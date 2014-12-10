@@ -15,6 +15,18 @@ def length(v):
 def angle(v1, v2):
   return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
 
+def linear_momentum(mass, velocity):
+    # Calculates linear momentum p=mv
+    # Everything should be in cgs
+    # mass in grams
+    # velocity in cm/s
+    # return in gcm/s
+    px = mass * velocity[0]
+    py = mass * velocity[1]
+    pz = mass * velocity[2]
+    p = [px, py, pz]
+    return p
+
 def rel_position(pos1, pos2):
     # Finds the relative position of the cell position to the CoM.
     # Output units are the same as input units.
@@ -40,6 +52,13 @@ rv_2 = []
 coms = []	# Center of mass of system
 it = 0
 
+#Import all the timesteps for the series:
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
+pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
+
+dim = pf.domain_dimensions[0]
+lu = pf['LengthUnits']     #length units in cm
+
 header = 0
 with open('coms.csv', 'r+') as f:
     reader = csv.reader(f)
@@ -52,13 +71,6 @@ with open('coms.csv', 'r+') as f:
             coms.append(com_val)
         else:
             header = 1
-
-#Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
-pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
-
-dim = pf.domain_dimensions[0]
-lu = pf['LengthUnits']     #length units in cm
 
 for pf in ts:
 	#get time
@@ -109,19 +121,21 @@ for pf in ts:
 	#rv1 = (proj1 - ps1)*mg1
 	#rv2 = (proj2 - ps2)*mg2
 	Lz1 = 0
-	for val in len(sp1['x']):
-		pos = [sp1['x'][val]*gl+0.5, sp1['y'][val]*gl+0.5, sp1['z'][val]*gl+0.5]
-                mass = g["CellMass"][pos[0], pos[1], pos[2]]
-                velocity = [g["x-velocity"][pos[0], pos[1], pos[2]], g["y-velocity"][pos[0], pos[1], pos[2]], g["z-velocity"][pos[0], pos[1], pos[2]]]
+	for val in range(len(sp1['x'])):
+		grid = [sp1['x'][val]*dim+0.5, sp1['y'][val]*dim+0.5, sp1['z'][val]*dim+0.5]
+		pos = [sp1['x'][val]*lu, sp1['y'][val]*lu, sp1['z'][val]*lu]
+                mass = g["CellMass"][grid[0], grid[1], grid[2]]
+                velocity = [g["x-velocity"][grid[0], grid[1], grid[2]], g["y-velocity"][grid[0], grid[1], grid[2]], g["z-velocity"][grid[0], grid[1], grid[2]]]
                 p = linear_momentum(mass, velocity)
                 rpos = rel_position(pos, coms[it])
                 L = (z_momentum(rpos, p))#/mass
                 Lz1 = Lz1 + L #Adds up all the z-compnents to find the total angular momentum of gas
 	Lz2 = 0
-	for val in len(sp2['x']):
-		pos = [sp2['x'][val]*gl+0.5, sp2['y'][val]*gl+0.5, sp2['z'][val]*gl+0.5]
-                mass = g["CellMass"][pos[0], pos[1], pos[2]]
-                velocity = [g["x-velocity"][pos[0], pos[1], pos[2]], g["y-velocity"][pos[0], pos[1], pos[2]], g["z-velocity"][pos[0], pos[1], pos[2]]]
+	for val in range(len(sp2['x'])):
+		grid = [sp2['x'][val]*dim+0.5, sp2['y'][val]*dim+0.5, sp2['z'][val]*dim+0.5]
+		pos = [sp2['x'][val]*lu, sp2['y'][val]*lu, sp2['z'][val]*lu]
+                mass = g["CellMass"][grid[0], grid[1], grid[2]]
+                velocity = [g["x-velocity"][grid[0], grid[1], grid[2]], g["y-velocity"][grid[0], grid[1], grid[2]], g["z-velocity"][grid[0], grid[1], grid[2]]]
                 p = linear_momentum(mass, velocity)
                 rpos = rel_position(pos, coms[it])
                 L = (z_momentum(rpos, p))#/mass
