@@ -15,50 +15,14 @@ def length(v):
 def angle(v1, v2):
   return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
 
-def rel_position(pos1, pos2):
-    # Finds the relative position of the cell position to the CoM.
-    # Output units are the same as input units.
-    # This is just to work out the sign of the linear momentum.
-    x = pos1[0] - pos2[0]
-    y = pos1[1] - pos2[1]
-    z = pos1[2] - pos2[2]
-    rel = [x, y, z]
-    return rel
-
-def z_momentum(rel_position, momentum):
-    # Works out the z-component of the angular momentum
-    # Using the cross product of radius and linear momentum
-    # i.e., L = r x p
-    # Everything in cgs
-    Lz = rel_position[0] * momentum[1] - rel_position[1] * momentum[0]
-    return Lz
-
 #Define arrays:
 time = []
 rv_1 = []
 rv_2 = []
-coms = []	# Center of mass of system
-it = 0
-
-header = 0
-with open('coms.csv', 'r+') as f:
-    reader = csv.reader(f)
-    for row in reader:
-        if header != 0:
-            x = float(row[7]) * lu	# Multiplies CoM by length of grid in cm
-            y = float(row[8]) * lu	# This is because CoM is given in grid units
-            z = float(row[9]) * lu
-            com_val = [x,y,z]
-            coms.append(com_val)
-        else:
-            header = 1
 
 #Import all the timesteps for the series:
 ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
 pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
-
-dim = pf.domain_dimensions[0]
-lu = pf['LengthUnits']     #length units in cm
 
 for pf in ts:
 	#get time
@@ -108,8 +72,8 @@ for pf in ts:
 	#find momentum of gas relative to particle
 	rv1 = (proj1 - ps1)*mg1
 	rv2 = (proj2 - ps2)*mg2
-	rv_1.append(Lz1)
-	rv_2.append(Lz2)
+	rv_1.append(rv1)
+	rv_2.append(rv2)
 
 	#create plot
 	plt.clf()
