@@ -56,6 +56,11 @@ it = 0
 ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
 pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
 
+#Find the mass of the particles
+dd = pf.h.all_data()
+pm1 = dd["ParticleMass"][0]
+pm2 = dd["ParticleMass"][1]
+
 dim = pf.domain_dimensions[0]
 lu = pf['LengthUnits']     #length units in cm
 
@@ -86,8 +91,16 @@ for pf in ts:
 	pp2 = [dd['particle_position_x'][1], dd['particle_position_y'][1], dd['particle_position_z'][1]]
 
 	#get particle velocites
-	#pv1 = [dd['particle_velocity_x'][0], dd['particle_velocity_y'][0], dd['particle_velocity_z'][0]]
-	#pv2 = [dd['particle_velocity_x'][1], dd['particle_velocity_y'][1], dd['particle_velocity_z'][1]]
+	pv1 = [dd['particle_velocity_x'][0], dd['particle_velocity_y'][0], dd['particle_velocity_z'][0]]
+	pv2 = [dd['particle_velocity_x'][1], dd['particle_velocity_y'][1], dd['particle_velocity_z'][1]]
+	
+	#Calculate angular momentum of the particles:
+    	p1 = linear_momentum(pm1, pv1)
+    	p2 = linear_momentum(pm2, pv2)
+    	rel1 = rel_position(pp1, coms[it])
+    	rel2 = rel_position(pp2, coms[it])
+    	L1 = z_momentum(rel1, p1)
+    	L2 = z_momentum(rel2, p2)
 	
 	#get particle speed
 	#ps1 = (pv1[0]**2. + pv1[1]**2. + pv1[2]**2.)**0.5
@@ -130,6 +143,7 @@ for pf in ts:
                 rpos = rel_position(pos, coms[it])
                 L = (z_momentum(rpos, p))#/mass
                 Lz1 = Lz1 + L #Adds up all the z-compnents to find the total angular momentum of gas
+	Lz1rel = L1 - Lz1
 	Lz2 = 0
 	for val in range(len(sp2['x'])):
 		grid = [sp2['x'][val]*dim+0.5, sp2['y'][val]*dim+0.5, sp2['z'][val]*dim+0.5]
@@ -140,8 +154,9 @@ for pf in ts:
                 rpos = rel_position(pos, coms[it])
                 L = (z_momentum(rpos, p))#/mass
                 Lz2 = Lz2 + L #Adds up all the z-compnents to find the total angular momentum of gas
-	rv_1.append(Lz1)
-	rv_2.append(Lz2)
+	Lz2rel = L2 - Lz2
+	rv_1.append(Lz1rel)
+	rv_2.append(Lz2rel)
 
 	#create plot
 	plt.clf()
