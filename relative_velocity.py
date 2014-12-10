@@ -22,8 +22,8 @@ rv_2 = []
 
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
-pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/Hot_fb_0.4k/DD0000/CE0000")
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/hot2/DD00*/CE00*.hierarchy")
+pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/hot2/DD0000/CE0000")
 
 for pf in ts:
 	#get time
@@ -52,6 +52,10 @@ for pf in ts:
 	#get gas vector
 	bv1 = sp1.quantities["BulkVelocity"]()
 	bv2 = sp2.quantities["BulkVelocity"]()
+	
+	#get mass of surrounding gas
+	mg1 = sum(sp1['CellMass'])
+	mg2 = sum(sp2['CellMass'])
 
 	#get gas speed
 	bs1 = (bv1[0]**2. + bv1[1]**2. + bv1[2]**2.)**0.5
@@ -65,9 +69,9 @@ for pf in ts:
 	proj1 = bs1*math.cos(ang1)
 	proj2 = bs2*math.cos(ang2)
 
-	#find relative velocity:
-	rv1 = ps1 - proj1
-	rv2 = ps2 - proj2
+	#find momentum of gas relative to particle
+	rv1 = (proj1 - ps1)*mg1
+	rv2 = (proj2 - ps2)*mg2
 	rv_1.append(rv1)
 	rv_2.append(rv2)
 
@@ -78,5 +82,5 @@ plt.plot(time, rv_1, 'r', label='P1')
 plt.plot(time, rv_2, 'b', label='P2')
 plt.axhline(y=0.0, color='k')
 plt.xlabel('Time ($Years$)')
-plt.ylabel('v$_p$ - v$_g$ ($cms^{-1}$)')
-plt.savefig('relative_velocity.png')
+plt.ylabel('momentum ($gcms^{-1}$)')
+plt.savefig('relative_momentum.png')
