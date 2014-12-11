@@ -37,13 +37,13 @@ def rel_position(pos1, pos2):
     rel = [x, y, z]
     return rel
 
-def z_momentum(rel_position, momentum):
-    # Works out the z-component of the angular momentum
-    # Using the cross product of radius and linear momentum
-    # i.e., L = r x p
-    # Everything in cgs
-    Lz = rel_position[0] * momentum[1] - rel_position[1] * momentum[0]
-    return Lz
+def angular_momentum(rel_position, momentum):
+    #Everything in cgs
+    Lx = rel_position[1]*momentum[2] - rel_position[2]*momentum[1]
+    Ly = rel_position[2]*momentum[0] - rel_position[0]*momentum[2]
+    Lz = rel_position[0]*momentum[1] - rel_position[1]*momentum[0]
+    L = [Lx, Ly, Lz]
+    return L
 
 #Define arrays:
 time = []
@@ -103,8 +103,10 @@ for pf in ts:
     	p2 = linear_momentum(pm2, pv2)
     	rel1 = rel_position(pp1, com)
     	rel2 = rel_position(pp2, com)
-    	Lp1 = z_momentum(rel1, p1)
-    	Lp2 = z_momentum(rel2, p2)
+    	Lp1 = angular_momentum(rel1, p1)
+    	Lp2 = angular_momentum(rel2, p2)
+	Lpm1 = (Lp1[0]**2. + Lp1[1]**2. + Lp1[2]**2.)**0.5
+	Lpm1 = (Lp2[0]**2. + Lp2[1]**2. + Lp2[2]**2.)**0.5
 
 	#make sphere around particles to get gas vector:
 	sp1 = pf.h.sphere(pp1, 5.0/pf['rsun']) #sphere has radius of 2.5Rsun
@@ -118,31 +120,25 @@ for pf in ts:
 	gm1 = sum(sp1['CellMass'])
 	gm2 = sum(sp2['CellMass'])
 
-	#get gas speed
-	bs1 = (bv1[0]**2. + bv1[1]**2. + bv1[2]**2.)**0.5
-	bs2 = (bv2[0]**2. + bv2[1]**2. + bv2[2]**2.)**0.5
+	#find momentum of the gas
+	pg1 = linear_momentum(gm1, bv1)
+    	pg2 = linear_momentum(gm2, bv2)
+	Lg1 = angular_momentum(rel1, pg1)
+    	Lg2 = angular_momentum(rel2, pg2)
+	Lgm1 = (Lg1[0]**2. + Lg1[1]**2. + Lg1[2]**2.)**0.5
+	Lgm1 = (Lg2[0]**2. + Lg2[1]**2. + Lg2[2]**2.)**0.5
 
-	#find angle between particle and gas vector (angles are all in radians)
-	ang1 = angle(pv1, bv1)
-	ang2 = angle(pv2, bv2)
+	#find angle between particle and gas angular momentum vector (angles are all in radians)
+	ang1 = angle(Lp1, Lg1)
+	ang2 = angle(Lp2, Lg2)
 
 	#find projection of gas vector on the particle vector
-	proj1 = bs1*math.cos(ang1)
-	proj2 = bs2*math.cos(ang2)
-
-	#find the gas projection vector
-	gv1 = [proj1*bv1[0], proj1*bv1[1], proj1*bv1[2]]
-	gv2 = [proj2*bv2[0], proj2*bv2[1], proj2*bv2[2]]
-
-	#find momentum of the gas
-	pg1 = linear_momentum(gm1, gv1)
-    	pg2 = linear_momentum(gm2, gv2)
-    	Lg1 = z_momentum(rel1, pg1)
-    	Lg2 = z_momentum(rel2, pg2)
+	Lgm1 = Lgm1*math.cos(ang1)
+	Lgm2 = Lgm2*math.cos(ang2)
 
 	#find angular momentum of gas relative to particle
-	rL1 = Lp1 - Lg1
-	rL2 = Lp2 - Lg2
+	rL1 = Lpm1 - Lgm1
+	rL2 = Lpm2 - Lgm2
 	rL_1.append(rL1)
 	rL_2.append(rL2)
 
