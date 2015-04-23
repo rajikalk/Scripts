@@ -4,19 +4,27 @@ from yt.mods import *
 import matplotlib.pyplot as plt
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/home/science/staff/reggie/Simulation/Hot_fb_0.5k/DD00*/CE00*.hierarchy")
+ts = DatasetSeries("/Users/rajikak/Output/CircumbinaryOutFlow_0.25/WIND_hdf5_plt_cnt_*", particle_filename="/Users/rajikak/Output/CircumbinaryOutFlow_0.25/WIND_hdf5_part_*")
 
-#save_directory = '~/YT_output/run1.e-6lessetot_Gcorr_0.75k/xy-plane/'
-it = 0
+#save_directory = '~/YT_output/CircumbinaryOutFlow/Density_xz_plane/'
+it = 440
+max_file = 453
 
-for pf in ts:
-    p = SlicePlot(pf, "z", "Density")
-    p.annotate_velocity()
-    p.annotate_particles(10.0, p_size = 50)
+while it < max_file:
+    it_str = ("%04d" % it)
+    pf = load("/Users/rajikak/Output/CircumbinaryOutFlow_0.25/WIND_hdf5_plt_cnt_"+it_str, particle_filename="/Users/rajikak/Output/CircumbinaryOutFlow_0.25/WIND_hdf5_part_"+it_str)
+    p = ProjectionPlot(pf, "z", "density")
+    #p.set_log("density", False)
+    #p.zoom(10)
+    p.annotate_streamlines('magx', 'magy')
+    p.annotate_velocity(normalize=True)
+    if len(pf.field_list) > 12:
+        p.annotate_particles(10.0, p_size = 50)
+    p.set_cmap(field="density", cmap="hot")
     time = str(float(pf.current_time))
     title = "Current Time:" + time + "years"
     p.annotate_title(title)
-    p.set_zlim('all', zmin = 1e-9, zmax = 1e-4)
-    filename = "frame_" + ("%03d" % it) + ".png"
+    p.set_zlim('all', zmin = 1e-3, zmax = 1e1)
+    filename = "frame_" + ("%06d" % it) + ".png"
     p.save(filename)
     it = it + 1

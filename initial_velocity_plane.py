@@ -27,7 +27,7 @@ def GPE(Mass, cellMass, distance):
     return result
     
 #load data cube:
-pf = load("/home/science/staff/reggie/Simulation/Hot_fb_0.5k/DD0000/CE0000")
+pf = load("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
 g = pf.h.grids[0]
 
 #Find size of domain
@@ -68,18 +68,18 @@ for x in range(dim):
     pp1 = [dd['particle_position_x'][0]*lu, dd['particle_position_y'][0]*lu, dd['particle_position_z'][0]*lu]
     pp2 = [dd['particle_position_x'][1]*lu, dd['particle_position_y'][1]*lu, dd['particle_position_z'][1]*lu]
     
-    
-    
     #calculate distances to each particle
     radius1 = distance([(x+0.5)*gl,y_pos*gl,z_pos*gl],pp1)
     radius2 = distance([(x+0.5)*gl,y_pos*gl,z_pos*gl],pp2)
-    
+
     cmass = g["CellMassMsun"][x,y_pos,z_pos]*Msun #in grams
     GPE1 = GPE(pm1, cmass, radius1)
     GPE2 = GPE(pm2, cmass, radius2)
     GPE_val = GPE1 + GPE2
     v_kep = (-GPE_val/cmass)**0.5
+    
     kep_v.append(v_kep)
+
     v_x = g["x-velocity"][x,y_pos,z_pos]
     v_y = g["y-velocity"][x,y_pos,z_pos]
     v_z = g["z-velocity"][x,y_pos,z_pos]
@@ -87,10 +87,10 @@ for x in range(dim):
     vel.append(v_mag)
     v_rel = v_mag/v_kep
     rel_v.append(v_rel)
-    print "v_kep:", v_kep, "cm/s, v:", v_mag
+    print "rel_v", v_rel
     
 f, (ax1, ax2, ax3) = plt.subplots(3, sharex=True)
-#f.clf()
+f.clf()
 f.set_size_inches(7,7)
 ax1.plot(x_pos, kep_v, 'b')
 ax1.set_ylabel('$v_{keplerian}$ ($cms^{-1}$)')

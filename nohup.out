@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "bound.py", line 49, in <module>
+    ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot/longer/DD00*/CE00*.hierarchy")
+  File "/home/rajika/yt-x86_64/src/yt-hg/yt/data_objects/time_series.py", line 261, in from_filenames
+    raise YTOutputNotIdentified(filenames, {})
+yt.utilities.exceptions.YTOutputNotIdentified: Supplied ('/', 'd', 'i', 's', 'k', 's', '/', 'c', 'e', 'r', 'e', 's', '/', 'm', 'a', 'k', 'e', 'm', 'a', 'k', 'e', '/', 'a', 'c', 'o', 'm', 'p', '/', 'j', 's', 't', 'a', 'f', 'f', '/', 'r', 'a', 'j', 'i', 'k', 'a', '/', 's', 'm', 'a', 'l', 'l', 'b', 'o', 'x', '/', 'r', 'o', 't', 'a', 't', 'i', 'o', 'n', '/', 'r', 'u', 'n', '1', '.', 'e', '-', '6', 'l', 'e', 's', 's', 'e', 't', 'o', 't', '/', 'l', 'o', 'n', 'g', 'e', 'r', '/', 'D', 'D', '0', '0', '*', '/', 'C', 'E', '0', '0', '*', '.', 'h', 'i', 'e', 'r', 'a', 'r', 'c', 'h', 'y') {}, but could not load!
+Traceback (most recent call last):
+  File "bound.py", line 49, in <module>
+    ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot/longer/DD00*/CE00*.hierarchy")
+  File "/home/rajika/yt-x86_64/src/yt-hg/yt/data_objects/time_series.py", line 261, in from_filenames
+    raise YTOutputNotIdentified(filenames, {})
+yt.utilities.exceptions.YTOutputNotIdentified: Supplied ('/', 'd', 'i', 's', 'k', 's', '/', 'c', 'e', 'r', 'e', 's', '/', 'm', 'a', 'k', 'e', 'm', 'a', 'k', 'e', '/', 'a', 'c', 'o', 'm', 'p', '/', 'j', 's', 't', 'a', 'f', 'f', '/', 'r', 'a', 'j', 'i', 'k', 'a', '/', 's', 'm', 'a', 'l', 'l', 'b', 'o', 'x', '/', 'r', 'o', 't', 'a', 't', 'i', 'o', 'n', '/', 'r', 'u', 'n', '1', '.', 'e', '-', '6', 'l', 'e', 's', 's', 'e', 't', 'o', 't', '/', 'l', 'o', 'n', 'g', 'e', 'r', '/', 'D', 'D', '0', '0', '*', '/', 'C', 'E', '0', '0', '*', '.', 'h', 'i', 'e', 'r', 'a', 'r', 'c', 'h', 'y') {}, but could not load!

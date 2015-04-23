@@ -12,8 +12,8 @@ def dotproduct(v1, v2):
 def length(v):
   return math.sqrt(dotproduct(v, v))
 
-def angle(v1, v2):
-  return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))
+def projection(v1, v2):
+  return (dotproduct(v1, v2)) / (length(v2))
 
 def linear_momentum(mass, velocity):
     # Calculates linear momentum p=mv
@@ -106,7 +106,7 @@ for pf in ts:
     	Lp1 = angular_momentum(rel1, p1)
     	Lp2 = angular_momentum(rel2, p2)
 	Lpm1 = (Lp1[0]**2. + Lp1[1]**2. + Lp1[2]**2.)**0.5
-	Lpm1 = (Lp2[0]**2. + Lp2[1]**2. + Lp2[2]**2.)**0.5
+	Lpm2 = (Lp2[0]**2. + Lp2[1]**2. + Lp2[2]**2.)**0.5
 
 	#make sphere around particles to get gas vector:
 	sp1 = pf.h.sphere(pp1, 5.0/pf['rsun']) #sphere has radius of 2.5Rsun
@@ -128,13 +128,9 @@ for pf in ts:
 	Lgm1 = (Lg1[0]**2. + Lg1[1]**2. + Lg1[2]**2.)**0.5
 	Lgm1 = (Lg2[0]**2. + Lg2[1]**2. + Lg2[2]**2.)**0.5
 
-	#find angle between particle and gas angular momentum vector (angles are all in radians)
-	ang1 = angle(Lp1, Lg1)
-	ang2 = angle(Lp2, Lg2)
-
 	#find projection of gas vector on the particle vector
-	Lgm1 = Lgm1*math.cos(ang1)
-	Lgm2 = Lgm2*math.cos(ang2)
+	Lgm1 = projection(Lp1, Lg1)
+	Lgm2 = projection(Lp1, Lg1)
 
 	#find angular momentum of gas relative to particle
 	rL1 = Lpm1 - Lgm1
@@ -161,6 +157,6 @@ for pf in ts:
 	plt.axvline(x=0.06, color='b', ls='--')
 	plt.xlabel('Time ($Years$)')
 	plt.ylabel('L$_{z,p}$-L$_{z,g}$ ($gcms^{-1}$)')
-	plt.savefig('relative_angular_momentum.png')
+	plt.savefig('relative_total_angular_momentum.png')
 	
 	it = it + 1

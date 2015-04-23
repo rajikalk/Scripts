@@ -20,7 +20,7 @@ def _Temperature(field, data):
 add_field("Temperature", function=_Temperature, units=r"K")
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/home/science/staff/reggie/Simulation/Hot_fb_0.5k/DD00*/CE00*.hierarchy")
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6vkepfix_0.75k/DD00*/CE00*.hierarchy")
 
 #save directory
 #save_directory = '/media/DATA/YT_output/run1.e-6lessetot_Gcorr_0.75k/xz-plane-Temperature/'

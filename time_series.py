@@ -16,9 +16,9 @@ def distance(point1, point2):
     return result
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/run2.e-4/DD00*/CE00*.hierarchy")
-init_pf = load("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/run2.e-4/DD0000/CE0000")
-f = open('separation.csv','r+')
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
+init_pf = load("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
+f = open('separation_main.csv','r+')
 f.write('time, separation\n')
 #f.write('time, TE\n')
 

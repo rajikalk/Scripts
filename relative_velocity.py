@@ -21,8 +21,13 @@ rv_1 = []
 rv_2 = []
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
-pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/reggie/Hot_fb_0.4k/DD00*/CE00*.hierarchy")
+pf = load ("/disks/ceres/makemake/acomp/reggie/Hot_fb_0.4k/DD0000/CE0000")
+
+#Find the mass of the particles
+dd = pf.h.all_data()
+pm1 = dd["ParticleMassMsun"][0]*Msun
+pm2 = dd["ParticleMassMsun"][1]*Msun
 
 for pf in ts:
 	#get time
@@ -45,6 +50,10 @@ for pf in ts:
 	ps1 = (pv1[0]**2. + pv1[1]**2. + pv1[2]**2.)**0.5
 	ps2 = (pv2[0]**2. + pv2[1]**2. + pv2[2]**2.)**0.5
 
+	#particle momentum
+	pmom_1 = pm1 * ps1
+	pmom_2 = pm2 * ps2
+
 	#make sphere around particles to get gas vector:
 	sp1 = pf.h.sphere(pp1, 5.0/pf['rsun']) #sphere has radius of 2.5Rsun
 	sp2 = pf.h.sphere(pp2, 5.0/pf['rsun'])
@@ -54,24 +63,28 @@ for pf in ts:
 	bv2 = sp2.quantities["BulkVelocity"]()
 	
 	#get mass of surrounding gas
-	mg1 = sum(sp1['CellMass'])
-	mg2 = sum(sp2['CellMass'])
+	gm1 = sum(sp1['CellMass'])
+	gm2 = sum(sp2['CellMass'])
 
 	#get gas speed
 	bs1 = (bv1[0]**2. + bv1[1]**2. + bv1[2]**2.)**0.5
 	bs2 = (bv2[0]**2. + bv2[1]**2. + bv2[2]**2.)**0.5
+	
+	#gas momentum
+	gmom_1 = gm1 * bs1
+	gmom_2 = gm2 * bs2
 
 	#find angle between particle and gas vector (angles are all in radians)
 	ang1 = angle(pv1, bv1)
 	ang2 = angle(pv2, bv2)
 
 	#find projection of gas vector on the particle vector
-	proj1 = bs1*math.cos(ang1)
-	proj2 = bs2*math.cos(ang2)
+	proj1 = gmom_1*math.cos(ang1)
+	proj2 = gmom_2*math.cos(ang2)
 
 	#find momentum of gas relative to particle
-	rv1 = (proj1 - ps1)*mg1
-	rv2 = (proj2 - ps2)*mg2
+	rv1 = pmom_1 - proj1
+	rv2 = pmom_2 - proj2
 	rv_1.append(rv1)
 	rv_2.append(rv2)
 

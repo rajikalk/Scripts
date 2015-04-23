@@ -15,7 +15,7 @@ def distance(point1, point2):
     return result
 
 #Load DataCube
-ts = TimeSeriesData.from_filenames("/home/reggie/DATA/Simulations/rotation/run1.e-6lessetot_Gcorr_0.75k/hot/DD00*/CE00*.hierarchy")
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD00*/CE00*.hierarchy")
 
 #system:
 #Msun = init_pf['MassUnits']       #grams/Msun
@@ -90,8 +90,20 @@ for pf in ts:
 plt.clf()
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
 plt.plot(times, gradient)
-plt.ylim([-2.e-6, 0.0])
+plt.ylim([-2.e-6, 0.5e-6])
+plt.axvline(x=0.01, color='k')
+plt.axvline(x=0.04, color='k')
+plt.axvline(x=0.10, color='k')
+plt.axvline(x=0.06, color='b', ls='--')
+plt.axvline(x=0.02, color='r', ls=':')
+plt.axvline(x=0.03, color='r', ls=':')
+plt.axvline(x=0.05, color='r', ls=':')
+plt.axvline(x=0.07, color='r', ls=':')
+plt.axvline(x=0.08, color='r', ls=':')
+plt.axvline(x=0.09, color='r', ls=':')
+plt.axvline(x=0.06, color='b', ls='--')
 plt.xlabel("Time ($years$)")
-plt.ylabel("Gradient ($g~cm^{-3}~R_\odot^{-1}$)")
+plt.ylabel("Gradient (gcm$^{-3}$R$_\odot^{-1}$)")
 plt.savefig("grad_timeseries.png")
 print "t_min:", t_min, "years, grad_min:", grad_min
+

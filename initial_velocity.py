@@ -27,7 +27,7 @@ def GPE(Mass, distance):
     return result
     
 #load data cube:
-pf = load ("/home/science/staff/reggie/Simulation/Hot_fb_0.5k/DD0000/CE0000")
+pf = load ("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6lessetot_Gcorr_0.75k/DD0000/CE0000")
 g = pf.h.grids[0]
 
 #Find size of domain
@@ -69,7 +69,7 @@ for z in range(dim):
     #calculate distances to each particle
     radius1 = distance([x_pos*gl, y_pos*gl,(z+0.5)*gl],pp1)
     radius2 = distance([x_pos*gl, y_pos*gl,(z+0.5)*gl],pp2)
-    
+
     #cmass = g["CellMassMsun"][x,y_pos,z_pos]*Msun #in grams
     GPE1 = GPE(pm1, radius1)
     GPE2 = GPE(pm2, radius2)
@@ -84,7 +84,7 @@ for z in range(dim):
     vel.append(v_mag)
     v_rel = v_mag/v_kep
     rel_v.append(v_rel)
-    print "v_kep:", v_kep, "cm/s, v:", v_mag
+    print "rel_v", v_rel
     
 f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharey=True)
 #f.clf()

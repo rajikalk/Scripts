@@ -59,10 +59,15 @@ def _KeplerianVelocity(field, data):
     Msun = 1.9891*(10**33.)
     lu = 10000000000000.     #length units in cm
     gl = lu/256.             #cm in grid length
-    r = data['Radius']
-    M = data['ParticleMassMsun'][0]*Msun + data['ParticleMassMsun'][1]*Msun
+    r1 = ((data['x'] - data['particle_position_x'][0])**2. + (data['y'] - data['particle_position_y'][0])**2. + (data['z'] - data['particle_position_z'][0])**2.)**0.5
+    M1 = data['ParticleMass'][0]
     G = 6.67259*(10**(-8.))
-    v_k = ((G*M)/r)**(0.5)
+    GPE1 = (G*M1)/(r1*lu)
+    r2 = ((data['x'] - data['particle_position_x'][1])**2. + (data['y'] - data['particle_position_y'][1])**2. + (data['z'] - data['particle_position_z'][1])**2.)**0.5
+    M2 = data['ParticleMass'][1]
+    GPE2 = (G*M2)/(r2*lu)
+    GPE = GPE1 + GPE2
+    v_k = (GPE)**(0.5)
     v_g = ((data['x-velocity']**2) + (data['y-velocity']**2) + (data['z-velocity']**2))**(0.5)
     v = v_g/v_k
     if v.any() > 1.0:
@@ -131,10 +136,10 @@ def _DensityBound(field, data):
 add_field("DensityBound", function=_DensityBound, units=r"g/cm^3")
 
 #Import all the timesteps for the series:
-ts = TimeSeriesData.from_filenames("/media/DATA/Simulations/smallbox/highres_hot2/DD00*/CE00*.hierarchy")
+ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/jstaff/rajika/smallbox/rotation/run1.e-6vkepfix_0.75k/DD00*/CE00*.hierarchy")
 
 #save directory
-save_directory = 'xz-plane/'
+#save_directory = 'xz-plane/'
 it = 0
 
 #create plots
@@ -147,6 +152,6 @@ for pf in ts:
     title = "Current Time:" + time + "years"
     p.annotate_title(title)
     p.set_zlim('all', zmin = 1.e-9, zmax = 1.e-4)
-    filename = save_directory + "frame_" + ("%03d" % it) + ".png"
+    filename = "frame_y_" + ("%03d" % it) + ".png"
     p.save(filename)
     it = it + 1
