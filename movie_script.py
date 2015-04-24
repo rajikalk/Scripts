@@ -14,6 +14,7 @@ axis = "xz"
 zoom = False #boolean
 zoom_cell = 226
 annotate_vel_freq = 2
+start_frame = 0
 source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_8/"
 directory = source_directory + "WIND_" + type + "_" + axis + "_000000"
 if zoom == False:
@@ -93,14 +94,18 @@ min = []
 for it in its:
     directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
     f = h5py.File(directory, 'r')
-    for x in range(zoom_cell, dim-zoom_cell):
-        den_field = f[field + '_' + type + '_' + axis][x]
-        if shape(den_field) == (512,1):
-            den_field = den_field.transpose()[0]
-        max_val = np.max(den_field[zoom_cell:dim-zoom_cell])
-        min_val = np.min(den_field[zoom_cell:dim-zoom_cell])
-        max.append(max_val)
-        min.append(min_val)
+    if zoom:
+        for x in range(zoom_cell, dim-zoom_cell):
+            den_field = f[field + '_' + type + '_' + axis][x]
+            if shape(den_field) == (dim,1):
+                den_field = den_field.transpose()[0]
+            max_val = np.max(den_field[zoom_cell:dim-zoom_cell])
+            min_val = np.min(den_field[zoom_cell:dim-zoom_cell])
+    else:
+        max_val = np.max(f[field + '_' + type + '_' + axis])
+        min_val = np.min(f[field + '_' + type + '_' + axis])
+    max.append(max_val)
+    min.append(min_val)
 max_str = '%.1e' % np.max(max)
 min_str = '%.1e' % np.min(min)
 max_round = str(0.5*floor(2.0 * float(max_str[0:3])))
@@ -110,11 +115,11 @@ cbar_min = float(min_round+min_str[-4:])
 print "found colour bar extremes"
 
 #plot figures
-frame_val = 0
+frame_val = start_frame
+its = its[start_frame:]
 for it in its:
     directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
     f = h5py.File(directory, 'r')
-    t = (f['time'][0])/year
     velx = []
     vely = []
     image = []
@@ -124,7 +129,7 @@ for it in its:
         image_val = f[field + "_" + type + "_" + axis][x]
         magx_val = f["mag"+axis[0]+ "_" + type + "_"+axis][x]
         magy_val = f["mag"+axis[1]+ "_" + type + "_"+axis][x]
-        if shape(image_val) == (512,1):
+        if shape(image_val) == (dim,1):
             image_val = image_val.transpose()
             magx_val = magx_val.transpose()
             magy_val = magy_val.transpose()
@@ -138,8 +143,14 @@ for it in its:
     magx = np.array(magx)
     magy = np.array(magy)
     for x in range(zoom_cell, dim-zoom_cell, annotate_vel_freq):
-        velx.append(f["vel" + axis[0] + "_" + type + "_" + axis][x][zoom_cell:dim-zoom_cell:annotate_vel_freq].transpose()[0])
-        vely.append(f["vel" + axis[1] + "_" + type + "_" + axis][x][zoom_cell:dim-zoom_cell:annotate_vel_freq].transpose()[0])
+        velx_temp = f["vel" + axis[0] + "_" + type + "_" + axis][x]
+        vely_temp = f["vel" + axis[1] + "_" + type + "_" + axis][x]
+        if shape(velx_temp) == (dim, 1):
+            velx_temp = velx_temp.transpose()
+            vely_temp = vely_temp.transpose()
+        velx.append(velx_temp[0][zoom_cell:dim-zoom_cell:annotate_vel_freq])
+        vely.append(vely_temp[0][zoom_cell:dim-zoom_cell:annotate_vel_freq])
+    plt.clf()
     fig, ax = plt.subplots()
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max))
     cbar = plt.colorbar(plot, pad=0.0)
@@ -165,7 +176,7 @@ for it in its:
         part_mass_max = np.max(f["particlemasses"])
         part_mass = f["particlemasses"]/part_mass_max
         ax.scatter(part_pos_1, part_pos_2, c=part_mass, cmap=mpl.cm.gray)
-    ax.set_title('time='+str(t)+'years')
+    ax.set_title('time='+str((f['time'][0])/year)+'years')
     ax.set_xlabel('x (AU)')
     if axis == "xy":
         ax.set_ylabel('y (AU)', labelpad=-20)
