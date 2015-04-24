@@ -9,11 +9,16 @@ import csv
 max_file = 2839
 it = 0
 field = "dens"
-type = "proj" #or "slice"
-axis = "xz"
-zoom = False #boolean
+type = "slice" #or "slice"
+axis = "xy"
+zoom = True #boolean
+zoom_cell = 226
+annotate_vel_freq = 2
 source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_8/"
 directory = source_directory + "WIND_" + type + "_" + axis + "_000000"
+if zoom == False:
+    zoom_cell=0
+    annotate_vel_freq = 8
 year = 31557600
 au = 1.496e13
 m_times = []
@@ -30,7 +35,6 @@ print "loaded movie frame times"
 f = h5py.File(directory, 'r')
 xmin = f['minmax_xyz'][0][0]/au
 xmax = f['minmax_xyz'][0][1]/au
-axis_val=0
 if axis == "xy":
     ymin = f['minmax_xyz'][1][0]/au
     ymax = f['minmax_xyz'][1][1]/au
@@ -39,16 +43,11 @@ else:
     ymax = f['minmax_xyz'][2][1]/au
 dim = np.shape(f[field + "_" + type + "_" + axis])[0]
 cl = (xmax-xmin)/(dim)
-if zoom:
-    x = np.arange(xmin+(225*cl), xmax-(225)*cl, cl)
-    y = np.arange(ymin+(225*cl), ymax-(225)*cl, cl)
-    x_vel = np.arange(xmin+(229*cl), xmax-(225*cl), cl*2)
-    y_vel = np.arange(ymin+(229*cl), ymax-(225*cl), cl*2)
-x = np.arange(xmin, xmax, cl)
-y = np.arange(ymin, ymax, cl)
+x = np.arange(xmin+(zoom_cell*cl), xmax-(zoom_cell)*cl, cl)
+y = np.arange(ymin+(zoom_cell*cl), ymax-(zoom_cell)*cl, cl)
+x_vel = np.arange(xmin+(((annotate_vel_freq/2.)+zoom_cell)*cl), xmax-(zoom_cell*cl), cl*annotate_vel_freq)
+y_vel = np.arange(ymin+(((annotate_vel_freq/2.)+zoom_cell)*cl), ymax-(zoom_cell*cl), cl*annotate_vel_freq)
 X, Y = np.meshgrid(x, y)
-x_vel = np.arange(xmin+(4*cl), xmax, cl*8)
-y_vel = np.arange(ymin+(4*cl), ymax, cl*8)
 X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
 print "created meshs"
 
@@ -94,10 +93,14 @@ min = []
 for it in its:
     directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
     f = h5py.File(directory, 'r')
-    max_val = np.max(f[field + '_' + type + '_' + axis])
-    min_val = np.min(f[field + '_' + type + '_' + axis])
-    max.append(max_val)
-    min.append(min_val)
+    for x in range(zoom_cell, dim-zoom_cell):
+        den_field = f[field + '_' + type + '_' + axis][x]
+        if shape(den_field) == (512,1):
+            den_field = den_field.transpose()[0]
+        max_val = np.max(den_field[zoom_cell:dim-zoom_cell])
+        min_val = np.min(den_field[zoom_cell:dim-zoom_cell])
+        max.append(max_val)
+        min.append(min_val)
 max_str = '%.1e' % np.max(max)
 min_str = '%.1e' % np.min(min)
 max_round = str(0.5*floor(2.0 * float(max_str[0:3])))
@@ -117,32 +120,26 @@ for it in its:
     image = []
     magx = []
     magy = []
-    for x in range(dim):
-        if axis == "xy":
-            image_temp = f[field + "_" + type + "_" + axis][x]
-            image_val = image_temp.transpose()[0]
-            magx_temp = f["mag"+axis[0]+ "_" + type + "_"+axis][x]
-            magx_val = magx_temp.transpose()[0]
-            magy_temp = f["mag"+axis[1]+ "_" + type + "_"+axis][x]
-            magy_val = magy_temp.transpose()[0]
-        else:
-            image_val = f[field + "_" + type + "_" + axis][x][0]
-            magx_val = f["mag"+axis[0]+ "_" + type + "_" +axis][x][0]
-            magy_val = f["mag"+axis[1]+ "_" + type + "_" +axis][x][0]
+    for x in range(zoom_cell, dim-zoom_cell):
+        image_val = f[field + "_" + type + "_" + axis][x]
+        magx_val = f["mag"+axis[0]+ "_" + type + "_"+axis][x]
+        magy_val = f["mag"+axis[1]+ "_" + type + "_"+axis][x]
+        if shape(image_val) == (512,1):
+            image_val = image_val.transpose()
+            magx_val = magx_val.transpose()
+            magy_val = magy_val.transpose()
+        image_val = image_val[0][zoom_cell: dim-zoom_cell]
+        magx_val = magx_val[0][zoom_cell: dim-zoom_cell]
+        magy_val = magy_val[0][zoom_cell: dim-zoom_cell]
         image.append(image_val)
         magx.append(magx_val)
         magy.append(magy_val)
     image = np.array(image)
     magx = np.array(magx)
     magy = np.array(magy)
-    if zoom:
-        for x in np.arange(225, dim-225, 2):
-            velx.append(f["vel" + axis[0] + "_" + type + "_" + axis][x][0][225:-225:2])
-            vely.append(f["vel" + axis[1] + "_" + type + "_" + axis][x][0][225:-225:2])
-    else:
-        for x in np.arange(0, dim, 8):
-            velx.append(f["vel" + axis[0] + "_" + type + "_" + axis][x][0][0::8])
-            vely.append(f["vel" + axis[1] + "_" + type + "_" + axis][x][0][0::8])
+    for x in range(zoom_cell, dim-zoom_cell, annotate_vel_freq):
+        velx.append(f["vel" + axis[0] + "_" + type + "_" + axis][x][zoom_cell:dim-zoom_cell:annotate_vel_freq].transpose()[0])
+        vely.append(f["vel" + axis[1] + "_" + type + "_" + axis][x][zoom_cell:dim-zoom_cell:annotate_vel_freq].transpose()[0])
     fig, ax = plt.subplots()
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max))
     cbar = plt.colorbar(plot, pad=0.0)
@@ -175,8 +172,8 @@ for it in its:
     else:
         ax.set_ylabel('z (AU)')
     if zoom:
-        ax.set_xlim([-150, 150])
-        ax.set_ylim([-150, 150])
+        ax.set_xlim([ceil(X[0][0]/10)*10, floor(X[-1][-1]/10)*10])
+        ax.set_ylim([ceil(Y[0][0]/10)*10, floor(Y[-1][-1]/10)*10])
     else:
         ax.set_xlim([-1336.8983957219252, 1331.6761363636206])
         ax.set_ylim([-1336.8983957219252, 1331.6761363636201])
