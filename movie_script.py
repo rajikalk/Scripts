@@ -9,9 +9,9 @@ import csv
 max_file = 2839
 it = 0
 field = "dens"
-type = "slice" #or "slice"
-axis = "xy"
-zoom = True #boolean
+type = "proj" #or "slice"
+axis = "xz"
+zoom = False #boolean
 zoom_cell = 226
 annotate_vel_freq = 2
 source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_8/"
@@ -168,15 +168,15 @@ for it in its:
     ax.set_title('time='+str(t)+'years')
     ax.set_xlabel('x (AU)')
     if axis == "xy":
-        ax.set_ylabel('y (AU)')
+        ax.set_ylabel('y (AU)', labelpad=-20)
     else:
-        ax.set_ylabel('z (AU)')
+        ax.set_ylabel('z (AU)', labelpad=-20)
     if zoom:
         ax.set_xlim([ceil(X[0][0]/10)*10, floor(X[-1][-1]/10)*10])
         ax.set_ylim([ceil(Y[0][0]/10)*10, floor(Y[-1][-1]/10)*10])
     else:
         ax.set_xlim([-1336.8983957219252, 1331.6761363636206])
         ax.set_ylim([-1336.8983957219252, 1331.6761363636201])
-    plt.savefig("movie_frame_" + ("%06d" % frame_val) + ".png")
+    plt.savefig("movie_frame_" + ("%06d" % frame_val) + ".png", bbox_inches='tight')
     frame_val = frame_val + 1
     print 'done frame_val =', frame_val
