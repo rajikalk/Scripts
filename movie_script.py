@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import csv
 
-max_file = 2839
+max_file = 2870
 it = 0
 field = "dens"
 type = "proj" #or "slice"
@@ -15,7 +15,7 @@ zoom = False #boolean
 zoom_cell = 226
 annotate_vel_freq = 2
 start_frame = 0
-source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_8/"
+source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_9/"
 directory = source_directory + "WIND_" + type + "_" + axis + "_000000"
 if zoom == False:
     zoom_cell=0
@@ -99,6 +99,11 @@ for it in its:
             den_field = f[field + '_' + type + '_' + axis][x]
             if shape(den_field) == (dim,1):
                 den_field = den_field.transpose()[0]
+            if type == "proj":
+                if axis == "xz":
+                    den_field = den_field/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
+                else:
+                    den_field = den_field/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
             max_val = np.max(den_field[zoom_cell:dim-zoom_cell])
             min_val = np.min(den_field[zoom_cell:dim-zoom_cell])
     else:
