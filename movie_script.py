@@ -62,7 +62,7 @@ while mit < len(m_times)-1:
     while it < max_file:
         directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
         f = h5py.File(directory, 'r')
-        diff = abs(mtime - float(str(f['time'][0])))
+        diff = abs(mtime - float(str(f['time'][0]/year)))
         if diff == 0:
             its.append(it)
             mit = mit + 1
