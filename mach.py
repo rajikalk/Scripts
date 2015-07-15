@@ -22,7 +22,7 @@ mach_2 = []
 
 #Import all the timesteps for the series:
 ts = TimeSeriesData.from_filenames("/disks/ceres/makemake/acomp/reggie/Hot_fb_0.4k/DD00*/CE00*.hierarchy")
-pf = load ("/disks/ceres/makemake/acomp/reggie/Hot_fb_0.4k/DD0000/CE0000")
+pf = load("/disks/ceres/makemake/acomp/reggie/Hot_fb_0.4k/DD0000/CE0000")
 
 #Define values:
 dim = pf.domain_dimensions[0]

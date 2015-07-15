@@ -5,18 +5,21 @@ import matplotlib as cm
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import csv
+import commands
 
-max_file = 2870
+
+max_file = 414
 it = 0
 field = "dens"
 type = "proj" #or "slice"
 axis = "xz"
-zoom = False #boolean
-zoom_cell = 226
-annotate_vel_freq = 2
+zoom = True #boolean
+zoom_cell = 253
+annotate_vel_freq = 1
 start_frame = 0
-source_directory = "/Users/rajikak/Output/CircumbinaryOutFlow_0.25_lref_9/"
-directory = source_directory + "WIND_" + type + "_" + axis + "_000000"
+path = "/Users/rajikak/Output/omega_t_ff_0.2/CircumbinaryOutFlow_0.25_lref_9/"
+source_directory = commands.getoutput('ls ' + path).split('\n')
+directory = source_directory[0]
 if zoom == False:
     zoom_cell=0
     annotate_vel_freq = 8
@@ -33,7 +36,7 @@ with open('movie_times.txt', 'r+') as f:
 print "loaded movie frame times"
 
 #load initial file:
-f = h5py.File(directory, 'r')
+f = h5py.File(path+source_directory[0], 'r')
 xmin = f['minmax_xyz'][0][0]/au
 xmax = f['minmax_xyz'][0][1]/au
 if axis == "xy":
@@ -44,8 +47,8 @@ else:
     ymax = f['minmax_xyz'][2][1]/au
 dim = np.shape(f[field + "_" + type + "_" + axis])[0]
 cl = (xmax-xmin)/(dim)
-x = np.arange(xmin+(zoom_cell*cl), xmax-(zoom_cell)*cl, cl)
-y = np.arange(ymin+(zoom_cell*cl), ymax-(zoom_cell)*cl, cl)
+x = np.arange(xmin+((zoom_cell)*cl), xmax-((zoom_cell)*cl), cl)
+y = np.arange(ymin+((zoom_cell)*cl), ymax-((zoom_cell)*cl), cl)
 x_vel = np.arange(xmin+(((annotate_vel_freq/2.)+zoom_cell)*cl), xmax-(zoom_cell*cl), cl*annotate_vel_freq)
 y_vel = np.arange(ymin+(((annotate_vel_freq/2.)+zoom_cell)*cl), ymax-(zoom_cell*cl), cl*annotate_vel_freq)
 X, Y = np.meshgrid(x, y)
@@ -60,11 +63,12 @@ diff_prev = np.inf
 while mit < len(m_times)-1:
     mtime = m_times[mit]
     while it < max_file:
-        directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
+        directory = path + source_directory[it]
         f = h5py.File(directory, 'r')
         diff = abs(mtime - float(str(f['time'][0]/year)))
         if diff == 0:
             its.append(it)
+            print "found", mtime
             mit = mit + 1
             if mit == len(m_times):
                 break
@@ -74,6 +78,7 @@ while mit < len(m_times)-1:
             diff_prev = diff
         elif diff > diff_prev:
             its.append(it-1)
+            print "found", mtime
             diff_prev = np.inf
             it = it - 1
             mit = mit + 1
@@ -85,32 +90,45 @@ while mit < len(m_times)-1:
             diff_prev = diff
         if it == max_file-1 and mtime == m_times[-1]:
             its.append(it)
+            print "found", mtime
         it = it + 1
+    mit = len(m_times)
 print "found usable movie plots"
 
 #find extremes for colour bar
 max = []
 min = []
 for it in its:
-    directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
+    directory = path + source_directory[it]
     f = h5py.File(directory, 'r')
     if zoom:
         for x in range(zoom_cell, dim-zoom_cell):
             den_field = f[field + '_' + type + '_' + axis][x]
-            if shape(den_field) == (dim,1):
-                den_field = den_field.transpose()[0]
+            if shape(den_field) == (1,dim):
+                den_field = den_field.transpose()
+            den_field = den_field[zoom_cell:dim-zoom_cell]
+            max_val = np.max(den_field)
+            min_val = np.min(den_field)
             if type == "proj":
                 if axis == "xz":
-                    den_field = den_field/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
+                    max_val = max_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
+                    min_val = min_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
                 else:
-                    den_field = den_field/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
-            max_val = np.max(den_field[zoom_cell:dim-zoom_cell])
-            min_val = np.min(den_field[zoom_cell:dim-zoom_cell])
+                    max_val = max_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
+                    min_val = min_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
     else:
         max_val = np.max(f[field + '_' + type + '_' + axis])
         min_val = np.min(f[field + '_' + type + '_' + axis])
+        if type == "proj":
+            if axis == "xz":
+                max_val = max_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
+                min_val = min_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
+            else:
+                max_val = max_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
+                min_val = min_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
     max.append(max_val)
     min.append(min_val)
+    print "extremes found for", it
 max_str = '%.1e' % np.max(max)
 min_str = '%.1e' % np.min(min)
 max_round = str(0.5*floor(2.0 * float(max_str[0:3])))
@@ -123,7 +141,7 @@ print "found colour bar extremes"
 frame_val = start_frame
 its = its[start_frame:]
 for it in its:
-    directory = source_directory + "WIND_" + type + "_" + axis + "_" + ("%06d" % it)
+    directory = path + source_directory[it]
     f = h5py.File(directory, 'r')
     velx = []
     vely = []
@@ -139,6 +157,8 @@ for it in its:
             magx_val = magx_val.transpose()
             magy_val = magy_val.transpose()
         image_val = image_val[0][zoom_cell: dim-zoom_cell]
+        if type == "proj":
+            image_val = image_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
         magx_val = magx_val[0][zoom_cell: dim-zoom_cell]
         magy_val = magy_val[0][zoom_cell: dim-zoom_cell]
         image.append(image_val)
@@ -159,10 +179,7 @@ for it in its:
     fig, ax = plt.subplots()
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max))
     cbar = plt.colorbar(plot, pad=0.0)
-    if type == "slice":
-        cbar.set_label('Density ($g/cm^3$)', rotation=270, labelpad = 20)
-    else:
-        cbar.set_label('Projected Density ($g/cm^2$)', rotation=270, labelpad = 20)
+    cbar.set_label('Density ($g/cm^3$)', rotation=270, labelpad = 20)
     Q = quiver(X_vel, Y_vel, velx, vely)
     plt.streamplot(X, Y, magx, magy)
     if len(f.keys()) > 12:

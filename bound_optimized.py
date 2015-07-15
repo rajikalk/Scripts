@@ -90,7 +90,7 @@ for pf in ts:
     KEp2 = Kinetic_Energy(pm[1], pv[1])
     TotalKEp = KEp1 + KEp2
     KE_p.append(TotalKEp)
-    
+
     #Find kinetic energy of gas
     KEg = dd['KineticEnergy']*dd['CellVolume']
     TotalKEg = sum(KEg)
@@ -115,7 +115,7 @@ for pf in ts:
 
     #Get the grids in the data dump
     g = pf.h.grids[0]
-    
+
     #Calculate GPE of particles on gas
     GPEpg = []
     for x in range(dim):
@@ -131,7 +131,7 @@ for pf in ts:
                 GPE2 = Grav_Pot(pm[1], mass, radius2)
                 GPEpg_val = GPE1 + GPE2
                 GPEpg.append(GPEpg_val)
-    
+
     GPEpg = np.array(GPEpg)
     TotalGPEpg = sum(GPEpg)
     GPE_pg.append(TotalGPEpg)

@@ -56,8 +56,8 @@ PD_M = []
 PD_B = []
 PD_U = []
 
-'''
-with open('total_conserved_mass.csv', 'r+') as f:
+
+with open('total_mass.csv', 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
         if it != 0:
@@ -90,7 +90,7 @@ with open('total_conserved_mass.csv', 'r+') as f:
         else:
             it = 1
 '''
-with open('separation.csv', 'r+') as f:
+with open('separation_main.csv', 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
         if it != 0:
@@ -120,7 +120,7 @@ with open('separation.csv', 'r+') as f:
             #den4.append(d4)
         else:
             it = 1
-'''
+
 it = 0
 with open('energy_conservation.csv', 'r+') as f:
     reader = csv.reader(f)
@@ -157,7 +157,7 @@ with open('energy_conservation.csv', 'r+') as f:
 
 
 it=0
-with open('angular_momentum_conservation_z.csv', 'r+') as f:
+with open('angular_momentum_conservation_z.csv', 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
         if it != 0:
@@ -176,7 +176,7 @@ with open('angular_momentum_conservation_z.csv', 'r+') as f:
             print time_val, L_tot_val, L_p_val, L_g_val
 	else:
             it = 1
-
+'''
 f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
 f.set_size_inches(8,7)
 ax1.plot(time1, in_M, 'k', label='Total Mass in box')
@@ -251,7 +251,7 @@ ax4.set_ylabel('Mass ($M_\odot$)')
 ax4.set_xlabel('Time ($years$)')
 ax4.set_xlim([0.0, 0.5])
 f.subplots_adjust(hspace=0.12)
-
+'''
 fig = plt.figure()
 fig.clf()
 
@@ -287,12 +287,12 @@ plt.axvline(x=0.09, color='r', ls=':')
 plt.xlabel('Time ($years$)')
 plt.ylabel('Angular Momentum ($g~cm^2s^{-1}$)')
 #plt.ylim([-1.e47, 0.4e47])
-'''
+
 fig = plt.figure()
 fig.clf()
 #fig.set_size_inches(6,8)
-plt.plot(time1, sep1, 'b', label='Cool')
-plt.plot(time2, sep2, 'r' ,label='Hot_fast')
+plt.plot(time1, sep1, 'k-.', label='Cool')
+plt.plot(time2, sep2, 'r--' ,label='Hot_fast')
 plt.plot(time3, sep3, 'g', label='Hot_slow')
 #plt.plot(time4, sep4, label='175000K')
 
@@ -306,7 +306,6 @@ plt.axvline(x=0.05, color='r', ls=':')
 plt.axvline(x=0.07, color='r', ls=':')
 plt.axvline(x=0.08, color='r', ls=':')
 plt.axvline(x=0.09, color='r', ls=':')
-plt.axvline(x=0.06, color='b', ls='--')
 
 #plt.legend(loc='upper right')
 plt.xlabel('Time ($years$)')
@@ -314,6 +313,8 @@ plt.ylabel('Separation ($R_\odot$)')
 #fig.tight_layout()
 #plt.xlim([0.0, 0.5])
 #plt.ylim([0.0, 5.e-6]
-
-filename = 'separation_comparison.png'
-plt.savefig(filename)
+'''
+filename = 'total_conserved_mass'
+plt.savefig(filename+'.eps', bbox_inches='tight')
+plt.savefig(filename+'.svg', bbox_inches='tight')
+plt.savefig(filename+'.png', bbox_inches='tight')

@@ -1,9 +1,15 @@
 import csv
 
-arc_pos = ['051', '066', '081', '096', '115', '133', '156', '166', '170']
+arc_pos = []
 arcs = []
-fout = open('save_red_metadata.py', 'r+')
+with open('log_20150331.csv', 'r+') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        if row[1] == "Ne-Ar":
+            arc_pos.append(row[0])
+f.close()
 
+fout = open('save_red_metadata.py', 'r+')
 with open('save_red_metadata_no_arc.py', 'r') as f:
     reader = csv.reader(f)
     writer = csv.writer(fout)
