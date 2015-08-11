@@ -3,26 +3,28 @@ import numpy as np
 from pylab import *
 import matplotlib as cm
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
 import csv
 import commands
 
 
-max_file = 414
+max_file = 2268
 it = 0
 field = "dens"
 type = "proj" #or "slice"
 axis = "xz"
-zoom = True #boolean
-zoom_cell = 253
+zoom = False #boolean
+zoom_cell = 123
 annotate_vel_freq = 1
-start_frame = 0
-path = "/Users/rajikak/Output/omega_t_ff_0.2/CircumbinaryOutFlow_0.25_lref_9/"
+start_frame = 86
+path = "/Users/rajikak/Output/omega_t_ff_0.2/CircumbinaryOutFlow_0.25_lref_10/"
 source_directory = commands.getoutput('ls ' + path).split('\n')
 directory = source_directory[0]
 if zoom == False:
     zoom_cell=0
-    annotate_vel_freq = 8
+    annotate_vel_freq = 16
 year = 31557600
 au = 1.496e13
 m_times = []
@@ -54,7 +56,7 @@ y_vel = np.arange(ymin+(((annotate_vel_freq/2.)+zoom_cell)*cl), ymax-(zoom_cell*
 X, Y = np.meshgrid(x, y)
 X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
 print "created meshs"
-
+'''
 #find usable plots:
 it = 0
 mit = 0
@@ -98,7 +100,7 @@ print "found usable movie plots"
 #find extremes for colour bar
 max = []
 min = []
-for it in its:
+for it in range(len(source_directory)):
     directory = path + source_directory[it]
     f = h5py.File(directory, 'r')
     if zoom:
@@ -136,12 +138,16 @@ min_round = str(0.5*ceil(2.0 * float(min_str[0:3])))
 cbar_max = float(max_round+max_str[-4:])
 cbar_min = float(min_round+min_str[-4:])
 print "found colour bar extremes"
+'''
+cbar_max = 1.e-12
+cbar_min = 1.e-17
+print "found colour bar extremes"
 
 #plot figures
 frame_val = start_frame
-its = its[start_frame:]
-for it in its:
-    directory = path + source_directory[it]
+source_directory = source_directory[start_frame:]
+for source in source_directory:
+    directory = path + source
     f = h5py.File(directory, 'r')
     velx = []
     vely = []
@@ -178,10 +184,12 @@ for it in its:
     plt.clf()
     fig, ax = plt.subplots()
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max))
+    plot.set_rasterized(True)
     cbar = plt.colorbar(plot, pad=0.0)
     cbar.set_label('Density ($g/cm^3$)', rotation=270, labelpad = 20)
+    res = plt.streamplot(X, Y, magx, magy, density=2, linewidth=1, minlength=0.9)
+    lines = res.lines.get_paths()
     Q = quiver(X_vel, Y_vel, velx, vely)
-    plt.streamplot(X, Y, magx, magy)
     if len(f.keys()) > 12:
         if axis == "xy":
             part_pos_1 = f["particlepositions"][0]/au
@@ -197,7 +205,20 @@ for it in its:
                         part_pos_2.append(f["particlepositions"][2][part_pos]/au)
         part_mass_max = np.max(f["particlemasses"])
         part_mass = f["particlemasses"]/part_mass_max
-        ax.scatter(part_pos_1, part_pos_2, c=part_mass, cmap=mpl.cm.gray)
+        part_color = []
+        for mass in part_mass:
+            if mass/part_mass_max == 1:
+                color = 'y'
+            else:
+                color = 'r'
+            part_color.append(color)
+        for pos_it in range(len(part_pos_1)):
+            ax.plot((part_pos_1[pos_it]-(2.5*cl), part_pos_1[pos_it]+(2.5*cl)), (part_pos_2[pos_it], part_pos_2[pos_it]), lw=2, color='k')
+            ax.plot((part_pos_1[pos_it], part_pos_1[pos_it]), (part_pos_2[pos_it]-(2.5*cl), part_pos_2[pos_it]+(2.5*cl)), lw=2, color='k')
+            ax.plot((part_pos_1[pos_it]-(2.4*cl), part_pos_1[pos_it]+(2.4*cl)), (part_pos_2[pos_it], part_pos_2[pos_it]), lw=1, c=part_color[pos_it])
+            ax.plot((part_pos_1[pos_it], part_pos_1[pos_it]), (part_pos_2[pos_it]-(2.4*cl), part_pos_2[pos_it]+(2.4*cl)), lw=1, c=part_color[pos_it])
+            circle = mpatches.Circle([part_pos_1[pos_it], part_pos_2[pos_it]], 2.5*cl, fill=False, lw=3, edgecolor='k')
+            ax.add_patch(circle)
     ax.set_title('time='+str((f['time'][0])/year)+'years')
     ax.set_xlabel('x (AU)')
     if axis == "xy":
@@ -210,6 +231,7 @@ for it in its:
     else:
         ax.set_xlim([-1336.8983957219252, 1331.6761363636206])
         ax.set_ylim([-1336.8983957219252, 1331.6761363636201])
-    plt.savefig("movie_frame_" + ("%06d" % frame_val) + ".png", bbox_inches='tight')
-    frame_val = frame_val + 1
+    plt.savefig("movie_frame_" + ("%06d" % frame_val) + ".eps", format='eps', bbox_inches='tight')
+#plt.savefig("movie_frame_" + ("%06d" % frame_val) + ".pdf", format='pdf', bbox_inches='tight', dpi=600)
     print 'done frame_val =', frame_val
+    frame_val = frame_val + 1
