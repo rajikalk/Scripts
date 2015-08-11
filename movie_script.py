@@ -85,44 +85,29 @@ print "created list of times"
 it = 0
 mit = 0
 diff_prev = np.inf
-'''
-while mit < len(m_times)-1:
-    mtime = m_times[mit] + max_time
-    while it < max_file:
-        directory = path + source_directory[it]
-        f = h5py.File(directory, 'r')
-        diff = abs(mtime - float(str(f['time'][0]/year)))
+mtime = m_times[mit]
+
+while mit < len(m_times):
+    while it < len(source_directory):
+        f = h5py.File(path+source_directory[it], 'r')
+        diff = abs(mtime-((f['time'][0]/year)-sink_form_time))
         #print diff
-        if diff == 0:
-            its.append(it)
-            #print "found", mtime
-            mit = mit + 1
-            if mit == len(m_times):
-                break
-            else:
-                mtime = m_times[mit] + max_time
-        elif np.isinf(diff_prev) and diff != 0:
-            diff_prev = diff
-        elif diff > diff_prev:
+        if diff > diff_prev:
             its.append(it-1)
-            #print "found", mtime
-            diff_prev = np.inf
             it = it - 1
             mit = mit + 1
             if mit == len(m_times):
                 break
-            else:
-                mtime = m_times[mit] + max_time
-        elif diff < diff_prev:
+            mtime = m_times[mit]
+            diff_prev = np.inf
+            print "found time", m_times[mit]
+        else:
             diff_prev = diff
-        if it == max_file-1 and mtime == m_times[-1]:
-            its.append(it)
-            #print "found", mtime
+            print diff_prev
         it = it + 1
-        print mtime
-    mit = len(m_times)
-print "found usable movie plots"
 
+
+'''
 #find extremes for colour bar
 max = []
 min = []
