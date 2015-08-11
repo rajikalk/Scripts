@@ -10,7 +10,7 @@ import csv
 import commands
 
 
-max_file = 2268
+max_file = 2190
 it = 0
 field = "dens"
 type = "proj" #or "slice"
@@ -18,7 +18,7 @@ axis = "xz"
 zoom = False #boolean
 zoom_cell = 123
 annotate_vel_freq = 1
-start_frame = 86
+start_frame = 0
 path = "/Users/rajikak/Output/omega_t_ff_0.2/CircumbinaryOutFlow_0.25_lref_10/"
 source_directory = commands.getoutput('ls ' + path).split('\n')
 directory = source_directory[0]
@@ -27,18 +27,18 @@ if zoom == False:
     annotate_vel_freq = 16
 year = 31557600
 au = 1.496e13
-m_times = []
 its = []
-
+'''
 #load times:
 with open('movie_times.txt', 'r+') as f:
     reader = csv.reader(f)
     for row in reader:
         m_times.append(float(row[0]))
 print "loaded movie frame times"
-
+'''
 #load initial file:
-f = h5py.File(path+source_directory[0], 'r')
+f = h5py.File(path+source_directory[-1], 'r')
+max_time = float(str(f['time'][0]/year))
 xmin = f['minmax_xyz'][0][0]/au
 xmax = f['minmax_xyz'][0][1]/au
 if axis == "xy":
@@ -56,44 +56,70 @@ y_vel = np.arange(ymin+(((annotate_vel_freq/2.)+zoom_cell)*cl), ymax-(zoom_cell*
 X, Y = np.meshgrid(x, y)
 X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
 print "created meshs"
-'''
+
+#Find sink praticle creation time
+particles = False
+sink_form_time = 0.0
+while particles == False:
+    for source in source_directory:
+        directory = path + source
+        f = h5py.File(directory, 'r')
+        if 'particlepositions' in f.keys():
+            particles = True
+            sink_form_time = float(str(f['time'][0]/year))
+            print "sink formation time =", sink_form_time
+            break
+
+#generate movie times:
+presink = np.arange(1, 101, 4)
+m_times = ((sink_form_time/np.log(presink[-1]))*np.log(presink))-sink_form_time
+m_times = np.round(m_times/100)*100
+m_times = np.array(m_times).tolist()
+postsink = m_times[-1] + 5
+while postsink < (max_time-sink_form_time):
+    m_times.append(postsink)
+    postsink = postsink + 5
+print "created list of times"
+
 #find usable plots:
 it = 0
 mit = 0
 diff_prev = np.inf
-
+'''
 while mit < len(m_times)-1:
-    mtime = m_times[mit]
+    mtime = m_times[mit] + max_time
     while it < max_file:
         directory = path + source_directory[it]
         f = h5py.File(directory, 'r')
         diff = abs(mtime - float(str(f['time'][0]/year)))
+        #print diff
         if diff == 0:
             its.append(it)
-            print "found", mtime
+            #print "found", mtime
             mit = mit + 1
             if mit == len(m_times):
                 break
             else:
-                mtime = m_times[mit]
+                mtime = m_times[mit] + max_time
         elif np.isinf(diff_prev) and diff != 0:
             diff_prev = diff
         elif diff > diff_prev:
             its.append(it-1)
-            print "found", mtime
+            #print "found", mtime
             diff_prev = np.inf
             it = it - 1
             mit = mit + 1
             if mit == len(m_times):
                 break
             else:
-                mtime = m_times[mit]
+                mtime = m_times[mit] + max_time
         elif diff < diff_prev:
             diff_prev = diff
         if it == max_file-1 and mtime == m_times[-1]:
             its.append(it)
-            print "found", mtime
+            #print "found", mtime
         it = it + 1
+        print mtime
     mit = len(m_times)
 print "found usable movie plots"
 
