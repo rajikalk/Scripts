@@ -176,9 +176,10 @@ def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=
     #import pdb
     #pdb.set_trace()
     if log_colour:
-        plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg', norm=LogNorm())
+        plot = plt.pcolormesh(field_dictionary['X'].value, field_dictionary['Y'].value, np.fliplr(field_dictionary[field].value), cmap='brg', norm=LogNorm(), rasterized=True)
 #plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg', norm=LogNorm())
     else:
+        plot = plt.pcolormesh(field_dictionary['X'].value, field_dictionary['Y'].value, np.fliplr(field_dictionary[field].value), cmap='brg', rasterized=True)
 #plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg')
     if clim != None:
         plt.clim(clim)
