@@ -30,9 +30,11 @@ def parse_inputs():
     parser.add_argument("-clim", "--colour_limits", help="colourbar limits", nargs="+", type=float, default=None)
     parser.add_argument("-tmax", "--time_max", help="what is the max time you would like to go up to?", default=None, type=int)
     parser.add_argument("-cl", "--colour_bar_label", help="what do you want as the colour bar label?", default=None, type=str)
-    parser.add_argument
+    parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", default=True)
     args = parser.parse_args()
     return args
+
+args = parse_inputs()
 
 def generate_frame_times(files,sink_form_time,args):
     if args.time_max == None:
@@ -157,8 +159,45 @@ def _My_Bulk_Velocity(field, data):
 
 yt.add_field("My_Bulk_Velocity", function=_My_Bulk_Velocity, units=r"cm/s")
 
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val):
+    global field_dictionary
+    global args
+    standard_vel = 500000.
+    scale_factor = 100000.
+    vel_scale_factor = 90000.
+    xmin = np.min(field_dictionary['X'][0].in_units('AU').value)
+    xmax = np.max(field_dictionary['X'][0].in_units('AU').value)
+    ymin = np.min(field_dictionary['Y'][0].in_units('AU').value)
+    ymax = np.max(field_dictionary['Y'][0].in_units('AU').value)
+    len_scale = standard_vel/(0.04*(xmax - xmin))
+    vels = np.hypot(X_val, Y_val)
+    print("got image limits. About to plot arrows")
+    for xp in range(len(X_pos[0])):
+        for yp in range(len(Y_pos[0])):
+            xvel = X_val[xp][yp]/len_scale
+            yvel = Y_val[xp][yp]/len_scale
+            width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
+            if width_val > 1.0:
+                width_val = 1.0
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
+            print("plotted arrow for position", xp, yp)
+    print("done plotting arrows")
+    if args.plot_velocity_legend == True:
+        #import pdb
+        #pdb.set_trace()
+        print("plotting quiver legend")
+        pos_start = [0.77*xmax, 0.87*ymin]
+        xvel = standard_vel/len_scale
+        yvel = 0.0
+        width_val = 1.0
+        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
+        axis.annotate("5kms$^{-1}$", xy=(0.98*xmax, 0.95*ymin), va="center", ha="right", color='w', fontsize=16)
+        print("plotted arrow legend")
+
+
 def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=None, log_colour=False, clim=None, units=None):
     global field_dictionary
+    global args
     bx = field_dictionary['box_bound'].value
     if args.colour_bar_label != None:
         cbar_label = args.colour_bar_label
@@ -170,6 +209,7 @@ def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=
             field_data = field_dictionary[field].in_units(units)
         if str(field_dictionary[field].unit_quantity).split(' ')[-1] != '':
             cbar_label = cbar_label + ' (' + str(field_dictionary[field].unit_quantity).split(' ')[-1] + ')'
+    print("cbar_label=", cbar_label)
     
     plt.clf()
     fig, ax = plt.subplots()
@@ -177,16 +217,21 @@ def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=
     #pdb.set_trace()
     if log_colour:
         plot = plt.pcolormesh(field_dictionary['X'].value, field_dictionary['Y'].value, np.fliplr(field_dictionary[field].value), cmap='brg', norm=LogNorm(), rasterized=True)
-#plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg', norm=LogNorm())
+        #plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg', norm=LogNorm())
     else:
         plot = plt.pcolormesh(field_dictionary['X'].value, field_dictionary['Y'].value, np.fliplr(field_dictionary[field].value), cmap='brg', rasterized=True)
-#plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg')
+        #plot = plt.imshow(np.fliplr(field_dictionary[field].value), extent=[-bx, bx, -bx, bx], cmap='brg')
+    print("plotted image")
     if clim != None:
         plt.clim(clim)
     cbar = plt.colorbar(plot, pad=0.0)
     cbar.set_label(cbar_label, rotation=270, labelpad=12, size=14)
-    Q = plt.quiver(field_dictionary['quiver_grids'][0].value, field_dictionary['quiver_grids'][1].value, field_dictionary['velx_quiver'].in_units('km/s').value, field_dictionary['vely_quiver'].in_units('km/s').value)
-    qk = plt.quiverkey(Q, 0.9, 0.1, 5, r'$5 \frac{km}{s}$')
+    print("plotted color bar")
+    #Q = plt.quiver(field_dictionary['quiver_grids'][0].value, field_dictionary['quiver_grids'][1].value, field_dictionary['velx_quiver'].in_units('km/s').value, field_dictionary['vely_quiver'].in_units('km/s').value)
+    #qk = plt.quiverkey(Q, 0.9, 0.1, 5, r'$5 \frac{km}{s}$')
+    print("plotting quiver plot")
+    my_own_quiver_function(ax, field_dictionary['X_quiver'].in_units('AU').value, field_dictionary['Y_quiver'].in_units('AU').value, field_dictionary['velx_quiver'].value, field_dictionary['vely_quiver'].value)
+    print("plotting quiver plot")
     if ('all', u'particle_mass') in dd.ds.field_list:
         part_color = ['lime','cyan','r','c','y','w','k']
         line_rad = np.min(dd['dx'].in_units('AU'))*2.5
@@ -211,9 +256,7 @@ def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=
     print('Saved file', save_name)
     return fig
 
-#============================================================================================
-
-args = parse_inputs()
+#========================================================================================
 
 path = args.files
 if args.save_dir == None:
@@ -275,8 +318,10 @@ for file in usable_files:
     #Set the center of the system for calculations
     if args.center == 0:
         center = dd['CoM'].in_units('AU')
+        center_vel = dd['My_Bulk_Velocity'].in_units('cm/s')
     else:
         center = [dd['particle_posx'][args.center-1].in_units('AU'), dd['particle_posy'][args.center-1].in_units('AU'), dd['particle_posz'][args.center-1].in_units('AU')]
+        center_vel = [dd['particle_velx'][args.center-1].in_units('cm/s'), dd['particle_vely'][args.center-1].in_units('cm/s'), dd['particle_velz'][args.center-1].in_units('cm/s')]
 
     #get xyz positions relative to the chosen center
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
@@ -298,9 +343,9 @@ for file in usable_files:
 
     #correct velocities:
     dens_grid = dd['dens'][nearest_points[1]].reshape(xy[0].shape)
-    vx_grid = dd['velx'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - dd['My_Bulk_Velocity'][0].in_units('cm/s')
-    vy_grid = dd['vely'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - dd['My_Bulk_Velocity'][1].in_units('cm/s')
-    vz_grid = dd['velz'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - dd['My_Bulk_Velocity'][2].in_units('cm/s')
+    vx_grid = dd['velx'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[0]
+    vy_grid = dd['vely'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[1]
+    vz_grid = dd['velz'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[2]
     vx_grid_quiver = dd['velx'][nearest_points_quiver[1]].reshape(xy_quiver[0].shape)
     vy_grid_quiver = dd['vely'][nearest_points_quiver[1]].reshape(xy_quiver[0].shape)
 
@@ -424,6 +469,8 @@ for file in usable_files:
                     'vely_quiver':vy_grid_quiver,
                     'X':xy[0],
                     'Y':xy[1],
+                    'X_quiver':xy_quiver[0],
+                    'Y_quiver':xy_quiver[1],
                     'box_bound':bx,
                     'Density':dens_grid
                     }
