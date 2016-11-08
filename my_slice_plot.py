@@ -336,53 +336,35 @@ for file in usable_files:
     #load file
     ds = yt.load(file, particle_filename=part_file)
     dd = ds.box(left_edge=[-bx.in_units('cm'),-bx.in_units('cm'),-bx.in_units('cm')], right_edge=[bx.in_units('cm'),bx.in_units('cm'),bx.in_units('cm')])
+    #!!!! Really think about weather to have the max density define where slice is take
+    # OR just to slice through xy-plane
     dz = dd['z'][np.argmax(dd['dens'])].in_units('AU')
+    masses = dd['cell_mass']
     
-    #Set the center of the system for calculations
-    if args.center == 0:
-        center = dd['CoM'].in_units('AU')
-        center_vel = dd['My_Bulk_Velocity'].in_units('cm/s')
-    else:
-        center = [dd['particle_posx'][args.center-1].in_units('AU'), dd['particle_posy'][args.center-1].in_units('AU'), dd['particle_posz'][args.center-1].in_units('AU')]
-        center_vel = [dd['particle_velx'][args.center-1].in_units('cm/s'), dd['particle_vely'][args.center-1].in_units('cm/s'), dd['particle_velz'][args.center-1].in_units('cm/s')]
-
     #get xyz positions relative to the chosen center
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
-
+        
     #This line takes a while
     print("Computing tree...")
     tree = spatial.cKDTree(xyz)
     print("Done computing tree...")
-
+    
     #create grid of the pixel positions and quiver positions
     xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), dz*np.ones_like(xy[0].flatten().value)]).T
-
+    
     #This line also takes a while
     print("Finding nearest points...")
     nearest_points = tree.query(xyz_grid, distance_upper_bound=np.max(dd['dx'].in_units('AU')), n_jobs=-1)
     print("Done finding nearest points...")
-
-    #correct velocities:
+    
+    #Get image fields:
     dens_grid = dd['dens'][nearest_points[1]].reshape(xy[0].shape)
-    vx_grid = dd['velx'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[0]
-    vy_grid = dd['vely'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[1]
-    vz_grid = dd['velz'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s') - center_vel[2]
     vx_grid_quiver_full = dd['velx'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
     vy_grid_quiver_full = dd['vely'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
+    vz_grid_quiver_full = dd['velz'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
     vx_grid_quiver, vy_grid_quiver = get_quiver_arrays(vx_grid_quiver_full, vy_grid_quiver_full)
-
-
-    #Try computing mass versus radius
-    radii_cyl = np.sqrt((xyz.T[0].in_units('AU')-center[0])**2 + (xyz.T[1].in_units('AU')-center[1])**2)
-    radii_sph = np.sqrt((xyz.T[0].in_units('AU')-center[0])**2 + (xyz.T[1].in_units('AU')-center[1])**2 + (xyz.T[2].in_units('AU')-center[2])**2)
     r_grid = np.sqrt(xy[0].in_units('AU')**2 + xy[1].in_units('AU')**2)
-    r_corr_grid = np.sqrt((xy[0].in_units('AU')-center[0].in_units('AU'))**2. + (xy[1].in_units('AU')-center[1].in_units('AU'))**2.)
-
-    bin_size = np.sqrt((x[-1]-x[-2])**2.+(x[-1]-x[-2])**2.)
-    rs = np.arange(np.min(r_corr_grid), np.max(r_corr_grid)+bin_size, bin_size)
-    mass_versus_r = np.ones_like(rs)
-    masses = dd['cell_mass']
-
+    
     #Work out the semimajor axis of the system, if there is one
     if ('all', u'particle_mass') in ds.field_list:
         if len(dd['particle_mass']) == 2:
@@ -394,76 +376,110 @@ for file in usable_files:
     else:
         a = yt.YTArray(0.0, 'cm')
 
-    #Calculate enclosed mass in cylindrical coordinates
-    print("Calculating cylindrical enclosed mass")
-    enclosed_mass_grid_cyl = yt.YTArray(np.zeros(np.shape(r_corr_grid)), 'g')
-    prev_r = rs[0]
-    prev_enc_mass_cyl = yt.YTArray(0.0, 'g')
-    included_particles = False
-    for r in rs[1:]:
-        ind = np.where((radii_cyl >= prev_r) & (radii_cyl < r))
-        grid_ind = np.where((r_corr_grid >= prev_r) & (r_corr_grid < r))
-        if len(ind) != 0:
-            enclosed_mass_cyl = prev_enc_mass_cyl + np.sum(masses[ind])
-            if r == rs[1] and args.center != 0:
-                enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][args.center-1]
-            if included_particles == False:
-                if args.center != 0 and r > a.in_units('AU'):
-                    if args.center == 1:
-                        enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][1]
-                    else:
-                        enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][0]
-                    included_particles = True
-                elif args.center == 0 and r > a.in_units('AU')/2. and ('all', u'particle_mass') in ds.field_list:
-                    enclosed_mass_cyl = enclosed_mass_cyl + np.sum(dd['particle_mass'])
-                    included_particles = True
-            enclosed_mass_grid_cyl[grid_ind] = enclosed_mass_cyl
-            prev_enc_mass_cyl = enclosed_mass_cyl
-            prev_r = r
+    averaged_rel_kep_vel_cyl = np.zeros(np.shape(dens_grid))
+    averaged_rel_kep_vel_sph = np.zeros(np.shape(dens_grid))
 
-    #Then again in spherical coordinates
-    #Calculate enclosed mass in cylindrical coordinates
-    print("Calculating spherical enclosed mass")
-    enclosed_mass_grid_sph = yt.YTArray(np.zeros(np.shape(r_corr_grid)), 'g')
-    prev_r = rs[0]
-    prev_enc_mass_sph = yt.YTArray(0.0, 'g')
-    included_particles = False
-    for r in rs[1:]:
-        ind = np.where((radii_sph >= prev_r) & (radii_sph < r))
-        grid_ind = np.where((r_corr_grid >= prev_r) & (r_corr_grid < r))
-        if len(ind) != 0:
-            enclosed_mass_sph = prev_enc_mass_sph + np.sum(masses[ind])
-            if r == rs[1] and args.center != 0:
-                enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][args.center-1]
-            if included_particles == False:
-                if args.center != 0 and r > a.in_units('AU'):
-                    if args.center == 1:
-                        enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][1]
-                    else:
-                        enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][0]
-                    included_particles = True
-                elif args.center == 0 and r > a.in_units('AU')/2. and ('all', u'particle_mass') in ds.field_list:
-                    enclosed_mass_sph = enclosed_mass_sph + np.sum(dd['particle_mass'])
-                    included_particles = True
-            enclosed_mass_grid_sph[grid_ind] = enclosed_mass_sph
-            prev_enc_mass_sph = enclosed_mass_sph
-            prev_r = r
+    #Iterate over all centers:
+    for cen in range(len(dd['particle_mass']) + 1):
+        
+        #Set the center of the system for calculations
+        if cen == 0:
+            center = dd['CoM'].in_units('AU')
+            center_vel = dd['My_Bulk_Velocity'].in_units('cm/s')
+        else:
+            center = [dd['particle_posx'][cen-1].in_units('AU'), dd['particle_posy'][cen-1].in_units('AU'), dd['particle_posz'][cen-1]].in_units('AU')]
+            center_vel = [dd['particle_velx'][cen-1].in_units('cm/s'), dd['particle_vely'][cen-1].in_units('cm/s'), dd['particle_velz'][cen-1]].in_units('cm/s')]
 
-    #Work out the velocities
-    vkep_grid_cyl = np.sqrt(yt.utilities.physical_constants.G*enclosed_mass_grid_cyl.in_units('g')/r_corr_grid.in_units('cm'))
-    vkep_grid_sph = np.sqrt(yt.utilities.physical_constants.G*enclosed_mass_grid_sph.in_units('g')/r_corr_grid.in_units('cm'))
+        #correct velocities:
+        vx_grid = vx_grid_quiver_full - center_vel[0]
+        vy_grid = vy_grid_quiver_full - center_vel[1]
+        vz_grid = vz_grid_quiver_full - center_vel[2]
 
-    vrad_grid_cyl = (xy[0].in_units('cm')*vx_grid.in_units('cm/s') + xy[1]*vy_grid.in_units('cm/s'))/r_grid.in_units('cm')
-    vmag_grid_cyl = np.sqrt(vx_grid.in_units('cm/s')**2 + vy_grid.in_units('cm/s')**2)
+        #Try computing mass versus radius
+        radii_cyl = np.sqrt((xyz.T[0].in_units('AU')-center[0])**2 + (xyz.T[1].in_units('AU')-center[1])**2)
+        radii_sph = np.sqrt((xyz.T[0].in_units('AU')-center[0])**2 + (xyz.T[1].in_units('AU')-center[1])**2 + (xyz.T[2].in_units('AU')-center[2])**2)
+        r_corr_grid = np.sqrt((xy[0].in_units('AU')-center[0].in_units('AU'))**2. + (xy[1].in_units('AU')-center[1].in_units('AU'))**2.)
 
-    vrad_grid_sph = (xy[0]*vx_grid.in_units('cm/s') + xy[1]*vy_grid.in_units('cm/s') + dz*vz_grid.in_units('cm/s'))/r_grid.in_units('cm')
-    vmag_grid_sph = np.sqrt(vx_grid.in_units('cm/s')**2 + vy_grid.in_units('cm/s')**2 + vz_grid.in_units('cm/s')**2)
+        bin_size = np.sqrt((x[-1]-x[-2])**2.+(x[-1]-x[-2])**2.)
+        rs = np.arange(np.min(r_corr_grid), np.max(r_corr_grid)+bin_size, bin_size)
+        mass_versus_r = np.ones_like(rs)
 
-    vtan_grid_cyl = np.sqrt(vmag_grid_cyl.in_units('cm/s')**2 - vrad_grid_cyl.in_units('cm/s')**2)
-    vtan_grid_sph = np.sqrt(vmag_grid_sph.in_units('cm/s')**2 - vrad_grid_sph.in_units('cm/s')**2)
+        #Calculate enclosed mass in cylindrical coordinates
+        print("Calculating cylindrical enclosed mass")
+        enclosed_mass_grid_cyl = yt.YTArray(np.zeros(np.shape(r_corr_grid)), 'g')
+        prev_r = rs[0]
+        prev_enc_mass_cyl = yt.YTArray(0.0, 'g')
+        included_particles = False
+        for r in rs[1:]:
+            ind = np.where((radii_cyl >= prev_r) & (radii_cyl < r))
+            grid_ind = np.where((r_corr_grid >= prev_r) & (r_corr_grid < r))
+            if len(ind) != 0:
+                enclosed_mass_cyl = prev_enc_mass_cyl + np.sum(masses[ind])
+                if r == rs[1] and cen != 0:
+                    enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][cen-1]
+                if included_particles == False:
+                    if cen != 0 and r > a.in_units('AU'):
+                        if cen == 1:
+                            enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][0]
+                        else:
+                            enclosed_mass_cyl = enclosed_mass_cyl + dd['particle_mass'][1]
+                        included_particles = True
+                    elif cen == 0 and r > a.in_units('AU')/2. and ('all', u'particle_mass') in ds.field_list:
+                        enclosed_mass_cyl = enclosed_mass_cyl + np.sum(dd['particle_mass'])
+                        included_particles = True
+                enclosed_mass_grid_cyl[grid_ind] = enclosed_mass_cyl
+                prev_enc_mass_cyl = enclosed_mass_cyl
+                prev_r = r
 
-    vrel_grid_cyl = vtan_grid_cyl.in_units('cm/s')/vkep_grid_cyl.in_units('cm/s')
-    vrel_grid_sph = vtan_grid_sph.in_units('cm/s')/vkep_grid_sph.in_units('cm/s')
+        #Then again in spherical coordinates
+        #Calculate enclosed mass in cylindrical coordinates
+        print("Calculating spherical enclosed mass")
+        enclosed_mass_grid_sph = yt.YTArray(np.zeros(np.shape(r_corr_grid)), 'g')
+        prev_r = rs[0]
+        prev_enc_mass_sph = yt.YTArray(0.0, 'g')
+        included_particles = False
+        for r in rs[1:]:
+            ind = np.where((radii_sph >= prev_r) & (radii_sph < r))
+            grid_ind = np.where((r_corr_grid >= prev_r) & (r_corr_grid < r))
+            if len(ind) != 0:
+                enclosed_mass_sph = prev_enc_mass_sph + np.sum(masses[ind])
+                if r == rs[1] and cen != 0:
+                    enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][cen-1]
+                if included_particles == False:
+                    if cen != 0 and r > a.in_units('AU'):
+                        if cen == 1:
+                            enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][0]
+                        else:
+                            enclosed_mass_sph = enclosed_mass_sph + dd['particle_mass'][1]
+                        included_particles = True
+                    elif cen == 0 and r > a.in_units('AU')/2. and ('all', u'particle_mass') in ds.field_list:
+                        enclosed_mass_sph = enclosed_mass_sph + np.sum(dd['particle_mass'])
+                        included_particles = True
+                enclosed_mass_grid_sph[grid_ind] = enclosed_mass_sph
+                prev_enc_mass_sph = enclosed_mass_sph
+                prev_r = r
+
+        #Work out the velocities
+        vkep_grid_cyl = np.sqrt(yt.utilities.physical_constants.G*enclosed_mass_grid_cyl.in_units('g')/r_corr_grid.in_units('cm'))
+        vkep_grid_sph = np.sqrt(yt.utilities.physical_constants.G*enclosed_mass_grid_sph.in_units('g')/r_corr_grid.in_units('cm'))
+
+        vrad_grid_cyl = (xy[0].in_units('cm')*vx_grid.in_units('cm/s') + xy[1]*vy_grid.in_units('cm/s'))/r_grid.in_units('cm')
+        vmag_grid_cyl = np.sqrt(vx_grid.in_units('cm/s')**2 + vy_grid.in_units('cm/s')**2)
+
+        vrad_grid_sph = (xy[0]*vx_grid.in_units('cm/s') + xy[1]*vy_grid.in_units('cm/s') + dz*vz_grid.in_units('cm/s'))/r_grid.in_units('cm')
+        vmag_grid_sph = np.sqrt(vx_grid.in_units('cm/s')**2 + vy_grid.in_units('cm/s')**2 + vz_grid.in_units('cm/s')**2)
+
+        vtan_grid_cyl = np.sqrt(vmag_grid_cyl.in_units('cm/s')**2 - vrad_grid_cyl.in_units('cm/s')**2)
+        vtan_grid_sph = np.sqrt(vmag_grid_sph.in_units('cm/s')**2 - vrad_grid_sph.in_units('cm/s')**2)
+
+        vrel_grid_cyl = vtan_grid_cyl.in_units('cm/s')/vkep_grid_cyl.in_units('cm/s')
+        vrel_grid_sph = vtan_grid_sph.in_units('cm/s')/vkep_grid_sph.in_units('cm/s')
+
+        averaged_rel_kep_vel_cyl = averaged_rel_kep_vel_cyl + vrel_grid_cyl
+        averaged_rel_kep_vel_sph = averaged_rel_kep_vel_sph + vrel_grid_sph
+
+    averaged_rel_kep_vel_cyl = averaged_rel_kep_vel_cyl/(len(dd['particle_mass']) + 1)
+    averaged_rel_kep_vel_sph = averaged_rel_kep_vel_sph/(len(dd['particle_mass']) + 1)
 
     #Save fields to dictionaries. Should make plotting easier
     field_dictionary.pop('temp_yarr', None)
