@@ -16,6 +16,7 @@ import sys
 import os
 from matplotlib import transforms
 import glob
+import my_module as mym
 
 def define_constants():
     constants = {'year':31557600.0, 'au':1.496e13, 'Msun':1.98841586e+33}
@@ -54,7 +55,7 @@ def get_files(path, args):
     else:
         type = "slice"
     source_directory = sorted(glob.glob(path + 'WIND_' + type + '*'))
-    return source_directory, type
+    return source_directory
 
 def sim_info(path, file, args):
     c = define_constants()
@@ -63,7 +64,6 @@ def sim_info(path, file, args):
     for p_s in path_split:
         if 'omega' in p_s:
             ang_val = p_s.split('_')[-1]
-        '''
         if 'lref' in p_s:
             temp_split = p_s.split('_')
             for t_s_it in range(len(temp_split)):
@@ -73,7 +73,11 @@ def sim_info(path, file, args):
                     den_pert = temp_split[t_s_it]
                 else:
                     den_pert = '0.0'
-        '''
+    lref =  path.split('lref')[-1].split('/')[0].split('_')[-1]
+    if '0.' in  path.split('lref')[0].split('/')[-1]:
+        den_pert = path.split('lref')[0].split('/')[-1].split('_')[-2]
+    else:
+        den_pert = '0.0'
     movie_type = path.split('/')[-2].split('_')[0]
     f = h5py.File(file, 'r')
     if 'r_accretion' in f.keys():
@@ -122,7 +126,9 @@ def sim_info(path, file, args):
                 'annotate_freq': annotate_freq,
                 'r_accretion': racc,
                 'type': type,
-                'smoothing': smoothing
+                'smoothing': smoothing,
+                'refinement_level': lref,
+                'den_pert': den_pert,
                 }
     f.close()
     return sim_info
@@ -164,272 +170,27 @@ def initialise_grid(args, sim_info):
     #print "created meshs"
     return X, Y, X_vel, Y_vel
 
-def find_sink_formation_time(files):
-    c = define_constants()
-    for source in range(len(files)):
-        f = h5py.File(files[source], 'r')
-        if 'particlepositions' in f.keys():
-            particles = True
-            sink_form = float(str(f['time'][0]))/c['year']
-            zit = source
-            #print "sink formation time =", sink_form_time
-            break
-        else:
-            sink_form = float(str(f['time'][0]))/c['year']
-#print "found sink particle creation time"
-    return sink_form, zit
-
-'''
-#Find sink praticle creation time
-def find_sink_formation_time(path):
-    c = define_constants()
-    sink_form_time = 0.0
-    header = 0
-    with open(str(path) + "sinks_evol.dat", "rU") as f:
-        reader = csv.reader(f, delimiter='\t')
-        for row in reader:
-            if header != 0:
-                sink_form_time = float(row[0][-15:])/c['year']
-                break
-            else:
-                header = 1
-            if row[0][0:6] == '     [':
-                header = 0
-        f.close()
-    return sink_form_time
-'''
-
 def has_sinks(f):
     if "particlepositions" in f.keys():
         return True
     else:
         return False
 
-def generate_frame_times(sink_form_time, files, zit, args):
-    c = define_constants()
-    f = h5py.File(files[-1], 'r')
-    max_time = float(str(f['time'][0]/c['year']))
-    f.close()
-    #print 'zit =', zit
-    interval = zit/float(args.presink_frames)
-    #presink = np.arange(1, 101, interval)
-    presink = np.arange(0, zit, interval)
-    m_times = []
-    for pit in presink:
-        f = h5py.File(files[int(pit)], 'r')
-        time = float(str(f['time'][0]/c['year']))-sink_form_time
-        if args.start_time != None:
-            if time >= args.start_time:
-                m_times.append(time)
-        else:
-            m_times.append(time)
-    #m_times = ((sink_form_time/np.log(presink[-1]))*np.log(presink))-sink_form_time
-    #m_times = np.array(m_times).tolist()
-    postsink = 0.0
-    while postsink < (max_time-sink_form_time):
-        if args.start_time != None:
-            if postsink >= args.start_time:
-                m_times.append(postsink)
-        else:
-            m_times.append(postsink)
-        postsink = postsink + args.time_step
-    no_frames = len(m_times)
-#m_times = m_times[int(args.start_frame):]
-#print "created list of times"
-    return m_times, no_frames
-
-def find_files_lin(m_times, files, sink_form_time):
-    c = define_constants()
-    #find usable plots:
-    it = 0
-    its = []
-    mit = 0
-    diff_prev = np.inf
-    found_all = False
-    prev_time = 0
-    #print files
-    while found_all == False:# mit != len(m_times):
-        if len(files) == 1:
-            its.append(it)
-            found_all == True
-            break
-        #print "checking file", it, "of", len(files)
-        f = h5py.File(files[it], 'r')
-        time = (f['time'][0]/c['year'])-sink_form_time
-        diff = abs(m_times[mit]-time)
-        f.close()
-        if diff > diff_prev:
-            its.append(it-1)
-            it = it-1
-            #print "found time", prev_time, "for m_time", m_times[mit]
-            if mit == len(m_times)-1:
-                print 'Found all'
-                found_all = True
-            mit = mit + 1
-            diff_prev = np.inf
-        else:
-            diff_prev = diff
-            it = it + 1
-            prev_time = time
-                #print "Found all the times!"
-    return its
-
-def find_files_bin(m_times, files, sink_form_time):
-    its = []
-    c = define_constants()
-    mit = 0
-    min = 0
-    max = len(files)-1
-    pit = 0
-    while mit < len(m_times):
-        it = int(np.round(min + ((max - min)/2.)))
-        #print 'search iterator =', it
-        f = h5py.File(files[it], 'r')
-        time = (f['time'][0]/c['year'])-sink_form_time
-        f.close()
-        #print "it =", it
-        if pit == it or time == m_times[mit]:
-            its.append(files[it])
-            print "found time", time, "for m_time", m_times[mit]
-            mit = mit + 1
-            min = it
-            max = len(m_times)-1
-            pit = it
-        elif time > m_times[mit]:
-            max = it
-            pit = it
-        elif time < m_times[mit]:
-            min = it
-            pit = it
-    return its
-
-def find_time(plot_time, files, sink_form_time):
-    c = define_constants()
-    min = 0
-    max = len(files)-1
-    pit = 0
-    it = 100
-    while pit != it:
-        it = int(np.round(min + ((max - min)/2.)))
-        f = h5py.File(files[it], 'r')
-        time = (f['time'][0]/c['year'])-sink_form_time
-        f.close()
-        if pit == it:
-            print "found time", time
-            break
-        elif time > plot_time:
-            max = it
-            pit = it
-        elif time < plot_time:
-            min = it
-            pit = it
-    return [it]
-
-def find_colourbar_extremes(files, args, sim_info):
-    #find extremes for colour bar
-    max = []
-    min = []
-    v_min_temp = []
-    v_max_temp = []
-    f = h5py.File(files[0], 'r')
-    for key in f.keys():
-        if args.field in key:
-            field = key
-    for it in files:
-        f = h5py.File(it, 'r')
-        if args.zoom:
-            for x in range(sim_info['zoom_cell'], dim-zoom_cell):
-                den_field = f[field][x]
-                if shape(den_field) == (1,dim):
-                    den_field = den_field.transpose()
-                den_field = den_field[zoom_cell:dim-zoom_cell]
-                max_val = np.max(den_field)
-                min_val = np.min(den_field)
-                if type == "proj":
-                    if axis == "xz":
-                        max_val = max_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
-                        min_val = min_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
-                    else:
-                        max_val = max_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
-                        min_val = min_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
-        else:
-            max_val = np.max(f[field])
-            min_val = np.min(f[field])
-            if type == "proj":
-                if axis == "xz":
-                    max_val = max_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
-                    min_val = min_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
-                else:
-                    max_val = max_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
-                    min_val = min_val/(f["minmax_xyz"][2][1]-f["minmax_xyz"][2][0])
-        for x in range(zoom_cell, dim-zoom_cell, annotate_vel_freq):
-            velx_temp = f["vel" + axis[0] + "_" + type + "_" + axis][x]
-            vely_temp = f["vel" + axis[1] + "_" + type + "_" + axis][x]
-            vel_temp = np.sqrt(np.square(velx_temp) + np.square(vely_temp))
-            v_min_temp.append(np.min(vel_temp))
-            v_max_temp.append(np.max(vel_temp))
-        #max.append(max_val)
-        #min.append(min_val)
-        print "extremes found for", it
-    max_str = '%.1e' % np.max(max)
-    min_str = '%.1e' % np.min(min)
-    max_round = str(0.5*floor(2.0 * float(max_str[0:3])))
-    min_round = str(0.5*ceil(2.0 * float(min_str[0:3])))
-    v_min = np.min(v_min_temp)
-    v_max = np.max(v_max_temp)
-    v_scale = 0.05/v_max
-    cbar_max = float(max_round+max_str[-4:])
-    cbar_min = float(min_round+min_str[-4:])
-    f.close()
-    print "found colour bar extremes"
-    return cbar_max, cbar_min
-
 def get_image_arrays(f, field, simfo, args):
+    dim = int(simfo['dimension'])
     image = []
     for x in range(int(simfo['zoom_cell']), int(simfo['dimension']-simfo['zoom_cell'])):
         image_val = f[field][x]
-        '''
-        if np.shape(image_val) == (simfo['dimension'],1):
+        if np.shape(image_val)[0] == 1:
             image_val = image_val.transpose()
-        '''
         image_val = image_val[simfo['zoom_cell']: simfo['dimension']-simfo['zoom_cell']]
         if simfo['movie_file_type'] == "proj":
             image_val = image_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
         image.append(image_val)
     image = np.array(image)
+    if np.shape(image)[-1] == 1:
+        image = image[:, :, 0]
     return image
-
-def smooth_array_2D(Arr, args):
-    new = []
-    (x_len, y_len) = np.shape(Arr)
-    for x in range(x_len):
-        new.append([])
-        for y in range(y_len):
-            delta_x = (x_len-1) - x
-            delta_y = (y_len-1) - y
-            if x < args.magnetic_smoothing:
-                ave_x = range(0, x+args.magnetic_smoothing)
-            elif delta_x < args.magnetic_smoothing:
-                ave_x = range(x-args.magnetic_smoothing, x_len-1)
-            else:
-                ave_x = range(x-args.magnetic_smoothing, x+args.magnetic_smoothing)
-            if y < args.magnetic_smoothing:
-                ymin = 0
-                ymax = y+args.magnetic_smoothing
-            elif delta_y < args.magnetic_smoothing:
-                ymin = y-args.magnetic_smoothing
-                ymax = y_len-1
-            else:
-                ymin = y-args.magnetic_smoothing
-                ymax = y+args.magnetic_smoothing
-            ave_num = len(ave_x)*len(range(ymin,ymax))
-            sum_val = 0.
-            for curx in ave_x:
-                sum_val = sum_val + sum(Arr[curx][ymin:ymax])
-            val = sum_val/ave_num
-            new[-1].append(val)
-    new = np.array(new)
-    return new
 
 def get_quiver_arrays(f, field, sim_info, args):
     smoothing_val = int(sim_info['smoothing'])
@@ -527,25 +288,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, sim_info, args):
     vel_scale_factor = 90000.
     #len_scale = 4000.
     len_scale = standard_vel/(0.04*(sim_info['xmax']-sim_info['xmin']))
-    '''
-    if args.zoom:
-        #len_scale = -2000.*float(args.zoom_times) + 12000.
-        len_scale = 60000.
-        standard_vel = 500000.
-    if float(args.zoom_times) == 1.28:
-        len_scale = 4000.
-        standard_vel = 500000.
-    print "zoom_times=", args.zoom_times
-    print "len_scale=", len_scale
-    print "standard_vel", standard_vel
-    '''
     vels = np.hypot(X_val, Y_val)
-    '''
-    width_scale = np.exp(standard_vel/scale_factor)
-    widths = np.exp(vels/scale_factor)
-    widths = widths/width_scale
-    widths = widths.clip(max=1.0)
-    '''
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = X_val[xp][yp]/len_scale
@@ -582,9 +325,9 @@ def main():
     
     c = define_constants()
     args = parse_inputs()
-    files = get_files(path, args)[0]
+    files = get_files(path, args)
     simfo = sim_info(path, files[-1], args)
-    sink_form_time, form_it = find_sink_formation_time(files)
+    sink_form_time = mym.find_sink_formation_time(files)
     X, Y, X_vel, Y_vel = initialise_grid(args, simfo)
     yabel, xlim, ylim = image_properties(X, Y, args, simfo)
     deltax = (simfo['dimension'])/64.
@@ -600,30 +343,17 @@ def main():
     
     # Initialise Grid and build lists
     if args.plot_time != None:
-        m_times, no_frames = [args.plot_time], 1
+        m_times = [args.plot_time]
     else:
-        m_times, no_frames = generate_frame_times(sink_form_time, files, form_it, args)
+        m_times = mym.generate_frame_times(files, args.time_step)
+    no_frames = len(m_times)
     sys.stdout.flush()
     CW.Barrier()
     
     #if rank == 0:
-    its = find_files_lin(m_times, files, sink_form_time)
-    '''
-        print "About to sent file list to other ranks"
-        for r in range(1, size):
-            print "Sending file list to rank", r
-            CW.send(its, dest=r, tag=1)
-            print "Sent file list to rank", r
-    '''
+    usable_files = mym.find_files(m_times, files)
     sys.stdout.flush()
     CW.Barrier()
-    '''
-    if rank != 0:
-        its = CW.recv(source=0, tag=1)
-        print "Receive file list on rank", rank
-    sys.stdout.flush()
-    CW.Barrier()
-    '''
     frames = range(args.start_frame, no_frames)
 
     sys.stdout.flush()
@@ -631,16 +361,14 @@ def main():
     rit = args.working_rank
     for frame_val in frames:
         if rank == rit:
-            file_it = its[frame_val]
-            file = files[file_it]
-            f = h5py.File(file, 'r')
+            f = h5py.File(usable_files[frame_val], 'r')
             file_time = (f['time'][0]/c['year'])-sink_form_time
             has_particles = has_sinks(f)
             image = get_image_arrays(f, simfo['field'], simfo, args)
             magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args)
             magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args)
-            magx = smooth_array_2D(magx, args)
-            magy = smooth_array_2D(magy, args)
+            #magx = smooth_array_2D(magx, args)
+            #magy = smooth_array_2D(magy, args)
             velx, vely = get_quiver_arrays(f, 'vel', simfo, args)
             plt.clf()
             fig, ax = plt.subplots()
@@ -668,7 +396,7 @@ def main():
                     line_rad = 0.025*simfo['xmax']
                 else:
                     line_rad = 0.025*simfo['xmax']
-                print "line_rad=", line_rad
+                #print "line_rad=", line_rad
                 particle_text = []
                 p_t = ''
                 for pos_it in range(len(part_pos[0])):
@@ -709,7 +437,7 @@ def main():
                 #ax.set_xlim([-1000.,1000])
                 #ax.set_ylim([-1000.,1000])
             #plt.show()
-            if len(its) > 1:
+            if len(usable_files) > 1:
                 if args.output_filename == None:
                     file_name = save_dir + "movie_frame_" + ("%06d" % frame_val)
                 else:
@@ -725,7 +453,7 @@ def main():
                 #plt.savefig(file_name + ".jpg", format='jpeg', bbox_inches='tight')
             call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
             #os.remove(file_name + '.eps')
-            print 'Created frame', (frame_val+1), 'of', str(len(its)), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_dir+file_name
+            print 'Created frame', (frame_val+1), 'of', str(len(usable_files)), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_dir+file_name
         rit = rit +1
         if rit == size:
             rit = 0
