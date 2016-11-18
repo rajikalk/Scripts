@@ -9,6 +9,9 @@ import yt
 import argparse
 import os
 import glob
+import my_module as mym
+import my_fields as myf
+from yt.utilities.exceptions import YTOutputNotIdentified
 plt.ion()
 
 temp_yarr = yt.YTArray([0,1,2], 'g')
@@ -37,195 +40,7 @@ def parse_inputs():
 
 args = parse_inputs()
 
-def generate_frame_times(files,sink_form_time,args):
-    if args.time_max == None:
-        file = files[-1]
-        part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        max_time = ds.current_time.in_units('yr').value - sink_form_time
-    else:
-        max_time = args.time_max
-    m_times = []
-    postsink = 0.0
-    while postsink < max_time:
-        m_times.append(postsink)
-        postsink = postsink + args.time_step
-    no_frames = len(m_times)
-    return m_times
-
-def find_files_bin(m_times, files, sink_form_time):
-    usable_files = []
-    mit = 0
-    min = 0
-    max = len(files)-1
-    pit = 0
-    while mit < len(m_times):
-        it = int(np.round(min + ((max - min)/2.)))
-        file = files[it]
-        part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        time = ds.current_time.in_units('yr').value-sink_form_time
-        if pit == it or time == m_times[mit]:
-            if m_times[mit] == 0.0:
-                if time < 0.0:
-                    it = it + 1
-                    while time < 0.0:
-                        file = files[it]
-                        part_file=file[:-12] + 'part' + file[-5:]
-                        ds = yt.load(file, particle_filename=part_file)
-                        time = ds.current_time.in_units('yr').value-sink_form_time
-                        if time > 0.0:
-                            usable_files.append(file)
-                        else:
-                            it = it + 1
-                else:
-                    usable_files.append(file)
-            else:
-                usable_files.append(file)
-            mit = mit + 1
-            min = it
-            max = len(files)-1
-            pit = it
-        elif time > m_times[mit]:
-            max = it
-            pit = it
-        elif time < m_times[mit]:
-            min = it
-            pit = it
-    return usable_files
-
-#First find the time that you want to plot! This uses a simple binary search
-def find_time(plot_time, files, sink_form_time):
-    min = 0
-    max = len(files)-1
-    pit = 0
-    it = 100
-    found = False
-    while found == False:
-        it = int(np.round(min + ((max - min)/2.)))
-        ds = yt.load(files[it])
-        time_val = (ds.current_time.in_units('yr').value)-sink_form_time
-        if pit == it:
-            if plot_time == 0.0 and time_val < 0.0:
-                it = it + 1
-                ds = yt.load(files[it])
-                time_val = (ds.current_time.in_units('yr').value)-sink_form_time
-            found = True
-            break
-        elif time_val > plot_time:
-            max = it
-            pit = it
-        elif time_val < plot_time:
-            min = it
-            pit = it
-    return it
-
-def _CoM(field, data):
-    TM = np.sum(data['cell_mass'].in_units('g'))
-    x_top = yt.YTArray(0.0, 'cm*g')
-    y_top = yt.YTArray(0.0, 'cm*g')
-    z_top = yt.YTArray(0.0, 'cm*g')
-    if ('all', u'particle_mass') in data.ds.field_list:
-        TM = TM + np.sum(data['particle_mass'].in_units('g'))
-        for part in range(len(data['particle_mass'])):
-            x_top = x_top + data['particle_mass'][part].in_units('g')*data['particle_posx'][part].in_units('cm')
-            y_top = y_top + data['particle_mass'][part].in_units('g')*data['particle_posy'][part].in_units('cm')
-            z_top = z_top + data['particle_mass'][part].in_units('g')*data['particle_posz'][part].in_units('cm')
-    x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
-    y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
-    z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
-    com = [(x_top/TM), (y_top/TM), (z_top/TM)]
-    com = yt.YTArray(com, 'cm')
-    return com
-
-yt.add_field("CoM", function=_CoM, units=r"cm")
-
-def _My_Bulk_Velocity(field, data):
-    x_vel = np.sum(data['velx'].in_units('cm/s')*data['cell_mass'].in_units('g'))
-    y_vel = np.sum(data['vely'].in_units('cm/s')*data['cell_mass'].in_units('g'))
-    z_vel = np.sum(data['velz'].in_units('cm/s')*data['cell_mass'].in_units('g'))
-    TM = np.sum(data['cell_mass'].in_units('g'))
-    if ('all', u'particle_mass') in data.ds.field_list:
-        TM = TM + np.sum(data['particle_mass'].in_units('g'))
-        for part in range(len(data['particle_mass'])):
-            x_vel = x_vel + data['particle_mass'][part].in_units('g')*data['particle_velx'][part].in_units('cm/s')
-            y_vel = y_vel + data['particle_mass'][part].in_units('g')*data['particle_vely'][part].in_units('cm/s')
-            z_vel = z_vel + data['particle_mass'][part].in_units('g')*data['particle_velz'][part].in_units('cm/s')
-    bv = [(x_vel/TM), (y_vel/TM), (z_vel/TM)]
-    bv = yt.YTArray(bv, 'cm/s')
-    return bv
-
-yt.add_field("My_Bulk_Velocity", function=_My_Bulk_Velocity, units=r"cm/s")
-
-def get_quiver_arrays(velx_full, vely_full):
-    global args
-    annotate_freq = float(args.resolution)/float(args.quiver_frequency)
-    if args.smooth_cells == None:
-        smoothing_val = int(annotate_freq/2)
-    else:
-        smoothing_val = int(args.smooth_cells)
-    x_pos = []
-    y_pos = []
-    counter = 0
-    while counter < 31:
-        val = int(annotate_freq*counter + annotate_freq/2.)
-        x_pos.append(int(val))
-        y_pos.append(int(val))
-        counter = counter + 1
-    velx = []
-    vely = []
-    for x in x_pos:
-        x = int(x)
-        xarr = []
-        yarr = []
-        for y in y_pos:
-            y = int(y)
-            x_vel =[]
-            y_vel = []
-            for curx in range(x-smoothing_val, x+smoothing_val):
-                for cury in range(y-smoothing_val, y+smoothing_val):
-                    x_vel.append(velx_full[curx][cury])
-                    y_vel.append(vely_full[curx][cury])
-            x_vel = np.mean(x_vel)
-            y_vel = np.mean(y_vel)
-            xarr.append(x_vel)
-            yarr.append(y_vel)
-        velx.append(xarr)
-        vely.append(yarr)
-    velx = yt.YTArray(velx, "cm/s")
-    vely = yt.YTArray(vely, "cm/s")
-    return velx, vely
-
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val):
-    global field_dictionary
-    global args
-    standard_vel = 500000.
-    scale_factor = 100000.
-    vel_scale_factor = 90000.
-    xmin = np.min(field_dictionary['X'][0].in_units('AU').value)
-    xmax = np.max(field_dictionary['X'][0].in_units('AU').value)
-    ymin = np.min(field_dictionary['Y'][0].in_units('AU').value)
-    len_scale = standard_vel/(0.04*(xmax - xmin))
-    vels = np.hypot(X_val, Y_val)
-    for xp in range(len(X_pos[0])):
-        for yp in range(len(Y_pos[0])):
-            xvel = X_val[xp][yp]/len_scale
-            yvel = Y_val[xp][yp]/len_scale
-            width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
-            if width_val > 1.0:
-                width_val = 1.0
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
-    if args.plot_velocity_legend == True:
-        print("plotting quiver legend")
-        pos_start = [0.77*xmax, 0.87*ymin]
-        xvel = standard_vel/len_scale
-        yvel = 0.0
-        width_val = 1.0
-        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
-        axis.annotate("5kms$^{-1}$", xy=(0.98*xmax, 0.95*ymin), va="center", ha="right", color='w', fontsize=16)
-
-
-def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=None, log_colour=False, clim=None, units=None):
+def My_plotting_function(file, field, colormap=None, save_name=None, image_prefix=None, log_colour=False, clim=None, units=None):
     global field_dictionary
     global args
     bx = field_dictionary['box_bound'].value
@@ -253,18 +68,9 @@ def My_plotting_function(dd, field, colormap=None, save_name=None, image_prefix=
     cbar.set_label(cbar_label, rotation=270, labelpad=12, size=14)
     #print("plotted color bar")
     print("plotting quiver plot")
-    my_own_quiver_function(ax, field_dictionary['X_quiver'].in_units('AU').value, field_dictionary['Y_quiver'].in_units('AU').value, field_dictionary['velx_quiver'].value, field_dictionary['vely_quiver'].value)
-    if ('all', u'particle_mass') in dd.ds.field_list:
-        part_color = ['lime','cyan','r','c','y','w','k']
-        line_rad = np.min(dd['dx'].in_units('AU'))*2.5
-        p_t = ''
-        for pos_it in range(len(dd['particle_posx'])):
-            ax.plot((dd['particle_posx'][pos_it].in_units('AU')-(line_rad), dd['particle_posx'][pos_it].in_units('AU')+(line_rad)), (dd['particle_posy'][pos_it].in_units('AU'), dd['particle_posy'][pos_it].in_units('AU')), lw=2., c='k')
-            ax.plot((dd['particle_posx'][pos_it].in_units('AU'), dd['particle_posx'][pos_it].in_units('AU')), (dd['particle_posy'][pos_it].in_units('AU')-(line_rad), dd['particle_posy'][pos_it].in_units('AU')+(line_rad)), lw=2., c='k')
-            ax.plot((dd['particle_posx'][pos_it].in_units('AU')-(line_rad), dd['particle_posx'][pos_it].in_units('AU')+(line_rad)), (dd['particle_posy'][pos_it].in_units('AU'), dd['particle_posy'][pos_it].in_units('AU')), lw=1., c=part_color[pos_it])
-            ax.plot((dd['particle_posx'][pos_it].in_units('AU'), dd['particle_posx'][pos_it].in_units('AU')), (dd['particle_posy'][pos_it].in_units('AU')-(line_rad), dd['particle_posy'][pos_it].in_units('AU')+(line_rad)), lw=1., c=part_color[pos_it])
-            circle = mpatches.Circle([dd['particle_posx'][pos_it].in_units('AU').value, dd['particle_posy'][pos_it].in_units('AU').value], line_rad.value, fill=False, lw=1, edgecolor='k')
-            ax.add_patch(circle)
+    mym.my_own_quiver_function(ax, field_dictionary['X_quiver'].in_units('AU'), field_dictionary['Y_quiver'].in_units('AU'), field_dictionary['velx_quiver'], field_dictionary['vely_quiver'])
+    part_info = mym.get_particle_data(file, axis="xy")
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], np.min(field_dictionary['X_quiver'].in_units('AU').value))
     plt.xlim([-bx, bx])
     plt.ylim([-bx, bx])
     plt.xlabel('$x$ (AU)', labelpad=-1)
@@ -297,26 +103,22 @@ if os.path.exists(save_dir) == False:
 #Get sink formation time
 data_files = sorted(glob.glob(args.files+'WIND_hdf5_plt_cnt*'))
 file = data_files[-1]
-init_ds = yt.load(file, particle_filename=file[:-12] + 'part' + file[-5:])
-init_dd = init_ds.all_data()
+ds = yt.load(file, particle_filename=file[:-12] + 'part' + file[-5:])
+dd = ds.all_data()
 yr = yt.units.yr.in_units('s')
-sink_formation_time_s = yt.YTArray(init_dd['particle_creation_time'][0].value, 's')
-sink_formation_time = sink_formation_time_s.in_units('yr').value
-print("sink formation time =", sink_formation_time)
 
 #Find relavent files
 if args.plot_time != None:
     plot_time_val = float(args.plot_time)
-    file_it = find_time(plot_time_val, data_files, sink_formation_time)
-    usable_files = [data_files[file_it]]
+    usable_files = mym.find_files([plot_time_val], data_files)
     m_times = [plot_time_val]
 else:
-    m_times = generate_frame_times(data_files, sink_formation_time, args)
-    usable_files = find_files_bin(m_times, data_files, sink_formation_time)
+    m_times = mym.generate_frame_times(data_files, args.time_step)
+    usable_files = mym.find_files(m_times, data_files)
 print("FOUND USABLE FILES")
 
 #Initialise meshs
-bx = (init_ds.domain_right_edge[0].in_units('AU')/args.zoom_times)/2.
+bx = (ds.domain_right_edge[0].in_units('AU')/args.zoom_times)/2.
 nx = args.resolution       #number of points in the grid
 nx_quiver = args.quiver_frequency #number of points for a quiver plot in the grid
 x = np.linspace(-bx, bx, nx)
@@ -362,7 +164,7 @@ for file in usable_files:
     vx_grid_quiver_full = dd['velx'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
     vy_grid_quiver_full = dd['vely'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
     vz_grid_quiver_full = dd['velz'][nearest_points[1]].reshape(xy[0].shape).in_units('cm/s')
-    vx_grid_quiver, vy_grid_quiver = get_quiver_arrays(vx_grid_quiver_full, vy_grid_quiver_full)
+    vx_grid_quiver, vy_grid_quiver = mym.get_quiver_arrays(vx_grid_quiver_full, vy_grid_quiver_full)
     r_grid = np.sqrt(xy[0].in_units('AU')**2 + xy[1].in_units('AU')**2)
     
     #Work out the semimajor axis of the system, if there is one
@@ -378,17 +180,21 @@ for file in usable_files:
 
     averaged_rel_kep_vel_cyl = np.zeros(np.shape(dens_grid))
     averaged_rel_kep_vel_sph = np.zeros(np.shape(dens_grid))
+    averaged_rel_kep_vel_cyl_x = np.zeros(np.shape(dens_grid))
+    averaged_rel_kep_vel_cyl_y = np.zeros(np.shape(dens_grid))
 
     #Iterate over all centers:
     for cen in range(len(dd['particle_mass']) + 1):
-        
+        print("calculating for center", cen)
         #Set the center of the system for calculations
         if cen == 0:
             center = dd['CoM'].in_units('AU')
             center_vel = dd['My_Bulk_Velocity'].in_units('cm/s')
         else:
-            center = [dd['particle_posx'][cen-1].in_units('AU'), dd['particle_posy'][cen-1].in_units('AU'), dd['particle_posz'][cen-1]].in_units('AU')]
-            center_vel = [dd['particle_velx'][cen-1].in_units('cm/s'), dd['particle_vely'][cen-1].in_units('cm/s'), dd['particle_velz'][cen-1]].in_units('cm/s')]
+            center = [dd['particle_posx'][cen-1].in_units('AU'), dd['particle_posy'][cen-1].in_units('AU'), dd['particle_posz'][cen-1].in_units('AU')]
+            center_vel = [dd['particle_velx'][cen-1].in_units('cm/s'), dd['particle_vely'][cen-1].in_units('cm/s'), dd['particle_velz'][cen-1].in_units('cm/s')]
+        print("center =", center)
+        print("center_vel", center_vel)
 
         #correct velocities:
         vx_grid = vx_grid_quiver_full - center_vel[0]
@@ -475,10 +281,26 @@ for file in usable_files:
         vrel_grid_cyl = vtan_grid_cyl.in_units('cm/s')/vkep_grid_cyl.in_units('cm/s')
         vrel_grid_sph = vtan_grid_sph.in_units('cm/s')/vkep_grid_sph.in_units('cm/s')
 
+        vtan_grid_cyl_unit_x = vy_grid/np.hypot(vy_grid, vx_grid)
+        vtan_grid_cyl_unit_y = -vx_grid/np.hypot(vy_grid, vx_grid)
+        
+        angle = np.arctan(vtan_grid_cyl_unit_y/vtan_grid_cyl_unit_x)
+        
+        vrel_grid_cyl_x = vrel_grid_cyl*(np.cos(angle))
+        vrel_grid_cyl_y = vrel_grid_cyl*(np.sin(angle))
+
+        averaged_rel_kep_vel_cyl_x = averaged_rel_kep_vel_cyl_x + vrel_grid_cyl_x
+        averaged_rel_kep_vel_cyl_y = averaged_rel_kep_vel_cyl_y + vrel_grid_cyl_y
+
         averaged_rel_kep_vel_cyl = averaged_rel_kep_vel_cyl + vrel_grid_cyl
         averaged_rel_kep_vel_sph = averaged_rel_kep_vel_sph + vrel_grid_sph
+        #print("vrel_grid_cyl", vrel_grid_cyl)
 
-    averaged_rel_kep_vel_cyl = averaged_rel_kep_vel_cyl/(len(dd['particle_mass']) + 1)
+
+    averaged_rel_kep_vel_cyl_x = averaged_rel_kep_vel_cyl_x/(len(dd['particle_mass']) + 1)
+    averaged_rel_kep_vel_cyl_y = averaged_rel_kep_vel_cyl_y/(len(dd['particle_mass']) + 1)
+    averaged_rel_kep_vel_cyl = np.hypot(averaged_rel_kep_vel_cyl_x, averaged_rel_kep_vel_cyl_y)
+    #averaged_rel_kep_vel_cyl = averaged_rel_kep_vel_cyl/(len(dd['particle_mass']) + 1)
     averaged_rel_kep_vel_sph = averaged_rel_kep_vel_sph/(len(dd['particle_mass']) + 1)
 
     #Save fields to dictionaries. Should make plotting easier
@@ -488,13 +310,13 @@ for file in usable_files:
                     'Radial_Velocity_Cyl':vrad_grid_cyl,
                     'Velocity_Magnitude_Cyl':vmag_grid_cyl,
                     'Tangential_Velocity_Cyl':vtan_grid_cyl,
-                    'Relative_Keplerian_Velocity_Cyl':vrel_grid_cyl,
+                    'Relative_Keplerian_Velocity_Cyl':averaged_rel_kep_vel_cyl,
                     'Enclosed_Mass_Sph':enclosed_mass_grid_sph,
                     'Keplerian_Velocity_Sph':vkep_grid_sph,
                     'Radial_Velocity_Sph':vrad_grid_sph,
                     'Velocity_Magnitude_Sph':vmag_grid_sph,
                     'Tangential_Velocity_Sph':vtan_grid_sph,
-                    'Relative_Keplerian_Velocity_Sph':vrel_grid_sph,
+                    'Relative_Keplerian_Velocity_Sph':averaged_rel_kep_vel_sph,
                     'quiver_grids':xy_quiver,
                     'velx_quiver':vx_grid_quiver,
                     'vely_quiver':vy_grid_quiver,
@@ -509,6 +331,6 @@ for file in usable_files:
 
     #Now plot
     for field_val in args.field:
-        My_plotting_function(dd, field_val, image_prefix=args.image_prefix, save_name=field_val+'_time_'+str(int(time))+'.eps', log_colour=args.log_colour, clim=args.colour_limits)
+        My_plotting_function(file, field_val, image_prefix=args.image_prefix, save_name=field_val+'_time_'+str(int(time))+'.eps', log_colour=args.log_colour, clim=args.colour_limits)
 
     fit = fit + 1
