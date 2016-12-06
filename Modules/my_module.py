@@ -174,7 +174,7 @@ def initialise_grid(file, zoom_times=0):
     xmin = f['minmax_xyz'][0][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
     xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
     annotate_freq = ((xmax/cl) - (xmin/cl))/31.
-    x = np.arange(xmin, xmax, cl)
+    x = np.arange(xmin+cl/2., xmax+cl/2., cl)
     if (len(x) % 2 != 0):
         x = np.arange(int(xmin), int(xmax), cl)
     x_ind = []
@@ -236,12 +236,16 @@ def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None
     vely = np.array(vely)
     return velx, vely
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend=False, standard_vel=5, legend_text="5kms$^{-1}$"):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$"):
+    if plot_velocity_legend == 'False':
+        plot_velocity_legend = False
+    elif plot_velocity_legend == 'True':
+        plot_velocity_legend = True
     standard_vel = yt.units.km.in_units('cm').value * standard_vel
     xmin = np.min(X_pos)
     xmax = np.max(X_pos)
     ymin = np.min(Y_pos)
-    len_scale = standard_vel/(0.04*(xmax - xmin))
+    len_scale = standard_vel/(0.05*(xmax - xmin))
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
@@ -251,14 +255,15 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             if width_val > 1.0:
                 width_val = 1.0
             axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
-    if plot_velocity_legend == True:
+    if plot_velocity_legend:
         print("plotting quiver legend")
-        pos_start = [0.8*xmax, 0.9*ymin]
+        pos_start = [0.75*xmax, 0.9*ymin]
         xvel = standard_vel/len_scale
         yvel = 0.0
         width_val = 1.0
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
         axis.annotate(legend_text, xy=(0.99*xmax, 0.99*ymin), va="center", ha="right", color='w', fontsize=16)
+    return axis
 
 def annotate_particles(axis, particle_position, accretion_rad, box_size, particle_mass=None):
     part_color = ['lime','cyan','r','c','y','w','k']
@@ -281,9 +286,13 @@ def annotate_particles(axis, particle_position, accretion_rad, box_size, particl
             p_t = p_t+', $M_'+str(pos_it+1)+'$='+P_msun+'M$_\odot$'
         print("p_t =", p_t)
     axis.annotate(p_t, xy=(-0.98*box_size, -0.95*box_size), va="center", ha="left", color='w', fontsize=16)
+    return axis
 
-def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False):
-    x = data[x_field]
+def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU'):
+    if x_units == None:
+        x = data[x_field]
+    else:
+        x = data[x_field].in_units(x_units)
     if log:
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
     else:
@@ -299,9 +308,9 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
         y = data[y_field]
         prev_bin = bins[0]
         for bin in bins[1:]:
+            ind = np.where((x >= prev_bin) & (x < bin))
             mid_x = (bin+prev_bin)/2.
             x_array.append(mid_x)
-            ind = np.where((x >= prev_bin) & (x < bin))
             if len(ind) != 0:
                 y_vals = y[ind]
                 if weight_field != None:
@@ -310,14 +319,21 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
                     bin_val = np.mean(y[ind])
             else:
                 bin_val = np.nan
+            prev_bin = bin
             y_temp.append(bin_val)
-        y_array.update({y_field:y_temp})
+            #print "weighted_val =", bin_val, ", at radius=", mid_x
+
+    y_array.update({y_field:y_temp})
 
     return x_array, y_array
 
-def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000):
-    z = data['z']
-    big_array = np.array([z, data[x_field], data[y_field]])
+def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units='AU'):
+    z = data['z'].in_units('AU')
+    if x_units == None:
+        x = data[x_field]
+    else:
+        x = data[x_field].in_units(x_units)
+    big_array = np.array([z, x, data[y_field]])
     plot_array = []
     z_bins = np.linspace(np.min(np.abs(z)), np.max(np.abs(z)), bin_no+1)
     import random
@@ -333,15 +349,18 @@ def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000):
             if 0.0 not in data_point:
                 plot_array.append(data_point)
                 counter = counter + 1
-                print "selected random data point", data_point
+                #print "selected random data point", data_point
         prev_z = z_bin
-        print "selected random data points"
+    #print "selected random data points"
     plot_array = np.array(plot_array)
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolution=1024):
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024):
+    print("image resolution =", resolution)
+    
     x = np.linspace(np.min(X), np.max(X), resolution)
+    print("len(x) =", len(x))
     X = yt.YTArray(X, 'AU')
     Y = yt.YTArray(Y, 'AU')
     xy = np.meshgrid(x,x)
@@ -362,6 +381,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     #This line also takes a while
     print("Finding nearest points...")
     nearest_points = tree.query(xyz_grid, k=2, distance_upper_bound=cell_max, n_jobs=-1)[1]
+    print("len(nearest_points) =", len(nearest_points))
     del xyz_grid
     print("Done finding nearest points...")
 
@@ -369,6 +389,9 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     
     plt.clf()
     fig, ax = plt.subplots()
+    print("len(xy[0]) =", len(xy[0]))
+    #import pdb
+    #pdb.set_trace()
     if log:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
     else:
@@ -377,7 +400,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     cbar = plt.colorbar(plot, pad=0.0)
     if field == "Relative_Keplerian_Velocity":
         cbar_label = "Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"
-        cbar.set_clim([0.0, 2.0])
+        plot.set_clim([0.0, 2.0])
     else:
         units = str(field_grid.unit_quantity).split(' ')[-1]
         cbar_label = ''
@@ -389,5 +412,5 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     ax.set_ylim([np.min(Y), np.max(Y)])
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
     ax.set_ylabel('$y$ (AU)', labelpad=-20)
-    return ax
+    return fig, ax
 
