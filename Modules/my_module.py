@@ -195,8 +195,6 @@ def initialise_grid(file, zoom_times=0):
     y_vel = np.array(y_vel)
     X, Y = np.meshgrid(x, x)
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
-    import pdb
-    pdb.set_trace()
     #print "created meshs"
     return X, Y, X_vel, Y_vel
 
