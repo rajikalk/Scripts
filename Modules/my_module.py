@@ -11,6 +11,7 @@ from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
 import my_fields as myf
 import scipy.spatial as spatial
+import pickle
 
 def yt_file_type(file):
     try:
@@ -112,7 +113,10 @@ def find_files(m_times, files):
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
         if pit == it or time == m_times[mit]:
-            usable_files.append(files[it])
+            if time < 0:
+                usable_files.append(files[it+1])
+            else:
+                usable_files.append(files[it])
             print "found time", time, "for m_time", m_times[mit]
             mit = mit + 1
             min = it
@@ -358,18 +362,16 @@ def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units=
 
 def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024):
     print("image resolution =", resolution)
-    
     x = np.linspace(np.min(X), np.max(X), resolution)
     print("len(x) =", len(x))
     X = yt.YTArray(X, 'AU')
     Y = yt.YTArray(Y, 'AU')
     xy = np.meshgrid(x,x)
     dd = ds.all_data()
-    cell_max = np.max(dd['dx'].in_units('AU'))
+    cell_max = np.max(dd['dz'].in_units('AU'))
     cell_min = np.min(dd['dz'].in_units('AU'))
-    dd = ds.region([0.0,0.0,0.0], [np.min(X)-cell_max, np.min(Y)-cell_max, -cell_max], [np.max(X)+cell_max, np.max(Y)+cell_max, cell_max])
-    #inds = np.where((dd['x'].in_units('AU')>(np.min(X.in_units('AU'))-cell_max.in_units('AU')))&(dd['x'].in_units('AU') < (np.max(X.in_units('AU'))+cell_max.in_units('AU')))&(dd['y'].in_units('AU')>(np.min(Y.in_units('AU'))-cell_max.in_units('AU')))&(dd['y'].in_units('AU') < (np.max(Y.in_units('AU'))+cell_max.in_units('AU'))))
-    #xyz = yt.YTArray([dd['x'][inds].in_units('AU'),dd['y'][inds].in_units('AU'),dd['z'][inds].in_units('AU')]).T
+    #dd = ds.region([0.0,0.0,0.0], [np.min(X)-cell_max, np.min(Y)-cell_max, -cell_max], [np.max(X)+cell_max, np.max(Y)+cell_max, cell_max])
+    dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
     print("Computing tree...")
     tree = spatial.cKDTree(xyz)
@@ -381,6 +383,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     #This line also takes a while
     print("Finding nearest points...")
     nearest_points = tree.query(xyz_grid, k=2, distance_upper_bound=cell_max, n_jobs=-1)[1]
+    
     print("len(nearest_points) =", len(nearest_points))
     del xyz_grid
     print("Done finding nearest points...")
@@ -390,8 +393,6 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     plt.clf()
     fig, ax = plt.subplots()
     print("len(xy[0]) =", len(xy[0]))
-    #import pdb
-    #pdb.set_trace()
     if log:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
     else:
@@ -413,4 +414,3 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
     ax.set_ylabel('$y$ (AU)', labelpad=-20)
     return fig, ax
-
