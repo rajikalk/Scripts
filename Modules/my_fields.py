@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 import yt
 import numpy as np
+from subprocess import call
+import pickle
 
 center = 0
-bin_size = yt.YTArray(100., 'AU')
-image_resolution = 512
+n_bins = 100
 coordinates = 'cylindrical'
+has_run = False
+global_enc_mass = []
 
 def set_center(x):
     """
@@ -19,14 +22,14 @@ def set_center(x):
     center = x
     return center
 
-def set_bin_size(x):
+def set_n_bins(x):
     """
-    sets the bin size used when calculating the enclosed mass
-    Type: int or float
+    sets the number of bins used when calculating the enclosed mass
+    Type: int
     """
-    global bin_size
-    bin_size = yt.YTArray(x, 'AU')
-    return bin_size
+    global n_bins
+    n_bins = x
+    return x
 
 def set_image_resolution(x):
     """
@@ -55,12 +58,12 @@ def get_center():
     global center
     return center
 
-def get_bin_size():
+def get_n_bins():
     """
-    returns the currently set bin_size
+    returns the currently set number of bins
     """
-    global bin_size
-    return bin_size
+    global n_bins
+    return n_bins
 
 def get_image_resolution():
     """
@@ -69,7 +72,7 @@ def get_image_resolution():
     global image_resolution
     return image_resolution
 
-def get_coordinate_system(x):
+def get_coordinate_system():
     """
     returns the currently set coordinate system
     """
@@ -144,8 +147,9 @@ def _Center_Position(field, data):
     if center == 0:
         center_pos = data['CoM'].in_units('cm')
     else:
-        center_pos = [data['particle_posx'][center-1].in_units('cm'), data['particle_posy'][center-1].in_units('cm'), data['particle_posz'][center-1].in_units('cm')]
-    print("center_pos =", center_pos)
+        #center_pos = [data['particle_posx'][center-1].in_units('cm'), data['particle_posy'][center-1].in_units('cm'), data['particle_posz'][center-1].in_units('cm')]
+        center_pos = [data['particle_posx'][center-1].in_units('cm').value, data['particle_posy'][center-1].in_units('cm').value, data['particle_posz'][center-1].in_units('cm').value]
+        center_pos = yt.YTArray(center_pos, 'cm')
     return center_pos
 
 yt.add_field("Center_Position", function=_Center_Position, units=r"cm")
@@ -158,8 +162,7 @@ def _Center_Velocity(field, data):
     if center == 0:
         center_vel = data['My_Bulk_Velocity'].in_units('cm/s')
     else:
-        center_vel = [dd['particle_velx'][center-1].in_units('cm/s'), dd['particle_vely'][center-1].in_units('cm/s'), dd['particle_velz'][center-1].in_units('cm/s')]
-    print("center_vel", center_vel)
+        center_vel = [data['particle_velx'][center-1].in_units('cm/s'), data['particle_vely'][center-1].in_units('cm/s'), data['particle_velz'][center-1].in_units('cm/s')]
     return center_vel
 
 yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s")
@@ -196,19 +199,15 @@ def _Distance_from_Center(field, data):
     """
     Calculates the distance from the current set center.
     """
-    distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2. + (data['dz_from_Center'])**2.)
+    global coordinates
+    if 'cyl' in coordinates.lower():
+        distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2.)
+    else:
+        distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2. + (data['dz_from_Center'])**2.)
     return distance
 
 yt.add_field("Distance_from_Center", function=_Distance_from_Center, units=r"cm")
 
-def _Cylindrical_Distance_from_Center(field, data):
-    """
-    Calculates the cylindrical distance from the current set center.
-    """
-    distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2.)
-    return distance
-
-yt.add_field("Cylindrical_Distance_from_Center", function=_Cylindrical_Distance_from_Center, units=r"cm")
 
 def _Corrected_velx(field, data):
     """
@@ -239,69 +238,133 @@ yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s")
 
 def _Corrected_vel_mag(field, data):
     """
-    Calculates the velocity magnitude corrected for the bulk velocity
+    Calculates the velocity magnitude corrected for the bulk velocity in the current coordinate system.
     """
-    distance = np.sqrt((data['Corrected_velx'])**2. + (data['Corrected_vely'])**2. + (data['Corrected_velz'])**2.)
-    return distance
+    global coordinates
+    if 'cyl' in coordinates.lower():
+        vmag = np.sqrt((data['Corrected_velx'])**2. + (data['Corrected_vely'])**2.)
+    else:
+        vmag = np.sqrt((data['Corrected_velx'])**2. + (data['Corrected_vely'])**2. + (data['Corrected_velz'])**2.)
+    return vmag
 
 yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
 
-def Enclosed_Mass(data):
+def Enclosed_Mass(file, max_radius):
     global center
-    global bin_size
+    global n_bins
     global coordinates
-    import pdb
-    pdb.set_trace()
-    a = data['Semimajor_Axis']
-    center_pos = data['Center_Position']
-    center_vel = data['Center_Velocity']
-
-    if 'cyl' in coordinates.lower():
-        distance = data['Cylindrical_Distance_from_Center']
-    else:
+    global has_run
+    global global_enc_mass
+    if has_run == False:
+        part_file = part_file=file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+        data = ds.all_data()
+        if ('all', u'particle_mass') in data.ds.field_list:
+            particle_mass = data['particle_mass']
+            if len(data['particle_mass']) == 2:
+                pos1 = [data['particle_posx'][0].in_units('cm'), data['particle_posy'][0].in_units('cm'), data['particle_posz'][0].in_units('cm')]
+                pos2 = [data['particle_posx'][1].in_units('cm'), data['particle_posy'][1].in_units('cm'), data['particle_posz'][1].in_units('cm')]
+                a = np.sqrt((pos1[0] - pos2[0])**2. + (pos1[1] - pos2[1])**2. + (pos1[2] - pos2[2])**2.)
+            else:
+                a = yt.YTArray(0.0, 'cm')
+        else:
+            particle_mass = yt.YTArray([], 'g')
+            a = yt.YTArray(0.0, 'cm')
+        
         distance = data['Distance_from_Center']
-    rs = np.arange(np.min(distance), np.max(distance)+bin_size.in_units('cm'), bin_size.in_units('cm'))
-    enclosed_mass = yt.YTArray(np.zeros(np.shape(distance)), 'g')
+        cell_mass = data['cell_mass']
 
-    prev_r = rs[0]
-    prev_enc_mass = yt.YTArray(0.0, 'g')
-    included_particles = False
-    for r in rs[1:]:
-        ind = np.where((distance >= prev_r) & (distance < r))
-        if len(ind) != 0:
-            enclosed_mass_val = prev_enc_mass + np.sum(data['cell_mass'][ind])
-            if r == rs[1] and center != 0:
-                enclosed_mass_val = enclosed_mass_val + data['particle_mass'][center-1]
-            if included_particles == False:
-                if center != 0 and r > a.in_units('AU'):
-                    if center == 1:
-                        enclosed_mass_val = enclosed_mass_val + data['particle_mass'][0]
-                    else:
-                        enclosed_mass_val = enclosed_mass_val + data['particle_mass'][1]
-                    included_particles = True
-                elif center == 0 and r > a.in_units('AU')/2. and ('all', u'particle_mass') in data.ds.field_list:
-                    enclosed_mass_val = enclosed_mass_val + np.sum(data['particle_mass'])
-                    included_particles = True
-            enclosed_mass[ind] = enclosed_mass_val
-            prev_enc_mass = enclosed_mass_val
-            prev_r = r
-    return enclosed_mass
+        pickle_file_enc = '/home/100/rlk100/Scripts/Modules/enclosed_mass_temp.pkl'
+        pickle_file = '/home/100/rlk100/Scripts/Modules/pickle_temp.pkl'
+        file = open(pickle_file, 'w+')
+        pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), file)
+        file.close()
+
+        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
+
+        file = open(pickle_file_enc, 'r')
+        enclosed_mass = pickle.load(file)
+        global_enc_mass = yt.YTArray(enclosed_mass, 'g')
+
+        has_run = True
+    return global_enc_mass
 
 def _Enclosed_Mass(field, data):
-    dd = data.ds.all_data()
-    indices_x = np.where(np.in1d(dd[('index', 'x')], data['x']))[0]
-    indices_y = np.where(np.in1d(dd[('index', 'y')], data['y']))[0]
-    indices_z = np.where(np.in1d(dd[('index', 'z')], data['z']))[0]
-    inds = list(set(indices_x).intersection(indices_y).intersection(indices_z))
-    enclosed_mass = Enclosed_Mass(dd)
-    #enclosed_mass = enclosed_mass[inds]
+    """
+    Calculates the enclosed mass for the set center and in the set coordinate system, with the current set bin size
+    """
+    global coordinates
+    global global_enc_mass
+    global has_run
+    
+    if np.shape(data) != np.shape(global_enc_mass):
+        has_run = False
+
+    if np.shape(data) != (16, 16, 16):
+        file = data.ds.fullpath +'/'+data.ds.basename
+        '''
+        if 'cyl' in coordinates:
+            max_radius = np.sqrt(np.square(np.max(np.abs(data[('index', 'x')]))) + np.square(np.max(np.abs(data[('index', 'y')]))))
+        else:
+            max_radius = np.sqrt(np.square(np.max(np.abs(data[('index', 'x')]))) + np.square(np.max(np.abs(data[('index', 'y')]))) + np.square(np.max(np.abs(data[('index', 'z')]))))
+        '''
+        max_radius = np.max(data['Distance_from_Center'])
+        enclosed_mass = Enclosed_Mass(file, max_radius)
+        dd = data.ds.all_data()
+        comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
+        data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
+        inds = np.where(np.in1d(comb, data_comb))[0]
+        enclosed_mass = global_enc_mass[inds]
+    else:
+        enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
     return enclosed_mass
 
-yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"")
+yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")
 
+def _Radial_Velocity(field, data):
+    """
+    Calculates the radial velocity from the current center, in the current coordinate system, corrected for the velocity of the center.
+    """
+    global coordinates
+    if 'cyl' in coordinates.lower():
+        rad_vel = (data['Corrected_velx'].in_units('cm/s')*data['dx_from_Center'].in_units('cm') + data['Corrected_vely'].in_units('cm/s')*data['dy_from_Center'].in_units('cm'))/data['Distance_from_Center'].in_units('cm')
+    else:
+        rad_vel = (data['Corrected_velx'].in_units('cm/s')*data['dx_from_Center'].in_units('cm') + data['Corrected_vely'].in_units('cm/s')*data['dy_from_Center'].in_units('cm') + data['Corrected_velz'].in_units('cm/s')*data['dz_from_Center'].in_units('cm'))/data['Distance_from_Center'].in_units('cm')
+    return rad_vel
 
+yt.add_field("Radial_Velocity", function=_Radial_Velocity, units=r"cm/s")
 
+def _Tangential_Velocity(field, data):
+    """
+    Calculates the Tangetial velocity for the current center, in the current coordinate system, corrected for the velocity of the center.
+    """
+    v_mag = data['Corrected_vel_mag']
+    v_r = data['Radial_Velocity']
+    v_t = np.sqrt(v_mag**2. - v_r**2.)
+    return v_t
 
+yt.add_field("Tangential_Velocity", function=_Tangential_Velocity, units=r"cm/s")
+
+def _Keplerian_Velocity(field, data):
+    """
+    Calculates the keplerian velocity for the enclosed mass calculated from the current center, in the current coordinate system, corrected for the velocity of the center.
+    """
+    G = yt.utilities.physical_constants.G
+    keplerian_field = np.sqrt((G*data['Enclosed_Mass'])/data['Distance_from_Center'])
+    return keplerian_field
+
+yt.add_field("Keplerian_Velocity", function=_Keplerian_Velocity, units=r"cm/s")
+
+def _Relative_Keplerian_Velocity(field, data):
+    """
+    Calculates the Relative Keplerian Velocity.
+    """
+    v_mag = data['Tangential_Velocity']
+    v_kep = data['Keplerian_Velocity']
+    rel_kep = v_mag/v_kep
+    return rel_kep
+
+yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
 
 '''
     #because orbital mechanics get a bit complicated in binaries, we try to simplify the problem.
@@ -411,4 +474,3 @@ yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"")
     
     yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")
     '''
-
