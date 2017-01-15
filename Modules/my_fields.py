@@ -3,6 +3,8 @@ import yt
 import numpy as np
 from subprocess import call
 import pickle
+import os
+import time
 
 center = 0
 n_bins = 100
@@ -144,11 +146,14 @@ def _Center_Position(field, data):
     Returns the center position for the current set center.
     """
     global center
-    if center == 0:
+    dd = data.ds.all_data()
+    if np.shape(data) == (16, 16, 16):
         center_pos = data['CoM'].in_units('cm')
+    elif center == 0:
+        center_pos = dd.quantities.center_of_mass(use_particles=True).in_units('cm')
     else:
-        #center_pos = [data['particle_posx'][center-1].in_units('cm'), data['particle_posy'][center-1].in_units('cm'), data['particle_posz'][center-1].in_units('cm')]
-        center_pos = [data['particle_posx'][center-1].in_units('cm').value, data['particle_posy'][center-1].in_units('cm').value, data['particle_posz'][center-1].in_units('cm').value]
+        #center_pos = [data['particle_posx'][center-1].in_units('cm').value, data['particle_posy'][center-1].in_units('cm').value, data['particle_posz'][center-1].in_units('cm').value]
+        center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
         center_pos = yt.YTArray(center_pos, 'cm')
     return center_pos
 
@@ -159,10 +164,14 @@ def _Center_Velocity(field, data):
     Returns the center velocity for the current set center.
     """
     global center
-    if center == 0:
+    dd = data.ds.all_data()
+    if np.shape(data) == (16, 16, 16):
         center_vel = data['My_Bulk_Velocity'].in_units('cm/s')
+    elif center == 0:
+        center_vel = dd.quantities.bulk_velocity(use_particles=True)
     else:
-        center_vel = [data['particle_velx'][center-1].in_units('cm/s'), data['particle_vely'][center-1].in_units('cm/s'), data['particle_velz'][center-1].in_units('cm/s')]
+        #center_vel = [data['particle_velx'][center-1].in_units('cm/s'), data['particle_vely'][center-1].in_units('cm/s'), data['particle_velz'][center-1].in_units('cm/s')]
+        center_vel = [dd['particle_velx'][center-1].in_units('cm/s'), dd['particle_vely'][center-1].in_units('cm/s'), dd['particle_velz'][center-1].in_units('cm/s')]
     return center_vel
 
 yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s")
@@ -273,19 +282,19 @@ def Enclosed_Mass(file, max_radius):
         
         distance = data['Distance_from_Center']
         cell_mass = data['cell_mass']
-
-        pickle_file_enc = '/home/100/rlk100/Scripts/Modules/enclosed_mass_temp.pkl'
-        pickle_file = '/home/100/rlk100/Scripts/Modules/pickle_temp.pkl'
-        file = open(pickle_file, 'w+')
-        pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), file)
-        file.close()
-
-        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
+        time_str = str(int(time.time()))
+        pickle_file_enc = '/short/ek9/rlk100/temp_pickles/enclosed_mass_temp_' + time_str + '.pkl'
+        pickle_file = '/short/ek9/rlk100/temp_pickles/pickle_temp_' + time_str + '.pkl'
+        temp_file = open(pickle_file, 'w')
+        pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), temp_file)
+        temp_file.close()
+        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-sf', pickle_file_enc, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
+        #call(['mpirun', '-np', '8', 'python', '/Users/rajikak/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
 
         file = open(pickle_file_enc, 'r')
         enclosed_mass = pickle.load(file)
         global_enc_mass = yt.YTArray(enclosed_mass, 'g')
-
+        os.remove(pickle_file_enc)
         has_run = True
     return global_enc_mass
 
@@ -302,19 +311,16 @@ def _Enclosed_Mass(field, data):
 
     if np.shape(data) != (16, 16, 16):
         file = data.ds.fullpath +'/'+data.ds.basename
-        '''
-        if 'cyl' in coordinates:
-            max_radius = np.sqrt(np.square(np.max(np.abs(data[('index', 'x')]))) + np.square(np.max(np.abs(data[('index', 'y')]))))
-        else:
-            max_radius = np.sqrt(np.square(np.max(np.abs(data[('index', 'x')]))) + np.square(np.max(np.abs(data[('index', 'y')]))) + np.square(np.max(np.abs(data[('index', 'z')]))))
-        '''
         max_radius = np.max(data['Distance_from_Center'])
         enclosed_mass = Enclosed_Mass(file, max_radius)
         dd = data.ds.all_data()
         comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
         data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
         inds = np.where(np.in1d(comb, data_comb))[0]
-        enclosed_mass = global_enc_mass[inds]
+        if len(global_enc_mass) == 0:
+            enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
+        else:
+            enclosed_mass = global_enc_mass[inds]
     else:
         enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
     return enclosed_mass
@@ -366,111 +372,228 @@ def _Relative_Keplerian_Velocity(field, data):
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
 
-'''
-    #because orbital mechanics get a bit complicated in binaries, we try to simplify the problem.
-    #I try to define regions, which tells us which center to use when calculating the keplerian velocity.
-    #Region 1: closer to particle 1 than particle 2, but <a
-    #Region 2: closer to particle 2 than particle 1, but <a
-    #Region 3: r>a
-    def _Defined_regions(field, data):
-    distance = data['Distance_from_CoM'].in_units('cm')
-    field_array = np.zeros(len(distance))
-    if ('all', u'particle_mass') in data.ds.field_list:
-    if len(data['particle_mass']) == 2:
-    semimajor_axis = data['Semimajor_Axis']
-    distance_from_a = np.sqrt((data['x'].in_units('cm') - data['particle_posx'][0].in_units('cm'))**2. + (data['y'].in_units('cm') - data['particle_posy'][0].in_units('cm'))**2. + (data['z'].in_units('cm') - data['particle_posz'][0].in_units('cm'))**2.)
-    distance_from_b = np.sqrt((data['x'].in_units('cm') - data['particle_posx'][1].in_units('cm'))**2. + (data['y'].in_units('cm') - data['particle_posy'][1].in_units('cm'))**2. + (data['z'].in_units('cm') - data['particle_posz'][1].in_units('cm'))**2.)
-    region_c = (distance > semimajor_axis)
-    region_a = (distance < semimajor_axis)*np.less(distance_from_a, distance_from_b)
-    region_b = (distance < semimajor_axis)*np.less(distance_from_b, distance_from_a)
-    field_array = field_array+region_c*3.
-    field_array = field_array+region_b*2.
-    field_array = field_array+region_a*1.
-    else:
-    field_array = field_array+3.
-    else:
-    field_array = field_array + 3.
-    regions = yt.YTArray(field_array, '')
-    return regions
+def delta_B(file, data):
+    global n_bins
     
-    yt.add_field("Defined_regions", function=_Defined_regions, units=r"")
+    part_file = part_file=file[:-12] + 'part' + file[-5:]
+    ds = yt.load(file, particle_filename=part_file)
+    dd = ds.all_data()
     
-    #Here I calculate the enclosed mass.
-    def _Enclosed_Mass(field, data):
-    distance = data['Distance_from_CoM'].in_units('cm')
-    field_array = np.zeros(len(distance))
-    AU = yt.units.astronomical_unit.in_units('cm')
-    #For the single star case:
-    if ('all', u'particle_mass') in data.ds.field_list:
-    if len(data['particle_mass']) == 1:
-    #I use radial bins to calculate the enclosed mass.
-    #These are currently linearly spaced, not sure I should use like a logarithmic bins
-    #bin size is currently 100 Au.. bit big, but for testing!
-    r_bins = range(0*AU, np.max(distance), 10.*AU)
-    r_bins.append(np.max(distance) + 10.*AU)
-    r_bins = yt.YTArray(r_bins, 'cm')
-    prev_r = r_bins[0]
-    for r in r_bins[1:]:
-    filtered_dist = (distance > prev_r)*(distance < r) #finds cells in radial shell
-    enc_dist = distance < r #gets enclosed cells
-    enclosed_mass = np.sum(enc_dist*data['cell_mass'].in_units('g'))
-    enclosed_mass = enclosed_mass + data['particle_mass'][0]
-    field_array = field_array+(filtered_dist*enclosed_mass.value)
-    prev_r = r
-    #but gets messy with binaries:
-    elif len(data['particle_mass']) == 2:
-    #calculates distance from stars a and b
-    distance_from_a = np.sqrt((data['x'].in_units('cm') - data['particle_posx'][0].in_units('cm'))**2. + (data['y'].in_units('cm') - data['particle_posy'][0].in_units('cm'))**2. + (data['z'].in_units('cm') - data['particle_posz'][0].in_units('cm'))**2.)
-    distance_from_b = np.sqrt((data['x'].in_units('cm') - data['particle_posx'][1].in_units('cm'))**2. + (data['y'].in_units('cm') - data['particle_posy'][1].in_units('cm'))**2. + (data['z'].in_units('cm') - data['particle_posz'][1].in_units('cm'))**2.)
-    regions = data['Defined_regions']
-    semimajor_axis = data['Semimajor_Axis']
-    #first calculate for region around first star:
-    #refer to drawing in log book for 09/08/2016 for max dist justification
-    max_dist = np.sqrt((semimajor_axis**2.) + (semimajor_axis/2.)**2.)
-    r_bins = range(0*AU, max_dist, 2.*AU)
-    r_bins = yt.YTArray(r_bins, 'cm')
-    prev_r = r_bins[0]
-    for r in r_bins[1:]:
-    filtered_dist = (distance_from_a > prev_r)*(distance_from_a < r)*(regions==1)
-    enc_dist = distance_from_a < r
-    enclosed_mass = np.sum(enc_dist*data['cell_mass'].in_units('g'))
-    enclosed_mass = enclosed_mass + data['particle_mass'][0]
-    field_array = field_array+(filtered_dist*enclosed_mass.value)
-    prev_r = r
-    #Do again for the region around the second star:
-    prev_r = r_bins[0]
-    for r in r_bins[1:]:
-    filtered_dist = (distance_from_b > prev_r)*(distance_from_b < r)*(regions==2)
-    enc_dist = distance_from_b < r
-    enclosed_mass = np.sum(enc_dist*data['cell_mass'].in_units('g'))
-    enclosed_mass = enclosed_mass + data['particle_mass'][1]
-    field_array = field_array+(filtered_dist*enclosed_mass.value)
-    prev_r = r
-    #Then for the circumbinary area:
-    r_bins = range(semimajor_axis, np.max(distance), 10.*AU)
-    r_bins.append(np.max(distance) + 10.*AU)
-    r_bins = yt.YTArray(r_bins, 'cm')
-    prev_r = r_bins[0]
-    for r in r_bins[1:]:
-    filtered_dist = (distance > prev_r)*(distance < r)*(regions==3)
-    enc_dist = distance < r
-    enclosed_mass = np.sum(enc_dist*data['cell_mass'].in_units('g'))
-    enclosed_mass = enclosed_mass + np.sum(data['particle_mass'])
-    field_array = field_array+(filtered_dist*enclosed_mass.value)
-    prev_r = r
-    else:
-    r_bins = range(0*AU, np.max(distance), 10.*AU)
-    r_bins.append(np.max(distance) + 10.*AU)
-    r_bins = yt.YTArray(r_bins, 'cm')
-    prev_r = r_bins[0]
-    for r in r_bins[1:]:
-    filtered_dist = (distance > prev_r)*(distance < r) #finds cells in radial shell
-    enc_dist = distance < r #gets enclosed cells
-    enclosed_mass = np.sum(enc_dist*data['cell_mass'].in_units('g'))
-    field_array = field_array+(filtered_dist*enclosed_mass.value)
-    prev_r = r
-    enclosed_mass_field = yt.YTArray(field_array, 'g')
-    return enclosed_mass_field
-    
-    yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")
+    z = data['dz_from_Center']
+    comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
+    data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
+    inds = np.where(np.in1d(comb, data_comb))[0]
+    B = dd['magnetic_field_magnitude'][inds]
+    print "SHAPE(z) =", np.shape(z)
+    print "SHAPE(B) =", np.shape(B)
+    time_str = str(int(time.time()))
+    pickle_file_B_grad = '/short/ek9/rlk100/temp_pickles/B_grad_temp_' + time_str + '.pkl'
+    pickle_file = '/short/ek9/rlk100/temp_pickles/pickle_temp_B_grad_' + time_str + '.pkl'
     '''
+    pickle_file_B_grad = '/Users/rajikak/Scripts/Modules/B_grad_temp.pkl'
+    pickle_file = '/Users/rajikak/Scripts/Modules/pickle_temp_B_grad.pkl'
+    '''
+    file = open(pickle_file, 'w+')
+    pickle.dump((z.in_units('cm').value, B.value), file)
+    file.close()
+    
+    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/magnetic_gradient_z.py', '-f', pickle_file, '-sf', pickle_file_B_grad, '-bs', str(n_bins)])
+    
+    os.remove(pickle_file)
+    
+    file = open(pickle_file_B_grad, 'r')
+    B_grad = pickle.load(file)
+    B_gradient = yt.YTArray(np.abs(B_grad), 'G**2')
+    os.remove(pickle_file_B_grad)
+    return B_gradient
+    
+def _dB_squared(field, data):
+    """
+    Calculates the magnetic field gradient in the z direction
+    """
+    if np.shape(data) != (16, 16, 16):
+        file = data.ds.fullpath +'/'+data.ds.basename
+        dB = delta_B(file, data)
+    else:
+        dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2')
+    return dB
+
+yt.add_field("dB_squared", function=_dB_squared, units=r"G**2")
+
+def _Magnetic_Acceleration(field, data):
+    """
+    Calculates the magnetic pressure in sphere
+    """
+    magnetic_acceleration = data['dB_squared']/(data['dz'].in_units('cm')*data['dens'].in_units('g/cm**3')*8.*np.pi)
+    magnetic_acceleration = -1*magnetic_acceleration.in_units('cm/s**2')
+    return magnetic_acceleration
+
+yt.add_field("Magnetic_Acceleration", function=_Magnetic_Acceleration, units=r"cm/s**2")
+
+def _Gravitational_Acceleration(field, data):
+    """
+    Calculates gravitational pressure, from gravitational force.
+    """
+    gravitational_acceleration = (-1*yt.physical_constants.G*data['Enclosed_Mass'].in_units('g'))/(data['z'].in_units('cm')**2.)
+    return gravitational_acceleration
+
+yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
+
+def _Magnetic_Force(field, data):
+    """
+    Calculates force from magnetic gradient
+    """
+    F_mag = data['cell_mass']*data['Magnetic_Acceleration']
+    return F_mag
+
+yt.add_field("Magnetic_Force", function=_Magnetic_Force, units=r"g*cm/s**2")
+
+def _Gravitational_Force(field, data):
+    """
+    Calculates force from gravity
+    """
+    F_grav = -1*data['cell_mass']*data['Gravitational_Acceleration']
+    return F_grav
+
+yt.add_field("Gravitational_Force", function=_Gravitational_Force, units=r"g*cm/s**2")
+
+def _Force_Ratio(field, data):
+    """
+    Calculates the ratio of the magnetic pressure to the gravitational pressure
+    """
+    global coordinates
+    coordinates = 'sph'
+    force_ratio = (data['Magnetic_Force'])/(-1*data['Gravitational_Force'])
+    return force_ratio
+
+yt.add_field("Force_Ratio", function=_Force_Ratio, units=r"")
+
+def _Angular_Momentum_x(field, data):
+    """
+    Calculates the angular momentum in the x_direction about current set center.
+    """
+    L_x = data['cell_mass']*(data['vely']*data['dz_from_Center'] - data['velz']*data['dy_from_Center'])
+    return L_x
+
+yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
+
+def _Angular_Momentum_y(field, data):
+    """
+    Calculates the angular momentum in the y_direction about current set center.
+    """
+    L_y = data['cell_mass']*(data['velx']*data['dz_from_Center'] - data['velz']*data['dx_from_Center'])
+    return L_y
+
+yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s")
+
+def _Angular_Momentum_z(field, data):
+    """
+    Calculates the angular momentum in the z_direction about current set center.
+    """
+    L_z = data['cell_mass']*(data['velx']*data['dy_from_Center'] - data['vely']*data['dx_from_Center'])
+    return L_z
+
+yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s")
+
+def _Angular_Momentum(field, data):
+    """
+    Calculates the angular momentum about current set center.
+    """
+    L = np.sqrt(data['Angular_Momentum_x']**2. + data['Angular_Momentum_y']**2. + data['Angular_Momentum_z']**2.)
+    return L
+
+yt.add_field("Angular_Momentum", function=_Angular_Momentum, units=r"g*cm**2/s")
+
+def _Specific_Angular_Momentum(field, data):
+    """
+    Calculates the specific angular momentum about current set center.
+    """
+    l = data['Angular_Momentum']/data['cell_mass']
+    return l
+
+yt.add_field("Specific_Angular_Momentum", function=_Specific_Angular_Momentum, units=r"cm**2/s")
+
+def _Particle_dx_from_Center(field, data):
+    """
+        Calculates the change in x position from the current set center.
+        """
+    dx = data['particle_posx'].in_units('cm')-data['Center_Position'][0]
+    return dx
+
+yt.add_field("Particle_dx_from_Center", function=_Particle_dx_from_Center, units=r"cm")
+
+def _Particle_dy_from_Center(field, data):
+    """
+        Calculates the change in y position from the current set center.
+        """
+    dy = data['particle_posy'].in_units('cm')-data['Center_Position'][1]
+    return dy
+
+yt.add_field("Particle_dy_from_Center", function=_Particle_dy_from_Center, units=r"cm")
+
+def _Particle_dz_from_Center(field, data):
+    """
+        Calculates the change in z position from the current set center.
+        """
+    dz = data['particle_posz'].in_units('cm')-data['Center_Position'][2]
+    return dz
+
+yt.add_field("Particle_dz_from_Center", function=_Particle_dz_from_Center, units=r"cm")
+
+def _Particle_Distance_from_Center(field, data):
+    """
+        Calculates the distance from the current set center.
+        """
+    global coordinates
+    if 'cyl' in coordinates.lower():
+        distance = np.sqrt((data['Particle_dx_from_Center'])**2. + (data['Particle_dy_from_Center'])**2.)
+    else:
+        distance = np.sqrt((data['Particle_dx_from_Center'])**2. + (data['Particle_dy_from_Center'])**2. + (data['Particle_dz_from_Center'])**2.)
+    return distance
+
+yt.add_field("Particle_Distance_from_Center", function=_Particle_Distance_from_Center, units=r"cm")
+
+def _Particle_Angular_Momentum_x(field, data):
+    """
+        Calculates the angular momentum in the x_direction about current set center.
+        """
+    L_x = data['particle_mass']*(data['particle_vely']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dy_from_Center'])
+    return L_x
+
+yt.add_field("Particle_Angular_Momentum_x", function=_Particle_Angular_Momentum_x, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum_y(field, data):
+    """
+        Calculates the angular momentum in the y_direction about current set center.
+        """
+    L_y = data['particle_mass']*(data['particle_velx']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dx_from_Center'])
+    return L_y
+
+yt.add_field("Particle_Angular_Momentum_y", function=_Particle_Angular_Momentum_y, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum_z(field, data):
+    """
+        Calculates the angular momentum in the z_direction about current set center.
+        """
+    L_z = data['particle_mass']*(data['particle_velx']*data['Particle_dy_from_Center'] - data['particle_vely']*data['Particle_dx_from_Center'])
+    return L_z
+
+yt.add_field("Particle_Angular_Momentum_z", function=_Particle_Angular_Momentum_z, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum(field, data):
+    """
+        Calculates the angular momentum about current set center.
+        """
+    L = np.sqrt(data['Particle_Angular_Momentum_x']**2. + data['Particle_Angular_Momentum_y']**2. + data['Particle_Angular_Momentum_z']**2.)
+    return L
+
+yt.add_field("Particle_Angular_Momentum", function=_Particle_Angular_Momentum, units=r"g*cm**2/s")
+
+def _Particle_Specific_Angular_Momentum(field, data):
+    """
+        Calculates the specific angular momentum about current set center.
+        """
+    l = data['Particle_Angular_Momentum']/data['particle_mass']
+    return l
+
+yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")

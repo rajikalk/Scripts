@@ -8,7 +8,8 @@ import os
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", help="file to us")
+    parser.add_argument("-f", "--file", help="file to use")
+    parser.add_argument("-sf", "--save_file", help="file to save to")
     parser.add_argument("-c", "--center", help="What is the center?", default=0, type=int)
     parser.add_argument("-bs", "--no_of_bins", help="how many bins", default=100, type=float)
     parser.add_argument("-co", "--coordinates", help="What is the coordinates?", default='cylindrical', type=str)
@@ -28,14 +29,20 @@ def main():
     max_radius = args.max_r
     
     file = open(args.file, 'r')
-    distance, cell_mass, part_mass = pickle.load(file)
+    loaded_fields = pickle.load(file)
+    distance = loaded_fields[0]
+    cell_mass = loaded_fields[1]
+    part_mass = loaded_fields[2]
     
     rank = CW.Get_rank()
     size = CW.Get_size()
 
+    dist_min = np.min(distance)
     rs = np.linspace(0.0, max_radius, no_of_bins)
-    bin_sze = rs[-1] - rs[-2]
-    rs = np.append(rs, rs[-1]+bin_sze)
+    bin_size = rs[-1] - rs[-2]
+    #print "bin_size =", bin_size/1.49597870751e+13
+    #print "max_radius =", max_radius/1.49597870751e+13
+    rs = np.append(rs, rs[-1]+bin_size)
     enclosed_mass = np.array(np.zeros(np.shape(distance)))
 
     rit = 1
@@ -43,7 +50,9 @@ def main():
         if rank == rit:
             enclosed_mass = np.array(np.zeros(np.shape(distance)))
             ind = np.where((distance >= rs[r-1]) & (distance < rs[r]))[0]
-            enclosed_dist = np.where(distance < rs[r-1])
+            enclosed_dist = np.where(distance < rs[r-1])[0]
+            if len(enclosed_dist) == 0:
+                enclosed_dist = np.where(distance < (dist_min+1))
             enclosed_mass_val = np.sum(cell_mass[enclosed_dist])
             if center != 0:
                 enclosed_mass_val = enclosed_mass_val + part_mass[center-1]
@@ -52,10 +61,12 @@ def main():
                     enclosed_mass_val = enclosed_mass_val + part_mass[1]
                 else:
                     enclosed_mass_val = enclosed_mass_val + part_mass[0]
+                print "Added other particle with mass", part_mass[0]/1.98841586e+33
             elif center == 0 and rs[r] > a/2. and len(part_mass)>0:
                 enclosed_mass_val = enclosed_mass_val + np.sum(part_mass)
+                print "Added other particle with mass", part_mass[0]/1.98841586e+33
             enclosed_mass[ind] = enclosed_mass_val
-            #print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
+            print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
             CW.send(enclosed_mass, dest=0, tag=rank)
         if rank == 0:
             enclosed_mass_add = CW.recv(source=rit, tag=rit)
@@ -65,9 +76,9 @@ def main():
             rit = 1
 
     if rank == 0:
-        #os.remove(args.file)
-        pickle_file_enc = '/home/100/rlk100/Scripts/Modules/enclosed_mass_temp.pkl'
-        file = open(pickle_file_enc, 'w+')
+        os.remove(args.file)
+        file = open(args.save_file, 'w+')
+        print "pickle file:", args.save_file
         pickle.dump(enclosed_mass, file)
         file.close()
 

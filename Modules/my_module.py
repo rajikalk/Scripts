@@ -13,6 +13,17 @@ import my_fields as myf
 import scipy.spatial as spatial
 import pickle
 
+fontgize_global=12
+
+def set_global_font_size(x):
+    global fontgize_global
+    fontgize_global = x
+    return fontgize_global
+
+def get_global_font_size():
+    global fontgize_global
+    return fontgize_global
+
 def yt_file_type(file):
     try:
         part_file=file[:-12] + 'part' + file[-5:]
@@ -162,7 +173,7 @@ def get_particle_data(file, axis='xz'):
                  'accretion_rad':accretion_rad}
     return part_info
 
-def initialise_grid(file, zoom_times=0):
+def initialise_grid(file, zoom_times=0, center=0):
     f = h5py.File(file, 'r')
     for key in f.keys():
         if 'dens' in key:
@@ -199,6 +210,13 @@ def initialise_grid(file, zoom_times=0):
     y_vel = np.array(y_vel)
     X, Y = np.meshgrid(x, x)
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
+    if center != 0:
+        x_pos = f['particlepositions_proj'][0][center-1]/yt.units.au.in_units('cm').value
+        y_pos = f['particlepositions_proj'][1][center-1]/yt.units.au.in_units('cm').value
+        X = X + x_pos
+        Y = Y + y_pos
+        X_vel = X_vel + x_pos
+        Y_vel = Y_vel + y_pos
     #print "created meshs"
     return X, Y, X_vel, Y_vel
 
@@ -241,6 +259,7 @@ def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None
     return velx, vely
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$"):
+    global fontgize_global
     if plot_velocity_legend == 'False':
         plot_velocity_legend = False
     elif plot_velocity_legend == 'True':
@@ -249,32 +268,48 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     xmin = np.min(X_pos)
     xmax = np.max(X_pos)
     ymin = np.min(Y_pos)
-    len_scale = standard_vel/(0.05*(xmax - xmin))
+    len_scale = standard_vel/(0.07*(xmax - xmin))
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = X_val[xp][yp]/len_scale
             yvel = Y_val[xp][yp]/len_scale
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
-            if width_val > 1.0:
-                width_val = 1.0
+            if width_val > 0.8:
+                width_val = 0.8
             axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
         print("plotting quiver legend")
-        pos_start = [0.75*xmax, 0.9*ymin]
+        pos_start = [0.75*xmax, 0.87*ymin]
         xvel = standard_vel/len_scale
         yvel = 0.0
         width_val = 1.0
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
-        axis.annotate(legend_text, xy=(0.99*xmax, 0.99*ymin), va="center", ha="right", color='w', fontsize=16)
+        axis.annotate(legend_text, xy=(0.99*xmax, 0.97*ymin), va="center", ha="right", color='w', fontsize=fontgize_global)
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, box_size, particle_mass=None):
+def annotate_particles(axis, particle_position, accretion_rad, box_size, annotate_field=None, field_symbol='M', units=None):
+    global fontgize_global
+    if annotate_field != None and units != None:
+        annotate_field = annotate_field.in_units(units)
     part_color = ['lime','cyan','r','c','y','w','k']
     if accretion_rad/box_size < 0.025:
         line_rad = 0.025*box_size
     else:
         line_rad = accretion_rad
+    try:
+        units = str(annotate_field.unit_quantity).split(' ')[-1]
+        s1 = units.split('**')
+        unit_string = ''
+        for s in s1:
+            if s == s1[0]:
+                unit_string = unit_string + s
+            else:
+                unit_string = unit_string + "$^" + s[0] + "$" + s[1:]
+
+    except:
+        unit_string = 'M$_\odot$'
+    field_symbol = '$' + field_symbol + '_'
     p_t = ''
     for pos_it in range(len(particle_position[0])):
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
@@ -283,24 +318,45 @@ def annotate_particles(axis, particle_position, accretion_rad, box_size, particl
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=1., c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=1, edgecolor='k')
         axis.add_patch(circle)
-        P_msun = str(np.round(particle_mass[pos_it], decimals=2))
-        if p_t == '':
-            p_t = '$M_'+str(pos_it+1)+'$='+P_msun+'M$_\odot$'
-        else:
-            p_t = p_t+', $M_'+str(pos_it+1)+'$='+P_msun+'M$_\odot$'
-        print("p_t =", p_t)
-    axis.annotate(p_t, xy=(-0.98*box_size, -0.95*box_size), va="center", ha="left", color='w', fontsize=16)
+        if annotate_field != None:
+            if units != None:
+                annotate_field = annotate_field.in_units(units)
+            if unit_string == 'M$_\odot$':
+                P_msun = str(np.round(annotate_field[pos_it], 2))
+            else:
+                if annotate_field[pos_it] == 0.0:
+                    P_msun = '0.0'
+                else:
+                    P_msun = '{:0.1e}'.format(annotate_field[pos_it])
+            if p_t == '':
+                p_t = field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
+            else:
+                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
+            print("p_t =", p_t)
+    if annotate_field != None:
+        axis.annotate(p_t, xy=(-0.98*box_size, -0.95*box_size), va="center", ha="left", color='w', fontsize=fontgize_global)
+        print("Annotated particle field")
     return axis
 
-def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU'):
+def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', abs=False):
     if x_units == None:
         x = data[x_field]
     else:
         x = data[x_field].in_units(x_units)
+    if abs:
+        x = np.abs(x)
+    print("Got x values")
     if log:
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
+    elif n_bins == None:
+        unit_string = str(x.unit_quantity).split(' ')[-1]
+        bins = list(set(x.value))
+        bins = np.sort(bins)
+        bins = yt.YTArray(bins, unit_string)
     else:
         bins = np.linspace(np.min(x), np.max(x), n_bins+1)
+    print("No of bins:", len(bins))
+
 
     if weight_field != None:
         weight = data[weight_field]
@@ -310,6 +366,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
     for y_field in y_fields:
         y_temp = []
         y = data[y_field]
+        print("Got y values")
         prev_bin = bins[0]
         for bin in bins[1:]:
             ind = np.where((x >= prev_bin) & (x < bin))
@@ -325,7 +382,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
                 bin_val = np.nan
             prev_bin = bin
             y_temp.append(bin_val)
-            #print "weighted_val =", bin_val, ", at radius=", mid_x
+            print "weighted_val =", bin_val, ", at radius=", mid_x
 
     y_array.update({y_field:y_temp})
 
@@ -360,13 +417,14 @@ def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units=
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024):
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, comb=False, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"):
     print("image resolution =", resolution)
     x = np.linspace(np.min(X), np.max(X), resolution)
+    y = np.linspace(np.min(Y), np.max(Y), resolution)
     print("len(x) =", len(x))
     X = yt.YTArray(X, 'AU')
     Y = yt.YTArray(Y, 'AU')
-    xy = np.meshgrid(x,x)
+    xy = np.meshgrid(x,y)
     dd = ds.all_data()
     cell_max = np.max(dd['dz'].in_units('AU'))
     cell_min = np.min(dd['dz'].in_units('AU'))
@@ -388,7 +446,21 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     del xyz_grid
     print("Done finding nearest points...")
 
-    field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
+    if comb:
+        field_grid = np.zeros_like(xy[0])
+        for cen in range(len(dd['particle_mass'])+1):
+            myf.set_center(cen)
+            print("Doing center =", cen)
+            del dd
+            dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
+            field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
+        field_grid = field_grid/(len(dd['particle_mass'])+1)
+    else:
+        field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
+
+    if units != None:
+        field_grid = field_grid.in_units(units)
+    field_grid = field_grid
     
     plt.clf()
     fig, ax = plt.subplots()
@@ -399,18 +471,12 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
     plt.gca().set_aspect('equal')
     cbar = plt.colorbar(plot, pad=0.0)
-    if field == "Relative_Keplerian_Velocity":
-        cbar_label = "Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"
-        plot.set_clim([0.0, 2.0])
-    else:
-        units = str(field_grid.unit_quantity).split(' ')[-1]
-        cbar_label = ''
-        for string in field.split('_'):
-            cbar_label = cbar_label + string + ' '
-        cbar_label = cbar_label + '('+units+')'
     cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
+    #if field == "Relative_Keplerian_Velocity":
+    #   cbar.set_clim([0.0, 2.0])
+
     ax.set_xlim([np.min(X), np.max(X)])
     ax.set_ylim([np.min(Y), np.max(Y)])
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
     ax.set_ylabel('$y$ (AU)', labelpad=-20)
-    return fig, ax
+    return fig, ax, xy, field_grid
