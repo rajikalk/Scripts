@@ -258,16 +258,23 @@ def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None
     vely = np.array(vely)
     return velx, vely
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$"):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$", limits=None):
     global fontgize_global
     if plot_velocity_legend == 'False':
         plot_velocity_legend = False
     elif plot_velocity_legend == 'True':
         plot_velocity_legend = True
     standard_vel = yt.units.km.in_units('cm').value * standard_vel
-    xmin = np.min(X_pos)
-    xmax = np.max(X_pos)
-    ymin = np.min(Y_pos)
+    if limits == None:
+        xmin = np.min(X_pos)
+        xmax = np.max(X_pos)
+        ymin = np.min(Y_pos)
+        ymax = np.max(Y_pos)
+    else:
+        xmin = limits[0][0]
+        xmax = limits[0][1]
+        ymin = limits[1][0]
+        ymax = limits[1][1]
     len_scale = standard_vel/(0.07*(xmax - xmin))
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
@@ -280,19 +287,24 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
         print("plotting quiver legend")
-        pos_start = [0.75*xmax, 0.87*ymin]
+        pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.07*(ymax-ymin)]
         xvel = standard_vel/len_scale
         yvel = 0.0
         width_val = 1.0
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
-        axis.annotate(legend_text, xy=(0.99*xmax, 0.97*ymin), va="center", ha="right", color='w', fontsize=fontgize_global)
+        axis.annotate(legend_text, xy=(xmax - 0.01*(xmax-xmin), ymin + 0.03*(ymax-ymin)), va="center", ha="right", color='w', fontsize=fontgize_global)
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, box_size, annotate_field=None, field_symbol='M', units=None):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None):
     global fontgize_global
     if annotate_field != None and units != None:
         annotate_field = annotate_field.in_units(units)
     part_color = ['lime','cyan','r','c','y','w','k']
+    xmin = limits[0][0]
+    xmax = limits[0][1]
+    ymin = limits[1][0]
+    ymax = limits[1][1]
+    box_size = xmax - xmin
     if accretion_rad/box_size < 0.025:
         line_rad = 0.025*box_size
     else:
@@ -334,7 +346,7 @@ def annotate_particles(axis, particle_position, accretion_rad, box_size, annotat
                 p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
             print("p_t =", p_t)
     if annotate_field != None:
-        axis.annotate(p_t, xy=(-0.98*box_size, -0.95*box_size), va="center", ha="left", color='w', fontsize=fontgize_global)
+        axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
         print("Annotated particle field")
     return axis
 
