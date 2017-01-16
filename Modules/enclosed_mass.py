@@ -46,6 +46,8 @@ def main():
     enclosed_mass = np.array(np.zeros(np.shape(distance)))
 
     rit = 1
+    printed = False
+    print_cen = False
     for r in range(len(rs))[1:]:
         if rank == rit:
             enclosed_mass = np.array(np.zeros(np.shape(distance)))
@@ -56,15 +58,22 @@ def main():
             enclosed_mass_val = np.sum(cell_mass[enclosed_dist])
             if center != 0:
                 enclosed_mass_val = enclosed_mass_val + part_mass[center-1]
-            elif center !=0 and rs[r] > a:
+                if print_cen == False:
+                    print "Centered on particle with mass", part_mass[center-1]/1.98841586e+33
+                    print_cen = True
+            if center !=0 and rs[r] > a:
                 if center == 1:
                     enclosed_mass_val = enclosed_mass_val + part_mass[1]
                 else:
                     enclosed_mass_val = enclosed_mass_val + part_mass[0]
-                print "Added other particle with mass", part_mass[0]/1.98841586e+33
+                if printed == False:
+                    print "Added other particle with mass", part_mass[0]/1.98841586e+33
+                    printed = True
             elif center == 0 and rs[r] > a/2. and len(part_mass)>0:
                 enclosed_mass_val = enclosed_mass_val + np.sum(part_mass)
-                print "Added other particle with mass", part_mass[0]/1.98841586e+33
+                if printed == False:
+                    print "Added both particles with mass", np.sum(part_mass)/1.98841586e+33
+                    printed = True
             enclosed_mass[ind] = enclosed_mass_val
             print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
             CW.send(enclosed_mass, dest=0, tag=rank)

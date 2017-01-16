@@ -280,6 +280,8 @@ def Enclosed_Mass(file, max_radius):
             particle_mass = yt.YTArray([], 'g')
             a = yt.YTArray(0.0, 'cm')
         
+        prev_coordinates = coordinates
+        coordinates = 'cylindrical'
         distance = data['Distance_from_Center']
         cell_mass = data['cell_mass']
         time_str = str(int(time.time()))
@@ -296,6 +298,7 @@ def Enclosed_Mass(file, max_radius):
         global_enc_mass = yt.YTArray(enclosed_mass, 'g')
         os.remove(pickle_file_enc)
         has_run = True
+        coordinates = prev_coordinates
     return global_enc_mass
 
 def _Enclosed_Mass(field, data):
