@@ -24,14 +24,14 @@ def parse_inputs():
     args = parser.parse_args()
     return args
 
-def get_image_arrays(f, field, simfo):
+def get_image_arrays(f, field, simfo, args):
     dim = int(simfo['dimension'])
     image = []
-    for x in range(simfo['xmin_cell'], simfo['xmax_cell']):
+    for x in range(int(simfo['zoom_cell']), int(simfo['dimension']-simfo['zoom_cell'])):
         image_val = f[field][x]
         if np.shape(image_val)[0] == 1:
             image_val = image_val.transpose()
-        image_val = image_val[simfo['ymin_cell']:simfo['ymax_cell']]
+        image_val = image_val[simfo['zoom_cell']: simfo['dimension']-simfo['zoom_cell']]
         if simfo['movie_file_type'] == "proj":
             image_val = image_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
         image.append(image_val)
@@ -39,7 +39,6 @@ def get_image_arrays(f, field, simfo):
     if np.shape(image)[-1] == 1:
         image = image[:, :, 0]
     return image
-
 
 #=============================MAIN==============================
 args = parse_inputs()
@@ -172,8 +171,8 @@ for it in range(len(positions)):
         file.close()
         movf = h5py.File(movie_file, 'r')
         plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
-        magx = get_image_arrays(movf, 'mag'+margs.axis[0]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo)
-        magy = get_image_arrays(movf, 'mag'+margs.axis[1]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo)
+        magx = get_image_arrays(movf, 'mag'+margs.axis[0]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs)
+        magy = get_image_arrays(movf, 'mag'+margs.axis[1]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs)
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']])
         print "PARTICLE POSITION=", part_info['particle_position']
@@ -201,7 +200,7 @@ for it in range(len(positions)):
                 cbar_plotted = True
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
-        #del part_info
+        part_info
     if 'slice' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         axs = axes_dict[ax_label]

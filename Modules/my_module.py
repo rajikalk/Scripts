@@ -128,7 +128,7 @@ def find_files(m_times, files):
                 usable_files.append(files[it+1])
             else:
                 usable_files.append(files[it])
-            print "found time", time, "for m_time", m_times[mit]
+            print "found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1]
             mit = mit + 1
             min = it
             max = len(files)-1
@@ -299,7 +299,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     global fontgize_global
     if annotate_field != None and units != None:
         annotate_field = annotate_field.in_units(units)
-    part_color = ['lime','cyan','r','c','y','w','k']
+    part_color = ['cyan','cyan','r','c','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
     ymin = limits[1][0]
@@ -429,7 +429,7 @@ def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units=
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, comb=False, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"):
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolution=1024, comb=False, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"):
     print("image resolution =", resolution)
     x = np.linspace(np.min(X), np.max(X), resolution)
     y = np.linspace(np.min(Y), np.max(Y), resolution)
@@ -482,11 +482,12 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     else:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
     plt.gca().set_aspect('equal')
-    cbar = plt.colorbar(plot, pad=0.0)
-    cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
-    #if field == "Relative_Keplerian_Velocity":
-    #   cbar.set_clim([0.0, 2.0])
-
+    #cbar = plt.colorbar(plot, pad=0.0)
+    #cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
+    '''
+    if field == "Relative_Keplerian_Velocity":
+       cbar.set_clim([0.0, 2.0])
+    '''
     ax.set_xlim([np.min(X), np.max(X)])
     ax.set_ylim([np.min(Y), np.max(Y)])
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
