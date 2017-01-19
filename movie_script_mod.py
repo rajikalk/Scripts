@@ -26,8 +26,8 @@ def define_constants():
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-z", "--zoom", help="Will movie be zoomed in?", default=False, type=bool)
-    parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default = 4)
+    #parser.add_argument("-z", "--zoom", help="Will movie be zoomed in?", default=False, type=bool)
+    #parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default = 4)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 2, type=float)
@@ -93,31 +93,62 @@ def sim_info(path, file, args):
         if args.field in key:
             field = key
     dim = np.shape(f[field])[0]
+    xmin_full = f['minmax_xyz'][0][0]/c['au']
+    xmax_full = f['minmax_xyz'][0][1]/c['au']
+    print "XMIN_FULL, XMAX_FULL=", xmin_full, xmax_full
+    cl = (xmax_full-xmin_full)/dim
+    if args.axis == "xy":
+        ymin_full = f['minmax_xyz'][1][0]/c['au']
+        ymax_full = f['minmax_xyz'][1][1]/c['au']
+    else:
+        ymin_full = f['minmax_xyz'][2][0]/c['au']
+        ymax_full = f['minmax_xyz'][2][1]/c['au']
+    if args.image_center != 0:
+        x_pos = f['particlepositions_proj'][0][args.image_center]/c['au']
+        y_pos = f['particlepositions_proj'][1][args.image_center]/c['au']
+        center_pos = [x_pos, y_pos]
+    else:
+        center_pos = [0.0, 0.0]
+    if args.ax_lim != None:
+        xmin = center_pos[0]-args.ax_lim
+        xmax = center_pos[0]+args.ax_lim
+        ymin = center_pos[1]-args.ax_lim
+        ymax = center_pos[1]+args.ax_lim
+    else:
+        xmin = xmin_full
+        xmax = xmax_full
+        ymin = ymin_full
+        ymax = ymax_full
+    print "XMIN, XMAX=", xmin, xmax
+    xmin_cell = int(np.round((xmin - xmin_full)/cl))
+    xmax_cell = int(np.round((xmax - xmin_full)/cl))
+    ymin_cell = int(np.round((ymin - ymin_full)/cl))
+    ymax_cell = int(np.round((ymax - ymin_full)/cl))
+    print "XMIN_CELL, XMAX_CELL", xmin_cell, xmax_cell
+    '''
     if args.zoom:
         zoom_cell = int((dim - dim/float(args.zoom_times))/2.)
     else:
         zoom_cell = 0
-    xmin = f['minmax_xyz'][0][0]/c['au']
-    xmax = f['minmax_xyz'][0][1]/c['au']
-    cl = (xmax-xmin)/dim
-    xmin = f['minmax_xyz'][0][0]/c['au'] + zoom_cell*cl
-    xmax = f['minmax_xyz'][0][1]/c['au'] - zoom_cell*cl
+    xmin = xmin_full + zoom_cell*cl
+    xmax = xmax_full - zoom_cell*cl
     if args.axis == "xy":
-        ymin = f['minmax_xyz'][1][0]/c['au'] + zoom_cell*cl
-        ymax = f['minmax_xyz'][1][1]/c['au'] - zoom_cell*cl
+        ymin_full = f['minmax_xyz'][1][0]/c['au']
+        ymax_full = f['minmax_xyz'][1][1]/c['au']
+        ymin = ymin_full + zoom_cell*cl
+        ymax = ymax_full - zoom_cell*cl
     else:
+        ymin_full = f['minmax_xyz'][2][0]/c['au']
+        ymax_full = f['minmax_xyz'][2][1]/c['au']
         ymin = f['minmax_xyz'][2][0]/c['au'] + zoom_cell*cl
         ymax = f['minmax_xyz'][2][1]/c['au'] - zoom_cell*cl
-    if args.image_center != 0:
-        x_pos = f['particlepositions_proj'][0][args.image_center-1]/c['au']
-        y_pos = f['particlepositions_proj'][1][args.image_center-1]/c['au']
-        xmin = xmin + x_pos
-        xmax = xmax + x_pos
-        ymin = ymin + y_pos
-        ymax = ymax + y_pos
-        center_pos = [x_pos, y_pos]
-    else:
-        center_pos = [0.0, 0.0]
+    x_min_cell = int(np.round((xmin - xmin_full)/cl))
+    x_max_cell = int(np.round((xmax - xmin_full)/cl))
+    print "x_cells=", x_min_cell, x_max_cell
+    y_min_cell = int((ymin - ymin_full)/cl)
+    y_max_cell = int((ymax - ymin_full)/cl)
+    print "y_cells=", y_min_cell, y_max_cell
+    '''
     if args.axis == "xz":
         type = "proj"
     else:
@@ -131,7 +162,6 @@ def sim_info(path, file, args):
                 'movie_type':movie_type,
                 'field': field,
                 'dimension': dim,
-                'zoom_cell': zoom_cell,
                 'movie_file_type': type,
                 'xmin': xmin,
                 'xmax': xmax,
@@ -144,7 +174,11 @@ def sim_info(path, file, args):
                 'smoothing': smoothing,
                 'refinement_level': lref,
                 'den_pert': den_pert,
-                'center': center_pos
+                'center': center_pos,
+                'xmin_cell': xmin_cell,
+                'xmax_cell': xmax_cell,
+                'ymin_cell': ymin_cell,
+                'ymax_cell': ymax_cell
                 }
     f.close()
     return sim_info
@@ -155,20 +189,23 @@ def has_sinks(f):
     else:
         return False
 
-def get_image_arrays(f, field, simfo, args, part_info):
+def get_image_arrays(f, field, simfo):
     dim = int(simfo['dimension'])
     image = []
+    '''
     if args.image_center != 0:
         shift_x = int(part_info['particle_position'][0][args.image_center-1]/simfo['cell_length'])
         shift_y = int(part_info['particle_position'][1][args.image_center-1]/simfo['cell_length'])
     else:
         shift_x = 0
         shift_y = 0
-    for x in range(simfo['zoom_cell']-shift_y, simfo['dimension']-simfo['zoom_cell']-shift_y):
+    '''
+    #for x in range(simfo['zoom_cell']-shift_y, simfo['dimension']-simfo['zoom_cell']-shift_y):
+    for x in range(simfo['xmin_cell'], simfo['xmax_cell']):
         image_val = f[field][x]
         if np.shape(image_val)[0] == 1:
             image_val = image_val.transpose()
-        image_val = image_val[simfo['zoom_cell']-shift_x: simfo['dimension']-simfo['zoom_cell']-shift_x]
+        image_val = image_val[simfo['ymin_cell']:simfo['ymax_cell']]
         if simfo['movie_file_type'] == "proj":
             image_val = image_val/(f["minmax_xyz"][1][1]-f["minmax_xyz"][1][0])
         image.append(image_val)
@@ -183,8 +220,8 @@ def image_properties(X, Y, args, sim_info):
         ylabel = '$y$ (AU)'
     else:
         ylabel = '$z$ (AU)'
-    xlim = [sim_info['xmin'], sim_info['xmax']-sim_info['cell_length']]
-    ylim = [sim_info['ymin'], sim_info['ymax']-sim_info['cell_length']]
+    xlim = [sim_info['xmin'], sim_info['xmax']]
+    ylim = [sim_info['ymin'], sim_info['ymax']]
     return ylabel, xlim, ylim
 
 def rainbow_text(x,y,ls,lc,**kw):
@@ -240,7 +277,6 @@ def main():
     frames = range(args.start_frame, no_frames)
 
     simfo = sim_info(path, usable_files[0], args)
-    print "X_min, X_max=", simfo['xmin'], simfo['xmax']
     sink_form_time = mym.find_sink_formation_time(files)
     print "sink_form_time", sink_form_time
 
@@ -257,13 +293,9 @@ def main():
             print "FILE =", usable_files[frame_val]
             file_time = (f['time'][0]/c['year'])-sink_form_time
             part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
-            if args.zoom:
-                X, Y, X_vel, Y_vel = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times, center=args.image_center)
-            else:
-                X, Y, X_vel, Y_vel = mym.initialise_grid(usable_files[frame_val], center=args.image_center)
+            limits = [[simfo['xmin'],simfo['xmax']],[simfo['ymin'],simfo['ymax']]]
+            X, Y, X_vel, Y_vel = mym.initialise_grid(usable_files[frame_val], limits, center=args.image_center)
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
-            print "print IMAGE PROPERTIES: xlim=", np.min(X), np.max(X)
-            print "print IMAGE PROPERTIES: x_vel_lim=", np.min(X_vel), np.max(X_vel)
             has_particles = has_sinks(f)
             
             if args.ax_lim != None:
@@ -274,11 +306,11 @@ def main():
                     xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center-1], args.ax_lim + part_info['particle_position'][0][args.image_center-1]]
                     ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center-1], args.ax_lim + part_info['particle_position'][1][args.image_center-1]]
 
-            image = get_image_arrays(f, simfo['field'], simfo, args, part_info)
+            image = get_image_arrays(f, simfo['field'], simfo)
             print "image shape=", np.shape(image)
             print "grid shape=", np.shape(X)
-            magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, part_info)
-            magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, part_info)
+            magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo)
+            magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo)
             if args.axis == 'xy':
                 velx, vely = mym.get_quiver_arrays(f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
@@ -308,6 +340,8 @@ def main():
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim])
                 if args.annotate_particles_mass == True:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+                else:
+                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
                 if args.plot_lref == True:
                     r_acc = np.round(part_info['accretion_rad'])
                     ax.annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo['xmax'], 0.93*simfo['ymax']), va="center", ha="right", color='w', fontsize=args.text_font)
@@ -319,16 +353,9 @@ def main():
                 cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
                 ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
                 ax.set_ylabel(yabel, labelpad=-20, fontsize=args.text_font)
-                if args.ax_lim == None:
-                    ax.set_xlim(xlim)
-                    ax.set_ylim(ylim)
-                else:
-                    if args.image_center == 0:
-                        ax.set_xlim([-1*args.ax_lim, args.ax_lim])
-                        ax.set_ylim([-1*args.ax_lim, args.ax_lim])
-                    else:
-                        ax.set_xlim([-1*args.ax_lim + part_info['particle_position'][0][args.image_center-1], args.ax_lim + part_info['particle_position'][0][args.image_center-1]])
-                        ax.set_ylim([-1*args.ax_lim + part_info['particle_position'][1][args.image_center-1], args.ax_lim + part_info['particle_position'][1][args.image_center-1]])
+                ax.set_xlim(xlim)
+                ax.set_ylim(ylim)
+
                 plt.tick_params(axis='both', which='major', labelsize=16)
                 for line in ax.xaxis.get_ticklines():
                     line.set_color('white')
@@ -367,13 +394,11 @@ def main():
                 args_dict.update({'title': title})
                 args_dict.update({'yabel': yabel})
                 args_dict.update({'axlim':args.ax_lim})
-                print "Built dictionary"
+                args_dict.update({'xlim':xlim})
+                args_dict.update({'ylim':ylim})
                 pickle_file = save_dir + 'movie_pickle.pkl'
-                print "Got pickle file name"
                 file = open(pickle_file, 'w+')
-                print "Opened pickle file"
                 pickle.dump((usable_files[frame_val], X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, args), file)
-                print "Dumped data into pickle"
                 file.close()
                 print "Created pickle"
         rit = rit +1
