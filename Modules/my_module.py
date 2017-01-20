@@ -190,8 +190,11 @@ def initialise_grid(file, zoom_times=0, center=0):
     xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
     annotate_freq = ((xmax/cl) - (xmin/cl))/31.
     x = np.arange(xmin+cl/2., xmax+cl/2., cl)
+    #x = np.arange(xmin, xmax, cl)[:-1]
+    '''
     if (len(x) % 2 != 0):
         x = np.arange(int(xmin), int(xmax), cl)
+    '''
     x_ind = []
     y_ind = []
     counter = 0
@@ -204,6 +207,7 @@ def initialise_grid(file, zoom_times=0, center=0):
     y_vel = []
     for x_counter in x_ind:
         val = xmin+cl/2. + x_counter*cl
+        #val = xmin + x_counter*cl
         x_vel.append(val)
         y_vel.append(val)
     x_vel = np.array(x_vel)
@@ -211,12 +215,13 @@ def initialise_grid(file, zoom_times=0, center=0):
     X, Y = np.meshgrid(x, x)
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
     if center != 0:
-        x_pos = f['particlepositions_proj'][0][center-1]/yt.units.au.in_units('cm').value
-        y_pos = f['particlepositions_proj'][1][center-1]/yt.units.au.in_units('cm').value
+        x_pos = np.round(f['particlepositions'][0][center-1]/yt.units.au.in_units('cm').value/cl)*cl
+        y_pos = np.round(f['particlepositions'][1][center-1]/yt.units.au.in_units('cm').value/cl)*cl
         X = X + x_pos
         Y = Y + y_pos
         X_vel = X_vel + x_pos
         Y_vel = Y_vel + y_pos
+    
     #print "created meshs"
     return X, Y, X_vel, Y_vel
 
