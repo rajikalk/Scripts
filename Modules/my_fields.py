@@ -375,7 +375,7 @@ def _Relative_Keplerian_Velocity(field, data):
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
 
-def delta_B(file, data):
+def delta_B(file, data, field):
     global n_bins
     
     part_file = part_file=file[:-12] + 'part' + file[-5:]
@@ -386,7 +386,7 @@ def delta_B(file, data):
     comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
     data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
     inds = np.where(np.in1d(comb, data_comb))[0]
-    B = dd['magnetic_field_magnitude'][inds]
+    B = dd[field][inds]
     print "SHAPE(z) =", np.shape(z)
     print "SHAPE(B) =", np.shape(B)
     time_str = str(int(time.time()))
@@ -397,37 +397,45 @@ def delta_B(file, data):
     pickle_file = '/Users/rajikak/Scripts/Modules/pickle_temp_B_grad.pkl'
     '''
     file = open(pickle_file, 'w+')
-    pickle.dump((z.in_units('cm').value, B.value), file)
+    pickle.dump((np.abs(z.in_units('cm').value), B.value), file)
     file.close()
     
     call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/magnetic_gradient_z.py', '-f', pickle_file, '-sf', pickle_file_B_grad, '-bs', str(n_bins)])
     
-    os.remove(pickle_file)
-    
     file = open(pickle_file_B_grad, 'r')
     B_grad = pickle.load(file)
-    B_gradient = yt.YTArray(np.abs(B_grad), 'G**2')
     os.remove(pickle_file_B_grad)
     return B_gradient
+
+def _Squared_B_Mag(field, data):
+    """
+    Just calculates the dquare of the magnetic fields magnitude
+    """
+    B = data['magnetic_field_magnitude']**2.
+    return B
+
+yt.add_field("Squared_B_Mag", function=_Squared_B_Mag, units=r"G**2")
+
     
-def _dB_squared(field, data):
+def _B_gradient(field, data):
     """
     Calculates the magnetic field gradient in the z direction
     """
     if np.shape(data) != (16, 16, 16):
         file = data.ds.fullpath +'/'+data.ds.basename
-        dB = delta_B(file, data)
+        dB = delta_B(file, data, 'Squared_B_Mag')
+        dB = yt.YTArray(np.abs(dB), 'G**2/cm')
     else:
-        dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2')
+        dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
     return dB
 
-yt.add_field("dB_squared", function=_dB_squared, units=r"G**2")
+yt.add_field("B_gradient", function=_B_gradient, units=r"G**2/cm")
 
 def _Magnetic_Acceleration(field, data):
     """
     Calculates the magnetic pressure in sphere
     """
-    magnetic_acceleration = data['dB_squared']/(data['dz'].in_units('cm')*data['dens'].in_units('g/cm**3')*8.*np.pi)
+    magnetic_acceleration = 1/(data['dens'].in_units('g/cm**3')*8.*np.pi) * data['B_gradient']
     magnetic_acceleration = -1*magnetic_acceleration.in_units('cm/s**2')
     return magnetic_acceleration
 
@@ -441,7 +449,20 @@ def _Gravitational_Acceleration(field, data):
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
+'''
+def _Gravitational_Acceleration_z(field, data):
+    """
+        Calculates gravitational pressure, from gravitational force.
+        """
+    if np.shape(data) != (16, 16, 16):
+        file = data.ds.fullpath +'/'+data.ds.basename
+        gravitational_acceleration = delta_B(file, data)
+    else:
+        gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
+    return gravitational_acceleration
 
+yt.add_field("Gravitational_Acceleration_z", function=_Gravitational_Acceleration_z, units=r"cm/s**2")
+'''
 def _Magnetic_Force(field, data):
     """
     Calculates force from magnetic gradient

@@ -54,7 +54,6 @@ def parse_inputs():
     parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default=True)
-    parser.add_argument("-mod", "--modifier", help="for test purposes", default=0, type=int)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -115,15 +114,6 @@ def sim_info(path, file, args):
     else:
         ymin = f['minmax_xyz'][2][0]/c['au'] + zoom_cell*cl
         ymax = f['minmax_xyz'][2][1]/c['au'] - zoom_cell*cl
-    '''
-    if args.image_center != 0:
-        x_pos = np.round(f['particlepositions'][0][args.image_center-1]/(cl*c['au'])) * cl
-        y_pos = np.round(f['particlepositions'][1][args.image_center-1]/(cl*c['au'])) * cl
-        xmin = xmin + x_pos
-        xmax = xmax + x_pos
-        ymin = ymin + y_pos
-        ymax = ymax + y_pos
-    '''
     if args.axis == "xz":
         type = "proj"
     else:
@@ -170,7 +160,7 @@ def get_image_arrays(f, field, simfo, args, part_info, X, Y):
     y_pos_max = int(np.ceil(np.max(Y) - simfo['xmin_full'])/simfo['cell_length'])
     #y_pos_min = simfo['zoom_cell']
     #y_pos_max = simfo['dimension'] - simfo['zoom_cell']
-    xpos = x_pos_min + args.modifier
+    xpos = x_pos_min
     ypos = y_pos_min
     print "XPOS =", xpos
     for x in range(ypos, ypos+len(X[0])):
@@ -266,9 +256,16 @@ def main():
             simfo = sim_info(path, usable_files[frame_val], args)
             part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
             if args.zoom:
-                X, Y, X_vel, Y_vel = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times, center=args.image_center)
+                X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
             else:
-                X, Y, X_vel, Y_vel = mym.initialise_grid(usable_files[frame_val], center=args.image_center)
+                X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val])
+            if args.image_center != 0:
+                x_pos = np.round(part_info['particle_position'][0][args.image_center-1]/cl)*cl
+                y_pos = np.round(part_info['particle_position'][1][args.image_center-1]/cl)*cl
+                X = X + x_pos
+                Y = Y + y_pos
+                X_vel = X_vel + x_pos
+                Y_vel = Y_vel + y_pos
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
             
             has_particles = has_sinks(f)

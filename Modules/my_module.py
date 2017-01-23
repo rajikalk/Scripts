@@ -173,7 +173,7 @@ def get_particle_data(file, axis='xz'):
                  'accretion_rad':accretion_rad}
     return part_info
 
-def initialise_grid(file, zoom_times=0, center=0):
+def initialise_grid(file, zoom_times=0):#, center=0):
     f = h5py.File(file, 'r')
     for key in f.keys():
         if 'dens' in key:
@@ -214,6 +214,7 @@ def initialise_grid(file, zoom_times=0, center=0):
     y_vel = np.array(y_vel)
     X, Y = np.meshgrid(x, x)
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
+    '''
     if center != 0:
         x_pos = np.round(f['particlepositions'][0][center-1]/yt.units.au.in_units('cm').value/cl)*cl
         y_pos = np.round(f['particlepositions'][1][center-1]/yt.units.au.in_units('cm').value/cl)*cl
@@ -221,9 +222,9 @@ def initialise_grid(file, zoom_times=0, center=0):
         Y = Y + y_pos
         X_vel = X_vel + x_pos
         Y_vel = Y_vel + y_pos
-    
+    '''
     #print "created meshs"
-    return X, Y, X_vel, Y_vel
+    return X, Y, X_vel, Y_vel, cl
 
 def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None):
     annotate_freq = float(np.shape(velx_full)[0])/float(no_of_quivers-1)
@@ -355,7 +356,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         print("Annotated particle field")
     return axis
 
-def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', abs=False):
+def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', abs=False, center=0):
+    myf.set_center(center)
     if x_units == None:
         x = data[x_field]
     else:
@@ -383,6 +385,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
     for y_field in y_fields:
         y_temp = []
         y = data[y_field]
+        y_units = y.units
         print("Got y values")
         prev_bin = bins[0]
         for bin in bins[1:]:
@@ -403,9 +406,10 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
 
     y_array.update({y_field:y_temp})
 
-    return x_array, y_array
+    return x_array, y_array, y_units
 
-def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units='AU'):
+def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units='AU', center=0):
+    myf.set_center(center)
     z = data['z'].in_units('AU')
     if x_units == None:
         x = data[x_field]
@@ -434,7 +438,11 @@ def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units=
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolution=1024, comb=False, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"):
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"): #cmap=plt.cm.get_cmap('bwr_r')
+    """
+       Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
+    """
+    print "SLICE PLOT CENTER =", center
     print("image resolution =", resolution)
     x = np.linspace(np.min(X), np.max(X), resolution)
     y = np.linspace(np.min(Y), np.max(Y), resolution)
@@ -443,9 +451,8 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     Y = yt.YTArray(Y, 'AU')
     xy = np.meshgrid(x,y)
     dd = ds.all_data()
+    no_of_particles = len(dd['particle_mass'])
     cell_max = np.max(dd['dz'].in_units('AU'))
-    cell_min = np.min(dd['dz'].in_units('AU'))
-    #dd = ds.region([0.0,0.0,0.0], [np.min(X)-cell_max, np.min(Y)-cell_max, -cell_max], [np.max(X)+cell_max, np.max(Y)+cell_max, cell_max])
     dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
     print("Computing tree...")
@@ -463,8 +470,8 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
     del xyz_grid
     print("Done finding nearest points...")
 
-    if comb:
-        field_grid = np.zeros_like(xy[0])
+    if center == 3:
+        field_grid = np.zeros_like(xy[0].shape)
         for cen in range(len(dd['particle_mass'])+1):
             myf.set_center(cen)
             print("Doing center =", cen)
@@ -473,6 +480,18 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('bwr_r'), log=False, resolut
             field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
         field_grid = field_grid/(len(dd['particle_mass'])+1)
     else:
+        '''
+        if no_of_particles == 2:
+            if center == 1:
+                myf.set_center(2)
+            else:
+                myf.set_center(1)
+        else:
+            myf.set_center(center)
+        '''
+        myf.set_center(center)
+        del dd
+        dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
         field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
 
     if units != None:

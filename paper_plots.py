@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default=4.1, type=float)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int, default=0)
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="True")
-    parser.add_argument("-c", "--center", help="What center do you want to set for everything?", type=int, default=0)
+    parser.add_argument("-c", "--center", help="What center do you want to set for everything?, if 3 it combines all centers", type=int, default=0)
     parser.add_argument("-ic", "--image_center", help="Where would you like to center the image?", type=int, default=0)
     
     #movie plot args
@@ -36,10 +36,9 @@ def parse_inputs():
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-13)
     
     #slice plot args
-    parser.add_argument("-sf", "--slice_field", help="What is the field you want to have a sliceplot of?", type=str, default="Relative_Keplerian_Velocity")
+    parser.add_argument("-f", "--field", help="What is the field you want to have a sliceplot of?", type=str, default="Relative_Keplerian_Velocity")
     parser.add_argument("-res", "--resolution", help="What resolution do you want the slices to have?", type=int, default=1024)
     parser.add_argument("-af", "--annotate_field", help="What field of the particles do you want to annotate", type=str, default="particle_mass")
-    parser.add_argument("-cc", "--combine_centers", help="Did you want to take the average of all centers for the slice plot?", default=False)
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     
     #profile plot args
@@ -53,13 +52,15 @@ def parse_inputs():
     parser.add_argument("-zb", "--z_bins", help="how many z bins do you want when sampling points?", type=int, default=2.)
     parser.add_argument("-nsp", "--no_sampled_points", help="how many random points do you want to randomly sample?", type=int, default=2000)
     parser.add_argument("-xy", "--x_units", help="x units for profile plot", type=str, default="AU")
+    parser.add_argument("-yl", "--y_label", help="what is the y_label you will use", type=str, default=None)
+    parser.add_argument("-sn", "--save_name", help="If not defined, it's the same as the field", type=str, default=None)
     
     #pressure plot args
     parser.add_argument("-ts", "--time_step", help="would you like to plot multiple times?", type=int, default=500)
     
     parser.add_argument("-pd", "--pickle_dump", help="do you want to pickle data?", default=False)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-cu", "--c_units", help="What units do you want the olorbar in")
+    parser.add_argument("-cu", "--c_units", help="What units do you want the colorbar in")
     
     #outflow plots
     
@@ -93,40 +94,59 @@ del files
 part_file = file[:-12] + 'part' + file[-5:]
 ds = yt.load(file, particle_filename=part_file)
 dd = ds.all_data()
+sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
 
 if args.slice_plot == 'True':
     args.slice_plot = True
 if args.slice_plot:
+    file_time = ds.current_time.in_units('yr').value-sink_form_time
     movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
-    movie_file = mym.find_files([args.plot_time], movie_files)[0]
+    movie_file = mym.find_files([file_time], movie_files)[0]
     del movie_files
     n_bins = np.ceil(np.sqrt((args.resolution/2.)**2. + (args.resolution/2.)**2.))
     myf.set_n_bins(n_bins)
     save_image_name = save_dir + "Slice_Plot_time_" + str(args.plot_time) + ".eps"
-    X, Y, X_vel, Y_vel = mym.initialise_grid(movie_file, zoom_times=args.zoom_times, center=args.image_center)
-    if args.combine_centers == 'True':
-        args.combine_centers = True
+    X, Y, X_vel, Y_vel, cl = mym.initialise_grid(movie_file, zoom_times=args.zoom_times)
+    part_info = mym.get_particle_data(file, axis='xy')
+    if args.image_center != 0:
+        x_pos = np.round(part_info['particle_position'][0][args.image_center-1]/cl)*cl
+        y_pos = np.round(part_info['particle_position'][1][args.image_center-1]/cl)*cl
+        X = X + x_pos
+        Y = Y + y_pos
+        X_vel = X_vel + x_pos
+        Y_vel = Y_vel + y_pos
     myf.set_coordinate_system('cylindrical')
-    fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.slice_field, resolution=args.resolution, comb=args.combine_centers, units=args.c_units)
+    fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
     f = h5py.File(movie_file, 'r')
     velx, vely = mym.get_quiver_arrays(f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0])
     f.close()
-    part_info = mym.get_particle_data(movie_file, axis='xy')
-    if args.ax_lim == None:
-        ax.set_xlim([np.min(X), np.max(X)])
-        ax.set_ylim([np.min(Y), np.max(Y)])
+
+    if args.ax_lim != None:
+        if args.image_center == 0:
+            xlim = [-1*args.ax_lim, args.ax_lim]
+            ylim = [-1*args.ax_lim, args.ax_lim]
+        else:
+            xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center-1], args.ax_lim + part_info['particle_position'][0][args.image_center-1]]
+            ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center-1], args.ax_lim + part_info['particle_position'][1][args.image_center-1]]
     else:
-        ax.set_xlim([-1*args.ax_lim, args.ax_lim])
-        ax.set_ylim([-1*args.ax_lim, args.ax_lim])
+        xlim = [np.min(X), np.max(X)]
+        ylim = [np.min(Y), np.max(Y)]
+    limits = [xlim, ylim]
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
     if args.pickle_dump == False:
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend)
         if args.annotate_field == 'particle_mass':
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], np.max(X), annotate_field=part_info['particle_mass'])
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=part_info['particle_mass'])
         elif 'angular' in args.annotate_field:
             annotate_field = dd[args.annotate_field].value
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], np.max(X), annotate_field=annotate_field, field_symbol='L', units=args.c_units)
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=annotate_field, field_symbol='L', units=args.c_units)
         else:
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], np.max(X))
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits)
+        for line in ax.xaxis.get_ticklines():
+            line.set_color('white')
+        for line in ax.yaxis.get_ticklines():
+            line.set_color('white')
 
         fig.savefig(save_image_name)
         print "created slice plot:", save_image_name
@@ -134,20 +154,21 @@ if args.slice_plot:
         print "CREATING PICKLE"
         pickle_file = save_dir + 'slice_pickle.pkl'
         file = open(pickle_file, 'w+')
-        pickle.dump((X_vel, Y_vel, xy, field_grid, velx, vely, part_info),file)
+        pickle.dump((X_vel, Y_vel, xy, field_grid, velx, vely, part_info, limits),file)
         file.close()
         print "Created Pickle"
 
 if args.profile_plot == 'True':
     args.profile_plot = True
 if args.profile_plot:
+    myf.set_center(args.center)
     print "Doing Profile Plot"
     save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
     measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max, 'au'), (args.disk_thickness, 'au'))
     if args.profile_bins == None:
         args.profile_bins = args.resolution/2.
-    prof_x, prof_y = mym.profile_plot(measuring_volume, args.x_field, [args.y_field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units)
-    sampled_points = mym.sample_points(measuring_volume, args.x_field, args.y_field, bin_no=args.z_bins, no_of_points=args.no_sampled_points, x_units=args.x_units)
+    prof_x, prof_y = mym.profile_plot(measuring_volume, args.x_field, [args.y_field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, center=args.center)
+    sampled_points = mym.sample_points(measuring_volume, args.x_field, args.y_field, bin_no=args.z_bins, no_of_points=args.no_sampled_points, x_units=args.x_units, center=args.center)
     
     if args.pickle_dump == False:
         plt.clf()
@@ -159,9 +180,10 @@ if args.profile_plot:
         plt.xlabel('Cyclindral Radius (AU)', labelpad=-1)
         plt.ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', labelpad=-3)
         plt.xlim([0.0, args.r_max])
-        plt.xlim([0.0, 2.0])
+        plt.ylim([0.0, 2.0])
         plt.axhline(y=1.0, color='k', linestyle='--')
-        plt.axes().set_aspect(1./plt.axes().get_data_ratio())
+        #plt.axes().set_aspect(1./plt.axes().get_data_ratio())
+        plt.axes().set_aspect((args.r_max)/(2.0))
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
         print "created profile plot:", save_image_name
     else:
@@ -175,11 +197,14 @@ if args.profile_plot:
 if args.force_comp == 'True':
     args.force_comp = True
 if args.force_comp:
-    field = 'Force_Ratio'
+    field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
     times = mym.generate_frame_times(files, args.time_step, start_time=0)
     plot_files = mym.find_files(times, files)
-    save_image_name = save_dir + field + "_abs.eps"
+    if args.save_name == None:
+        save_image_name = save_dir + field + "_abs.eps"
+    else:
+        save_image_name = args.save_name + ".eps"
     myf.set_coordinate_system('sph')
     plt.clf()
     x = []
@@ -192,23 +217,51 @@ if args.force_comp:
             part_file = file[:-12] + 'part' + file[-5:]
             ds = yt.load(file, particle_filename=part_file)
             dd = ds.all_data()
-            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (25, 'au'), (1000, 'au'))
-            prof_x, prof_y = mym.profile_plot(column, 'dz_from_Center', [field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units)
+            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (25, 'au'), (500, 'au'))
+            prof_x, prof_y, y_units = mym.profile_plot(column, 'dz_from_Center', [field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units)
             x.append(prof_x)
-            prof_y = (np.array(prof_y[field][::-1]) + np.array(prof_y[field]))/2.
-            y.append(prof_y)
-    colors = ['k', 'b', 'c', 'g', 'r', 'm']
-    dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
-    for time in range(len(x)):
-        plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
-        #plt.semilogy(x[time], y[time], c=colors[len(dash_list) - len(times) + time], dashes=dash_list[len(dash_list) - len(times) + time], label=str(times[time])+"yr")
-    plt.legend(loc='best')
-    plt.xlabel('Z-distance (AU)', labelpad=-1)
-    plt.ylabel(field, labelpad=-3)
-    plt.xlim([0.0, 1000.0])
-    plt.axes().set_aspect(1./plt.axes().get_data_ratio())
-    plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-    print "created profile plot:", save_image_name
+            #prof_y = (np.array(prof_y[field][::-1]) + np.array(prof_y[field]))/2.
+            y.append(prof_y[field])
+            if args.pickle_dump == False:
+                for time in range(len(x)):
+                    #plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
+                    plt.loglog(x[time], np.abs(y[time]))
+
+                #plt.legend(loc='best')
+                plt.xlabel('Z-distance (AU)')
+                if args.y_label == None:
+                    plt.ylabel(field)
+                else:
+                    plt.ylabel(args.y_label, fontsize=14)
+                plt.xlim([0.0, 500.0])
+                #plt.ylim([1.e-1, 1.e5])
+                #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
+                plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+                print "created force comparison plot:", save_image_name
+    if args.pickle_dump == False:
+        colors = ['k', 'b', 'c', 'g', 'r', 'm']
+        dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+        for time in range(len(x)):
+            #plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
+            plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
+        
+        #plt.legend(loc='best')
+        plt.xlabel('Z-distance (AU)')
+        if args.y_label == None:
+            plt.ylabel(field)
+        else:
+            plt.ylabel(args.y_label, fontsize=14)
+        #plt.xlim([10.0, 1000.0])
+        #plt.ylim([1.e-1, 1.e5])
+        #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
+        plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+        print "created force comparison plot:", save_image_name
+    if args.pickle_dump == True:
+        pickle_file = save_dir + 'force_comp_pickle.pkl'
+        file = open(pickle_file, 'w+')
+        pickle.dump((x, y, args.y_label),file)
+        file.close()
+        print "created force comp pickle:", pickle_file
 
 if args.outflow_pickle == 'True':
     args.outflow_pickle = True
@@ -389,8 +442,8 @@ if args.separation:
         lit = lit + 1
     plt.xlim([0.0, 3000.0])
     plt.legend(loc='best')
-    plt.xlabel("Time (yr)", labelpad=-1, fontsize=14)
-    plt.ylabel("Separation (AU)", labelpad=-2, fontsize=14)
+    plt.xlabel("Time (yr)", fontsize=14)
+    plt.ylabel("Separation (AU)", fontsize=14)
     plt.tick_params(axis='x', which='major', labelsize=14)
     plt.tick_params(axis='y', which='major', labelsize=14)
     plt.savefig(image_name, bbox_inches='tight')

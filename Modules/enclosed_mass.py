@@ -61,7 +61,7 @@ def main():
                 if print_cen == False:
                     print "Centered on particle with mass", part_mass[center-1]/1.98841586e+33
                     print_cen = True
-            if center !=0 and rs[r] > a:
+            if center !=0 and rs[r] > a and len(part_mass)>1:
                 if center == 1:
                     enclosed_mass_val = enclosed_mass_val + part_mass[1]
                 else:

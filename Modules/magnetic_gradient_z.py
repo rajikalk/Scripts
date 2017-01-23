@@ -10,7 +10,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", help="file to use")
     parser.add_argument("-sf", "--save_file", help="file to save to")
-    parser.add_argument("-bs", "--no_of_bins", help="how many bins", default=100, type=float)
+    parser.add_argument("-bs", "--no_of_bins", help="how many bins", default=None, type=float)
     args = parser.parse_args()
     return args
 
@@ -22,10 +22,10 @@ def main():
     
     file = open(args.file, 'r')
     z, B= pickle.load(file)
-    B = B**2.
     
     dz = list(set(z))
-    rs = np.sort(dz)
+    rs = [0]
+    rs = rs + list(np.sort(dz))
 
     rank = CW.Get_rank()
     size = CW.Get_size()
@@ -35,7 +35,8 @@ def main():
     bin_size = rs[-1] - rs[-2]
     print "bin_size =", bin_size/1.49597870751e+13
     print "max_radius =", max_height/1.49597870751e+13
-    rs = np.append(rs, rs[-1]+bin_size)
+    rs = rs.append(rs[-1]+bin_size)
+    rs = np.array(rs)
     gradient = np.array(np.zeros(np.shape(z)))
 
     rit = 1
@@ -65,9 +66,9 @@ def main():
                     B_2 = np.mean(B[shell_2])
             print "B_0, B_1, B_2 =", B_0, B_1, B_2
             if rs[r] > 0.0:
-                B_grad = ((B_1 - B_0) + (B_2 - B_1))/2.
+                B_grad = (((B_1 - B_0)/(rs[r] - rs[r-1])) + ((B_2 - B_1)/(rs[r+1] - rs[r])))/2.
             else:
-                B_grad = ((B_0 - B_1) + (B_1 - B_2))/2.
+                B_grad = (((B_0 - B_1)/(rs[r-1]-rs[r])) + ((B_1 - B_2)/(rs[r]-rs[r+1])))/2.
             print "B_grad =", B_grad, "on rank", rank
             grad[shell_1] = B_grad
             CW.send(grad, dest=0, tag=rank)
