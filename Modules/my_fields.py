@@ -8,6 +8,7 @@ import time
 
 center = 0
 n_bins = 100
+adaptive_bins = True
 coordinates = 'cylindrical'
 has_run = False
 global_enc_mass = []
@@ -31,6 +32,15 @@ def set_n_bins(x):
     """
     global n_bins
     n_bins = x
+    return x
+
+def set_adaptive_bins(x):
+    """
+    sets the whether adaptive bins are used when calculating used when calculating the enclosed mass
+    Type: bool
+    """
+    global adaptive_bins
+    adaptive_bins = x
     return x
 
 def set_image_resolution(x):
@@ -66,6 +76,13 @@ def get_n_bins():
     """
     global n_bins
     return n_bins
+
+def set_adaptive_bins():
+    """
+    returns the current set adaptive_bins bool
+    """
+    global adaptive_bins
+    return adaptive_bins
 
 def get_image_resolution():
     """
@@ -261,6 +278,7 @@ yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
 def Enclosed_Mass(file, max_radius):
     global center
     global n_bins
+    global adaptive_bins
     global coordinates
     global has_run
     global global_enc_mass
@@ -290,7 +308,7 @@ def Enclosed_Mass(file, max_radius):
         temp_file = open(pickle_file, 'w')
         pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), temp_file)
         temp_file.close()
-        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-sf', pickle_file_enc, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
+        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-sf', pickle_file_enc, '-c', str(center), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value), '-bins', str(int(n_bins)), '-ab', str(adaptive_bins)])
         #call(['mpirun', '-np', '8', 'python', '/Users/rajikak/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
 
         file = open(pickle_file_enc, 'r')
@@ -309,6 +327,8 @@ def _Enclosed_Mass(field, data):
     global global_enc_mass
     global has_run
     
+    import pdb
+    pdb.set_trace()
     if np.shape(data) != np.shape(global_enc_mass):
         has_run = False
 
@@ -405,7 +425,7 @@ def delta_B(file, data, field):
     file = open(pickle_file_B_grad, 'r')
     B_grad = pickle.load(file)
     os.remove(pickle_file_B_grad)
-    return B_gradient
+    return B_grad
 
 def _Squared_B_Mag(field, data):
     """
@@ -424,7 +444,8 @@ def _B_gradient(field, data):
     if np.shape(data) != (16, 16, 16):
         file = data.ds.fullpath +'/'+data.ds.basename
         dB = delta_B(file, data, 'Squared_B_Mag')
-        dB = yt.YTArray(np.abs(dB), 'G**2/cm')
+        dB = yt.YTArray(np.abs(dB), 'G**2')
+        dB = dB/data['dz'].in_units('cm')
     else:
         dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
     return dB
@@ -445,24 +466,26 @@ def _Gravitational_Acceleration(field, data):
     """
     Calculates gravitational pressure, from gravitational force.
     """
-    gravitational_acceleration = (-1*yt.physical_constants.G*data['Enclosed_Mass'].in_units('g'))/(data['z'].in_units('cm')**2.)
+    gravitational_acceleration = (yt.physical_constants.G*data['Enclosed_Mass'].in_units('g'))/(data['z'].in_units('cm')**2.)
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
-'''
+
 def _Gravitational_Acceleration_z(field, data):
     """
-        Calculates gravitational pressure, from gravitational force.
-        """
+    Calculates gravitational pressure, from gravitational force.
+    """
     if np.shape(data) != (16, 16, 16):
         file = data.ds.fullpath +'/'+data.ds.basename
-        gravitational_acceleration = delta_B(file, data)
+        delta_pot = delta_B(file, data, 'gravitational_potential')
+        g_acc = delta_pot/dd['dz'].in_units('cm').value
+        gravitational_acceleration = yt.YTArray(np.abs(g_acc), 'cm/s**2')
     else:
-        gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
+        gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'cm/s**2')
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration_z", function=_Gravitational_Acceleration_z, units=r"cm/s**2")
-'''
+
 def _Magnetic_Force(field, data):
     """
     Calculates force from magnetic gradient

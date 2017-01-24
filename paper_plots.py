@@ -51,7 +51,8 @@ def parse_inputs():
     parser.add_argument("-pb", "--profile_bins", help="how many bins do you want for the profile?", type=int, default=None)
     parser.add_argument("-zb", "--z_bins", help="how many z bins do you want when sampling points?", type=int, default=2.)
     parser.add_argument("-nsp", "--no_sampled_points", help="how many random points do you want to randomly sample?", type=int, default=2000)
-    parser.add_argument("-xy", "--x_units", help="x units for profile plot", type=str, default="AU")
+    parser.add_argument("-xu", "--x_units", help="x units for profile plot", type=str, default="AU")
+    parser.add_argument("-yu", "--y_units", help="y units for profile plot", type=str, default=None)
     parser.add_argument("-yl", "--y_label", help="what is the y_label you will use", type=str, default=None)
     parser.add_argument("-sn", "--save_name", help="If not defined, it's the same as the field", type=str, default=None)
     
@@ -104,7 +105,7 @@ if args.slice_plot:
     movie_file = mym.find_files([file_time], movie_files)[0]
     del movie_files
     n_bins = np.ceil(np.sqrt((args.resolution/2.)**2. + (args.resolution/2.)**2.))
-    myf.set_n_bins(n_bins)
+    #myf.set_n_bins(n_bins)
     save_image_name = save_dir + "Slice_Plot_time_" + str(args.plot_time) + ".eps"
     X, Y, X_vel, Y_vel, cl = mym.initialise_grid(movie_file, zoom_times=args.zoom_times)
     part_info = mym.get_particle_data(file, axis='xy')
@@ -165,8 +166,10 @@ if args.profile_plot:
     print "Doing Profile Plot"
     save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
     measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max, 'au'), (args.disk_thickness, 'au'))
+    '''
     if args.profile_bins == None:
         args.profile_bins = args.resolution/2.
+    '''
     prof_x, prof_y = mym.profile_plot(measuring_volume, args.x_field, [args.y_field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, center=args.center)
     sampled_points = mym.sample_points(measuring_volume, args.x_field, args.y_field, bin_no=args.z_bins, no_of_points=args.no_sampled_points, x_units=args.x_units, center=args.center)
     
@@ -217,41 +220,52 @@ if args.force_comp:
             part_file = file[:-12] + 'part' + file[-5:]
             ds = yt.load(file, particle_filename=part_file)
             dd = ds.all_data()
-            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (25, 'au'), (500, 'au'))
-            prof_x, prof_y, y_units = mym.profile_plot(column, 'dz_from_Center', [field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units)
+            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (25, 'au'), (1000, 'au'))
+            if args.y_units == None:
+                args.y_units = str(column[field].units)
+            if args.weight_field == 'None':
+                prof_x, prof_y= mym.profile_plot(column, 'dz_from_Center', [field], log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, y_units=args.y_units)
+            else:
+                prof_x, prof_y= mym.profile_plot(column, 'dz_from_Center', [field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, y_units=args.y_units)
             x.append(prof_x)
-            #prof_y = (np.array(prof_y[field][::-1]) + np.array(prof_y[field]))/2.
-            y.append(prof_y[field])
+            prof_y = (np.array(prof_y[field][::-1]) + np.array(prof_y[field]))/2.
+            y.append(prof_y)
             if args.pickle_dump == False:
                 for time in range(len(x)):
-                    #plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
-                    plt.loglog(x[time], np.abs(y[time]))
+                    if args.logscale == 'True':
+                        plt.loglog(x[time], y[time])
+                    else:
+                        plt.plot(x[time], y[time])
 
                 #plt.legend(loc='best')
                 plt.xlabel('Z-distance (AU)')
                 if args.y_label == None:
-                    plt.ylabel(field)
+                    plt.ylabel(field+" ("+args.y_units+")")
                 else:
                     plt.ylabel(args.y_label, fontsize=14)
-                plt.xlim([0.0, 500.0])
+                plt.xlim([10., 500.0])
                 #plt.ylim([1.e-1, 1.e5])
                 #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
                 print "created force comparison plot:", save_image_name
     if args.pickle_dump == False:
+        plt.clf()
         colors = ['k', 'b', 'c', 'g', 'r', 'm']
         dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
         for time in range(len(x)):
-            #plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
-            plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
+            if args.logscale == 'True':
+                plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
+            else:
+                plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
         
         #plt.legend(loc='best')
         plt.xlabel('Z-distance (AU)')
         if args.y_label == None:
-            plt.ylabel(field)
+            plt.ylabel(field+" ("+args.y_units+")")
         else:
             plt.ylabel(args.y_label, fontsize=14)
-        #plt.xlim([10.0, 1000.0])
+        plt.xlim([10.0, 500.0])
+        plt.yscale('symlog')
         #plt.ylim([1.e-1, 1.e5])
         #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)

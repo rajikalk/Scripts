@@ -11,10 +11,11 @@ def parse_inputs():
     parser.add_argument("-f", "--file", help="file to use")
     parser.add_argument("-sf", "--save_file", help="file to save to")
     parser.add_argument("-c", "--center", help="What is the center?", default=0, type=int)
-    parser.add_argument("-bs", "--no_of_bins", help="how many bins", default=100, type=float)
     parser.add_argument("-co", "--coordinates", help="What is the coordinates?", default='cylindrical', type=str)
     parser.add_argument("-a", "--semimajor_axis", help="what is the semimajor axis of the binary?", default=0, type=float)
     parser.add_argument("-mr", "--max_r", help="what is the max radius?", default=None, type=float)
+    parser.add_argument("-bins", "--no_of_bins", help="number of bins to use", default=None, type=int)
+    parser.add_argument("-ab", "--adaptive_bins", help="do you want to use adaptive bin sizes?", default=True, type=str)
     args = parser.parse_args()
     return args
 
@@ -23,7 +24,8 @@ def main():
     
     args = parse_inputs()
     center = int(args.center)
-    no_of_bins = args.no_of_bins
+    if args.adaptive_bins == 'False':
+        args.adaptive_bins = False
     coordinates = args.coordinates
     a = args.semimajor_axis
     max_radius = args.max_r
@@ -38,7 +40,16 @@ def main():
     size = CW.Get_size()
 
     dist_min = np.min(distance)
-    rs = np.linspace(0.0, max_radius, no_of_bins)
+    if args.adaptive_bins:
+        rs = [0]
+        rs = rs + list(set(distance[distance<max_radius]))
+        rs = np.sort(rs)
+        bin_freq = len(rs)/500
+        if bin_freq > 0:
+            rs = rs[::bin_freq]
+        rs = np.array(rs)
+    else:
+        rs = np.linspace(0.0, max_radius, args.no_of_bins)
     bin_size = rs[-1] - rs[-2]
     #print "bin_size =", bin_size/1.49597870751e+13
     #print "max_radius =", max_radius/1.49597870751e+13
@@ -59,7 +70,7 @@ def main():
             if center != 0:
                 enclosed_mass_val = enclosed_mass_val + part_mass[center-1]
                 if print_cen == False:
-                    print "Centered on particle with mass", part_mass[center-1]/1.98841586e+33
+                    #print "Centered on particle with mass", part_mass[center-1]/1.98841586e+33
                     print_cen = True
             if center !=0 and rs[r] > a and len(part_mass)>1:
                 if center == 1:
@@ -67,12 +78,12 @@ def main():
                 else:
                     enclosed_mass_val = enclosed_mass_val + part_mass[0]
                 if printed == False:
-                    print "Added other particle with mass", part_mass[0]/1.98841586e+33
+                    #print "Added other particle with mass", part_mass[0]/1.98841586e+33
                     printed = True
             elif center == 0 and rs[r] > a/2. and len(part_mass)>0:
                 enclosed_mass_val = enclosed_mass_val + np.sum(part_mass)
                 if printed == False:
-                    print "Added both particles with mass", np.sum(part_mass)/1.98841586e+33
+                    #print "Added both particles with mass", np.sum(part_mass)/1.98841586e+33
                     printed = True
             enclosed_mass[ind] = enclosed_mass_val
             print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank

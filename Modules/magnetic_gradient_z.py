@@ -66,9 +66,7 @@ def main():
                     B_2 = np.mean(B[shell_2])
             print "B_0, B_1, B_2 =", B_0, B_1, B_2
             if rs[r] > 0.0:
-                B_grad = (((B_1 - B_0)/(rs[r] - rs[r-1])) + ((B_2 - B_1)/(rs[r+1] - rs[r])))/2.
-            else:
-                B_grad = (((B_0 - B_1)/(rs[r-1]-rs[r])) + ((B_1 - B_2)/(rs[r]-rs[r+1])))/2.
+                B_grad = ((B_1 - B_0) + (B_2 - B_1))/2.
             print "B_grad =", B_grad, "on rank", rank
             grad[shell_1] = B_grad
             CW.send(grad, dest=0, tag=rank)

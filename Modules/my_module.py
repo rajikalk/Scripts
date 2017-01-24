@@ -356,7 +356,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         print("Annotated particle field")
     return axis
 
-def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', abs=False, center=0):
+def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', y_units=None, abs=False, center=0):
     myf.set_center(center)
     if x_units == None:
         x = data[x_field]
@@ -365,13 +365,14 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
     if abs:
         x = np.abs(x)
     print("Got x values")
-    if log:
+    if log == 'True':
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
     elif n_bins == None:
         unit_string = str(x.unit_quantity).split(' ')[-1]
         bins = list(set(x.value))
         bins = np.sort(bins)
         bins = yt.YTArray(bins, unit_string)
+        bins = bins[::2]
     else:
         bins = np.linspace(np.min(x), np.max(x), n_bins+1)
     print("No of bins:", len(bins))
@@ -384,12 +385,15 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
 
     for y_field in y_fields:
         y_temp = []
-        y = data[y_field]
+        if y_units == None:
+            y = data[y_field]
+        else:
+            y = data[y_field].in_units(y_units)
         y_units = y.units
         print("Got y values")
         prev_bin = bins[0]
         for bin in bins[1:]:
-            ind = np.where((x >= prev_bin) & (x < bin))
+            ind = np.where((x >= prev_bin) & (x < bin))[0]
             mid_x = (bin+prev_bin)/2.
             x_array.append(mid_x)
             if len(ind) != 0:
@@ -402,11 +406,11 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
                 bin_val = np.nan
             prev_bin = bin
             y_temp.append(bin_val)
-            print "weighted_val =", bin_val, ", at radius=", mid_x
+            print "Value =", bin_val, ", at radius=", mid_x
 
     y_array.update({y_field:y_temp})
 
-    return x_array, y_array, y_units
+    return x_array, y_array
 
 def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units='AU', center=0):
     myf.set_center(center)
