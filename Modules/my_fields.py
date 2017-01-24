@@ -22,7 +22,9 @@ def set_center(x):
     Options:0=center of mass, 1=particle 1, 2=particle 2.
     """
     global center
+    global global_enc_mass
     center = x
+    global_enc_mass = []
     return center
 
 def set_n_bins(x):
@@ -59,8 +61,10 @@ def set_coordinate_system(x):
     Default: 'cylindrical'
     Options: 'cylindrical', 'spherical'
     """
+    global global_enc_mass
     global coordinates
     coordinates = x
+    global_enc_mass = []
     return coordinates
 
 def get_center():
@@ -275,48 +279,44 @@ def _Corrected_vel_mag(field, data):
 
 yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
 
-def Enclosed_Mass(file, max_radius):
+def Enclosed_Mass(file, max_radius,inds):
     global center
     global n_bins
     global adaptive_bins
-    global coordinates
     global has_run
     global global_enc_mass
-    if has_run == False:
-        part_file = part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        data = ds.all_data()
-        if ('all', u'particle_mass') in data.ds.field_list:
-            particle_mass = data['particle_mass']
-            if len(data['particle_mass']) == 2:
-                pos1 = [data['particle_posx'][0].in_units('cm'), data['particle_posy'][0].in_units('cm'), data['particle_posz'][0].in_units('cm')]
-                pos2 = [data['particle_posx'][1].in_units('cm'), data['particle_posy'][1].in_units('cm'), data['particle_posz'][1].in_units('cm')]
-                a = np.sqrt((pos1[0] - pos2[0])**2. + (pos1[1] - pos2[1])**2. + (pos1[2] - pos2[2])**2.)
-            else:
-                a = yt.YTArray(0.0, 'cm')
+    part_file = part_file=file[:-12] + 'part' + file[-5:]
+    ds = yt.load(file, particle_filename=part_file)
+    data = ds.all_data()
+    if ('all', u'particle_mass') in data.ds.field_list:
+        particle_mass = data['particle_mass']
+        if len(data['particle_mass']) == 2:
+            pos1 = [data['particle_posx'][0].in_units('cm'), data['particle_posy'][0].in_units('cm'), data['particle_posz'][0].in_units('cm')]
+            pos2 = [data['particle_posx'][1].in_units('cm'), data['particle_posy'][1].in_units('cm'), data['particle_posz'][1].in_units('cm')]
+            a = np.sqrt((pos1[0] - pos2[0])**2. + (pos1[1] - pos2[1])**2. + (pos1[2] - pos2[2])**2.)
         else:
-            particle_mass = yt.YTArray([], 'g')
             a = yt.YTArray(0.0, 'cm')
-        
-        prev_coordinates = coordinates
-        coordinates = 'cylindrical'
-        distance = data['Distance_from_Center']
-        cell_mass = data['cell_mass']
-        time_str = str(int(time.time()))
-        pickle_file_enc = '/short/ek9/rlk100/temp_pickles/enclosed_mass_temp_' + time_str + '.pkl'
-        pickle_file = '/short/ek9/rlk100/temp_pickles/pickle_temp_' + time_str + '.pkl'
-        temp_file = open(pickle_file, 'w')
-        pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), temp_file)
-        temp_file.close()
-        call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-sf', pickle_file_enc, '-c', str(center), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value), '-bins', str(int(n_bins)), '-ab', str(adaptive_bins)])
-        #call(['mpirun', '-np', '8', 'python', '/Users/rajikak/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
+    else:
+        particle_mass = yt.YTArray([], 'g')
+        a = yt.YTArray(0.0, 'cm')
+    
+    distance = data['Distance_from_Center']
+    cell_mass = data['cell_mass']
+    time_str = str(int(time.time()))
+    pickle_file_enc = '/short/ek9/rlk100/temp_pickles/enclosed_mass_temp_' + time_str + '.pkl'
+    pickle_file = '/short/ek9/rlk100/temp_pickles/pickle_temp_' + time_str + '.pkl'
+    temp_file = open(pickle_file, 'w')
+    pickle.dump((distance.in_units('cm').value, cell_mass.in_units('g').value, particle_mass.in_units('g').value), temp_file)
+    temp_file.close()
+    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-sf', pickle_file_enc, '-c', str(center), '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value), '-bins', str(int(n_bins)), '-ab', str(adaptive_bins)])
+    #call(['mpirun', '-np', '8', 'python', '/Users/rajikak/Scripts/Modules/enclosed_mass.py', '-f', pickle_file, '-c', str(center), '-bs', str(n_bins), '-co', coordinates, '-a', str(a.in_units('cm').value), '-mr', str(max_radius.in_units('cm').value)])
 
-        file = open(pickle_file_enc, 'r')
-        enclosed_mass = pickle.load(file)
-        global_enc_mass = yt.YTArray(enclosed_mass, 'g')
-        os.remove(pickle_file_enc)
-        has_run = True
-        coordinates = prev_coordinates
+    file = open(pickle_file_enc, 'r')
+    enclosed_mass = pickle.load(file)
+    enc_mass = yt.YTArray(enclosed_mass, 'g')
+    global_enc_mass = enc_mass[inds]
+    os.remove(pickle_file_enc)
+    has_run = True
     return global_enc_mass
 
 def _Enclosed_Mass(field, data):
@@ -327,25 +327,35 @@ def _Enclosed_Mass(field, data):
     global global_enc_mass
     global has_run
     
-    import pdb
-    pdb.set_trace()
-    if np.shape(data) != np.shape(global_enc_mass):
-        has_run = False
-
-    if np.shape(data) != (16, 16, 16):
+    if np.shape(data) == (16, 16, 16):
+        enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
+    elif np.shape(data) != np.shape(global_enc_mass):
         file = data.ds.fullpath +'/'+data.ds.basename
         max_radius = np.max(data['Distance_from_Center'])
-        enclosed_mass = Enclosed_Mass(file, max_radius)
         dd = data.ds.all_data()
         comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
         data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
         inds = np.where(np.in1d(comb, data_comb))[0]
-        if len(global_enc_mass) == 0:
-            enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
-        else:
-            enclosed_mass = global_enc_mass[inds]
+        enclosed_mass = Enclosed_Mass(file, max_radius,inds)
+    elif np.shape(data) == np.shape(global_enc_mass):
+        enclosed_mass = global_enc_mass
+    '''
+    if np.shape(data) != np.shape(global_enc_mass):
+        has_run = False
+
+    if has_run == True:
+        enclosed_mass = global_enc_mass
+    elif np.shape(data) != (16, 16, 16) and has_run == False:
+        file = data.ds.fullpath +'/'+data.ds.basename
+        max_radius = np.max(data['Distance_from_Center'])
+        dd = data.ds.all_data()
+        comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
+        data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
+        inds = np.where(np.in1d(comb, data_comb))[0]
+        enclosed_mass = Enclosed_Mass(file, max_radius,inds)
     else:
         enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
+    '''
     return enclosed_mass
 
 yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")

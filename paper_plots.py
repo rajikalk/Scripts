@@ -209,6 +209,7 @@ if args.force_comp:
     else:
         save_image_name = args.save_name + ".eps"
     myf.set_coordinate_system('sph')
+    myf.set_center(1)
     plt.clf()
     x = []
     y = []
@@ -221,21 +222,27 @@ if args.force_comp:
             ds = yt.load(file, particle_filename=part_file)
             dd = ds.all_data()
             column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (25, 'au'), (1000, 'au'))
+            '''
             if args.y_units == None:
                 args.y_units = str(column[field].units)
             if args.weight_field == 'None':
                 prof_x, prof_y= mym.profile_plot(column, 'dz_from_Center', [field], log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, y_units=args.y_units)
             else:
                 prof_x, prof_y= mym.profile_plot(column, 'dz_from_Center', [field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, y_units=args.y_units)
+            '''
+            x_field = np.abs(column['dz_from_Center'].in_units('AU'))
+            y_field = column[field].in_units(args.y_units)
+            prof_x, prof_y= mym.profile_plot_new(x_field, y_field)
             x.append(prof_x)
-            prof_y = (np.array(prof_y[field][::-1]) + np.array(prof_y[field]))/2.
             y.append(prof_y)
             if args.pickle_dump == False:
                 for time in range(len(x)):
                     if args.logscale == 'True':
                         plt.loglog(x[time], y[time])
+                        plt.xlim([10., 1000.0])
                     else:
                         plt.plot(x[time], y[time])
+                        plt.xlim([0., 1000.0])
 
                 #plt.legend(loc='best')
                 plt.xlabel('Z-distance (AU)')
@@ -243,7 +250,6 @@ if args.force_comp:
                     plt.ylabel(field+" ("+args.y_units+")")
                 else:
                     plt.ylabel(args.y_label, fontsize=14)
-                plt.xlim([10., 500.0])
                 #plt.ylim([1.e-1, 1.e5])
                 #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
@@ -258,7 +264,7 @@ if args.force_comp:
             else:
                 plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")
         
-        #plt.legend(loc='best')
+        plt.legend(loc='best')
         plt.xlabel('Z-distance (AU)')
         if args.y_label == None:
             plt.ylabel(field+" ("+args.y_units+")")

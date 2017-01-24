@@ -11,7 +11,6 @@ def parse_inputs():
     parser.add_argument("-f", "--file", help="file to use")
     parser.add_argument("-sf", "--save_file", help="file to save to")
     parser.add_argument("-c", "--center", help="What is the center?", default=0, type=int)
-    parser.add_argument("-co", "--coordinates", help="What is the coordinates?", default='cylindrical', type=str)
     parser.add_argument("-a", "--semimajor_axis", help="what is the semimajor axis of the binary?", default=0, type=float)
     parser.add_argument("-mr", "--max_r", help="what is the max radius?", default=None, type=float)
     parser.add_argument("-bins", "--no_of_bins", help="number of bins to use", default=None, type=int)
@@ -26,7 +25,6 @@ def main():
     center = int(args.center)
     if args.adaptive_bins == 'False':
         args.adaptive_bins = False
-    coordinates = args.coordinates
     a = args.semimajor_axis
     max_radius = args.max_r
     
@@ -40,14 +38,16 @@ def main():
     size = CW.Get_size()
 
     dist_min = np.min(distance)
+    dist_max = np.max(distance)
     if args.adaptive_bins:
         rs = [0]
-        rs = rs + list(set(distance[distance<max_radius]))
+        rs = rs + list(set(distance[distance<=max_radius]))
         rs = np.sort(rs)
         bin_freq = len(rs)/500
         if bin_freq > 0:
             rs = rs[::bin_freq]
         rs = np.array(rs)
+        rs = np.append(rs, max_radius)
     else:
         rs = np.linspace(0.0, max_radius, args.no_of_bins)
     bin_size = rs[-1] - rs[-2]
