@@ -151,7 +151,7 @@ def has_sinks(f):
     else:
         return False
 
-def get_image_arrays(f, field, simfo, args, part_info, X, Y):
+def get_image_arrays(f, field, simfo, args, X, Y):
     dim = int(simfo['dimension'])
     image = []
     x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
@@ -254,7 +254,9 @@ def main():
             print "FILE =", usable_files[frame_val]
             file_time = (f['time'][0]/c['year'])-sink_form_time
             simfo = sim_info(path, usable_files[frame_val], args)
-            part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
+            has_particles = has_sinks(f)
+            if has_particles:
+                part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
             if args.zoom:
                 X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
             else:
@@ -268,8 +270,6 @@ def main():
                 Y_vel = Y_vel + y_pos
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
             
-            has_particles = has_sinks(f)
-            
             if args.ax_lim != None:
                 if args.image_center == 0:
                     xlim = [-1*args.ax_lim, args.ax_lim]
@@ -278,11 +278,11 @@ def main():
                     xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center-1], args.ax_lim + part_info['particle_position'][0][args.image_center-1]]
                     ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center-1], args.ax_lim + part_info['particle_position'][1][args.image_center-1]]
 
-            image = get_image_arrays(f, simfo['field'], simfo, args, part_info, X, Y)
+            image = get_image_arrays(f, simfo['field'], simfo, args, X, Y)
             print "image shape=", np.shape(image)
             print "grid shape=", np.shape(X)
-            magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, part_info, X, Y)
-            magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, part_info, X, Y)
+            magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, X, Y)
+            magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, X, Y)
             if args.axis == 'xy':
                 velx, vely = mym.get_quiver_arrays(f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
@@ -310,10 +310,11 @@ def main():
                 else:
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim])
-                if args.annotate_particles_mass == True:
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
-                else:
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+                if has_particles:
+                    if args.annotate_particles_mass == True:
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+                    else:
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
                 if args.plot_lref == True:
                     r_acc = np.round(part_info['accretion_rad'])
                     ax.annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo['xmax'], 0.93*simfo['ymax']), va="center", ha="right", color='w', fontsize=args.text_font)
@@ -346,11 +347,11 @@ def main():
                         file_name = save_dir + "time_" + str(args.plot_time)
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
-                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                     
                 #plt.savefig(file_name + ".jpg", format='jpeg', bbox_inches='tight')
                 call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-                #os.remove(file_name + '.eps')
+                os.remove(file_name + '.eps')
                 print 'Created frame', (frame_val+1), 'of', str(len(usable_files)), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
             else:
                 print "Creating pickle"
