@@ -63,9 +63,9 @@ def get_image_mesh(file, zoom_times):
     X, Y = np.meshgrid(x, x)
     return X, Y
 
-def generate_frame_times(files, dt, start_time=None, presink_frames=25):
+def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=None):
     try:
-        file = files[-1]
+        file = files[-2]
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
@@ -76,6 +76,8 @@ def generate_frame_times(files, dt, start_time=None, presink_frames=25):
         sink_form_time = find_sink_formation_time(files)
         max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
         f.close()
+    if end_time != None and end_time < max_time:
+        max_time = end_time
 
     if start_time == None:
         m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
@@ -292,7 +294,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 width_val = 0.8
             axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
-        print("plotting quiver legend")
+        #print("plotting quiver legend")
         pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.07*(ymax-ymin)]
         xvel = standard_vel/len_scale
         yvel = 0.0
@@ -350,10 +352,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 p_t = field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
             else:
                 p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
-            print("p_t =", p_t)
+            #print("p_t =", p_t)
     if annotate_field != None:
         axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
-        print("Annotated particle field")
+        #print("Annotated particle field")
     return axis
 
 def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', y_units=None, abs=False, center=0):
@@ -364,7 +366,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
         x = data[x_field].in_units(x_units)
     if abs:
         x = np.abs(x)
-    print("Got x values")
+    #print("Got x values")
     if log == 'True':
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
     elif n_bins == None:
@@ -375,7 +377,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
         bins = bins[::2]
     else:
         bins = np.linspace(np.min(x), np.max(x), n_bins+1)
-    print("No of bins:", len(bins))
+    #print("No of bins:", len(bins))
 
 
     if weight_field != None:
@@ -390,7 +392,7 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
         else:
             y = data[y_field].in_units(y_units)
         y_units = y.units
-        print("Got y values")
+        #print("Got y values")
         prev_bin = bins[0]
         for bin in bins[1:]:
             ind = np.where((x >= prev_bin) & (x < bin))[0]
@@ -406,24 +408,25 @@ def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=Fal
                 bin_val = np.nan
             prev_bin = bin
             y_temp.append(bin_val)
-            print "Value =", bin_val, ", at radius=", mid_x
+            #print "Value =", bin_val, ", at radius=", mid_x
 
     y_array.update({y_field:y_temp})
 
     return x_array, y_array
 
-def profile_plot_new(x, y, weight=None, n_bins=None, log=False):
+def profile_plot_new(x, y, weight=None, n_bins=None, log=False, freq=2):
     if log == 'True':
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
     elif n_bins == None:
         unit_string = str(x.unit_quantity).split(' ')[-1]
-        bins = list(set(x.value))
+        bins = [0.0] + list(set(x.value))
         bins = np.sort(bins)
+        bins = bins[::freq]
+        bins = np.append(bins, bins[-1] + (bins[-1]-bins[-2]))
         bins = yt.YTArray(bins, unit_string)
-        bins = bins[::2]
     else:
         bins = np.linspace(np.min(x), np.max(x), n_bins+1)
-    print("No of bins:", len(bins))
+    #print("No of bins:", len(bins))
 
     x_array = []
     y_array = []
@@ -442,7 +445,7 @@ def profile_plot_new(x, y, weight=None, n_bins=None, log=False):
             bin_val = np.nan
         prev_bin = bin
         y_array.append(bin_val)
-        print "Value =", bin_val, ", at radius=", mid_x
+        #print "Value =", bin_val, ", at radius=", mid_x
     
     return x_array, y_array
 
@@ -480,11 +483,11 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     """
        Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
     """
-    print "SLICE PLOT CENTER =", center
-    print("image resolution =", resolution)
+    #print "SLICE PLOT CENTER =", center
+    #print("image resolution =", resolution)
     x = np.linspace(np.min(X), np.max(X), resolution)
     y = np.linspace(np.min(Y), np.max(Y), resolution)
-    print("len(x) =", len(x))
+    #print("len(x) =", len(x))
     X = yt.YTArray(X, 'AU')
     Y = yt.YTArray(Y, 'AU')
     xy = np.meshgrid(x,y)
@@ -501,15 +504,15 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.zeros_like(xy[0].flatten())]).T
 
     #This line also takes a while
-    print("Finding nearest points...")
+    #print("Finding nearest points...")
     nearest_points = tree.query(xyz_grid, k=2, distance_upper_bound=cell_max, n_jobs=-1)[1]
     
-    print("len(nearest_points) =", len(nearest_points))
+    #print("len(nearest_points) =", len(nearest_points))
     del xyz_grid
-    print("Done finding nearest points...")
+    #print("Done finding nearest points...")
 
     if center == 3:
-        field_grid = np.zeros_like(xy[0].shape)
+        field_grid = np.zeros_like(xy[0])
         for cen in range(len(dd['particle_mass'])+1):
             myf.set_center(cen)
             print("Doing center =", cen)
@@ -538,7 +541,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     
     plt.clf()
     fig, ax = plt.subplots()
-    print("len(xy[0]) =", len(xy[0]))
+    #print("len(xy[0]) =", len(xy[0]))
     if log:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
     else:

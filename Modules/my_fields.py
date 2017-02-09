@@ -81,7 +81,7 @@ def get_n_bins():
     global n_bins
     return n_bins
 
-def set_adaptive_bins():
+def get_adaptive_bins():
     """
     returns the current set adaptive_bins bool
     """
@@ -283,7 +283,6 @@ def Enclosed_Mass(file, max_radius,inds):
     global center
     global n_bins
     global adaptive_bins
-    global has_run
     global global_enc_mass
     part_file = part_file=file[:-12] + 'part' + file[-5:]
     ds = yt.load(file, particle_filename=part_file)
@@ -316,16 +315,13 @@ def Enclosed_Mass(file, max_radius,inds):
     enc_mass = yt.YTArray(enclosed_mass, 'g')
     global_enc_mass = enc_mass[inds]
     os.remove(pickle_file_enc)
-    has_run = True
     return global_enc_mass
 
 def _Enclosed_Mass(field, data):
     """
     Calculates the enclosed mass for the set center and in the set coordinate system, with the current set bin size
     """
-    global coordinates
     global global_enc_mass
-    global has_run
     
     if np.shape(data) == (16, 16, 16):
         enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
@@ -339,23 +335,6 @@ def _Enclosed_Mass(field, data):
         enclosed_mass = Enclosed_Mass(file, max_radius,inds)
     elif np.shape(data) == np.shape(global_enc_mass):
         enclosed_mass = global_enc_mass
-    '''
-    if np.shape(data) != np.shape(global_enc_mass):
-        has_run = False
-
-    if has_run == True:
-        enclosed_mass = global_enc_mass
-    elif np.shape(data) != (16, 16, 16) and has_run == False:
-        file = data.ds.fullpath +'/'+data.ds.basename
-        max_radius = np.max(data['Distance_from_Center'])
-        dd = data.ds.all_data()
-        comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
-        data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
-        inds = np.where(np.in1d(comb, data_comb))[0]
-        enclosed_mass = Enclosed_Mass(file, max_radius,inds)
-    else:
-        enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
-    '''
     return enclosed_mass
 
 yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")
@@ -437,25 +416,49 @@ def delta_B(file, data, field):
     os.remove(pickle_file_B_grad)
     return B_grad
 
+def Gradient(x_field, y_field, max_radius, bin_data):
+    global n_bins
+    global adaptive_bins
+    
+    print "X_FIELD =", x_field
+    print "Y_FIELD =", y_field
+    
+    time_str = str(time.time()).split('.')[0] + '_' + str(time.time()).split('.')[1]
+    gradient_input = '/short/ek9/rlk100/temp_pickles/gradient_input_' + time_str + '.pkl'
+    gradient_output = '/short/ek9/rlk100/temp_pickles/gradient_' + time_str + '.pkl'
+    temp_file = open(gradient_input, 'w')
+    pickle.dump((x_field.value, y_field.value, bin_data.value), temp_file)
+    temp_file.close()
+    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/gradient.py', '-f', gradient_input, '-sf', gradient_output, '-mr', str(max_radius.value), '-bins', str(int(n_bins)), '-ab', str(adaptive_bins)])
+
+    file = open(gradient_output, 'r')
+    gradient = pickle.load(file)
+    os.remove(gradient_output)
+    return gradient
+
 def _Squared_B_Mag(field, data):
     """
     Just calculates the dquare of the magnetic fields magnitude
     """
-    B = data['magnetic_field_magnitude']**2.
+    if ('gas', 'magnetic_field_magnitude') in data.ds.derived_field_list:
+        B = data['magnetic_field_magnitude']**2.
+    else:
+        B = yt.YTArray(np.zeros(np.shape(data)), 'G**2')
     return B
 
 yt.add_field("Squared_B_Mag", function=_Squared_B_Mag, units=r"G**2")
 
-    
 def _B_gradient(field, data):
     """
     Calculates the magnetic field gradient in the z direction
     """
     if np.shape(data) != (16, 16, 16):
-        file = data.ds.fullpath +'/'+data.ds.basename
-        dB = delta_B(file, data, 'Squared_B_Mag')
-        dB = yt.YTArray(np.abs(dB), 'G**2')
-        dB = dB/data['dz'].in_units('cm')
+        y = data['Squared_B_Mag']
+        bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
+        x = np.abs(data['dz_from_Center'].in_units('cm'))
+        max_radius = np.max(x)
+        gradient = Gradient(x, y, max_radius, bin_data)
+        dB = yt.YTArray(np.abs(gradient), 'G**2/cm')
     else:
         dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
     return dB
@@ -467,7 +470,7 @@ def _Magnetic_Acceleration(field, data):
     Calculates the magnetic pressure in sphere
     """
     magnetic_acceleration = 1/(data['dens'].in_units('g/cm**3')*8.*np.pi) * data['B_gradient']
-    magnetic_acceleration = -1*magnetic_acceleration.in_units('cm/s**2')
+    magnetic_acceleration = np.sign(data['dz_from_Center'])*(np.abs(magnetic_acceleration.in_units('cm/s**2')))
     return magnetic_acceleration
 
 yt.add_field("Magnetic_Acceleration", function=_Magnetic_Acceleration, units=r"cm/s**2")
@@ -476,25 +479,77 @@ def _Gravitational_Acceleration(field, data):
     """
     Calculates gravitational pressure, from gravitational force.
     """
-    gravitational_acceleration = (yt.physical_constants.G*data['Enclosed_Mass'].in_units('g'))/(data['z'].in_units('cm')**2.)
+    gravitational_acceleration = -1*np.sign(data['dz_from_Center'])*(yt.physical_constants.G*data['Enclosed_Mass'].in_units('g'))/(data['dz_from_Center'].in_units('cm')**2.)
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
+
+def _Particle_Potential(field, data):
+    """
+    Calculates the potential from the praticles.
+    """
+    if np.shape(data) == (16, 16, 16):
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
+    else:
+        dd = data.ds.all_data()
+        comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
+        data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
+        inds = np.where(np.in1d(comb, data_comb))[0]
+        Part_gpot = yt.YTArray(np.zeros(np.shape(dd)), 'cm**2/s**2')
+        if ('all', u'particle_mass') in data.ds.field_list:
+            for part in range(len(dd['particle_mass'])):
+                gpot = -(yt.physical_constants.G*dd['particle_mass'][part].in_units('g'))/(dd['Distance_from_Center'].in_units('cm'))
+                Part_gpot = Part_gpot + gpot
+        Part_gpot = Part_gpot[inds]
+    return Part_gpot
+
+yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2")
+
+def _Total_Potential(field, data):
+    """
+    Gives the total potential inclusing contribution from the gas and the sink particles.
+    """
+    G_pot_total = data['gpot'] + data['Particle_Potential']
+    return G_pot_total
+
+yt.add_field("Total_Potential", function=_Total_Potential, units=r"cm**2/s**2")
 
 def _Gravitational_Acceleration_z(field, data):
     """
     Calculates gravitational pressure, from gravitational force.
     """
+    y = data['Total_Potential']
     if np.shape(data) != (16, 16, 16):
-        file = data.ds.fullpath +'/'+data.ds.basename
-        delta_pot = delta_B(file, data, 'gravitational_potential')
-        g_acc = delta_pot/dd['dz'].in_units('cm').value
-        gravitational_acceleration = yt.YTArray(np.abs(g_acc), 'cm/s**2')
+        #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
+        #x = np.abs(data['dz_from_Center'].in_units('cm'))
+        bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.)
+        x = data['dz_from_Center'].in_units('cm')
+        max_radius = np.max(x)
+        gradient = Gradient(x, y, max_radius, bin_data)
+        gravitational_acceleration = yt.YTArray(-1*np.sign(data['dz_from_Center'])*np.abs(gradient), 'cm/s**2')
     else:
         gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'cm/s**2')
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration_z", function=_Gravitational_Acceleration_z, units=r"cm/s**2")
+
+def _Acceleration_Ratio(field, data):
+    """
+    Ratio of the magnetic acceleration to the gravitational acceleration calculated from enclosed_mass
+    """
+    A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration'])
+    return A_ratio
+
+yt.add_field("Acceleration_Ratio", function=_Acceleration_Ratio, units=r"")
+
+def _Acceleration_Ratio_z(field, data):
+    """
+    Ratio of the magnetic acceleration to the gravitational acceleration calculated from the potential gradient
+    """
+    A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration_z'])
+    return A_ratio
+
+yt.add_field("Acceleration_Ratio_z", function=_Acceleration_Ratio_z, units=r"")
 
 def _Magnetic_Force(field, data):
     """
@@ -509,21 +564,38 @@ def _Gravitational_Force(field, data):
     """
     Calculates force from gravity
     """
-    F_grav = -1*data['cell_mass']*data['Gravitational_Acceleration']
+    F_grav = np.abs(data['cell_mass']*data['Gravitational_Acceleration'])
     return F_grav
 
 yt.add_field("Gravitational_Force", function=_Gravitational_Force, units=r"g*cm/s**2")
+
+def _Gravitational_Force_z(field, data):
+    """
+    Calculates force from gravity
+    """
+    F_grav = np.abs(data['cell_mass']*data['Gravitational_Acceleration_z'])
+    return F_grav
+
+yt.add_field("Gravitational_Force_z", function=_Gravitational_Force_z, units=r"g*cm/s**2")
 
 def _Force_Ratio(field, data):
     """
     Calculates the ratio of the magnetic pressure to the gravitational pressure
     """
-    global coordinates
-    coordinates = 'sph'
-    force_ratio = (data['Magnetic_Force'])/(-1*data['Gravitational_Force'])
+    force_ratio = np.abs((data['Magnetic_Force']))/(np.abs(data['Gravitational_Force']))
     return force_ratio
 
 yt.add_field("Force_Ratio", function=_Force_Ratio, units=r"")
+
+def _Force_Ratio_z(field, data):
+    """
+    Calculates the ratio of the magnetic pressure to the gravitational pressure
+    """
+    force_ratio = np.abs((data['Magnetic_Force']))/(np.abs(data['Gravitational_Force_z']))
+    return force_ratio
+
+yt.add_field("Force_Ratio_z", function=_Force_Ratio_z, units=r"")
+
 
 def _Angular_Momentum_x(field, data):
     """
@@ -572,27 +644,36 @@ yt.add_field("Specific_Angular_Momentum", function=_Specific_Angular_Momentum, u
 
 def _Particle_dx_from_Center(field, data):
     """
-        Calculates the change in x position from the current set center.
-        """
-    dx = data['particle_posx'].in_units('cm')-data['Center_Position'][0]
+    Calculates the change in x position from the current set center.
+    """
+    if ('all', u'particle_posx') in data.ds.field_list:
+        dx = data['particle_posx'].in_units('cm')-data['Center_Position'][0]
+    else:
+        dx = yt.YTArray(np.zeros(np.shape(data)), 'cm')
     return dx
 
 yt.add_field("Particle_dx_from_Center", function=_Particle_dx_from_Center, units=r"cm")
 
 def _Particle_dy_from_Center(field, data):
     """
-        Calculates the change in y position from the current set center.
-        """
-    dy = data['particle_posy'].in_units('cm')-data['Center_Position'][1]
+    Calculates the change in y position from the current set center.
+    """
+    if ('all', u'particle_posy') in data.ds.field_list:
+        dy = data['particle_posy'].in_units('cm')-data['Center_Position'][1]
+    else:
+        dy = yt.YTArray(np.zeros(np.shape(data)), 'cm')
     return dy
 
 yt.add_field("Particle_dy_from_Center", function=_Particle_dy_from_Center, units=r"cm")
 
 def _Particle_dz_from_Center(field, data):
     """
-        Calculates the change in z position from the current set center.
-        """
-    dz = data['particle_posz'].in_units('cm')-data['Center_Position'][2]
+    Calculates the change in z position from the current set center.
+    """
+    if ('all', u'particle_posz') in data.ds.field_list:
+        dz = data['particle_posz'].in_units('cm')-data['Center_Position'][2]
+    else:
+        dz = yt.YTArray(np.zeros(np.shape(data)), 'cm')
     return dz
 
 yt.add_field("Particle_dz_from_Center", function=_Particle_dz_from_Center, units=r"cm")
@@ -612,35 +693,45 @@ yt.add_field("Particle_Distance_from_Center", function=_Particle_Distance_from_C
 
 def _Particle_Angular_Momentum_x(field, data):
     """
-        Calculates the angular momentum in the x_direction about current set center.
-        """
-    L_x = data['particle_mass']*(data['particle_vely']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dy_from_Center'])
+    Calculates the angular momentum in the x_direction about current set center.
+    """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        L_x = data['particle_mass']*(data['particle_vely']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dy_from_Center'])
+    else:
+        L_x = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
     return L_x
 
 yt.add_field("Particle_Angular_Momentum_x", function=_Particle_Angular_Momentum_x, units=r"g*cm**2/s")
 
 def _Particle_Angular_Momentum_y(field, data):
     """
-        Calculates the angular momentum in the y_direction about current set center.
-        """
-    L_y = data['particle_mass']*(data['particle_velx']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dx_from_Center'])
+    Calculates the angular momentum in the y_direction about current set center.
+    """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        L_y = data['particle_mass']*(data['particle_velx']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dx_from_Center'])
+    else:
+        L_y = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
     return L_y
 
 yt.add_field("Particle_Angular_Momentum_y", function=_Particle_Angular_Momentum_y, units=r"g*cm**2/s")
 
 def _Particle_Angular_Momentum_z(field, data):
     """
-        Calculates the angular momentum in the z_direction about current set center.
-        """
-    L_z = data['particle_mass']*(data['particle_velx']*data['Particle_dy_from_Center'] - data['particle_vely']*data['Particle_dx_from_Center'])
+    Calculates the angular momentum in the z_direction about current set center.
+    """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        L_z = data['particle_mass']*(data['particle_velx']*data['Particle_dy_from_Center'] - data['particle_vely']*data['Particle_dx_from_Center'])
+    else:
+        L_z = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
     return L_z
 
 yt.add_field("Particle_Angular_Momentum_z", function=_Particle_Angular_Momentum_z, units=r"g*cm**2/s")
 
 def _Particle_Angular_Momentum(field, data):
     """
-        Calculates the angular momentum about current set center.
-        """
+    Calculates the angular momentum about current set center.
+    """
+    
     L = np.sqrt(data['Particle_Angular_Momentum_x']**2. + data['Particle_Angular_Momentum_y']**2. + data['Particle_Angular_Momentum_z']**2.)
     return L
 
@@ -648,9 +739,12 @@ yt.add_field("Particle_Angular_Momentum", function=_Particle_Angular_Momentum, u
 
 def _Particle_Specific_Angular_Momentum(field, data):
     """
-        Calculates the specific angular momentum about current set center.
-        """
-    l = data['Particle_Angular_Momentum']/data['particle_mass']
+    Calculates the specific angular momentum about current set center.
+    """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        l = data['Particle_Angular_Momentum']/data['particle_mass']
+    else:
+        l = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s')
     return l
 
 yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")

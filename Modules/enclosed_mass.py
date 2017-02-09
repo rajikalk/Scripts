@@ -86,7 +86,7 @@ def main():
                     #print "Added both particles with mass", np.sum(part_mass)/1.98841586e+33
                     printed = True
             enclosed_mass[ind] = enclosed_mass_val
-            print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
+            #print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
             CW.send(enclosed_mass, dest=0, tag=rank)
         if rank == 0:
             enclosed_mass_add = CW.recv(source=rit, tag=rit)
