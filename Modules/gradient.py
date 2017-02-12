@@ -88,7 +88,7 @@ def main():
             #print "mid_01, mid_12, mid_23:", mid_01, mid_12, mid_23
             #print "y_01, y_12, y_23:", y_01, y_12, y_23, "on rank", rank
             #print "grad_1, grad_2, average", grad_1, grad_2, grad_val, "on rank", rank
-            print "Gradient =", grad_val, "at Distance =", mid_12, "on rank", rank
+            #print "Gradient =", grad_val, "at Distance =", np.mean([mid_01, mid_23]), "on rank", rank
             grad_add[shell_12] = grad_val
             #grad_add[shell] = grad_val
             CW.send(grad_add, dest=0, tag=rank)

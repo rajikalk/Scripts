@@ -282,6 +282,7 @@ for it in range(len(positions)):
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         #arg_list = ['python', '/Users/rajikak/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         get_rmax = False
+        r_max = 500.
         for prof_arg in prof_args:
             arg_list.append(prof_arg)
             if get_rmax == True:
@@ -296,7 +297,7 @@ for it in range(len(positions)):
         file.close()
         cm = plt.cm.get_cmap('RdYlBu')
         plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm)
-        axes_dict[ax_label].plot(prof_x, prof_y[prof_y.keys()[0]], 'k-', linewidth=2.)
+        axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
         axes_dict[ax_label].set_xlim([0.0, r_max])
         axes_dict[ax_label].set_ylim([0.0, 2.0])
         #print "SET PROFILE XLIMS:", axes_dict[ax_label].set_xlim()

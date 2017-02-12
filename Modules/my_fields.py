@@ -454,6 +454,8 @@ def _B_gradient(field, data):
     """
     if np.shape(data) != (16, 16, 16):
         y = data['Squared_B_Mag']
+        #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
+        #x = np.abs(data['dz_from_Center'].in_units('cm'))
         bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
         x = np.abs(data['dz_from_Center'].in_units('cm'))
         max_radius = np.max(x)

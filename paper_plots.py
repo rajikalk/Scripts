@@ -105,6 +105,10 @@ def bin(lcdata, errors, reference, bin_size,algorithm="average"):
     
     return array(final_data),array(final_errors),array(final_reference)
 
+def movingaverage(interval, window_size):
+    window = np.ones(int(window_size))/float(window_size)
+    return np.convolve(interval, window, 'same')
+
 #======================================================================================================
 
 args = parse_inputs()
@@ -211,13 +215,24 @@ if args.profile_plot:
     myf.set_center(args.center)
     print "Doing Profile Plot"
     save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
-    measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max, 'au'), (args.disk_thickness, 'au'))
+    measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max+100, 'au'), (args.disk_thickness, 'au'))
     '''
     if args.profile_bins == None:
         args.profile_bins = args.resolution/2.
     '''
-    prof_x, prof_y = mym.profile_plot(measuring_volume, args.x_field, [args.y_field], weight_field=args.weight_field, log=args.logscale, n_bins=args.profile_bins, x_units=args.x_units, center=args.center)
-    sampled_points = mym.sample_points(measuring_volume, args.x_field, args.y_field, bin_no=args.z_bins, no_of_points=args.no_sampled_points, x_units=args.x_units, center=args.center)
+    if args.weight_field != None:
+        w_arr = measuring_volume[args.weight_field]
+    else:
+        w_arr = args.weight_field
+    x_arr = measuring_volume[args.x_field].in_units(args.x_units)
+    if args.y_units == None:
+        y_arr = measuring_volume[args.y_field]
+        args.y_units = str(y_arr.units)
+    else:
+        y_arr = measuring_volume[args.y_field].in_units(args.y_units)
+    z_arr = measuring_volume['z'].in_units('AU')
+    prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins)
+    sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points)
     
     if args.pickle_dump == False:
         plt.clf()
@@ -286,14 +301,14 @@ if args.force_comp:
             w_field = None
         prof_x, prof_y= mym.profile_plot_new(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, freq=args.frequency)
         x.append(prof_x)
-        #prof_y = np.mean(np.array(prof_y) + np.array(prof_y[::-1]))
+        #y_temp = (np.array(prof_y) + np.array(prof_y[::-1]))/2.
         y.append(prof_y)
         if args.pickle_dump == False:
             plt.clf()
             plt.axhline(y=1.0, color='k', linestyle='--')
             for time in range(len(x)):
                 if args.logscale == True:
-                    plt.loglog(x[time], y[time], linewidth=1.5)
+                    plt.loglog(x[time][1:], y[time][1:], linewidth=1.5)
                     #plt.semilogy(x[time], y[time], linewidth=1.5)
                     plt.xlim([1., 1000.0])
                 else:
@@ -320,12 +335,12 @@ if args.force_comp:
         for time in range(len(x)):
             plt.axhline(y=1.0, color='k', linestyle='--')
             if args.logscale == True:
-                plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
+                plt.loglog(x[time][1:], y[time][1:], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
                 #plt.semilogy(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                plt.xlim([1., 100.0])
+                plt.xlim([1., 1000.0])
             else:
                 plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                plt.xlim([0., 100.0])
+                plt.xlim([0., 1000.0])
         
         #plt.legend(loc='best')
         plt.xlabel('Z-distance (AU)')

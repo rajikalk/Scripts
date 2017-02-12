@@ -358,70 +358,14 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         #print("Annotated particle field")
     return axis
 
-def profile_plot(data, x_field, y_fields, weight_field=None, n_bins=100, log=False, x_units='AU', y_units=None, abs=False, center=0):
-    myf.set_center(center)
-    if x_units == None:
-        x = data[x_field]
-    else:
-        x = data[x_field].in_units(x_units)
-    if abs:
-        x = np.abs(x)
-    #print("Got x values")
+def profile_plot(x, y, weight=None, n_bins=None, log=False):
     if log == 'True':
         bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
     elif n_bins == None:
         unit_string = str(x.unit_quantity).split(' ')[-1]
         bins = list(set(x.value))
         bins = np.sort(bins)
-        bins = yt.YTArray(bins, unit_string)
         bins = bins[::2]
-    else:
-        bins = np.linspace(np.min(x), np.max(x), n_bins+1)
-    #print("No of bins:", len(bins))
-
-
-    if weight_field != None:
-        weight = data[weight_field]
-    x_array = []
-    y_array = {}
-
-    for y_field in y_fields:
-        y_temp = []
-        if y_units == None:
-            y = data[y_field]
-        else:
-            y = data[y_field].in_units(y_units)
-        y_units = y.units
-        #print("Got y values")
-        prev_bin = bins[0]
-        for bin in bins[1:]:
-            ind = np.where((x >= prev_bin) & (x < bin))[0]
-            mid_x = (bin+prev_bin)/2.
-            x_array.append(mid_x)
-            if len(ind) != 0:
-                y_vals = y[ind]
-                if weight_field != None:
-                    bin_val = (np.sum(y[ind]*weight[ind]))/np.sum(weight[ind])
-                else:
-                    bin_val = np.mean(y[ind])
-            else:
-                bin_val = np.nan
-            prev_bin = bin
-            y_temp.append(bin_val)
-            #print "Value =", bin_val, ", at radius=", mid_x
-
-    y_array.update({y_field:y_temp})
-
-    return x_array, y_array
-
-def profile_plot_new(x, y, weight=None, n_bins=None, log=False, freq=2):
-    if log == 'True':
-        bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
-    elif n_bins == None:
-        unit_string = str(x.unit_quantity).split(' ')[-1]
-        bins = [0.0] + list(set(x.value))
-        bins = np.sort(bins)
-        bins = bins[::freq]
         bins = np.append(bins, bins[-1] + (bins[-1]-bins[-2]))
         bins = yt.YTArray(bins, unit_string)
     else:
@@ -445,18 +389,12 @@ def profile_plot_new(x, y, weight=None, n_bins=None, log=False, freq=2):
             bin_val = np.nan
         prev_bin = bin
         y_array.append(bin_val)
-        #print "Value =", bin_val, ", at radius=", mid_x
+        print "Value =", bin_val, ", at radius=", mid_x
     
     return x_array, y_array
 
-def sample_points(data, x_field, y_field, bin_no=2., no_of_points=2000, x_units='AU', center=0):
-    myf.set_center(center)
-    z = data['z'].in_units('AU')
-    if x_units == None:
-        x = data[x_field]
-    else:
-        x = data[x_field].in_units(x_units)
-    big_array = np.array([z, x, data[y_field]])
+def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000):
+    big_array = np.array([z, x_field, y_field])
     plot_array = []
     z_bins = np.linspace(np.min(np.abs(z)), np.max(np.abs(z)), bin_no+1)
     import random
