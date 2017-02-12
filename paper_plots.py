@@ -299,7 +299,7 @@ if args.force_comp:
             w_field = column[args.weight_field]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot_new(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, freq=args.frequency)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, freq=args.frequency)
         x.append(prof_x)
         #y_temp = (np.array(prof_y) + np.array(prof_y[::-1]))/2.
         y.append(prof_y)
