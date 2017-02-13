@@ -284,22 +284,24 @@ if args.force_comp:
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
         column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (1100, 'au'))
-        x_field = np.abs(column['dz_from_Center'].in_units('AU'))
+        sorted_inds = np.argsort(column['dz_from_Center'].in_units('AU'))
+        x_field = np.abs(column['dz_from_Center'][sorted_inds].in_units('AU'))
         dummy = column['magx']
         dummy = column['magy']
         dummy = column['magz']
         if args.y_units == None:
-            y_field = column[field]
+            y_field = column[field][sorted_inds]
             args.y_units = str(y_field.units)
         else:
-            y_field = column[field].in_units(args.y_units)
+            y_field = column[field][sorted_inds].in_units(args.y_units)
+        y_field = (y_field + y_field[::-1])/2.
         if np.max(y_field) < 0:
             y_field = np.abs(y_field)
         if args.weight_field != None:
-            w_field = column[args.weight_field]
+            w_field = column[args.weight_field][sorted_inds]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, freq=args.frequency)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins)
         x.append(prof_x)
         #y_temp = (np.array(prof_y) + np.array(prof_y[::-1]))/2.
         y.append(prof_y)
