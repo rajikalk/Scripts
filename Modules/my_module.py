@@ -228,8 +228,10 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     #print "created meshs"
     return X, Y, X_vel, Y_vel, cl
 
-def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None):
-    annotate_freq = float(np.shape(velx_full)[0])/float(no_of_quivers-1)
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None):
+    import pdb
+    pdb.set_trace()
+    annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
     if smooth_cells == None:
         smoothing_val = int(annotate_freq/2)
     else:
@@ -238,9 +240,10 @@ def get_quiver_arrays(velx_full, vely_full, no_of_quivers=32., smooth_cells=None
     y_ind = []
     counter = 0
     while counter < (no_of_quivers-1):
-        val = int(annotate_freq*counter + annotate_freq/2.)
-        x_ind.append(int(val))
-        y_ind.append(int(val))
+        valx = int(x_pos_min + annotate_freq*counter + annotate_freq/2.)
+        valy = int(y_pos_min + annotate_freq*counter + annotate_freq/2.)
+        x_ind.append(int(valx))
+        y_ind.append(int(valy))
         counter = counter + 1
     velx = []
     vely = []
@@ -358,19 +361,27 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         #print("Annotated particle field")
     return axis
 
-def profile_plot(x, y, weight=None, n_bins=None, log=False):
-    if log == 'True':
-        bins = np.logspace(np.log10(np.min(x)), np.log10(np.max(x)), n_bins+1)
-    elif n_bins == None:
-        unit_string = str(x.unit_quantity).split(' ')[-1]
-        bins = list(set(x.value))
+def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None):
+    unit_string = str(x.unit_quantity).split(' ')[-1]
+    if bin_data == None:
+        bin_data = x
+    if n_bins == None:
+        unit_string = str(bin_data.unit_quantity).split(' ')[-1]
+        bins = [0] + list(set(bin_data.value))
         bins = np.sort(bins)
-        bins = bins[::2]
+        #bins = bins[::]
         bins = np.append(bins, bins[-1] + (bins[-1]-bins[-2]))
         bins = yt.YTArray(bins, unit_string)
+    elif log == True:
+        if bin_min == None:
+            bins = np.logspace(np.log10(np.min(bin_data)), np.log10(np.max(x)), n_bins+1)
+        else:
+            bins = np.logspace(np.log10(bin_min), np.log10(np.max(x)), n_bins+1)
     else:
-        bins = np.linspace(np.min(x), np.max(x), n_bins+1)
+        bins = np.linspace(np.min(bin_data), np.max(x), n_bins+1)
     #print("No of bins:", len(bins))
+    neg_inds = np.where(bins < 0)[0]
+    #bins[neg_inds[-1]] = -1*(bins[neg_inds[-1]+1] - yt.YTArray(0.01, unit_string))
 
     x_array = []
     y_array = []
@@ -387,10 +398,17 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False):
                 bin_val = np.mean(y[ind])
         else:
             bin_val = np.nan
+            print "FOUND EMPTY BIN"
         prev_bin = bin
         y_array.append(bin_val)
         print "Value =", bin_val, ", at radius=", mid_x
-    
+
+    x_array = np.array(x_array)
+    y_array = np.array(y_array)
+    inds = np.where(np.isnan(y_array)==False)
+    x_array = x_array[inds]
+    y_array = y_array[inds]
+
     return x_array, y_array
 
 def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000):

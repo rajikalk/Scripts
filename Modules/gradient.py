@@ -10,7 +10,6 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", help="file to use")
     parser.add_argument("-sf", "--save_file", help="file to save to")
-    parser.add_argument("-mr", "--max_r", help="what is the max radius?", default=None, type=float)
     parser.add_argument("-bins", "--no_of_bins", help="number of bins to use", default=None, type=int)
     parser.add_argument("-ab", "--adaptive_bins", help="do you want to use adaptive bin sizes?", default=True, type=str)
     args = parser.parse_args()
@@ -22,7 +21,8 @@ def main():
     args = parse_inputs()
     if args.adaptive_bins == 'False':
         args.adaptive_bins = False
-    max_radius = args.max_r
+    else:
+        args.adaptive_bins = True
     
     file = open(args.file, 'r')
     loaded_fields = pickle.load(file)
@@ -36,13 +36,14 @@ def main():
     dist_min = np.min(distance)
     dist_max = np.max(distance)
     if args.adaptive_bins:
-        rs = [0] + list(set(distance[bin_data<=max_radius]))
+        rs = [0] + list(set(distance))
         rs = np.sort(rs)
-        rs = rs[::2]
+        #rs = rs[::2]
         rs = np.array(rs)
-        rs = np.append(rs, max_radius)
+        rs = np.append(rs, (dist_max+(rs[-1]-rs[-2])))
     else:
-        rs = np.linspace(0.0, max_radius, args.no_of_bins)
+        rs = np.linspace(dist_min, dist_max, args.no_of_bins)
+        rs = np.append(rs, (dist_max+(rs[-1]-rs[-2])))
     bin_size = rs[-1] - rs[-2]
     rs = np.append(rs, rs[-1]+bin_size)
     gradient = np.array(np.zeros(np.shape(distance)))
@@ -75,11 +76,13 @@ def main():
             shell_12 = np.where((distance >= r_1) & (distance < r_2))[0]
             shell_23 = np.where((distance >= r_2) & (distance < r_3))[0]
             if len(shell_01) == 0:
+                print "FOUND EMPTY SHELL"
                 y_01 = 0.0
             else:
                 y_01 = np.mean(y[shell_01])
             if len(shell_23) == 0:
                 y_23= 0.0
+                print "FOUND EMPTY SHELL"
             else:
                 y_23 = np.mean(y[shell_23])
             grad_val = (y_23 - y_01)/(2.*(mid_23 - mid_01))

@@ -154,14 +154,8 @@ def has_sinks(f):
 def get_image_arrays(f, field, simfo, args, X, Y):
     dim = int(simfo['dimension'])
     image = []
-    x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
-    x_pos_max = int(np.ceil(np.max(X) - simfo['xmin_full'])/simfo['cell_length'])
-    y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
-    y_pos_max = int(np.ceil(np.max(Y) - simfo['xmin_full'])/simfo['cell_length'])
-    #y_pos_min = simfo['zoom_cell']
-    #y_pos_max = simfo['dimension'] - simfo['zoom_cell']
-    xpos = x_pos_min
-    ypos = y_pos_min
+    xpos = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
+    ypos = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
     print "XPOS =", xpos
     for x in range(ypos, ypos+len(X[0])):
         image_val = f[field][x]
@@ -283,10 +277,12 @@ def main():
             print "grid shape=", np.shape(X)
             magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, X, Y)
             magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, X, Y)
+            x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
+            y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
             if args.axis == 'xy':
-                velx, vely = mym.get_quiver_arrays(f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
+                velx, vely = mym.get_quiver_arrays(x_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
-                velx, vely = mym.get_quiver_arrays(f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:])
+                velx, vely = mym.get_quiver_arrays(x_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:])
             time_val = 10.0*(np.floor(np.round(file_time)/10.0))
             time_val = m_times[frame_val]
             if time_val == -0.0:

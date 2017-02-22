@@ -33,7 +33,7 @@ def set_n_bins(x):
     Type: int
     """
     global n_bins
-    n_bins = x
+    n_bins = int(x)
     return x
 
 def set_adaptive_bins(x):
@@ -384,39 +384,7 @@ def _Relative_Keplerian_Velocity(field, data):
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
 
-def delta_B(file, data, field):
-    global n_bins
-    
-    part_file = part_file=file[:-12] + 'part' + file[-5:]
-    ds = yt.load(file, particle_filename=part_file)
-    dd = ds.all_data()
-    
-    z = data['dz_from_Center']
-    comb = dd['x'].value + dd['y'].in_units('km').value + dd['z'].in_units('au').value
-    data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
-    inds = np.where(np.in1d(comb, data_comb))[0]
-    B = dd[field][inds]
-    print "SHAPE(z) =", np.shape(z)
-    print "SHAPE(B) =", np.shape(B)
-    time_str = str(int(time.time()))
-    pickle_file_B_grad = '/short/ek9/rlk100/temp_pickles/B_grad_temp_' + time_str + '.pkl'
-    pickle_file = '/short/ek9/rlk100/temp_pickles/pickle_temp_B_grad_' + time_str + '.pkl'
-    '''
-    pickle_file_B_grad = '/Users/rajikak/Scripts/Modules/B_grad_temp.pkl'
-    pickle_file = '/Users/rajikak/Scripts/Modules/pickle_temp_B_grad.pkl'
-    '''
-    file = open(pickle_file, 'w+')
-    pickle.dump((np.abs(z.in_units('cm').value), B.value), file)
-    file.close()
-    
-    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/magnetic_gradient_z.py', '-f', pickle_file, '-sf', pickle_file_B_grad, '-bs', str(n_bins)])
-    
-    file = open(pickle_file_B_grad, 'r')
-    B_grad = pickle.load(file)
-    os.remove(pickle_file_B_grad)
-    return B_grad
-
-def Gradient(x_field, y_field, max_radius, bin_data):
+def Gradient(x_field, y_field, bin_data):
     global n_bins
     global adaptive_bins
     
@@ -429,7 +397,7 @@ def Gradient(x_field, y_field, max_radius, bin_data):
     temp_file = open(gradient_input, 'w')
     pickle.dump((x_field.value, y_field.value, bin_data.value), temp_file)
     temp_file.close()
-    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/gradient.py', '-f', gradient_input, '-sf', gradient_output, '-mr', str(max_radius.value), '-bins', str(int(n_bins)), '-ab', str(adaptive_bins)])
+    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/gradient.py', '-f', gradient_input, '-sf', gradient_output, '-bins', str(n_bins), '-ab', str(adaptive_bins)])
 
     file = open(gradient_output, 'r')
     gradient = pickle.load(file)
@@ -456,10 +424,9 @@ def _B_gradient(field, data):
         y = data['Squared_B_Mag']
         #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
         #x = np.abs(data['dz_from_Center'].in_units('cm'))
-        bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
-        x = np.abs(data['dz_from_Center'].in_units('cm'))
-        max_radius = np.max(x)
-        gradient = Gradient(x, y, max_radius, bin_data)
+        bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2)
+        x = data['dz_from_Center'].in_units('cm')
+        gradient = Gradient(x, y, bin_data)
         dB = yt.YTArray(np.abs(gradient), 'G**2/cm')
     else:
         dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
@@ -526,8 +493,7 @@ def _Gravitational_Acceleration_z(field, data):
         #x = np.abs(data['dz_from_Center'].in_units('cm'))
         bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.)
         x = data['dz_from_Center'].in_units('cm')
-        max_radius = np.max(x)
-        gradient = Gradient(x, y, max_radius, bin_data)
+        gradient = Gradient(x, y, bin_data)
         gravitational_acceleration = yt.YTArray(-1*np.sign(data['dz_from_Center'])*np.abs(gradient), 'cm/s**2')
     else:
         gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'cm/s**2')
@@ -750,3 +716,16 @@ def _Particle_Specific_Angular_Momentum(field, data):
     return l
 
 yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")
+
+def _B_angle(field, data):
+    """
+    Calculates the angle of the magnetic field from the xy-plane
+    """
+    B_z = data['magnetic_field_z']
+    B_h = np.sqrt(data['magnetic_field_x']**2. + data['magnetic_field_y']**2.)
+    angle = np.arctan(B_z/B_h)
+    angle = np.rad2deg(angle)
+    angle = yt.YTArray(angle, 'deg')
+    return angle
+
+yt.add_field("B_angle", function=_B_angle, units=r"deg")
