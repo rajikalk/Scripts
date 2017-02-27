@@ -9,6 +9,7 @@ import h5py
 import my_module as mym
 import matplotlib.gridspec as gridspec
 import glob
+import matplotlib.patheffects as path_effects
 
 def parse_inputs():
     import argparse
@@ -171,39 +172,33 @@ for it in range(len(positions)):
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         concat_string = ''
         adding = False
-        x_shift = False
-        y_shift = False
+        get_stdv = False
+        standard_vel = 5.
         for mov_arg in mov_args:
-            if mov_arg == 'x_shift':
-                x_shift = True
-            if x_shift == True:
-                x_shift = float(mov_arg)
-            if mov_arg == 'y_shift':
-                y_shift = True
-            if y_shift == True:
-                y_shift = float(mov_arg)
-            if x_shift != True and y_shift != True:
-                arg_list.append(mov_arg)
+            if get_stdv:
+                standard_vel = float(mov_arg)
+            if mov_arg == '-stdv':
+                get_stdv = True
+            arg_list.append(mov_arg)
         call(arg_list)
         pickle_file = save_dir + 'movie_pickle.pkl'
         file = open(pickle_file, 'r')
         movie_file, X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, margs = pickle.load(file)
-        if isinstance(x_shift, (float)):
-            X = X + x_shift
-        if isinstance(y_shift, (float)):
-            Y = Y + y_shift
         file.close()
         movf = h5py.File(movie_file, 'r')
         plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
         magx = get_image_arrays(movf, 'mag'+margs.axis[0]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
         magy = get_image_arrays(movf, 'mag'+margs.axis[1]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
-        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']])
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         #print "PARTICLE POSITION=", part_info['particle_position']
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in args_dict.keys():
-            axes_dict[ax_label].annotate(args_dict['annotate_time'], xy=(args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0]), args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), va="center", ha="left", color='w', fontsize=args.text_font)
-        axes_dict[ax_label].annotate(args_dict['title'], xy=(0.0, args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), va="center", ha="center", color='w', fontsize=(args.text_font+2))
+            time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['annotate_time'], va="center", ha="left", color='w', fontsize=args.text_font)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        #axes_dict[ax_label].annotate(args_dict['title'], xy=(np.mean(args_dict['xlim']), args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), va="center", ha="center", color='w', fontsize=(args.text_font+2))
+        title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
+        title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axes_dict[ax_label].set_xlim(args_dict['xlim'])
         axes_dict[ax_label].set_ylim(args_dict['ylim'])
         for line in axes_dict[ax_label].xaxis.get_ticklines():
@@ -231,19 +226,14 @@ for it in range(len(positions)):
         slice_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         plot_velocity_legend = False
-        x_shift = False
-        y_shift = False
+        get_stdv = False
+        standard_vel = 5.
         for slice_arg in slice_args:
-            if mov_arg == 'x_shift':
-                x_shift = True
-            if x_shift == True:
-                x_shift = float(slice_arg)
-            if mov_arg == 'y_shift':
-                y_shift = True
-            if y_shift == True:
-                y_shift = float(slice_arg)
-            if x_shift != True and y_shift != True:
-                arg_list.append(slice_arg)
+            if get_stdv:
+                standard_vel = float(mov_arg)
+            if slice_arg == '-stdv':
+                get_stdv = True
+            arg_list.append(slice_arg)
             if slice_arg == '-pvl':
                 plot_velocity_legend = True
         call(arg_list)
@@ -252,14 +242,8 @@ for it in range(len(positions)):
         file = open(pickle_file, 'r')
         X_vel, Y_vel, xy, field_grid, velx, vely, part_info, limits = pickle.load(file)
         file.close()
-
-        if isinstance(x_shift, (float)):
-            xy[0] = xy[0] + x_shift
-        if isinstance(y_shift, (float)):
-            xy[1] = xy[1] + y_shift
-
         plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0) #cmap=plt.cm.get_cmap('bwr_r')
-        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=limits)
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=limits, standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits)
         axes_dict[ax_label].set_xlim(limits[0])
         axes_dict[ax_label].set_ylim(limits[1])
@@ -331,11 +315,13 @@ for it in range(len(positions)):
         plt.axhline(y=1.0, color='k', linestyle='--')
         for time in range(len(x)):
             axes_dict[ax_label].loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr")#, linewidth=1.5)
+            if positions[it][0] == columns:
+                plt.legend(loc='best')
         if positions[it][0] == 1:
             axes_dict[ax_label].set_ylabel(y_label)
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('Z-distance (AU)')
-        axes_dict[ax_label].set_xlim([1.0, 100.0])
+        axes_dict[ax_label].set_xlim([1.0, 1000.0])
         #data_aspect = (np.log(plt.ylim()[1])-np.log(plt.ylim()[0]))/(np.log(1000.0)-np.log(1.0))
         #axes_dict[ax_label].set_aspect(1./data_aspect)
         #axes_dict[ax_label].set_xlim([1.0, 1000.0])
@@ -567,7 +553,7 @@ for it in range(len(positions)):
     if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
-    if positions[it][1] == rows:
+    if positions[it][1] != rows:
         xticklabels = axes_dict[ax_label].get_xticklabels()
         plt.setp(xticklabels, visible=False)
     if positions[it][0] == 1:
@@ -576,7 +562,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
+            plt.setp(xticklabels[1], visible=False)
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
     f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')

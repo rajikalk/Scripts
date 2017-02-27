@@ -19,6 +19,7 @@ def parse_inputs():
     parser.add_argument("-sp", "--slice_plot", help="Did you want to plot create a slice plot?", default=False)
     parser.add_argument("-pp", "--profile_plot", help="Did you want to plot a profile plot?", default=False)
     parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", default=False)
+    parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", default=False)
     parser.add_argument("-op", "--outflow_pickle", help="Do you want to measure the outflows?", default=False)
     parser.add_argument("-po", "--plot_outflows", help="Do you want to plot the outflows nwo that you've measured them?", default=False)
     parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", default=False)
@@ -45,7 +46,6 @@ def parse_inputs():
     parser.add_argument("-rmax", "--r_max", help="radius of measuign volume", type=float, default=500.)
     parser.add_argument("-dt", "--disk_thickness", help="How far above and below the midplane do you want your profile to go?", type=float, default=100.)
     parser.add_argument("-xf", "--x_field", help="x axis of the profile plot?", type=str, default="Distance_from_Center")
-    parser.add_argument("-yf", "--y_field", help="y axis of the profile plot?", type=str, default="Relative_Keplerian_Velocity")
     parser.add_argument("-wf", "--weight_field", help="any weight field?", type=str, default=None)
     parser.add_argument("-log", "--logscale", help="Want to use a log scale?", type=bool, default=False)
     parser.add_argument("-pb", "--profile_bins", help="how many bins do you want for the profile?", type=int, default=None)
@@ -64,50 +64,13 @@ def parse_inputs():
     parser.add_argument("-cu", "--c_units", help="What units do you want the colorbar in")
     parser.add_argument("-fr", "--frequency", help="how frequenctly do you take the cell boundaries with using adaptive bins", default=2, type=int)
     parser.add_argument("-et", "--endtime", default=2001, type=int)
-    parser.add_argument("-sm", "--smoothing_window", default=5, type=int)
+    parser.add_argument("-stdv", "--standard_vel", default=5, type=float)
     
     #outflow plots
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
-
-def bin(lcdata, errors, reference, bin_size,algorithm="average"):
-    """
-    Function takes a 1d array of data and performs a binning routine (with the defined method), averaging up all the points in equal chunks of size bin_size of the reference array and returns a new array with these values, another with the errors and an array with the middle position of all the bins."""
-    
-    final_data=[]
-    final_reference=[]
-    final_errors=[]
-    Data = array(lcdata)
-    errors=array(errors)
-    reference=array(reference)
-    endpoint = reference.max()
-    startpoint=reference.min()
-    i = startpoint
-    while i<endpoint:
-        if size(Data[(reference>i)&(reference<(i+bin_size))])==0.0:
-            i+=bin_size
-            continue
-        if algorithm.upper() == "MEDIAN":
-            final_data.append(median(Data[(reference>i)&(reference<(i+bin_size))]))
-            final_reference.append(i+(bin_size/2.0))
-            #final_errors.append(MAD)
-        elif algorithm.upper() == "AVERAGE":
-            final_data.append(average(Data[(reference>i)&(reference<(i+bin_size))],weights=1./(errors[(reference>i)&(reference<(i+bin_size))]**2)))
-            final_reference.append(i+(bin_size/2.0))
-            final_errors.append(sqrt(sum(errors[(reference>i)&(reference<(i+bin_size))]**2))/size(errors[(reference>i)&(reference<(i+bin_size))]))
-        elif algorithm.upper() == "SUM":
-            final_data.append(sum(Data[(reference>i)&(reference<(i+bin_size))]))
-            final_errors.append(sqrt(sum(errors[(reference>i)&(reference<(i+bin_size))]**2)))
-            final_reference.append(i+(bin_size/2.0))
-        i += bin_size
-    
-    return array(final_data),array(final_errors),array(final_reference)
-
-def movingaverage(interval, window_size):
-    window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
 
 #======================================================================================================
 
@@ -159,7 +122,15 @@ if args.slice_plot:
     save_image_name = save_dir + "Slice_Plot_time_" + str(args.plot_time) + ".eps"
     X, Y, X_vel, Y_vel, cl = mym.initialise_grid(movie_file, zoom_times=args.zoom_times)
     part_info = mym.get_particle_data(file, axis='xy')
+    center_vel = [0.0, 0.0, 0.0]
     if args.image_center != 0:
+        if False not in (np.sort(dd['particle_tag']) == dd['particle_tag']):
+            args.image_center = args.image_center
+        elif args.image_center == 1:
+            args.image_center = 2
+        else:
+            args.image_center = 1
+        center_vel = [dd['particle_velx'][args.image_center-1].value, dd['particle_vely'][args.image_center-1].value, dd['particle_velz'][args.image_center-1].value]
         x_pos = np.round(part_info['particle_position'][0][args.image_center-1]/cl)*cl
         y_pos = np.round(part_info['particle_position'][1][args.image_center-1]/cl)*cl
         X = X + x_pos
@@ -169,7 +140,13 @@ if args.slice_plot:
     myf.set_coordinate_system('cylindrical')
     fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
     f = h5py.File(movie_file, 'r')
-    velx, vely = mym.get_quiver_arrays(f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0])
+    dim = np.shape(f['dens_slice_xy'])[0]
+    xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
+    xmax = f['minmax_xyz'][0][1]/yt.units.AU.in_units('cm').value
+    cl = (xmax-xmin_full)/dim
+    x_pos_min = int(np.round(np.min(X) - xmin_full))/cl
+    y_pos_min = int(np.round(np.min(Y) - xmin_full))/cl
+    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0], center_vel=center_vel[:2])
     f.close()
 
     if args.ax_lim != None:
@@ -186,7 +163,7 @@ if args.slice_plot:
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     if args.pickle_dump == False:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel)
         if args.annotate_field == 'particle_mass':
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=part_info['particle_mass'])
         elif 'angular' in args.annotate_field:
@@ -226,28 +203,29 @@ if args.profile_plot:
         w_arr = args.weight_field
     x_arr = measuring_volume[args.x_field].in_units(args.x_units)
     if args.y_units == None:
-        y_arr = measuring_volume[args.y_field]
+        y_arr = measuring_volume[args.field]
         args.y_units = str(y_arr.units)
     else:
-        y_arr = measuring_volume[args.y_field].in_units(args.y_units)
+        y_arr = measuring_volume[args.field].in_units(args.y_units)
     z_arr = measuring_volume['z'].in_units('AU')
-    prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins)
+    prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
     sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points)
     
     if args.pickle_dump == False:
         plt.clf()
         cm = plt.cm.get_cmap('RdYlBu')
         plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm)
-        plt.plot(prof_x, prof_y[args.y_field], 'k-', linewidth=2.)
+        plt.plot(prof_x, prof_y, 'k-', linewidth=2.)
         cbar = plt.colorbar(plot, pad=0.0)
         cbar.set_label('|z position| (AU)', rotation=270, labelpad=13, size=14)
         plt.xlabel('Cyclindral Radius (AU)', labelpad=-1)
-        plt.ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', labelpad=-3)
+        #plt.ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', labelpad=-3)
+        plt.ylabel('$\theta$', labelpad=-3)
         plt.xlim([0.0, args.r_max])
-        plt.ylim([0.0, 2.0])
-        plt.axhline(y=1.0, color='k', linestyle='--')
+        plt.ylim([0.0, 90.0])
+        plt.axhline(y=60.0, color='k', linestyle='--')
         #plt.axes().set_aspect(1./plt.axes().get_data_ratio())
-        plt.axes().set_aspect((args.r_max)/(2.0))
+        #plt.axes().set_aspect((args.r_max)/(2.0))
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
         print "created profile plot:", save_image_name
     else:
@@ -263,7 +241,7 @@ if args.force_comp == 'True':
 if args.force_comp:
     field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
-    times = mym.generate_frame_times(files, args.time_step, start_time=0, end_time=args.endtime)
+    times = [0.0, 500.0, 1000.0, 2000.0]
     plot_files = mym.find_files(times, files)
     if args.save_name == None:
         save_image_name = save_dir + field + "_abs.eps"
@@ -271,53 +249,52 @@ if args.force_comp:
         save_image_name = args.save_name + ".eps"
     myf.set_coordinate_system('sph')
     myf.set_center(1)
-    #myf.set_adaptive_bins(False)
-    #myf.set_n_bins(500)
     plt.clf()
     x = []
     y = []
     fit = 0
-    smoothing_val = [1,1,1,1,1]
     for file in plot_files:
         time = times[fit]
         part_file = file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (1100, 'au'))
-        sorted_inds = np.argsort(column['dz_from_Center'].in_units('AU'))
-        x_field = np.abs(column['dz_from_Center'][sorted_inds].in_units('AU'))
+        height = 1000
+        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
+        bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
+        x_field = column['dz_from_Center'].in_units('AU')
         dummy = column['magx']
         dummy = column['magy']
         dummy = column['magz']
         if args.y_units == None:
-            y_field = column[field][sorted_inds]
+            y_field = column[field]
             args.y_units = str(y_field.units)
         else:
-            y_field = column[field][sorted_inds].in_units(args.y_units)
-        y_field = (y_field + y_field[::-1])/2.
+            y_field = column[field].in_units(args.y_units)
         if np.max(y_field) < 0:
             y_field = np.abs(y_field)
         if args.weight_field != None:
-            w_field = column[args.weight_field][sorted_inds]
+            w_field = column[args.weight_field]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
+        #prof_x = x_field
+        #prof_y = y_field
+        #prof_y = (prof_y + prof_y[::-1])/2.
+        prof_x = np.array(prof_x)
+        prof_y = np.array(prof_y)
         x.append(prof_x)
-        #y_temp = (np.array(prof_y) + np.array(prof_y[::-1]))/2.
         y.append(prof_y)
         if args.pickle_dump == False:
             plt.clf()
             plt.axhline(y=1.0, color='k', linestyle='--')
             for time in range(len(x)):
                 if args.logscale == True:
-                    plt.loglog(x[time][1:], y[time][1:], linewidth=1.5)
-                    #plt.semilogy(x[time], y[time], linewidth=1.5)
-                    plt.xlim([1., 1000.0])
+                    plt.loglog(x[time], y[time], linewidth=1.5, alpha=0.75)
+                    plt.xlim([1., height])
                 else:
                     plt.plot(x[time], y[time], linewidth=1.5)
-                    plt.xlim([0., 1000.0])
+                    plt.xlim([0., height])
 
-            #plt.legend(loc='best')
             plt.xlabel('Z-distance (AU)')
             if args.y_label == None:
                 plt.ylabel(field+" ("+args.y_units+")")
@@ -325,7 +302,7 @@ if args.force_comp:
                 plt.ylabel(args.y_label, fontsize=14)
             #plt.ylim([np.min(np.min(y)), np.max(np.max(y))])
             #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
-            plt.axhline(y=1.0, color='k', linestyle='--')
+            #plt.axhline(y=1.0, color='k', linestyle='--')
             plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
             print "created force comparison plot:", save_image_name
         fit = fit + 1
@@ -337,14 +314,13 @@ if args.force_comp:
         for time in range(len(x)):
             plt.axhline(y=1.0, color='k', linestyle='--')
             if args.logscale == True:
-                plt.loglog(x[time][1:], y[time][1:], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                #plt.semilogy(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                plt.xlim([1., 1000.0])
+                plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5, alpha=0.75)
+                plt.xlim([1., height])
             else:
                 plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                plt.xlim([0., 1000.0])
+                plt.xlim([0., height])
         
-        #plt.legend(loc='best')
+        plt.legend(loc='best')
         plt.xlabel('Z-distance (AU)')
         if args.y_label == None:
             plt.ylabel(field+" ("+args.y_units+")")
@@ -352,6 +328,64 @@ if args.force_comp:
             plt.ylabel(args.y_label, fontsize=14)
         #plt.ylim([np.min(np.min(y)), np.max(np.max(y))])
         #plt.axes().set_aspect((1000.)/(plt.ylim()[-1]))
+        plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+        print "created force comparison plot:", save_image_name
+    else:
+        pickle_file = save_dir + 'force_comp_pickle.pkl'
+        file = open(pickle_file, 'w+')
+        pickle.dump((x, y, times, args.y_label),file)
+        file.close()
+        print "created force comp pickle:", pickle_file
+
+if args.b_mag == 'True':
+    args.b_mag = True
+if args.b_mag:
+    files = sorted(glob.glob(path + '*_plt_cnt*'))
+    times = mym.generate_frame_times(files, args.time_step, start_time=0, end_time=args.endtime)
+    plot_files = mym.find_files(times, files)
+    if args.save_name == None:
+        save_image_name = "angle_scatter.pdf"
+    else:
+        save_image_name = args.save_name + ".pdf"
+    myf.set_center(0)
+    plt.clf()
+    x = []
+    y = []
+    fit = 0
+    for file in plot_files:
+        time = times[fit]
+        part_file = file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+        dd = ds.all_data()
+        measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max+100, 'au'), (args.disk_thickness, 'au'))
+        inds = np.where((measuring_volume['B_angle']>59.5)&(measuring_volume['B_angle']<60.5))[0]
+        x.append(measuring_volume['Distance_from_Center'].in_units('AU')[inds])
+        y.append(measuring_volume['dz_from_Center'].in_units('AU')[inds])
+        if args.pickle_dump == False:
+            plt.clf()
+            for time in range(len(x)):
+                plt.scatter(x[time], y[time], alpha=0.4)
+                plt.xlim([0., args.r_max])
+                plt.ylim([0.,50.])
+        
+            plt.xlabel('Cylindrical distance (AU)')
+            plt.ylabel('Z-distance (AU)')
+            plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+            print "created force comparison plot:", save_image_name
+        fit = fit + 1
+    if args.pickle_dump == False:
+        plt.clf()
+        colors = ['k', 'b', 'c', 'g', 'r', 'm']
+        dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+        dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
+        for time in range(len(x)):
+            plt.scatter(x[time], y[time], c=colors[-len(x) + time], label=str(times[time])+"yr", alpha=0.4)
+            plt.xlim([0., args.r_max])
+            plt.ylim([0.,50.])
+
+        plt.legend(loc='best')
+        plt.xlabel('Cylindrical distance (AU)')
+        plt.ylabel('Z-distance (AU)')
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
         print "created force comparison plot:", save_image_name
     else:
