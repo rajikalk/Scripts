@@ -228,7 +228,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     #print "created meshs"
     return X, Y, X_vel, Y_vel, cl
 
-def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None):
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None):
     import pdb
     pdb.set_trace()
     annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
@@ -267,6 +267,9 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         vely.append(yarr)
     velx = np.array(velx)
     vely = np.array(vely)
+    if center_vel != None:
+        velx = velx - center_vel[0]
+        vely = vely - center_vel[1]
     return velx, vely
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$", limits=None):
