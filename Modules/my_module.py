@@ -12,6 +12,7 @@ from matplotlib.colors import LogNorm
 import my_fields as myf
 import scipy.spatial as spatial
 import pickle
+import matplotlib.patheffects as path_effects
 
 fontgize_global=12
 
@@ -229,8 +230,6 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     return X, Y, X_vel, Y_vel, cl
 
 def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None):
-    import pdb
-    pdb.set_trace()
     annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
     if smooth_cells == None:
         smoothing_val = int(annotate_freq/2)
@@ -272,7 +271,8 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         vely = vely - center_vel[1]
     return velx, vely
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, legend_text="5kms$^{-1}$", limits=None):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None):
+    legend_text=str(int(standard_vel)) + "kms$^{-1}$"
     global fontgize_global
     if plot_velocity_legend == 'False':
         plot_velocity_legend = False
@@ -306,7 +306,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         yvel = 0.0
         width_val = 1.0
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
-        axis.annotate(legend_text, xy=(xmax - 0.01*(xmax-xmin), ymin + 0.03*(ymax-ymin)), va="center", ha="right", color='w', fontsize=fontgize_global)
+        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.03*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontgize_global)
+        annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     return axis
 
 def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None):
@@ -360,7 +361,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
             #print("p_t =", p_t)
     if annotate_field != None:
-        axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
+        part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
+        part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        #axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
         #print("Annotated particle field")
     return axis
 

@@ -241,18 +241,6 @@ def main():
     cbar_max = args.colourbar_max
     cbar_min = args.colourbar_min
 
-    if args.image_center != 0:
-        sim_file = usable_sim_files[-1][:-12] + 'part' + usable_sim_files[-1][-5:]
-        f = h5py.File(sim_file, 'r')
-        if False not in (np.sort(f[f.keys()[11]][:].T[17]) == f[f.keys()[11]][:].T[17]):
-            part_ind = args.image_center - 1
-        elif args.image_center == 1:
-            part_ind = 1
-        else:
-            part_ind = 0
-        f.close()
-    part_ind = args.image_center - 1
-
     sys.stdout.flush()
     CW.Barrier()
     rit = args.working_rank
@@ -272,12 +260,14 @@ def main():
                 print "SIM_FILE =", sim_file
                 f.close()
                 f = h5py.File(sim_file, 'r')
-                center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
+                center_vel = [f[f.keys()[11]][args.image_center-1][18], f[f.keys()[11]][args.image_center-1][19], f[f.keys()[11]][args.image_center - 1][20]]
+                import pdb
+                pdb.set_trace()
                 print "CENTER_VEL=", center_vel
                 f.close()
                 f = h5py.File(usable_files[frame_val], 'r')
-                x_pos = np.round(part_info['particle_position'][0][part_ind]/cl)*cl
-                y_pos = np.round(part_info['particle_position'][1][part_ind]/cl)*cl
+                x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
+                y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
                 X = X + x_pos
                 Y = Y + y_pos
                 X_vel = X_vel + x_pos
@@ -289,8 +279,8 @@ def main():
                     xlim = [-1*args.ax_lim, args.ax_lim]
                     ylim = [-1*args.ax_lim, args.ax_lim]
                 else:
-                    xlim = [-1*args.ax_lim + part_info['particle_position'][0][part_ind], args.ax_lim + part_info['particle_position'][0][part_ind]]
-                    ylim = [-1*args.ax_lim + part_info['particle_position'][1][part_ind], args.ax_lim + part_info['particle_position'][1][part_ind]]
+                    xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center - 1], args.ax_lim + part_info['particle_position'][0][args.image_center - 1]]
+                    ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center - 1], args.ax_lim + part_info['particle_position'][1][args.image_center - 1]]
 
             image = get_image_arrays(f, simfo['field'], simfo, args, X, Y)
             print "image shape=", np.shape(image)
@@ -301,7 +291,7 @@ def main():
             y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
             if args.axis == 'xy':
                 if args.image_center != 0:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], center_vel=center_vel[:2])
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])#, center_vel=center_vel[:2])
                 else:
                     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
