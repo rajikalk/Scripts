@@ -30,8 +30,7 @@ def define_constants():
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-z", "--zoom", help="Will movie be zoomed in?", default=False, type=bool)
-    parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default = 4)
+    parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default = 0)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 2, type=float)
@@ -54,6 +53,7 @@ def parse_inputs():
     parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default=True)
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -97,7 +97,7 @@ def sim_info(path, file, args):
         if args.field in key:
             field = key
     dim = np.shape(f[field])[0]
-    if args.zoom:
+    if args.zoom_times > 0:
         zoom_cell = int((dim - dim/float(args.zoom_times))/2.)
     else:
         zoom_cell = 0
@@ -216,6 +216,7 @@ def main():
     args = parse_inputs()
     mym.set_global_font_size(args.text_font)
     files = get_files(path, args)
+    sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
     
     # Initialise Grid and build lists
     if args.plot_time != None:
@@ -228,6 +229,7 @@ def main():
 
     #if rank == 0:
     usable_files = mym.find_files(m_times, files)
+    usable_sim_files = mym.find_files(m_times, sim_files)
     sys.stdout.flush()
     CW.Barrier()
     frames = range(args.start_frame, no_frames)
@@ -238,6 +240,12 @@ def main():
     # Define colourbar bounds
     cbar_max = args.colourbar_max
     cbar_min = args.colourbar_min
+
+    if args.image_center != 0:
+        sim_file = usable_sim_files[0][:-12] + 'part' + usable_sim_files[0][-5:]
+        f = h5py.File(sim_file, 'r')
+        part_tag = f[f.keys()[11]][args.image_center][17]
+        f.clsoe()
 
     sys.stdout.flush()
     CW.Barrier()
@@ -251,13 +259,22 @@ def main():
             has_particles = has_sinks(f)
             if has_particles:
                 part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
-            if args.zoom:
-                X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
-            else:
-                X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val])
+            X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
+            center_vel = [0.0, 0.0, 0.0]
             if args.image_center != 0:
-                x_pos = np.round(part_info['particle_position'][0][args.image_center-1]/cl)*cl
-                y_pos = np.round(part_info['particle_position'][1][args.image_center-1]/cl)*cl
+                sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
+                print "SIM_FILE =", sim_file
+                f.close()
+                f = h5py.File(sim_file, 'r')
+                for part in range(len(f[f.keys()[11]])):
+                    if f[f.keys()[11]][part][17] == part_tag:
+                        part_ind = part
+                center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
+                print "CENTER_VEL=", center_vel
+                f.close()
+                f = h5py.File(usable_files[frame_val], 'r')
+                x_pos = np.round(part_info['particle_position'][0][part_ind]/cl)*cl
+                y_pos = np.round(part_info['particle_position'][1][part_ind]/cl)*cl
                 X = X + x_pos
                 Y = Y + y_pos
                 X_vel = X_vel + x_pos
@@ -280,9 +297,17 @@ def main():
             x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
             y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
             if args.axis == 'xy':
-                velx, vely = mym.get_quiver_arrays(x_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
+                if args.image_center != 0:
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], center_vel=center_vel[:2])
+                else:
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
-                velx, vely = mym.get_quiver_arrays(x_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:])
+                if args.image_center != 0:
+                    import pdb
+                    pdb.set_trace()
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], center_vel=center_vel[::2])
+                else:
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:])
             time_val = 10.0*(np.floor(np.round(file_time)/10.0))
             time_val = m_times[frame_val]
             if time_val == -0.0:
@@ -305,7 +330,8 @@ def main():
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 else:
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim])
+                
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
                 if has_particles:
                     if args.annotate_particles_mass == True:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
