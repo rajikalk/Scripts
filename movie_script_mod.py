@@ -18,6 +18,7 @@ import my_module as mym
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import matplotlib.patheffects as path_effects
 
 def find_nearest(array,value):
     idx = (np.abs(array-value)).argmin()
@@ -260,7 +261,9 @@ def main():
                 print "SIM_FILE =", sim_file
                 f.close()
                 f = h5py.File(sim_file, 'r')
-                center_vel = [f[f.keys()[11]][args.image_center-1][18], f[f.keys()[11]][args.image_center-1][19], f[f.keys()[11]][args.image_center - 1][20]]
+                #center_vel = [f[f.keys()[11]][args.image_center-1][18], f[f.keys()[11]][args.image_center-1][19], f[f.keys()[11]][args.image_center - 1][20]]
+                center_vel = [f[f.keys()[11]][0][18], f[f.keys()[11]][0][19], f[f.keys()[11]][0][20]]
+
                 import pdb
                 pdb.set_trace()
                 print "CENTER_VEL=", center_vel
@@ -291,7 +294,7 @@ def main():
             y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
             if args.axis == 'xy':
                 if args.image_center != 0:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])#, center_vel=center_vel[:2])
+                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], center_vel=center_vel[:2])
                 else:
                     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
             else:
@@ -332,8 +335,10 @@ def main():
                     r_acc = np.round(part_info['accretion_rad'])
                     ax.annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo['xmax'], 0.93*simfo['ymax']), va="center", ha="right", color='w', fontsize=args.text_font)
                 if args.annotate_time == "True":
-                    ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
-                ax.annotate(title, xy=(0.0, ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="center", color='w', fontsize=(args.text_font+4))
+                    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
+                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                    #ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
+                ax.annotate(title, xy=(np.mean(xlim), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="center", color='w', fontsize=(args.text_font+4))
 
                 cbar = plt.colorbar(plot, pad=0.0)
                 cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
