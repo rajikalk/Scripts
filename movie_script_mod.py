@@ -242,6 +242,11 @@ def main():
     cbar_max = args.colourbar_max
     cbar_min = args.colourbar_min
 
+    if args.axis == 'xy':
+        y_int = 1
+    else:
+        y_int = 2
+
     sys.stdout.flush()
     CW.Barrier()
     rit = args.working_rank
@@ -257,24 +262,32 @@ def main():
             X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
             center_vel = [0.0, 0.0, 0.0]
             if args.image_center != 0:
-                sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
-                print "SIM_FILE =", sim_file
-                f.close()
-                f = h5py.File(sim_file, 'r')
-                #center_vel = [f[f.keys()[11]][args.image_center-1][18], f[f.keys()[11]][args.image_center-1][19], f[f.keys()[11]][args.image_center - 1][20]]
-                center_vel = [f[f.keys()[11]][0][18], f[f.keys()[11]][0][19], f[f.keys()[11]][0][20]]
-
-                import pdb
-                pdb.set_trace()
-                print "CENTER_VEL=", center_vel
-                f.close()
-                f = h5py.File(usable_files[frame_val], 'r')
                 x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
                 y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
+                pos = np.array([part_info['particle_position'][0][args.image_center - 1], part_info['particle_position'][1][args.image_center - 1]])
                 X = X + x_pos
                 Y = Y + y_pos
                 X_vel = X_vel + x_pos
                 Y_vel = Y_vel + y_pos
+                sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
+                print "SIM_FILE =", sim_file
+                f.close()
+                f = h5py.File(sim_file, 'r')
+                if len(part_info['particle_mass']) == 1:
+                    part_ind = 0
+                else:
+                    min_dist = 1000.0
+                    for part in range(len(part_info['particle_mass'])):
+                        temp_pos = np.array([f[f.keys()[11]][part][13]/c['au'], f[f.keys()[11]][part][13+y_int]/c['au']])
+                        dist = np.sqrt(np.abs(np.diff((temp_pos - pos)**2)))[0]
+                        if dist < min_dist:
+                            min_dist = dist
+                            part_ind = part
+                
+                center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
+                print "CENTER_VEL=", center_vel
+                f.close()
+                f = h5py.File(usable_files[frame_val], 'r')
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
             
             if args.ax_lim != None:
