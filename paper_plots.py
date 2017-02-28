@@ -124,12 +124,6 @@ if args.slice_plot:
     part_info = mym.get_particle_data(file, axis='xy')
     center_vel = [0.0, 0.0, 0.0]
     if args.image_center != 0:
-        if False not in (np.sort(dd['particle_tag']) == dd['particle_tag']):
-            args.image_center = args.image_center
-        elif args.image_center == 1:
-            args.image_center = 2
-        else:
-            args.image_center = 1
         center_vel = [dd['particle_velx'][args.image_center-1].value, dd['particle_vely'][args.image_center-1].value, dd['particle_velz'][args.image_center-1].value]
         x_pos = np.round(part_info['particle_position'][0][args.image_center-1]/cl)*cl
         y_pos = np.round(part_info['particle_position'][1][args.image_center-1]/cl)*cl
@@ -163,6 +157,7 @@ if args.slice_plot:
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     if args.pickle_dump == False:
+
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel)
         if args.annotate_field == 'particle_mass':
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=part_info['particle_mass'])

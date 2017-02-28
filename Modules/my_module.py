@@ -483,15 +483,6 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
             field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
         field_grid = field_grid/(len(dd['particle_mass'])+1)
     else:
-        '''
-        if no_of_particles == 2:
-            if center == 1:
-                myf.set_center(2)
-            else:
-                myf.set_center(1)
-        else:
-            myf.set_center(center)
-        '''
         myf.set_center(center)
         del dd
         dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
@@ -507,14 +498,14 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     if log:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
     else:
-        plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
+        if field == "Relative_Keplerian_Velocity":
+            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=0.0, vmax=2.0)
+        else:
+            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
     plt.gca().set_aspect('equal')
-    #cbar = plt.colorbar(plot, pad=0.0)
-    #cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
-    '''
-    if field == "Relative_Keplerian_Velocity":
-       cbar.set_clim([0.0, 2.0])
-    '''
+    cbar = plt.colorbar(plot, pad=0.0)
+    cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
+
     ax.set_xlim([np.min(X), np.max(X)])
     ax.set_ylim([np.min(Y), np.max(Y)])
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
