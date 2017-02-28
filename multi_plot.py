@@ -560,7 +560,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
-            plt.setp(xticklabels[1], visible=False)
+            plt.setp(xticklabels[0], visible=False)
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
     f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
