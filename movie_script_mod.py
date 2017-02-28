@@ -261,7 +261,7 @@ def main():
                 part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
             X, Y, X_vel, Y_vel, cl = mym.initialise_grid(usable_files[frame_val], zoom_times=args.zoom_times)
             center_vel = [0.0, 0.0, 0.0]
-            if args.image_center != 0:
+            if args.image_center != 0 and has_particles:
                 x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
                 y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
                 pos = np.array([part_info['particle_position'][0][args.image_center - 1], part_info['particle_position'][1][args.image_center - 1]])
