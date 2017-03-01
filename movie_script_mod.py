@@ -291,12 +291,12 @@ def main():
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
             
             if args.ax_lim != None:
-                if args.image_center == 0:
-                    xlim = [-1*args.ax_lim, args.ax_lim]
-                    ylim = [-1*args.ax_lim, args.ax_lim]
-                else:
+                if has_particles and args.image_center != 0:
                     xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center - 1], args.ax_lim + part_info['particle_position'][0][args.image_center - 1]]
                     ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center - 1], args.ax_lim + part_info['particle_position'][1][args.image_center - 1]]
+                else:
+                    xlim = [-1*args.ax_lim, args.ax_lim]
+                    ylim = [-1*args.ax_lim, args.ax_lim]
 
             image = get_image_arrays(f, simfo['field'], simfo, args, X, Y)
             print "image shape=", np.shape(image)
