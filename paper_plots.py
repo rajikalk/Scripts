@@ -10,7 +10,9 @@ import numpy as np
 import h5py
 import pickle
 import matplotlib.gridspec as gridspec
+from matplotlib.colors import LogNorm
 import csv
+import matplotlib.patheffects as path_effects
 
 def parse_inputs():
     import argparse
@@ -66,7 +68,9 @@ def parse_inputs():
     parser.add_argument("-et", "--endtime", default=2001, type=int)
     parser.add_argument("-stdv", "--standard_vel", default=5, type=float)
     
-    #outflow plots
+    #yt_slice
+    parser.add_argument("-ys", "--yt_slice", help="did you want to make a yt-slice?", default=False)
+    parser.add_argument("-st", "--slice_thickness", help="How thick do you want the slice to be?", default=100.0, type=float)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -575,3 +579,73 @@ if args.separation:
     plt.tick_params(axis='y', which='major', labelsize=14)
     plt.savefig(image_name, bbox_inches='tight')
     print "Created image", image_name
+
+if args.yt_slice == 'True':
+    args.yt_slice = True
+if args.yt_slice:
+    print "MAKING YT SLICE"
+    if args.image_center == 0:
+        c = np.array([0.5, 0.5, 0.5])
+    else:
+        c = np.array([(dd['particle_posx'][args.image_center-1]-ds.domain_left_edge[0])/ds.domain_width[0], (dd['particle_posy'][args.image_center-1]-ds.domain_left_edge[1])/ds.domain_width[1], (dd['particle_posz'][args.image_center-1]-ds.domain_left_edge[2])/ds.domain_width[2]])
+    if len(dd['particle_posx']) == 1:
+        L = [0.0, 1.0, 0.0]
+    else:
+        pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+        L = [-1*pos_vec[-1], pos_vec[0]]
+        L.append(0.0)
+    if args.ax_lim != None:
+        if args.image_center == 0:
+            xlim = [-1*args.ax_lim, args.ax_lim]
+            ylim = [-1*args.ax_lim, args.ax_lim]
+        else:
+            xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center-1], args.ax_lim + part_info['particle_position'][0][args.image_center-1]]
+            ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center-1], args.ax_lim + part_info['particle_position'][1][args.image_center-1]]
+    else:
+        xlim = [-1000, 1000]
+        ylim = [-1000, 1000]
+    x_width = (xlim[1] -xlim[0])
+    y_width = (ylim[1] -ylim[0])
+    thickness = yt.YTArray(args.slice_thickness, 'AU')
+    if args.field == "Relative_Keplerian_Velocity":
+        field = "density"
+    else:
+        field = args.field
+    proj = yt.OffAxisProjectionPlot(ds, L, field, center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+    weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
+    proj.set_buff_size(args.resolution)
+    weighted_proj.set_buff_size(args.resolution)
+
+    image_data = proj.frb.data[proj.frb.keys()[0]]/thickness.in_units('cm')
+    velx_full = weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')
+    velx_full = weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')
+
+
+    resolution = len(image_data[0])
+    x = np.linspace(xlim[0], xlim[1], resolution)
+    y = np.linspace(ylim[0], ylim[1], resolution)
+    X, Y = np.meshgrid(x, y)
+
+    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0]
+
+    part_info = mym.get_particle_data(file)
+    part_info['particle_position'][0] = part_info['particle_position'][0]/np.sin(90-np.rad2deg(np.arctan(L[0]/L[1])))
+
+    fig, ax = plt.subplots()
+    plot = ax.pcolormesh(X, Y, image_data.T.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
+    plt.gca().set_aspect('equal')
+    cbar = plt.colorbar(plot, pad=0.0)
+    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(args.plot_time))+'yr', va="center", ha="left", color='w', fontsize=12)
+    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+    ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
+    ax.set_ylabel('$z$ (AU)', labelpad=-20, fontsize=args.text_font)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    plt.savefig("yt_slice.eps", format='eps', bbox_inches='tight')
+
+    proj.save()
+
