@@ -17,7 +17,6 @@ import matplotlib.patheffects as path_effects
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-mp", "--movie_plot", help="did you want to plot a slice of the movie?", default=False)
     parser.add_argument("-sp", "--slice_plot", help="Did you want to plot create a slice plot?", default=False)
     parser.add_argument("-pp", "--profile_plot", help="Did you want to plot a profile plot?", default=False)
     parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", default=False)
@@ -32,7 +31,6 @@ def parse_inputs():
     parser.add_argument("-ic", "--image_center", help="Where would you like to center the image?", type=int, default=0)
     
     #movie plot args
-    parser.add_argument("-wr", "--working_rank", default=0, type=int)
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", default=True)
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-15)
@@ -64,7 +62,6 @@ def parse_inputs():
     parser.add_argument("-pd", "--pickle_dump", help="do you want to pickle data?", default=False)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-cu", "--c_units", help="What units do you want the colorbar in")
-    parser.add_argument("-fr", "--frequency", help="how frequenctly do you take the cell boundaries with using adaptive bins", default=2, type=int)
     parser.add_argument("-et", "--endtime", default=2001, type=int)
     parser.add_argument("-stdv", "--standard_vel", default=5, type=float)
     
@@ -89,11 +86,6 @@ if os.path.exists(save_dir) == False:
     os.makedirs(save_dir)
 
 myf.set_center(args.center)
-
-if args.movie_plot == 'True':
-    args.movie_plot = True
-if args.movie_plot:
-    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', path, save_dir, '-pt', str(args.plot_time), '-t', args.title, '-z', 'True', '-zt', str(args.zoom_times), '-cmin', str(args.colourbar_min), '-cmax', str(args.colourbar_max), '-at', str(args.annotate_time), '-ax', 'xy', '-wr', str(args.working_rank), '-pvl', str(args.plot_velocity_legend), '-ic', str(args.image_center)])
 
 movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 movie_file = mym.find_files([args.plot_time], movie_files)[0]
@@ -611,31 +603,72 @@ if args.yt_slice:
         field = "density"
     else:
         field = args.field
+    temp = dd['velx']
+    temp = dd['vely']
+    temp = dd['velz']
+    temp = dd['particle_posx']
+    temp = dd['particle_posy']
+    temp = dd['velocity_magnitude']
+
     proj = yt.OffAxisProjectionPlot(ds, L, field, center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-    weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
     proj.set_buff_size(args.resolution)
-    weighted_proj.set_buff_size(args.resolution)
+    proj.save()
+    image_data = (proj.frb.data[proj.frb.keys()[0]]/thickness.in_units('cm')).T
+    del proj
 
-    image_data = proj.frb.data[proj.frb.keys()[0]]/thickness.in_units('cm')
-    velx_full = weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')
-    velx_full = weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')
+    #weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['velx', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
+    annotated_proj = yt.OffAxisProjectionPlot(ds, L, ['Projected_Velocity', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
 
 
-    resolution = len(image_data[0])
-    x = np.linspace(xlim[0], xlim[1], resolution)
-    y = np.linspace(ylim[0], ylim[1], resolution)
+    velx_full = (annotated_proj.frb.data[('gas', 'Projected_Velocity')]/thickness.in_units('cm')).T
+    vely_full = (annotated_proj.frb.data[('flash', 'velz')]/thickness.in_units('cm')).T
+    magx = (annotated_proj.frb.data[('flash', 'magx')]/thickness.in_units('cm')).T
+    magy = (annotated_proj.frb.data[('flash', 'magz')]/thickness.in_units('cm')).T
+
+    #velx_full = (weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')).T
+    #vely_full = (weighted_proj.frb.data[('flash', 'velz')].in_units('cm/s')).T
+    #magx = (weighted_proj.frb.data[('flash', 'magx')]/thickness.in_units('cm')).T
+    #magz = (weighted_proj.frb.data[('flash', 'magz')]/thickness.in_units('cm')).T
+
+    res = np.shape(image_data)[0]
+
+    x = np.linspace(xlim[0], xlim[1], res)
+    y = np.linspace(ylim[0], ylim[1], res)
     X, Y = np.meshgrid(x, y)
 
-    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0]
+    cl = float((xlim[1] - xlim[0]))/float(res)
+    x = np.arange(xlim[0]+cl/2., xlim[1]+cl/2., cl)
+    annotate_freq = res/31.
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < 31:
+        val = annotate_freq*counter + annotate_freq/2.
+        x_ind.append(int(val))
+        y_ind.append(int(val))
+        counter = counter + 1
+    x_vel = []
+    y_vel = []
+    for x_counter in x_ind:
+        val = xlim[0]+cl/2. + x_counter*cl
+        x_vel.append(val)
+        y_vel.append(val)
+    x_vel = np.array(x_vel)
+    y_vel = np.array(y_vel)
+    X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
+
+    velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full)
 
     part_info = mym.get_particle_data(file)
     part_info['particle_position'][0] = part_info['particle_position'][0]/np.sin(90-np.rad2deg(np.arctan(L[0]/L[1])))
 
     fig, ax = plt.subplots()
-    plot = ax.pcolormesh(X, Y, image_data.T.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
+    plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
     plt.gca().set_aspect('equal')
     cbar = plt.colorbar(plot, pad=0.0)
     cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(args.plot_time))+'yr', va="center", ha="left", color='w', fontsize=12)
@@ -646,6 +679,5 @@ if args.yt_slice:
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     plt.savefig("yt_slice.eps", format='eps', bbox_inches='tight')
-
-    proj.save()
+    print "SAVED PLOT AS yt_slice.eps"
 
