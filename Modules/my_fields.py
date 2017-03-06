@@ -279,6 +279,54 @@ def _Corrected_vel_mag(field, data):
 
 yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
 
+def _Projected_Velocity(field, data):
+    """
+    If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
+    """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        if len(data['particle_mass']) == 2:
+            pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
+            pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+            vels = np.array([data['velocity_x'].in_units('cm/s').value, data['velocity_y'].in_units('cm/s').value])
+            vels = vels.T
+            c = ((np.dot(vels,pos_vec))/(np.dot(pos_vec,pos_vec)))
+            velx = pos_vec[0] * c
+            vely = pos_vec[1] * c
+            vels = np.sqrt(velx**2. + vely**2.)
+            '''
+            vels = c*pos_mag
+            vels = yt.YTArray(vels, 'cm/s')
+            '''
+        else:
+            vels = data['velx'].in_units('cm/s')
+    else:
+        vels = data['velx'].in_units('cm/s')
+    return vels
+
+yt.add_field("Projected_Velocity", function=_Projected_Velocity, units=r"cm/s")
+
+def _Projected_Magnetic_Field(field, data):
+    """
+        If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
+        """
+    if ('all', u'particle_mass') in data.ds.field_list:
+        if len(data['particle_mass']) == 2:
+            pos_vec = [np.diff(data['particle_posx'].value)[0], np.diff(data['particle_posy'].value)[0]]
+            pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+            mags = np.array([data['magx'].in_units('cm/s').value,data['magy'].in_units('cm/s').value])
+            mags = vels.T
+            proj = ((np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec)))
+            mags = pos_mag * proj
+            mags = yt.YTArray(mags, 'gauss')
+        else:
+            mags = data['magx'].in_units('gauss')
+    else:
+        mags = data['magx'].in_units('gauss')
+    return mags
+
+yt.add_field("Projected_Magnetic_Field", function=_Projected_Magnetic_Field, units=r"gauss")
+
+
 def Enclosed_Mass(file, max_radius,inds):
     global center
     global n_bins
