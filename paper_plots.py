@@ -129,6 +129,9 @@ if args.slice_plot:
         Y_vel = Y_vel + y_pos
     myf.set_coordinate_system('cylindrical')
     fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
+    dummy1, dummy2, dummy3, magx_grid = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
+    dummy1, dummy2, dummy3, magy_grid = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
+
     f = h5py.File(movie_file, 'r')
     dim = np.shape(f['dens_slice_xy'])[0]
     xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
@@ -136,6 +139,7 @@ if args.slice_plot:
     cl = (xmax-xmin_full)/dim
     x_pos_min = int(np.round(np.min(X) - xmin_full))/cl
     y_pos_min = int(np.round(np.min(Y) - xmin_full))/cl
+    #ax.streamplot(xy[0], xy[1], magx_grid, magy_grid, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0], center_vel=center_vel[:2])
     f.close()
 
