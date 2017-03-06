@@ -129,9 +129,6 @@ if args.slice_plot:
         Y_vel = Y_vel + y_pos
     myf.set_coordinate_system('cylindrical')
     fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
-    dummy1, dummy2, dummy3, magx_grid = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
-    dummy1, dummy2, dummy3, magy_grid = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
-
     f = h5py.File(movie_file, 'r')
     dim = np.shape(f['dens_slice_xy'])[0]
     xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
@@ -139,7 +136,6 @@ if args.slice_plot:
     cl = (xmax-xmin_full)/dim
     x_pos_min = int(np.round(np.min(X) - xmin_full))/cl
     y_pos_min = int(np.round(np.min(Y) - xmin_full))/cl
-    #ax.streamplot(xy[0], xy[1], magx_grid, magy_grid, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0], center_vel=center_vel[:2])
     f.close()
 
@@ -604,7 +600,7 @@ if args.yt_slice:
     y_width = (ylim[1] -ylim[0])
     thickness = yt.YTArray(args.slice_thickness, 'AU')
     if args.field == "Relative_Keplerian_Velocity":
-        field = "density"
+        field = "dens"
     else:
         field = args.field
     temp = dd['velx']
@@ -614,25 +610,13 @@ if args.yt_slice:
     temp = dd['particle_posy']
     temp = dd['velocity_magnitude']
 
-    proj = yt.OffAxisProjectionPlot(ds, L, field, center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-    proj.set_buff_size(args.resolution)
-    proj.save()
-    image_data = (proj.frb.data[proj.frb.keys()[0]]/thickness.in_units('cm')).T
-    del proj
-
-    #weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['velx', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
-    annotated_proj = yt.OffAxisProjectionPlot(ds, L, ['Projected_Velocity', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+    proj = yt.OffAxisProjectionPlot(ds, L, [field,'Projected_Velocity', 'velz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+    image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
+    velx_full = (proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s')/thickness.in_units('cm')).T
+    vely_full = (proj.frb.data[('flash', 'velz')].in_units('cm**2/s')/thickness.in_units('cm')).T
 
 
-    velx_full = (annotated_proj.frb.data[('gas', 'Projected_Velocity')]/thickness.in_units('cm')).T
-    vely_full = (annotated_proj.frb.data[('flash', 'velz')]/thickness.in_units('cm')).T
-    magx = (annotated_proj.frb.data[('flash', 'magx')]/thickness.in_units('cm')).T
-    magy = (annotated_proj.frb.data[('flash', 'magz')]/thickness.in_units('cm')).T
-
-    #velx_full = (weighted_proj.frb.data[('flash', 'velx')].in_units('cm/s')).T
-    #vely_full = (weighted_proj.frb.data[('flash', 'velz')].in_units('cm/s')).T
-    #magx = (weighted_proj.frb.data[('flash', 'magx')]/thickness.in_units('cm')).T
-    #magz = (weighted_proj.frb.data[('flash', 'magz')]/thickness.in_units('cm')).T
+    #weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['Projected_Velocity', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
 
     res = np.shape(image_data)[0]
 
