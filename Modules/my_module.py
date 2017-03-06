@@ -463,8 +463,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     del xyz
     print("Done computing tree...")
     #create grid of the pixel positions and quiver positions
-    #xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.zeros_like(xy[0].flatten())]).T
-    xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), -1*np.ones_like(xy[0].flatten())]).T
+    xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.zeros_like(xy[0].flatten())]).T
 
     #This line also takes a while
     #print("Finding nearest points...")
@@ -481,8 +480,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
             print("Doing center =", cen)
             del dd
             dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
-            #field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
-            field_grid = field_grid + dd[field][nearest_points[:,0]].reshape(xy[0].shape)
+            field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
         field_grid = field_grid/(len(dd['particle_mass'])+1)
     else:
         myf.set_center(center)
