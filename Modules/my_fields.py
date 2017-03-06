@@ -307,17 +307,18 @@ yt.add_field("Projected_Velocity", function=_Projected_Velocity, units=r"cm/s")
 
 def _Projected_Magnetic_Field(field, data):
     """
-        If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
-        """
+    If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
+    """
     if ('all', u'particle_mass') in data.ds.field_list:
         if len(data['particle_mass']) == 2:
-            pos_vec = [np.diff(data['particle_posx'].value)[0], np.diff(data['particle_posy'].value)[0]]
+            pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
             pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
-            mags = np.array([data['magx'].in_units('cm/s').value,data['magy'].in_units('cm/s').value])
-            mags = vels.T
-            proj = ((np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec)))
-            mags = pos_mag * proj
-            mags = yt.YTArray(mags, 'gauss')
+            mags = np.array([data['magx'].value, data['magy'].value])
+            mags = mags.T
+            c = ((np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec)))
+            magx = pos_vec[0] * c
+            magy = pos_vec[1] * c
+            mags = np.sqrt(magx**2. + magy**2.)
         else:
             mags = data['magx'].in_units('gauss')
     else:
@@ -325,7 +326,6 @@ def _Projected_Magnetic_Field(field, data):
     return mags
 
 yt.add_field("Projected_Magnetic_Field", function=_Projected_Magnetic_Field, units=r"gauss")
-
 
 def Enclosed_Mass(file, max_radius,inds):
     global center
