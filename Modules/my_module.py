@@ -464,7 +464,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     print("Done computing tree...")
     #create grid of the pixel positions and quiver positions
     #xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.zeros_like(xy[0].flatten())]).T
-    xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.ones_like(xy[0].flatten())]).T
+    xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), -1*np.ones_like(xy[0].flatten())]).T
 
     #This line also takes a while
     #print("Finding nearest points...")
