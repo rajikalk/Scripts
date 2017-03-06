@@ -128,6 +128,11 @@ if args.slice_plot:
         X_vel = X_vel + x_pos
         Y_vel = Y_vel + y_pos
     myf.set_coordinate_system('cylindrical')
+    dummy1, dummy2, dummy3, magx_grid = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
+    dummy1, dummy2, dummy3, magy_grid = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
+    del dummy1
+    del dummy2
+    del dummy3
     fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
     f = h5py.File(movie_file, 'r')
     dim = np.shape(f['dens_slice_xy'])[0]
@@ -586,6 +591,8 @@ if args.yt_slice:
         pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
         L = [-1*pos_vec[-1], pos_vec[0]]
         L.append(0.0)
+        if L[0] > 0:
+            L = [-1*L[0], -1*L[1], 0.0]
     if args.ax_lim != None:
         if args.image_center == 0:
             xlim = [-1*args.ax_lim, args.ax_lim]
@@ -648,7 +655,9 @@ if args.yt_slice:
     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full)
 
     part_info = mym.get_particle_data(file)
-    part_info['particle_position'][0] = part_info['particle_position'][0]/np.sin(90-np.rad2deg(np.arctan(L[0]/L[1])))
+    part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
+    cen_AU = c*ds.domain_width.in_units('AU')[0].value - ds.domain_width.in_units('AU')[0].value/2.
+    part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0] - cen_AU[0])**2. + (part_plane_position[1] - cen_AU[1])**2.)
 
     fig, ax = plt.subplots()
     plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
