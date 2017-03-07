@@ -26,15 +26,15 @@ def parse_inputs():
     parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", default=False)
     parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default=4.1, type=float)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int, default=0)
-    parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="True")
+    parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-c", "--center", help="What center do you want to set for everything?, if 3 it combines all centers", type=int, default=0)
     parser.add_argument("-ic", "--image_center", help="Where would you like to center the image?", type=int, default=0)
     
     #movie plot args
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", default=True)
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
-    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-15)
-    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-13)
+    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-16)
+    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-14)
     
     #slice plot args
     parser.add_argument("-f", "--field", help="What is the field you want to have a sliceplot of?", type=str, default="Relative_Keplerian_Velocity")
@@ -90,11 +90,8 @@ myf.set_center(args.center)
 movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 movie_file = mym.find_files([args.plot_time], movie_files)[0]
 del movie_files
-file_no = int(movie_file.split('WIND')[1][-6:])*4
-file = movie_file.split('WIND')[0]+'WIND_hdf5_plt_cnt_' + ("%04d" % file_no)
-if os.path.isfile(file) == False:
-    sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
-    file = mym.find_files([args.plot_time], sim_files)[0]
+sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
+file = mym.find_files([args.plot_time], sim_files)[0]
 part_file = file[:-12] + 'part' + file[-5:]
 ds = yt.load(file, particle_filename=part_file)
 dd = ds.all_data()
@@ -159,6 +156,7 @@ if args.slice_plot:
     ax.set_ylim(ylim)
     if args.pickle_dump == False:
 
+        plt.streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5)
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel)
         if args.annotate_field == 'particle_mass':
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=part_info['particle_mass'])
@@ -580,6 +578,7 @@ if args.separation:
 if args.yt_slice == 'True':
     args.yt_slice = True
 if args.yt_slice:
+    part_info = mym.get_particle_data(file)
     print "MAKING YT SLICE"
     if args.image_center == 0:
         c = np.array([0.5, 0.5, 0.5])
@@ -617,13 +616,17 @@ if args.yt_slice:
     temp = dd['particle_posy']
     temp = dd['velocity_magnitude']
 
-    proj = yt.OffAxisProjectionPlot(ds, L, [field,'Projected_Velocity', 'velz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+    proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
     image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
-    velx_full = (proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s')/thickness.in_units('cm')).T
-    vely_full = (proj.frb.data[('flash', 'velz')].in_units('cm**2/s')/thickness.in_units('cm')).T
-
-
-    #weighted_proj = yt.OffAxisProjectionPlot(ds, L, ['Projected_Velocity', 'velz', 'magx', 'magz'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='density')
+    velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
+    vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
+    magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
+    magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
+    mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T
+    velx_full = velx_full/mass
+    vely_full = vely_full/mass
+    magx = magx/mass
+    magy = magy/mass
 
     res = np.shape(image_data)[0]
 
@@ -654,27 +657,51 @@ if args.yt_slice:
 
     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full)
 
-    part_info = mym.get_particle_data(file)
     part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
     cen_AU = c*ds.domain_width.in_units('AU')[0].value - ds.domain_width.in_units('AU')[0].value/2.
     part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0] - cen_AU[0])**2. + (part_plane_position[1] - cen_AU[1])**2.)
 
-    fig, ax = plt.subplots()
-    plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
-    plt.gca().set_aspect('equal')
-    cbar = plt.colorbar(plot, pad=0.0)
-    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+    if args.pickle_dump == False:
+        fig, ax = plt.subplots()
+        plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
+        plt.gca().set_aspect('equal')
+        cbar = plt.colorbar(plot, pad=0.0)
+        cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
 
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+        plt.streamplot(X, Y, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
-    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(args.plot_time))+'yr', va="center", ha="left", color='w', fontsize=12)
-    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(args.plot_time))+'yr', va="center", ha="left", color='w', fontsize=12)
+        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-    ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
-    ax.set_ylabel('$z$ (AU)', labelpad=-20, fontsize=args.text_font)
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
-    plt.savefig("yt_slice.eps", format='eps', bbox_inches='tight')
-    print "SAVED PLOT AS yt_slice.eps"
+        ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
+        ax.set_ylabel('$z$ (AU)', labelpad=-20, fontsize=args.text_font)
+        ax.set_xlim(xlim)
+        ax.set_ylim(ylim)
+        if args.save_name == None:
+            save_image_name = "yt_slice.eps"
+        else:
+            save_image_name = args.save_name + ".eps"
+        plt.savefig(save_image_name, format='eps', bbox_inches='tight')
+        print "SAVED PLOT AS", save_image_name
+    else:
+        args_dict = {}
+        if args.annotate_time == "True":
+            args_dict.update({'annotate_time': '$t$='+str(int(args.plot_time))+'yr'})
+        args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+        args_dict.update({'cbar_min': args.colourbar_min})
+        args_dict.update({'cbar_max': args.colourbar_min})
+        args_dict.update({'title': args.title})
+        args_dict.update({'axlim':args.ax_lim})
+        args_dict.update({'xlim':xlim})
+        args_dict.update({'ylim':ylim})
+        args_dict.update({'standard_vel':args.standard_vel})
+        import pdb
+        pdb.set_trace()
 
+        pickle_file = save_dir + 'yt_proj_pickle.pkl'
+        file = open(pickle_file, 'w+')
+        pickle.dump((X, Y, X_vel, Y_vel, image_data.value, velx, vely, magx.value, magy.value, part_info, args_dict),file)
+        file.close()
+        print "created force comp pickle:", pickle_file
