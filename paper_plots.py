@@ -579,6 +579,8 @@ if args.yt_slice == 'True':
     args.yt_slice = True
 if args.yt_slice:
     part_info = mym.get_particle_data(file)
+    part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
+    part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
     print "MAKING YT SLICE"
     if args.image_center == 0:
         c = np.array([0.5, 0.5, 0.5])
@@ -656,10 +658,6 @@ if args.yt_slice:
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
 
     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full)
-
-    part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
-    cen_AU = c*ds.domain_width.in_units('AU')[0].value - ds.domain_width.in_units('AU')[0].value/2.
-    part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0] - cen_AU[0])**2. + (part_plane_position[1] - cen_AU[1])**2.)
 
     if args.pickle_dump == False:
         fig, ax = plt.subplots()
