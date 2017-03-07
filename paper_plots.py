@@ -691,14 +691,12 @@ if args.yt_slice:
             args_dict.update({'annotate_time': '$t$='+str(int(args.plot_time))+'yr'})
         args_dict.update({'annotate_velocity': args.plot_velocity_legend})
         args_dict.update({'cbar_min': args.colourbar_min})
-        args_dict.update({'cbar_max': args.colourbar_min})
+        args_dict.update({'cbar_max': args.colourbar_max})
         args_dict.update({'title': args.title})
         args_dict.update({'axlim':args.ax_lim})
         args_dict.update({'xlim':xlim})
         args_dict.update({'ylim':ylim})
         args_dict.update({'standard_vel':args.standard_vel})
-        import pdb
-        pdb.set_trace()
 
         pickle_file = save_dir + 'yt_proj_pickle.pkl'
         file = open(pickle_file, 'w+')
