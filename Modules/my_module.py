@@ -126,11 +126,27 @@ def find_files(m_times, files):
         else:
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+        print "Current file time =", time
+        diff = time - m_times[mit]
         if pit == it or time == m_times[mit]:
             if time < 0:
-                usable_files.append(files[it+1])
+                append_file = files[it+1]
+            elif np.abs(diff) > 100:
+                if diff > 0:
+                    append_file = files[it-1]
+                else:
+                    append_file = files[it+1]
             else:
-                usable_files.append(files[it])
+                append_file = files[it]
+            usable_files.append(append_file)
+            if yt_file:
+                file = append_file
+                part_file=file[:-12] + 'part' + file[-5:]
+                ds = yt.load(file, particle_filename=part_file)
+                time = ds.current_time.in_units('yr').value-sink_form_time
+            else:
+                f = h5py.File(append_file, 'r')
+                time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
             print "found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1]
             mit = mit + 1
             min = it
