@@ -170,8 +170,6 @@ for it in range(len(positions)):
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
-        concat_string = ''
-        adding = False
         get_stdv = False
         standard_vel = 5.
         for mov_arg in mov_args:
@@ -181,6 +179,7 @@ for it in range(len(positions)):
                 get_stdv = True
             arg_list.append(mov_arg)
         call(arg_list)
+
         pickle_file = save_dir + 'movie_pickle.pkl'
         file = open(pickle_file, 'r')
         movie_file, X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, margs = pickle.load(file)
@@ -218,9 +217,50 @@ for it in range(len(positions)):
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
         #axes_dict[ax_label].set_aspect((args_dict['ylim'][1] - args_dict['ylim'][0])/(args_dict['xlim'][1] - args_dict['xlim'][0]))
+    if 'yt_proj' in plot_type[it]:
+        axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
+        yt_args = input_args[it].split(' ')
+        arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
+        for yt_arg in yt_args:
+            arg_list.append(yt_arg)
+        call(arg_list)
+
+        pickle_file = save_dir + 'yt_proj_pickle.pkl'
+        file = open(pickle_file, 'r')
+        X, Y, X_vel, Y_vel, image, velx, vely, magx, magy, part_info, args_dict = pickle.load(file)
+        file.close()
+
+        plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
+        axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=args_dict['standard_vel'])
+        mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
+        if 'annotate_time' in args_dict.keys():
+            time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['annotate_time'], va="center", ha="left", color='w', fontsize=args.text_font)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
+        title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        axes_dict[ax_label].set_xlim(args_dict['xlim'])
+        axes_dict[ax_label].set_ylim(args_dict['ylim'])
+        for line in axes_dict[ax_label].xaxis.get_ticklines():
+            line.set_color('white')
+        for line in axes_dict[ax_label].yaxis.get_ticklines():
+            line.set_color('white')
+        if positions[it][0] == 1:
+            axes_dict[ax_label].set_ylabel(args_dict['yabel'], labelpad=args.y_label_pad, fontsize=args.text_font)
+        if args.share_colourbar == False:
+            if positions[it][0] == columns:
+                cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
+                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+        else:
+            if cbar_plotted == False:
+                cax = f.add_axes([0.9, 0.1, 0.02, 0.8])
+                f.colorbar(plot, pad=0.0, cax=cax)
+                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                cbar_plotted = True
+        if positions[it][1] == rows:
+            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
     if 'slice' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
-        axs = axes_dict[ax_label]
         slice_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         plot_velocity_legend = False
@@ -236,7 +276,7 @@ for it in range(len(positions)):
                 plot_velocity_legend = True
         call(arg_list)
 
-        pickle_file = save_dir + 'slice_pickle.pkl'
+        pickle_file = save_dir + 'yt_proj_pickle.pkl'
         file = open(pickle_file, 'r')
         X_vel, Y_vel, xy, field_grid, velx, vely, part_info, limits = pickle.load(file)
         file.close()
