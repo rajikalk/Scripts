@@ -777,3 +777,35 @@ def _B_angle(field, data):
     return angle
 
 yt.add_field("B_angle", function=_B_angle, units=r"deg")
+
+def _Projected_Velocity_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of Projected_Velocity
+    """
+    return data['Projected_Velocity']*data['cell_mass']
+
+yt.add_field("Projected_Velocity_mw", function=_Projected_Velocity_mw, units=r"cm*g/s")
+
+def _velz_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of velz
+    """
+    return data['velz']*data['cell_mass']
+
+yt.add_field("velz_mw", function=_velz_mw, units=r"cm*g/s")
+
+def _Projected_Magnetic_Field_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of Projected_Magnetic_Field
+    """
+    return data['Projected_Magnetic_Field']*data['cell_mass']
+
+yt.add_field("Projected_Magnetic_Field_mw", function=_Projected_Magnetic_Field_mw, units=r"gauss*g")
+
+def _magz_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magz
+    """
+    return data['magz']*data['cell_mass']
+
+yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
