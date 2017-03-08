@@ -578,6 +578,14 @@ if args.separation:
 if args.yt_slice == 'True':
     args.yt_slice = True
 if args.yt_slice:
+    title_parts = args.title.split('_')
+    title = ''
+    for part in title_parts:
+        if part != title_parts[-1]:
+            title = title + part + ' '
+        else:
+            title = title + part
+    
     part_info = mym.get_particle_data(file)
     part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
     part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
@@ -650,9 +658,10 @@ if args.yt_slice:
     x_vel = []
     y_vel = []
     for x_counter in x_ind:
-        val = xlim[0]+cl/2. + x_counter*cl
-        x_vel.append(val)
-        y_vel.append(val)
+        x_val = xlim[0]+cl/2. + x_counter*cl
+        y_val = ylim[0]+cl/2. + x_counter*cl
+        x_vel.append(x_val)
+        y_vel.append(y_val)
     x_vel = np.array(x_vel)
     y_vel = np.array(y_vel)
     X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
@@ -690,7 +699,7 @@ if args.yt_slice:
         args_dict.update({'annotate_velocity': args.plot_velocity_legend})
         args_dict.update({'cbar_min': args.colourbar_min})
         args_dict.update({'cbar_max': args.colourbar_max})
-        args_dict.update({'title': args.title})
+        args_dict.update({'title': title})
         args_dict.update({'axlim':args.ax_lim})
         args_dict.update({'xlim':xlim})
         args_dict.update({'ylim':ylim})
