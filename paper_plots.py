@@ -591,9 +591,9 @@ if args.yt_slice:
     part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
     print "MAKING YT SLICE"
     if args.image_center == 0:
-        c = np.array([0.5, 0.5, 0.5])
+        c = np.array([0.0, 0.0, 0.0])
     else:
-        c = np.array([(dd['particle_posx'][args.image_center-1]-ds.domain_left_edge[0])/ds.domain_width[0], (dd['particle_posy'][args.image_center-1]-ds.domain_left_edge[1])/ds.domain_width[1], (dd['particle_posz'][args.image_center-1]-ds.domain_left_edge[2])/ds.domain_width[2]])
+        c = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
     if len(dd['particle_posx']) == 1:
         L = [0.0, 1.0, 0.0]
     else:
@@ -626,7 +626,7 @@ if args.yt_slice:
     temp = dd['particle_posy']
     temp = dd['velocity_magnitude']
 
-    proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=c, width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+    proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
     image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
     velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
     vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
