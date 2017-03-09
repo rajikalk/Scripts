@@ -333,7 +333,7 @@ for it in range(len(positions)):
         #axes_dict[ax_label].set_aspect(250.)
         if positions[it][0] == columns and args.share_colourbar == False:
             cbar = plt.colorbar(plot, pad=0.0)
-            cbar.set_label('|z position| (AU)', rotation=270, labelpad=20, size=args.text_font)
+            cbar.set_label('|$z$ position| (AU)', rotation=270, labelpad=20, size=args.text_font)
         if positions[it][0] == 1:
             axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)')
         if positions[it][1] == rows:
