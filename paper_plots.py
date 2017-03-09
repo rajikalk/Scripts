@@ -186,11 +186,7 @@ if args.profile_plot:
     myf.set_center(args.center)
     print "Doing Profile Plot"
     save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
-    measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max+100, 'au'), (args.disk_thickness, 'au'))
-    '''
-    if args.profile_bins == None:
-        args.profile_bins = args.resolution/2.
-    '''
+    measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max, 'au'), (args.disk_thickness, 'au'))
     if args.weight_field != None:
         w_arr = measuring_volume[args.weight_field]
     else:
@@ -202,6 +198,7 @@ if args.profile_plot:
     else:
         y_arr = measuring_volume[args.field].in_units(args.y_units)
     z_arr = measuring_volume['z'].in_units('AU')
+
     prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
     sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points)
     
