@@ -769,7 +769,10 @@ def _B_angle(field, data):
     """
     Calculates the angle of the magnetic field from the xy-plane
     """
-    B_z = data['magnetic_field_z']
+    if ('flash', u'magz') in data.ds.field_list:
+        B_z = data['magnetic_field_z']
+    else:
+        B_z = yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss')
     B_h = np.sqrt(data['magnetic_field_x']**2. + data['magnetic_field_y']**2.)
     angle = np.arctan(B_z/B_h)
     angle = np.rad2deg(angle)
@@ -806,6 +809,9 @@ def _magz_mw(field, data):
     """
     field to be able to created a mass weighted projection of magz
     """
-    return data['magz']*data['cell_mass']
+    if ('flash', u'magz') in data.ds.field_list:
+        return data['magz']*data['cell_mass']
+    else:
+        return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
 
 yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
