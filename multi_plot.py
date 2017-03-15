@@ -97,6 +97,7 @@ rows = np.max(positions[:,1])
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
 f =plt.figure(figsize=(width, height))
+#f =plt.figure(figsize=(4, 9))
 gs_left = gridspec.GridSpec(rows, columns-1)
 gs_right = gridspec.GridSpec(rows, 1)
 
@@ -435,6 +436,10 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         L = float(row[3])
+                        if 'specific' in input_args[it]:
+                            L = L/float(row[1])
+                        if np.isnan(L):
+                            L = 1.e-6
                         angular_momentum[-1].append(L)
                     if header == 0:
                         header = 1
@@ -448,6 +453,10 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         L = float(row[3])
+                        if 'specific' in input_args[it]:
+                            L = L/float(row[1])
+                        if np.isnan(L):
+                            L = 1.e-6
                         angular_momentum[-1].append(L)
                     if header == 0:
                         header = 1
@@ -461,15 +470,23 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         L = float(row[3])
+                        if 'specific' in input_args[it]:
+                            L = L/float(row[1])
+                        if np.isnan(L):
+                            L = 1.e-6
                         angular_momentum[-1].append(L)
                     if header == 0:
                         header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], angular_momentum[t], linestyles[t])
-            axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
+            if 'specific' in input_args[it]:
+                axes_dict[ax_label].set_ylabel('Sp. Ang. Mom. (km$^2\,$s$^{-1}$)')
+                axes_dict[ax_label].set_ylim([1.e7, 1.e11])
+            else:
+                axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
+                axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
             axes_dict[ax_label].set_xlim([0, 3000])
-            axes_dict[ax_label].set_ylim([1.e5, 1.e10])
         else:
             time = []
             momentum = []
@@ -483,6 +500,10 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         p = float(row[2])
+                        if 'specific' in input_args[it]:
+                            p = p/float(row[1])
+                        if np.isnan(p):
+                            p = 1.e-6
                         momentum[-1].append(p)
                     if header == 0:
                         header = 1
@@ -496,6 +517,10 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         p = float(row[2])
+                        if 'specific' in input_args[it]:
+                            p = p/float(row[1])
+                        if np.isnan(p):
+                            p = 1.e-6
                         momentum[-1].append(p)
                     if header == 0:
                         header = 1
@@ -509,17 +534,26 @@ for it in range(len(positions)):
                         time_val = float(row[0])
                         time[-1].append(time_val)
                         p = float(row[2])
+                        if 'specific' in input_args[it]:
+                            p = p/float(row[1])
+                        if np.isnan(p):
+                            p = 1.e-6
                         momentum[-1].append(p)
                     if header == 0:
                         header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], momentum[t], linestyles[t])
-            axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
+            if 'specific' in input_args[it]:
+                axes_dict[ax_label].set_ylabel('Specific Mom. (km$\,$s$^{-1}$)')
+                axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
+            else:
+                axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
+                axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
             axes_dict[ax_label].set_xlim([0, 3000])
-            axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
+            print "CREATED OUTFLOWS PLOT"
     if 'appendix' in plot_type[it]:
         lref_labels = ['10', '11', '12', '13', '14', '15']
-        colors = ['k', 'b', 'c', 'g', 'r', 'o', 'm']
+        colors = ['k', 'b', 'c', 'g', 'r', 'm']
         dash_list =  [[5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None), [1,1]]
         Time = []
         Mass = []
