@@ -64,13 +64,13 @@ def get_image_mesh(file, zoom_times):
     X, Y = np.meshgrid(x, x)
     return X, Y
 
-def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=None):
+def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=2000.):
     try:
         file = files[-2]
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
+        sink_form_time = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
         max_time = ds.current_time.in_units('yr').value - sink_form_time
     except YTOutputNotIdentified:
         f = h5py.File(files[-1], 'r')
@@ -90,7 +90,7 @@ def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time
         m_times = []
 
     postsink = 0.0
-    while postsink < (max_time):
+    while postsink <= (end_time):
         if start_time != None:
             if postsink >= start_time:
                 m_times.append(postsink)
@@ -105,7 +105,7 @@ def find_files(m_times, files):
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
+        sink_form_time = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s').value)
         yt_file = True
     except YTOutputNotIdentified:
         sink_form_time = find_sink_formation_time(files)
