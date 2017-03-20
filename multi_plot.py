@@ -259,7 +259,7 @@ for it in range(len(positions)):
                 cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
                 cbar_plotted = True
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
+            axes_dict[ax_label].set_xlabel('Distance from center (AU)', fontsize=args.text_font)
     if 'slice' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         slice_args = input_args[it].split(' ')
@@ -635,6 +635,7 @@ for it in range(len(positions)):
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
             plt.setp(xticklabels[0], visible=False)
+            #plt.setp(xticklabels[1], visible=False)
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
     f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
