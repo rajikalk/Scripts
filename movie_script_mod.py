@@ -289,6 +289,10 @@ def main():
                 f.close()
                 f = h5py.File(usable_files[frame_val], 'r')
             yabel, xlim, ylim = image_properties(X, Y, args, simfo)
+            if args.axis == 'xy':
+                center_vel=center_vel[:2]
+            else:
+                center_vel=center_vel[::2]
             
             if args.ax_lim != None:
                 if has_particles and args.image_center != 0:
@@ -305,16 +309,15 @@ def main():
             magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis, simfo, args, X, Y)
             x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
             y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
-            if args.axis == 'xy':
-                if args.image_center != 0:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], center_vel=center_vel[:2])
-                else:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0])
+            import pdb
+            pdb.set_trace()
+            if np.shape(f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis]) == (2048, 2048):
+                velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis]]
+            elif args.axis == 'xy':
+                velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:,0]]
             else:
-                if args.image_center != 0:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], center_vel=center_vel[::2])
-                else:
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, y_pos_min, X, f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:])
+                velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:]]
+            velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, velocity_data[0], velocity_data[1], center_vel=center_vel)
             time_val = 10.0*(np.floor(np.round(file_time)/10.0))
             time_val = m_times[frame_val]
             if time_val == -0.0:
