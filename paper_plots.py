@@ -93,7 +93,7 @@ movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
 
 if args.produce_movie != False:
-    m_times = mym.generate_frame_times(sim_files, args.time_step)
+    m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
 else:
     m_times = [args.plot_time]
 
@@ -165,8 +165,10 @@ for fit in range(len(usable_files)):
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         if args.pickle_dump == False:
-
-            plt.streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5)
+            if fit == 0 and len(usable_files) != 1:
+                plt.streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5)
+            else:
+                plt.streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5, arrowstyle='-')
             mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel)
             if args.annotate_field == 'particle_mass':
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits, annotate_field=part_info['particle_mass'])
@@ -182,6 +184,8 @@ for fit in range(len(usable_files)):
 
             fig.savefig(save_image_name)
             print "created slice plot:", save_image_name
+            import pdb
+            pdb.set_trace()
         else:
             print "CREATING PICKLE"
             pickle_file = save_dir + 'slice_pickle.pkl'
@@ -563,9 +567,14 @@ for fit in range(len(usable_files)):
             dy = y_pos[0] - y_pos[1]
             dz = z_pos[0] - z_pos[1]
             sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+            if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
+                times_new = np.array([0])
+                sep_new = np.array([500])
+                times = np.append(times_new, times)
+                sep = np.append(sep_new, sep)
             plt.semilogy(times, sep, line_style[lit], label=labels[lit])
             lit = lit + 1
-        plt.xlim([0.0, 3000.0])
+        plt.xlim([0.0, 3100.0])
         plt.legend(loc='best')
         plt.xlabel("Time (yr)", fontsize=14)
         plt.ylabel("Separation (AU)", fontsize=14)
@@ -715,7 +724,7 @@ for fit in range(len(usable_files)):
             print "created force comp pickle:", pickle_file
 
     #saving the figure
-    if args.mov != False:
+    if args.produce_movie != False:
         save_image_name = save_dir + "movie_frame_" + ("%06d" % fit)
-        plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
-        print "CREATED MOVIE FRAME", fit, "of", range(len(usable_files))
+        plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
+        print "CREATED MOVIE FRAME No.", fit, "OF", len(usable_files), "saved as:", save_image_name
