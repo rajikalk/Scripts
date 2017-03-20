@@ -58,13 +58,13 @@ for dir in dirs:
             write_line = line + job_name
         elif line == 'mpirun -np $PBS_NCPUS python ~/Scripts/movie_script_mod.py ':
             if dir == 'xz':
-                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' ' + args.additions + '-z True -zt 1.33 -cmin 1.e-16 -cmax 1.e-14 -at True -pvl True -al 1000 -tf 16 ' + '1>' + job_name + '.out 2>&1'
+                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' ' + args.additions + '-zt 1.33 -cmin 1.e-16 -cmax 1.e-14 -at True -pvl True -al 1000 -tf 16 ' + '1>' + job_name + '.out 2>&1'
             if dir == 'xy':
                 write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' -ax "xy" ' + args.additions + ' ' + '1>' + job_name + '.out 2>&1'
             if dir == 'xz_zoom':
-                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' -z True ' + args.additions + ' ' + '1>' + job_name + '.out 2>&1'
+                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' -zt 12.3 ' + args.additions + ' ' + '1>' + job_name + '.out 2>&1'
             if dir == 'xy_zoom':
-                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + ' -z True -zt 12.3 -cmin 1.e-15 -cmax 1.e-13 -at True -pvl True -ax xy -al 100 -tf 16 ' + args.additions + ' ' + '1>' + job_name + '.out 2>&1'
+                write_line = line + cur_dir + ' ' + save_dir + dir + '/ -sf ' + start_frame + '-zt 12.3 -cmin 1.e-15 -cmax 1.e-13 -at True -pvl True -ax xy -al 100 -tf 16 ' + args.additions + ' ' + '1>' + job_name + '.out 2>&1'
         else:
             write_line = line
         write_line = write_line + '\n'
