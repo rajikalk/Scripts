@@ -31,7 +31,7 @@ def define_constants():
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default = 0)
+    parser.add_argument("-zt", "--zoom_times", help="0 is default zoom", default=0)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 2, type=float)
