@@ -70,6 +70,7 @@ def parse_inputs():
     parser.add_argument("-st", "--slice_thickness", help="How thick do you want the slice to be?", default=100.0, type=float)
     
     parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", default=False, type=bool)
+    parser.add_argument("-sf", "--start_frame", help="if you don't want to start at frame 0, what frame do you want to start at?", type=int, default=0)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -93,7 +94,7 @@ movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
 
 if args.produce_movie != False:
-    m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
+    m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=25)
 else:
     m_times = [args.plot_time]
 
@@ -109,7 +110,7 @@ dd = ds.all_data()
 sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
 
 #Now iterate over the files
-for fit in range(len(usable_files)):
+for fit in range(args.start_frame, len(usable_files)):
     if args.slice_plot != False:
         movie_file = movie_files[fit]
     file = usable_files[fit]
@@ -691,10 +692,11 @@ for fit in range(len(usable_files)):
             mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
             if ('all', u'particle_mass') in ds.field_list:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
-            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(args.plot_time))+'yr', va="center", ha="left", color='w', fontsize=12)
+            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(m_times[fit]))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-            ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
+            #ax.set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
+            ax.set_xlabel('Distance from center (AU)', labelpad=-1, fontsize=args.text_font)
             ax.set_ylabel('$z$ (AU)', labelpad=-20, fontsize=args.text_font)
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
