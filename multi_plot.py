@@ -10,6 +10,9 @@ import my_module as mym
 import matplotlib.gridspec as gridspec
 import glob
 import matplotlib.patheffects as path_effects
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 def parse_inputs():
     import argparse
@@ -97,7 +100,7 @@ rows = np.max(positions[:,1])
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
 f =plt.figure(figsize=(width, height))
-#f =plt.figure(figsize=(4, 9))
+#f =plt.figure(figsize=(5, 9))
 gs_left = gridspec.GridSpec(rows, columns-1)
 gs_right = gridspec.GridSpec(rows, 1)
 
@@ -216,7 +219,10 @@ for it in range(len(positions)):
                 cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
                 cbar_plotted = True
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
+            if positions[it][0] == 2:
+                axes_dict[ax_label].set_xlabel('Distance from center (AU)', fontsize=args.text_font)
+            else:
+                axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
         #axes_dict[ax_label].set_aspect((args_dict['ylim'][1] - args_dict['ylim'][0])/(args_dict['xlim'][1] - args_dict['xlim'][0]))
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
@@ -357,9 +363,9 @@ for it in range(len(positions)):
             if positions[it][0] == columns:
                 plt.legend(loc='best')
         if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel(y_label)
+            axes_dict[ax_label].set_ylabel(y_label, fontsize=args.text_font+2)
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('Z-distance (AU)')
+            axes_dict[ax_label].set_xlabel('Z-distance (AU)', fontsize=args.text_font)
         axes_dict[ax_label].set_xlim([1.0, 1000.0])
         #data_aspect = (np.log(plt.ylim()[1])-np.log(plt.ylim()[0]))/(np.log(1000.0)-np.log(1.0))
         #axes_dict[ax_label].set_aspect(1./data_aspect)
@@ -634,8 +640,10 @@ for it in range(len(positions)):
         axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
-            #plt.setp(xticklabels[1], visible=False)
+            if 'force' in plot_type[it]:
+                plt.setp(xticklabels[1], visible=False)
+            else:
+                plt.setp(xticklabels[0], visible=False)
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
     f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
