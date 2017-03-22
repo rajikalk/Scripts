@@ -13,6 +13,9 @@ import matplotlib.gridspec as gridspec
 from matplotlib.colors import LogNorm
 import csv
 import matplotlib.patheffects as path_effects
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 def parse_inputs():
     import argparse
@@ -71,6 +74,8 @@ def parse_inputs():
     
     parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", default=False, type=bool)
     parser.add_argument("-sf", "--start_frame", help="if you don't want to start at frame 0, what frame do you want to start at?", type=int, default=0)
+    
+    parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -241,100 +246,6 @@ for fit in range(args.start_frame, len(usable_files)):
             file.close()
             print "created profile pickle:", pickle_file
 
-
-    if args.force_comp == 'True':
-        args.force_comp = True
-    if args.force_comp:
-        field = args.field
-        files = sorted(glob.glob(path + '*_plt_cnt*'))
-        times = [0.0, 500.0, 1000.0, 2000.0]
-        plot_files = mym.find_files(times, files)
-        if args.save_name == None:
-            save_image_name = save_dir + field + "_abs.eps"
-        else:
-            save_image_name = args.save_name + ".eps"
-        myf.set_coordinate_system('sph')
-        myf.set_center(1)
-        plt.clf()
-        x = []
-        y = []
-        fit = 0
-        for file in plot_files:
-            time = times[fit]
-            part_file = file[:-12] + 'part' + file[-5:]
-            ds = yt.load(file, particle_filename=part_file)
-            dd = ds.all_data()
-            height = 1000
-            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
-            bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
-            x_field = column['dz_from_Center'].in_units('AU')
-            dummy = column['magx']
-            dummy = column['magy']
-            dummy = column['magz']
-            if args.y_units == None:
-                y_field = column[field]
-                args.y_units = str(y_field.units)
-            else:
-                y_field = column[field].in_units(args.y_units)
-            if np.max(y_field) < 0:
-                y_field = np.abs(y_field)
-            if args.weight_field != None:
-                w_field = column[args.weight_field]
-            else:
-                w_field = None
-            prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
-            prof_x = np.array(prof_x)
-            prof_y = np.array(prof_y)
-            x.append(prof_x)
-            y.append(prof_y)
-            if args.pickle_dump == False:
-                plt.clf()
-                plt.axhline(y=1.0, color='k', linestyle='--')
-                for time in range(len(x)):
-                    if args.logscale == True:
-                        plt.loglog(x[time], y[time], linewidth=1.5, alpha=0.75)
-                        plt.xlim([1., height])
-                    else:
-                        plt.plot(x[time], y[time], linewidth=1.5)
-                        plt.xlim([0., height])
-
-                plt.xlabel('Z-distance (AU)')
-                if args.y_label == None:
-                    plt.ylabel(field+" ("+args.y_units+")")
-                else:
-                    plt.ylabel(args.y_label, fontsize=14)
-                plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-                print "created force comparison plot:", save_image_name
-            fit = fit + 1
-        if args.pickle_dump == False:
-            plt.clf()
-            colors = ['k', 'b', 'c', 'g', 'r', 'm']
-            dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
-            dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
-            for time in range(len(x)):
-                plt.axhline(y=1.0, color='k', linestyle='--')
-                if args.logscale == True:
-                    plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5, alpha=0.75)
-                    plt.xlim([1., height])
-                else:
-                    plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
-                    plt.xlim([0., height])
-            
-            plt.legend(loc='best')
-            plt.xlabel('Z-distance (AU)')
-            if args.y_label == None:
-                plt.ylabel(field+" ("+args.y_units+")")
-            else:
-                plt.ylabel(args.y_label, fontsize=14)
-            plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-            print "created force comparison plot:", save_image_name
-        else:
-            pickle_file = save_dir + 'force_comp_pickle.pkl'
-            file = open(pickle_file, 'w+')
-            pickle.dump((x, y, times, args.y_label),file)
-            file.close()
-            print "created force comp pickle:", pickle_file
-
     if args.b_mag == 'True':
         args.b_mag = True
     if args.b_mag:
@@ -461,128 +372,6 @@ for fit in range(args.start_frame, len(usable_files)):
         file = open(pickle_file, 'w+')
         pickle.dump((times, mass, maximum_speed, momentum, ang_momentum),file)
         file.close()
-
-    if args.plot_outflows == 'True':
-        args.plot_outflows = True
-    if args.plot_outflows:
-        files = glob.glob('/home/100/rlk100/Paper_plots/Outflows/*/outflow*')
-        fig = plt.figure()
-        gs = gridspec.GridSpec(3, 1)
-        gs.update(hspace=0.0)
-        pit = 0
-        times = []
-        mass = []
-        maximum_speed = []
-        momentum = []
-        ang_momentum = []
-        max_time = 3000.
-        for file in files:
-            legend_label =  file.split('Outflows/')[-1].split('/')[0]
-            f = open(file, 'r')
-            t, m, ms, mom, ang_mom = pickle.load(f)
-            times.append(t)
-            mass.append(m)
-            maximum_speed.append(ms)
-            momentum.append(mom)
-            ang_momentum.append(ang_mom)
-            f.close()
-        linestyles = ['k:', 'b-.', 'g--', 'r-', 'm+', 'cx']
-        ax1 = fig.add_subplot(gs[0,0])
-        ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
-        ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
-        for file_no in range(len(times)):
-            inds = np.where(mass[file_no] == 0.0)
-            if len(inds) == 0:
-                mass[file_no][inds] = 0.0000001
-            ax1.semilogy(times[file_no], mass[file_no], linestyles[file_no])
-        ax1.set_ylabel('Outflow Mass (M$_\odot$)')
-        ax1.set_xlim([0, max_time])
-        ax1.set_ylim(bottom=1.e-5)
-        for file_no in range(len(times)):
-            inds = np.where(momentum[file_no] == 0.0)
-            if len(inds) == 0:
-                momentum[file_no][inds] = 0.0000001
-            ax2.semilogy(times[file_no], momentum[file_no], linestyles[file_no])
-        ax2.set_ylabel('Outflow Momentum (M$_\odot$kms$^{-1}$)')
-        ax2.set_xlim([0, max_time])
-        ax2.set_ylim(bottom=1.e-5)
-        for file_no in range(len(times)):
-            inds = np.where(ang_momentum[file_no] == 0.0)
-            if len(inds) == 0:
-                ang_momentum[file_no][inds] = 0.0000001
-            ax3.semilogy(times[file_no], ang_momentum[file_no], linestyles[file_no])
-        ax3.set_xlabel('Time since protostar formation (yr)')
-        ax3.set_ylabel('Outflow Ang. Mom. (M$_\odot$km$^2$s$^{-1}$)')
-        ax3.set_xlim([0, max_time])
-        ax3.set_ylim(bottom=1.e5)
-        plt.tight_layout()
-        image_name = save_dir + "outflow_plot.eps"
-        plt.savefig(image_name, bbox_inches='tight')
-        print "Created image", image_name
-
-    if args.separation == 'True':
-        args.separation = True
-    if args.separation:
-        image_name = save_dir + "separation.eps"
-        files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat"]
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        line_style = ['b-', 'r-']
-        labels=["Tight Binary", "Wide Binary"]
-        lit = 0
-        plt.clf()
-        for file in files:
-            particle_tag = []
-            times = []
-            x_pos = []
-            y_pos = []
-            z_pos = []
-            with open(file, 'r') as f:
-                reader = csv.reader(f, dialect='dat')
-                for row in reader:
-                    if row[0][0] != '[':
-                        part_tag = int(row[0])
-                        if part_tag not in particle_tag:
-                            particle_tag.append(part_tag)
-                            x_pos.append([])
-                            y_pos.append([])
-                            z_pos.append([])
-                            pit = len(particle_tag) - 1
-                        elif particle_tag[0] == part_tag:
-                            pit = 0
-                        else:
-                            pit = 1
-                        time = (float(row[1]) - float(row[-1]))/yt.units.yr.in_units('s').value
-                        times.append(time)
-                        x = float(row[2])/yt.units.AU.in_units('cm').value
-                        y = float(row[3])/yt.units.AU.in_units('cm').value
-                        z = float(row[4])/yt.units.AU.in_units('cm').value
-                        x_pos[pit].append(x)
-                        y_pos[pit].append(y)
-                        z_pos[pit].append(z)
-            times = np.array(times)
-            times = times[::2]
-            x_pos = np.array(x_pos)
-            y_pos = np.array(y_pos)
-            z_pos = np.array(z_pos)
-            dx = x_pos[0] - x_pos[1]
-            dy = y_pos[0] - y_pos[1]
-            dz = z_pos[0] - z_pos[1]
-            sep = np.sqrt(dx**2. + dy**2. + dz**2.)
-            if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
-                times_new = np.array([0])
-                sep_new = np.array([500])
-                times = np.append(times_new, times)
-                sep = np.append(sep_new, sep)
-            plt.semilogy(times, sep, line_style[lit], label=labels[lit])
-            lit = lit + 1
-        plt.xlim([0.0, 3100.0])
-        plt.legend(loc='best')
-        plt.xlabel("Time (yr)", fontsize=14)
-        plt.ylabel("Separation (AU)", fontsize=14)
-        plt.tick_params(axis='x', which='major', labelsize=14)
-        plt.tick_params(axis='y', which='major', labelsize=14)
-        plt.savefig(image_name, bbox_inches='tight')
-        print "Created image", image_name
 
     if args.yt_slice == 'True':
         args.yt_slice = True
@@ -725,8 +514,266 @@ for fit in range(args.start_frame, len(usable_files)):
             file.close()
             print "created force comp pickle:", pickle_file
 
+
     #saving the figure
     if args.produce_movie != False:
         save_image_name = save_dir + "movie_frame_" + ("%06d" % fit)
         plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
         print "CREATED MOVIE FRAME No.", fit, "OF", len(usable_files), "saved as:", save_image_name
+
+#=============================================================================
+#These plots don't need to iterate over multiple files
+
+if args.force_comp == 'True':
+    args.force_comp = True
+    if args.force_comp:
+        field = args.field
+        files = sorted(glob.glob(path + '*_plt_cnt*'))
+        times = [0.0, 500.0, 1000.0, 2000.0]
+        plot_files = mym.find_files(times, files)
+        if args.save_name == None:
+            save_image_name = save_dir + field + "_abs.eps"
+        else:
+            save_image_name = args.save_name + ".eps"
+        myf.set_coordinate_system('sph')
+        myf.set_center(1)
+        plt.clf()
+        x = []
+        y = []
+        fit = 0
+        for file in plot_files:
+            time = times[fit]
+            part_file = file[:-12] + 'part' + file[-5:]
+            ds = yt.load(file, particle_filename=part_file)
+            dd = ds.all_data()
+            height = 1000
+            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
+            bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
+            x_field = column['dz_from_Center'].in_units('AU')
+            dummy = column['magx']
+            dummy = column['magy']
+            dummy = column['magz']
+            if args.y_units == None:
+                y_field = column[field]
+                args.y_units = str(y_field.units)
+            else:
+                y_field = column[field].in_units(args.y_units)
+            if np.max(y_field) < 0:
+                y_field = np.abs(y_field)
+            if args.weight_field != None:
+                w_field = column[args.weight_field]
+            else:
+                w_field = None
+            prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
+            prof_x = np.array(prof_x)
+            prof_y = np.array(prof_y)
+            x.append(prof_x)
+            y.append(prof_y)
+            if args.pickle_dump == False:
+                plt.clf()
+                plt.axhline(y=1.0, color='k', linestyle='--')
+                for time in range(len(x)):
+                    if args.logscale == True:
+                        plt.loglog(x[time], y[time], linewidth=1.5, alpha=0.75)
+                        plt.xlim([1., height])
+                    else:
+                        plt.plot(x[time], y[time], linewidth=1.5)
+                        plt.xlim([0., height])
+            
+                plt.xlabel('Z-distance (AU)')
+                if args.y_label == None:
+                    plt.ylabel(field+" ("+args.y_units+")")
+            else:
+                plt.ylabel(args.y_label, fontsize=14)
+                plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+                print "created force comparison plot:", save_image_name
+            fit = fit + 1
+                
+        if args.pickle_dump == False:
+            plt.clf()
+            colors = ['k', 'b', 'c', 'g', 'r', 'm']
+            dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+            dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
+            for time in range(len(x)):
+                plt.axhline(y=1.0, color='k', linestyle='--')
+                if args.logscale == True:
+                    plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5, alpha=0.75)
+                    plt.xlim([1., height])
+                else:
+                    plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
+                    plt.xlim([0., height])
+            
+            plt.legend(loc='best')
+            plt.xlabel('Z-distance (AU)')
+            if args.y_label == None:
+                plt.ylabel(field+" ("+args.y_units+")")
+            else:
+                plt.ylabel(args.y_label, fontsize=14)
+            plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+            print "created force comparison plot:", save_image_name
+        else:
+            pickle_file = save_dir + 'force_comp_pickle.pkl'
+            file = open(pickle_file, 'w+')
+            pickle.dump((x, y, times, args.y_label),file)
+            file.close()
+            print "created force comp pickle:", pickle_file
+
+if args.plot_outflows == 'True':
+    args.plot_outflows = True
+    if args.plot_outflows:
+        files = glob.glob('/home/100/rlk100/Paper_plots/Outflows/*/outflow*')
+        fig = plt.figure()
+        gs = gridspec.GridSpec(3, 1)
+        gs.update(hspace=0.0)
+        pit = 0
+        times = []
+        mass = []
+        maximum_speed = []
+        momentum = []
+        ang_momentum = []
+        max_time = 3000.
+        for file in files:
+            legend_label =  file.split('Outflows/')[-1].split('/')[0]
+            f = open(file, 'r')
+            t, m, ms, mom, ang_mom = pickle.load(f)
+            times.append(t)
+            mass.append(m)
+            maximum_speed.append(ms)
+            momentum.append(mom)
+            ang_momentum.append(ang_mom)
+            f.close()
+        linestyles = ['k:', 'b-.', 'g--', 'r-', 'm+', 'cx']
+        ax1 = fig.add_subplot(gs[0,0])
+        ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+        ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+        for file_no in range(len(times)):
+            inds = np.where(mass[file_no] == 0.0)
+            if len(inds) == 0:
+                mass[file_no][inds] = 0.0000001
+            ax1.semilogy(times[file_no], mass[file_no], linestyles[file_no])
+        ax1.set_ylabel('Outflow Mass (M$_\odot$)')
+        ax1.set_xlim([0, max_time])
+        ax1.set_ylim(bottom=1.e-5)
+        for file_no in range(len(times)):
+            inds = np.where(momentum[file_no] == 0.0)
+            if len(inds) == 0:
+                momentum[file_no][inds] = 0.0000001
+            ax2.semilogy(times[file_no], momentum[file_no], linestyles[file_no])
+        ax2.set_ylabel('Outflow Momentum (M$_\odot$kms$^{-1}$)')
+        ax2.set_xlim([0, max_time])
+        ax2.set_ylim(bottom=1.e-5)
+        for file_no in range(len(times)):
+            inds = np.where(ang_momentum[file_no] == 0.0)
+            if len(inds) == 0:
+                ang_momentum[file_no][inds] = 0.0000001
+            ax3.semilogy(times[file_no], ang_momentum[file_no], linestyles[file_no])
+        ax3.set_xlabel('Time since protostar formation (yr)')
+        ax3.set_ylabel('Outflow Ang. Mom. (M$_\odot$km$^2$s$^{-1}$)')
+        ax3.set_xlim([0, max_time])
+        ax3.set_ylim(bottom=1.e5)
+        plt.tight_layout()
+        image_name = save_dir + "outflow_plot.eps"
+        plt.savefig(image_name, bbox_inches='tight')
+        print "Created image", image_name
+
+if args.separation == 'True':
+    args.separation = True
+    if args.separation:
+        image_name = save_dir + "separation"
+        files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat"]
+        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
+        line_style = ['b-', 'r-']
+        labels=["Tight Binary", "Wide Binary"]
+        lit = 0
+        plt.clf()
+        for file in files:
+            particle_tag = []
+            times = []
+            x_pos = []
+            y_pos = []
+            z_pos = []
+            with open(file, 'r') as f:
+                reader = csv.reader(f, dialect='dat')
+                for row in reader:
+                    if row[0][0] != '[':
+                        part_tag = int(row[0])
+                        if part_tag not in particle_tag:
+                            particle_tag.append(part_tag)
+                            x_pos.append([])
+                            y_pos.append([])
+                            z_pos.append([])
+                            pit = len(particle_tag) - 1
+                        elif particle_tag[0] == part_tag:
+                            pit = 0
+                        else:
+                            pit = 1
+                        time = (float(row[1]) - float(row[-1]))/yt.units.yr.in_units('s').value
+                        times.append(time)
+                        x = float(row[2])/yt.units.AU.in_units('cm').value
+                        y = float(row[3])/yt.units.AU.in_units('cm').value
+                        z = float(row[4])/yt.units.AU.in_units('cm').value
+                        x_pos[pit].append(x)
+                        y_pos[pit].append(y)
+                        z_pos[pit].append(z)
+            times = np.array(times)
+            times = times[::2]
+            x_pos = np.array(x_pos)
+            y_pos = np.array(y_pos)
+            z_pos = np.array(z_pos)
+            dx = x_pos[0] - x_pos[1]
+            dy = y_pos[0] - y_pos[1]
+            dz = z_pos[0] - z_pos[1]
+            sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+            if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
+                times_new = np.array([0])
+                sep_new = np.array([500])
+                times = np.append(times_new, times)
+                sep = np.append(sep_new, sep)
+            plt.semilogy(times, sep, line_style[lit], label=labels[lit])
+            lit = lit + 1
+        plt.xlim([0.0, 3100.0])
+        plt.legend(loc='best')
+        plt.xlabel("Time (yr)", fontsize=14)
+        plt.ylabel("Separation (AU)", fontsize=14)
+        plt.tick_params(axis='x', which='major', labelsize=14)
+        plt.tick_params(axis='y', which='major', labelsize=14)
+        plt.savefig(image_name + '.eps', bbox_inches='tight')
+        plt.savefig(image_name + '.pdf', bbox_inches='tight')
+        print "Created image", image_name
+
+if args.total_mass_of_system == 'True':
+    args.total_mass_of_system = True
+if args.total_mass_of_system:
+    legend_labels = ['Single star', 'Tight binary', 'Wide Binary']
+    linestyles = ['k-', 'b--', 'r-.']
+    image_name = save_dir + "total_mass"
+    dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/SingleStar/SingleStarOutFlow_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10"]
+    case_it = 0
+    plt.clf()
+    for dir in dirs:
+        files = sorted(glob.glob(dir + '/WIND_proj*'))
+        m_times = mym.generate_frame_times(files, 10, presink_frames=0, end_time=3000)
+        usable_files = mym.find_files(m_times, files)
+        sink_form_time = mym.find_sink_formation_time(files)
+        times = []
+        mass = []
+        for file in usable_files:
+            f = h5py.File(file, 'r')
+            file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time
+            part_mass = np.sum(np.array(f['particlemasses'])/yt.units.msun.in_units('g').value)
+            times.append(file_time)
+            mass.append(part_mass)
+            f.close()
+        plt.plot(times, mass, linestyles[case_it], label=legend_labels[case_it])
+        case_it = case_it + 1
+    plt.xlabel("Time since protostar formation (yr)", fontsize=args.text_font)
+    plt.ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
+    plt.legend(loc='best')
+    plt.xlim([0, 3000])
+    plt.tick_params(axis='y', which='major', labelsize=args.text_font)
+    plt.tick_params(axis='x', which='major', labelsize=args.text_font)
+    plt.savefig(image_name + ".eps", bbox_inches='tight')
+    plt.savefig(image_name + ".pdf", bbox_inches='tight')
+    print "Created image", image_name
+
+
