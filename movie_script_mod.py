@@ -55,6 +55,7 @@ def parse_inputs():
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default=True)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
+    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=2000, type=int)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -223,7 +224,7 @@ def main():
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
     no_frames = len(m_times)
     sys.stdout.flush()
     CW.Barrier()
