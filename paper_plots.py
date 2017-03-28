@@ -74,6 +74,7 @@ def parse_inputs():
     
     parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", default=False, type=bool)
     parser.add_argument("-sf", "--start_frame", help="if you don't want to start at frame 0, what frame do you want to start at?", type=int, default=0)
+    parser.add_argument("-ef", "--end_frame", help="do you only want to plot up to t a certain number of frames?", default=None, type=int)
     
     parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
     
@@ -99,7 +100,7 @@ movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
 
 if args.produce_movie != False:
-    m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=25)
+    m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
 else:
     m_times = [args.plot_time]
 
@@ -115,13 +116,21 @@ dd = ds.all_data()
 sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
 
 #Now iterate over the files
-for fit in range(args.start_frame, len(usable_files)):
-    if args.slice_plot != False:
-        movie_file = movie_files[fit]
-    file = usable_files[fit]
-    part_file = file[:-12] + 'part' + file[-5:]
-    ds = yt.load(file, particle_filename=part_file)
-    dd = ds.all_data()
+if args.end_frame == None:
+    final_frame = len(usable_files)
+else:
+    final_frame = args.end_frame
+for fit in range(args.start_frame, final_frame):
+    if fit == 0 or usable_files[fit] != usable_files[fit-1]:
+        print "CREATING FRAME", fit, "WITH FILE", usable_files[fit]
+        if args.slice_plot != False:
+            movie_file = movie_files[fit]
+        file = usable_files[fit]
+        part_file = file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+        dd = ds.all_data()
+    else:
+        print "CREATING FRAME", fit, "WITH FILE", usable_files[fit-1]
 
     if args.slice_plot == 'True':
         args.slice_plot = True
@@ -190,8 +199,6 @@ for fit in range(args.start_frame, len(usable_files)):
 
             fig.savefig(save_image_name)
             print "created slice plot:", save_image_name
-            import pdb
-            pdb.set_trace()
         else:
             print "CREATING PICKLE"
             pickle_file = save_dir + 'slice_pickle.pkl'
@@ -388,7 +395,7 @@ for fit in range(args.start_frame, len(usable_files)):
             part_info = mym.get_particle_data(file)
             part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
             part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
-        print "MAKING YT SLICE"
+        print "MAKING YT SLICE FOR TIME =", m_times[fit]
         if args.image_center == 0 or ('all', u'particle_mass') not in ds.field_list:
             c = np.array([0.0, 0.0, 0.0])
         else:
@@ -428,13 +435,22 @@ for fit in range(args.start_frame, len(usable_files)):
             temp = dd['particle_posy']
         temp = dd['velocity_magnitude']
 
-        proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-        image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
-        velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
-        vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
-        magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
-        magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
-        mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T
+        if fit == 0 or usable_files[fit] != usable_files[fit-1]:
+            proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
+            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
+            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
+            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
+            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
+            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T
+            if np.median(image_data[200:600,400]) > 1.e-15:
+                image_data = image_data.T
+                velx_full = velx_full.T
+                vely_full = vely_full.T
+                magx = magx.T
+                magy = magy.T
+                mass = mass.T
+
         velx_full = velx_full/mass
         vely_full = vely_full/mass
         magx = magx/mass
@@ -490,7 +506,7 @@ for fit in range(args.start_frame, len(usable_files)):
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             if args.save_name == None:
-                save_image_name = "yt_slice.eps"
+                save_image_name = save_dir + "yt_slice.eps"
             else:
                 save_image_name = args.save_name + ".eps"
             plt.savefig(save_image_name, format='eps', bbox_inches='tight')
@@ -519,6 +535,8 @@ for fit in range(args.start_frame, len(usable_files)):
     if args.produce_movie != False:
         save_image_name = save_dir + "movie_frame_" + ("%06d" % fit)
         plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
+        call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', save_image_name+'.eps', save_image_name+'.jpg'])
+        os.remove(save_image_name + '.eps')
         print "CREATED MOVIE FRAME No.", fit, "OF", len(usable_files), "saved as:", save_image_name
 
 #=============================================================================
