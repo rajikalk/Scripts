@@ -62,7 +62,7 @@ dd = ds.all_data()
 sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
 
 #find times:
-m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0)
+m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
 usable_files = mym.find_files(m_times, files)
 
 #open files to read data out to:
