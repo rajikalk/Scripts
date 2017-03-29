@@ -103,6 +103,12 @@ if args.produce_movie != False:
     m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
 else:
     m_times = [args.plot_time]
+no_of_frames = len(m_times)
+if args.end_frame == None:
+    final_frame = len(usable_files)
+else:
+    final_frame = args.end_frame + 1
+m_times = m_times[args.start_frame:final_frame]
 
 if args.slice_plot != False:
     usable_movie_files = mym.find_files(m_times, movie_files)
@@ -119,10 +125,10 @@ sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units(
 if args.end_frame == None:
     final_frame = len(usable_files)
 else:
-    final_frame = args.end_frame
-for fit in range(args.start_frame, final_frame):
+    final_frame = args.end_frame + 1
+for fit in range(len(usable_files)):
     if fit == 0 or usable_files[fit] != usable_files[fit-1]:
-        print "CREATING FRAME", fit, "WITH FILE", usable_files[fit]
+        print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit]
         if args.slice_plot != False:
             movie_file = movie_files[fit]
         file = usable_files[fit]
@@ -130,7 +136,7 @@ for fit in range(args.start_frame, final_frame):
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
     else:
-        print "CREATING FRAME", fit, "WITH FILE", usable_files[fit-1]
+        print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit-1]
 
     if args.slice_plot == 'True':
         args.slice_plot = True
@@ -533,11 +539,11 @@ for fit in range(args.start_frame, final_frame):
 
     #saving the figure
     if args.produce_movie != False:
-        save_image_name = save_dir + "movie_frame_" + ("%06d" % fit)
+        save_image_name = save_dir + "movie_frame_" + ("%06d" % (args.start_frame + fit))
         plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
         call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', save_image_name+'.eps', save_image_name+'.jpg'])
         os.remove(save_image_name + '.eps')
-        print "CREATED MOVIE FRAME No.", fit, "OF", len(usable_files), "saved as:", save_image_name
+        print "CREATED MOVIE FRAME No.", args.start_frame + fit, "OF", no_of_frames, "saved as:", save_image_name
 
 #=============================================================================
 #These plots don't need to iterate over multiple files
