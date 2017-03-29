@@ -231,7 +231,8 @@ def main():
 
     #if rank == 0:
     usable_files = mym.find_files(m_times, files)
-    usable_sim_files = mym.find_files(m_times, sim_files)
+    if args.image_center != 0:
+        usable_sim_files = mym.find_files(m_times, sim_files)
     sys.stdout.flush()
     CW.Barrier()
     frames = range(args.start_frame, no_frames)
