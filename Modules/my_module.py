@@ -135,7 +135,10 @@ def find_files(m_times, files):
                 if diff > 0:
                     append_file = files[it-1]
                 else:
-                    append_file = files[it+1]
+                    if it+1 == len(files):
+                        append_file = files[it]
+                    else:
+                        append_file = files[it+1]
             else:
                 append_file = files[it]
             usable_files.append(append_file)
