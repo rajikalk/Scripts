@@ -265,6 +265,8 @@ def main():
     simfo = sim_info(path, files[-1], args)
     if args.yt_proj == False:
         X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times)
+        set_projection_orientation = False
+        proj_orientation = None
     else:
         x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
         y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -279,18 +281,6 @@ def main():
             x_ind.append(int(val))
             y_ind.append(int(val))
             counter = counter + 1
-        '''
-        x_vel = []
-        y_vel = []
-        for x_counter in x_ind:
-            x_val = simfo['xmin']+cl/2. + x_counter*cl
-            y_val = simfo['ymin']+cl/2. + x_counter*cl
-            x_vel.append(x_val)
-            y_vel.append(y_val)
-        x_vel = np.array(x_vel)
-        y_vel = np.array(y_vel)
-        X_vel, Y_vel = np.meshgrid(x_vel, y_vel)
-        '''
         X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
     if args.yt_proj == False and args.image_center != 0:
         sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
@@ -330,6 +320,10 @@ def main():
     rit = args.working_rank
     for frame_val in frames:
         if rank == rit:
+            for rit in range(size):
+                if rit != rank:
+                    set_projection_orientation = comm.recv(source=rit, tag=1)
+                    proj_orientation = comm.recv(source=rit, tag=2)
             if args.yt_proj:
                 file = usable_files[frame_val]
                 part_file = file[:-12] + 'part' + file[-5:]
@@ -411,7 +405,9 @@ def main():
                     center_pos = np.array([0.0, 0.0, 0.0])
                 else:
                     center_pos = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
-                if has_particles == False or len(dd['particle_posx']) == 1:
+                if set_projection_orientation:
+                    L = proj_orientation
+                elif has_particles == False or len(dd['particle_posx']) == 1:
                     L = [0.0, 1.0, 0.0]
                 else:
                     pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
@@ -419,6 +415,13 @@ def main():
                     L.append(0.0)
                     if L[0] > 0:
                         L = [-1*L[0], -1*L[1], 0.0]
+                    if np.diff(part_info['particle_position'][0])[0] < 1.0:
+                        set_projection_orientation = True
+                        proj_orientation = L
+                        for rit in range(size):
+                            if rit != rank:
+                                comm.send(set_projection_orientation, dest=rit, tag=1)
+                                comm.send(proj_orientation, dest=rit, tag=2)
                 x_width = (xlim[1] -xlim[0])
                 y_width = (ylim[1] -ylim[0])
                 thickness = yt.YTArray(100, 'AU')
