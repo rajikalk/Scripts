@@ -11,6 +11,7 @@ import yt
 import os
 import argparse
 import my_module as mym
+from mpi4py import MPI
 
 def parse_inputs():
     import argparse
@@ -23,6 +24,11 @@ def parse_inputs():
     #parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
+
+#===========================================================================================================================
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
 args = parse_inputs()
 output_file = args.output_file
@@ -62,91 +68,135 @@ dd = ds.all_data()
 sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
 
 #find times:
-m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
-usable_files = mym.find_files(m_times, files)
+if rank == 0:
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
+    print "m_times =", m_times
+    usable_files = mym.find_files(m_times, files)
+    for other_rank in range(1, size):
+        comm.send(usable_files, dest=other_rank, tag=1)
+        print "Sent usable files to rank", other_rank
+else:
+    usable_files = comm.recv(source=0, tag=1)
+    print "Received usable files to rank", rank
+
+print "usable_files =", usable_files
 
 #open files to read data out to:
-if os.path.isfile(save_dir + output_file) == False:
-    f = open(save_dir + output_file, 'a+')
+if rank == 0:
+    if os.path.isfile(save_dir + output_file) == False:
+        f = open(save_dir + output_file, 'a+')
+        f.close()
+    f = open(save_dir + output_file, 'w')
+    f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed \n')
     f.close()
-f = open(save_dir + output_file, 'w')
-f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed \n')
-f.close()
 
 file_no = 0
+rit = 1
 for file in usable_files:
-    part_file = file[:-12] + 'part' + file[-5:]
-    ds = yt.load(file, particle_filename=part_file)
-    dd = ds.all_data()
-    
-    time_val = ds.current_time.in_units('yr').value - sink_form
-
-    #define cylinders:
-    tube_1 = ds.disk([0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
-    tube_2 = ds.disk([0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, -1.0], (radius, 'au'), (height/2., 'au'))
-
-    #calculate mass in cylinders
-    # for region 1
-    pos_pos = np.where(tube_1['velocity_z'] > 0.0)[0]
-    if len(pos_pos) == 0:
-        mass_1 = 0.0
-        speed_1 = 0.0
-        max_speed_1 = 0.0
-        mom_1 = 0.0
-    else:
-        mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
-        speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
-        max_speed_1 = np.max(speed_1)
-        mom_1 = speed_1*mass_1
-    
-    #for region 2
-    neg_pos = np.where(tube_2['velocity_z'] < 0.0)[0]
-    if len(neg_pos) == 0:
-        mass_2 = 0.0
-        speed_2 = 0.0
-        max_speed_2 = 0.0
-        mom_2 = 0.0
-    else:
-        mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
-        speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
-        max_speed_2 = np.max(speed_2)
-        mom_2 = speed_2*mass_2
-    
-    #Calculate outflow mass:
-    outflow_mass = np.sum(mass_1) + np.sum(mass_2)
-    
-    #Calculate max outflow speed:
-    if max_speed_1 > max_speed_2:
-        max_speed = abs(max_speed_1)
-    else:
-        max_speed = abs(max_speed_2)
-
-    #Calculate outflow momentum:
-    mom = np.sum(mom_1) + np.sum(mom_2)
-
-    #Calculate outflow angular momentum:
-    L_x = np.sum(tube_1['angular_momentum_x'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_x'][neg_pos].in_units("Msun * km**2 / s").value)
-    L_y = np.sum(tube_1['angular_momentum_y'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_y'][neg_pos].in_units("Msun * km**2 / s").value)
-    L_z = np.sum(tube_1['angular_momentum_z'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_z'][neg_pos].in_units("Msun * km**2 / s").value)
-    L = np.sqrt((L_x)**2. + (L_y)**2. + (L_z)**2.)
-    
-    #Append quantities
-    if outflow_mass == 0.0:
-        outflow_mass = np.nan
-        max_speed = np.nan
-        mom = np.nan
-        L = np.nan
+    if rank == rit:
+        part_file = file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+        dd = ds.all_data()
         
-    time.append(time_val)
-    mass.append(outflow_mass)
-    maximum_speed.append(max_speed)
-    momentum.append(mom)
-    ang_momentum.append(L)
-    print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed
-    f = open(save_dir + output_file, 'a')
-    f.write(str(time_val) + ',' + str(outflow_mass) + ',' + str(mom) + ',' + str(L) + ',' + str(max_speed) + '\n')
-    f.close()
-    prev_time = time_val
+        time_val = ds.current_time.in_units('yr').value - sink_form
 
-    file_no = file_no + 1
-    print "Progress:", file_no, "/", len(usable_files)
+        #define cylinders:
+        tube_1 = ds.disk([0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
+        tube_2 = ds.disk([0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, -1.0], (radius, 'au'), (height/2., 'au'))
+
+        #calculate mass in cylinders
+        # for region 1
+        pos_pos = np.where(tube_1['velocity_z'] > 0.0)[0]
+        if len(pos_pos) == 0:
+            mass_1 = 0.0
+            speed_1 = 0.0
+            max_speed_1 = 0.0
+            mom_1 = 0.0
+        else:
+            mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
+            speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
+            max_speed_1 = np.max(speed_1)
+            mom_1 = speed_1*mass_1
+        
+        #for region 2
+        neg_pos = np.where(tube_2['velocity_z'] < 0.0)[0]
+        if len(neg_pos) == 0:
+            mass_2 = 0.0
+            speed_2 = 0.0
+            max_speed_2 = 0.0
+            mom_2 = 0.0
+        else:
+            mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
+            speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
+            max_speed_2 = np.max(speed_2)
+            mom_2 = speed_2*mass_2
+        
+        #Calculate outflow mass:
+        outflow_mass = np.sum(mass_1) + np.sum(mass_2)
+        
+        #Calculate max outflow speed:
+        if max_speed_1 > max_speed_2:
+            max_speed = abs(max_speed_1)
+        else:
+            max_speed = abs(max_speed_2)
+
+        #Calculate outflow momentum:
+        mom = np.sum(mom_1) + np.sum(mom_2)
+
+        #Calculate outflow angular momentum:
+        L_x = np.sum(tube_1['angular_momentum_x'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_x'][neg_pos].in_units("Msun * km**2 / s").value)
+        L_y = np.sum(tube_1['angular_momentum_y'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_y'][neg_pos].in_units("Msun * km**2 / s").value)
+        L_z = np.sum(tube_1['angular_momentum_z'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_z'][neg_pos].in_units("Msun * km**2 / s").value)
+        L = np.sqrt((L_x)**2. + (L_y)**2. + (L_z)**2.)
+        
+        #Append quantities
+        if outflow_mass == 0.0:
+            outflow_mass = np.nan
+            max_speed = np.nan
+            mom = np.nan
+            L = np.nan
+        
+        print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, "on rank", rit
+
+        #send data to rank 0 to append to write out.
+        write_data = [time_val, outflow_mass, max_speed, mom, L]
+        comm.send(write_data, dest=0, tag=2)
+        print "Sent data", write_data, "from rank", rank
+
+    rit = rit + 1
+    if rit == size:
+        rit = 1
+
+    if rank == 0:
+        if (len(usable_files)-file_no) < size:
+            end_rank = (len(usable_files)-file_no)+1
+        else:
+            end_rank = size
+        for other_rank in range(1,end_rank):
+            write_data = comm.recv(source=other_rank, tag=2)
+            print "received data", write_data, "from rank", other_rank
+            f = open(save_dir + output_file, 'a')
+            f.write(str(write_data[0]) + ',' + str(write_data[1]) + ',' + str(write_data[2]) + ',' + str(write_data[3]) + ',' + str(write_data[4]) + '\n')
+            f.close()
+
+            time.append(write_data[0])
+            mass.append(write_data[1])
+            maximum_speed.append(write_data[2])
+            momentum.append(write_data[3])
+            ang_momentum.append(write_data[4])
+
+            file_no = file_no + 1
+            print "Progress:", file_no, "/", len(usable_files)
+        if file_no == len(usable_files):
+            print "BREAKING ON RANK", rank
+            break
+
+    #print "file =", file
+    if file == usable_files[-1]:
+        break
+
+    if len(usable_files) < size:
+        if rank >= size:
+            break
+
+print "Completed job on rank", rank
