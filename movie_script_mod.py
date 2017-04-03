@@ -58,6 +58,7 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=2000, type=int)
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
+    parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -251,6 +252,7 @@ def main():
     
     rank = CW.Get_rank()
     size = CW.Get_size()
+    #comm = MPI.COMM_WORLD
     
     # Read in directories:
     path = sys.argv[1]
@@ -265,8 +267,11 @@ def main():
     simfo = sim_info(path, files[-1], args)
     if args.yt_proj == False:
         X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times)
-        set_projection_orientation = False
-        proj_orientation = None
+        if args.projection_orientation != None:
+            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+            L = [1, y_val, 0]
+        #set_projection_orientation = False
+        #proj_orientation = None
     else:
         x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
         y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -299,11 +304,13 @@ def main():
     usable_files = mym.find_files(m_times, files)
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
+        del sim_files
     sys.stdout.flush()
     CW.Barrier()
     frames = range(args.start_frame, no_frames)
 
     sink_form_time = mym.find_sink_formation_time(files)
+    del files
     print "sink_form_time", sink_form_time
 
     # Define colourbar bounds
@@ -320,10 +327,12 @@ def main():
     rit = args.working_rank
     for frame_val in frames:
         if rank == rit:
+            '''
             for rit in range(size):
                 if rit != rank:
                     set_projection_orientation = comm.recv(source=rit, tag=1)
                     proj_orientation = comm.recv(source=rit, tag=2)
+            '''
             if args.yt_proj:
                 file = usable_files[frame_val]
                 part_file = file[:-12] + 'part' + file[-5:]
@@ -339,6 +348,7 @@ def main():
                 part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
             center_vel = [0.0, 0.0, 0.0]
             if args.image_center != 0 and has_particles:
+                original_positions = [X, Y, X_vel, y_vel]
                 x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
                 y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
                 pos = np.array([part_info['particle_position'][0][args.image_center - 1], part_info['particle_position'][1][args.image_center - 1]])
@@ -405,23 +415,28 @@ def main():
                     center_pos = np.array([0.0, 0.0, 0.0])
                 else:
                     center_pos = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
+                '''
                 if set_projection_orientation:
                     L = proj_orientation
-                elif has_particles == False or len(dd['particle_posx']) == 1:
-                    L = [0.0, 1.0, 0.0]
-                else:
-                    pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
-                    L = [-1*pos_vec[-1], pos_vec[0]]
-                    L.append(0.0)
-                    if L[0] > 0:
-                        L = [-1*L[0], -1*L[1], 0.0]
-                    if np.diff(part_info['particle_position'][0])[0] < 1.0:
-                        set_projection_orientation = True
-                        proj_orientation = L
-                        for rit in range(size):
-                            if rit != rank:
-                                comm.send(set_projection_orientation, dest=rit, tag=1)
-                                comm.send(proj_orientation, dest=rit, tag=2)
+                '''
+                if args.projection_orientation == None:
+                    elif has_particles == False or len(dd['particle_posx']) == 1:
+                        L = [0.0, 1.0, 0.0]
+                    else:
+                        pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+                        L = [-1*pos_vec[-1], pos_vec[0]]
+                        L.append(0.0)
+                        if L[0] > 0:
+                            L = [-1*L[0], -1*L[1], 0.0]
+                        '''
+                        if np.diff(part_info['particle_position'][0])[0] < 1.0:
+                            set_projection_orientation = True
+                            proj_orientation = L
+                            for rit in range(size):
+                                if rit != rank:
+                                    comm.send(set_projection_orientation, dest=rit, tag=1)
+                                    comm.send(proj_orientation, dest=rit, tag=2)
+                        '''
                 x_width = (xlim[1] -xlim[0])
                 y_width = (ylim[1] -ylim[0])
                 thickness = yt.YTArray(100, 'AU')
@@ -535,6 +550,9 @@ def main():
                 del magy
                 del velx_full
                 del vely_full
+                
+                if args.image_center != 0 and has_particles:
+                    X, Y, X_vel, Y_vel = original_positions
 
             else:
                 print "Creating pickle"
