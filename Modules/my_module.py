@@ -71,7 +71,10 @@ def get_image_mesh(file, zoom_times):
     X, Y = np.meshgrid(x, x)
     return X, Y
 
-def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=2000.):
+def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=2000., debug=False):
+    if debug == True:
+        import pdb
+        pdb.set_trace()
     try:
         file = files[-2]
         part_file=file[:-12] + 'part' + file[-5:]
@@ -97,7 +100,7 @@ def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time
         m_times = []
 
     postsink = 0.0
-    while postsink <= (end_time):
+    while postsink <= max_time:
         if start_time != None:
             if postsink >= start_time:
                 m_times.append(postsink)
