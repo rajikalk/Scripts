@@ -21,6 +21,7 @@ def parse_inputs():
     parser.add_argument("-of", "--output_file", help="Do you have a file ot write out to?", default="out.csv")
     parser.add_argument("-ff", "--file_frequency", help="every how many files do you want to use?", default=100, type=int)
     parser.add_argument("-dt", "--time_step", help="How frequently do you want to measure the outflow?", default=2, type=int)
+    parser.add_argument("-disk", "--measure_disks", help="Do you want to measure disk quantities?", type=bool, default=False)
     #parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -55,11 +56,18 @@ maximum_speed = []
 momentum = []
 ang_momentum = []
 #define analysis cylinder:
-radius = 500.0
-#region:
-upper_cylinder_bound = 250.0
-lower_cylinder_bound = -250.0
-height = 500.0
+if args.measure_disks != False:
+    radius = 20.0
+    height = 20.0
+    tube_center_1 = None
+    tube_center_2 = None
+else:
+    radius = 500.0
+    height = 500.0
+    upper_cylinder_bound = 250.0
+    lower_cylinder_bound = -250.0
+    tube_center_1 = [0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')]
+    tube_center_2 = [0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')]
 
 #read in sink creation time
 part_file = files[-1][:-12] + 'part' + files[-1][-5:]
