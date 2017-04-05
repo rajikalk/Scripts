@@ -301,7 +301,6 @@ def main():
     CW.Barrier()
 
     usable_files = mym.find_files(m_times, files)
-    del files
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
         del sim_files
