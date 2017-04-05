@@ -191,7 +191,7 @@ def _Center_Velocity(field, data):
     elif center == 0:
         center_vel = dd.quantities.bulk_velocity(use_particles=True)
     else:
-        center_vel = [dd['particle_velx'][center-1].in_units('cm/s'), dd['particle_vely'][center-1].in_units('cm/s'), dd['particle_velz'][center-1].in_units('cm/s')]
+        center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
     return center_vel
 
 yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s")
