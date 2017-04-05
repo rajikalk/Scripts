@@ -191,7 +191,6 @@ def _Center_Velocity(field, data):
     elif center == 0:
         center_vel = dd.quantities.bulk_velocity(use_particles=True)
     else:
-        #center_vel = [data['particle_velx'][center-1].in_units('cm/s'), data['particle_vely'][center-1].in_units('cm/s'), data['particle_velz'][center-1].in_units('cm/s')]
         center_vel = [dd['particle_velx'][center-1].in_units('cm/s'), dd['particle_vely'][center-1].in_units('cm/s'), dd['particle_velz'][center-1].in_units('cm/s')]
     return center_vel
 
@@ -243,7 +242,7 @@ def _Corrected_velx(field, data):
     """
     Calculates the x-velocity correcnted for the bulk velocity.
     """
-    dvx = data['velx'].in_units('cm/s') - data['My_Bulk_Velocity'][0].in_units('cm/s')
+    dvx = data['velx'].in_units('cm/s') - data['Center_Velocity'][0].in_units('cm/s')
     return dvx
 
 yt.add_field("Corrected_velx", function=_Corrected_velx, units=r"cm/s")
@@ -252,7 +251,7 @@ def _Corrected_vely(field, data):
     """
     Calculates the y-velocity correcnted for the bulk velocity.
     """
-    dvy = data['vely'].in_units('cm/s') - data['My_Bulk_Velocity'][1].in_units('cm/s')
+    dvy = data['vely'].in_units('cm/s') - data['Center_Velocity'][1].in_units('cm/s')
     return dvy
 
 yt.add_field("Corrected_vely", function=_Corrected_vely, units=r"cm/s")
@@ -261,7 +260,7 @@ def _Corrected_velz(field, data):
     """
     Calculates the z-velocity correcnted for the bulk velocity.
     """
-    dvz = data['velz'].in_units('cm/s') - data['My_Bulk_Velocity'][2].in_units('cm/s')
+    dvz = data['velz'].in_units('cm/s') - data['Center_Velocity'][2].in_units('cm/s')
     return dvz
 
 yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s")
@@ -617,7 +616,7 @@ def _Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum in the x_direction about current set center.
     """
-    L_x = data['cell_mass']*(data['velz']*data['dy_from_Center']- data['vely']*data['dz_from_Center'])
+    L_x = data['cell_mass']*(data['Corrected_velx']*data['dy_from_Center']- data['Corrected_vely']*data['dz_from_Center'])
     return L_x
 
 yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
@@ -626,7 +625,7 @@ def _Angular_Momentum_y(field, data):
     """
     Calculates the angular momentum in the y_direction about current set center.
     """
-    L_y = data['cell_mass']*(data['velz']*data['dx_from_Center'] - data['velx']*data['dz_from_Center'])
+    L_y = data['cell_mass']*(data['Corrected_velz']*data['dx_from_Center'] - data['Corrected_velx']*data['dz_from_Center'])
     return L_y
 
 yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s")
@@ -635,7 +634,7 @@ def _Angular_Momentum_z(field, data):
     """
     Calculates the angular momentum in the z_direction about current set center.
     """
-    L_z = data['cell_mass']*(data['vely']*data['dx_from_Center'] - data['velx']*data['dy_from_Center'])
+    L_z = data['cell_mass']*(data['Corrected_vely']*data['dx_from_Center'] - data['Corrected_velx']*data['dy_from_Center'])
     return L_z
 
 yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s")
