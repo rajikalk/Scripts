@@ -267,11 +267,6 @@ def main():
     simfo = sim_info(path, files[-1], args)
     if args.yt_proj == False:
         X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times)
-        if args.projection_orientation != None:
-            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-            L = [1, y_val, 0]
-        #set_projection_orientation = False
-        #proj_orientation = None
     else:
         x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
         y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -287,6 +282,10 @@ def main():
             y_ind.append(int(val))
             counter = counter + 1
         X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+        if args.projection_orientation != None:
+            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+            L = [1, y_val, 0]
+            print "SET PROJECTION ORIENTATION L=", L
     if args.yt_proj == False and args.image_center != 0:
         sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
     elif args.yt_proj != False and args.image_center != 0:
@@ -302,6 +301,7 @@ def main():
     CW.Barrier()
 
     usable_files = mym.find_files(m_times, files)
+    del files
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
         del sim_files
@@ -310,7 +310,6 @@ def main():
     frames = range(args.start_frame, no_frames)
 
     sink_form_time = mym.find_sink_formation_time(files)
-    del files
     print "sink_form_time", sink_form_time
 
     # Define colourbar bounds
@@ -327,12 +326,6 @@ def main():
     rit = args.working_rank
     for frame_val in frames:
         if rank == rit:
-            '''
-            for rit in range(size):
-                if rit != rank:
-                    set_projection_orientation = comm.recv(source=rit, tag=1)
-                    proj_orientation = comm.recv(source=rit, tag=2)
-            '''
             if args.yt_proj:
                 file = usable_files[frame_val]
                 part_file = file[:-12] + 'part' + file[-5:]
@@ -415,12 +408,8 @@ def main():
                     center_pos = np.array([0.0, 0.0, 0.0])
                 else:
                     center_pos = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
-                '''
-                if set_projection_orientation:
-                    L = proj_orientation
-                '''
                 if args.projection_orientation == None:
-                    elif has_particles == False or len(dd['particle_posx']) == 1:
+                    if has_particles == False or len(dd['particle_posx']) == 1:
                         L = [0.0, 1.0, 0.0]
                     else:
                         pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
@@ -428,15 +417,6 @@ def main():
                         L.append(0.0)
                         if L[0] > 0:
                             L = [-1*L[0], -1*L[1], 0.0]
-                        '''
-                        if np.diff(part_info['particle_position'][0])[0] < 1.0:
-                            set_projection_orientation = True
-                            proj_orientation = L
-                            for rit in range(size):
-                                if rit != rank:
-                                    comm.send(set_projection_orientation, dest=rit, tag=1)
-                                    comm.send(proj_orientation, dest=rit, tag=2)
-                        '''
                 x_width = (xlim[1] -xlim[0])
                 y_width = (ylim[1] -ylim[0])
                 thickness = yt.YTArray(100, 'AU')
@@ -458,7 +438,7 @@ def main():
                 magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                 magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                 mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
-                if np.median(image[200:600,400]) > 1.e-15:
+                if np.median(image[200:600,400]) > 5.e-15:
                     image = image.T
                     velx_full = velx_full.T
                     vely_full = vely_full.T
@@ -473,6 +453,8 @@ def main():
                 del mass
                     
                 velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
+                del velx_full
+                del vely_full
 
             time_val = 10.0*(np.floor(np.round(file_time)/10.0))
             time_val = m_times[frame_val]
@@ -548,8 +530,8 @@ def main():
                 del image
                 del magx
                 del magy
-                del velx_full
-                del vely_full
+                del velx
+                del vely
                 
                 if args.image_center != 0 and has_particles:
                     X, Y, X_vel, Y_vel = original_positions
