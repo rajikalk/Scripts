@@ -66,8 +66,8 @@ else:
     height = 500.0
     upper_cylinder_bound = 250.0
     lower_cylinder_bound = -250.0
-    tube_center_1 = [0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')]
-    tube_center_2 = [0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')]
+    center_1 = [0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')]
+    center_2 = [0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')]
 
 #read in sink creation time
 part_file = files[-1][:-12] + 'part' + files[-1][-5:]
@@ -106,11 +106,15 @@ for file in usable_files:
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
         
+        if args.measure_disks != False:
+            center_1 = [dd['particle_posx'][0].in_units('cm'), dd['particle_posy'][0].in_units('cm'), dd['particle_posz'][0].in_units('cm')]
+            center_2 = [dd['particle_posx'][1].in_units('cm'), dd['particle_posy'][1].in_units('cm'), dd['particle_posz'][1].in_units('cm')]
+        
         time_val = ds.current_time.in_units('yr').value - sink_form
 
         #define cylinders:
-        tube_1 = ds.disk([0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
-        tube_2 = ds.disk([0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')], [0.0, 0.0, -1.0], (radius, 'au'), (height/2., 'au'))
+        tube_1 = ds.disk(center_1, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
+        tube_2 = ds.disk(center_2, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
 
         #calculate mass in cylinders
         # for region 1
