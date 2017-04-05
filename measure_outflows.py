@@ -49,12 +49,6 @@ if save_dir[-1] != '/':
 file_name = 'WIND_hdf5_plt_cnt_*'
 files = sorted(glob.glob(dir + file_name))
 
-#define measured quantities:
-time = []
-mass = []
-maximum_speed = []
-momentum = []
-ang_momentum = []
 #define analysis cylinder:
 if args.measure_disks != False:
     radius = 20.0
@@ -95,7 +89,10 @@ if rank == 0:
         f = open(save_dir + output_file, 'a+')
         f.close()
     f = open(save_dir + output_file, 'w')
-    f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed \n')
+    if args.measure_disks != False:
+        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed \n')
+    else:
+        f.write('Lref ' + dir.split('_')[-1] + ': Time, Lz_1, Lz_2 \n')
     f.close()
 
 file_no = 0
@@ -115,63 +112,71 @@ for file in usable_files:
         #define cylinders:
         tube_1 = ds.disk(center_1, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
         tube_2 = ds.disk(center_2, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
-
+        
         #calculate mass in cylinders
         # for region 1
-        pos_pos = np.where(tube_1['velocity_z'] > 0.0)[0]
-        if len(pos_pos) == 0:
-            mass_1 = 0.0
-            speed_1 = 0.0
-            max_speed_1 = 0.0
-            mom_1 = 0.0
+        if args.measure_disks != False:
+            m1 = np.sum(tube_1['cellmass'].in_units("Msun").value)
+            Lz_2 = np.sum(tube_2['angular_momentum_z'].in_units("Msun * km**2 / s").value)
+            print "OUTPUT=", time_val, Lz_1, Lz_2, "on rank", rit
+                    
+            #send data to rank 0 to append to write out.
+            write_data = [time_val, Lz_1, Lz_2]
         else:
-            mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
-            speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
-            max_speed_1 = np.max(speed_1)
-            mom_1 = speed_1*mass_1
-        
-        #for region 2
-        neg_pos = np.where(tube_2['velocity_z'] < 0.0)[0]
-        if len(neg_pos) == 0:
-            mass_2 = 0.0
-            speed_2 = 0.0
-            max_speed_2 = 0.0
-            mom_2 = 0.0
-        else:
-            mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
-            speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
-            max_speed_2 = np.max(speed_2)
-            mom_2 = speed_2*mass_2
-        
-        #Calculate outflow mass:
-        outflow_mass = np.sum(mass_1) + np.sum(mass_2)
-        
-        #Calculate max outflow speed:
-        if max_speed_1 > max_speed_2:
-            max_speed = abs(max_speed_1)
-        else:
-            max_speed = abs(max_speed_2)
+            pos_pos = np.where(tube_1['velocity_z'] > 0.0)[0]
+            if len(pos_pos) == 0:
+                mass_1 = 0.0
+                speed_1 = 0.0
+                max_speed_1 = 0.0
+                mom_1 = 0.0
+            else:
+                mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
+                speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
+                max_speed_1 = np.max(speed_1)
+                mom_1 = speed_1*mass_1
+            
+            #for region 2
+            neg_pos = np.where(tube_2['velocity_z'] < 0.0)[0]
+            if len(neg_pos) == 0:
+                mass_2 = 0.0
+                speed_2 = 0.0
+                max_speed_2 = 0.0
+                mom_2 = 0.0
+            else:
+                mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
+                speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
+                max_speed_2 = np.max(speed_2)
+                mom_2 = speed_2*mass_2
+            
+            #Calculate outflow mass:
+            outflow_mass = np.sum(mass_1) + np.sum(mass_2)
+            
+            #Calculate max outflow speed:
+            if max_speed_1 > max_speed_2:
+                max_speed = abs(max_speed_1)
+            else:
+                max_speed = abs(max_speed_2)
 
-        #Calculate outflow momentum:
-        mom = np.sum(mom_1) + np.sum(mom_2)
+            #Calculate outflow momentum:
+            mom = np.sum(mom_1) + np.sum(mom_2)
 
-        #Calculate outflow angular momentum:
-        L_x = np.sum(tube_1['angular_momentum_x'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_x'][neg_pos].in_units("Msun * km**2 / s").value)
-        L_y = np.sum(tube_1['angular_momentum_y'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_y'][neg_pos].in_units("Msun * km**2 / s").value)
-        L_z = np.sum(tube_1['angular_momentum_z'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_z'][neg_pos].in_units("Msun * km**2 / s").value)
-        L = np.sqrt((L_x)**2. + (L_y)**2. + (L_z)**2.)
-        
-        #Append quantities
-        if outflow_mass == 0.0:
-            outflow_mass = np.nan
-            max_speed = np.nan
-            mom = np.nan
-            L = np.nan
-        
-        print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, "on rank", rit
+            #Calculate outflow angular momentum:
+            L_x = np.sum(tube_1['angular_momentum_x'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_x'][neg_pos].in_units("Msun * km**2 / s").value)
+            L_y = np.sum(tube_1['angular_momentum_y'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_y'][neg_pos].in_units("Msun * km**2 / s").value)
+            L_z = np.sum(tube_1['angular_momentum_z'][pos_pos].in_units("Msun * km**2 / s").value) + np.sum(tube_2['angular_momentum_z'][neg_pos].in_units("Msun * km**2 / s").value)
+            L = np.sqrt((L_x)**2. + (L_y)**2. + (L_z)**2.)
+            
+            #Append quantities
+            if outflow_mass == 0.0:
+                outflow_mass = np.nan
+                max_speed = np.nan
+                mom = np.nan
+                L = np.nan
+            
+            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, "on rank", rit
 
-        #send data to rank 0 to append to write out.
-        write_data = [time_val, outflow_mass, max_speed, mom, L]
+            #send data to rank 0 to append to write out.
+            write_data = [time_val, outflow_mass, max_speed, mom, L]
         comm.send(write_data, dest=0, tag=2)
         print "Sent data", write_data, "from rank", rank
 
@@ -188,14 +193,14 @@ for file in usable_files:
             write_data = comm.recv(source=other_rank, tag=2)
             print "received data", write_data, "from rank", other_rank
             f = open(save_dir + output_file, 'a')
-            f.write(str(write_data[0]) + ',' + str(write_data[1]) + ',' + str(write_data[2]) + ',' + str(write_data[3]) + ',' + str(write_data[4]) + '\n')
+            write_string = ''
+            for datum in write_data:
+                if datum != write_data[-1]:
+                    write_string = write_string + str(datum) + ','
+                else:
+                    write_string = write_string + str(datum) + '\n'
+            f.write(write_string)
             f.close()
-
-            time.append(write_data[0])
-            mass.append(write_data[1])
-            maximum_speed.append(write_data[2])
-            momentum.append(write_data[3])
-            ang_momentum.append(write_data[4])
 
             file_no = file_no + 1
             print "Progress:", file_no, "/", len(usable_files)
