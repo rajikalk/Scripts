@@ -310,6 +310,7 @@ def main():
 
     sink_form_time = mym.find_sink_formation_time(files)
     print "sink_form_time", sink_form_time
+    del files
 
     # Define colourbar bounds
     cbar_max = args.colourbar_max
