@@ -617,7 +617,7 @@ def _Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum in the x_direction about current set center.
     """
-    L_x = data['cell_mass']*(data['vely']*data['dz_from_Center'] - data['velz']*data['dy_from_Center'])
+    L_x = data['cell_mass']*(data['velz']*data['dy_from_Center']- data['vely']*data['dz_from_Center'])
     return L_x
 
 yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
@@ -626,7 +626,7 @@ def _Angular_Momentum_y(field, data):
     """
     Calculates the angular momentum in the y_direction about current set center.
     """
-    L_y = data['cell_mass']*(data['velx']*data['dz_from_Center'] - data['velz']*data['dx_from_Center'])
+    L_y = data['cell_mass']*(data['velz']*data['dx_from_Center'] - data['velx']*data['dz_from_Center'])
     return L_y
 
 yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s")
@@ -635,7 +635,7 @@ def _Angular_Momentum_z(field, data):
     """
     Calculates the angular momentum in the z_direction about current set center.
     """
-    L_z = data['cell_mass']*(data['velx']*data['dy_from_Center'] - data['vely']*data['dx_from_Center'])
+    L_z = data['cell_mass']*(data['vely']*data['dx_from_Center'] - data['velx']*data['dy_from_Center'])
     return L_z
 
 yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s")
