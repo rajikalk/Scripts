@@ -117,7 +117,6 @@ for file in usable_files:
         #calculate mass in cylinders
         # for region 1
         if args.measure_disks != False:
-            '''
             myf.set_center(1)
             #print "doing center 1, with center_vel =", dd['Center_Velocity']
             Lz_1 = np.sum(tube_1['Angular_Momentum_z'].in_units("Msun * km**2 / s").value)
@@ -127,21 +126,6 @@ for file in usable_files:
             #print "doing center 2, with center_vel =", dd['Center_Velocity']
             Lz_2 = np.sum(tube_2['Angular_Momentum_z'].in_units("Msun * km**2 / s").value)
             del dd
-            '''
-            center_vel_1 = [dd['particle_velx'][0].in_units('cm/s'), dd['particle_vely'][0].in_units('cm/s'), dd['particle_velz'][0].in_units('cm/s')]
-            center_vel_2 = [dd['particle_velx'][1].in_units('cm/s'), dd['particle_vely'][1].in_units('cm/s'), dd['particle_velz'][1].in_units('cm/s')]
-            tube_dx_1 = tube_1['x'].in_units('cm') - dd['particle_posx'][0].in_units('cm')
-            tube_dx_2 = tube_2['x'].in_units('cm') - dd['particle_posx'][1].in_units('cm')
-            tube_dy_1 = tube_1['y'].in_units('cm') - dd['particle_posy'][0].in_units('cm')
-            tube_dy_2 = tube_2['y'].in_units('cm') - dd['particle_posy'][1].in_units('cm')
-            tube_velx_1 = tube_1['velocity_x'].in_units('cm/s') - dd['particle_velx'][0].in_units('cm/s')
-            tube_velx_2 = tube_2['velocity_x'].in_units('cm/s') - dd['particle_velx'][1].in_units('cm/s')
-            tube_vely_1 = tube_1['velocity_y'].in_units('cm/s') - dd['particle_vely'][0].in_units('cm/s')
-            tube_vely_2 = tube_2['velocity_y'].in_units('cm/s') - dd['particle_vely'][1].in_units('cm/s')
-            Lz_1 = tube_1['cell_mass'].in_units('g') * (tube_dx_1*tube_vely_1 - tube_dy_1*tube_velx_1)
-            Lz_2 = tube_2['cell_mass'].in_units('g') * (tube_dx_2*tube_vely_2 - tube_dy_2*tube_velx_2)
-            Lz_1 = np.sum(Lz_1.in_units("Msun * km**2 / s").value)
-            Lz_2 = np.sum(Lz_2.in_units("Msun * km**2 / s").value)
             print "OUTPUT=", time_val, Lz_1, Lz_2, "on rank", rit
                     
             #send data to rank 0 to append to write out.
