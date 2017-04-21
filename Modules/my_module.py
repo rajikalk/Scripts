@@ -40,7 +40,7 @@ def find_sink_formation_time(files):
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
+        sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
     except:
         sink_form = None
         for source in range(len(files)):
@@ -131,11 +131,12 @@ def find_files(m_times, files):
         if yt_file:
             file = files[it]
             part_file=file[:-12] + 'part' + file[-5:]
-            ds = yt.load(file, particle_filename=part_file)
-            time = ds.current_time.in_units('yr').value-sink_form_time
+            f = h5py.File(part_file, 'r')
+            time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
         else:
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+        f.close()
         print "Current file time =", time
         diff = time - m_times[mit]
         if pit == it or time == m_times[mit]:
