@@ -57,10 +57,16 @@ if args.measure_disks != False:
     tube_center_1 = None
     tube_center_2 = None
 else:
+    '''
     radius = 500.0
     height = 500.0
     upper_cylinder_bound = 250.0
     lower_cylinder_bound = -250.0
+    '''
+    radius = 6000.0
+    height = 4011.0
+    upper_cylinder_bound = 0.0
+    lower_cylinder_bound = 0.0
     center_1 = [0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')]
     center_2 = [0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')]
 
@@ -202,11 +208,13 @@ for file in usable_files:
             print "received data", write_data, "from rank", other_rank
             f = open(save_dir + output_file, 'a')
             write_string = ''
-            for datum in write_data:
-                if datum != write_data[-1]:
-                    write_string = write_string + str(datum) + ','
+            for dit in range(len(write_data)):
+                if dit != len(write_data)-1:
+                    write_string = write_string + str(write_data[dit]) + ','
                 else:
-                    write_string = write_string + str(datum) + '\n'
+                    write_string = write_string + str(write_data[dit]) + '\n'
+                    print "finished creating write line"
+            print "write_string =", write_string
             f.write(write_string)
             f.close()
 
