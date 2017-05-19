@@ -23,6 +23,8 @@ def parse_inputs():
     parser.add_argument("-ff", "--file_frequency", help="every how many files do you want to use?", default=100, type=int)
     parser.add_argument("-dt", "--time_step", help="How frequently do you want to measure the outflow?", default=2, type=int)
     parser.add_argument("-disk", "--measure_disks", help="Do you want to measure disk quantities?", type=bool, default=False)
+    parser.add_argument("-lb", "--lower_bounds", help="lower bounds of box", type=float, default=50.0)
+    parser.add_argument("-rad", "--radius", help="What is the radius of the measuring cylindar", type=float, default=6000.0)
     #parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -63,10 +65,10 @@ else:
     upper_cylinder_bound = 250.0
     lower_cylinder_bound = -250.0
     '''
-    radius = 6000.0
+    radius = args.radius
     height = 4011.0
-    upper_cylinder_bound = 0.0
-    lower_cylinder_bound = 0.0
+    upper_cylinder_bound = args.lower_bounds
+    lower_cylinder_bound = -1 * args.lower_bounds
     center_1 = [0.0, 0.0, (upper_cylinder_bound+(height/2.))*yt.units.AU.in_units('cm')]
     center_2 = [0.0, 0.0, (lower_cylinder_bound-(height/2.))*yt.units.AU.in_units('cm')]
 
@@ -78,8 +80,7 @@ sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
 
 #find times:
 if rank == 0:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
-    print "m_times =", m_times
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, start_time=-500.)
     usable_files = mym.find_files(m_times, files)
     for other_rank in range(1, size):
         comm.send(usable_files, dest=other_rank, tag=1)
@@ -96,8 +97,8 @@ if rank == 0:
         f = open(save_dir + output_file, 'a+')
         f.close()
     f = open(save_dir + output_file, 'w')
-    if args.measure_disks != False:
-        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed \n')
+    if args.measure_disks == False:
+        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed, Unbound Mass \n')
     else:
         f.write('Lref ' + dir.split('_')[-1] + ': Time, Lz_1, Lz_2 \n')
     f.close()
@@ -143,11 +144,18 @@ for file in usable_files:
                 speed_1 = 0.0
                 max_speed_1 = 0.0
                 mom_1 = 0.0
+                unbound_1 = 0.0
             else:
                 mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
                 speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
                 max_speed_1 = np.max(speed_1)
                 mom_1 = speed_1*mass_1
+                kin = (tube_1['kinetic_energy'][pos_pos] * tube_1['cell_volume'][pos_pos]).in_units('erg')
+                pot = (tube_1['gpot'][pos_pos]*tube_1['cell_mass'][pos_pos]).in_units('erg')
+                eint = (tube_1['eint'][pos_pos]*tube_1['cell_mass'][pos_pos]).in_units('erg')
+                tot_e = kin + pot + eint
+                un_ints = np.where(tot_e > 0.0)
+                unbound_1 =tube_1['cell_mass'][pos_pos][un_ints].in_units('Msun').value
             
             #for region 2
             neg_pos = np.where(tube_2['velocity_z'] < 0.0)[0]
@@ -156,14 +164,22 @@ for file in usable_files:
                 speed_2 = 0.0
                 max_speed_2 = 0.0
                 mom_2 = 0.0
+                unbound_2 = 0.0
             else:
                 mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
                 speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
                 max_speed_2 = np.max(speed_2)
                 mom_2 = speed_2*mass_2
+                kin = (tube_2['kinetic_energy'][neg_pos] * tube_2['cell_volume'][neg_pos]).in_units('erg')
+                pot = (tube_2['gpot'][neg_pos]*tube_2['cell_mass'][neg_pos]).in_units('erg')
+                eint = (tube_2['eint'][neg_pos]*tube_2['cell_mass'][neg_pos]).in_units('erg')
+                tot_e = kin + pot + eint
+                un_ints = np.where(tot_e > 0.0)
+                unbound_2 =tube_2['cell_mass'][neg_pos][un_ints].in_units('Msun').value
             
             #Calculate outflow mass:
             outflow_mass = np.sum(mass_1) + np.sum(mass_2)
+            unbound_mass = np.sum(unbound_1) + np.sum(unbound_2)
             
             #Calculate max outflow speed:
             if max_speed_1 > max_speed_2:
@@ -186,11 +202,12 @@ for file in usable_files:
                 max_speed = np.nan
                 mom = np.nan
                 L = np.nan
+                unbound_mass = np.nan
             
-            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, "on rank", rit
+            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, "on rank", rit
 
             #send data to rank 0 to append to write out.
-            write_data = [time_val, outflow_mass, mom, L, max_speed]
+            write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass]
         comm.send(write_data, dest=0, tag=2)
         print "Sent data", write_data, "from rank", rank
 
