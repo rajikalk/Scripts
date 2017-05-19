@@ -99,8 +99,10 @@ rows = np.max(positions[:,1])
 
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
-f =plt.figure(figsize=(width, height))
-#f =plt.figure(figsize=(5, 9))
+if plot_type[0] == "outflow":
+    f = plt.figure(figsize=(5, 9))
+else:
+    f = plt.figure(figsize=(width, height))
 gs_left = gridspec.GridSpec(rows, columns-1)
 gs_right = gridspec.GridSpec(rows, 1)
 
@@ -167,7 +169,7 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax1'])})
         elif args.share_y:
             yit = np.where(positions[:,1] == positions[it][1])[0][0]
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit]])})
+            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit-1]])})
         else:
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
     if 'movie' in plot_type[it]:
@@ -371,9 +373,9 @@ for it in range(len(positions)):
         #axes_dict[ax_label].set_aspect(1./data_aspect)
         #axes_dict[ax_label].set_xlim([1.0, 1000.0])
     if 'outflow' in plot_type[it]:
-        legend_labels = ['Single star', 'Tight binary', 'Wide Binary']
+        legend_labels = ['Single Star', 'Tight Binary', 'Wide Binary']
         linestyles = ['k-', 'b--', 'r-.']
-        csv_files = glob.glob(file_dir[it] + "out*.csv")
+        csv_files = glob.glob(file_dir[it] + "out*_r_1000_50.csv")
         for file in csv_files:
             if 'single' in file:
                 single_file = file
@@ -427,7 +429,8 @@ for it in range(len(positions)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
             axes_dict[ax_label].set_xlim([0, 3000])
-            axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
+            axes_dict[ax_label].set_ylim([5.e-4, 5.e-1])
+            #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             axes_dict[ax_label].legend(loc='best')
         elif 'ang' in input_args[it]:
             time = []
@@ -487,10 +490,11 @@ for it in range(len(positions)):
                 axes_dict[ax_label].semilogy(time[t], angular_momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
                 axes_dict[ax_label].set_ylabel('Sp. Ang. Mom. (km$^2\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e7, 1.e11])
+                #axes_dict[ax_label].set_ylim([1.e7, 1.e11])
             else:
                 axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e5, 1.e10])
+                axes_dict[ax_label].set_ylim([1.e6, 1.e10])
+                #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
             axes_dict[ax_label].set_xlim([0, 3000])
         else:
@@ -551,10 +555,11 @@ for it in range(len(positions)):
                 axes_dict[ax_label].semilogy(time[t], momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
                 axes_dict[ax_label].set_ylabel('Specific Mom. (km$\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
+                #axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
             else:
                 axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
+                axes_dict[ax_label].set_ylim([5.e-5, 1.e0])
+                #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
             axes_dict[ax_label].set_xlim([0, 3000])
             print "CREATED OUTFLOWS PLOT"
     if 'appendix' in plot_type[it]:
