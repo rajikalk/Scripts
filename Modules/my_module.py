@@ -94,7 +94,10 @@ def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time
         m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
         m_times = m_times.tolist()
     elif start_time < 0.0:
-        m_times = np.logspace(np.log10(start_time), np.log10(sink_form_time), presink_frames) - sink_form_time
+        if presink_frames != 0:
+            m_times = np.logspace(np.log10(start_time), np.log10(sink_form_time), presink_frames) - sink_form_time
+        else:
+            m_times = np.arange(start_time, 0+dt, dt)
         m_times = m_times.tolist()
     else:
         m_times = []
