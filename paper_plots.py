@@ -77,6 +77,7 @@ def parse_inputs():
     parser.add_argument("-ef", "--end_frame", help="do you only want to plot up to t a certain number of frames?", default=None, type=int)
     
     parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
+    parser.add_argument("-ni", "--non_ideal", help="do you want to plot the non-ideal regimes we shoudl think about", default=False, type=bool)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -98,28 +99,28 @@ myf.set_center(args.center)
 
 movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
+file = sim_files[-1]
+part_file = file[:-12] + 'part' + file[-5:]
+ds = yt.load(file, particle_filename=part_file)
+dd = ds.all_data()
+sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
 
 if args.produce_movie != False:
     m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
 else:
     m_times = [args.plot_time]
 no_of_frames = len(m_times)
-if args.end_frame == None:
-    final_frame = len(usable_files)
-else:
+if args.end_frame != None:
     final_frame = args.end_frame + 1
-m_times = m_times[args.start_frame:final_frame]
+    m_times = m_times[args.start_frame:final_frame]
+else:
+    m_times = m_times[args.start_frame:]
 
 if args.slice_plot != False:
     usable_movie_files = mym.find_files(m_times, movie_files)
 usable_files = mym.find_files(m_times, sim_files)
 del movie_files
 del sim_files
-file = usable_files[-1]
-part_file = file[:-12] + 'part' + file[-5:]
-ds = yt.load(file, particle_filename=part_file)
-dd = ds.all_data()
-sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
 
 #Now iterate over the files
 if args.end_frame == None:
@@ -137,6 +138,24 @@ for fit in range(len(usable_files)):
         dd = ds.all_data()
     else:
         print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit-1]
+
+    if args.non_ideal == 'True':
+        args.non_ideal = true
+    if args.non_ideal:
+        inds = np.where((dd['temperature']<281)&(dd['temperature']>279))
+        times_str = str(m_times[fit])
+        plt.clf()
+        plt.plot(np.log10(dd['H_nuclei_density'][inds].value), np.log10(dd['magnetic_field_strength'][inds].value), 'o')
+        plt.plot([12.2, 14.2], [-0.5, 1.5], 'k-')
+        plt.plot([13.8, 15], [-0.5, 0.7], 'k-')
+        #plt.xlim([12, 15])
+        #plt.ylim([-0.5, 1.5])
+        plt.xlabel('log n$_\mathrm{H}$ (cm$^3$)')
+        plt.ylabel('log B (G)')
+        plt.title('At time '+ times_str + 'yr')
+        save_name = save_dir + 'konigl_salmeron_time_'+times_str+'.eps'
+        plt.savefig(save_name)
+        print "created file:", save_name
 
     if args.slice_plot == 'True':
         args.slice_plot = True
@@ -741,9 +760,18 @@ if args.separation == 'True':
                         z_pos[pit].append(z)
             times = np.array(times)
             times = times[::2]
+            sorted_inds = np.argsort(times)
+            times = times[sorted_inds]
+            
             x_pos = np.array(x_pos)
             y_pos = np.array(y_pos)
             z_pos = np.array(z_pos)
+            x_pos[0] = x_pos[0][sorted_inds]
+            x_pos[1] = x_pos[1][sorted_inds]
+            y_pos[0] = y_pos[0][sorted_inds]
+            y_pos[1] = y_pos[1][sorted_inds]
+            z_pos[0] = z_pos[0][sorted_inds]
+            z_pos[1] = z_pos[1][sorted_inds]
             dx = x_pos[0] - x_pos[1]
             dy = y_pos[0] - y_pos[1]
             dz = z_pos[0] - z_pos[1]
@@ -768,7 +796,7 @@ if args.separation == 'True':
 if args.total_mass_of_system == 'True':
     args.total_mass_of_system = True
 if args.total_mass_of_system:
-    legend_labels = ['Single star', 'Tight binary', 'Wide Binary']
+    legend_labels = ['Single Star', 'Tight Binary', 'Wide Binary']
     linestyles = ['k-', 'b--', 'r-.']
     image_name = save_dir + "total_mass"
     dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/SingleStar/SingleStarOutFlow_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10"]
