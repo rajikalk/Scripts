@@ -128,6 +128,9 @@ def find_files(m_times, files):
     min = 0
     max = len(files)-1
     pit = 0
+    prev_diff = np.nan
+    #import pdb
+    #pdb.set_trace()
     while mit < len(m_times):
         it = int(np.round(min + ((max - min)/2.)))
         #print 'search iterator =', it
@@ -140,35 +143,45 @@ def find_files(m_times, files):
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
         f.close()
-        print "Current file time =", time
+        print "Current file time =", time, "for interator =", it
         diff = time - m_times[mit]
         if pit == it or time == m_times[mit]:
-            if time < 0:
-                append_file = files[it+1]
-            elif np.abs(diff) > 100:
-                if diff > 0:
-                    append_file = files[it-1]
-                else:
-                    if it+1 == len(files):
-                        append_file = files[it]
-                    else:
-                        append_file = files[it+1]
+            if it == (len(files)-1):
+                pot_files = files[it-1:it]
+            elif it == 0:
+                pot_files = files[it:it+1]
             else:
-                append_file = files[it]
+                pot_files = files[it-1:it+1]
+            diff_arr = []
+            for pfile in pot_files:
+                if yt_file:
+                    part_file=pfile[:-12] + 'part' + file[-5:]
+                    f = h5py.File(part_file, 'r')
+                    time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+                else:
+                    f = h5py.File(pfile, 'r')
+                    time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+                f.close()
+                diff_val = abs(time - m_times[mit])
+                diff_arr.append(diff_val)
+            append_file = pot_files[np.argmin(diff_arr)]
             usable_files.append(append_file)
             if yt_file:
-                file = append_file
-                part_file=file[:-12] + 'part' + file[-5:]
-                ds = yt.load(file, particle_filename=part_file)
-                time = ds.current_time.in_units('yr').value-sink_form_time
+                part_file=append_file[:-12] + 'part' + file[-5:]
+                f = h5py.File(part_file, 'r')
+                time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
             else:
                 f = h5py.File(append_file, 'r')
                 time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+            f.close()
             print "found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1]
+            #append_file = files[it]
+            #usable_files.append(append_file)
             mit = mit + 1
             min = it
             max = len(files)-1
             pit = it
+            prev_diff = np.nan
         elif time > m_times[mit]:
             max = it
             pit = it

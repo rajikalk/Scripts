@@ -100,7 +100,7 @@ rows = np.max(positions[:,1])
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
 if plot_type[0] == "outflow":
-    f = plt.figure(figsize=(5, 9))
+    f = plt.figure(figsize=(7, 9))
 else:
     f = plt.figure(figsize=(width, height))
 gs_left = gridspec.GridSpec(rows, columns-1)

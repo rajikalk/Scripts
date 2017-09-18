@@ -37,7 +37,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 2, type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
-    parser.add_argument("-st", "--start_time", help="What time woudl you like to start calculating times from?", type=int)
+    #parser.add_argument("-st", "--start_time", help="What time woudl you like to start calculating times from?", type=float, default=0.0)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", default = 25)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
@@ -295,7 +295,7 @@ def main():
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time) #, start_time = args.start_time)
     no_frames = len(m_times)
     m_times = m_times[args.start_frame:]
     sys.stdout.flush()
@@ -327,6 +327,8 @@ def main():
     rit = args.working_rank
     for frame_val in range(len(frames)):
         if rank == rit:
+            sys.stdout.flush()
+            CW.Barrier()
             if args.yt_proj and args.plot_time==None and os.path.isfile(path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                 print "USING PICKLED FILE:", pickle_file
@@ -349,9 +351,11 @@ def main():
                 has_particles = has_sinks(f)
                 if has_particles:
                     part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
+                else:
+                    part_info = {}
                 center_vel = [0.0, 0.0, 0.0]
                 if args.image_center != 0 and has_particles:
-                    original_positions = [X, Y, X_vel, y_vel]
+                    original_positions = [X, Y, X_vel, Y_vel]
                     x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
                     y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
                     pos = np.array([part_info['particle_position'][0][args.image_center - 1], part_info['particle_position'][1][args.image_center - 1]])
@@ -448,6 +452,13 @@ def main():
                     magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                     magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
+                    image = image.T
+                    velx_full = velx_full.T
+                    vely_full = vely_full.T
+                    magx = magx.T
+                    magy = magy.T
+                    mass = mass.T
+                    '''
                     if np.median(image[200:600,400]) > 5.e-15:
                         image = image.T
                         velx_full = velx_full.T
@@ -455,6 +466,7 @@ def main():
                         magx = magx.T
                         magy = magy.T
                         mass = mass.T
+                    '''
             
                     velx_full = velx_full/mass
                     vely_full = vely_full/mass
@@ -548,6 +560,9 @@ def main():
                 
                 if args.image_center != 0 and has_particles:
                     X, Y, X_vel, Y_vel = original_positions
+            
+                sys.stdout.flush()
+                CW.Barrier()
 
             else:
                 print "Creating pickle"
@@ -574,6 +589,7 @@ def main():
                 print "Dumped data into pickle"
                 file.close()
                 print "Created pickle"
+        
         rit = rit +1
         if rit == size:
             rit = 0
