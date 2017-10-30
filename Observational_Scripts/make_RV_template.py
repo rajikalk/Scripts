@@ -4,6 +4,28 @@ import os
 import astropy.io.fits as pyfits
 from astroquery.vizier import Vizier
 from astroquery.simbad import Simbad
+import numpy as np
+import matplotlib.pyplot as plt
+
+def parse_inputs():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-abs", "--absorption", help="do you want to correct for sky absorption?", default='False')
+    parser.add_argument("-allspt", "--all_spectral_types", help="do you want to correct absorption for all spectral types", default='False')
+    parser.add_argument("-sky", "--skylines", help="do you want to correct for skylines?", default='False')
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
+args = parse_inputs()
+if args.absorption == 'False':
+    abs_cor = False
+else:
+    abs_cor = True
+if args.skylines == 'False':
+    sky_cor = False
+else:
+    sky_cor = True
 
 S = Simbad()
 S.add_votable_fields('rv_value')
@@ -16,6 +38,11 @@ RV = []
 Spec_type = []
 RA = []
 DEC = []
+spectra_F = []
+sky_spectra = []
+
+dell_template = 0.1
+wave_template=np.arange(90000)*dell_template + 3000
 
 f = open('/Users/rajikak/Observational_Data/RV_standards/RV_standard.csv', 'w')
 f.write('Name,RV(km/s),Spectral Type,RA,DEC\n')
@@ -26,11 +53,15 @@ for file in files:
     Obj_name = hdu[0].header['OBJNAME']
     if Obj_name == 'object' or Obj_name == '':
         Obj_name = hdu[0].header['OBJECT']
-    if not os.path.exists(image_dir+Obj_name +'/'+file.split('/')[-1]+'.png'):
+    if os.path.exists(image_dir+Obj_name +'/'+file.split('/')[-1]+'.png'):
         if not os.path.exists(image_dir + Obj_name):
             os.makedirs(image_dir + Obj_name)
 
-        flux,wave = ps.read_and_find_star_p08(file, fig_fn=image_dir+Obj_name +'/'+file.split('/')[-1]+'.png')
+        flux,wave,var = ps.read_and_find_star_p08(file, fig_fn=image_dir+Obj_name +'/'+file.split('/')[-1]+'.png')
+
+        #plt.clf()
+        #plt.plot(wave, spectrum)
+        #plt.show()
         
         if Obj_name not in RV_standard:
             RV_standard.append(Obj_name)
@@ -48,6 +79,11 @@ for file in files:
                 object_RV = float(data['RV_VALUE'])
             
             sptype = data['SP_TYPE'][-1]
+            spectrum,sig = ps.weighted_extract_spectrum(flux,var)
+
+            if (sptype[0] == 'F'):
+                spectrum_interp = np.interp(wave_template,wave[3300:]*(1 - (0.0 - 0.0)/2.998e5),spectrum[3300:])
+                spectra_F.append(spectrum_interp)
             Spec_type.append(sptype)
             RV.append(object_RV)
             ra = str(data['RA'][-1])
@@ -56,12 +92,33 @@ for file in files:
             DEC.append(dec)
             write_string = Obj_name + ',' + str(object_RV) + ',' + sptype + ',' + ra + ',' + dec + '\n'
             f.write(write_string)
+
+            if args.all_spectral_types != 'False':
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
+            elif (sptype[0] == 'F') or (sptype[0] == 'G'):# or (sptype[0] == 'K'):
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
+            else:
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
+            
         else:
             ind = RV_standard.index(Obj_name)
             object_RV = RV[ind]
             
+            if args.all_spectral_types != 'False':
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
+            elif (sptype[0] == 'F') or (sptype[0] == 'G') or (sptype[0] == 'K'):
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
+            else:
+                ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
+
+
         print "Object:", Obj_name, "has RV:", object_RV
 
-        ps.make_wifes_p08_template(file, templates_dir, rv=object_RV)
+        #ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=True, correct_skylines=False)
 
 f.close()
+
+absorption_spec_F = np.median(spectra_F,axis=0)
+outfn = '/Users/rajikak/tools/absorption_spec_F.fits'
+pyfits.writeto(outfn,absorption_spec_F,clobber=True)
+
