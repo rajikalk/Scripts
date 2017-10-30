@@ -20,6 +20,8 @@ files = glob.glob('./*p08*')
 
 MJD = []
 RV = []
+RV_full = []
+RV_sig = []
 Amb_Temp = []
 Baro_Pres = []
 Rel_humid = []
@@ -73,6 +75,7 @@ for slit in range(slits):
     outfn = 'templates/slit_'+str(slit)+'.fits'
     pyfits.writeto(outfn,spectrum_interp,clobber=True)
     print('saved template:'+outfn)
+
 print "MADE TEMPLATES FOR EACH SLIT"
 print "NOW CALCULATING RV VARIATION FOR EACH SLIT"
 
@@ -117,8 +120,8 @@ RV = np.array(RV)
 RV_med = []
 RV_std = []
 for obs in range(len(RV[0])):
-    RV_med.append(np.median(RV[:,obs]))
-    RV_std.append(np.std(RV[:,obs]))
+    RV_med.append(np.median(RV[np.where(np.isnan(RV[:,obs])==False)[0],obs]))
+    RV_std.append(np.std(RV[np.where(np.isnan(RV[:,obs])==False)[0],obs]))
 
 
 
