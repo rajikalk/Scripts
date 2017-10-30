@@ -23,6 +23,7 @@ def parse_inputs():
     parser.add_argument("-abs_only", "--absorption", help="Correct for absorption only?", type=str, default='False')
     parser.add_argument("-sky_only", "--skylines", help="Correct for sky emission only?", type=str, default='False')
     parser.add_argument("-plot_curves", "--plot_curves", help="Dow you want to plot the RV curves?", type=str, default='True')
+    parser.add_argument("-plot_suffix", "--plot_suffix", help="Do you want to give your plots suffixes to help distinguish between them?", type=str, default='')
     args = parser.parse_args()
     return args
 
@@ -224,7 +225,7 @@ if args.mode == 'update':
                             
                             print "Absorption offset=   " + str(rv_abs) + ',    '+ str(rv_abs_sig)
                        
-                            if np.isnan(rv_abs) or np.isnan(rv_abs_sig) or Temp_sptype[ind][0] == 'M' or Temp_sptype[ind][0] == 'K':
+                       if np.isnan(rv_abs) or np.isnan(rv_abs_sig): # or Temp_sptype[ind][0] == 'M' or Temp_sptype[ind][0] == 'K':
                                 print "Could not get reliable absorption RV or wrong spectral type"
                                 rv_abs = 0.0
                                 rv_abs_sig = np.nan
@@ -466,7 +467,7 @@ plt.legend(loc='best')
 plt.xlabel('RV Variation (km/s)')
 plt.ylabel('#')
 plt.xlim([0.0, 100.0])
-plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution.pdf')
+plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution' + args.plot_suffix + '.pdf')
 print "CREATED RV DISTRIBUTION HISTOGRAM"
 
 for Spt in range(len(RV_dist_sptype)):
@@ -480,7 +481,7 @@ for Spt in range(len(RV_dist_sptype)):
     plt.xlabel('RV Variation (km/s)')
     plt.ylabel('#')
     plt.xlim([0.0, 100.0])
-    plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution_' + sp_label[Spt] + '.pdf')
+    plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution_' + sp_label[Spt] + args.plot_suffix +'.pdf')
     print "CREATED RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
 
 
