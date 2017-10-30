@@ -1,3 +1,4 @@
+#REGGIE'S VERSION!
 """After analysis with WiFeS, this suite of routines can extract a star optimally
 and calculate its radial velocity.
 
