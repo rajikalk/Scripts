@@ -6,12 +6,13 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-sin", "--single_arc", help="Do you want to use only the first arc of the night? or two arcs on either side?", default='True')
+    parser.add_argument("-obj", "--objects")
     args = parser.parse_args()
     return args
 
 args = parse_inputs()
 
-files = glob.glob('T2m3w*.fits')
+files = glob.glob('T2m3wr*.fits')
 
 bias_files = []
 flat_files = []
