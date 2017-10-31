@@ -100,10 +100,13 @@ for file in files:
             f.write(write_string)
 
             if args.all_spectral_types != 'False':
+                print "Making template with absorption correction for all spectral types"
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             elif sptype[0] in abs_corr_spt:# or (sptype[0] == 'K'):
+                print "Making template with absorption correction for selected spectral types"
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             else:
+                print "Making template with no absorption and sky=", sky_cor
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
             
         else:
@@ -111,10 +114,13 @@ for file in files:
             object_RV = RV[ind]
             
             if args.all_spectral_types != 'False':
+                print "Making template with absorption correction for all spectral types"
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             elif sptype[0] in abs_corr_spt:
+                print "Making template with absorption correction for selected spectral types"
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             else:
+                print "Making template with no absorption and sky=", sky_cor
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
 
 
