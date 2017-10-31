@@ -21,7 +21,10 @@ def parse_inputs():
     parser.add_argument("-allspt", "--all_spectral_types", help="do you want to correct absorption for all spectral types", default='False')
     parser.add_argument("-sky", "--skylines", help="do you want to correct for skylines?", default='False')
     parser.add_argument("-abs_spt", "--abs_corr_spectral_types", help="Which spectral types would you like to correct the absorption line rv for? default is 'F,G'", type=str, default='F,G')
+    parser.add_argument("-temp_dir", "--template_dir", help="what template directory do you want to use? If none, it uses the default in the /tools directory", type=str, default=None)
+    parser.add_argument("-plot_suffix", "--plot_suffix", help="Do you want to give your plots suffixes to help distinguish between them?", type=str, default='')
     parser.add_argument("files", nargs='*')
+    
     args = parser.parse_args()
     return args
 
@@ -40,6 +43,10 @@ RV_abs = []
 RV_abs_sig = []
 Hcorr = []
 D_rvs = [[],[],[],[]]
+if args.template_dir == None:
+    templates_dir = '/Users/rajikak/tools/templates/'
+else:
+    templates_dir = args.template_dir
 abs_temps = glob.glob('/Users/rajikak/tools/absorption_spec_F.fits')
 sky_temp = glob.glob('/Users/rajikak/tools/wifes_sky.fits')
 abs_corr_spt = args.abs_corr_spectral_types.split(',')
@@ -120,9 +127,9 @@ for image in images:
 
         template_name = '/Users/rajikak/tools/templates/' + obj_name + '_' + file.split('.p08')[0]+'.fits'
 
-        usable_temps = glob.glob('/Users/rajikak/tools/templates/*T2m3w*.fits')
-        if template_name in usable_temps:
-            usable_temps.remove(template_name)
+        usable_temps = glob.glob(templates_dir + '*T2m3w*.fits')
+        if templates_dir + template_name.split('/')[-1] in usable_temps:
+            usable_temps.remove(templates_dir + template_name.split('/')[-1])
 
         spectrum,sig = ps.weighted_extract_spectrum(flux,var)
         rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,usable_temps, ([0,5400],[6900,7000]), save_figures=False, heliocentric_correction=(h_corr - rv_abs -rv_sky))
@@ -193,8 +200,8 @@ plt.plot(x_fit, y_fit, label='Gaussian fit')
 plt.legend(loc='best')
 plt.xlabel('$\Delta$RV (km/s)')
 plt.ylabel('#')
-plt.title('RV precision with abs correction (FG) (mu:' + np.str(np.mean(np.hstack(D_rvs))) +', sigma:' + np.str(np.std(np.hstack(D_rvs))) + ')')
-plt.savefig('RV_precision_with_abs_correction_FG.eps')
+plt.title('RV precision (mu:' + np.str(np.mean(np.hstack(D_rvs))) +', sigma:' + np.str(np.std(np.hstack(D_rvs))) + ')')
+plt.savefig('RV_precision'+args.plot_suffix+'.eps')
 
 
 temp_file = open('RV_test_with_absorption_correction_for_FGK_and_sky.pkl', 'w')
