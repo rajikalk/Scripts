@@ -13,6 +13,8 @@ def parse_inputs():
     parser.add_argument("-abs", "--absorption", help="do you want to correct for sky absorption?", default='False')
     parser.add_argument("-allspt", "--all_spectral_types", help="do you want to correct absorption for all spectral types", default='False')
     parser.add_argument("-sky", "--skylines", help="do you want to correct for skylines?", default='False')
+    parser.add_argument("-abs_spt", "--abs_corr_spectral_types", help="Which spectral types would you like to correct the absorption line rv for? default is 'F,G'", type=str, default='F,G')
+    parser.add_argument("-temp_dir", "--template_dir", help="where do you want to save the templates? if None, selects default in /tools.", default=None, type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -30,7 +32,10 @@ else:
 S = Simbad()
 S.add_votable_fields('rv_value')
 
-templates_dir = '/Users/rajikak/tools/templates/'
+if args.template_dir == None:
+    templates_dir = '/Users/rajikak/tools/templates/'
+else:
+    templates_dir = args.template_dir
 files = glob.glob('/Users/rajikak/Observational_Data/RV_standards/PyWiFeS/*/*p08.fits')
 image_dir = '/Users/rajikak/Observational_Data/RV_standards/Images/'
 RV_standard = []
@@ -40,6 +45,7 @@ RA = []
 DEC = []
 spectra_F = []
 sky_spectra = []
+abs_corr_spt = args.abs_corr_spectral_types.split(',')
 
 dell_template = 0.1
 wave_template=np.arange(90000)*dell_template + 3000
@@ -95,7 +101,7 @@ for file in files:
 
             if args.all_spectral_types != 'False':
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
-            elif (sptype[0] == 'F') or (sptype[0] == 'G'):# or (sptype[0] == 'K'):
+            elif sptype[0] in abs_corr_spt:# or (sptype[0] == 'K'):
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             else:
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
@@ -106,7 +112,7 @@ for file in files:
             
             if args.all_spectral_types != 'False':
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
-            elif (sptype[0] == 'F') or (sptype[0] == 'G') or (sptype[0] == 'K'):
+            elif sptype[0] in abs_corr_spt:
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=abs_cor, correct_skylines=sky_cor)
             else:
                 ps.make_wifes_p08_template(file, templates_dir, rv=object_RV, correct_absorption=False, correct_skylines=sky_cor)
