@@ -20,6 +20,7 @@ def parse_inputs():
     parser.add_argument("-abs", "--absorption", help="do you want to correct for sky absorption?", default='False')
     parser.add_argument("-allspt", "--all_spectral_types", help="do you want to correct absorption for all spectral types", default='False')
     parser.add_argument("-sky", "--skylines", help="do you want to correct for skylines?", default='False')
+    parser.add_argument("-abs_spt", "--abs_corr_spectral_types", help="Which spectral types would you like to correct the absorption line rv for? default is 'F,G'", type=str, default='F,G')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -41,6 +42,7 @@ Hcorr = []
 D_rvs = [[],[],[],[]]
 abs_temps = glob.glob('/Users/rajikak/tools/absorption_spec_F.fits')
 sky_temp = glob.glob('/Users/rajikak/tools/wifes_sky.fits')
+abs_corr_spt = args.abs_corr_spectral_types.split(',')
 
 sky_intervals = ([0,5500],[5700,5850],[6000,6100],[6700,6800])
 abs_bad_ints = ([0,5500],[5500,6860],[6910,7000])
@@ -80,7 +82,7 @@ for image in images:
                 rv_abs, rv_abs_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), heliocentric_correction=0.0)
                 print "ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig)
             else:
-                if RV_standard_data[ind][1][0] == 'F' or RV_standard_data[ind][1][0] == 'G':
+                if RV_standard_data[ind][1][0] in abs_corr_spt:
                     rv_abs, rv_abs_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), heliocentric_correction=0.0)
                     print "ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig)
                 else:
