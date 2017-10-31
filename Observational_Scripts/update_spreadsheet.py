@@ -24,6 +24,7 @@ def parse_inputs():
     parser.add_argument("-sky_only", "--skylines", help="Correct for sky emission only?", type=str, default='False')
     parser.add_argument("-plot_curves", "--plot_curves", help="Dow you want to plot the RV curves?", type=str, default='True')
     parser.add_argument("-plot_suffix", "--plot_suffix", help="Do you want to give your plots suffixes to help distinguish between them?", type=str, default='')
+    parser.add_argument("-abs_spt", "--abs_corr_spectral_types", help="Which spectral types would you like to correct the absorption line rv for? default is 'F,G,K,M'", type=str, default='F,G,K,M')
     args = parser.parse_args()
     return args
 
@@ -45,6 +46,7 @@ Temp_sptype = []
 Pref_template = []
 Obs_info = []
 SNR = []
+abs_corr_spt = args.abs_corr_spectral_types.split(',')
 
 abs_temp = glob.glob('/Users/rajikak/tools/absorption_spec_F.fits')
 sky_temp = glob.glob('/Users/rajikak/tools/wifes_sky.fits')
@@ -192,6 +194,22 @@ if args.mode == 'update':
                         Manual_click_flag[click_ind] = [fn, manual_click_data[0][-2], maxpx]
                     else:
                         flux, wave, var, sky = ps.read_and_find_star_p08(fn, fig_fn='/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/'+Obs_date+'_'+str(MJD)+'.png', manual_click=click, return_sky=True, sky_rad=5)
+                    
+                    #selecting template
+                    if Pref_template[ind] != '':
+                        templates = glob.glob('/Users/rajikak/tools/templates/'+Pref_template[ind]+'*')
+                        if Temp_sptype[ind] == '':
+                            temp_name = Pref_template[ind].split('_')[0]
+                            custom_simbad = Simbad()
+                            custom_simbad.add_votable_fields("sptype")
+                            data = custom_simbad.query_object(temp_name)
+                            sptype = data['SP_TYPE'][-1]
+                            Temp_sptype[ind] = sptype
+                        else:
+                            sptype = Temp_sptype[ind]
+                    else:
+                        templates = glob.glob('/Users/rajikak/tools/templates/*.fits')
+                    
                     if args.correct_sky == 'True':
                         #Calculating RV from skylines
                         if args.absorption == 'False':
@@ -225,7 +243,7 @@ if args.mode == 'update':
                             
                             print "Absorption offset=   " + str(rv_abs) + ',    '+ str(rv_abs_sig)
                        
-                       if np.isnan(rv_abs) or np.isnan(rv_abs_sig): # or Temp_sptype[ind][0] == 'M' or Temp_sptype[ind][0] == 'K':
+                            if np.isnan(rv_abs) or np.isnan(rv_abs_sig) or (Temp_sptype[ind][0] not in abs_corr_spt):
                                 print "Could not get reliable absorption RV or wrong spectral type"
                                 rv_abs = 0.0
                                 rv_abs_sig = np.nan
@@ -244,28 +262,6 @@ if args.mode == 'update':
                         rv_abs_sig = 0.0
                         rv_err = 0.0
                         which_sky = ''
-                    
-                    #selecting template
-                    if Pref_template[ind] != '':
-                        templates = glob.glob('/Users/rajikak/tools/templates/'+Pref_template[ind]+'*')
-                        if Temp_sptype[ind] == '':
-                            temp_name = Pref_template[ind].split('_')[0]
-                            custom_simbad = Simbad()
-                            custom_simbad.add_votable_fields("sptype")
-                            data = custom_simbad.query_object(temp_name)
-                            sptype = data['SP_TYPE'][-1]
-                            Temp_sptype[ind] = sptype
-                        else:
-                            sptype = Temp_sptype[ind]
-                        '''
-                        if sptype[0] == 'M':
-                            rv_abs = 0.0
-                            rv_sky = 0.0
-                        else:
-                            which_sky = 'abs'
-                        '''
-                    else:
-                        templates = glob.glob('/Users/rajikak/tools/templates/*.fits')
 
                     #Selecting
                     if which_sky == 'sky': #rv_sky_sig < rv_abs_sig or :
