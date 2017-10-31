@@ -25,6 +25,7 @@ def parse_inputs():
     parser.add_argument("-plot_curves", "--plot_curves", help="Dow you want to plot the RV curves?", type=str, default='True')
     parser.add_argument("-plot_suffix", "--plot_suffix", help="Do you want to give your plots suffixes to help distinguish between them?", type=str, default='')
     parser.add_argument("-abs_spt", "--abs_corr_spectral_types", help="Which spectral types would you like to correct the absorption line rv for? default is 'F,G,K,M'", type=str, default='F,G,K,M')
+    parser.add_argument("-temp_dir", "--template_dir", help="what template directory do you want to use? If none, it uses the default in the /tools directory", type=str, default=None)
     args = parser.parse_args()
     return args
 
@@ -47,6 +48,11 @@ Pref_template = []
 Obs_info = []
 SNR = []
 abs_corr_spt = args.abs_corr_spectral_types.split(',')
+
+if args.template_dir == None:
+    templates_dir = '/Users/rajikak/tools/templates/'
+else:
+    templates_dir = args.template_dir
 
 abs_temp = glob.glob('/Users/rajikak/tools/absorption_spec_F.fits')
 sky_temp = glob.glob('/Users/rajikak/tools/wifes_sky.fits')
@@ -197,7 +203,7 @@ if args.mode == 'update':
                     
                     #selecting template
                     if Pref_template[ind] != '':
-                        templates = glob.glob('/Users/rajikak/tools/templates/'+Pref_template[ind]+'*')
+                        templates = glob.glob(templates_dir+Pref_template[ind]+'*')
                         if Temp_sptype[ind] == '':
                             temp_name = Pref_template[ind].split('_')[0]
                             custom_simbad = Simbad()
@@ -208,7 +214,8 @@ if args.mode == 'update':
                         else:
                             sptype = Temp_sptype[ind]
                     else:
-                        templates = glob.glob('/Users/rajikak/tools/templates/*.fits')
+                        templates = glob.glob(templates_dir + '/*.fits')
+                        Temp_sptype[ind] = ' '
                     
                     if args.correct_sky == 'True':
                         #Calculating RV from skylines
@@ -255,7 +262,7 @@ if args.mode == 'update':
                             rv_abs_sig = 0.0
                             which_sky = 'sky'
                     else:
-                        spectrum,sig = ps.weighted_extract_spectrum(flux)
+                        spectrum,sig = ps.weighted_extract_spectrum(flux, var)
                         rv_sky = 0.0
                         rv_abs = 0.0
                         rv_sky_sig = 0.0
@@ -467,18 +474,21 @@ plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribu
 print "CREATED RV DISTRIBUTION HISTOGRAM"
 
 for Spt in range(len(RV_dist_sptype)):
-    max = np.max(RV_dist_sptype[Spt])
-    bins = np.arange(0, max+2,2)
-    hist, bins = np.histogram(RV_dist_sptype[Spt], bins=bins)
-    width = (bins[1] - bins[0])
-    center = (bins[:-1] + bins[1:])/2. - width/2.
-    plt.clf()
-    plt.bar(center+(width*dist), hist, align='center', width=width)
-    plt.xlabel('RV Variation (km/s)')
-    plt.ylabel('#')
-    plt.xlim([0.0, 100.0])
-    plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution_' + sp_label[Spt] + args.plot_suffix +'.pdf')
-    print "CREATED RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
+    if len(RV_dist_sptype[Spt]) > 0:
+        max = np.max(RV_dist_sptype[Spt])
+        bins = np.arange(0, max+2,2)
+        hist, bins = np.histogram(RV_dist_sptype[Spt], bins=bins)
+        width = (bins[1] - bins[0])
+        center = (bins[:-1] + bins[1:])/2. - width/2.
+        plt.clf()
+        plt.bar(center+(width*dist), hist, align='center', width=width)
+        plt.xlabel('RV Variation (km/s)')
+        plt.ylabel('#')
+        plt.xlim([0.0, 100.0])
+        plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution_' + sp_label[Spt] + args.plot_suffix +'.pdf')
+        print "CREATED RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
+    else:
+        print "Couldn't make RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
 
 
 images_RIK = images = glob.glob('Observational_Data/PDF_dirs/RIK*/RV_vs_MJD.png')
