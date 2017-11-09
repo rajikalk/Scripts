@@ -200,8 +200,35 @@ plt.plot(x_fit, y_fit, label='Gaussian fit')
 plt.legend(loc='best')
 plt.xlabel('$\Delta$RV (km/s)')
 plt.ylabel('#')
-plt.title('RV precision (mu:' + np.str(np.mean(np.hstack(D_rvs))) +', sigma:' + np.str(np.std(np.hstack(D_rvs))) + ')')
+plt.title('RV precision (mu:' + np.str(np.mean(np.hstack(D_rvs))) +', sigma:' + np.str(np.std(np.hstack(D_rvs), ddof=1)) + ')')
 plt.savefig('RV_precision'+args.plot_suffix+'.eps')
+
+y = hist_F
+popt_F, pcov_F = optimize.curve_fit(function,centers, y)
+x_fit = np.linspace(bins[0], bins[-1], 100)
+y_fit = function(x_fit, *popt_F)
+
+y = hist_G
+popt_G, pcov_G = optimize.curve_fit(function,centers, y)
+x_fit = np.linspace(bins[0], bins[-1], 100)
+y_fit = function(x_fit, *popt_G)
+
+y = hist_K
+popt_K, pcov_K = optimize.curve_fit(function,centers, y)
+x_fit = np.linspace(bins[0], bins[-1], 100)
+y_fit = function(x_fit, *popt_K)
+
+y = hist_M
+popt_M, pcov_M = optimize.curve_fit(function,centers, y)
+x_fit = np.linspace(bins[0], bins[-1], 100)
+y_fit = function(x_fit, *popt_M)
+
+
+
+print "For F: mu = ", np.mean(D_rvs[0]), "std = ", np.std(D_rvs[0], ddof=1)
+print "For G: mu = ", np.mean(D_rvs[1]), "std = ", np.std(D_rvs[1], ddof=1)
+print "For K: mu = ", np.mean(D_rvs[2]), "std = ", np.std(D_rvs[2], ddof=1)
+print "For M: mu = ", np.mean(D_rvs[3]), "std = ", np.std(D_rvs[3], ddof=1)
 
 
 temp_file = open('RV_test_with_absorption_correction_for_FGK_and_sky.pkl', 'w')
