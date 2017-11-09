@@ -335,7 +335,6 @@ def main():
                 file = open(pickle_file, 'r')
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                 file.close()
-                
             else:
                 time_val = m_times[frame_val]
                 if args.yt_proj != False:
