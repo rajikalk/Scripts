@@ -373,119 +373,54 @@ for it in range(len(positions)):
         #axes_dict[ax_label].set_aspect(1./data_aspect)
         #axes_dict[ax_label].set_xlim([1.0, 1000.0])
     if 'outflow' in plot_type[it]:
-        legend_labels = ['Single Star', 'Tight Binary', 'Wide Binary']
+        legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
         linestyles = ['k-', 'b--', 'r-.']
-        csv_files = glob.glob(file_dir[it] + "out*_r_1000_50.csv")
-        for file in csv_files:
-            if 'single' in file:
-                single_file = file
-            elif 'tight' in file:
-                tight_file = file
-            else:
-                wide_file = file
+        csv_files = sorted(glob.glob(file_dir[it] + "mach*.csv"))
         if 'mass' in input_args[it]:
             time = []
             mass = []
-            header = 0
-            with open(single_file, 'r') as file:
-                time.append([])
-                mass.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        m = float(row[1])
-                        mass[-1].append(m)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(tight_file, 'r') as file:
-                time.append([])
-                mass.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        m = float(row[1])
-                        mass[-1].append(m)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(wide_file, 'r') as file:
-                time.append([])
-                mass.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        m = float(row[1])
-                        mass[-1].append(m)
-                    if header == 0:
-                        header = 1
+            for file_it in range(len(csv_files)):
+                header = 0
+                with open(csv_files[file_it], 'r') as file:
+                    time.append([])
+                    mass.append([])
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if header != 0:
+                            time_val = float(row[0])
+                            time[-1].append(time_val)
+                            m = float(row[1])
+                            mass[-1].append(m)
+                        if header == 0:
+                            header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
-            axes_dict[ax_label].set_xlim([0, 3000])
-            axes_dict[ax_label].set_ylim([5.e-4, 5.e-1])
+            #axes_dict[ax_label].set_xlim([0, 3000])
+            #axes_dict[ax_label].set_ylim([5.e-4, 5.e-1])
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             axes_dict[ax_label].legend(loc='best')
         elif 'ang' in input_args[it]:
             time = []
             angular_momentum = []
-            header = 0
-            with open(single_file, 'r') as file:
-                time.append([])
-                angular_momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        L = float(row[3])
-                        if 'specific' in input_args[it]:
-                            L = L/float(row[1])
-                        if np.isnan(L):
-                            L = 1.e-6
-                        angular_momentum[-1].append(L)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(tight_file, 'r') as file:
-                time.append([])
-                angular_momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        L = float(row[3])
-                        if 'specific' in input_args[it]:
-                            L = L/float(row[1])
-                        if np.isnan(L):
-                            L = 1.e-6
-                        angular_momentum[-1].append(L)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(wide_file, 'r') as file:
-                time.append([])
-                angular_momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        L = float(row[3])
-                        if 'specific' in input_args[it]:
-                            L = L/float(row[1])
-                        if np.isnan(L):
-                            L = 1.e-6
-                        angular_momentum[-1].append(L)
-                    if header == 0:
-                        header = 1
+            for file_it in range(len(csv_files)):
+                header = 0
+                with open(csv_files[file_it], 'r') as file:
+                    time.append([])
+                    angular_momentum.append([])
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if header != 0:
+                            time_val = float(row[0])
+                            time[-1].append(time_val)
+                            L = float(row[3])
+                            if 'specific' in input_args[it]:
+                                L = L/float(row[1])
+                            if np.isnan(L):
+                                L = 1.e-6
+                            angular_momentum[-1].append(L)
+                        if header == 0:
+                            header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], angular_momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
@@ -493,64 +428,31 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e7, 1.e11])
             else:
                 axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e6, 1.e10])
+                #axes_dict[ax_label].set_ylim([1.e6, 1.e10])
                 #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
-            axes_dict[ax_label].set_xlim([0, 3000])
+            #axes_dict[ax_label].set_xlim([0, 3000])
         else:
             time = []
             momentum = []
-            header = 0
-            with open(single_file, 'r') as file:
-                time.append([])
-                momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        p = float(row[2])
-                        if 'specific' in input_args[it]:
-                            p = p/float(row[1])
-                        if np.isnan(p):
-                            p = 1.e-6
-                        momentum[-1].append(p)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(tight_file, 'r') as file:
-                time.append([])
-                momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        p = float(row[2])
-                        if 'specific' in input_args[it]:
-                            p = p/float(row[1])
-                        if np.isnan(p):
-                            p = 1.e-6
-                        momentum[-1].append(p)
-                    if header == 0:
-                        header = 1
-            header = 0
-            with open(wide_file, 'r') as file:
-                time.append([])
-                momentum.append([])
-                reader = csv.reader(file)
-                for row in reader:
-                    if header != 0:
-                        time_val = float(row[0])
-                        time[-1].append(time_val)
-                        p = float(row[2])
-                        if 'specific' in input_args[it]:
-                            p = p/float(row[1])
-                        if np.isnan(p):
-                            p = 1.e-6
-                        momentum[-1].append(p)
-                    if header == 0:
-                        header = 1
+            for file_it in range(len(csv_files)):
+                header = 0
+                with open(csv_files[file_it], 'r') as file:
+                    time.append([])
+                    momentum.append([])
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if header != 0:
+                            time_val = float(row[0])
+                            time[-1].append(time_val)
+                            p = float(row[2])
+                            if 'specific' in input_args[it]:
+                                p = p/float(row[1])
+                            if np.isnan(p):
+                                p = 1.e-6
+                            momentum[-1].append(p)
+                        if header == 0:
+                            header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
@@ -558,9 +460,9 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
             else:
                 axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([5.e-5, 1.e0])
+                #axes_dict[ax_label].set_ylim([5.e-5, 1.e0])
                 #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
-            axes_dict[ax_label].set_xlim([0, 3000])
+            #axes_dict[ax_label].set_xlim([0, 3000])
             print "CREATED OUTFLOWS PLOT"
     if 'appendix' in plot_type[it]:
         lref_labels = ['10', '11', '12', '13', '14', '15']
