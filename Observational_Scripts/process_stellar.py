@@ -633,6 +633,7 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
     peaks = np.zeros(len(template_fns))
     for i,template_fn in enumerate(template_fns):
         template_int = template_ints[i]
+        '''
         if save_figures == True:
             plt.clf()
             plt.plot(wave_log, template_int, label='template')
@@ -641,6 +642,7 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
             #plt.xlim([6800,7000])
             plt.savefig(save_dir + 'spectrum_vs_template_' + template_fns[i].split('/')[-1].split('.fits')[0] + '.eps')
             plt.clf()
+        '''
         cor = np.correlate(spect_int,template_int,'same')
         ##here it's a good idea to limit where the peak Xcorrelation can be, only search for a peak within 1000 of rv=0
         ## that's and RV range of -778 to 778 for the default spacings in the code
@@ -653,6 +655,9 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
         best_ind = np.argmax(correlation)
         #print("best RV for template "+str(i+1)+" is "+str(this_rvs[best_ind+1] + heliocentric_correction))
         if save_figures == True:
+            temp_file = open(save_dir + 'cross_correlation.pkl', 'w')
+            pickle.dump((this_rvs[1:-1], correlation/np.max(correlation)), temp_file)
+            temp_file.close()
             plt.clf()
             plt.plot(this_rvs[1:-1], correlation/np.max(correlation))
             plt.title('Correlation_with_template_'+template_fn.split('/')[-1])
@@ -788,7 +793,7 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     rv_sig1: float
         Uncertainty in radial velocity (NB assumes good model fit)
     rv2: float
-        Radial velocity of star 1 in km/s
+        Radial velocity of star 2 in km/s
     rv_sig2: float
         Uncertainty in radial velocity (NB assumes good model fit)
     corpeak: float
@@ -838,7 +843,7 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     #ix_c12 = np.minimum(np.maximum(xy[1]-xy[0]+ncor//2,0),ncor-1) #XXX New (temporary?) line XXX
     todcor = (c1[xy[0]] + alpha_norm*c2[xy[1]])/np.sqrt(1 + 2*alpha_norm*c12[ix_c12] + alpha_norm**2)
     
-    print("Max correlation: {0:5.2f}".format(np.max(todcor)))
+    #print("Max correlation: {0:5.2f}".format(np.max(todcor)))
     #print(alpha_norm)
     #plt.plot(drv*(np.arange(nwave_log)-nwave_log//2),np.roll(c1,nwave_log//2))
     #Figure like TODCOR paper:
