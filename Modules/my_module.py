@@ -165,6 +165,16 @@ def find_files(m_times, files):
                 diff_val = abs(time - m_times[mit])
                 diff_arr.append(diff_val)
             append_file = pot_files[np.argmin(diff_arr)]
+            if time == 0.0:
+                if yt_file:
+                    part_file=append_file[:-12] + 'part' + file[-5:]
+                    f = h5py.File(part_file, 'r')
+                    if ('all', u'particle_mass') not in ds.field_list:
+                        append_file = pot_files[np.argmin(diff_arr)+1]
+                else:
+                    f = h5py.File(append_file, 'r')
+                    if 'particlemasses' not in f.keys():
+                        append_file = pot_files[np.argmin(diff_arr)+1]
             usable_files.append(append_file)
             if yt_file:
                 part_file=append_file[:-12] + 'part' + file[-5:]
