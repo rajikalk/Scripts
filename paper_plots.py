@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", default=False)
     parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", default=False)
     parser.add_argument("-op", "--outflow_pickle", help="Do you want to measure the outflows?", default=False)
-    parser.add_argument("-po", "--plot_outflows", help="Do you want to plot the outflows nwo that you've measured them?", default=False)
+    parser.add_argument("-po", "--plot_outflows", help="Do you want to plot the outflows now that you've measured them?", default=False)
     parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", default=False)
     parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default=4.1, type=float)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int, default=0)
@@ -46,7 +46,7 @@ def parse_inputs():
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     
     #profile plot args
-    parser.add_argument("-rmax", "--r_max", help="radius of measuign volume", type=float, default=500.)
+    parser.add_argument("-rmax", "--r_max", help="radius of measuing volume", type=float, default=500.)
     parser.add_argument("-dt", "--disk_thickness", help="How far above and below the midplane do you want your profile to go?", type=float, default=100.)
     parser.add_argument("-xf", "--x_field", help="x axis of the profile plot?", type=str, default="Distance_from_Center")
     parser.add_argument("-wf", "--weight_field", help="any weight field?", type=str, default=None)
@@ -70,7 +70,7 @@ def parse_inputs():
     
     #yt_slice
     parser.add_argument("-ys", "--yt_slice", help="did you want to make a yt-slice?", default=False)
-    parser.add_argument("-st", "--slice_thickness", help="How thick do you want the slice to be?", default=100.0, type=float)
+    parser.add_argument("-st", "--slice_thickness", help="How thick do you want the slice to be?", default=300.0, type=float)
     
     parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", default=False, type=bool)
     parser.add_argument("-sf", "--start_frame", help="if you don't want to start at frame 0, what frame do you want to start at?", type=int, default=0)
@@ -78,6 +78,7 @@ def parse_inputs():
     
     parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
     parser.add_argument("-ni", "--non_ideal", help="do you want to plot the non-ideal regimes we shoudl think about", default=False, type=bool)
+    parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -131,7 +132,7 @@ for fit in range(len(usable_files)):
     if fit == 0 or usable_files[fit] != usable_files[fit-1]:
         print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit]
         if args.slice_plot != False:
-            movie_file = movie_files[fit]
+            movie_file = usable_movie_files[fit]
         file = usable_files[fit]
         part_file = file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
@@ -174,7 +175,8 @@ for fit in range(len(usable_files)):
             Y = Y + y_pos
             X_vel = X_vel + x_pos
             Y_vel = Y_vel + y_pos
-        myf.set_coordinate_system('cylindrical')
+        #myf.set_coordinate_system('cylindrical')
+        myf.set_coordinate_system('spherical')
         dummy1, dummy2, dummy3, magx_grid = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
         dummy1, dummy2, dummy3, magy_grid = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
         del dummy1
@@ -188,7 +190,10 @@ for fit in range(len(usable_files)):
         cl = (xmax-xmin_full)/dim
         x_pos_min = int(np.round(np.min(X) - xmin_full))/cl
         y_pos_min = int(np.round(np.min(Y) - xmin_full))/cl
-        velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0], center_vel=center_vel[:2])
+        if f['velx_slice_xy'].shape == (2048,2048):
+            velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'], f['vely_slice_xy'], center_vel=center_vel[:2])
+        else:
+            velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, f['velx_slice_xy'][:,:,0], f['vely_slice_xy'][:,:,0], center_vel=center_vel[:2])
         f.close()
 
         if args.ax_lim != None:
@@ -236,9 +241,16 @@ for fit in range(len(usable_files)):
         args.profile_plot = True
     if args.profile_plot:
         myf.set_center(args.center)
+        myf.set_coordinate_system('spherical')
         print "Doing Profile Plot"
         save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
-        measuring_volume = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (args.r_max, 'au'), (args.disk_thickness, 'au'))
+        if myf.get_center() == 0:
+             tot_vec = [np.sum(dd['specific_angular_momentum_x']).value, np.sum(dd['specific_angular_momentum_y']).value, np.sum(dd['specific_angular_momentum_z']).value]
+        else:
+            tot_vec = [dd['particle_x_ang'][args.center-1].value, dd['particle_y_ang'][args.center-1].value, dd['particle_z_ang'][args.center-1].value]
+        tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
+        L = tot_vec/tot_mag
+        measuring_volume = ds.disk(dd['Center_Position'], L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
         if args.weight_field != None:
             w_arr = measuring_volume[args.weight_field]
         else:
@@ -252,21 +264,21 @@ for fit in range(len(usable_files)):
         z_arr = measuring_volume['z'].in_units('AU')
 
         prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
-        sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points)
+        sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
         
         if args.pickle_dump == False:
             plt.clf()
             cm = plt.cm.get_cmap('RdYlBu')
-            plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm)
+            plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=(1-w_arr/np.max(w_arr)), cmap=cm)
             plt.plot(prof_x, prof_y, 'k-', linewidth=2.)
             cbar = plt.colorbar(plot, pad=0.0)
             cbar.set_label('|z position| (AU)', rotation=270, labelpad=13, size=14)
             plt.xlabel('Cyclindral Radius (AU)', labelpad=-1)
-            #plt.ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', labelpad=-3)
+            plt.ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', labelpad=-3)
             plt.ylabel('$\theta$', labelpad=-3)
             plt.xlim([0.0, args.r_max])
-            plt.ylim([0.0, 90.0])
-            plt.axhline(y=60.0, color='k', linestyle='--')
+            plt.ylim([0.0, 2.0])
+            #plt.axhline(y=60.0, color='k', linestyle='--')
             #plt.axes().set_aspect(1./plt.axes().get_data_ratio())
             #plt.axes().set_aspect((args.r_max)/(2.0))
             plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
@@ -429,6 +441,10 @@ for fit in range(len(usable_files)):
             L = [0.0, 1.0, 0.0]
         elif len(dd['particle_posx']) == 1:
             L = [0.0, 1.0, 0.0]
+        elif args.projection_orientation != None:
+            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+            L = [1, y_val, 0]
+            print "SET PROJECTION ORIENTATION L=", L
         else:
             pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
             L = [-1*pos_vec[-1], pos_vec[0]]
@@ -461,13 +477,14 @@ for fit in range(len(usable_files)):
         temp = dd['velocity_magnitude']
 
         if fit == 0 or usable_files[fit] != usable_files[fit-1]:
+            L = np.array(L)
             proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T
-            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
-            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T
-            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
-            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T
-            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T
+            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T#[:][::-1]
+            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T#[:][::-1]
+            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T#[:][::-1]
+            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T#[:][::-1]
+            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T#[:][::-1]
+            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T#[:][::-1]
             if np.median(image_data[200:600,400]) > 1.e-15:
                 image_data = image_data.T
                 velx_full = velx_full.T
@@ -548,6 +565,7 @@ for fit in range(len(usable_files)):
             args_dict.update({'xlim':xlim})
             args_dict.update({'ylim':ylim})
             args_dict.update({'standard_vel':args.standard_vel})
+            args_dict.update({'yabel':'$z$ (AU)'})
 
             pickle_file = save_dir + 'yt_proj_pickle.pkl'
             file = open(pickle_file, 'w+')
@@ -566,245 +584,269 @@ for fit in range(len(usable_files)):
 
 #=============================================================================
 #These plots don't need to iterate over multiple files
+'''
+if args.measure_disks == 'True':
+    args.measure_disks = True
+if args.measure_disks:
+    field = args.field
+    files = sorted(glob.glob(path + '*_plt_cnt*'))
+    times = [0.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0, 4000.0]
+    plot_files = mym.find_files(times, files)
+    save_image_name = save_dir + field + "_profile_plot.eps"
+    myf.set_center(args.center)
+    height = 40
+    radius = 20
+    for file in plot_files:
+        time = times[fit]
+        part_file = file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+'''
 
 if args.force_comp == 'True':
     args.force_comp = True
-    if args.force_comp:
-        field = args.field
-        files = sorted(glob.glob(path + '*_plt_cnt*'))
-        times = [0.0, 500.0, 1000.0, 2000.0]
-        plot_files = mym.find_files(times, files)
-        if args.save_name == None:
-            save_image_name = save_dir + field + "_abs.eps"
+if args.force_comp:
+    field = args.field
+    files = sorted(glob.glob(path + '*_plt_cnt*'))
+    times = [0.0, 500.0, 1000.0, 2000.0]
+    plot_files = mym.find_files(times, files)
+    if args.save_name == None:
+        save_image_name = save_dir + field + "_abs.eps"
+    else:
+        save_image_name = args.save_name + ".eps"
+    myf.set_coordinate_system('sph')
+    myf.set_center(1)
+    plt.clf()
+    x = []
+    y = []
+    fit = 0
+    height = 1000
+    for file in plot_files:
+        time = times[fit]
+        part_file = file[:-12] + 'part' + file[-5:]
+        ds = yt.load(file, particle_filename=part_file)
+        dd = ds.all_data()
+        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
+        bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
+        x_field = column['dz_from_Center'].in_units('AU')
+        dummy = column['magx']
+        dummy = column['magy']
+        dummy = column['magz']
+        if args.y_units == None:
+            y_field = column[field]
+            args.y_units = str(y_field.units)
         else:
-            save_image_name = args.save_name + ".eps"
-        myf.set_coordinate_system('sph')
-        myf.set_center(1)
-        plt.clf()
-        x = []
-        y = []
-        fit = 0
-        for file in plot_files:
-            time = times[fit]
-            part_file = file[:-12] + 'part' + file[-5:]
-            ds = yt.load(file, particle_filename=part_file)
-            dd = ds.all_data()
-            height = 1000
-            column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
-            bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
-            x_field = column['dz_from_Center'].in_units('AU')
-            dummy = column['magx']
-            dummy = column['magy']
-            dummy = column['magz']
-            if args.y_units == None:
-                y_field = column[field]
-                args.y_units = str(y_field.units)
-            else:
-                y_field = column[field].in_units(args.y_units)
-            if np.max(y_field) < 0:
-                y_field = np.abs(y_field)
-            if args.weight_field != None:
-                w_field = column[args.weight_field]
-            else:
-                w_field = None
-            prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
-            prof_x = np.array(prof_x)
-            prof_y = np.array(prof_y)
-            x.append(prof_x)
-            y.append(prof_y)
-            if args.pickle_dump == False:
-                plt.clf()
-                plt.axhline(y=1.0, color='k', linestyle='--')
-                for time in range(len(x)):
-                    if args.logscale == True:
-                        plt.loglog(x[time], y[time], linewidth=1.5, alpha=0.75)
-                        plt.xlim([1., height])
-                    else:
-                        plt.plot(x[time], y[time], linewidth=1.5)
-                        plt.xlim([0., height])
-            
-                plt.xlabel('Z-distance (AU)')
-                if args.y_label == None:
-                    plt.ylabel(field+" ("+args.y_units+")")
-            else:
-                plt.ylabel(args.y_label, fontsize=14)
-                plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-                print "created force comparison plot:", save_image_name
-            fit = fit + 1
-                
+            y_field = column[field].in_units(args.y_units)
+        if np.max(y_field) < 0:
+            y_field = np.abs(y_field)
+        if args.weight_field != None:
+            w_field = column[args.weight_field]
+        else:
+            w_field = None
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
+        prof_x = np.array(prof_x)
+        prof_y = np.array(prof_y)
+        x.append(prof_x)
+        y.append(prof_y)
         if args.pickle_dump == False:
             plt.clf()
-            colors = ['k', 'b', 'c', 'g', 'r', 'm']
-            dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
-            dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
+            plt.axhline(y=1.0, color='k', linestyle='--')
             for time in range(len(x)):
-                plt.axhline(y=1.0, color='k', linestyle='--')
                 if args.logscale == True:
-                    plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5, alpha=0.75)
+                    plt.loglog(x[time], y[time], linewidth=1.5, alpha=0.75)
                     plt.xlim([1., height])
                 else:
-                    plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
+                    plt.plot(x[time], y[time], linewidth=1.5)
                     plt.xlim([0., height])
-            
-            plt.legend(loc='best')
+        
             plt.xlabel('Z-distance (AU)')
             if args.y_label == None:
                 plt.ylabel(field+" ("+args.y_units+")")
-            else:
-                plt.ylabel(args.y_label, fontsize=14)
+        else:
+            plt.ylabel(args.y_label, fontsize=14)
             plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
             print "created force comparison plot:", save_image_name
+        fit = fit + 1
+            
+    if args.pickle_dump == False:
+        plt.clf()
+        colors = ['k', 'b', 'c', 'g', 'r', 'm']
+        dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+        dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
+        for time in range(len(x)):
+            plt.axhline(y=1.0, color='k', linestyle='--')
+            if args.logscale == True:
+                plt.loglog(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5, alpha=0.75)
+                plt.xlim([1., height])
+            else:
+                plt.plot(x[time], y[time], c=colors[-len(x) + time], dashes=dash_list[-len(x) + time], label=str(times[time])+"yr", linewidth=1.5)
+                plt.xlim([0., height])
+        
+        plt.legend(loc='best')
+        plt.xlabel('Z-distance (AU)')
+        if args.y_label == None:
+            plt.ylabel(field+" ("+args.y_units+")")
         else:
-            pickle_file = save_dir + 'force_comp_pickle.pkl'
-            file = open(pickle_file, 'w+')
-            pickle.dump((x, y, times, args.y_label),file)
-            file.close()
-            print "created force comp pickle:", pickle_file
+            plt.ylabel(args.y_label, fontsize=14)
+        plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
+        print "created force comparison plot:", save_image_name
+    else:
+        pickle_file = save_dir + 'force_comp_pickle.pkl'
+        file = open(pickle_file, 'w+')
+        pickle.dump((x, y, times, args.y_label),file)
+        file.close()
+        print "created force comp pickle:", pickle_file
 
 if args.plot_outflows == 'True':
     args.plot_outflows = True
-    if args.plot_outflows:
-        files = glob.glob('/home/100/rlk100/Paper_plots/Outflows/*/outflow*')
-        fig = plt.figure()
-        gs = gridspec.GridSpec(3, 1)
-        gs.update(hspace=0.0)
-        pit = 0
-        times = []
-        mass = []
-        maximum_speed = []
-        momentum = []
-        ang_momentum = []
-        max_time = 3000.
-        for file in files:
-            legend_label =  file.split('Outflows/')[-1].split('/')[0]
-            f = open(file, 'r')
-            t, m, ms, mom, ang_mom = pickle.load(f)
-            times.append(t)
-            mass.append(m)
-            maximum_speed.append(ms)
-            momentum.append(mom)
-            ang_momentum.append(ang_mom)
-            f.close()
-        linestyles = ['k:', 'b-.', 'g--', 'r-', 'm+', 'cx']
-        ax1 = fig.add_subplot(gs[0,0])
-        ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
-        ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
-        for file_no in range(len(times)):
-            inds = np.where(mass[file_no] == 0.0)
-            if len(inds) == 0:
-                mass[file_no][inds] = 0.0000001
-            ax1.semilogy(times[file_no], mass[file_no], linestyles[file_no])
-        ax1.set_ylabel('Outflow Mass (M$_\odot$)')
-        ax1.set_xlim([0, max_time])
-        ax1.set_ylim(bottom=1.e-5)
-        for file_no in range(len(times)):
-            inds = np.where(momentum[file_no] == 0.0)
-            if len(inds) == 0:
-                momentum[file_no][inds] = 0.0000001
-            ax2.semilogy(times[file_no], momentum[file_no], linestyles[file_no])
-        ax2.set_ylabel('Outflow Momentum (M$_\odot$kms$^{-1}$)')
-        ax2.set_xlim([0, max_time])
-        ax2.set_ylim(bottom=1.e-5)
-        for file_no in range(len(times)):
-            inds = np.where(ang_momentum[file_no] == 0.0)
-            if len(inds) == 0:
-                ang_momentum[file_no][inds] = 0.0000001
-            ax3.semilogy(times[file_no], ang_momentum[file_no], linestyles[file_no])
-        ax3.set_xlabel('Time since protostar formation (yr)')
-        ax3.set_ylabel('Outflow Ang. Mom. (M$_\odot$km$^2$s$^{-1}$)')
-        ax3.set_xlim([0, max_time])
-        ax3.set_ylim(bottom=1.e5)
-        plt.tight_layout()
-        image_name = save_dir + "outflow_plot.eps"
-        plt.savefig(image_name, bbox_inches='tight')
-        print "Created image", image_name
+if args.plot_outflows:
+    files = glob.glob('/home/100/rlk100/Paper_plots/Outflows/*/outflow*')
+    fig = plt.figure()
+    gs = gridspec.GridSpec(3, 1)
+    gs.update(hspace=0.0)
+    pit = 0
+    times = []
+    mass = []
+    maximum_speed = []
+    momentum = []
+    ang_momentum = []
+    max_time = 3000.
+    for file in files:
+        legend_label =  file.split('Outflows/')[-1].split('/')[0]
+        f = open(file, 'r')
+        t, m, ms, mom, ang_mom = pickle.load(f)
+        times.append(t)
+        mass.append(m)
+        maximum_speed.append(ms)
+        momentum.append(mom)
+        ang_momentum.append(ang_mom)
+        f.close()
+    linestyles = ['k:', 'b-.', 'g--', 'r-', 'm+', 'cx']
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+    ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+    for file_no in range(len(times)):
+        inds = np.where(mass[file_no] == 0.0)
+        if len(inds) == 0:
+            mass[file_no][inds] = 0.0000001
+        ax1.semilogy(times[file_no], mass[file_no], linestyles[file_no])
+    ax1.set_ylabel('Outflow Mass (M$_\odot$)')
+    ax1.set_xlim([0, max_time])
+    ax1.set_ylim(bottom=1.e-5)
+    for file_no in range(len(times)):
+        inds = np.where(momentum[file_no] == 0.0)
+        if len(inds) == 0:
+            momentum[file_no][inds] = 0.0000001
+        ax2.semilogy(times[file_no], momentum[file_no], linestyles[file_no])
+    ax2.set_ylabel('Outflow Momentum (M$_\odot$kms$^{-1}$)')
+    ax2.set_xlim([0, max_time])
+    ax2.set_ylim(bottom=1.e-5)
+    for file_no in range(len(times)):
+        inds = np.where(ang_momentum[file_no] == 0.0)
+        if len(inds) == 0:
+            ang_momentum[file_no][inds] = 0.0000001
+        ax3.semilogy(times[file_no], ang_momentum[file_no], linestyles[file_no])
+    ax3.set_xlabel('Time since protostar formation (yr)')
+    ax3.set_ylabel('Outflow Ang. Mom. (M$_\odot$km$^2$s$^{-1}$)')
+    ax3.set_xlim([0, max_time])
+    ax3.set_ylim(bottom=1.e5)
+    plt.tight_layout()
+    image_name = save_dir + "outflow_plot.eps"
+    plt.savefig(image_name, bbox_inches='tight')
+    print "Created image", image_name
 
 if args.separation == 'True':
     args.separation = True
-    if args.separation:
-        image_name = save_dir + "separation"
-        files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat"]
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        line_style = ['b-', 'r-']
-        labels=["Tight Binary", "Wide Binary"]
-        lit = 0
-        plt.clf()
-        for file in files:
-            particle_tag = []
-            times = []
-            x_pos = []
-            y_pos = []
-            z_pos = []
-            with open(file, 'r') as f:
-                reader = csv.reader(f, dialect='dat')
-                for row in reader:
-                    if row[0][0] != '[':
-                        part_tag = int(row[0])
-                        if part_tag not in particle_tag:
-                            particle_tag.append(part_tag)
-                            x_pos.append([])
-                            y_pos.append([])
-                            z_pos.append([])
-                            pit = len(particle_tag) - 1
-                        elif particle_tag[0] == part_tag:
-                            pit = 0
-                        else:
-                            pit = 1
-                        time = (float(row[1]) - float(row[-1]))/yt.units.yr.in_units('s').value
+if args.separation:
+    image_name = save_dir + "separation"
+    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
+    csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
+    line_style = ['b-', 'r-', 'k-']
+    labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
+    lit = 0
+    plt.clf()
+    for file in files:
+        sink_form_time = 0
+        particle_tag = []
+        times = []
+        x_pos = []
+        y_pos = []
+        z_pos = []
+        with open(file, 'r') as f:
+            reader = csv.reader(f, dialect='dat')
+            for row in reader:
+                if row[0][0] != '[':
+                    if sink_form_time == 0:
+                        sink_form_time = float(row[-1])
+                    part_tag = int(row[0])
+                    if part_tag not in particle_tag:
+                        particle_tag.append(part_tag)
+                        x_pos.append([])
+                        y_pos.append([])
+                        z_pos.append([])
+                        pit = len(particle_tag) - 1
+                    elif particle_tag[0] == part_tag:
+                        pit = 0
+                    else:
+                        pit = 1
+                    time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
+                    if time not in times:
                         times.append(time)
-                        x = float(row[2])/yt.units.AU.in_units('cm').value
-                        y = float(row[3])/yt.units.AU.in_units('cm').value
-                        z = float(row[4])/yt.units.AU.in_units('cm').value
-                        x_pos[pit].append(x)
-                        y_pos[pit].append(y)
-                        z_pos[pit].append(z)
-            times = np.array(times)
-            times = times[::2]
-            sorted_inds = np.argsort(times)
-            times = times[sorted_inds]
-            
-            x_pos = np.array(x_pos)
-            y_pos = np.array(y_pos)
-            z_pos = np.array(z_pos)
-            x_pos[0] = x_pos[0][sorted_inds]
-            x_pos[1] = x_pos[1][sorted_inds]
-            y_pos[0] = y_pos[0][sorted_inds]
-            y_pos[1] = y_pos[1][sorted_inds]
-            z_pos[0] = z_pos[0][sorted_inds]
-            z_pos[1] = z_pos[1][sorted_inds]
-            dx = x_pos[0] - x_pos[1]
-            dy = y_pos[0] - y_pos[1]
-            dz = z_pos[0] - z_pos[1]
-            sep = np.sqrt(dx**2. + dy**2. + dz**2.)
-            if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
-                times_new = np.array([0])
-                sep_new = np.array([500])
-                times = np.append(times_new, times)
-                sep = np.append(sep_new, sep)
-            plt.semilogy(times, sep, line_style[lit], label=labels[lit])
-            lit = lit + 1
-        plt.xlim([0.0, 3100.0])
-        plt.legend(loc='best')
-        plt.xlabel("Time (yr)", fontsize=14)
-        plt.ylabel("Separation (AU)", fontsize=14)
-        plt.tick_params(axis='x', which='major', labelsize=14)
-        plt.tick_params(axis='y', which='major', labelsize=14)
-        plt.savefig(image_name + '.eps', bbox_inches='tight')
-        plt.savefig(image_name + '.pdf', bbox_inches='tight')
-        print "Created image", image_name
+                    x = float(row[2])/yt.units.AU.in_units('cm').value
+                    y = float(row[3])/yt.units.AU.in_units('cm').value
+                    z = float(row[4])/yt.units.AU.in_units('cm').value
+                    x_pos[pit].append(x)
+                    y_pos[pit].append(y)
+                    z_pos[pit].append(z)
+        times = np.array(times)
+        #times = times[::2]
+        sorted_inds = np.argsort(times)
+        times = times[sorted_inds]
+        
+        x_pos = np.array(x_pos)
+        y_pos = np.array(y_pos)
+        z_pos = np.array(z_pos)
+        x_pos[0] = x_pos[0][sorted_inds]
+        x_pos[1] = x_pos[1][sorted_inds]
+        y_pos[0] = y_pos[0][sorted_inds]
+        y_pos[1] = y_pos[1][sorted_inds]
+        z_pos[0] = z_pos[0][sorted_inds]
+        z_pos[1] = z_pos[1][sorted_inds]
+        x_pos[0] = x_pos[0][-len(x_pos[1]):]
+        y_pos[0] = y_pos[0][-len(y_pos[1]):]
+        z_pos[0] = z_pos[0][-len(z_pos[1]):]
+        dx = x_pos[0] - x_pos[1]
+        dy = y_pos[0] - y_pos[1]
+        dz = z_pos[0] - z_pos[1]
+        sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+        if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
+            times_new = np.array([0])
+            sep_new = np.array([500])
+            times = np.append(times_new, times)
+            sep = np.append(sep_new, sep)
+        plt.semilogy(times, sep, line_style[lit], label=labels[lit])
+        lit = lit + 1
+    plt.xlim([0.0, 3100.0])
+    plt.legend(loc='best')
+    plt.xlabel("Time (yr)", fontsize=14)
+    plt.ylabel("Separation (AU)", fontsize=14)
+    plt.tick_params(axis='x', which='major', labelsize=14)
+    plt.tick_params(axis='y', which='major', labelsize=14)
+    plt.savefig(image_name + '.eps', bbox_inches='tight')
+    plt.savefig(image_name + '.pdf', bbox_inches='tight')
+    print "Created image", image_name
 
 if args.total_mass_of_system == 'True':
     args.total_mass_of_system = True
 if args.total_mass_of_system:
-    legend_labels = ['Single Star', 'Tight Binary', 'Wide Binary']
+    legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
     linestyles = ['k-', 'b--', 'r-.']
     image_name = save_dir + "total_mass"
-    dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/SingleStar/SingleStarOutFlow_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10"]
+    dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2"]
     case_it = 0
     plt.clf()
     for dir in dirs:
         files = sorted(glob.glob(dir + '/WIND_proj*'))
-        m_times = mym.generate_frame_times(files, 10, presink_frames=0, end_time=3000)
+        m_times = mym.generate_frame_times(files, 100, presink_frames=0, end_time=None)
         usable_files = mym.find_files(m_times, files)
         sink_form_time = mym.find_sink_formation_time(files)
         times = []
@@ -821,7 +863,7 @@ if args.total_mass_of_system:
     plt.xlabel("Time since protostar formation (yr)", fontsize=args.text_font)
     plt.ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
     plt.legend(loc='best')
-    plt.xlim([0, 3000])
+    #plt.xlim([0, 3000])
     plt.tick_params(axis='y', which='major', labelsize=args.text_font)
     plt.tick_params(axis='x', which='major', labelsize=args.text_font)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
