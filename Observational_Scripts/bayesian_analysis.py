@@ -167,6 +167,8 @@ if args.calculate_bayes == 'False':
     plt.clf()
     plt.plot(gamma, p_gamma_US_norm)
     #plt.title('US:' + "{0:5.1f}".format(mean_US*100.)+'$^{' + "{0:5.1f}".format(US_pos_error*100.)+'}_{' + "{0:5.1f}".format(US_neg_error*100.)+'}$%')
+    print "US:", mean_US, "(+", US_pos_error, ", -",US_neg_error,")"
+    print "US_max:", gamma[np.argmax(p_gamma_US_norm)]
     plt.savefig('Binary_fraction_US'+args.image_suffix+'.png')
 
     #UCL
@@ -201,6 +203,8 @@ if args.calculate_bayes == 'False':
     plt.clf()
     plt.plot(gamma, p_gamma_UCL_norm)
     #plt.title('UCL:' + "{0:5.1f}".format(mean_UCL*100.)+'$^{' + "{0:5.1f}".format(UCL_pos_error*100.)+'}_{' + "{0:5.1f}".format(UCL_neg_error*100.)+'}$%')
+    print "UCL:", mean_UCL, "(+", UCL_pos_error, ", -",UCL_neg_error,")"
+    print "UCL_max:", gamma[np.argmax(p_gamma_UCL_norm)]
     plt.savefig('Binary_fraction_UCL'+args.image_suffix+'.png')
 
     plt.clf()
