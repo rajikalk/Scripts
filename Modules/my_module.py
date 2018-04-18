@@ -219,27 +219,21 @@ def get_particle_data(file, axis='xz'):
         part_mass = dd['particle_mass'].in_units('msun').value
         ordered_inds = np.argsort(dd['particle_tag'].value)
         part_mass = dd['particle_mass'][ordered_inds].in_units('msun').value
-        if axis == 'xy':
-            part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
-            part_pos_y = dd['particle_posy'][ordered_inds].in_units('AU').value
-        else:
-            part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
-            part_pos_y = dd['particle_posz'][ordered_inds].in_units('AU').value
+        part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
+        part_pos_y = dd['particle_posy'][ordered_inds].in_units('AU').value
+        part_pos_z = dd['particle_posz'][ordered_inds].in_units('AU').value
         accretion_rad = np.min(dd['dx'].in_units('au').value) * 2.5
     except YTOutputNotIdentified:
         f = h5py.File(file, 'r')
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
         ordered_inds = np.argsort(part_mass)[::-1]
         part_mass = np.array(f["particlemasses"][:][ordered_inds])/yt.units.msun.in_units('g').value
-        if axis == 'xy':
-            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
-            part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
-        else:
-            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
-            part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
+        part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
+        part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
+        part_pos_z = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
     part_info = {'particle_mass':part_mass,
-                 'particle_position':[part_pos_x, part_pos_y],
+                 'particle_position':[part_pos_x, part_pos_y,part_pos_z],
                  'accretion_rad':accretion_rad}
     return part_info
 
