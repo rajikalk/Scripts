@@ -12,6 +12,7 @@ adaptive_bins = True
 coordinates = 'cylindrical'
 has_run = False
 global_enc_mass = []
+normal = [1, 0, 0]
 
 def set_center(x):
     """
@@ -67,6 +68,15 @@ def set_coordinate_system(x):
     global_enc_mass = []
     return coordinates
 
+def set_normal(x):
+    """
+    Sets the normal used for projected fields.
+        
+    Default: [x,y,z] = [1,0,0]
+    """
+    normal = x
+    return normal
+
 def get_center():
     """
     returns the currently set center
@@ -101,6 +111,13 @@ def get_coordinate_system():
     """
     global coordinates
     return coordinates
+
+def get_normal():
+    """
+    returns the currently set normal
+    """
+    global normal
+    return normal
 
 def _CoM(field, data):
     """
@@ -173,7 +190,6 @@ def _Center_Position(field, data):
     elif center == 0:
         center_pos = dd.quantities.center_of_mass(use_particles=True).in_units('cm')
     else:
-        #center_pos = [data['particle_posx'][center-1].in_units('cm').value, data['particle_posy'][center-1].in_units('cm').value, data['particle_posz'][center-1].in_units('cm').value]
         center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
         center_pos = yt.YTArray(center_pos, 'cm')
     return center_pos
@@ -189,7 +205,10 @@ def _Center_Velocity(field, data):
     if np.shape(data) == (16, 16, 16):
         center_vel = data['My_Bulk_Velocity'].in_units('cm/s')
     elif center == 0:
-        center_vel = dd.quantities.bulk_velocity(use_particles=True)
+        if ('all', u'particle_mass') in data.ds.field_list:
+            center_vel = dd.quantities.bulk_velocity(use_particles=True)
+        else:
+            center_vel = dd.quantities.bulk_velocity(use_particles=False)
     else:
         center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
     return center_vel
@@ -280,11 +299,15 @@ yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
 
 def _Projected_Velocity(field, data):
     """
-    If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
+    If the normal is [1,0,0] and there are two particles this calculates the projected velocity of the gas in the plane of their separation axis. If normal is set to something else, it calculates the projected
     """
+    global normal
     if ('all', u'particle_mass') in data.ds.field_list:
         if len(data['particle_mass']) == 2:
-            pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
+            if normal != [1,0,0]:
+                pos_vec = np.array([normal[1], -1*normal[0]])
+            else:
+                pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
             pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
             vels = np.array([data['velocity_x'].in_units('cm/s').value, data['velocity_y'].in_units('cm/s').value])
             vels = vels.T
@@ -306,11 +329,15 @@ yt.add_field("Projected_Velocity", function=_Projected_Velocity, units=r"cm/s")
 
 def _Projected_Magnetic_Field(field, data):
     """
-    If there are two particles this calculates the projected velocity of the gas in the plane of their separation axis
+    If the normal is [1,0,0] and there are two particles this calculates the projected magnetic field of the gas in the plane of their separation axis. If normal is set to something else, it calculates the projected
     """
+    global normal
     if ('all', u'particle_mass') in data.ds.field_list:
         if len(data['particle_mass']) == 2:
-            pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
+            if normal != [1,0,0]:
+                pos_vec = np.array([normal[1], -1*normal[0]])
+            else:
+                pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
             pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
             mags = np.array([data['magx'].value, data['magy'].value])
             mags = mags.T
@@ -425,6 +452,7 @@ def _Relative_Keplerian_Velocity(field, data):
     Calculates the Relative Keplerian Velocity.
     """
     v_mag = data['Tangential_Velocity']
+    #v_mag = data['Corrected_vel_mag']
     v_kep = data['Keplerian_Velocity']
     rel_kep = v_mag/v_kep
     return rel_kep
@@ -814,3 +842,17 @@ def _magz_mw(field, data):
         return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
 
 yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
+
+def _Is_Unbound(field, data):
+    """
+    returned boolean array about whether the gas is bound or unbound using the total potential energy adn the kinetic energy
+    """
+    Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg').value
+    unbound_inds = np.where(Total_Energy > 0.0)[0]
+    bound_inds = np.where(Total_Energy < 0.0)[0]
+    Unbound = Total_Energy
+    Unbound[unbound_inds] = True
+    Unbound[bound_inds] = False
+    return Unbound
+
+yt.add_field("Is_Unbound", function=_Is_Unbound, units=r"")
