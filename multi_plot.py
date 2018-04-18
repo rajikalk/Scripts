@@ -21,7 +21,7 @@ def parse_inputs():
     parser.add_argument("-sx", "--share_x", help="do you want to share the x axis?", default=False)
     parser.add_argument("-sy", "--share_y", help="do you want to share the y axis?", default=True)
     parser.add_argument("-sa", "--share_ax", help="do you want to share axes?", default=True)
-    parser.add_argument("-sd", "--save_dir", help="Where do you want to save the plot? defaults to same as input file directory")
+    parser.add_argument("-sd", "--save_dir", help="Where do you want to save the plot? defaults to same as input file directory", default='./')
     parser.add_argument("-sc", "--share_colourbar", help="Do you want to share colour bars over rows?", default=False)
     parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=12)
     parser.add_argument("-sn", "--savename", help="what do you want to save the plot as?", type=str, default='multiplot')
@@ -100,7 +100,7 @@ rows = np.max(positions[:,1])
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
 if plot_type[0] == "outflow":
-    f = plt.figure(figsize=(7, 9))
+    f = plt.figure(figsize=(8, 12))
 else:
     f = plt.figure(figsize=(width, height))
 gs_left = gridspec.GridSpec(rows, columns-1)
@@ -285,11 +285,13 @@ for it in range(len(positions)):
                 plot_velocity_legend = True
         call(arg_list)
 
-        pickle_file = save_dir + 'yt_proj_pickle.pkl'
+        pickle_file = save_dir + 'slice_pickle.pkl'
         file = open(pickle_file, 'r')
-        X_vel, Y_vel, xy, field_grid, velx, vely, part_info, limits = pickle.load(file)
+        X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, part_info, limits = pickle.load(file)
         file.close()
-        plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0) #cmap=plt.cm.get_cmap('bwr_r')
+        plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0)#cmap=plt.cm.get_cmap('bwr_r')
+        for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+            i[3] = j
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=limits, standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits)
         axes_dict[ax_label].set_xlim(limits[0])
@@ -327,7 +329,7 @@ for it in range(len(positions)):
         prof_x, prof_y, sampled_points = pickle.load(file)
         file.close()
         cm = plt.cm.get_cmap('RdYlBu')
-        plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm)
+        plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm, edgecolors='none')
         axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
         axes_dict[ax_label].set_xlim([0.0, r_max])
         axes_dict[ax_label].set_ylim([0.0, 2.0])
@@ -375,7 +377,8 @@ for it in range(len(positions)):
     if 'outflow' in plot_type[it]:
         legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
         linestyles = ['k-', 'b--', 'r-.']
-        csv_files = sorted(glob.glob(file_dir[it] + "mach*.csv"))
+        #csv_files = sorted(glob.glob(file_dir[it] + "mach*.csv"))
+        csv_files = [file_dir[it]+"mach_0.csv", file_dir[it]+"mach_1.csv", file_dir[it]+"mach_2.csv"]
         if 'mass' in input_args[it]:
             time = []
             mass = []
@@ -388,18 +391,45 @@ for it in range(len(positions)):
                     for row in reader:
                         if header != 0:
                             time_val = float(row[0])
-                            time[-1].append(time_val)
-                            m = float(row[1])
-                            mass[-1].append(m)
+                            if time_val not in time[-1]:
+                                time[-1].append(time_val)
+                                m = float(row[1])
+                                mass[-1].append(m)
                         if header == 0:
                             header = 1
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
-            #axes_dict[ax_label].set_xlim([0, 3000])
-            #axes_dict[ax_label].set_ylim([5.e-4, 5.e-1])
+            axes_dict[ax_label].set_xlim([0, 5000])
+            axes_dict[ax_label].set_ylim([1.e-5, 5.e-1])
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             axes_dict[ax_label].legend(loc='best')
+        elif 'speed' in input_args[it]:
+            time = []
+            speed = []
+            for file_it in range(len(csv_files)):
+                header = 0
+                with open(csv_files[file_it], 'r') as file:
+                    time.append([])
+                    speed.append([])
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if header != 0:
+                            time_val = float(row[0])
+                            if time_val not in time[-1]:
+                                time[-1].append(time_val)
+                                s = float(row[4])
+                                speed[-1].append(s)
+                        if header == 0:
+                            header = 1
+            for t in range(len(time)):
+                axes_dict[ax_label].semilogy(time[t], speed[t], linestyles[t], label=legend_labels[t])
+            axes_dict[ax_label].set_ylabel('Max. Speed (km/s)')
+            axes_dict[ax_label].set_xlim([0, 5000])
+            axes_dict[ax_label].set_ylim([1.e0, 1.e2])
+            axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
+            #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
+            #axes_dict[ax_label].legend(loc='best')
         elif 'ang' in input_args[it]:
             time = []
             angular_momentum = []
@@ -412,13 +442,14 @@ for it in range(len(positions)):
                     for row in reader:
                         if header != 0:
                             time_val = float(row[0])
-                            time[-1].append(time_val)
-                            L = float(row[3])
-                            if 'specific' in input_args[it]:
-                                L = L/float(row[1])
-                            if np.isnan(L):
-                                L = 1.e-6
-                            angular_momentum[-1].append(L)
+                            if time_val not in time[-1]:
+                                time[-1].append(time_val)
+                                L = float(row[3])
+                                if 'specific' in input_args[it]:
+                                    L = L/float(row[1])
+                                #if np.isnan(L):
+                                #    L = 1.e-6
+                                angular_momentum[-1].append(L)
                         if header == 0:
                             header = 1
             for t in range(len(time)):
@@ -428,10 +459,10 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e7, 1.e11])
             else:
                 axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
-                #axes_dict[ax_label].set_ylim([1.e6, 1.e10])
+                axes_dict[ax_label].set_ylim([5.e6, 5.e9])
                 #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
-            axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
-            #axes_dict[ax_label].set_xlim([0, 3000])
+            #axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
+            axes_dict[ax_label].set_xlim([0, 5000])
         else:
             time = []
             momentum = []
@@ -444,13 +475,14 @@ for it in range(len(positions)):
                     for row in reader:
                         if header != 0:
                             time_val = float(row[0])
-                            time[-1].append(time_val)
-                            p = float(row[2])
-                            if 'specific' in input_args[it]:
-                                p = p/float(row[1])
-                            if np.isnan(p):
-                                p = 1.e-6
-                            momentum[-1].append(p)
+                            if time_val not in time[-1]:
+                                time[-1].append(time_val)
+                                p = float(row[2])
+                                if 'specific' in input_args[it]:
+                                    p = p/float(row[1])
+                                #if np.isnan(p):
+                                #    p = 1.e-6
+                                momentum[-1].append(p)
                         if header == 0:
                             header = 1
             for t in range(len(time)):
@@ -460,9 +492,9 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
             else:
                 axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
-                #axes_dict[ax_label].set_ylim([5.e-5, 1.e0])
+                axes_dict[ax_label].set_ylim([1.e-5, 5.e-1])
                 #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
-            #axes_dict[ax_label].set_xlim([0, 3000])
+            axes_dict[ax_label].set_xlim([0, 5000])
             print "CREATED OUTFLOWS PLOT"
     if 'appendix' in plot_type[it]:
         lref_labels = ['10', '11', '12', '13', '14', '15']
