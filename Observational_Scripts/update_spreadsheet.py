@@ -13,6 +13,9 @@ from scipy import optimize
 import pickle
 
 def function(x, a, b, c):
+    return np.exp(-(x - b)**2 / (2 * c**2))*( a / (c * np.sqrt(2 * np.pi)))
+
+def log_function(x, a, b, c):
     return np.exp(-(np.log(x) - b)**2 / (2 * c**2))*( a / (x * c * np.sqrt(2 * np.pi)))
             
 
@@ -46,10 +49,13 @@ Coords = []
 Membership_probability = []
 IR_excess = []
 Disk_visual = []
+H_alpha_average = []
+H_alpha_variation = []
 Magnitudes = []
 No_obs = []
 SB1_flag = []
 SB2_flag = []
+V_last = []
 Mean_RV = []
 RV_variation = []
 Temp_sptype = []
@@ -57,6 +63,7 @@ Pref_template = []
 Obs_info = []
 SNR = []
 abs_corr_spt = args.abs_corr_spectral_types.split(',')
+H_alpha = 6562.8
 
 if args.template_dir == None:
     templates_dir = '/Users/rajikak/tools/templates/'
@@ -89,26 +96,29 @@ with open(args.input_file, 'rU') as f:
             Membership_probability.append(int(row[4]))
             IR_excess.append(row[5])
             Disk_visual.append(row[6])
-            Magnitudes.append([float(row[7]), float(row[8]), float(row[9])])
-            No_obs.append(int(row[10]))
-            if row[11] == 'FALSE' or row[11] == 'False':
+            H_alpha_average.append(float(row[7]))
+            H_alpha_variation.append(float(row[8]))
+            Magnitudes.append([float(row[9]), float(row[10]), float(row[11])])
+            No_obs.append(int(row[12]))
+            if row[13] == 'FALSE' or row[13] == 'False':
                 SB1_flag.append(False)
             else:
                 SB1_flag.append(True)
-            if row[12] == 'FALSE' or row[12] == 'False':
+            if row[14] == 'FALSE' or row[14] == 'False':
                 SB2_flag.append(False)
             else:
                 SB2_flag.append(True)
-            Mean_RV.append(row[13])
-            RV_variation.append(row[14])
-            Pref_template.append(row[15])
-            Temp_sptype.append(row[16])
-            if len(row) > 17:
-                Obs = np.array(row[17:])
+            V_last.append(row[15])
+            Mean_RV.append(row[16])
+            RV_variation.append(row[17])
+            Pref_template.append(row[18])
+            Temp_sptype.append(row[19])
+            if len(row) > 20:
+                Obs = np.array(row[20:])
                 Obs = np.delete(Obs, np.where(Obs==''))
                 #if len(Obs) > 5:
                 #    Obs = np.reshape(Obs, (len(Obs)/5, 5))
-                Obs = np.reshape(Obs, (len(Obs)/6, 6))
+                Obs = np.reshape(Obs, (len(Obs)/8, 8))
                 for ind_obs in Obs:
                     if '/' in ind_obs[0]:
                         new_format = '20' + ind_obs[0].split('/')[-1] + '-' + ind_obs[0].split('/')[-2] + '-' + ("%02d" % int(ind_obs[0].split('/')[-3]))
@@ -304,6 +314,18 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     plt.xlabel('wavelength')
                     plt.ylabel('flux')
                     plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/Spectrum_'+str(MJD)+'.png')
+                    h_alpha_ind = np.argmin(np.abs(wave - H_alpha))
+                    wave_h_alpha = wave[h_alpha_ind-15:h_alpha_ind+15]
+                    spectrum_h_alpha = spectrum[h_alpha_ind-15:h_alpha_ind+15]
+                    F_0 = np.median(sorted(spectrum_h_alpha)[:10])
+                    plt.clf()
+                    plt.plot(wave_h_alpha,spectrum_h_alpha-F_0)
+                    plt.xlabel('wavelength')
+                    plt.ylabel('flux')
+                    x = wave_h_alpha
+                    y = (1 - spectrum_h_alpha/F_0)
+                    equiv_width = np.trapz(y, x=x, dx=x[1:]-x[:-1])
+                    plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/H_alpha_'+str(MJD)+'.png')
                     if Obj_name in save_plots:
                         rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,templates, ([0,5400],[6550, 6600],[6870,6890]), save_figures=True, save_dir='/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/', heliocentric_correction=(h_corr-rv_abs-rv_sky))
                         corr_pickle = '/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/cross_correlation.pkl'
@@ -326,6 +348,12 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     print "*"
                     print "*"
                     print "RV for object:", Obj_name, "is", rv, rv_sig
+                    if np.abs(H_alpha - wave[np.argmax(spectrum)]) < 2.0:
+                        h_alpha_bool = True
+                        print "HAS H_ALPHA EMISSION"
+                    else:
+                        h_alpha_bool = False
+                    print "H_alpha EW is:", equiv_width
                     print "*"
                     print "*"
                     print "***************************************************"
@@ -336,10 +364,10 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     
                     if (args.date != '') or (str(np.round(MJD, decimals=5)) in Obs_info[ind]):
                         update_ind = np.where(Obs_info[ind] == str(np.round(MJD, decimals=5)))[0][0]
-                        Obs_info[ind][update_ind] = [Obs_date, str(np.round(MJD, decimals=5)), rv, rv_sig, rv_abs+rv_sky, temp_used]
+                        Obs_info[ind][update_ind] = [Obs_date, str(np.round(MJD, decimals=5)), rv, rv_sig, rv_abs+rv_sky, h_alpha_bool, equiv_width, temp_used]
                     else:
-                        Obs_info[ind] = np.append(Obs_info[ind],[Obs_date, str(np.round(MJD, decimals=5)), rv, rv_sig, rv_abs+rv_sky, temp_used])
-                        Obs_info[ind] = np.reshape(Obs_info[ind], (len(Obs_info[ind])/6, 6))
+                        Obs_info[ind] = np.append(Obs_info[ind],[Obs_date, str(np.round(MJD, decimals=5)), rv, rv_sig, rv_abs+rv_sky, h_alpha_bool, equiv_width, temp_used])
+                        Obs_info[ind] = np.reshape(Obs_info[ind], (len(Obs_info[ind])/8, 8))
                     No_obs[ind] = len(Obs_info[ind])
 
             elif Obj_name not in Object:
@@ -359,6 +387,8 @@ f.close()
 
 #Make RV plots
 RV_dist = [[],[]]
+V_n = [[],[]]
+V_avg = [[],[]]
 RV_dist_sptype = [[], [], [], []]
 #RV_dist = []
 if args.hist_pickle != None:
@@ -367,9 +397,24 @@ if args.mode == 'update':
     for obj in range(len(Object)):
         if No_obs[obj] != 0:
             mean_rv = np.average(Obs_info[obj][:,2].astype(np.float))
+            last_rv = Obs_info[obj][:,2][-1].astype(np.float)
+            h_alpha_median = np.median(Obs_info[obj][:,-2].astype(np.float))
+            h_alpha_variation = np.max(Obs_info[obj][:,-2].astype(np.float)) - np.min(Obs_info[obj][:,-2].astype(np.float))
         else:
             mean_rv = 0.0
+            last_rv = 0.0
+            h_alpha_median = 0.0
+            h_alpha_variation = 0.0
+        H_alpha_average[obj]=h_alpha_median
+        H_alpha_variation[obj]=h_alpha_variation
+        print "Object:", Object[obj], "has H_alpha EW of", h_alpha_median, "with variation", h_alpha_variation
         Mean_RV[obj] = mean_rv
+        if (Region[obj]) == 'US' and ('Y' in IR_excess[obj]):
+            V_avg[0].append(mean_rv)
+            V_n[0].append(last_rv)
+        elif (Region[obj]) == 'UCL' and ('Y' in IR_excess[obj]):
+            V_avg[1].append(mean_rv)
+            V_n[1].append(last_rv)
         if No_obs[obj] > 1:
             if args.mode == "update":
                 extrema_ints = [np.argmax(Obs_info[obj][:,2].astype(np.float)), np.argmin(Obs_info[obj][:,2].astype(np.float))]
@@ -472,19 +517,26 @@ if args.mode == 'update':
 #write out updated data
 print "REWRITING SPREADSHEET"
 f = open(args.input_file, 'w')
-f.write('Object,Region,RA,DEC,Pmem,Disk,Visual inspection,K_mag,V_mag,B_mag,No. Obs,SB1_flag,SB2 flag,Mean_RV,RV_variation,Pref_temp,Temp_SpT,Observations,MJD,RV,RV_err,RV_sky,Template\n')
+f.write('Object,Region,RA,DEC,Pmem,Disk, H_alpha_average,H_alpha_variation,Visual inspection,K_mag,V_mag,B_mag,No. Obs,SB1_flag,SB2 flag,V_n,V_avg,RV_variation,Pref_temp,Temp_SpT,Observations,MJD,RV,RV_err,RV_sky,H_alpha_bool, H_alpha,Template\n')
 
 for obj in range(len(Object)):
-    write_string = Object[obj] + ',' + Region[obj] + ',' + Coords[obj][0] + ',' + Coords[obj][1] + ',' + str(Membership_probability[obj]) + ',' + IR_excess[obj] + ',' + Disk_visual[obj] + ',' + str(Magnitudes[obj][0]) + ',' + str(Magnitudes[obj][1]) + ',' + str(Magnitudes[obj][2]) + ',' + str(No_obs[obj]) + ',' + str(SB1_flag[obj]) + ','+ str(SB2_flag[obj]) + ',' + str(Mean_RV[obj]) + ',' + str(RV_variation[obj]) + ',' + Pref_template[obj] + ',' + Temp_sptype[obj] + ',' + ','.join(np.ravel(Obs_info[obj])) + '\n'
+    if len(np.ravel(Obs_info[obj])) == 0:
+        last_rv = 0.0
+    else:
+        last_rv = np.ravel(Obs_info[obj])[-4]
+    write_string = Object[obj] + ',' + Region[obj] + ',' + Coords[obj][0] + ',' + Coords[obj][1] + ',' + str(Membership_probability[obj]) + ',' + IR_excess[obj] + ',' + Disk_visual[obj] + ',' + str(H_alpha_average[obj]) + ',' + str(H_alpha_variation[obj]) + ',' + str(Magnitudes[obj][0]) + ',' + str(Magnitudes[obj][1]) + ',' + str(Magnitudes[obj][2]) + ',' + str(No_obs[obj]) + ',' + str(SB1_flag[obj]) + ','+ str(SB2_flag[obj]) + ',' + str(last_rv) + ',' + str(Mean_RV[obj]) + ',' + str(RV_variation[obj]) + ',' + Pref_template[obj] + ',' + Temp_sptype[obj] + ',' + ','.join(np.ravel(Obs_info[obj])) + '\n'
     f.write(write_string)
 
 f.close()
 
 if RV_dist[0] == []:
     RV_dist = np.array([np.array(RV_dist[0]).astype(float),np.array(RV_dist[1]).astype(float)])
+    V_n = np.array([np.array(V_n[0]).astype(float),np.array(V_n[1]).astype(float)])
+    V_avg = np.array([np.array(V_avg[0]).astype(float),np.array(V_avg[1]).astype(float)])
     temp_file = open('RV_dist_histogram'+args.plot_suffix+'.pkl', 'w')
-    pickle.dump((RV_dist), temp_file)
+    pickle.dump((RV_dist,V_n,V_avg), temp_file)
     temp_file.close()
+    print "Saved pickle with RV distributions"
 
 plt.clf()
 no_bins = 30
@@ -509,7 +561,7 @@ plt.title('mean:' + str(x_fit[np.argmax(y_fit)]) + ' std:' + str(popt[2]))
 plt.xscale('log')
 plt.xlabel('$\Delta RV$ (km/s)')
 plt.ylim([0, 25.])
-plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Observational_Paper/Images/RV_distributions/Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps')
+plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Images/RV_distributions/Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps')
 
 '''
 for dist in range(len(RV_dist)):
@@ -544,7 +596,7 @@ for Spt in range(len(RV_dist_sptype)):
         center = (bins[:-1] + bins[1:])/2. - width/2.
         plt.clf()
         plt.bar(center+(width*dist), hist, align='center', width=width)
-        pl.gca().set_xscale("log")
+        #pl.gca().set_xscale("log")
         plt.xlabel('RV Variation (km/s)')
         plt.ylabel('#')
         plt.xlim([0.0, 100.0])
@@ -586,66 +638,79 @@ pdf.close()
 
 if args.mode == 'make_paper_plot':
     #Histogram plot
-    hist_pickles = ['RV_dist_histogram_highest_none.pkl', 'RV_dist_histogram_highest_abs_all.pkl']
-    text_labels = ['No correction to retrieved RV', 'Correction using', 'B-band absorption']
+    #hist_pickles = ['RV_dist_histogram_highest_none.pkl', 'RV_dist_histogram_highest_abs_all.pkl']
+    hist_pickles = ['RV_dist_histogram_no_correction.pkl', 'RV_dist_histogram_abs_correction.pkl']
+    text_labels = ['No correction to', 'retrieved RV', 'Correction using', 'B-band absorption']
     
     plt.clf()
-    no_bins = 30
+    no_bins = 20
     region_labels = ['Upper Scorpius', 'Upper Centaurus-Lupus']
     colors = ['b', 'orange']
     
-    bins = np.logspace(-1.0, 2.0, no_bins)
+    #bins = np.logspace(-1.0, 2.0, no_bins)
+    bins = np.linspace(-6.,6.,no_bins)
+    
     centers = (bins[:-1] + bins[1:])/2.
     width = bins[1:] - bins[:-1]
     
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, sharey=True)
     fig.set_size_inches(7,9)
-    text_ypos = 23
+    text_ypos = 36.5
+    text_x_pos = -5.5
     
-    RV_dist = pickle.load(open(hist_pickles[0], "rb" ))
-    hist_US, bins = np.histogram(RV_dist[0], bins=bins)
-    hist_UCL, bins = np.histogram(RV_dist[1][:57], bins=bins)
+    RV_dist, V_n, V_avg = pickle.load(open(hist_pickles[0], "rb" ))
+    hist_US, bins = np.histogram(V_n[0]-V_avg[0], bins=bins)
+    hist_UCL, bins = np.histogram(V_n[1]-V_avg[1], bins=bins)
     y = hist_US + hist_UCL
     popt, pcov = optimize.curve_fit(function,centers, y)
-    x_fit = np.logspace(-1.0, 2.0, 1000)
+    x_fit = np.linspace(-10.,10.,1000.)
+    #x_fit = np.logspace(-1.0, 2.0, 1000)
     y_fit = function(x_fit, *popt)
+    print "mean:", popt[-2], "std:", popt[-1]
     
 
     h_US = ax1.bar(centers, hist_US, width=width, align='center', label='Upper Scorpius', color='b')
     h_UCL = ax1.bar(centers, hist_UCL, width=width, align='center', label='Upper Centaurus-Lupus', bottom=hist_US, color='orange')
     ax1.plot(x_fit, y_fit, c='k')
-    ax1.axvline(x = x_fit[np.argmax(y_fit)], linestyle='--', color='k')
-    ax1.set_xscale('log')
-    ax1.set_ylim([0, 25.])
+    #ax1.axvline(x = x_fit[np.argmax(y_fit)], linestyle='--', color='k')
+    #ax1.set_xscale('log')
+    ax1.set_xlim([bins[0],bins[-1]])
+    ax1.set_ylim([0, 40.])
     ax1.set_ylabel('#')
-    ax1.text(1.5e-1, text_ypos, text_labels[0])
-    print "median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1])))
+    ax1.text(text_x_pos, text_ypos, text_labels[0])
+    ax1.text(text_x_pos, text_ypos-2, text_labels[1])
+    ax1.text(text_x_pos, text_ypos-4, "FWHM="+str(np.round((2.355*popt[-1]),decimals=2))+"km/s")
+    ax1.legend(loc='upper right')
+    #print "median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1])))
 
-    RV_dist = pickle.load(open(hist_pickles[1], "rb" ))
-    hist_US, bins = np.histogram(RV_dist[0], bins=bins)
-    hist_UCL, bins = np.histogram(RV_dist[1][:57], bins=bins)
+    RV_dist, V_n, V_avg = pickle.load(open(hist_pickles[1], "rb" ))
+    hist_US, bins = np.histogram(V_n[0]-V_avg[0], bins=bins)
+    hist_UCL, bins = np.histogram(V_n[1]-V_avg[1], bins=bins)
     y = hist_US + hist_UCL
     popt, pcov = optimize.curve_fit(function,centers, y)
-    x_fit = np.logspace(-1.0, 2.0, 1000)
+    x_fit = np.linspace(-10.,10.,1000.)
+    #x_fit = np.logspace(-1.0, 2.0, 1000)
     y_fit = function(x_fit, *popt)
+    print "mean:", popt[-2], "std:", popt[-1]
     
     
     h_US = ax2.bar(centers, hist_US, width=width, align='center', label='Upper Scorpius', color='b')
     h_UCL = ax2.bar(centers, hist_UCL, width=width, align='center', label='Upper Centaurus-Lupus', bottom=hist_US, color='orange')
     ax2.plot(x_fit, y_fit, c='k')
-    ax2.axvline(x = x_fit[np.argmax(y_fit)], linestyle='--', color='k')
-    ax2.set_xscale('log')
-    ax2.set_ylim([0, 25.])
-    ax2.set_xlabel('$\Delta v_r$ (km/s)')
+    #ax2.axvline(x = x_fit[np.argmax(y_fit)], linestyle='--', color='k')
+    #ax2.set_xscale('log')
+    ax2.set_xlim([bins[0],bins[-1]])
+    ax2.set_ylim([0, 40.])
+    ax2.set_xlabel('$v_{r,n} - <v_{r}>$ (km/s)')
     ax2.set_ylabel('#')
-    ax2.legend(loc='upper right')
-    ax2.text(1.5e-1, text_ypos, text_labels[1])
-    ax2.text(1.5e-1, text_ypos-1.5, text_labels[2])
+    ax2.text(text_x_pos, text_ypos, text_labels[2])
+    ax2.text(text_x_pos, text_ypos-2, text_labels[3])
+    ax2.text(text_x_pos, text_ypos-4, "FWHM="+str(np.round((2.355*popt[-1]),decimals=2))+"km/s")
     print "median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1])))
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     fig.subplots_adjust(hspace=0)
-    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Observational_Paper/Images/RV_distributions/Comp_Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps', format='eps', bbox_inches='tight')
+    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Images/RV_distributions/Comp_Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps', format='eps', bbox_inches='tight')
     
     plt.clf()
     fig.set_size_inches(7,5)
@@ -653,7 +718,7 @@ if args.mode == 'make_paper_plot':
     h_UCL = plt.bar(centers, hist_UCL, width=width, align='center', label='Upper Centaurus-Lupus', bottom=hist_US, color='orange')
     plt.plot(x_fit, y_fit, c='k')
     plt.xscale('log')
-    plt.ylim([0, 25.])
+    #plt.ylim([0, 25.])
     plt.xlabel('$\Delta v_{r,extrema}$ (km/s)')
     plt.ylabel('#')
     plt.legend(loc='upper right')
@@ -663,7 +728,7 @@ if args.mode == 'make_paper_plot':
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     fig.subplots_adjust(hspace=0)
-    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Observational_Paper/Images/RV_distributions/Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps', format='eps', bbox_inches='tight')
+    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Images/RV_distributions/Radial_Velocity_distribution' + args.plot_suffix + '_' + str(no_bins) + '.eps', format='eps', bbox_inches='tight')
     
 
     #Cross-correlation plots
@@ -689,7 +754,7 @@ if args.mode == 'make_paper_plot':
     plt.setp([ax2.get_yticklabels() for a in fig.axes[:-1]], visible=False)
     plt.setp([ax1.get_xticklabels()[-1]], visible=False)
     fig.subplots_adjust(wspace=0)
-    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Observational_Paper/Images/SB2/RIK-96.eps', format='eps', bbox_inches='tight')
+    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Images/SB2/RIK-96.eps', format='eps', bbox_inches='tight')
 
     #Cross-correlation plots
     UCAC4_pickles = ['/Users/rajikak/Observational_Data/PDF_dirs/UCAC4-161328427/cross_correlation_57477.5794273.pkl', '//Users/rajikak/Observational_Data/PDF_dirs/UCAC4-161328427/cross_correlation_57908.508085.pkl']
@@ -714,4 +779,4 @@ if args.mode == 'make_paper_plot':
     plt.setp([ax2.get_yticklabels() for a in fig.axes[:-1]], visible=False)
     plt.setp([ax1.get_xticklabels()[-1]], visible=False)
     fig.subplots_adjust(wspace=0)
-    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Observational_Paper/Images/SB2/UCAC4-161328427.eps', format='eps', bbox_inches='tight')
+    plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Images/SB2/UCAC4-161328427.eps', format='eps', bbox_inches='tight')
