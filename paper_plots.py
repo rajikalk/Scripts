@@ -177,12 +177,12 @@ for fit in range(len(usable_files)):
             Y_vel = Y_vel + y_pos
         #myf.set_coordinate_system('cylindrical')
         myf.set_coordinate_system('spherical')
-        dummy1, dummy2, dummy3, magx_grid = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
-        dummy1, dummy2, dummy3, magy_grid = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
+        dummy1, dummy2, dummy3, magx_grid, dummy4 = mym.sliceplot(ds, X, Y, 'magx', resolution=args.resolution, center=args.center, units=args.c_units)
+        dummy1, dummy2, dummy3, magy_grid, dummy4 = mym.sliceplot(ds, X, Y, 'magy', resolution=args.resolution, center=args.center, units=args.c_units)
         del dummy1
         del dummy2
         del dummy3
-        fig, ax, xy, field_grid = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units)
+        fig, ax, xy, field_grid, weight_field = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units, weight=args.weight_field)
         f = h5py.File(movie_file, 'r')
         dim = np.shape(f['dens_slice_xy'])[0]
         xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
@@ -233,7 +233,7 @@ for fit in range(len(usable_files)):
             print "CREATING PICKLE"
             pickle_file = save_dir + 'slice_pickle.pkl'
             file = open(pickle_file, 'w+')
-            pickle.dump((X_vel, Y_vel, xy, field_grid, velx, vely, part_info, limits),file)
+            pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, part_info, limits),file)
             file.close()
             print "Created Pickle"
 
@@ -269,7 +269,7 @@ for fit in range(len(usable_files)):
         if args.pickle_dump == False:
             plt.clf()
             cm = plt.cm.get_cmap('RdYlBu')
-            plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=(1-w_arr/np.max(w_arr)), cmap=cm)
+            plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=(1-w_arr/np.max(w_arr)), cmap=cm, edgecolors='none')
             plt.plot(prof_x, prof_y, 'k-', linewidth=2.)
             cbar = plt.colorbar(plot, pad=0.0)
             cbar.set_label('|z position| (AU)', rotation=270, labelpad=13, size=14)
@@ -317,7 +317,7 @@ for fit in range(len(usable_files)):
             if args.pickle_dump == False:
                 plt.clf()
                 for time in range(len(x)):
-                    plt.scatter(x[time], y[time], alpha=0.4)
+                    plt.scatter(x[time], y[time], alpha=0.4, edgecolors='none')
                     plt.xlim([0., args.r_max])
                     plt.ylim([0.,50.])
             
@@ -332,7 +332,7 @@ for fit in range(len(usable_files)):
             dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
             dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
             for time in range(len(x)):
-                plt.scatter(x[time], y[time], c=colors[-len(x) + time], label=str(times[time])+"yr", alpha=0.4)
+                plt.scatter(x[time], y[time], c=colors[-len(x) + time], label=str(times[time])+"yr", alpha=0.4, edgecolors='none')
                 plt.xlim([0., args.r_max])
                 plt.ylim([0.,50.])
 
@@ -607,14 +607,14 @@ if args.force_comp == 'True':
 if args.force_comp:
     field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
-    times = [0.0, 500.0, 1000.0, 2000.0]
+    times = [1000.0, 2000.0, 3000.0, 4000.0, 5000.0]
     plot_files = mym.find_files(times, files)
     if args.save_name == None:
         save_image_name = save_dir + field + "_abs.eps"
     else:
         save_image_name = args.save_name + ".eps"
     myf.set_coordinate_system('sph')
-    myf.set_center(1)
+    #myf.set_center(1)
     plt.clf()
     x = []
     y = []
@@ -760,14 +760,14 @@ if args.separation:
     image_name = save_dir + "separation"
     files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-    line_style = ['b-', 'r-', 'k-']
+    line_style = ['k-', 'b-', 'r-']
     labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
     lit = 0
     plt.clf()
     for file in files:
         sink_form_time = 0
         particle_tag = []
-        times = []
+        times = [[],[]]
         x_pos = []
         y_pos = []
         z_pos = []
@@ -789,8 +789,7 @@ if args.separation:
                     else:
                         pit = 1
                     time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
-                    if time not in times:
-                        times.append(time)
+                    times[pit].append(time)
                     x = float(row[2])/yt.units.AU.in_units('cm').value
                     y = float(row[3])/yt.units.AU.in_units('cm').value
                     z = float(row[4])/yt.units.AU.in_units('cm').value
@@ -798,19 +797,20 @@ if args.separation:
                     y_pos[pit].append(y)
                     z_pos[pit].append(z)
         times = np.array(times)
-        #times = times[::2]
-        sorted_inds = np.argsort(times)
-        times = times[sorted_inds]
+        sorted_inds_1 = np.argsort(times[0])
+        sorted_inds_2 = np.argsort(times[1])
+        times[0] = np.array(times[0])[sorted_inds_1]
+        times[1] = np.array(times[1])[sorted_inds_2]
         
         x_pos = np.array(x_pos)
         y_pos = np.array(y_pos)
         z_pos = np.array(z_pos)
-        x_pos[0] = x_pos[0][sorted_inds]
-        x_pos[1] = x_pos[1][sorted_inds]
-        y_pos[0] = y_pos[0][sorted_inds]
-        y_pos[1] = y_pos[1][sorted_inds]
-        z_pos[0] = z_pos[0][sorted_inds]
-        z_pos[1] = z_pos[1][sorted_inds]
+        x_pos[0] = np.array(x_pos[0])[sorted_inds_1]
+        x_pos[1] = np.array(x_pos[1])[sorted_inds_2]
+        y_pos[0] = np.array(y_pos[0])[sorted_inds_1]
+        y_pos[1] = np.array(y_pos[1])[sorted_inds_2]
+        z_pos[0] = np.array(z_pos[0])[sorted_inds_1]
+        z_pos[1] = np.array(z_pos[1])[sorted_inds_2]
         x_pos[0] = x_pos[0][-len(x_pos[1]):]
         y_pos[0] = y_pos[0][-len(y_pos[1]):]
         z_pos[0] = z_pos[0][-len(z_pos[1]):]
@@ -818,16 +818,18 @@ if args.separation:
         dy = y_pos[0] - y_pos[1]
         dz = z_pos[0] - z_pos[1]
         sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+        '''
         if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
             times_new = np.array([0])
             sep_new = np.array([500])
             times = np.append(times_new, times)
             sep = np.append(sep_new, sep)
-        plt.semilogy(times, sep, line_style[lit], label=labels[lit])
+        '''
+        plt.semilogy(times[1], sep, line_style[lit], label=labels[lit])
         lit = lit + 1
-    plt.xlim([0.0, 3100.0])
+    plt.xlim([0.0, 5000.0])
     plt.legend(loc='best')
-    plt.xlabel("Time (yr)", fontsize=14)
+    plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
     plt.ylabel("Separation (AU)", fontsize=14)
     plt.tick_params(axis='x', which='major', labelsize=14)
     plt.tick_params(axis='y', which='major', labelsize=14)
@@ -860,10 +862,10 @@ if args.total_mass_of_system:
             f.close()
         plt.plot(times, mass, linestyles[case_it], label=legend_labels[case_it])
         case_it = case_it + 1
-    plt.xlabel("Time since protostar formation (yr)", fontsize=args.text_font)
+    plt.xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     plt.ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
     plt.legend(loc='best')
-    #plt.xlim([0, 3000])
+    plt.xlim([0, 5000])
     plt.tick_params(axis='y', which='major', labelsize=args.text_font)
     plt.tick_params(axis='x', which='major', labelsize=args.text_font)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
