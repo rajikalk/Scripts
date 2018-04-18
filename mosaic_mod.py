@@ -65,6 +65,7 @@ def parse_inputs():
     parser.add_argument("-sx", "--share_x", help="do you want to share the x axis?", default=False)
     parser.add_argument("-sy", "--share_y", help="do you want to share the y axis?", default=True)
     parser.add_argument("-sa", "--share_ax", help="do you want to share axes?", default=True)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=100.)
     args = parser.parse_args()
     return args
 
@@ -312,6 +313,9 @@ for pit in range(len(paths)):
     fs = get_files(paths[pit], args_dict[pit])
     files.append(fs)
 
+    print "paths =", paths
+    print "fs =", fs
+    print "args_dict =", args_dict
     sfo = sim_info(paths[pit], fs[-1], args_dict[pit])
     simfo.append(sfo)
 
@@ -492,6 +496,7 @@ for frame_val in range(len(frames)):
                 time_val = stuff[14]
                 xabel = stuff[15]
                 yabel = stuff[16]
+                file_time = stuff[17]
                 file.close()
 
             else:
@@ -587,7 +592,7 @@ for frame_val in range(len(frames)):
                                 L = [-1*L[0], -1*L[1], 0.0]
                     x_width = (xlim[1] -xlim[0])
                     y_width = (ylim[1] -ylim[0])
-                    thickness = yt.YTArray(100, 'AU')
+                    thickness = yt.YTArray(args.slice_thickness, 'AU')
 
                     temp = dd['velx']
                     temp = dd['vely']
@@ -599,7 +604,7 @@ for frame_val in range(len(frames)):
                         
                     del temp
                     
-                    proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(100, 'AU'))
+                    proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
                     velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
                     vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
@@ -626,7 +631,7 @@ for frame_val in range(len(frames)):
 
                     pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                     file = open(pickle_file, 'w+')
-                    pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
+                    pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel, file_time), file)
                     file.close()
                     print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
                 
