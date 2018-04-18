@@ -59,6 +59,7 @@ def parse_inputs():
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=2000, type=int)
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=100.)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -310,7 +311,7 @@ def main():
     frames = range(args.start_frame, no_frames)
 
     sink_form_time = mym.find_sink_formation_time(files)
-    print "sink_form_time", sink_form_time
+    print "sink_form_time", sink_form_time, "on rank", rank
     del files
 
     # Define colourbar bounds
@@ -321,14 +322,13 @@ def main():
         y_int = 1
     else:
         y_int = 2
-
+    
     sys.stdout.flush()
     CW.Barrier()
     rit = args.working_rank
     for frame_val in range(len(frames)):
         if rank == rit:
-            sys.stdout.flush()
-            CW.Barrier()
+            print "creating frame", frames[frame_val], "on rank", rank
             if args.yt_proj and args.plot_time==None and os.path.isfile(path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                 print "USING PICKLED FILE:", pickle_file
@@ -336,6 +336,7 @@ def main():
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                 file.close()
             else:
+                print "NOT USING PICKLE ON RANK", rank
                 time_val = m_times[frame_val]
                 if args.yt_proj != False:
                     file = usable_files[frame_val]
@@ -354,6 +355,7 @@ def main():
                     part_info = {}
                 center_vel = [0.0, 0.0, 0.0]
                 if args.image_center != 0 and has_particles:
+                    
                     original_positions = [X, Y, X_vel, Y_vel]
                     x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
                     y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
@@ -432,7 +434,7 @@ def main():
                                 L = [-1*L[0], -1*L[1], 0.0]
                     x_width = (xlim[1] -xlim[0])
                     y_width = (ylim[1] -ylim[0])
-                    thickness = yt.YTArray(100, 'AU')
+                    thickness = yt.YTArray(args.slice_thickness, 'AU')
 
                     temp = dd['velx']
                     temp = dd['vely']
@@ -444,7 +446,7 @@ def main():
                         
                     del temp
                     
-                    proj = yt.OffAxisProjectionPlot(f, L, [simfo['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(100, 'AU'))
+                    proj = yt.OffAxisProjectionPlot(f, L, [simfo['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
                     velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
                     vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
