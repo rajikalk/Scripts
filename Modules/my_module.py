@@ -129,8 +129,6 @@ def find_files(m_times, files):
     max = len(files)-1
     pit = 0
     prev_diff = np.nan
-    #import pdb
-    #pdb.set_trace()
     while mit < len(m_times):
         it = int(np.round(min + ((max - min)/2.)))
         #print 'search iterator =', it
@@ -165,12 +163,21 @@ def find_files(m_times, files):
                 diff_val = abs(time - m_times[mit])
                 diff_arr.append(diff_val)
             append_file = pot_files[np.argmin(diff_arr)]
-            if time == 0.0:
+            if m_times[mit] == 0.0:
                 if yt_file:
-                    part_file=append_file[:-12] + 'part' + file[-5:]
-                    f = h5py.File(part_file, 'r')
+                    part_file=append_file[:-12] + 'part' + append_file[-5:]
+                    ds = yt.load(append_file, particle_filename=part_file)
                     if ('all', u'particle_mass') not in ds.field_list:
-                        append_file = pot_files[np.argmin(diff_arr)+1]
+                        found_first_particle_file = False
+                        app_ind = files.index(append_file) + 1
+                        while found_first_particle_file == False:
+                            append_file = files[app_ind]
+                            part_file=append_file[:-12] + 'part' + append_file[-5:]
+                            ds = yt.load(append_file, particle_filename=part_file)
+                            if ('all', u'particle_mass') in ds.field_list:
+                                found_first_particle_file = True
+                            else:
+                                app_ind = app_ind + 1
                 else:
                     f = h5py.File(append_file, 'r')
                     if 'particlemasses' not in f.keys():
@@ -209,23 +216,27 @@ def get_particle_data(file, axis='xz'):
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        if axis == 'xy':
-            part_pos_x = dd['particle_posx'].in_units('AU').value
-            part_pos_y = dd['particle_posy'].in_units('AU').value
-        else:
-            part_pos_x = dd['particle_posx'].in_units('AU').value
-            part_pos_y = dd['particle_posz'].in_units('AU').value
         part_mass = dd['particle_mass'].in_units('msun').value
+        ordered_inds = np.argsort(dd['particle_tag'].value)
+        part_mass = dd['particle_mass'][ordered_inds].in_units('msun').value
+        if axis == 'xy':
+            part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
+            part_pos_y = dd['particle_posy'][ordered_inds].in_units('AU').value
+        else:
+            part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
+            part_pos_y = dd['particle_posz'][ordered_inds].in_units('AU').value
         accretion_rad = np.min(dd['dx'].in_units('au').value) * 2.5
     except YTOutputNotIdentified:
         f = h5py.File(file, 'r')
-        if axis == 'xy':
-            part_pos_x = f["particlepositions"][0]/yt.units.au.in_units('cm').value
-            part_pos_y = f["particlepositions"][1]/yt.units.au.in_units('cm').value
-        else:
-            part_pos_x = f["particlepositions"][0]/yt.units.au.in_units('cm').value
-            part_pos_y = f["particlepositions"][2]/yt.units.au.in_units('cm').value
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
+        ordered_inds = np.argsort(part_mass)[::-1]
+        part_mass = np.array(f["particlemasses"][:][ordered_inds])/yt.units.msun.in_units('g').value
+        if axis == 'xy':
+            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
+            part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
+        else:
+            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
+            part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
     part_info = {'particle_mass':part_mass,
                  'particle_position':[part_pos_x, part_pos_y],
@@ -473,7 +484,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
 
     return x_array, y_array
 
-def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000):
+def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000, weight_arr=None):
     big_array = np.array([z, x_field, y_field])
     plot_array = []
     z_bins = np.linspace(np.min(np.abs(z)), np.max(np.abs(z)), bin_no+1)
@@ -497,7 +508,7 @@ def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000):
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)"): #cmap=plt.cm.get_cmap('bwr_r')
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None): #cmap=plt.cm.get_cmap('bwr_r')
     """
        Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
     """
@@ -544,6 +555,12 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
         dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
         field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
 
+    if weight != None:
+        weight_field = (dd[weight][nearest_points[:,0]].reshape(xy[0].shape) + dd[weight][nearest_points[:,1]].reshape(xy[0].shape))/2.
+    else:
+        weight_field = np.ones(np.shape(field_grid))
+    weight_field = weight_field/np.max(weight_field)
+
     if units != None:
         field_grid = field_grid.in_units(units)
     field_grid = field_grid
@@ -553,11 +570,17 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     #print("len(xy[0]) =", len(xy[0]))
     if log:
         plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
+        for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+            i[3] = j
     else:
         if field == "Relative_Keplerian_Velocity":
             plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=0.0, vmax=2.0)
+            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+                i[3] = j
         else:
             plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
+            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+                i[3] = j
     plt.gca().set_aspect('equal')
     cbar = plt.colorbar(plot, pad=0.0)
     cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
@@ -566,4 +589,4 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     ax.set_ylim([np.min(Y), np.max(Y)])
     ax.set_xlabel('$x$ (AU)', labelpad=-1)
     ax.set_ylabel('$y$ (AU)', labelpad=-20)
-    return fig, ax, xy, field_grid
+    return fig, ax, xy, field_grid, weight_field
