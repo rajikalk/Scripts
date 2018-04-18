@@ -286,7 +286,16 @@ def main():
         if args.projection_orientation != None:
             y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
             L = [1, y_val, 0]
-            print "SET PROJECTION ORIENTATION L=", L
+        else:
+            if has_particles == False or len(dd['particle_posx']) == 1:
+                L = [0.0, 1.0, 0.0]
+            else:
+                pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+                L = [-1*pos_vec[-1], pos_vec[0]]
+                L.append(0.0)
+                if L[0] > 0:
+                    L = [-1*L[0], -1*L[1], 0.0]
+        print "SET PROJECTION ORIENTATION L=", L
     if args.yt_proj == False and args.image_center != 0:
         sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
     elif args.yt_proj != False and args.image_center != 0:
@@ -350,7 +359,7 @@ def main():
                 print "FILE =", usable_files[frame_val]
                 has_particles = has_sinks(f)
                 if has_particles:
-                    part_info = mym.get_particle_data(usable_files[frame_val], args.axis)
+                    part_info = mym.get_particle_data(usable_files[frame_val], args.axis, proj_or=L)
                 else:
                     part_info = {}
                 center_vel = [0.0, 0.0, 0.0]
@@ -416,22 +425,19 @@ def main():
                         velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:]]
                     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, velocity_data[0], velocity_data[1], center_vel=center_vel)
                 else:
-                    if has_particles:
-                        part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
-                        part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
                     if args.image_center == 0 or has_particles == False:
                         center_pos = np.array([0.0, 0.0, 0.0])
                     else:
                         center_pos = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
-                    if args.projection_orientation == None:
-                        if has_particles == False or len(dd['particle_posx']) == 1:
-                            L = [0.0, 1.0, 0.0]
-                        else:
-                            pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
-                            L = [-1*pos_vec[-1], pos_vec[0]]
-                            L.append(0.0)
-                            if L[0] > 0:
-                                L = [-1*L[0], -1*L[1], 0.0]
+                    #CALCULATE PARTICLE PROJECTION
+                    if has_particles:
+                        L_orth = np.array([L[1], -1*L[0]])
+                        L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
+                        r = np.array([part_info['particle_position'][0], part_info['particle_position'][1]])
+                        r_pos = r * (L_orth/L_len)
+
+                        #part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
+                        #part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
                     x_width = (xlim[1] -xlim[0])
                     y_width = (ylim[1] -ylim[0])
                     thickness = yt.YTArray(args.slice_thickness, 'AU')
