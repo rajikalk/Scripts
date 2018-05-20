@@ -40,7 +40,10 @@ def find_sink_formation_time(files):
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
+        if ('io', u'particle_creation_time') in ds.field_list:
+            sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
+        else:
+            sink_form = 0.0
     except:
         sink_form = None
         for source in range(len(files)):
@@ -71,12 +74,9 @@ def get_image_mesh(file, zoom_times):
     X, Y = np.meshgrid(x, x)
     return X, Y
 
-def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time=2000., debug=False):
-    if debug == True:
-        import pdb
-        pdb.set_trace()
+def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=2000.):
     try:
-        file = files[-2]
+        file = files[-1]
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
@@ -90,17 +90,11 @@ def generate_frame_times(files, dt, start_time=None, presink_frames=25, end_time
     if end_time != None and end_time < max_time:
         max_time = end_time
 
-    if start_time == None:
+    if presink_frames != 0:
         m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
-        m_times = m_times.tolist()
-    elif start_time < 0.0:
-        if presink_frames != 0:
-            m_times = np.logspace(np.log10(start_time), np.log10(sink_form_time), presink_frames) - sink_form_time
-        else:
-            m_times = np.arange(start_time, 0+dt, dt)
-        m_times = m_times.tolist()
     else:
-        m_times = []
+        m_times = np.array([])
+    m_times = m_times.tolist()
 
     postsink = 0.0
     while postsink <= max_time:
@@ -118,11 +112,19 @@ def find_files(m_times, files):
         part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        sink_form_time = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s').value)
+        if m_times[0] > 10e5:
+            sink_form_time = 0.0
+        else:
+            sink_form_time = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s').value)
         yt_file = True
     except YTOutputNotIdentified:
-        sink_form_time = find_sink_formation_time(files)
+        if m_times[0] > 10e5:
+            sink_form_time = 0.0
+        else:
+            sink_form_time = find_sink_formation_time(files)
         yt_file = False
+    if m_times[0] > 10e5:
+        m_times[0] = m_times[0]/yt.units.yr.in_units('s').value
     usable_files = []
     mit = 0
     min = 0
@@ -222,12 +224,21 @@ def get_particle_data(file, axis='xz', proj_or=None):
         if axis == 'xy':
             part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
             part_pos_y = dd['particle_posy'][ordered_inds].in_units('AU').value
+            depth_pos = range(len(part_mass))
         else:
             if proj_or != None:
-                L_orth = np.array([proj_or[1], -1*proj_or[0]])
+                L = np.array([proj_or[0],proj_or[1]])
+                L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
                 r = np.array([dd['particle_posx'][ordered_inds].in_units('AU').value, dd['particle_posy'][ordered_inds].in_units('AU').value])
-                part_pos_x = r * (L_orth/L_len)
+                part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
+                part_pos_x = part_pos_x.T[0]
+                depth_pos = -1*np.dot(r.T,(L/L_len))
+                depth_pos = np.argsort(depth_pos)[::-1]
+            else:
+                part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
+                depth_pos = dd['particle_posy'][ordered_inds].in_units('AU').value
+                depth_pos = depth_pos[::-1]
             part_pos_y = dd['particle_posz'][ordered_inds].in_units('AU').value
         accretion_rad = np.min(dd['dx'].in_units('au').value) * 2.5
     except YTOutputNotIdentified:
@@ -238,17 +249,28 @@ def get_particle_data(file, axis='xz', proj_or=None):
         if axis == 'xy':
             part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
             part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
+            depth_pos = range(len(part_mass))
         else:
             if proj_or != None:
-                L_orth = np.array([proj_or[1], -1*proj_or[0]])
+                L = np.array([proj_or[0],proj_or[1]])
+                L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
                 r = np.array([f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value, f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value])
-                part_pos_x = r * (L_orth/L_len)
+                part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
+                part_pos_x = part_pos_x.T[0]
+                depth_pos = -1*np.dot(r.T,(L/L_len))
+                depth_pos = np.argsort(depth_pos)[::-1]
+            else:
+                part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
+                depth_pos = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
+                depth_pos = depth_pos[::-1]
             part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
+    positions = np.array([part_pos_x,part_pos_y])
     part_info = {'particle_mass':part_mass,
-                 'particle_position':[part_pos_x, part_pos_y],
-                 'accretion_rad':accretion_rad}
+                 'particle_position':positions,
+                 'accretion_rad':accretion_rad,
+                 'depth_position':depth_pos}
     return part_info
 
 def initialise_grid(file, zoom_times=0):#, center=0):
@@ -385,8 +407,10 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None,depth_array=None):
     global fontgize_global
+    if depth_array == None:
+        depth_array = np.arange(len(particle_position[0]))
     if annotate_field != None and units != None:
         annotate_field = annotate_field.in_units(units)
     part_color = ['cyan','cyan','r','c','y','w','k']
@@ -413,7 +437,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         unit_string = 'M$_\odot$'
     field_symbol = '$' + field_symbol + '_'
     p_t = ''
-    for pos_it in range(len(particle_position[0])):
+    for pos_it in depth_array:
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=2., c='k')
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=1., c=part_color[pos_it])
@@ -516,7 +540,7 @@ def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000, weight_arr=
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None): #cmap=plt.cm.get_cmap('bwr_r')
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None, vmin=None, vmax=None, yt_slice=False): #cmap=plt.cm.get_cmap('bwr_r')
     """
        Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
     """
@@ -532,6 +556,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     no_of_particles = len(dd['particle_mass'])
     cell_max = np.max(dd['dz'].in_units('AU'))
     dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
+    if yt_slice == False:
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
     print("Computing tree...")
     tree = spatial.cKDTree(xyz)
@@ -572,17 +597,26 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     if units != None:
         field_grid = field_grid.in_units(units)
     field_grid = field_grid
+
+    if field == 'Relative_Keplerian_Velocity':
+        vmin=0.0
+        vmax=2.0
     
     plt.clf()
     fig, ax = plt.subplots()
     #print("len(xy[0]) =", len(xy[0]))
     if log:
-        plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
-        for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-            i[3] = j
+        if vmin != None:
+            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(vmin=vmin, vmax=vmax), rasterized=True)
+            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+                i[3] = j
+        else:
+            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
+            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
+                i[3] = j
     else:
-        if field == "Relative_Keplerian_Velocity":
-            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=0.0, vmax=2.0)
+        if vmin != None:
+            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=vmin, vmax=vmax)
             for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
                 i[3] = j
         else:
