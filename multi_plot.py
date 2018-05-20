@@ -11,6 +11,7 @@ import matplotlib.gridspec as gridspec
 import glob
 import matplotlib.patheffects as path_effects
 import matplotlib
+import yt
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
@@ -175,6 +176,16 @@ for it in range(len(positions)):
     if 'movie' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
+        if 'slice' in plot_type:
+            m_times = [float(mov_args[mov_args.index('-pt') + 1])]
+            sim_files = sorted(glob.glob(file_dir[it] + 'WIND_hdf5_plt_cnt_*'))
+            usable_files = mym.find_files(m_times, sim_files)
+            file = usable_files[0]
+            part_file = file[:-12] + 'part' + file[-5:]
+            ds = yt.load(file, particle_filename=part_file)
+            dd = ds.all_data()
+            time_val = ds.current_time.in_units('yr').value - np.min(dd['particle_creation_time'].value)/yt.units.yr.in_units('s').value
+            mov_args[mov_args.index('-pt') + 1] = str(time_val)
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
@@ -198,7 +209,9 @@ for it in range(len(positions)):
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in args_dict.keys():
-            time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['annotate_time'], va="center", ha="left", color='w', fontsize=args.text_font)
+            time_string  = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
+            time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
+            time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), "$t$="+time_string+"yr", va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
         title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -277,7 +290,8 @@ for it in range(len(positions)):
         standard_vel = 5.
         for slice_arg in slice_args:
             if get_stdv:
-                standard_vel = float(mov_arg)
+                standard_vel = float(slice_arg)
+                get_stdv = False
             if slice_arg == '-stdv':
                 get_stdv = True
             arg_list.append(slice_arg)
@@ -287,11 +301,21 @@ for it in range(len(positions)):
 
         pickle_file = save_dir + 'slice_pickle.pkl'
         file = open(pickle_file, 'r')
-        X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, part_info, limits = pickle.load(file)
+        X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits = pickle.load(file)
         file.close()
-        plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0)#cmap=plt.cm.get_cmap('bwr_r')
-        for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-            i[3] = j
+        if "dens" in arg_list:
+            plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-15, vmax=1.e-12), rasterized=True)#cmap=plt.cm.get_cmap('bwr_r')
+        else:
+            img_array = plt.get_cmap('brg')(field_grid/np.max(field_grid))
+            alphas = np.clip(weight_field/(0.01*np.max(weight_field)), 0.0, 1.0)**(1./10.)
+            img_array[..., 3] = alphas
+            background = np.ones(np.shape(field_grid))
+            back_img_array = plt.get_cmap('Greys')(background)
+            extent = np.min(xy[0]), np.max(xy[0]), np.min(xy[1]), np.max(xy[1])
+            #plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0)#cmap=plt.cm.get_cmap('bwr_r')
+            axes_dict[ax_label].imshow(back_img_array,origin='lower', extent=extent)
+            plot = axes_dict[ax_label].imshow(img_array,origin='lower', vmin=0.0, vmax=2.0, extent=extent, cmap=plt.cm.brg)
+        axes_dict[ax_label].streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5, arrowstyle='-')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=limits, standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits)
         axes_dict[ax_label].set_xlim(limits[0])
@@ -303,7 +327,10 @@ for it in range(len(positions)):
             line.set_color('white')
         if positions[it][0] == columns and args.share_colourbar == False:
             cbar = plt.colorbar(plot, pad=0.0)
-            cbar.set_label("Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", rotation=270, labelpad=22, size=args.text_font)
+            if "dens" in arg_list:
+                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=22, size=args.text_font)
+            else:
+                cbar.set_label("Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", rotation=270, labelpad=22, size=args.text_font)
         if positions[it][0] == 1:
             axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=args.y_label_pad, fontsize=args.text_font)
         if positions[it][1] == rows:
@@ -401,7 +428,7 @@ for it in range(len(positions)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
             axes_dict[ax_label].set_xlim([0, 5000])
-            axes_dict[ax_label].set_ylim([1.e-5, 5.e-1])
+            axes_dict[ax_label].set_ylim([1.e-4, 1.5e-1])
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             axes_dict[ax_label].legend(loc='best')
         elif 'speed' in input_args[it]:
@@ -459,7 +486,7 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e7, 1.e11])
             else:
                 axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([5.e6, 5.e9])
+                axes_dict[ax_label].set_ylim([1.e6, 5.e9])
                 #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             #axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
             axes_dict[ax_label].set_xlim([0, 5000])
@@ -492,7 +519,7 @@ for it in range(len(positions)):
                 #axes_dict[ax_label].set_ylim([1.e-1, 1.e1])
             else:
                 axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
-                axes_dict[ax_label].set_ylim([1.e-5, 5.e-1])
+                axes_dict[ax_label].set_ylim([1.e-4, 2.5e-1])
                 #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
             axes_dict[ax_label].set_xlim([0, 5000])
             print "CREATED OUTFLOWS PLOT"
