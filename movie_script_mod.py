@@ -35,11 +35,11 @@ def parse_inputs():
     parser.add_argument("-zt", "--zoom_times", help="0 is default zoom", default=0)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
-    parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10, type=float)
+    parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     #parser.add_argument("-st", "--start_time", help="What time woudl you like to start calculating times from?", type=float, default=0.0)
-    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", default = 25)
-    parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int)
+    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
+    parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-plr", "--plot_lref", help="would you like to annotate the refinement level?", default=False)
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
@@ -94,6 +94,8 @@ def sim_info(path, file, args):
     for p_s in path_split:
         if 'omega' in p_s:
             ang_val = p_s.split('_')[-1]
+        else:
+            ang_val = 0.2
         if 'lref' in p_s:
             temp_split = p_s.split('_')
             for t_s_it in range(len(temp_split)):
@@ -223,7 +225,10 @@ def image_properties(X, Y, args, sim_info):
     if args.yt_proj == False:
         xlabel = '$x$ (AU)'
     else:
-        xlabel = 'Distance from center (AU)'
+        if args.axis == "xy":
+            xlabel = '$x$ (AU)'
+        else:
+            xlabel = 'Distance from center (AU)'
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     return xlabel, ylabel, xlim, ylim
@@ -268,6 +273,7 @@ def main():
     simfo = sim_info(path, files[-1], args)
     if args.yt_proj == False:
         X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times)
+        L=None
     else:
         x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
         y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -287,14 +293,18 @@ def main():
             y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
             L = [1, y_val, 0]
         else:
-            if has_particles == False or len(dd['particle_posx']) == 1:
-                L = [0.0, 1.0, 0.0]
+            if args.axis == 'xz':
+                L = [1.0, 0.0, 0.0]
+            else:
+                L = [0.0, 0.0, 1.0]
+            '''
             else:
                 pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
                 L = [-1*pos_vec[-1], pos_vec[0]]
                 L.append(0.0)
                 if L[0] > 0:
                     L = [-1*L[0], -1*L[1], 0.0]
+            '''
         print "SET PROJECTION ORIENTATION L=", L
     if args.yt_proj == False and args.image_center != 0:
         sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
@@ -305,7 +315,7 @@ def main():
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time) #, start_time = args.start_time)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
     no_frames = len(m_times)
     m_times = m_times[args.start_frame:]
     sys.stdout.flush()
@@ -514,9 +524,9 @@ def main():
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
                 if has_particles:
                     if args.annotate_particles_mass == True:
-                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'],depth_array=part_info['depth_position'])
                     else:
-                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+                        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None,depth_array=part_info['depth_position'])
                 if args.plot_lref == True:
                     r_acc = np.round(part_info['accretion_rad'])
                     ax.annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo['xmax'], 0.93*simfo['ymax']), va="center", ha="right", color='w', fontsize=args.text_font)
