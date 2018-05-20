@@ -9,9 +9,9 @@ with open('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Tab
     for row in reader:
         if header != 0:
             if float(row[9]) > 1000:
-                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[4] + '&' + row[5] + '&' + row[6] + '&' + row[7] + '&' + row[8] + '&' + str((np.round(float(row[9])*100.))/100.) + '&' + '$>10^3$' + '(' + row[11] + ')\\'
+                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[4] + '&' + str(np.round(float(row[5])*100.)/100.) + '&' + row[6] + '&' + row[7] + '&' + row[8] + '&' + str((np.round(float(row[9])*100.))/100.) + '&' + '$>10^3$' + '(' + row[11] + ')\\'
             else:
-                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[4] + '&' + row[5] + '&' + row[6] + '&' + row[7] + '&' + row[8] + '&' + str((np.round(float(row[9])*100.))/100.) + '&' + str((np.round(float(row[10])*100))/100.) + '(' + row[11] + ')\\'
+                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[4] + '&' + str(np.round(float(row[5])*100.)/100.) + '&' + row[6] + '&' + row[7] + '&' + row[8] + '&' + str((np.round(float(row[9])*100.))/100.) + '&' + str((np.round(float(row[10])*100))/100.) + '(' + row[11] + ')\\'
             Write_lines.append(line)
         if header == 0:
             header =1
@@ -36,7 +36,7 @@ f.write('    \centering\n')
 f.write('        \caption{Full list of objects observed in this survey. P(M) indicates the probability of membership to the listed region, based on Rizzuto et al. (2015) which uses proper motion and Bayesian analysis to determine a probability. ``Disk?" indicates whether the object is found to have an excess in the W3 and/or W4 WISE bands. An object has is given the label: ``YY" if it has an excess in both bands, ``YN" if it has an excess in W3 but not W4 and ``NY" if it has an excess in W4 but not W3. $N_{Obs}$ lists the number of observations obtained over the course of this survey. Temp. SpT. lists the spectral type of preferred template used to obtain radial velocities (see Section 2.3.3). $\Delta$RV is the radial velocity variation taken to be the difference between epochs with the highest and lowest radial velocity. The Bayes\' factor calculated from the Bayesian analysis described in Section 3.3. is the ratio of likelihoods of being a binary star to being a single star.}\n')
 f.write('        \\')
 f.write('begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}\n')
-f.write('            Object & Region & RA & DEC & P(M) & EW(H$_\alpha$)(\AA) & Disk? & $N_{Obs}$ & Temp. SpT. & $\Delta v_r$ & Bayes\' Factor(binary?)\\')
+f.write('            Object & Region & RA & DEC & P(M) & EW(H$\alpha$)(\AA) & Disk? & $N_{Obs}$ & Temp. SpT. & $\Delta v_r$ & Bayes\' Factor(binary?)\\')
 f.write('\\')
 f.write('\n')
 f.write('                \\hline\n')
