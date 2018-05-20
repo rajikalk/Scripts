@@ -313,9 +313,9 @@ for pit in range(len(paths)):
     fs = get_files(paths[pit], args_dict[pit])
     files.append(fs)
 
-    print "paths =", paths
-    print "fs =", fs
-    print "args_dict =", args_dict
+    #print "paths =", paths
+    #print "fs =", fs
+    #print "args_dict =", args_dict
     sfo = sim_info(paths[pit], fs[-1], args_dict[pit])
     simfo.append(sfo)
 
@@ -414,6 +414,7 @@ CW.Barrier()
 rit = args.working_rank
 for frame_val in range(len(frames)):
     if rank == rit:
+        time_val = m_times[frame_val]
         plt.clf()
         columns = np.max(positions[:,0])
         rows = np.max(positions[:,1])
@@ -495,7 +496,10 @@ for frame_val in range(len(frames)):
                 pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                 print "USING PICKLED FILE:", pickle_file
                 file = open(pickle_file, 'r')
-                stuff = pickle.load(file)
+                #weight_fieldstuff = pickle.load(file)
+                X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val, xabel, yabel = pickle.load(file)
+                
+                '''
                 X[pit], Y[pit], image, magx, magy = stuff[:5]
                 X_vel[pit], Y_vel[pit], velx, vely = stuff[5:9]
                 xlim, ylim = stuff[9:11]
@@ -505,7 +509,8 @@ for frame_val in range(len(frames)):
                 time_val = stuff[14]
                 xabel = stuff[15]
                 yabel = stuff[16]
-                file_time = stuff[17]
+                '''
+                #file_time = stuff[17]
                 file.close()
 
             else:
@@ -515,13 +520,29 @@ for frame_val in range(len(frames)):
                     part_file = file[:-12] + 'part' + file[-5:]
                     f = yt.load(file, particle_filename=part_file)
                     dd = f.all_data()
-                    file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
+                    #file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
                 else:
                     f = h5py.File(usable_files[pit][frame_val], 'r')
-                    file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time[pit]
+                    #file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time[pit]
                 print "FILE =", usable_files[pit][frame_val]
                 has_particles = has_sinks(f)
                 if has_particles:
+                    if args.yt_proj == False:
+                        L=None
+                    else:
+                        if args.projection_orientation != None:
+                            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+                            L = [1, y_val, 0]
+                        else:
+                            if has_particles == False or len(dd['particle_posx']) == 1:
+                                L = [0.0, 1.0, 0.0]
+                            else:
+                                pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+                                L = [-1*pos_vec[-1], pos_vec[0]]
+                                L.append(0.0)
+                                if L[0] > 0:
+                                    L = [-1*L[0], -1*L[1], 0.0]
+                    print "SET PROJECTION ORIENTATION L=", L
                     part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
                 else:
                     part_info = {}
@@ -608,6 +629,7 @@ for frame_val in range(len(frames)):
                     magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                     magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
+                    '''
                     if np.median(image[200:600,400]) > 5.e-15:
                         image = image.T
                         velx_full = velx_full.T
@@ -615,7 +637,7 @@ for frame_val in range(len(frames)):
                         magx = magx.T
                         magy = magy.T
                         mass = mass.T
-            
+                    '''
                     velx_full = velx_full/mass
                     vely_full = vely_full/mass
                     magx = magx/mass
@@ -628,7 +650,9 @@ for frame_val in range(len(frames)):
 
                     pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                     file = open(pickle_file, 'w+')
-                    pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel, file_time), file)
+                    import pdb
+                    pdb.set_trace()
+                    pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
                     file.close()
                     print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
                 
@@ -636,7 +660,7 @@ for frame_val in range(len(frames)):
 
             plot = axes_dict[ax_label].pcolormesh(X[pit], Y[pit], image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
             #plt.gca().set_aspect('equal')
-            if frame_val > 0 or file_time > -1.0:
+            if frame_val > 0 or time_val > -1.0:
                 axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
             else:
                 axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, minlength=0.5)
