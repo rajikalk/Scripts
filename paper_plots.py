@@ -161,6 +161,7 @@ for fit in range(len(usable_files)):
     if args.slice_plot == 'True':
         args.slice_plot = True
     if args.slice_plot:
+        print "MAKING SLICE PLOT WIHT FILE:", file
         n_bins = np.ceil(np.sqrt((args.resolution/2.)**2. + (args.resolution/2.)**2.))
         #myf.set_n_bins(n_bins)
         save_image_name = save_dir + "Slice_Plot_time_" + str(args.plot_time) + ".eps"
@@ -182,7 +183,11 @@ for fit in range(len(usable_files)):
         del dummy1
         del dummy2
         del dummy3
-        fig, ax, xy, field_grid, weight_field = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units, weight=args.weight_field)
+        if args.field == 'Relative_Keplerian_Velocity':
+            fig, ax, xy, field_grid, weight_field = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units, weight=args.weight_field)
+        else:
+            
+            fig, ax, xy, field_grid, weight_field = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units, weight=args.weight_field, log=True, cbar_label='Density (gcm$^{-3}$)', cmap=plt.cm.gist_heat, vmin=args.colourbar_min, vmax=args.colourbar_max)
         f = h5py.File(movie_file, 'r')
         dim = np.shape(f['dens_slice_xy'])[0]
         xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
@@ -233,7 +238,7 @@ for fit in range(len(usable_files)):
             print "CREATING PICKLE"
             pickle_file = save_dir + 'slice_pickle.pkl'
             file = open(pickle_file, 'w+')
-            pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, part_info, limits),file)
+            pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits),file)
             file.close()
             print "Created Pickle"
 
@@ -479,12 +484,13 @@ for fit in range(len(usable_files)):
         if fit == 0 or usable_files[fit] != usable_files[fit-1]:
             L = np.array(L)
             proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T#[:][::-1]
-            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T#[:][::-1]
-            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T#[:][::-1]
-            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T#[:][::-1]
-            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T#[:][::-1]
-            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T#[:][::-1]
+            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm'))#.T#[:][::-1]
+            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm'))#.T#[:][::-1]
+            '''
             if np.median(image_data[200:600,400]) > 1.e-15:
                 image_data = image_data.T
                 velx_full = velx_full.T
@@ -492,6 +498,7 @@ for fit in range(len(usable_files)):
                 magx = magx.T
                 magy = magy.T
                 mass = mass.T
+            '''
 
         velx_full = velx_full/mass
         vely_full = vely_full/mass
@@ -757,13 +764,19 @@ if args.plot_outflows:
 if args.separation == 'True':
     args.separation = True
 if args.separation:
-    image_name = save_dir + "separation"
-    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
+    #image_name = save_dir + "separation"
+    image_name = save_dir + "binary_system_time_evolution"
+    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0//sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     line_style = ['k-', 'b-', 'r-']
     labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
     lit = 0
     plt.clf()
+    fig = plt.figure()
+    gs = gridspec.GridSpec(2, 1)
+    gs.update(hspace=0.0)
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
     for file in files:
         sink_form_time = 0
         particle_tag = []
@@ -825,27 +838,29 @@ if args.separation:
             times = np.append(times_new, times)
             sep = np.append(sep_new, sep)
         '''
-        plt.semilogy(times[1], sep, line_style[lit], label=labels[lit])
+        ax1.semilogy(times[1], sep, line_style[lit], label=labels[lit])
         lit = lit + 1
-    plt.xlim([0.0, 5000.0])
-    plt.legend(loc='best')
-    plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
-    plt.ylabel("Separation (AU)", fontsize=14)
-    plt.tick_params(axis='x', which='major', labelsize=14)
-    plt.tick_params(axis='y', which='major', labelsize=14)
-    plt.savefig(image_name + '.eps', bbox_inches='tight')
-    plt.savefig(image_name + '.pdf', bbox_inches='tight')
-    print "Created image", image_name
+    ax1.set_ylim([1e0,5e2])
+    ax1.set_xlim([0.0, 5000.0])
+    ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
+    ax1.set_legend(loc='best')
+    #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
+    ax1.set_ylabel("Separation (AU)", fontsize=14)
+    ax1.tick_params(axis='x', which='major', labelsize=14)
+    ax1.tick_params(axis='y', which='major', labelsize=14)
+    #plt.savefig(image_name + '.eps', bbox_inches='tight')
+    #plt.savefig(image_name + '.pdf', bbox_inches='tight')
+    #print "Created image", image_name
 
-if args.total_mass_of_system == 'True':
-    args.total_mass_of_system = True
-if args.total_mass_of_system:
-    legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
-    linestyles = ['k-', 'b--', 'r-.']
-    image_name = save_dir + "total_mass"
-    dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2"]
+#if args.total_mass_of_system == 'True':
+    #args.total_mass_of_system = True
+#if args.total_mass_of_system:
+    #legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
+    #linestyles = ['k-', 'b--', 'r-.']
+    #image_name = save_dir + "total_mass"
+    dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2"]
     case_it = 0
-    plt.clf()
+    #plt.clf()
     for dir in dirs:
         files = sorted(glob.glob(dir + '/WIND_proj*'))
         m_times = mym.generate_frame_times(files, 100, presink_frames=0, end_time=None)
@@ -860,14 +875,14 @@ if args.total_mass_of_system:
             times.append(file_time)
             mass.append(part_mass)
             f.close()
-        plt.plot(times, mass, linestyles[case_it], label=legend_labels[case_it])
+        ax2.plot(times, mass, line_styls[case_it], label=legend_labels[case_it])
         case_it = case_it + 1
-    plt.xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
-    plt.ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
-    plt.legend(loc='best')
-    plt.xlim([0, 5000])
-    plt.tick_params(axis='y', which='major', labelsize=args.text_font)
-    plt.tick_params(axis='x', which='major', labelsize=args.text_font)
+    ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
+    #plt.legend(loc='best')
+    ax2.set_xlim([0, 5000])
+    ax2.tick_params(axis='y', which='major', labelsize=args.text_font)
+    ax2.tick_params(axis='x', which='major', labelsize=args.text_font)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
     print "Created image", image_name
