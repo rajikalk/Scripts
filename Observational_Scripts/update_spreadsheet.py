@@ -186,6 +186,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
             Obj_name = hdu[0].header['OBJECT']
             if 'U4' in Obj_name:
                 Obj_name = 'UCAC4' + Obj_name.split('U4')[-1]
+
             if Obj_name == 'RIK-96' or Obj_name == 'UCAC4-161328427' or Obj_name == 'UCAC4-1253626396' or Obj_name == 'UCAC4-447414452' or Obj_name == 'UCAC4-450968247':
                 ind = Object.index(Obj_name)
                 f = open('SB2_files.csv', 'a')
@@ -195,7 +196,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
             MJD = hdu[0].header['MJD-OBS']
             #alt_date = Obs_date.split('-')[-1]+'/'+Obs_date.split('-')[-2]+'/'+Obs_date.split('-')[-3][2:]
             
-            if [Obj_name, Obs_date] in ignore_obs_list:
+            if [Obj_name, Obs_date] in ignore_obs_list or Obj_name not in Object:
                 print "SKIPPING FILE:", fn, " BECAUSE DATA IS NOT GOOD"
             elif (Obj_name in Object and args.obj_name == "") or (Obj_name == args.obj_name) or ([item for item in Manual_click_flag if item[0] == Obj_name and item[1] == '/'.join([str(int(Obs_date.split('-')[2])), Obs_date.split('-')[1], Obs_date.split('-')[0][2:]])] != []) or (Obj_name in save_plots):
                 ind = Object.index(Obj_name)
@@ -314,10 +315,29 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     plt.xlabel('wavelength')
                     plt.ylabel('flux')
                     plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/Spectrum_'+str(MJD)+'.png')
-                    h_alpha_ind = np.argmin(np.abs(wave - H_alpha))
-                    wave_h_alpha = wave[h_alpha_ind-15:h_alpha_ind+15]
-                    spectrum_h_alpha = spectrum[h_alpha_ind-15:h_alpha_ind+15]
-                    F_0 = np.median(sorted(spectrum_h_alpha)[:10])
+                    if np.abs(wave[np.argmax(spectrum)] - H_alpha)<20:
+                        h_alpha_ind = np.argmax(spectrum)
+                    else:
+                        h_alpha_ind = np.argmin(np.abs(wave-H_alpha)) #np.argmax(spectrum)
+                    ind_width = 5
+                    diff = 0.90
+                    F_0_prev = 0.0
+                    #Found_line = False
+                    while diff > 0.01:# or Found_line == False:
+                        wave_h_alpha = wave[h_alpha_ind-ind_width:h_alpha_ind+ind_width]
+                        spectrum_h_alpha = spectrum[h_alpha_ind-ind_width:h_alpha_ind+ind_width]
+                        F_0 = np.median(np.concatenate((spectrum_h_alpha[:5],spectrum_h_alpha[-5:])))
+                        print 'F_0=',F_0
+                        diff = np.abs(F_0 - F_0_prev)/F_0
+                        F_0_prev = F_0
+                        ind_width = ind_width + 1
+                        '''
+                        if diff < 0.05:
+                            if np.abs(np.min(spectrum_h_alpha)-F_0)>np.abs(np.max(spectrum_h_alpha)-F_0):
+                                Found_line = False
+                            else:
+                                Found_line = True
+                        '''
                     plt.clf()
                     plt.plot(wave_h_alpha,spectrum_h_alpha-F_0)
                     plt.xlabel('wavelength')
@@ -325,6 +345,13 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     x = wave_h_alpha
                     y = (1 - spectrum_h_alpha/F_0)
                     equiv_width = np.trapz(y, x=x, dx=x[1:]-x[:-1])
+                    #else:
+                    #    equiv_width = np.nan
+                    '''
+                    if Obj_name == 'RIK-58':
+                        import pdb
+                        pdb.set_trace()
+                    '''
                     plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/H_alpha_'+str(MJD)+'.png')
                     if Obj_name in save_plots:
                         rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,templates, ([0,5400],[6550, 6600],[6870,6890]), save_figures=True, save_dir='/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/', heliocentric_correction=(h_corr-rv_abs-rv_sky))
@@ -398,8 +425,8 @@ if args.mode == 'update':
         if No_obs[obj] != 0:
             mean_rv = np.average(Obs_info[obj][:,2].astype(np.float))
             last_rv = Obs_info[obj][:,2][-1].astype(np.float)
-            h_alpha_median = np.median(Obs_info[obj][:,-2].astype(np.float))
-            h_alpha_variation = np.max(Obs_info[obj][:,-2].astype(np.float)) - np.min(Obs_info[obj][:,-2].astype(np.float))
+            h_alpha_median = np.mean(Obs_info[obj][:,-2].astype(np.float))
+            h_alpha_variation = np.std(Obs_info[obj][:,-2].astype(np.float))
         else:
             mean_rv = 0.0
             last_rv = 0.0
