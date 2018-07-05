@@ -38,10 +38,17 @@ def find_sink_formation_time(files):
     try:
         file = files[-2]
         part_file=file[:-12] + 'part' + file[-5:]
+        '''
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
         if ('io', u'particle_creation_time') in ds.field_list:
             sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
+        else:
+            sink_form = 0.0
+        '''
+        f = h5py.File(part_file, 'r')
+        if f[f.keys()[1]][-1][-1] > 0:
+            sink_form = np.min(f[f.keys()[11]][:,5])/yt.units.yr.in_units('s').value
         else:
             sink_form = 0.0
     except:
@@ -78,11 +85,12 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=20
     try:
         file = files[-1]
         part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        dd = ds.all_data()
+        #ds = yt.load(file, particle_filename=part_file)
+        #dd = ds.all_data()
+        f = h5py.File(part_file, 'r')
         sink_form_time = find_sink_formation_time(files)
-        max_time = ds.current_time.in_units('yr').value - sink_form_time
-    except YTOutputNotIdentified:
+        max_time = f[f.keys()[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
+    except:
         f = h5py.File(files[-1], 'r')
         sink_form_time = find_sink_formation_time(files)
         max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
@@ -107,22 +115,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=20
     return m_times
 
 def find_files(m_times, files):
-    try:
-        file = files[-1]
-        part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        dd = ds.all_data()
-        if m_times[0] > 10e5:
-            sink_form_time = 0.0
-        else:
-            sink_form_time = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s').value)
-        yt_file = True
-    except YTOutputNotIdentified:
-        if m_times[0] > 10e5:
-            sink_form_time = 0.0
-        else:
-            sink_form_time = find_sink_formation_time(files)
-        yt_file = False
+    sink_form_time = find_sink_formation_time(files)
     if m_times[0] > 10e5:
         m_times[0] = m_times[0]/yt.units.yr.in_units('s').value
     usable_files = []
@@ -134,31 +127,30 @@ def find_files(m_times, files):
     while mit < len(m_times):
         it = int(np.round(min + ((max - min)/2.)))
         #print 'search iterator =', it
-        if yt_file:
+        try:
             file = files[it]
             part_file=file[:-12] + 'part' + file[-5:]
             f = h5py.File(part_file, 'r')
             time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-        else:
+        except:
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
         f.close()
         print "Current file time =", time, "for interator =", it
-        diff = time - m_times[mit]
         if pit == it or time == m_times[mit]:
             if it == (len(files)-1):
                 pot_files = files[it-1:it]
             elif it == 0:
                 pot_files = files[it:it+1]
             else:
-                pot_files = files[it-1:it+1]
+                pot_files = files[it-2:it+2]
             diff_arr = []
             for pfile in pot_files:
-                if yt_file:
-                    part_file=pfile[:-12] + 'part' + file[-5:]
+                try:
+                    part_file=pfile[:-12] + 'part' + pfile[-5:]
                     f = h5py.File(part_file, 'r')
                     time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-                else:
+                except:
                     f = h5py.File(pfile, 'r')
                     time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
                 f.close()
@@ -166,7 +158,8 @@ def find_files(m_times, files):
                 diff_arr.append(diff_val)
             append_file = pot_files[np.argmin(diff_arr)]
             if m_times[mit] == 0.0:
-                if yt_file:
+                try:
+                    '''
                     part_file=append_file[:-12] + 'part' + append_file[-5:]
                     ds = yt.load(append_file, particle_filename=part_file)
                     if ('all', u'particle_mass') not in ds.field_list:
@@ -180,16 +173,28 @@ def find_files(m_times, files):
                                 found_first_particle_file = True
                             else:
                                 app_ind = app_ind + 1
-                else:
+                    '''
+                    f = h5py.File(append_file, 'r')
+                    if f[f.keys()[9]][-1][-1] == 0:
+                        found_first_particle_file = False
+                        app_ind = files.index(append_file) + 1
+                        while found_first_particle_file == False:
+                            append_file = files[app_ind]
+                            f = h5py.File(append_file, 'r')
+                            if f[f.keys()[9]][-1][-1] > 0:
+                                found_first_particle_file = True
+                            else:
+                                app_ind = app_ind + 1
+                except:
                     f = h5py.File(append_file, 'r')
                     if 'particlemasses' not in f.keys():
                         append_file = pot_files[np.argmin(diff_arr)+1]
             usable_files.append(append_file)
-            if yt_file:
-                part_file=append_file[:-12] + 'part' + file[-5:]
+            try:
+                part_file=append_file[:-12] + 'part' + append_file[-5:]
                 f = h5py.File(part_file, 'r')
                 time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-            else:
+            except:
                 f = h5py.File(append_file, 'r')
                 time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
             f.close()
@@ -540,7 +545,7 @@ def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000, weight_arr=
     plot_array = plot_array.transpose()
     return plot_array
 
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None, vmin=None, vmax=None, yt_slice=False): #cmap=plt.cm.get_cmap('bwr_r')
+def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None, vmin=None, vmax=None): #cmap=plt.cm.get_cmap('bwr_r')
     """
        Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
     """
@@ -556,7 +561,6 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     no_of_particles = len(dd['particle_mass'])
     cell_max = np.max(dd['dz'].in_units('AU'))
     dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
-    if yt_slice == False:
     xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
     print("Computing tree...")
     tree = spatial.cKDTree(xyz)
