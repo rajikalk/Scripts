@@ -202,13 +202,14 @@ def _Center_Velocity(field, data):
     """
     global center
     dd = data.ds.all_data()
-    if np.shape(data) == (16, 16, 16):
-        center_vel = data['My_Bulk_Velocity'].in_units('cm/s')
-    elif center == 0:
+    center_vel = yt.YTArray(np.array([0.0,0.0,0.0]), 'cm/s')
+    if center == 0 and ('gas', 'velocity_x') in data.ds.derived_field_list:
         if ('all', u'particle_mass') in data.ds.field_list:
             center_vel = dd.quantities.bulk_velocity(use_particles=True)
         else:
             center_vel = dd.quantities.bulk_velocity(use_particles=False)
+    elif center == 0 and ('gas', 'velocity_x') not in data.ds.derived_field_list:
+        center_vel = yt.YTArray([np.sum(dd['velx'].in_units('cm/s').value), np.sum(dd['vely'].in_units('cm/s').value), np.sum(dd['velz'].in_units('cm/s').value)], 'cm/s')
     else:
         center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
     return center_vel
@@ -437,6 +438,24 @@ def _Tangential_Velocity(field, data):
 
 yt.add_field("Tangential_Velocity", function=_Tangential_Velocity, units=r"cm/s")
 
+def _Total_Potential(field, data):
+    """
+        Gives the total potential inclusing contribution from the gas and the sink particles.
+        """
+    G_pot_total = data['gpot'] + data['Particle_Potential']
+    return G_pot_total
+
+yt.add_field("Total_Potential", function=_Total_Potential, units=r"cm**2/s**2")
+
+def _Keplerian_Velocity(field, data):
+    """
+    Keplerian velocity calculated from the total potential energy (Sum of the potential from the sinks and the gas)
+    """
+    keplerian_field = np.sqrt(-1*data['Total_Potential'])
+    return keplerian_field
+
+yt.add_field("Keplerian_Velocity", function=_Keplerian_Velocity, units=r"cm/s")
+'''
 def _Keplerian_Velocity(field, data):
     """
     Calculates the keplerian velocity for the enclosed mass calculated from the current center, in the current coordinate system, corrected for the velocity of the center.
@@ -446,7 +465,7 @@ def _Keplerian_Velocity(field, data):
     return keplerian_field
 
 yt.add_field("Keplerian_Velocity", function=_Keplerian_Velocity, units=r"cm/s")
-
+'''
 def _Relative_Keplerian_Velocity(field, data):
     """
     Calculates the Relative Keplerian Velocity.
@@ -548,15 +567,6 @@ def _Particle_Potential(field, data):
     return Part_gpot
 
 yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2")
-
-def _Total_Potential(field, data):
-    """
-    Gives the total potential inclusing contribution from the gas and the sink particles.
-    """
-    G_pot_total = data['gpot'] + data['Particle_Potential']
-    return G_pot_total
-
-yt.add_field("Total_Potential", function=_Total_Potential, units=r"cm**2/s**2")
 
 def _Gravitational_Acceleration_z(field, data):
     """
