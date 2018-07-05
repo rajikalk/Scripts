@@ -11,14 +11,12 @@ Objects = []
 Bayes_factor = []
 
 header = 0
-with open('/short/ek9/rlk100/Bayes_analysis/Mean_velocity/3_sig/bayes_factors.csv', 'rU') as f:
+with open('/short/ek9/rlk100/Bayes_analysis/Mean_velocity/3_sig/bayes_factors_reviewer_response.csv', 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
-        if header != 0:
+        if row[0] != 'UCAC4-1253626396':
             Objects.append(row[0])
             Bayes_factor.append(float(row[2]))
-        else:
-            header = 1
 
 #set up lists and arrays
 RA_US = [[],[]]
@@ -27,12 +25,12 @@ RA_UCL = [[],[]]
 DEC_UCL = [[],[]]
 
 header = 0
-with open('/home/100/rlk100/WiFeS_target_spreadsheet_highest_mass_template.csv', 'rU') as f:
+with open('/home/100/rlk100/WiFeS_target_spreadsheet_reviewer_response.csv', 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
         if header != 0:
-            if 'Y' in row[5] and int(row[10]) > 1:
-                c = SkyCoord(row[2]+' '+ row[3], unit=(u.hourangle, u.deg))
+            c = SkyCoord(row[2]+' '+ row[3], unit=(u.hourangle, u.deg))
+            if row[0] in Objects:
                 ind = Objects.index(row[0])
                 if row[1] == 'US':
                     if Bayes_factor[ind] > 300.0:
@@ -129,10 +127,10 @@ plt.clf()
 plt.imshow(test, origin='lower',extent=(lonra[1],lonra[0],latra[0],latra[1]), interpolation = 'none', cmap='Greys', clim=(0.0, 0.50))
 plt.colorbar(pad=0.0)
 plt.scatter(RA_US[0], DEC_US[0], color='b', marker='v')
-plt.scatter(RA_US[1], DEC_US[1], color='b', marker='+')
+plt.scatter(RA_US[1], DEC_US[1], color='b', marker='+', label='Upper Scorpius')
 plt.scatter(RA_UCL[0], DEC_UCL[0], color='r', marker='v')
-plt.scatter(RA_UCL[1], DEC_UCL[1], color='r', marker='+')
-#plt.legend(loc='lower right')
+plt.scatter(RA_UCL[1], DEC_UCL[1], color='r', marker='+', label='Upper Centaurus-Lupus')
+plt.legend(loc='lower right')
 plt.xlim(lonra)
 plt.ylim(latra)
 plt.xlabel('RA')
