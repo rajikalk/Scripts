@@ -1,44 +1,33 @@
-%run /home/100/rlk100/Scripts/bayesian_analysis.py -file /home/100/rlk100/WiFeS_target_spreadsheet_cleaned.csv -suffix '_resubmission' -bayes_f bayes_factors_cleaned.csv
-SpT_bin_1 = ['F6', 'F7', 'F8', 'F9', 'G0', 'G1', 'G2']
-SpT_bin_2 = ['G3', 'G5', 'G6', 'G7', 'G9', 'K0', 'K1', 'K3']
-SpT_bin_3 = ['K4', 'K6', 'M1', 'M2', 'M3']
-bin_1_inds_US = np.array([])
-bin_2_inds_US = np.array([])
-bin_3_inds_US = np.array([])
-bin_1_inds_UCL = np.array([])
-bin_2_inds_UCL = np.array([])
-bin_3_inds_UCL = np.array([])
-for SpT in SpT_bin_1:
-    inds = np.where(np.array(Obj_bayes_SpT[0])==SpT)[0]
-    if len(inds) > 0:
-        bin_1_inds_US = np.concatenate((bin_1_inds_US, inds))
+%run /home/100/rlk100/Scripts/bayesian_analysis.py -file Table_2_reviewer_response.csv -suffix '_reviewer_response' -bayes_f bayes_factors_reviewer_response.csv
+bin_1_inds_US = []
+bin_2_inds_US = []
+bin_3_inds_US = []
+bin_1_inds_UCL = []
+bin_2_inds_UCL = []
+bin_3_inds_UCL = []
+for obj_ind in range(len(Obj_bayes_SpT[0])):
+    if RV_standard_info[Obj_bayes_SpT[0][obj_ind]][1] > 1.02:
+        bin_1_inds_US.append(obj_ind)
+    elif RV_standard_info[Obj_bayes_SpT[0][obj_ind]][1] < 0.78:
+        bin_3_inds_US.append(obj_ind)
+    else:
+        bin_2_inds_US.append(obj_ind)
+for obj_ind in range(len(Obj_bayes_SpT[1])):
+    if RV_standard_info[Obj_bayes_SpT[1][obj_ind]][1] > 1.02:
+        bin_1_inds_UCL.append(obj_ind)
+    elif RV_standard_info[Obj_bayes_SpT[1][obj_ind]][1] < 0.78:
+        bin_3_inds_UCL.append(obj_ind)
+    else:
+        bin_2_inds_UCL.append(obj_ind)
 
-for SpT in SpT_bin_2:
-    inds = np.where(np.array(Obj_bayes_SpT[0])==SpT)[0]
-    if len(inds) > 0:
-        bin_2_inds_US = np.concatenate((bin_2_inds_US, inds))
+bin_1_inds_US = np.array(bin_1_inds_US)
+bin_2_inds_US = np.array(bin_2_inds_US)
+bin_3_inds_US = np.array(bin_3_inds_US)
+bin_1_inds_UCL = np.array(bin_1_inds_UCL)
+bin_2_inds_UCL = np.array(bin_2_inds_UCL)
+bin_3_inds_UCL = np.array(bin_3_inds_UCL)
 
-for SpT in SpT_bin_3:
-    inds = np.where(np.array(Obj_bayes_SpT[0])==SpT)[0]
-    if len(inds) > 0:
-        bin_3_inds_US = np.concatenate((bin_3_inds_US, inds))
-
-for SpT in SpT_bin_1:
-    inds = np.where(np.array(Obj_bayes_SpT[1])==SpT)[0]
-    if len(inds) > 0:
-        bin_1_inds_UCL = np.concatenate((bin_1_inds_UCL, inds))
-
-for SpT in SpT_bin_2:
-    inds = np.where(np.array(Obj_bayes_SpT[1])==SpT)[0]
-    if len(inds) > 0:
-        bin_2_inds_UCL = np.concatenate((bin_2_inds_UCL, inds))
-
-for SpT in SpT_bin_3:
-    inds = np.where(np.array(Obj_bayes_SpT[1])==SpT)[0]
-    if len(inds) > 0:
-        bin_3_inds_UCL = np.concatenate((bin_3_inds_UCL, inds))
-
-bin_1_frac = np.array([0.46, 0.50, 0.54])
+bin_1_frac = np.array([0.50, 0.54, 0.58])
 bin_2_frac = np.array([0.38, 0.41, 0.44])
 bin_3_frac = np.array([0.34, 0.38, 0.42])
 (len(bin_1_inds_US)*0.31*bin_1_frac + len(bin_2_inds_US)*0.31*bin_2_frac + len(bin_3_inds_US)*0.31*bin_3_frac)/len(all_bayes[0])
