@@ -18,6 +18,7 @@ args = parse_inputs()
 Object = [[],[]]
 Disk_tag = [[],[]]
 SpT = [[],[]]
+SpT_err = [[],[]]
 H_alpha = [[],[]]
 H_alpha_variation = [[],[]]
 J_mag = [[],[]]
@@ -30,6 +31,11 @@ W3_mag = [[],[]]
 W3_mag_err = [[],[]]
 W4_mag = [[],[]]
 W4_mag_err = [[],[]]
+K_W3 = [[],[]]
+K_W3_err = [[],[]]
+K_W4 = [[],[]]
+K_W4_err = [[],[]]
+
 
 #read in current data
 print "Reading in current spreadsheet"
@@ -44,8 +50,13 @@ with open(args.input_file, 'rU') as f:
                 else:
                     reg_ind = 1
                 Object[reg_ind].append(row[0])
-                Disk_tag[reg_ind].append(row[-4])
-                SpT[reg_ind].append(row[-1])
+                Disk_tag[reg_ind].append(row[41])
+                SpT[reg_ind].append(float(row[30]))
+                SpT_err[reg_ind].append(float(row[31]))
+                K_W3[reg_ind].append(float(row[34]))
+                K_W3_err[reg_ind].append(float(row[35]))
+                K_W4[reg_ind].append(float(row[38]))
+                K_W4_err[reg_ind].append(float(row[39]))
                 J_mag[reg_ind].append(float(row[25]))
                 J_mag_err[reg_ind].append(float(row[26]))
                 K_mag[reg_ind].append(float(row[28]))
@@ -73,9 +84,10 @@ with open(args.obs_data, 'rU') as f:
                     reg_ind = 0
                 else:
                     reg_ind = 1
-                ind = Object[reg_ind].index(row[0])
-                H_alpha[reg_ind][ind] = float(row[7])
-                H_alpha_variation[reg_ind][ind] = float(row[8])
+                if row[0] in Object[reg_ind]:
+                    ind = Object[reg_ind].index(row[0])
+                    H_alpha[reg_ind][ind] = float(row[7])
+                    H_alpha_variation[reg_ind][ind] = float(row[8])
         if header == 0:
             header = 1
     f.close()
@@ -101,8 +113,8 @@ plt.clf()
 fig, (ax) = plt.subplots(1, 1)
 fig.set_size_inches(6,5)
 plt.axhline(y=0.0, color='k', ls='--')
-plt.errorbar((J_mag[0]-K_mag[0]), H_alpha[0], xerr=np.sqrt(np.square(J_mag_err[0])+np.square(K_mag_err[0])), yerr=H_alpha_variation[0], fmt='bo', label='Upper Scorpius')
-plt.errorbar((J_mag[1]-K_mag[1]), H_alpha[1], xerr=np.sqrt(np.square(J_mag_err[1])+np.square(K_mag_err[1])),yerr=H_alpha_variation[1], fmt='r^', label='Upper Centaurus-Lupus')
+plt.errorbar(SpT[0], H_alpha[0], xerr=SpT_err[0], yerr=H_alpha_variation[0], fmt='bo', label='Upper Scorpius')
+plt.errorbar(SpT[1], H_alpha[1], xerr=SpT_err[1], yerr=H_alpha_variation[1], fmt='r^', label='Upper Centaurus-Lupus')
 #plt.scatter((J_mag[0]-K_mag[0]), H_alpha[0], color='b', marker='o', label='Upper Scorpius')
 #plt.scatter((J_mag[1]-K_mag[1]), H_alpha[1], color='r', marker='^', label='Upper Centaurus-Lupus')
 plt.ylabel('EW(H'+r'$ \alpha $'+')')
@@ -118,8 +130,8 @@ plt.clf()
 fig, (ax) = plt.subplots(1, 1)
 fig.set_size_inches(6,5)
 plt.axhline(y=0.0, color='k', ls='--')
-plt.errorbar((K_mag[0]-W3_mag[0]), H_alpha[0], xerr=np.sqrt(np.square(W3_mag_err[0])+np.square(K_mag_err[0])), yerr=H_alpha_variation[0], fmt='bo', label='Upper Scorpius')
-plt.errorbar((K_mag[1]-W3_mag[1]), H_alpha[1], xerr=np.sqrt(np.square(W3_mag_err[1])+np.square(K_mag_err[1])),yerr=H_alpha_variation[1], fmt='r^', label='Upper Centaurus-Lupus')
+plt.errorbar(K_W3[0], H_alpha[0], xerr=K_W3_err[0], yerr=H_alpha_variation[0], fmt='bo', label='Upper Scorpius')
+plt.errorbar(K_W3[1], H_alpha[1], xerr=K_W3_err[1], yerr=H_alpha_variation[1], fmt='r^', label='Upper Centaurus-Lupus')
 #plt.scatter((J_mag[0]-K_mag[0]), H_alpha[0], color='b', marker='o', label='Upper Scorpius')
 #plt.scatter((J_mag[1]-K_mag[1]), H_alpha[1], color='r', marker='^', label='Upper Centaurus-Lupus')
 plt.ylabel('EW(H'+r'$ \alpha $'+')')
@@ -131,12 +143,13 @@ plt.xlabel('K-W3')
 plt.legend(loc='lower left')
 plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Resubmission_1/H_alpha_EW_variation_W3.eps', bbox_inches='tight', pad_inches = 0.02)
 
+'''
 plt.clf()
 fig, (ax1, ax2) = plt.subplots(2, 1,sharex=True)
 fig.set_size_inches(7,8)
 ax1.plot(J_K, ((1.1*J_K)-0.3),'k--')
-ax1.errorbar((J_mag[0]-K_mag[0]), (K_mag[0]-W3_mag[0]), xerr=np.sqrt(np.square(J_mag_err[0])+np.square(K_mag_err[0])), yerr=np.sqrt(np.square(K_mag_err[0])+np.square(W3_mag_err[0])), fmt='bo', label='Upper Scorpius')
-ax1.errorbar((J_mag[1]-K_mag[1]), (K_mag[1]-W3_mag[1]), xerr=np.sqrt(np.square(J_mag_err[1])+np.square(K_mag_err[1])), yerr=np.sqrt(np.square(K_mag_err[1])+np.square(W3_mag_err[1])), fmt='r^', label='Upper Centaurus-Lupus')
+ax1.errorbar(SpT[0], K_W3[0], xerr=SpT_err[0], yerr=K_W3_err[0], fmt='bo', label='Upper Scorpius')
+ax1.errorbar(SpT[1], K_W3[1], xerr=SpT_err[1], yerr=K_W3_err[1], fmt='r^', label='Upper Centaurus-Lupus')
 #ax1.scatter((J_mag[0]-K_mag[0]), (K_mag[0]-W3_mag[0]), color='b', marker='+', label='Upper Scorpius')
 #ax1.scatter((J_mag[1]-K_mag[1]), (K_mag[1]-W3_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
 ax1.set_ylabel('K-W3')
@@ -145,15 +158,28 @@ ax1.set_xlim([J_K_min,J_K_max])
 ax1.legend(loc='upper left')
 plt.setp([ax1.get_yticklabels()[::2]], visible=False)
 ax2.plot(J_K, ((2.08*J_K)-0.48),'k--')
-ax2.errorbar((J_mag[0]-K_mag[0]), (K_mag[0]-W4_mag[0]), xerr=np.sqrt(np.square(J_mag_err[0])+np.square(K_mag_err[0])), yerr=np.sqrt(np.square(K_mag_err[0])+np.square(W4_mag_err[0])), fmt='bo', label='Upper Scorpius')
-ax2.errorbar((J_mag[1]-K_mag[1]), (K_mag[1]-W4_mag[1]), xerr=np.sqrt(np.square(J_mag_err[1])+np.square(K_mag_err[1])), yerr=np.sqrt(np.square(K_mag_err[1])+np.square(W4_mag_err[1])), fmt='r^', label='Upper Centaurus-Lupus')
+ax2.errorbar(SpT[0], K_W4[0], xerr=SpT_err[0], yerr=K_W4_err[0], fmt='bo', label='Upper Scorpius')
+ax2.errorbar(SpT[1], K_W4[1], xerr=SpT_err[1], yerr=K_W4_err[1], fmt='r^', label='Upper Centaurus-Lupus')
 #ax2.scatter((J_mag[0]-K_mag[0]), (K_mag[0]-W4_mag[0]), color='b', marker='+', label='Upper Scorpius')
 #ax2.scatter((J_mag[1]-K_mag[1]), (K_mag[1]-W4_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
-ax2.set_ylabel('K-w4')
+ax2.set_ylabel('K-W4')
 ax2.set_xlabel('J-K')
 ax2.set_xlim([J_K_min,J_K_max])
 plt.setp([ax2.get_yticklabels()[-1]], visible=False)
 plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
+fig.subplots_adjust(hspace=0)
+plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Resubmission_1/color_color_plot_2.eps', bbox_inches='tight', pad_inches = 0.02)
+'''
+
+plt.clf()
+fig, (ax1) = plt.subplots(1, 1,sharex=True)
+ax1.plot(J_K, ((2.08*J_K)-0.48),'k--')
+ax1.errorbar(SpT[0], K_W4[0], xerr=SpT_err[0], yerr=K_W4_err[0], fmt='bo', label='Upper Scorpius')
+ax1.errorbar(SpT[1], K_W4[1], xerr=SpT_err[1], yerr=K_W4_err[1], fmt='r^', label='Upper Centaurus-Lupus')
+ax1.legend(loc='upper left')
+ax1.set_ylabel('K-W4')
+ax1.set_xlabel('J-K')
+ax1.set_xlim([J_K_min,J_K_max])
 fig.subplots_adjust(hspace=0)
 plt.savefig('/Users/rajikak/Dropbox/Reggie_PhD/Papers/Multiplicity_US_UCL_2018/Resubmission_1/color_color_plot_2.eps', bbox_inches='tight', pad_inches = 0.02)
 
@@ -162,18 +188,18 @@ fig, (ax1, ax2, ax3) = plt.subplots(3, 1,sharex=True)
 fig.set_size_inches(6,9)
 ax1.plot(J_K_W2_1, np.ones(len(J_K_W2_1))*0.21, 'k--')
 ax1.plot(J_K_W2_2, ((4.17*J_K_W2_2)-3.3762), 'k--')
-ax1.scatter((J_mag[0]-K_mag[0]), (K_mag[0]-W2_mag[0]), color='b', marker='+', label='Upper Scorpius')
-ax1.scatter((J_mag[1]-K_mag[1]), (K_mag[1]-W2_mag[1]), color='r', marker='^',label='Upper Centaurus-Lupus')
+ax1.scatter(SpT[0], (K_mag[0]-W2_mag[0]), color='b', marker='+', label='Upper Scorpius')
+ax1.scatter(SpT[1], (K_mag[1]-W2_mag[1]), color='r', marker='^',label='Upper Centaurus-Lupus')
 ax1.set_ylabel('K-W2')
 ax1.set_xlim([J_K_min,J_K_max])
 ax2.plot(J_K, ((1.1*J_K)-0.3),'k--')
-ax2.scatter((J_mag[0]-K_mag[0]), (K_mag[0]-W3_mag[0]), color='b', marker='+', label='Upper Scorpius')
-ax2.scatter((J_mag[1]-K_mag[1]), (K_mag[1]-W3_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
+ax2.scatter(SpT[0], (K_mag[0]-W3_mag[0]), color='b', marker='+', label='Upper Scorpius')
+ax2.scatter(SpT[1], (K_mag[1]-W3_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
 ax2.set_ylabel('K-W3')
 ax2.set_xlim([J_K_min,J_K_max])
 ax3.plot(J_K, ((2.08*J_K)-0.48),'k--')
-ax3.scatter((J_mag[0]-K_mag[0]), (K_mag[0]-W4_mag[0]), color='b', marker='+', label='Upper Scorpius')
-ax3.scatter((J_mag[1]-K_mag[1]), (K_mag[1]-W4_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
+ax3.scatter(SpT[0], (K_mag[0]-W4_mag[0]), color='b', marker='+', label='Upper Scorpius')
+ax3.scatter(SpT[1], (K_mag[1]-W4_mag[1]), color='r', marker='^', label='Upper Centaurus-Lupus')
 ax3.set_ylabel('K-w4')
 ax3.set_xlabel('J-K')
 ax3.set_xlim([J_K_min,J_K_max])
