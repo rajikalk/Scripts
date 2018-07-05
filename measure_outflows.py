@@ -106,7 +106,7 @@ if rank == 0:
         f.close()
     f = open(save_dir + output_file, 'w')
     if args.measure_disks == False:
-        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed, Unbound Mass, CoM dist \n')
+        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed, Unbound Mass, CoM dist, Mean speed \n')
     else:
         f.write('Lref ' + dir.split('_')[-1] + ': Time, Lz_1, Lz_2 \n')
     f.close()
@@ -170,12 +170,14 @@ for file in usable_files:
                 mass_1 = 0.0
                 speed_1 = 0.0
                 max_speed_1 = 0.0
+                mean_speed_1 = 0.0
                 mom_1 = 0.0
                 unbound_1 = 0.0
             else:
                 mass_1 = tube_1['cell_mass'][pos_pos].in_units('Msun').value
                 speed_1 = tube_1['velocity_magnitude'][pos_pos].in_units("km/s").value
                 max_speed_1 = np.max(speed_1)
+                mean_speed_1 = np.mean(speed_1)
                 mom_1 = speed_1*mass_1
                 kin = (tube_1['kinetic_energy'][pos_pos] * tube_1['cell_volume'][pos_pos]).in_units('erg')
                 pot = (tube_1['gpot'][pos_pos]*tube_1['cell_mass'][pos_pos]).in_units('erg')
@@ -191,12 +193,14 @@ for file in usable_files:
                 mass_2 = 0.0
                 speed_2 = 0.0
                 max_speed_2 = 0.0
+                mean_speed_2 = 0.0
                 mom_2 = 0.0
                 unbound_2 = 0.0
             else:
                 mass_2 = tube_2['cell_mass'][neg_pos].in_units('Msun').value
                 speed_2 = tube_2['velocity_magnitude'][neg_pos].in_units("km/s").value
                 max_speed_2 = np.max(speed_2)
+                mean_speed_2 = np.mean(speed_2)
                 mom_2 = speed_2*mass_2
                 kin = (tube_2['kinetic_energy'][neg_pos] * tube_2['cell_volume'][neg_pos]).in_units('erg')
                 pot = (tube_2['gpot'][neg_pos]*tube_2['cell_mass'][neg_pos]).in_units('erg')
@@ -214,6 +218,7 @@ for file in usable_files:
                 max_speed = abs(max_speed_1)
             else:
                 max_speed = abs(max_speed_2)
+            mean_speed = (mean_speed_1 + mean_speed_2)/2.
 
             #Calculate outflow momentum:
             mom = np.sum(mom_1) + np.sum(mom_2)
@@ -234,10 +239,10 @@ for file in usable_files:
                 unbound_mass = np.nan
             
             
-            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, "on rank", rit
+            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed, "on rank", rit
 
             #send data to rank 0 to append to write out.
-            write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist]
+            write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed]
         comm.send(write_data, dest=0, tag=2)
         print "Sent data", write_data, "from rank", rank
 
