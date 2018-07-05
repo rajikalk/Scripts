@@ -288,6 +288,12 @@ for it in range(len(positions)):
         plot_velocity_legend = False
         get_stdv = False
         standard_vel = 5.
+        check_annotate_time = False
+        annotate_time = False
+        title = ''
+        check_title = False
+        update_slice_field = False
+        slice_field = 'vkep'
         for slice_arg in slice_args:
             if get_stdv:
                 standard_vel = float(slice_arg)
@@ -297,14 +303,36 @@ for it in range(len(positions)):
             arg_list.append(slice_arg)
             if slice_arg == '-pvl':
                 plot_velocity_legend = True
+            if check_annotate_time and slice_arg == 'True':
+                annotate_time = True
+                check_annotate_time = False
+            if slice_arg == '-at':
+                check_annotate_time = True
+            if check_title:
+                title = slice_arg
+                check_title = False
+            if slice_arg == '-t':
+                check_title = True
+            if update_slice_field:
+                slice_field = slice_arg
+                update_slice_field = False
+            if slice_arg == '-f':
+                update_slice_field = True
         call(arg_list)
 
         pickle_file = save_dir + 'slice_pickle.pkl'
         file = open(pickle_file, 'r')
-        X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits = pickle.load(file)
+        X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits, time_string = pickle.load(file)
         file.close()
-        if "dens" in arg_list:
+        if slice_field == 'dens':
             plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-15, vmax=1.e-12), rasterized=True)#cmap=plt.cm.get_cmap('bwr_r')
+            axes_dict[ax_label].streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5, arrowstyle='-')
+            if annotate_time:
+                time_text = axes_dict[ax_label].text((np.min(xy[0])+0.01*(np.max(xy[0])-np.min(xy[0]))), (np.max(xy[1])-0.04*(np.max(xy[1])-np.min(xy[1]))), time_string, va="center", ha="left", color='w', fontsize=args.text_font)
+                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            title = axes_dict[ax_label].text(np.mean([np.min(xy[0]), np.max(xy[0])]), (np.max(xy[1])-0.08*(np.max(xy[1]))), title, va="center", ha="center", color='w', fontsize=(args.text_font+2))
+            title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [[np.min(xy[0]), np.max(xy[0])], [np.min(xy[1]), np.max(xy[1])]], annotate_field=part_info['particle_mass'])
         else:
             img_array = plt.get_cmap('brg')(field_grid/np.max(field_grid))
             alphas = np.clip(weight_field/(0.01*np.max(weight_field)), 0.0, 1.0)**(1./10.)
@@ -315,9 +343,8 @@ for it in range(len(positions)):
             #plot = axes_dict[ax_label].pcolormesh(xy[0], xy[1], field_grid, cmap=plt.cm.get_cmap('brg'), rasterized=True, vmin=0.0, vmax=2.0)#cmap=plt.cm.get_cmap('bwr_r')
             axes_dict[ax_label].imshow(back_img_array,origin='lower', extent=extent)
             plot = axes_dict[ax_label].imshow(img_array,origin='lower', vmin=0.0, vmax=2.0, extent=extent, cmap=plt.cm.brg)
-        axes_dict[ax_label].streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5, arrowstyle='-')
+            mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits)
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=limits, standard_vel=standard_vel)
-        mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits)
         axes_dict[ax_label].set_xlim(limits[0])
         axes_dict[ax_label].set_ylim(limits[1])
         #plot.set_clim([0.0, 2.0])
@@ -327,7 +354,7 @@ for it in range(len(positions)):
             line.set_color('white')
         if positions[it][0] == columns and args.share_colourbar == False:
             cbar = plt.colorbar(plot, pad=0.0)
-            if "dens" in arg_list:
+            if slice_field == 'dens':
                 cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=22, size=args.text_font)
             else:
                 cbar.set_label("Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", rotation=270, labelpad=22, size=args.text_font)
@@ -431,7 +458,7 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_ylim([1.e-4, 1.5e-1])
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             axes_dict[ax_label].legend(loc='best')
-        elif 'speed' in input_args[it]:
+        elif 'max' in input_args[it]:
             time = []
             speed = []
             for file_it in range(len(csv_files)):
@@ -452,6 +479,32 @@ for it in range(len(positions)):
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], speed[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Max. Speed (km/s)')
+            axes_dict[ax_label].set_xlim([0, 5000])
+            axes_dict[ax_label].set_ylim([1.e0, 1.e2])
+            axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
+            #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
+            #axes_dict[ax_label].legend(loc='best')
+        elif 'mean' in input_args[it]:
+            time = []
+            speed = []
+            for file_it in range(len(csv_files)):
+                header = 0
+                with open(csv_files[file_it], 'r') as file:
+                    time.append([])
+                    speed.append([])
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if header != 0:
+                            time_val = float(row[0])
+                            if time_val not in time[-1]:
+                                time[-1].append(time_val)
+                                s = float(row[-1])
+                                speed[-1].append(s)
+                        if header == 0:
+                            header = 1
+            for t in range(len(time)):
+                axes_dict[ax_label].semilogy(time[t], speed[t], linestyles[t], label=legend_labels[t])
+            axes_dict[ax_label].set_ylabel('Mean. Speed (km/s)')
             axes_dict[ax_label].set_xlim([0, 5000])
             axes_dict[ax_label].set_ylim([1.e0, 1.e2])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
