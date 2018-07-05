@@ -72,6 +72,7 @@ def main():
 
     print "Reading in current spreadsheet", args.input_file
     header = 0
+    reshape_len = -1
     with open(args.input_file, 'rU') as f:
         reader = csv.reader(f)
         for row in reader:
@@ -81,14 +82,19 @@ def main():
                 Object.append(row[0])
                 Region.append(row[1])
                 IR_excess.append(row[5])
-                Pref_template.append(row[14])
-                Temp_sptype.append(row[15])
-                if len(row) > 16:
-                    Obs = np.array(row[16:])
+                Pref_template.append(row[15]) #row[18])
+                Temp_sptype.append(row[16]) #row[19])
+                if len(row) > 17:
+                    Obs = np.array(row[17:])
                     Obs = np.delete(Obs, np.where(Obs==''))
+                    if reshape_len == -1:
+                        for ob in Obs:
+                            reshape_len = reshape_len + 1
+                            if '/' in ob and ob != Obs[0]:
+                                break
                     #if len(Obs) > 5:
                     #    Obs = np.reshape(Obs, (len(Obs)/5, 5))
-                    Obs = np.reshape(Obs, (len(Obs)/6, 6))
+                    Obs = np.reshape(Obs, (len(Obs)/reshape_len, reshape_len))
                     for ind_obs in Obs:
                         if '/' in ind_obs[0]:
                             new_format = '20' + ind_obs[0].split('/')[-1] + '-' + ind_obs[0].split('/')[-2] + '-' + ("%02d" % int(ind_obs[0].split('/')[-3]))
@@ -152,7 +158,6 @@ def main():
     sys.stdout.flush()
     CW.Barrier()
     for obj in inds:
-
         Pref_template_name = Pref_template[obj].split('_')[0]
         if np.isnan(Obj_bayes[obj]) and rank == rit:
             print "Doing object:", Object[obj], "on rank:", rank            
