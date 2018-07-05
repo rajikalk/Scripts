@@ -14,9 +14,9 @@ with open('Table_2.csv', 'rU') as f:
             Write_lines.append([])
             while counter < len(row):
                 if row[counter] != '':
-                    line = row[counter+1] + '&' + str((np.round(float(row[counter+2])*100.))/100.) + '&' + str((np.round(float(row[counter+3])*100.))/100.) + '\\'
+                    line = row[counter+1] + '&' + str((np.round(float(row[counter+2])*100.))/100.) + '&' + str((np.round(float(row[counter+3])*100.))/100.) + '&' + str((np.round(float(row[counter+5])*100.))/100.) + '\\'
                     Write_lines[-1].append(line)
-                counter = counter + 6
+                counter = counter + 7
         if header == 0:
             header =1
 f.close()
@@ -39,8 +39,8 @@ f.write('begin{table*}\n')
 f.write('    \centering\n')
 f.write('        \caption{Full list of objects observed in this survey with each epoch of data. The spectral type listed is the spectral type of the preferred template used for each object. The error on the radial velocity is the error from the cross-correlation and the template precision (see Table. 3 in Paper) added in quadrature.}\n')
 f.write('        \\')
-f.write('begin{tabular}{|c|c|c|c|c|c|c|c|}\n')
-f.write('            Object & Region & RA & DEC & Template SpT. & MJD & $v_r$ (km/s) & $\sigma_{v_r}$ (km/s) \\')
+f.write('begin{tabular}{|c|c|c|c|c|c|c|c|c|}\n')
+f.write('            Object & Region & RA & DEC & Template SpT. & MJD & $v_r$(km/s) & $\sigma_{v_r}$(km/s) & EW(H$\alpha$)(\AA)\\')
 f.write('\\')
 f.write('\n')
 f.write('                \\hline\n')
