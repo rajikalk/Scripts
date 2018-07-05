@@ -79,6 +79,7 @@ def parse_inputs():
     parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
     parser.add_argument("-ni", "--non_ideal", help="do you want to plot the non-ideal regimes we shoudl think about", default=False, type=bool)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
+    parser.add_argument("-proj_ax", "--projection_axis", help="defaults to 'xz' and takes into account any projection orientation. Or can be set to xy", default="xz", type=str)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -141,8 +142,6 @@ for fit in range(len(usable_files)):
         print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit-1]
 
     if args.non_ideal == 'True':
-        args.non_ideal = true
-    if args.non_ideal:
         inds = np.where((dd['temperature']<281)&(dd['temperature']>279))
         times_str = str(m_times[fit])
         plt.clf()
@@ -159,8 +158,6 @@ for fit in range(len(usable_files)):
         print "created file:", save_name
 
     if args.slice_plot == 'True':
-        args.slice_plot = True
-    if args.slice_plot:
         print "MAKING SLICE PLOT WIHT FILE:", file
         n_bins = np.ceil(np.sqrt((args.resolution/2.)**2. + (args.resolution/2.)**2.))
         #myf.set_n_bins(n_bins)
@@ -189,6 +186,8 @@ for fit in range(len(usable_files)):
             
             fig, ax, xy, field_grid, weight_field = mym.sliceplot(ds, X, Y, args.field, resolution=args.resolution, center=args.center, units=args.c_units, weight=args.weight_field, log=True, cbar_label='Density (gcm$^{-3}$)', cmap=plt.cm.gist_heat, vmin=args.colourbar_min, vmax=args.colourbar_max)
         f = h5py.File(movie_file, 'r')
+        time_stamp = (ds.current_time.value - np.min(dd['particle_creation_time'].value))/yt.units.yr.in_units('s').value
+        time_string = '$t=$'+str(int(np.round(time_stamp/1000.)*1000.)) + 'yr'
         dim = np.shape(f['dens_slice_xy'])[0]
         xmin_full = f['minmax_xyz'][0][0]/yt.units.AU.in_units('cm').value
         xmax = f['minmax_xyz'][0][1]/yt.units.AU.in_units('cm').value
@@ -238,13 +237,11 @@ for fit in range(len(usable_files)):
             print "CREATING PICKLE"
             pickle_file = save_dir + 'slice_pickle.pkl'
             file = open(pickle_file, 'w+')
-            pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits),file)
+            pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits, time_string),file)
             file.close()
             print "Created Pickle"
 
     if args.profile_plot == 'True':
-        args.profile_plot = True
-    if args.profile_plot:
         myf.set_center(args.center)
         myf.set_coordinate_system('spherical')
         print "Doing Profile Plot"
@@ -296,8 +293,6 @@ for fit in range(len(usable_files)):
             print "created profile pickle:", pickle_file
 
     if args.b_mag == 'True':
-        args.b_mag = True
-    if args.b_mag:
         files = sorted(glob.glob(path + '*_plt_cnt*'))
         times = mym.generate_frame_times(files, args.time_step, start_time=0, end_time=args.endtime)
         plot_files = mym.find_files(times, files)
@@ -354,8 +349,6 @@ for fit in range(len(usable_files)):
             print "created force comp pickle:", pickle_file
 
     if args.outflow_pickle == 'True':
-        args.outflow_pickle = True
-    if args.outflow_pickle:
         pickle_file = save_dir + "outflow_quantities.pkl"
         mass = []
         maximum_speed = []
@@ -423,8 +416,6 @@ for fit in range(len(usable_files)):
         file.close()
 
     if args.yt_slice == 'True':
-        args.yt_slice = True
-    if args.yt_slice:
         title_parts = args.title.split('_')
         title = ''
         for part in title_parts:
@@ -432,8 +423,10 @@ for fit in range(len(usable_files)):
                 title = title + part + ' '
             else:
                 title = title + part
-        
-        if ('all', u'particle_mass') in ds.field_list:
+
+        if args.projection_axis == 'xy':
+            part_info = mym.get_particle_data(file, axis='xy')
+        elif ('all', u'particle_mass') in ds.field_list:
             part_info = mym.get_particle_data(file)
             part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
             part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
@@ -450,12 +443,15 @@ for fit in range(len(usable_files)):
             y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
             L = [1, y_val, 0]
             print "SET PROJECTION ORIENTATION L=", L
+        elif args.projection_axis == 'xy':
+            L = [0.0, 0.0, 1.0]
         else:
             pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
             L = [-1*pos_vec[-1], pos_vec[0]]
             L.append(0.0)
             if L[0] > 0:
                 L = [-1*L[0], -1*L[1], 0.0]
+        myf.set_normal(L)
         if args.ax_lim != None:
             if args.image_center == 0 or ('all', u'particle_mass') not in ds.field_list:
                 xlim = [-1*args.ax_lim, args.ax_lim]
@@ -469,10 +465,11 @@ for fit in range(len(usable_files)):
         x_width = (xlim[1] -xlim[0])
         y_width = (ylim[1] -ylim[0])
         thickness = yt.YTArray(args.slice_thickness, 'AU')
-        if args.field == "Relative_Keplerian_Velocity":
-            field = "dens"
-        else:
-            field = args.field
+        field = args.field
+        for field_ind in ds.derived_field_list:
+            if field_ind[1] == args.field:
+                full_field = field_ind
+        temp = dd[full_field]
         temp = dd['velx']
         temp = dd['vely']
         temp = dd['velz']
@@ -480,16 +477,30 @@ for fit in range(len(usable_files)):
             temp = dd['particle_posx']
             temp = dd['particle_posy']
         temp = dd['velocity_magnitude']
+        del temp
 
         if fit == 0 or usable_files[fit] != usable_files[fit-1]:
             L = np.array(L)
-            proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-            image_data = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm'))#.T#[:][::-1]
-            velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
-            vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
-            magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
-            magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
-            mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm'))#.T#[:][::-1]
+            if args.projection_axis == 'xz':
+                proj = yt.OffAxisProjectionPlot(ds, L, [field, 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+                image_data = (proj.frb.data[full_field]/thickness.in_units('cm'))#.T#[:][::-1]
+                velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm'))#.T#[:][::-1]
+                velx_full = velx_full/mass
+                vely_full = vely_full/mass
+                magx = magx/mass
+                magy = magy/mass
+            else:
+                proj = yt.OffAxisProjectionPlot(ds, L, [field, 'velx', 'vely', 'magx', 'magy', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+                image_data = (proj.frb.data[full_field]/thickness.in_units('cm'))#.T#[:][::-1]
+                velx_full = (proj.frb.data[('flash', u'velx')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                vely_full = (proj.frb.data[('flash', u'vely')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                magx = (proj.frb.data[('flash', u'magx')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                magy = (proj.frb.data[('flash', u'magy')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm'))#.T#[:][::-1]
             '''
             if np.median(image_data[200:600,400]) > 1.e-15:
                 image_data = image_data.T
@@ -499,11 +510,7 @@ for fit in range(len(usable_files)):
                 magy = magy.T
                 mass = mass.T
             '''
-
-        velx_full = velx_full/mass
-        vely_full = vely_full/mass
-        magx = magx/mass
-        magy = magy/mass
+        del proj
 
         res = np.shape(image_data)[0]
 
@@ -537,7 +544,7 @@ for fit in range(len(usable_files)):
 
         if args.pickle_dump == False:
             fig, ax = plt.subplots()
-            plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-16, vmax=1.e-14), rasterized=True)
+            plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args.colourbar_min, vmax=args.colourbar_max), rasterized=True)
             plt.gca().set_aspect('equal')
             cbar = plt.colorbar(plot, pad=0.0)
             cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
@@ -555,10 +562,11 @@ for fit in range(len(usable_files)):
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             if args.save_name == None:
-                save_image_name = save_dir + "yt_slice.eps"
+                save_image_name = save_dir + "yt_slice"
             else:
-                save_image_name = args.save_name + ".eps"
-            plt.savefig(save_image_name, format='eps', bbox_inches='tight')
+                save_image_name = args.save_name
+            plt.savefig(save_image_name+'.eps', format='eps', bbox_inches='tight')
+            plt.savefig(save_image_name+'.pdf', format='pdf', bbox_inches='tight')
             print "SAVED PLOT AS", save_image_name
         else:
             args_dict = {}
@@ -609,9 +617,7 @@ if args.measure_disks:
         ds = yt.load(file, particle_filename=part_file)
 '''
 
-if args.force_comp == 'True':
-    args.force_comp = True
-if args.force_comp:
+if args.force_comp  == 'True':
     field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
     times = [1000.0, 2000.0, 3000.0, 4000.0, 5000.0]
@@ -704,8 +710,6 @@ if args.force_comp:
         print "created force comp pickle:", pickle_file
 
 if args.plot_outflows == 'True':
-    args.plot_outflows = True
-if args.plot_outflows:
     files = glob.glob('/home/100/rlk100/Paper_plots/Outflows/*/outflow*')
     fig = plt.figure()
     gs = gridspec.GridSpec(3, 1)
@@ -762,8 +766,6 @@ if args.plot_outflows:
     print "Created image", image_name
 
 if args.separation == 'True':
-    args.separation = True
-if args.separation:
     #image_name = save_dir + "separation"
     image_name = save_dir + "binary_system_time_evolution"
     files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0//sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
@@ -852,9 +854,9 @@ if args.separation:
     #plt.savefig(image_name + '.pdf', bbox_inches='tight')
     #print "Created image", image_name
 
-#if args.total_mass_of_system == 'True':
+    #if args.total_mass_of_system == 'True':
     #args.total_mass_of_system = True
-#if args.total_mass_of_system:
+    #if args.total_mass_of_system:
     #legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
     #linestyles = ['k-', 'b--', 'r-.']
     #image_name = save_dir + "total_mass"
