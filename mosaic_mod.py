@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from mpi4py import MPI
+from mpi4py.MPI import COMM_WORLD as CW
 import h5py
 import numpy as np
 import numpy.ma as ma
@@ -15,8 +17,6 @@ import os
 from matplotlib import transforms
 import glob
 import my_module as mym
-from mpi4py import MPI
-from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import matplotlib.patheffects as path_effects
 import yt
@@ -148,16 +148,15 @@ def sim_info(path, file, args):
             type = "slice"
         annotate_freq = ((xmax/cl) - (xmin/cl))/31.
     except:
-        part_file = file[:-12] + 'part' + file[-5:]
-        f = yt.load(file, particle_filename=part_file)
-        dd = f.all_data()
+        f = h5py.File(file, 'r')
         if has_sinks(f):
-            racc = np.min(dd['dx'].in_units('au').value)*2.5
+            racc = f[f.keys()[18]][109][-1]/yt.units.AU.in_units('cm').value
         else:
             racc = 0.0
-        for key in f.field_list:
-            if args.field in key:
-                field = key
+        f.close()
+        part_file = file[:-12] + 'part' + file[-5:]
+        f = yt.load(file, particle_filename=part_file)
+        field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
         dim = 800
         zoom_cell = 0.0
         if args.ax_lim == None:
@@ -254,500 +253,505 @@ def rainbow_text(x,y,ls,lc,**kw):
         t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
 
 #=======MAIN=======
-#args = parse_inputs()
+def main():
+    rank = CW.Get_rank()
+    size = CW.Get_size()
+    args = parse_inputs()
+    prev_args = args
+    print "Starting mosaic_mod_script on rank", rank
 
-#def main():
-    
-rank = CW.Get_rank()
-size = CW.Get_size()
-args = parse_inputs()
-prev_args = args
+    # Read in directories:
+    input_file = args.input_file
+    save_dir = args.save_directory
+    if os.path.exists(save_dir) == False:
+        os.makedirs(save_dir)
 
-# Read in directories:
-input_file = args.input_file
-save_dir = args.save_directory
-if os.path.exists(save_dir) == False:
-    os.makedirs(save_dir)
+    # Read in input file
+    print "Reading in input mosaic file on rank", rank
+    positions = []
+    paths = []
+    args_dict = []
+    with open(input_file, 'rU') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if row[0] == 'Grid_inputs:':
+                glr = float(row[1])
+                grl = float(row[2])
+                glw = float(row[3])
+                ghspace = float(row[4])
+            elif row[0][0] != '#':
+                positions.append((int(row[0]), int(row[1])))
+                paths.append(row[2])
+                dict = ""
+                for col in row[3:]:
+                    dict = dict + col
+                    if col != row[-1]:
+                        dict = dict + ','
+                dict = ast.literal_eval(dict)
+                args_temp = argparse.Namespace(**vars(args))
+                for key in dict.keys():
+                    if key in args:
+                        exec("args_temp."+ key + " = " + "str(dict[key])")
+                args_dict.append(args_temp)
+                del args_temp
+                args = prev_args
 
-#read in input file
-positions = []
-paths = []
-args_dict = []
-with open(input_file, 'rU') as f:
-    reader = csv.reader(f)
-    for row in reader:
-        if row[0] == 'Grid_inputs:':
-            glr = float(row[1])
-            grl = float(row[2])
-            glw = float(row[3])
-            ghspace = float(row[4])
-        elif row[0][0] != '#':
-            positions.append((int(row[0]), int(row[1])))
-            paths.append(row[2])
-            dict = ""
-            for col in row[3:]:
-                dict = dict + col
-                if col != row[-1]:
-                    dict = dict + ','
-            dict = ast.literal_eval(dict)
-            args_temp = argparse.Namespace(**vars(args))
-            for key in dict.keys():
-                if key in args:
-                    exec("args_temp."+ key + " = " + "str(dict[key])")
-            args_dict.append(args_temp)
-            del args_temp
-            args = prev_args
+    positions = np.array(positions)
 
-positions = np.array(positions)
+    c = define_constants()
+    mym.set_global_font_size(args.text_font)
+    files = []
+    simfo = []
+    X = []
+    Y = []
+    X_vel = []
+    Y_vel = []
+    sim_files = []
+    for pit in range(len(paths)):
+        fs = get_files(paths[pit], args_dict[pit])
+        files.append(fs)
 
-c = define_constants()
-mym.set_global_font_size(args.text_font)
-files = []
-simfo = []
-X = []
-Y = []
-X_vel = []
-Y_vel = []
-sim_files = []
-for pit in range(len(paths)):
-    fs = get_files(paths[pit], args_dict[pit])
-    files.append(fs)
+        #print "paths =", paths
+        #print "fs =", fs
+        #print "args_dict =", args_dict
+        sfo = sim_info(paths[pit], fs[-1], args_dict[pit])
+        simfo.append(sfo)
 
-    #print "paths =", paths
-    #print "fs =", fs
-    #print "args_dict =", args_dict
-    sfo = sim_info(paths[pit], fs[-1], args_dict[pit])
-    simfo.append(sfo)
-
-    if args_dict[pit].yt_proj == False:
-        x, y, x_vel, y_vel, cl = mym.initialise_grid(files[pit][-1], zoom_times=args_dict[pit].zoom_times)
-        X.append(x)
-        Y.append(y)
-        X_vel.append(x_vel)
-        Y_vel.append(y_vel)
-    else:
-        x = np.linspace(sfo['xmin'], sfo['xmax'], sfo['dimension'])
-        y = np.linspace(sfo['ymin'], sfo['ymax'], sfo['dimension'])
-        x, y  = np.meshgrid(x, y)
-                
-        annotate_space = (simfo[pit]['xmax'] - simfo[pit]['xmin'])/31.
-        x_ind = []
-        y_ind = []
-        counter = 0
-        while counter < 31:
-            val = annotate_space*counter + annotate_space/2. + simfo[pit]['xmin']
-            x_ind.append(int(val))
-            y_ind.append(int(val))
-            counter = counter + 1
-        x_vel, y_vel = np.meshgrid(x_ind, y_ind)
-        if args_dict[pit].projection_orientation != None:
-            y_val = 1./np.tan(np.deg2rad(float(args_dict[pit].projection_orientation)))
-            L = [1, y_val, 0]
+        if args_dict[pit].yt_proj == False:
+            x, y, x_vel, y_vel, cl = mym.initialise_grid(files[pit][-1], zoom_times=args_dict[pit].zoom_times)
+            X.append(x)
+            Y.append(y)
+            X_vel.append(x_vel)
+            Y_vel.append(y_vel)
         else:
-            if has_particles == False or len(dd['particle_posx']) == 1:
-                L = [0.0, 1.0, 0.0]
-            else:
-                pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
-                L = [-1*pos_vec[-1], pos_vec[0]]
-                L.append(0.0)
-                if L[0] > 0:
-                    L = [-1*L[0], -1*L[1], 0.0]
-        print "SET PROJECTION ORIENTATION L=", L
-        X.append(x)
-        Y.append(y)
-        X_vel.append(x_vel)
-        Y_vel.append(y_vel)
-    if rank == 0:
-        print "shape of x, y", np.shape(x), np.shape(y)
-
-    if args_dict[pit].yt_proj == False and args_dict[pit].image_center != 0:
-        sim_fs = sorted(glob.glob(paths[pit] + 'WIND_hdf5_plt_cnt*'))
-    elif args_dict[pit].yt_proj != False and args_dict[pit].image_center != 0:
-        sim_fs = files
-    else:
-        sim_fs = []
-    sim_files.append(sim_fs)
-
-# Initialise Grid and build lists
-if args.plot_time != None:
-    m_times = [args.plot_time]
-else:
-    m_times = mym.generate_frame_times(files[0], args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
-no_frames = len(m_times)
-m_times = m_times[args.start_frame:]
-sys.stdout.flush()
-CW.Barrier()
-
-usable_files = []
-usable_sim_files = []
-for pit in range(len(paths)):
-    usable_fs = mym.find_files(m_times, files[pit])
-    usable_files.append(usable_fs)
-    if args_dict[pit].image_center != 0 and args_dict[pit].yt_proj == False:
-        usable_sfs = mym.find_files(m_times, sim_files[pit])
-        usable_sim_files.append(usable_fs)
-        del sim_files[pit]
-    else:
-        usable_sim_files.append([])
-sys.stdout.flush()
-CW.Barrier()
-frames = range(args.start_frame, no_frames)
-
-sink_form_time = []
-for pit in range(len(paths)):
-    sink_form = mym.find_sink_formation_time(files[pit])
-    print "sink_form_time", sink_form_time
-    sink_form_time.append(sink_form)
-del files
-
-# Define colourbar bounds
-cbar_max = args.colourbar_max
-cbar_min = args.colourbar_min
-
-if args.axis == 'xy':
-    y_int = 1
-else:
-    y_int = 2
-
-sys.stdout.flush()
-CW.Barrier()
-rit = args.working_rank
-for frame_val in range(len(frames)):
-    if rank == rit:
-        time_val = m_times[frame_val]
-        plt.clf()
-        columns = np.max(positions[:,0])
-        rows = np.max(positions[:,1])
-
-        width = float(columns)*(14.5/3.)
-        height = float(rows)*(17./4.)
-        fig =plt.figure(figsize=(width, height))
-        
-        gs_left = gridspec.GridSpec(rows, columns-1)
-        gs_right = gridspec.GridSpec(rows, 1)
-
-        gs_left.update(right=glr, wspace=glw, hspace=ghspace)
-        gs_right.update(left=grl, hspace=ghspace)
-        
-        axes_dict = {}
-        counter = 1
-
-        for pit in range(len(paths)):
+            x = np.linspace(sfo['xmin'], sfo['xmax'], sfo['dimension'])
+            y = np.linspace(sfo['ymin'], sfo['ymax'], sfo['dimension'])
+            x, y  = np.meshgrid(x, y)
             
-            title_parts = args_dict[pit].title.split('_')
-            title = ''
-            for part in title_parts:
-                if part != title_parts[-1]:
-                    title = title + part + ' '
-                else:
-                    title = title + part
-        
-            ax_label = 'ax' + str(counter)
-            yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-            if positions[pit][0] == 1 and positions[pit][1] == 1:
-                if columns > 1:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_left[0,0])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                else:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_right[0,0])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-            elif positions[pit][0] != columns:
-                if args.share_x and args.share_y:
-                    if yit >= len(axes_dict):
-                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
-                        #print "ADDED SUBPLOT:", counter, "on rank", rank
-                    else:
-                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
-                        #print "ADDED SUBPLOT:", counter, "on rank", rank
-                elif args.share_x:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[it][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                elif args.share_y and positions[pit][0]!=1:
-                    yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                    axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                elif args.share_y:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                else:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
+            annotate_space = (simfo[pit]['xmax'] - simfo[pit]['xmin'])/31.
+            x_ind = []
+            y_ind = []
+            counter = 0
+            while counter < 31:
+                val = annotate_space*counter + annotate_space/2. + simfo[pit]['xmin']
+                x_ind.append(int(val))
+                y_ind.append(int(val))
+                counter = counter + 1
+            x_vel, y_vel = np.meshgrid(x_ind, y_ind)
+            if args_dict[pit].projection_orientation != None:
+                y_val = 1./np.tan(np.deg2rad(float(args_dict[pit].projection_orientation)))
+                L = [1, y_val, 0]
             else:
-                if args.share_x and args.share_y:
-                    yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                    axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                elif args.share_x:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
-                elif args.share_y:
-                    yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                    axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit]])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
+                if has_particles == False or len(dd['particle_posx']) == 1:
+                    L = [0.0, 1.0, 0.0]
                 else:
-                    axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0])})
-                    #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+                    L = [-1*pos_vec[-1], pos_vec[0]]
+                    L.append(0.0)
+                    if L[0] > 0:
+                        L = [-1*L[0], -1*L[1], 0.0]
+            print "SET PROJECTION ORIENTATION L=", L
+            X.append(x)
+            Y.append(y)
+            X_vel.append(x_vel)
+            Y_vel.append(y_vel)
+        if rank == 0:
+            print "shape of x, y", np.shape(x), np.shape(y)
 
-            counter = counter + 1
-            axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
+        if args_dict[pit].yt_proj == False and args_dict[pit].image_center != 0:
+            sim_fs = sorted(glob.glob(paths[pit] + 'WIND_hdf5_plt_cnt*'))
+        elif args_dict[pit].yt_proj != False and args_dict[pit].image_center != 0:
+            sim_fs = files
+        else:
+            sim_fs = []
+        sim_files.append(sim_fs)
+
+    # Initialise Grid and build lists
+    if args.plot_time != None:
+        m_times = [args.plot_time]
+    else:
+        m_times = mym.generate_frame_times(files[0], args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+    no_frames = len(m_times)
+    m_times = m_times[args.start_frame:]
+    sys.stdout.flush()
+    CW.Barrier()
+
+    usable_files = []
+    usable_sim_files = []
+    for pit in range(len(paths)):
+        usable_fs = mym.find_files(m_times, files[pit])
+        usable_files.append(usable_fs)
+        if args_dict[pit].image_center != 0 and args_dict[pit].yt_proj == False:
+            usable_sfs = mym.find_files(m_times, sim_files[pit])
+            usable_sim_files.append(usable_fs)
+            del sim_files[pit]
+        else:
+            usable_sim_files.append([])
+    sys.stdout.flush()
+    CW.Barrier()
+    frames = range(args.start_frame, no_frames)
+
+    sink_form_time = []
+    for pit in range(len(paths)):
+        sink_form = mym.find_sink_formation_time(files[pit])
+        print "sink_form_time", sink_form_time
+        sink_form_time.append(sink_form)
+    del files
+
+    # Define colourbar bounds
+    cbar_max = args.colourbar_max
+    cbar_min = args.colourbar_min
+
+    if args.axis == 'xy':
+        y_int = 1
+    else:
+        y_int = 2
+
+    sys.stdout.flush()
+    CW.Barrier()
+    rit = args.working_rank
+    for frame_val in range(len(frames)):
+        if rank == rit:
+            time_val = m_times[frame_val]
+            plt.clf()
+            columns = np.max(positions[:,0])
+            rows = np.max(positions[:,1])
+
+            width = float(columns)*(14.5/3.)
+            height = float(rows)*(17./4.)
+            fig =plt.figure(figsize=(width, height))
             
+            gs_left = gridspec.GridSpec(rows, columns-1)
+            gs_right = gridspec.GridSpec(rows, 1)
 
-            if args_dict[pit].yt_proj and args_dict[pit].plot_time==None and os.path.isfile(paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
-                pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-                print "USING PICKLED FILE:", pickle_file
-                file = open(pickle_file, 'r')
-                #weight_fieldstuff = pickle.load(file)
-                X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val, xabel, yabel = pickle.load(file)
+            gs_left.update(right=glr, wspace=glw, hspace=ghspace)
+            gs_right.update(left=grl, hspace=ghspace)
+            
+            axes_dict = {}
+            counter = 1
+
+            for pit in range(len(paths)):
                 
-                '''
-                X[pit], Y[pit], image, magx, magy = stuff[:5]
-                X_vel[pit], Y_vel[pit], velx, vely = stuff[5:9]
-                xlim, ylim = stuff[9:11]
-                has_particles = stuff[11]
-                part_info = stuff[12]
-                simfo[pit] = stuff[13]
-                time_val = stuff[14]
-                xabel = stuff[15]
-                yabel = stuff[16]
-                '''
-                #file_time = stuff[17]
-                file.close()
-
-            else:
-                time_val = m_times[frame_val]
-                if args_dict[pit].yt_proj:
-                    file = usable_files[pit][frame_val]
-                    part_file = file[:-12] + 'part' + file[-5:]
-                    f = yt.load(file, particle_filename=part_file)
-                    dd = f.all_data()
-                    #file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
-                else:
-                    f = h5py.File(usable_files[pit][frame_val], 'r')
-                    #file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time[pit]
-                print "FILE =", usable_files[pit][frame_val]
-                has_particles = has_sinks(f)
-                if has_particles:
-                    if args.yt_proj == False:
-                        L=None
+                title_parts = args_dict[pit].title.split('_')
+                title = ''
+                for part in title_parts:
+                    if part != title_parts[-1]:
+                        title = title + part + ' '
                     else:
-                        if args.projection_orientation != None:
-                            y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-                            L = [1, y_val, 0]
+                        title = title + part
+            
+                ax_label = 'ax' + str(counter)
+                yit = np.where(positions[:,1] == positions[pit][1])[0][0]
+                if positions[pit][0] == 1 and positions[pit][1] == 1:
+                    if columns > 1:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[0,0])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    else:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[0,0])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                elif positions[pit][0] != columns:
+                    if args.share_x and args.share_y:
+                        if yit >= len(axes_dict):
+                            axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
+                            #print "ADDED SUBPLOT:", counter, "on rank", rank
                         else:
-                            if has_particles == False or len(dd['particle_posx']) == 1:
-                                L = [0.0, 1.0, 0.0]
-                            else:
-                                pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
-                                L = [-1*pos_vec[-1], pos_vec[0]]
-                                L.append(0.0)
-                                if L[0] > 0:
-                                    L = [-1*L[0], -1*L[1], 0.0]
-                    print "SET PROJECTION ORIENTATION L=", L
-                    part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
-                else:
-                    part_info = {}
-                center_vel = [0.0, 0.0, 0.0]
-                if args_dict[pit].image_center != 0 and has_particles:
-                    original_positions = [X[pit], Y[pit], X_vel[pit], y_vel[pit]]
-                    x_pos = np.round(part_info['particle_position'][0][args_dict[pit].image_center - 1]/cl)*cl
-                    y_pos = np.round(part_info['particle_position'][1][args_dict[pit].image_center - 1]/cl)*cl
-                    pos = np.array([part_info['particle_position'][0][args_dict[pit].image_center - 1], part_info['particle_position'][1][args_dict[pit].image_center - 1]])
-                    X[pit] = X[pit] + x_pos
-                    Y[pit] = Y[pit] + y_pos
-                    X_vel[pit] = X_vel[pit] + x_pos
-                    Y_vel[pit] = Y_vel[pit] + y_pos
-                    if args_dict[pit].yt_proj == False:
-                        sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
+                            axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
+                            #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    elif args.share_x:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[it][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    elif args.share_y and positions[pit][0]!=1:
+                        yit = np.where(positions[:,1] == positions[pit][1])[0][0]
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    elif args.share_y:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
                     else:
-                        sim_file = part_file
-                    f.close()
-                    f = h5py.File(sim_file, 'r')
-                    if len(part_info['particle_mass']) == 1:
-                        part_ind = 0
-                    else:
-                        min_dist = 1000.0
-                        for part in range(len(part_info['particle_mass'])):
-                            temp_pos = np.array([f[f.keys()[11]][part][13]/c['au'], f[f.keys()[11]][part][13+y_int]/c['au']])
-                            dist = np.sqrt(np.abs(np.diff((temp_pos - pos)**2)))[0]
-                            if dist < min_dist:
-                                min_dist = dist
-                                part_ind = part
-                    
-                    center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
-                    f.close()
-                    f = h5py.File(usable_files[pit][frame_val], 'r')
-                xabel, yabel, xlim, ylim = image_properties(X[pit], Y[pit], args_dict[pit], simfo[pit])
-                if args_dict[pit].axis == 'xy':
-                    center_vel=center_vel[:2]
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
                 else:
-                    center_vel=center_vel[::2]
+                    if args.share_x and args.share_y:
+                        yit = np.where(positions[:,1] == positions[pit][1])[0][0]
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    elif args.share_x:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    elif args.share_y:
+                        yit = np.where(positions[:,1] == positions[pit][1])[0][0]
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+                    else:
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0])})
+                        #print "ADDED SUBPLOT:", counter, "on rank", rank
+
+                counter = counter + 1
+                axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
                 
-                if args_dict[pit].ax_lim != None:
-                    if has_particles and args_dict[pit].image_center != 0:
-                        xlim = [-1*args_dict[pit].ax_lim + part_info['particle_position'][0][args_dict[pit].image_center - 1], args_dict[pit].ax_lim + part_info['particle_position'][0][args_dict[pit].image_center - 1]]
-                        ylim = [-1*args_dict[pit].ax_lim + part_info['particle_position'][1][args_dict[pit].image_center - 1], args_dict[pit].ax_lim + part_info['particle_position'][1][args_dict[pit].image_center - 1]]
-                    else:
-                        xlim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
-                        ylim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
 
-                if args_dict[pit].yt_proj == False:
-                    image = get_image_arrays(f, simfo[pit]['field'], simfo[pit], args_dict[pit], X[pit], Y[pit])
-                    magx = get_image_arrays(f, 'mag'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
-                    magy = get_image_arrays(f, 'mag'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
-                    x_pos_min = int(np.round(np.min(X[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
-                    y_pos_min = int(np.round(np.min(Y[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
-                    if np.shape(f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]) == (2048, 2048):
-                        velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]]
-                    elif args_dict[pit].axis == 'xy':
-                        velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0]]
-                    else:
-                        velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:]]
-                    velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X[pit], velocity_data[0], velocity_data[1], center_vel=center_vel)
-                else:
-                    if args_dict[pit].image_center == 0 or has_particles == False:
-                        center_pos = np.array([0.0, 0.0, 0.0])
-                    else:
-                        center_pos = np.array([dd['particle_posx'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posy'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posz'][args_dict[pit].image_center-1].in_units('AU')])
-                    x_width = (xlim[1] -xlim[0])
-                    y_width = (ylim[1] -ylim[0])
-                    thickness = yt.YTArray(args.slice_thickness, 'AU')
-
-                    temp = dd['velx']
-                    temp = dd['vely']
-                    temp = dd['velz']
-                    if has_particles:
-                        temp = dd['particle_posx']
-                        temp = dd['particle_posy']
-                    temp = dd['velocity_magnitude']
-                        
-                    del temp
-                    
-                    proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-                    image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
-                    velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                    vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                    magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                    magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                    mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
-                    '''
-                    if np.median(image[200:600,400]) > 5.e-15:
-                        image = image.T
-                        velx_full = velx_full.T
-                        vely_full = vely_full.T
-                        magx = magx.T
-                        magy = magy.T
-                        mass = mass.T
-                    '''
-                    velx_full = velx_full/mass
-                    vely_full = vely_full/mass
-                    magx = magx/mass
-                    magy = magy/mass
-                    del mass
-                        
-                    velx, vely = mym.get_quiver_arrays(0.0, 0.0, X[pit], velx_full, vely_full, center_vel=center_vel)
-                    del velx_full
-                    del vely_full
-
+                if args_dict[pit].yt_proj and args_dict[pit].plot_time==None and os.path.isfile(paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
                     pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-                    file = open(pickle_file, 'w+')
-                    import pdb
-                    pdb.set_trace()
-                    pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
+                    print "USING PICKLED FILE:", pickle_file
+                    file = open(pickle_file, 'r')
+                    #weight_fieldstuff = pickle.load(file)
+                    X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val, xabel, yabel = pickle.load(file)
+                    
+                    '''
+                    X[pit], Y[pit], image, magx, magy = stuff[:5]
+                    X_vel[pit], Y_vel[pit], velx, vely = stuff[5:9]
+                    xlim, ylim = stuff[9:11]
+                    has_particles = stuff[11]
+                    part_info = stuff[12]
+                    simfo[pit] = stuff[13]
+                    time_val = stuff[14]
+                    xabel = stuff[15]
+                    yabel = stuff[16]
+                    '''
+                    #file_time = stuff[17]
                     file.close()
-                    print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
-                
-                f.close()
 
-            plot = axes_dict[ax_label].pcolormesh(X[pit], Y[pit], image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
-            #plt.gca().set_aspect('equal')
-            if frame_val > 0 or time_val > -1.0:
-                axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-            else:
-                axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, minlength=0.5)
-            
-            mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=args_dict[pit].plot_velocity_legend, limits=[xlim, ylim], standard_vel=args_dict[pit].standard_vel)
-            if has_particles:
-                if args_dict[pit].annotate_particles_mass == True:
-                    mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
                 else:
-                    mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
-            if args_dict[pit].plot_lref == True:
-                r_acc = np.round(part_info['accretion_rad'])
-                axes_dict[ax_label].annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo[pit]['xmax'], 0.93*simfo[pit]['ymax']), va="center", ha="right", color='w', fontsize=args_dict[pit].text_font)
-            if args_dict[pit].annotate_time == "True":
-                time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args_dict[pit].text_font)
-                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                #ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
+                    time_val = m_times[frame_val]
+                    if args_dict[pit].yt_proj:
+                        file = usable_files[pit][frame_val]
+                        part_file = file[:-12] + 'part' + file[-5:]
+                        f = yt.load(file, particle_filename=part_file)
+                        dd = f.all_data()
+                        #file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
+                    else:
+                        f = h5py.File(usable_files[pit][frame_val], 'r')
+                        #file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time[pit]
+                    print "FILE =", usable_files[pit][frame_val]
+                    has_particles = has_sinks(f)
+                    if has_particles:
+                        if args.yt_proj == False:
+                            L=None
+                        else:
+                            if args.projection_orientation != None:
+                                y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+                                L = [1, y_val, 0]
+                            else:
+                                if has_particles == False or len(dd['particle_posx']) == 1:
+                                    L = [0.0, 1.0, 0.0]
+                                else:
+                                    pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
+                                    L = [-1*pos_vec[-1], pos_vec[0]]
+                                    L.append(0.0)
+                                    if L[0] > 0:
+                                        L = [-1*L[0], -1*L[1], 0.0]
+                        print "SET PROJECTION ORIENTATION L=", L
+                        part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
+                    else:
+                        part_info = {}
+                    center_vel = [0.0, 0.0, 0.0]
+                    if args_dict[pit].image_center != 0 and has_particles:
+                        original_positions = [X[pit], Y[pit], X_vel[pit], y_vel[pit]]
+                        x_pos = np.round(part_info['particle_position'][0][args_dict[pit].image_center - 1]/cl)*cl
+                        y_pos = np.round(part_info['particle_position'][1][args_dict[pit].image_center - 1]/cl)*cl
+                        pos = np.array([part_info['particle_position'][0][args_dict[pit].image_center - 1], part_info['particle_position'][1][args_dict[pit].image_center - 1]])
+                        X[pit] = X[pit] + x_pos
+                        Y[pit] = Y[pit] + y_pos
+                        X_vel[pit] = X_vel[pit] + x_pos
+                        Y_vel[pit] = Y_vel[pit] + y_pos
+                        if args_dict[pit].yt_proj == False:
+                            sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
+                        else:
+                            sim_file = part_file
+                        f.close()
+                        f = h5py.File(sim_file, 'r')
+                        if len(part_info['particle_mass']) == 1:
+                            part_ind = 0
+                        else:
+                            min_dist = 1000.0
+                            for part in range(len(part_info['particle_mass'])):
+                                temp_pos = np.array([f[f.keys()[11]][part][13]/c['au'], f[f.keys()[11]][part][13+y_int]/c['au']])
+                                dist = np.sqrt(np.abs(np.diff((temp_pos - pos)**2)))[0]
+                                if dist < min_dist:
+                                    min_dist = dist
+                                    part_ind = part
+                        
+                        center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
+                        f.close()
+                        f = h5py.File(usable_files[pit][frame_val], 'r')
+                    xabel, yabel, xlim, ylim = image_properties(X[pit], Y[pit], args_dict[pit], simfo[pit])
+                    if args_dict[pit].axis == 'xy':
+                        center_vel=center_vel[:2]
+                    else:
+                        center_vel=center_vel[::2]
+                    
+                    if args_dict[pit].ax_lim != None:
+                        if has_particles and args_dict[pit].image_center != 0:
+                            xlim = [-1*args_dict[pit].ax_lim + part_info['particle_position'][0][args_dict[pit].image_center - 1], args_dict[pit].ax_lim + part_info['particle_position'][0][args_dict[pit].image_center - 1]]
+                            ylim = [-1*args_dict[pit].ax_lim + part_info['particle_position'][1][args_dict[pit].image_center - 1], args_dict[pit].ax_lim + part_info['particle_position'][1][args_dict[pit].image_center - 1]]
+                        else:
+                            xlim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
+                            ylim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
+
+                    if args_dict[pit].yt_proj == False:
+                        image = get_image_arrays(f, simfo[pit]['field'], simfo[pit], args_dict[pit], X[pit], Y[pit])
+                        magx = get_image_arrays(f, 'mag'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
+                        magy = get_image_arrays(f, 'mag'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
+                        x_pos_min = int(np.round(np.min(X[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
+                        y_pos_min = int(np.round(np.min(Y[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
+                        if np.shape(f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]) == (2048, 2048):
+                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]]
+                        elif args_dict[pit].axis == 'xy':
+                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0]]
+                        else:
+                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:]]
+                        velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X[pit], velocity_data[0], velocity_data[1], center_vel=center_vel)
+                    else:
+                        if args_dict[pit].image_center == 0 or has_particles == False:
+                            center_pos = np.array([0.0, 0.0, 0.0])
+                        else:
+                            center_pos = np.array([dd['particle_posx'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posy'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posz'][args_dict[pit].image_center-1].in_units('AU')])
+                        x_width = (xlim[1] -xlim[0])
+                        y_width = (ylim[1] -ylim[0])
+                        thickness = yt.YTArray(args.slice_thickness, 'AU')
+
+                        temp = dd['velx']
+                        temp = dd['vely']
+                        temp = dd['velz']
+                        if has_particles:
+                            temp = dd['particle_posx']
+                            temp = dd['particle_posy']
+                        temp = dd['velocity_magnitude']
+                        
+                        del temp
+                        
+                        proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+                        '''
+                        image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
+                        velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
+                        vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
+                        magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
+                        magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
+                        mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
+                        '''
+                        image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).value
+                        velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
+                        vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
+                        magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
+                        magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
+                        mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
+                        '''
+                        if np.median(image[200:600,400]) > 5.e-15:
+                            image = image.T
+                            velx_full = velx_full.T
+                            vely_full = vely_full.T
+                            magx = magx.T
+                            magy = magy.T
+                            mass = mass.T
+                        '''
+                        velx_full = velx_full/mass
+                        vely_full = vely_full/mass
+                        magx = magx/mass
+                        magy = magy/mass
+                        del mass
+                        
+                        velx, vely = mym.get_quiver_arrays(0.0, 0.0, X[pit], velx_full, vely_full, center_vel=center_vel)
+                        del velx_full
+                        del vely_full
+
+                        pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                        file = open(pickle_file, 'w+')
+                        pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
+                        file.close()
+                        print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
+                    
+                    f.close()
+
+                plot = axes_dict[ax_label].pcolormesh(X[pit], Y[pit], image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+                #plt.gca().set_aspect('equal')
+                if frame_val > 0 or time_val > -1.0:
+                    axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                else:
+                    axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 
-            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args_dict[pit].text_font+2))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-            
-            if positions[pit][0] == columns:
-                cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
-                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args_dict[pit].text_font)
-            axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args_dict[pit].text_font)
-            if positions[pit][0] == 1:
-                axes_dict[ax_label].set_ylabel(yabel, labelpad=-20, fontsize=args_dict[pit].text_font)
-            axes_dict[ax_label].set_xlim(xlim)
-            axes_dict[ax_label].set_ylim(ylim)
-            for line in axes_dict[ax_label].xaxis.get_ticklines():
-                line.set_color('white')
-            for line in axes_dict[ax_label].yaxis.get_ticklines():
-                line.set_color('white')
+                mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=args_dict[pit].plot_velocity_legend, limits=[xlim, ylim], standard_vel=args_dict[pit].standard_vel)
+                if has_particles:
+                    if args_dict[pit].annotate_particles_mass == True:
+                        mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+                    else:
+                        mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+                if args_dict[pit].plot_lref == True:
+                    r_acc = np.round(part_info['accretion_rad'])
+                    axes_dict[ax_label].annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo[pit]['xmax'], 0.93*simfo[pit]['ymax']), va="center", ha="right", color='w', fontsize=args_dict[pit].text_font)
+                if args_dict[pit].annotate_time == "True":
+                    time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args_dict[pit].text_font)
+                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                    #ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
+                    
+                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args_dict[pit].text_font+2))
+                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-            plt.tick_params(axis='both', which='major', labelsize=16)
-            for line in axes_dict[ax_label].xaxis.get_ticklines():
-                line.set_color('white')
-            for line in axes_dict[ax_label].yaxis.get_ticklines():
-                line.set_color('white')
+                if positions[pit][0] == columns:
+                    cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
+                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args_dict[pit].text_font)
+                axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args_dict[pit].text_font)
+                if positions[pit][0] == 1:
+                    axes_dict[ax_label].set_ylabel(yabel, labelpad=-20, fontsize=args_dict[pit].text_font)
+                axes_dict[ax_label].set_xlim(xlim)
+                axes_dict[ax_label].set_ylim(ylim)
+                for line in axes_dict[ax_label].xaxis.get_ticklines():
+                    line.set_color('white')
+                for line in axes_dict[ax_label].yaxis.get_ticklines():
+                    line.set_color('white')
 
-            if positions[pit][0] != 1:
-                yticklabels = axes_dict[ax_label].get_yticklabels()
-                plt.setp(yticklabels, visible=False)
+                plt.tick_params(axis='both', which='major', labelsize=16)
+                for line in axes_dict[ax_label].xaxis.get_ticklines():
+                    line.set_color('white')
+                for line in axes_dict[ax_label].yaxis.get_ticklines():
+                    line.set_color('white')
 
-            if positions[pit][0] == 1:
-                axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args_dict[pit].text_font)
-            if positions[pit][1] == rows:
-                axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args_dict[pit].text_font)
                 if positions[pit][0] != 1:
-                    xticklabels = axes_dict[ax_label].get_xticklabels()
-                    plt.setp(xticklabels[0], visible=False)
+                    yticklabels = axes_dict[ax_label].get_yticklabels()
+                    plt.setp(yticklabels, visible=False)
 
-            if len(usable_files[pit]) > 1:
-                if args.output_filename == None:
-                    file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
-                else:
-                    file_name = args.output_filename + "_" + str(int(time_val))
-            else:
-                if args.output_filename != None:
-                    file_name = args.output_filename
-                else:
-                    file_name = save_dir + "time_" + str(args.plot_time)
+                if positions[pit][0] == 1:
+                    axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args_dict[pit].text_font)
+                if positions[pit][1] == rows:
+                    axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args_dict[pit].text_font)
+                    if positions[pit][0] != 1:
+                        xticklabels = axes_dict[ax_label].get_xticklabels()
+                        plt.setp(xticklabels[0], visible=False)
 
-            plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
-            #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                if len(usable_files[pit]) > 1:
+                    if args.output_filename == None:
+                        file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
+                    else:
+                        file_name = args.output_filename + "_" + str(int(time_val))
+                else:
+                    if args.output_filename != None:
+                        file_name = args.output_filename
+                    else:
+                        file_name = save_dir + "time_" + str(args.plot_time)
+
+                plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
+                #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 
-            #plt.savefig(file_name + ".jpg", format='jpeg', bbox_inches='tight')
-            call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-            os.remove(file_name + '.eps')
+                #plt.savefig(file_name + ".jpg", format='jpeg', bbox_inches='tight')
+                call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
+                os.remove(file_name + '.eps')
 
-            del image
-            del magx
-            del magy
-            del velx
-            del vely
-            
-            if args_dict[pit].image_center != 0 and has_particles:
-                X[pit], Y[pit], X_vel[pit], Y_vel[pit] = original_positions
-        print 'Created frame', (frames[frame_val]), 'of', str(frames[-1]), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
+                del image
+                del magx
+                del magy
+                del velx
+                del vely
+                
+                if args_dict[pit].image_center != 0 and has_particles:
+                    X[pit], Y[pit], X_vel[pit], Y_vel[pit] = original_positions
+            print 'Created frame', (frames[frame_val]), 'of', str(frames[-1]), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
 
-    rit = rit +1
-    if rit == size:
-        rit = 0
+        rit = rit +1
+        if rit == size:
+            rit = 0
 
-print "completed making movie frames on rank", rank
+    print "completed making movie frames on rank", rank
 
-#if __name__ == '__main__': main()
+if __name__ == '__main__': main()
 
 #Read in inputs:
 
