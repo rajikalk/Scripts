@@ -275,6 +275,7 @@ if args.make_paper_plot == 'True':
             ax.plot(total_gauss_fit[0], total_gauss_fit[1])
             ax.set_ylabel('#')
             text_ypos = 12.5
+            plt.setp([ax.get_yticklabels()[-1]], visible=False)
             ax.text(-7.5, text_ypos, 'B-band correction')
             ax.text(-7.5, text_ypos-1.5, text_labels[plot_pickle])
     ax.set_xlabel('$v_{r,standard} -  v_{r,retrieved}$ (km/s)')
