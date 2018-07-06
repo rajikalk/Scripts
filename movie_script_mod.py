@@ -59,7 +59,7 @@ def parse_inputs():
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=5000, type=int)
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
-    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=100.)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=300.)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
