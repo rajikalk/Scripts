@@ -20,6 +20,7 @@ import my_module as mym
 import pickle
 import matplotlib.patheffects as path_effects
 import yt
+import my_fields as myf
 import ast
 import matplotlib.gridspec as gridspec
 import argparse
@@ -65,7 +66,7 @@ def parse_inputs():
     parser.add_argument("-sx", "--share_x", help="do you want to share the x axis?", default=False)
     parser.add_argument("-sy", "--share_y", help="do you want to share the y axis?", default=True)
     parser.add_argument("-sa", "--share_ax", help="do you want to share axes?", default=True)
-    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=100.)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=300.)
     args = parser.parse_args()
     return args
 
@@ -340,7 +341,7 @@ def main():
             x_vel, y_vel = np.meshgrid(x_ind, y_ind)
             if args_dict[pit].projection_orientation != None:
                 y_val = 1./np.tan(np.deg2rad(float(args_dict[pit].projection_orientation)))
-                L = [1, y_val, 0]
+                L = [1.0, y_val, 0.0]
             else:
                 if has_particles == False or len(dd['particle_posx']) == 1:
                     L = [0.0, 1.0, 0.0]
@@ -348,8 +349,8 @@ def main():
                     pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
                     L = [-1*pos_vec[-1], pos_vec[0]]
                     L.append(0.0)
-                    if L[0] > 0:
-                        L = [-1*L[0], -1*L[1], 0.0]
+                    if L[0] > 0.0:
+                        L = [-1.0*L[0], -1.0*L[1], 0.0]
             print "SET PROJECTION ORIENTATION L=", L
             X.append(x)
             Y.append(y)
@@ -365,6 +366,9 @@ def main():
         else:
             sim_fs = []
         sim_files.append(sim_fs)
+    myf.set_normal(L)
+    print "SET PROJECTION ORIENTATION L=", myf.get_normal()
+    L = np.array(L)
 
     # Initialise Grid and build lists
     if args.plot_time != None:
@@ -517,7 +521,7 @@ def main():
                         file = usable_files[pit][frame_val]
                         part_file = file[:-12] + 'part' + file[-5:]
                         f = yt.load(file, particle_filename=part_file)
-                        dd = f.all_data()
+                        #dd = f.all_data()
                         #file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
                     else:
                         f = h5py.File(usable_files[pit][frame_val], 'r')
@@ -525,6 +529,7 @@ def main():
                     print "FILE =", usable_files[pit][frame_val]
                     has_particles = has_sinks(f)
                     if has_particles:
+                        '''
                         if args.yt_proj == False:
                             L=None
                         else:
@@ -541,6 +546,7 @@ def main():
                                     if L[0] > 0:
                                         L = [-1*L[0], -1*L[1], 0.0]
                         print "SET PROJECTION ORIENTATION L=", L
+                        '''
                         part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
                     else:
                         part_info = {}
@@ -605,20 +611,11 @@ def main():
                         if args_dict[pit].image_center == 0 or has_particles == False:
                             center_pos = np.array([0.0, 0.0, 0.0])
                         else:
+                            dd = f.all_data()
                             center_pos = np.array([dd['particle_posx'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posy'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posz'][args_dict[pit].image_center-1].in_units('AU')])
                         x_width = (xlim[1] -xlim[0])
                         y_width = (ylim[1] -ylim[0])
                         thickness = yt.YTArray(args.slice_thickness, 'AU')
-
-                        temp = dd['velx']
-                        temp = dd['vely']
-                        temp = dd['velz']
-                        if has_particles:
-                            temp = dd['particle_posx']
-                            temp = dd['particle_posy']
-                        temp = dd['velocity_magnitude']
-                        
-                        del temp
                         
                         proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                         '''
