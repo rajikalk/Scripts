@@ -12,7 +12,7 @@ adaptive_bins = True
 coordinates = 'cylindrical'
 has_run = False
 global_enc_mass = []
-normal = [1, 0, 0]
+normal = [1.0, 0.0, 0.0]
 
 def set_center(x):
     """
@@ -74,6 +74,9 @@ def set_normal(x):
         
     Default: [x,y,z] = [1,0,0]
     """
+    global normal
+    if isinstance(x,list) == False:
+        x = x.tolist()
     normal = x
     return normal
 
@@ -303,27 +306,25 @@ def _Projected_Velocity(field, data):
     If the normal is [1,0,0] and there are two particles this calculates the projected velocity of the gas in the plane of their separation axis. If normal is set to something else, it calculates the projected
     """
     global normal
-    if ('all', u'particle_mass') in data.ds.field_list:
-        if len(data['particle_mass']) == 2:
-            if normal != [1,0,0]:
-                pos_vec = np.array([normal[1], -1*normal[0]])
-            else:
-                pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
-            pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
-            vels = np.array([data['velocity_x'].in_units('cm/s').value, data['velocity_y'].in_units('cm/s').value])
-            vels = vels.T
-            c = ((np.dot(vels,pos_vec))/(np.dot(pos_vec,pos_vec)))
-            velx = pos_vec[0] * c
-            vely = pos_vec[1] * c
-            vels = np.sqrt(velx**2. + vely**2.)
-            '''
-            vels = c*pos_mag
-            vels = yt.YTArray(vels, 'cm/s')
-            '''
+    if normal != [1.0,0.0,0.0]:
+        pos_vec = np.array([normal[1], -1*normal[0]])
+    elif ('all', u'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        if len(dd['particle_mass']) == 2:
+            pos_vec = np.array([np.diff(dd[('all', u'particle_posx')].value)[0], np.diff(dd[('all', u'particle_posy')].value)[0]])
         else:
-            vels = data['velx'].in_units('cm/s')
+            pos_vec = np.array([0.0, -1.0])
     else:
-        vels = data['velx'].in_units('cm/s')
+        pos_vec = np.array([0.0, -1.0])
+    pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+    vels = np.array([data[('velx')].in_units('cm/s').value, data[('vely')].in_units('cm/s').value])
+    vels = vels.T
+    c = ((np.dot(vels,pos_vec))/(np.dot(pos_vec,pos_vec)))
+    velx = pos_vec[0] * c
+    vely = pos_vec[1] * c
+    vels = np.sqrt(velx**2. + vely**2.)
+    vels = c*pos_mag
+    vels = yt.YTArray(vels, 'cm/s')
     return vels
 
 yt.add_field("Projected_Velocity", function=_Projected_Velocity, units=r"cm/s")
@@ -333,23 +334,24 @@ def _Projected_Magnetic_Field(field, data):
     If the normal is [1,0,0] and there are two particles this calculates the projected magnetic field of the gas in the plane of their separation axis. If normal is set to something else, it calculates the projected
     """
     global normal
-    if ('all', u'particle_mass') in data.ds.field_list:
-        if len(data['particle_mass']) == 2:
-            if normal != [1,0,0]:
-                pos_vec = np.array([normal[1], -1*normal[0]])
-            else:
-                pos_vec = np.array([np.diff(data[('all', u'particle_posx')].value)[0], np.diff(data[('all', u'particle_posy')].value)[0]])
-            pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
-            mags = np.array([data['magx'].value, data['magy'].value])
-            mags = mags.T
-            c = ((np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec)))
-            magx = pos_vec[0] * c
-            magy = pos_vec[1] * c
-            mags = np.sqrt(magx**2. + magy**2.)
+    if normal != [1.0,0.0,0.0]:
+        pos_vec = np.array([normal[1], -1*normal[0]])
+    elif ('all', u'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        if len(dd['particle_mass']) == 2:
+            pos_vec = np.array([np.diff(dd[('all', u'particle_posx')].value)[0], np.diff(dd[('all', u'particle_posy')].value)[0]])
         else:
-            mags = data['magx'].in_units('gauss')
+            pos_vec = np.array([0.0, -1.0])
     else:
-        mags = data['magx'].in_units('gauss')
+        pos_vec = np.array([0.0, -1.0])
+    pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+    mags = np.array([data['magx'].value, data['magy'].value])
+    mags = mags.T
+    c = ((np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec)))
+    magx = pos_vec[0] * c
+    magy = pos_vec[1] * c
+    mags = np.sqrt(magx**2. + magy**2.)
+    mags = yt.YTArray(mags, 'gauss')
     return mags
 
 yt.add_field("Projected_Magnetic_Field", function=_Projected_Magnetic_Field, units=r"gauss")
