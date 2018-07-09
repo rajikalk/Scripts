@@ -152,7 +152,7 @@ def sim_info(path, file, args):
             racc = 0.0
         f.close()
         if args.field == 'dens':
-            field = 'dens'
+            field = ('flash', 'dens')
         else:
             part_file = file[:-12] + 'part' + file[-5:]
             f = yt.load(file, particle_filename=part_file)
@@ -454,7 +454,7 @@ def main():
                     x_width = (xlim[1] -xlim[0])
                     y_width = (ylim[1] -ylim[0])
                     thickness = yt.YTArray(args.slice_thickness, 'AU')
-
+                    '''
                     temp = dd['velx']
                     temp = dd['vely']
                     temp = dd['velz']
@@ -464,29 +464,14 @@ def main():
                     temp = dd['velocity_magnitude']
                         
                     del temp
-                    
+                    '''
                     proj = yt.OffAxisProjectionPlot(f, L, [simfo['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-                    image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
-                    velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                    vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                    magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                    magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                    mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
-                    image = image.T
-                    velx_full = velx_full.T
-                    vely_full = vely_full.T
-                    magx = magx.T
-                    magy = magy.T
-                    mass = mass.T
-                    '''
-                    if np.median(image[200:600,400]) > 5.e-15:
-                        image = image.T
-                        velx_full = velx_full.T
-                        vely_full = vely_full.T
-                        magx = magx.T
-                        magy = magy.T
-                        mass = mass.T
-                    '''
+                    image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
+                    velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
+                    vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
+                    magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
+                    magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
+                    mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
             
                     velx_full = velx_full/mass
                     vely_full = vely_full/mass
