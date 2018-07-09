@@ -384,7 +384,7 @@ def _Projected_Magnetic_Field(field, data):
     return mags
 
 yt.add_field("Projected_Magnetic_Field", function=_Projected_Magnetic_Field, units=r"gauss")
-
+'''
 def Enclosed_Mass(file, max_radius,inds):
     global center
     global n_bins
@@ -429,7 +429,7 @@ def _Enclosed_Mass(field, data):
     """
     global global_enc_mass
     
-    if np.shape(data) == (16, 16, 16):
+    if np.shape(data)[0] == 16:
         enclosed_mass = yt.YTArray(np.zeros(np.shape(data)), 'g')
     elif np.shape(data) != np.shape(global_enc_mass):
         file = data.ds.fullpath +'/'+data.ds.basename
@@ -444,7 +444,7 @@ def _Enclosed_Mass(field, data):
     return enclosed_mass
 
 yt.add_field("Enclosed_Mass", function=_Enclosed_Mass, units=r"g")
-
+'''
 def _Radial_Velocity(field, data):
     """
     Calculates the radial velocity from the current center, in the current coordinate system, corrected for the velocity of the center.
@@ -545,7 +545,7 @@ def _B_gradient(field, data):
     """
     Calculates the magnetic field gradient in the z direction
     """
-    if np.shape(data) != (16, 16, 16):
+    if np.shape(data)[0] != 16:
         y = data['Squared_B_Mag']
         #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
         #x = np.abs(data['dz_from_Center'].in_units('cm'))
@@ -568,7 +568,7 @@ def _Magnetic_Acceleration(field, data):
     return magnetic_acceleration
 
 yt.add_field("Magnetic_Acceleration", function=_Magnetic_Acceleration, units=r"cm/s**2")
-
+'''
 def _Gravitational_Acceleration(field, data):
     """
     Calculates gravitational pressure, from gravitational force.
@@ -577,12 +577,22 @@ def _Gravitational_Acceleration(field, data):
     return gravitational_acceleration
 
 yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
+'''
+
+def _Gravitational_Acceleration(field, data):
+    """
+    Calculates gravitational pressure, from gravitational force.
+    """
+    gravitational_acceleration = (data['Total_Potential']*data['cell_mass'])/data['Distance_from_Center']
+    return gravitational_acceleration
+
+yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
 
 def _Particle_Potential(field, data):
     """
     Calculates the potential from the praticles.
     """
-    if np.shape(data) == (16, 16, 16):
+    if np.shape(data)[0] == 16:
         Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
     else:
         dd = data.ds.all_data()
@@ -604,7 +614,7 @@ def _Gravitational_Acceleration_z(field, data):
     Calculates gravitational pressure, from gravitational force.
     """
     y = data['Total_Potential']
-    if np.shape(data) != (16, 16, 16):
+    if np.shape(data)[0] != 16:
         #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
         #x = np.abs(data['dz_from_Center'].in_units('cm'))
         bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.)
