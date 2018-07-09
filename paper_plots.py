@@ -101,11 +101,7 @@ myf.set_center(args.center)
 
 movie_files = sorted(glob.glob(path + 'WIND_slice_*'))
 sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
-file = sim_files[-1]
-part_file = file[:-12] + 'part' + file[-5:]
-ds = yt.load(file, particle_filename=part_file)
-dd = ds.all_data()
-sink_form_time = np.min(dd['particle_creation_time'].value/yt.units.yr.in_units('s').value)
+sink_form_time = mym.find_sink_formation_time(movie_files)
 
 if args.produce_movie != False:
     m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
@@ -768,7 +764,7 @@ if args.plot_outflows == 'True':
 if args.separation == 'True':
     #image_name = save_dir + "separation"
     image_name = save_dir + "binary_system_time_evolution"
-    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
+    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     line_style = ['k-', 'b-', 'r-']
     labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
@@ -779,6 +775,8 @@ if args.separation == 'True':
     gs.update(hspace=0.0)
     ax1 = fig.add_subplot(gs[0,0])
     ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+    sim_times = []
+    sim_total_mass = []
     for file in files:
         sink_form_time = 0
         particle_tag = []
@@ -786,6 +784,7 @@ if args.separation == 'True':
         x_pos = []
         y_pos = []
         z_pos = []
+        mass = []
         with open(file, 'r') as f:
             reader = csv.reader(f, dialect='dat')
             for row in reader:
@@ -798,6 +797,7 @@ if args.separation == 'True':
                         x_pos.append([])
                         y_pos.append([])
                         z_pos.append([])
+                        mass.append([])
                         pit = len(particle_tag) - 1
                     elif particle_tag[0] == part_tag:
                         pit = 0
@@ -808,9 +808,11 @@ if args.separation == 'True':
                     x = float(row[2])/yt.units.AU.in_units('cm').value
                     y = float(row[3])/yt.units.AU.in_units('cm').value
                     z = float(row[4])/yt.units.AU.in_units('cm').value
+                    m = float(row[14])/yt.units.msun.in_units('g').value
                     x_pos[pit].append(x)
                     y_pos[pit].append(y)
                     z_pos[pit].append(z)
+                    mass[pit].append(m)
         times = np.array(times)
         sorted_inds_1 = np.argsort(times[0])
         sorted_inds_2 = np.argsort(times[1])
@@ -820,19 +822,24 @@ if args.separation == 'True':
         x_pos = np.array(x_pos)
         y_pos = np.array(y_pos)
         z_pos = np.array(z_pos)
+        mass = np.array(mass)
         x_pos[0] = np.array(x_pos[0])[sorted_inds_1]
         x_pos[1] = np.array(x_pos[1])[sorted_inds_2]
         y_pos[0] = np.array(y_pos[0])[sorted_inds_1]
         y_pos[1] = np.array(y_pos[1])[sorted_inds_2]
         z_pos[0] = np.array(z_pos[0])[sorted_inds_1]
         z_pos[1] = np.array(z_pos[1])[sorted_inds_2]
+        mass[0] = np.array(mass[0])[sorted_inds_1]
+        mass[1] = np.array(mass[1])[sorted_inds_2]
         x_pos[0] = x_pos[0][-len(x_pos[1]):]
         y_pos[0] = y_pos[0][-len(y_pos[1]):]
         z_pos[0] = z_pos[0][-len(z_pos[1]):]
+        mass[0] = mass[0][-len(mass[1]):]
         dx = x_pos[0] - x_pos[1]
         dy = y_pos[0] - y_pos[1]
         dz = z_pos[0] - z_pos[1]
         sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+        total_mass = mass[0] + mass[1]
         '''
         if file == "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/sinks_evol.dat":
             times_new = np.array([0])
@@ -841,11 +848,14 @@ if args.separation == 'True':
             sep = np.append(sep_new, sep)
         '''
         ax1.semilogy(times[1], sep, line_style[lit], label=labels[lit])
+        ax2.plot(times[1], total_mass, line_style[lit], label=labels[lit])
+        sim_times.append(times[1])
+        sim_total_mass.append(total_mass)
         lit = lit + 1
     ax1.set_ylim([1e0,5e2])
     ax1.set_xlim([0.0, 5000.0])
     ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
-    ax1.set_legend(loc='best')
+    ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
     ax1.set_ylabel("Separation (AU)", fontsize=14)
     ax1.tick_params(axis='x', which='major', labelsize=14)
@@ -860,6 +870,7 @@ if args.separation == 'True':
     #legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
     #linestyles = ['k-', 'b--', 'r-.']
     #image_name = save_dir + "total_mass"
+    '''
     dirs = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2"]
     case_it = 0
     #plt.clf()
@@ -879,6 +890,7 @@ if args.separation == 'True':
             f.close()
         ax2.plot(times, mass, line_styls[case_it], label=legend_labels[case_it])
         case_it = case_it + 1
+    '''
     ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
     #plt.legend(loc='best')
