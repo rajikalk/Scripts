@@ -155,9 +155,12 @@ def sim_info(path, file, args):
         else:
             racc = 0.0
         f.close()
-        part_file = file[:-12] + 'part' + file[-5:]
-        f = yt.load(file, particle_filename=part_file)
-        field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
+        if args.field == 'dens':
+            field = ('flash', 'dens')
+        else:
+            part_file = file[:-12] + 'part' + file[-5:]
+            f = yt.load(file, particle_filename=part_file)
+            field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
         dim = 800
         zoom_cell = 0.0
         if args.ax_lim == None:
