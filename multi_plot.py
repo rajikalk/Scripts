@@ -176,6 +176,7 @@ for it in range(len(positions)):
     if 'movie' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
+        '''
         if 'slice' in plot_type:
             m_times = [float(mov_args[mov_args.index('-pt') + 1])]
             sim_files = sorted(glob.glob(file_dir[it] + 'WIND_hdf5_plt_cnt_*'))
@@ -186,6 +187,7 @@ for it in range(len(positions)):
             dd = ds.all_data()
             time_val = ds.current_time.in_units('yr').value - np.min(dd['particle_creation_time'].value)/yt.units.yr.in_units('s').value
             mov_args[mov_args.index('-pt') + 1] = str(time_val)
+        '''
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
