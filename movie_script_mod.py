@@ -145,16 +145,15 @@ def sim_info(path, file, args):
             type = "slice"
         annotate_freq = ((xmax/cl) - (xmin/cl))/31.
     except:
-        part_file = file[:-12] + 'part' + file[-5:]
-        f = yt.load(file, particle_filename=part_file)
-        dd = f.all_data()
+        f = h5py.File(file, 'r')
         if has_sinks(f):
-            racc = np.min(dd['dx'].in_units('au').value)*2.5
+            racc = f[f.keys()[18]][109][-1]/yt.units.AU.in_units('cm').value
         else:
             racc = 0.0
-        for key in f.field_list:
-            if args.field in key:
-                field = key
+        f.close()
+        part_file = file[:-12] + 'part' + file[-5:]
+        f = yt.load(file, particle_filename=part_file)
+        field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
         dim = 800
         zoom_cell = 0.0
         if args.ax_lim == None:
