@@ -188,10 +188,10 @@ def _Center_Position(field, data):
     """
     global center
     dd = data.ds.all_data()
-    if np.shape(data) == (16, 16, 16):
+    if np.shape(data)[0] == 16:
         center_pos = data['CoM'].in_units('cm')
     elif center == 0:
-        center_pos = dd.quantities.center_of_mass(use_particles=True).in_units('cm')
+        center_pos = dd['CoM'].in_units('cm')
     else:
         center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
         center_pos = yt.YTArray(center_pos, 'cm')
@@ -224,7 +224,12 @@ def _dx_from_Center(field, data):
     """
     Calculates the change in x position from the current set center.
     """
-    dx = data['x'].in_units('cm')-data['Center_Position'][0]
+    if ('gas', 'Center_Position') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_pos = dd['Center_Position'][0].in_units('cm')
+    else:
+        center_pos = yt.YTArray(0.0, 'cm')
+    dx = data['x'].in_units('cm')-center_pos
     return dx
 
 yt.add_field("dx_from_Center", function=_dx_from_Center, units=r"cm")
@@ -233,7 +238,12 @@ def _dy_from_Center(field, data):
     """
     Calculates the change in y position from the current set center.
     """
-    dy = data['y'].in_units('cm')-data['Center_Position'][1]
+    if ('gas', 'Center_Position') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_pos = dd['Center_Position'][1].in_units('cm')
+    else:
+        center_pos = yt.YTArray(0.0, 'cm')
+    dy = data['y'].in_units('cm')-center_pos
     return dy
 
 yt.add_field("dy_from_Center", function=_dy_from_Center, units=r"cm")
@@ -242,7 +252,12 @@ def _dz_from_Center(field, data):
     """
     Calculates the change in z position from the current set center.
     """
-    dz = data['z'].in_units('cm')-data['Center_Position'][2]
+    if ('gas', 'Center_Position') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_pos = dd['Center_Position'][2].in_units('cm')
+    else:
+        center_pos = yt.YTArray(0.0, 'cm')
+    dz = data['z'].in_units('cm')-center_pos
     return dz
 
 yt.add_field("dz_from_Center", function=_dz_from_Center, units=r"cm")
@@ -260,12 +275,16 @@ def _Distance_from_Center(field, data):
 
 yt.add_field("Distance_from_Center", function=_Distance_from_Center, units=r"cm")
 
-
 def _Corrected_velx(field, data):
     """
     Calculates the x-velocity correcnted for the bulk velocity.
     """
-    dvx = data['velx'].in_units('cm/s') - data['Center_Velocity'][0].in_units('cm/s')
+    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_vel = dd['Center_Velocity'][0].in_units('cm/s')
+    else:
+        center_vel = yt.YTArray(0.0, 'cm/s')
+    dvx = data['velx'].in_units('cm/s') - center_vel
     return dvx
 
 yt.add_field("Corrected_velx", function=_Corrected_velx, units=r"cm/s")
@@ -274,7 +293,12 @@ def _Corrected_vely(field, data):
     """
     Calculates the y-velocity correcnted for the bulk velocity.
     """
-    dvy = data['vely'].in_units('cm/s') - data['Center_Velocity'][1].in_units('cm/s')
+    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_vel = dd['Center_Velocity'][1].in_units('cm/s')
+    else:
+        center_vel = yt.YTArray(0.0, 'cm/s')
+    dvy = data['vely'].in_units('cm/s') - center_vel
     return dvy
 
 yt.add_field("Corrected_vely", function=_Corrected_vely, units=r"cm/s")
@@ -283,7 +307,12 @@ def _Corrected_velz(field, data):
     """
     Calculates the z-velocity correcnted for the bulk velocity.
     """
-    dvz = data['velz'].in_units('cm/s') - data['Center_Velocity'][2].in_units('cm/s')
+    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
+        dd = data.ds.all_data()
+        center_vel = dd['Center_Velocity'][2].in_units('cm/s')
+    else:
+        center_vel = yt.YTArray(0.0, 'cm/s')
+    dvz = data['velz'].in_units('cm/s') - center_vel
     return dvz
 
 yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s")
@@ -828,6 +857,22 @@ def _Projected_Velocity_mw(field, data):
 
 yt.add_field("Projected_Velocity_mw", function=_Projected_Velocity_mw, units=r"cm*g/s")
 
+def _velx_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of velx
+    """
+    return data['velx']*data['cell_mass']
+
+yt.add_field("velx_mw", function=_velx_mw, units=r"cm*g/s")
+
+def _vely_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of vely
+    """
+    return data['vely']*data['cell_mass']
+
+yt.add_field("vely_mw", function=_vely_mw, units=r"cm*g/s")
+
 def _velz_mw(field, data):
     """
     field to be able to created a mass weighted projection of velz
@@ -843,6 +888,28 @@ def _Projected_Magnetic_Field_mw(field, data):
     return data['Projected_Magnetic_Field']*data['cell_mass']
 
 yt.add_field("Projected_Magnetic_Field_mw", function=_Projected_Magnetic_Field_mw, units=r"gauss*g")
+
+def _magx_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magz
+    """
+    if ('flash', u'magx') in data.ds.field_list:
+        return data['magx']*data['cell_mass']
+    else:
+        return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
+
+yt.add_field("magx_mw", function=_magx_mw, units=r"gauss*g")
+
+def _magy_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magz
+    """
+    if ('flash', u'magy') in data.ds.field_list:
+        return data['magy']*data['cell_mass']
+    else:
+        return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
+
+yt.add_field("magy_mw", function=_magy_mw, units=r"gauss*g")
 
 def _magz_mw(field, data):
     """
