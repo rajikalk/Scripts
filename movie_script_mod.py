@@ -37,7 +37,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
-    #parser.add_argument("-st", "--start_time", help="What time woudl you like to start calculating times from?", type=float, default=0.0)
+    #parser.add_argument("-st", "--start_time", help="What time would you like to start calculating times from?", type=float, default=0.0)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
@@ -151,9 +151,12 @@ def sim_info(path, file, args):
         else:
             racc = 0.0
         f.close()
-        part_file = file[:-12] + 'part' + file[-5:]
-        f = yt.load(file, particle_filename=part_file)
-        field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
+        if args.field == 'dens':
+            field = 'dens'
+        else:
+            part_file = file[:-12] + 'part' + file[-5:]
+            f = yt.load(file, particle_filename=part_file)
+            field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
         dim = 800
         zoom_cell = 0.0
         if args.ax_lim == None:
