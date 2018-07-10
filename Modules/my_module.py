@@ -215,37 +215,40 @@ def find_files(m_times, files):
     return usable_files
 
 def get_particle_data(file, axis='xz', proj_or=None):
+    """
+    Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
+    """
     part_mass = []
     part_pos_x = []
     part_pos_y = []
     accretion_rad = []
     try:
         part_file=file[:-12] + 'part' + file[-5:]
-        ds = yt.load(file, particle_filename=part_file)
-        dd = ds.all_data()
-        part_mass = dd['particle_mass'].in_units('msun').value
-        ordered_inds = np.argsort(dd['particle_tag'].value)
-        part_mass = dd['particle_mass'][ordered_inds].in_units('msun').value
+        f = h5py.File(part_file, 'r')
+        ordered_inds = np.argsort(f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['tag                     '])[0][0]])
+        part_mass = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['mass                    '])[0][0]][ordered_inds]/yt.units.msun.in_units('g').value
         if axis == 'xy':
-            part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
-            part_pos_y = dd['particle_posy'][ordered_inds].in_units('AU').value
+            part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+            part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
             depth_pos = range(len(part_mass))
         else:
             if proj_or != None:
                 L = np.array([proj_or[0],proj_or[1]])
                 L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
-                r = np.array([dd['particle_posx'][ordered_inds].in_units('AU').value, dd['particle_posy'][ordered_inds].in_units('AU').value])
+                part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+                r = np.array([part_pos_x, part_pos_y])
                 part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
                 part_pos_x = part_pos_x.T[0]
                 depth_pos = -1*np.dot(r.T,(L/L_len))
                 depth_pos = np.argsort(depth_pos)[::-1]
             else:
-                part_pos_x = dd['particle_posx'][ordered_inds].in_units('AU').value
-                depth_pos = dd['particle_posy'][ordered_inds].in_units('AU').value
+                part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+                depth_pos = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
                 depth_pos = depth_pos[::-1]
-            part_pos_y = dd['particle_posz'][ordered_inds].in_units('AU').value
-        accretion_rad = np.min(dd['dx'].in_units('au').value) * 2.5
+            part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posz                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+        accretion_rad = [item for item in f[f.keys()[6]][:] if 'sink_accretion_radius' in item[0]][0][1]/yt.units.au.in_units('cm').value
     except YTOutputNotIdentified:
         f = h5py.File(file, 'r')
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
@@ -256,22 +259,12 @@ def get_particle_data(file, axis='xz', proj_or=None):
             part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
             depth_pos = range(len(part_mass))
         else:
-            if proj_or != None:
-                L = np.array([proj_or[0],proj_or[1]])
-                L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
-                L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
-                r = np.array([f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value, f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value])
-                part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
-                part_pos_x = part_pos_x.T[0]
-                depth_pos = -1*np.dot(r.T,(L/L_len))
-                depth_pos = np.argsort(depth_pos)[::-1]
-            else:
-                part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
-                depth_pos = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
-                depth_pos = depth_pos[::-1]
+            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
+            depth_pos = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
+            depth_pos = depth_pos[::-1]
             part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
-    positions = np.array([part_pos_x,part_pos_y])
+    positions = np.array([part_pos_x,part_pos_y,part_pos_z])
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
