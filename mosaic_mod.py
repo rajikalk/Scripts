@@ -81,16 +81,23 @@ def get_files(path, args):
         source_directory = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
     return source_directory
 
-def has_sinks(f):
+def has_sinks(file):
     try:
-        if "particlepositions" in f.keys():
+        part_file = file[:-12] + 'part' + file[-5:]
+        f = h5py.File(part_file, 'r')
+        if f[f.keys()[1]][-1][-1] > 0:
+            f.close()
             return True
         else:
+            f.close()
             return False
     except:
-        if ('io', u'particle_mass') in f.field_list:
+        f = h5py.File(file, 'r')
+        if "particlepositions" in f.keys():
+            f.close()
             return True
         else:
+            f.close()
             return False
 
 def sim_info(path, file, args):
@@ -150,7 +157,7 @@ def sim_info(path, file, args):
         annotate_freq = ((xmax/cl) - (xmin/cl))/31.
     except:
         f = h5py.File(file, 'r')
-        if has_sinks(f):
+        if has_sinks(file):
             racc = f[f.keys()[18]][109][-1]/yt.units.AU.in_units('cm').value
         else:
             racc = 0.0
@@ -505,53 +512,15 @@ def main():
                     file = open(pickle_file, 'r')
                     #weight_fieldstuff = pickle.load(file)
                     X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val, xabel, yabel = pickle.load(file)
-                    
-                    '''
-                    X[pit], Y[pit], image, magx, magy = stuff[:5]
-                    X_vel[pit], Y_vel[pit], velx, vely = stuff[5:9]
-                    xlim, ylim = stuff[9:11]
-                    has_particles = stuff[11]
-                    part_info = stuff[12]
-                    simfo[pit] = stuff[13]
-                    time_val = stuff[14]
-                    xabel = stuff[15]
-                    yabel = stuff[16]
-                    '''
+
                     #file_time = stuff[17]
                     file.close()
 
                 else:
                     time_val = m_times[frame_val]
-                    if args_dict[pit].yt_proj:
-                        file = usable_files[pit][frame_val]
-                        part_file = file[:-12] + 'part' + file[-5:]
-                        f = yt.load(file, particle_filename=part_file)
-                        #dd = f.all_data()
-                        #file_time = f.current_time.in_units('yr').value - sink_form_time[pit]
-                    else:
-                        f = h5py.File(usable_files[pit][frame_val], 'r')
-                        #file_time = (f['time'][0]/yt.units.yr.in_units('s').value)-sink_form_time[pit]
                     print "FILE =", usable_files[pit][frame_val]
-                    has_particles = has_sinks(f)
+                    has_particles = has_sinks(usable_files[pit][frame_val])
                     if has_particles:
-                        '''
-                        if args.yt_proj == False:
-                            L=None
-                        else:
-                            if args.projection_orientation != None:
-                                y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-                                L = [1, y_val, 0]
-                            else:
-                                if has_particles == False or len(dd['particle_posx']) == 1:
-                                    L = [0.0, 1.0, 0.0]
-                                else:
-                                    pos_vec = [np.diff(dd['particle_posx'].value)[0], np.diff(dd['particle_posy'].value)[0]]
-                                    L = [-1*pos_vec[-1], pos_vec[0]]
-                                    L.append(0.0)
-                                    if L[0] > 0:
-                                        L = [-1*L[0], -1*L[1], 0.0]
-                        print "SET PROJECTION ORIENTATION L=", L
-                        '''
                         part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
                     else:
                         part_info = {}
@@ -569,22 +538,21 @@ def main():
                             sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
                         else:
                             sim_file = part_file
-                        f.close()
-                        f = h5py.File(sim_file, 'r')
                         if len(part_info['particle_mass']) == 1:
                             part_ind = 0
                         else:
                             min_dist = 1000.0
                             for part in range(len(part_info['particle_mass'])):
+                                f = h5py.File(sim_file, 'r')
                                 temp_pos = np.array([f[f.keys()[11]][part][13]/c['au'], f[f.keys()[11]][part][13+y_int]/c['au']])
+                                f.close()
                                 dist = np.sqrt(np.abs(np.diff((temp_pos - pos)**2)))[0]
                                 if dist < min_dist:
                                     min_dist = dist
                                     part_ind = part
-                        
+                        f = h5py.File(sim_file, 'r')
                         center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
                         f.close()
-                        f = h5py.File(usable_files[pit][frame_val], 'r')
                     xabel, yabel, xlim, ylim = image_properties(X[pit], Y[pit], args_dict[pit], simfo[pit])
                     if args_dict[pit].axis == 'xy':
                         center_vel=center_vel[:2]
@@ -600,6 +568,7 @@ def main():
                             ylim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
 
                     if args_dict[pit].yt_proj == False:
+                        
                         image = get_image_arrays(f, simfo[pit]['field'], simfo[pit], args_dict[pit], X[pit], Y[pit])
                         magx = get_image_arrays(f, 'mag'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
                         magy = get_image_arrays(f, 'mag'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
@@ -622,7 +591,7 @@ def main():
                         y_width = (ylim[1] -ylim[0])
                         thickness = yt.YTArray(args.slice_thickness, 'AU')
                         
-                        proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'Projected_Velocity_mw', 'velz_mw', 'Projected_Magnetic_Field_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+                        proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw', 'Projected_Magnetic_Field_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                         #proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'velx_mw', 'vely_mw', 'velz_mw', 'magx_mw', 'magy_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                         #proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                         '''
