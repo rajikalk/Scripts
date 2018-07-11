@@ -254,7 +254,6 @@ def rainbow_text(x,y,ls,lc,**kw):
 #=======MAIN=======
 def main():
     
-    print "Running movie_script_mod.py"
     rank = CW.Get_rank()
     size = CW.Get_size()
     #comm = MPI.COMM_WORLD
