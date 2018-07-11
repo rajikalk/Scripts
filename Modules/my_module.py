@@ -249,7 +249,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
                 depth_pos = depth_pos[::-1]
             part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posz                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = [item for item in f[f.keys()[6]][:] if 'sink_accretion_radius' in item[0]][0][1]/yt.units.au.in_units('cm').value
-    except YTOutputNotIdentified:
+    except:
         f = h5py.File(file, 'r')
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
         ordered_inds = np.argsort(part_mass)[::-1]
@@ -264,7 +264,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
             depth_pos = depth_pos[::-1]
             part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
         accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
-    positions = np.array([part_pos_x,part_pos_y,part_pos_z])
+    positions = np.array([part_pos_x,part_pos_y])
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
