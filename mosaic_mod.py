@@ -591,57 +591,20 @@ def main():
                         y_width = (ylim[1] -ylim[0])
                         thickness = yt.YTArray(args.slice_thickness, 'AU')
                         
-                        proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw', 'Projected_Magnetic_Field_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-                        #proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'velx_mw', 'vely_mw', 'velz_mw', 'magx_mw', 'magy_mw', 'magz_mw', 'cell_mass'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-                        #proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
-                        '''
-                        image = (proj.frb.data[('flash', 'dens')]/thickness.in_units('cm')).T.value
-                        velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                        vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).T.value
-                        magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                        magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).T.value
-                        mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).T.value
-                        '''
+                        proj = yt.OffAxisProjectionPlot(f, L, [simfo[pit]['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                         image = (proj.frb.data[simfo[pit]['field']]/thickness.in_units('cm')).value
                         velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
-                        #velx_full_1 = (proj.frb.data[('gas', 'velx_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
-                        #velx_full_2 = (proj.frb.data[('gas', 'vely_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
-                        #velx_full_1 = (proj.frb.data[('gas', 'velx')].in_units('cm**2/s')/thickness.in_units('cm')).value
-                        #velx_full_2 = (proj.frb.data[('gas', 'vely')].in_units('cm**2/s')/thickness.in_units('cm')).value
-                        #velx_full = np.sqrt(np.square(velx_full_1) + np.square(velx_full_2))
-                        #del velx_full_1
-                        #del velx_full_2
                         vely_full = (proj.frb.data[('gas', 'velz_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
-                        #vely_full = (proj.frb.data[('gas', 'velz')].in_units('cm**2/s')/thickness.in_units('cm')).value
                         magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
-                        #magx_1 = (proj.frb.data[('gas', 'magx_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
-                        #magx_2 = (proj.frb.data[('gas', 'magy_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
-                        #magx_1 = (proj.frb.data[('gas', 'magx')].in_units('gauss*cm')/thickness.in_units('cm')).value
-                        #magx_2 = (proj.frb.data[('gas', 'magy')].in_units('gauss*cm')/thickness.in_units('cm')).value
-                        #magx = np.sqrt(np.square(magx_1) + np.square(magx_2))
-                        #del magx_1
-                        #del magx_2
                         magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
-                        #magy = (proj.frb.data[('gas', 'magz')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                         mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
-                        '''
-                        if np.median(image[200:600,400]) > 5.e-15:
-                            image = image.T
-                            velx_full = velx_full.T
-                            vely_full = vely_full.T
-                            magx = magx.T
-                            magy = magy.T
-                            mass = mass.T
-                        '''
                         
                         velx_full = velx_full/mass
                         vely_full = vely_full/mass
                         magx = magx/mass
                         magy = magy/mass
                         del mass
-                        
-                        
-                        
+
                         velx, vely = mym.get_quiver_arrays(0.0, 0.0, X[pit], velx_full, vely_full, center_vel=center_vel)
                         del velx_full
                         del vely_full
@@ -655,7 +618,7 @@ def main():
                     f.close()
 
                 plot = axes_dict[ax_label].pcolormesh(X[pit], Y[pit], image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
-                #plt.gca().set_aspect('equal')
+                plt.gca().set_aspect('equal')
                 if frame_val > 0 or time_val > -1.0:
                     axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 else:
