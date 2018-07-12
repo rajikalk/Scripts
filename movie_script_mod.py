@@ -461,12 +461,20 @@ def main():
                     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
                     del velx_full
                     del vely_full
-    
-                    pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-                    file = open(pickle_file, 'w+')
-                    pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel), file)
-                    file.close()
-                    print "Created Pickle:", pickle_file, "for  file:", usable_files[frame_val]
+
+                    if len(frames) == 1:
+                        if rank == 0:
+                            pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                            file = open(pickle_file, 'w+')
+                            pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel), file)
+                            file.close()
+                            print "Created Pickle:", pickle_file, "for  file:", usable_files[frame_val]
+                    else:
+                        pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                        file = open(pickle_file, 'w+')
+                        pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel), file)
+                        file.close()
+                        print "Created Pickle:", pickle_file, "for  file:", usable_files[frame_val]
 
                 f.close()
                     
@@ -569,7 +577,7 @@ def main():
                 print "Got pickle file name"
                 file = open(pickle_file, 'w+')
                 print "Opened pickle file"
-                pickle.dump((usable_files[frame_val], X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, args), file)
+                pickle.dump((usable_files[frame_val], X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, args, magx, magy), file)
                 print "Dumped data into pickle"
                 file.close()
                 print "Created pickle"
