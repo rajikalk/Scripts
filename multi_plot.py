@@ -30,16 +30,12 @@ def parse_inputs():
     args = parser.parse_args()
     return args
 
-def get_image_arrays(f, field, simfo, args, part_info, X, Y):
+def get_image_arrays(f, field, simfo, args, X, Y):
     dim = int(simfo['dimension'])
     image = []
-    x_pos_min = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
-    x_pos_max = int(np.ceil(np.max(X) - simfo['xmin_full'])/simfo['cell_length'])
-    y_pos_min = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
-    y_pos_max = int(np.ceil(np.max(Y) - simfo['xmin_full'])/simfo['cell_length'])
-    xpos = x_pos_min
-    ypos = y_pos_min
-    #print "XPOS =", xpos
+    xpos = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
+    ypos = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
+    print "XPOS =", xpos
     for x in range(ypos, ypos+len(X[0])):
         image_val = f[field][x]
         if np.shape(image_val)[0] == 1:
@@ -201,12 +197,14 @@ for it in range(len(positions)):
 
         pickle_file = save_dir + 'movie_pickle.pkl'
         file = open(pickle_file, 'r')
-        movie_file, X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, margs = pickle.load(file)
+        movie_file, X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, margs, magx, magy = pickle.load(file)
         file.close()
         movf = h5py.File(movie_file, 'r')
         plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
+        '''
         magx = get_image_arrays(movf, 'mag'+margs.axis[0]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
         magy = get_image_arrays(movf, 'mag'+margs.axis[1]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
+        '''
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
