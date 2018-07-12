@@ -434,7 +434,7 @@ def main():
                     del temp
                     del dd
             
-                    proj = yt.OffAxisProjectionPlot(f, L, [simfo['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw', 'Projected_Magnetic_Field_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
+                    proj = yt.OffAxisProjectionPlot(f, L, [simfo['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     f.close()
                     image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
                     velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
