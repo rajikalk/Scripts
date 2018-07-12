@@ -502,3 +502,55 @@ def _magz_mw(field, data):
     return mag_mw
 
 yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
+
+def _velx_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of velx
+    """
+    velx = data['velx']
+    cell_mass = data['cell_mass']
+    vel_mw = velx*cell_mass
+    del velx
+    del cell_mass
+    return vel_mw
+
+yt.add_field("velx_mw", function=_velx_mw, units=r"cm*g/s")
+
+def _vely_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of vely
+    """
+    vely = data['vely']
+    cell_mass = data['cell_mass']
+    vel_mw = vely*cell_mass
+    del vely
+    del cell_mass
+    return vel_mw
+
+yt.add_field("vely_mw", function=_vely_mw, units=r"cm*g/s")
+
+def _magx_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magx
+    """
+    magx = data['magx']
+    cell_mass = data['cell_mass']
+    mag_mw = magx*cell_mass
+    del magx
+    del cell_mass
+    return mag_mw
+
+yt.add_field("magx_mw", function=_magx_mw, units=r"gauss*g")
+
+def _magy_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magy
+    """
+    magy = data['magy']
+    cell_mass = data['cell_mass']
+    mag_mw = magy*cell_mass
+    del magy
+    del cell_mass
+    return mag_mw
+
+yt.add_field("magy_mw", function=_magy_mw, units=r"gauss*g")
