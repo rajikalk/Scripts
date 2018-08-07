@@ -58,7 +58,7 @@ def find_sink_formation_time(files):
             if 'particlemasses' in f.keys():
                 sink_form = f['time'][0]/yt.units.yr.in_units('s').value
                 break
-        if sink_form == None:
+        if sink_form is None:
             sink_form = -1*f['time'][0]/yt.units.yr.in_units('s').value
     return sink_form
 
@@ -95,7 +95,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=20
         sink_form_time = find_sink_formation_time(files)
         max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
         f.close()
-    if end_time != None and end_time < max_time:
+    if end_time is not None and end_time < max_time:
         max_time = end_time
 
     if presink_frames != 0:
@@ -106,7 +106,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=20
 
     postsink = 0.0
     while postsink <= max_time:
-        if start_time != None:
+        if start_time is not None:
             if postsink >= start_time:
                 m_times.append(postsink)
         else:
@@ -175,6 +175,7 @@ def find_files(m_times, files):
                                 app_ind = app_ind + 1
                     '''
                     f = h5py.File(append_file, 'r')
+                    print "found file", append_file, ", checking if particles exist"
                     if f[f.keys()[9]][-1][-1] == 0:
                         found_first_particle_file = False
                         app_ind = files.index(append_file) + 1
@@ -183,6 +184,7 @@ def find_files(m_times, files):
                             f = h5py.File(append_file, 'r')
                             if f[f.keys()[9]][-1][-1] > 0:
                                 found_first_particle_file = True
+                                print "found particles in file", append_file
                             else:
                                 app_ind = app_ind + 1
                 except:
@@ -232,7 +234,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
             part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
             depth_pos = range(len(part_mass))
         else:
-            if proj_or != None:
+            if proj_or is not None:
                 L = np.array([proj_or[0],proj_or[1]])
                 L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
@@ -326,7 +328,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
 
 def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None):
     annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
-    if smooth_cells == None:
+    if smooth_cells is None:
         smoothing_val = int(annotate_freq/2)
     else:
         smoothing_val = int(smooth_cells)
@@ -361,9 +363,12 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         vely.append(yarr)
     velx = np.array(velx)
     vely = np.array(vely)
-    if center_vel != None:
+    try:
         velx = velx - center_vel[0]
         vely = vely - center_vel[1]
+    except:
+        velx = velx
+        vely = vely
     return velx, vely
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None):
@@ -374,7 +379,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     elif plot_velocity_legend == 'True':
         plot_velocity_legend = True
     standard_vel = yt.units.km.in_units('cm').value * standard_vel
-    if limits == None:
+    if limits is None:
         xmin = np.min(X_pos)
         xmax = np.max(X_pos)
         ymin = np.min(Y_pos)
@@ -407,9 +412,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
 
 def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None,depth_array=None):
     global fontgize_global
-    if depth_array == None:
+    if depth_array is None:
         depth_array = np.arange(len(particle_position[0]))
-    if annotate_field != None and units != None:
+    if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
     part_color = ['cyan','cyan','r','c','y','w','k']
     xmin = limits[0][0]
@@ -442,8 +447,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=1., c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=1, edgecolor='k')
         axis.add_patch(circle)
-        if annotate_field != None:
-            if units != None:
+        if annotate_field is not None:
+            if units is not None:
                 annotate_field = annotate_field.in_units(units)
             if unit_string == 'M$_\odot$':
                 P_msun = str(np.round(annotate_field[pos_it], 2))
@@ -457,7 +462,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             else:
                 p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
             #print("p_t =", p_t)
-    if annotate_field != None:
+    if annotate_field is not None:
         part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
         part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         #axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
@@ -466,9 +471,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
 
 def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None):
     unit_string = str(x.unit_quantity).split(' ')[-1]
-    if bin_data == None:
+    if bin_data is None:
         bin_data = x
-    if n_bins == None:
+    if n_bins is None:
         unit_string = str(bin_data.unit_quantity).split(' ')[-1]
         bins = [0] + list(set(bin_data.value))
         bins = np.sort(bins)
@@ -476,7 +481,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
         bins = np.append(bins, bins[-1] + (bins[-1]-bins[-2]))
         bins = yt.YTArray(bins, unit_string)
     elif log == True:
-        if bin_min == None:
+        if bin_min is None:
             bins = np.logspace(np.log10(np.min(bin_data)), np.log10(np.max(x)), n_bins+1)
         else:
             bins = np.logspace(np.log10(bin_min), np.log10(np.max(x)), n_bins+1)
@@ -495,7 +500,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
         mid_x = (bin+prev_bin)/2.
         x_array.append(mid_x)
         if len(ind) != 0:
-            if weight != None:
+            if weight is not None:
                 bin_val = (np.sum(y[ind]*weight[ind]))/np.sum(weight[ind])
             else:
                 bin_val = np.mean(y[ind])
@@ -585,13 +590,13 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
         dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
         field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
 
-    if weight != None:
+    if weight is not None:
         weight_field = (dd[weight][nearest_points[:,0]].reshape(xy[0].shape) + dd[weight][nearest_points[:,1]].reshape(xy[0].shape))/2.
     else:
         weight_field = np.ones(np.shape(field_grid))
     weight_field = weight_field/np.max(weight_field)
 
-    if units != None:
+    if units is not None:
         field_grid = field_grid.in_units(units)
     field_grid = field_grid
 
@@ -603,7 +608,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
     fig, ax = plt.subplots()
     #print("len(xy[0]) =", len(xy[0]))
     if log:
-        if vmin != None:
+        if vmin is not None:
             plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(vmin=vmin, vmax=vmax), rasterized=True)
             for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
                 i[3] = j
@@ -612,7 +617,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
             for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
                 i[3] = j
     else:
-        if vmin != None:
+        if vmin is not None:
             plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=vmin, vmax=vmax)
             for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
                 i[3] = j
