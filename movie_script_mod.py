@@ -589,7 +589,7 @@ def main():
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 if 0.0 in (cbar_min, cbar_max):
-                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True)
+                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
                 else:
                     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
                 plt.gca().set_aspect('equal')
@@ -619,7 +619,10 @@ def main():
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
                 cbar = plt.colorbar(plot, pad=0.0)
-                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+                if simfo['field'] == 'dens':
+                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+                else:
+                    cbar.set_label(simfo['field'], rotation=270, labelpad=14, size=args.text_font)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
                 for line in ax.xaxis.get_ticklines():
