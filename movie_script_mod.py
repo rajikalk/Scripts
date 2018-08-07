@@ -383,6 +383,7 @@ def main():
                 else:
                     center_vel=center_vel[::2]
                 if args.axis == "xz":
+                    '''
                     proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'cell_mass', 'velz_mw', 'magz_mw', 'Projected_Magnetic_Field_mw', 'Projected_Velocity_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
                     velx_full = (proj.frb.data[('gas', 'Projected_Velocity_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
@@ -390,7 +391,15 @@ def main():
                     magx = (proj.frb.data[('gas', 'Projected_Magnetic_Field_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                     magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
+                    '''
+                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='cell_mass')
+                    image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
+                    velx_full = (np.sqrt(proj.frb.data[('gas', 'velx')]**2. + proj.frb.data[('gas', 'vely')]**2.)/thickness.in_units('cm')).value
+                    vely_full = (proj.frb.data[('gas', 'velz')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
+                    magx = (np.sqrt(proj.frb.data[('gas', 'magx')]**2. + proj.frb.data[('gas', 'magy')]**2.)/thickness.in_units('cm')).value
+                    magy = (proj.frb.data[('gas', 'magz')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                 else:
+                    '''
                     proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'cell_mass', 'velx_mw', 'vely_mw', 'magx_mw', 'magy_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
                     velx_full = (proj.frb.data[('gas', 'velx_mw')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
@@ -398,11 +407,21 @@ def main():
                     magx = (proj.frb.data[('gas', 'magx_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                     magy = (proj.frb.data[('gas', 'magy_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
+                    '''
+                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='cell_mass')
+                    image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
+                    velx_full = (proj.frb.data[('gas', 'velx')]/thickness.in_units('cm')).value
+                    vely_full = (proj.frb.data[('gas', 'vely')]/thickness.in_units('cm')).value
+                    magx = (proj.frb.data[('gas', 'magx')]/thickness.in_units('cm')).value
+                    magy = (proj.frb.data[('gas', 'magy')]/thickness.in_units('cm')).value
+                
+                '''
                 velx_full = velx_full/mass
                 vely_full = vely_full/mass
                 magx = magx/mass
                 magy = magy/mass
                 del mass
+                '''
 
                 velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
                 del velx_full
