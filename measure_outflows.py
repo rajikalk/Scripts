@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from mpi4py import MPI
 import numpy as np
 import h5py
 import csv
@@ -8,11 +9,11 @@ import matplotlib.pyplot as plt
 import sys
 import glob
 import yt
+yt.enable_parallelism()
 import os
 import argparse
 import my_module as mym
 import my_fields as myf
-from mpi4py import MPI
 
 def parse_inputs():
     import argparse
@@ -106,13 +107,13 @@ if rank == 0:
         f.close()
     f = open(save_dir + output_file, 'w')
     if args.measure_disks == False:
-        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed, Unbound Mass, CoM dist, Mean speed \n')
+        f.write('Lref ' + dir.split('_')[-1] + ': Time, Mass, Momentum, Angular Momentum, Max speed, Unbound Mass, CoM dist, Mean speed, F_rad, F_tan \n')
     else:
         f.write('Lref ' + dir.split('_')[-1] + ': Time, Lz_1, Lz_2 \n')
     f.close()
 
 file_no = 0
-rit = 0
+rit = 1
 for file in usable_files:
     if rank == rit:
         part_file = file[:-12] + 'part' + file[-5:]
@@ -237,12 +238,14 @@ for file in usable_files:
                 mom = np.nan
                 L = np.nan
                 unbound_mass = np.nan
+        
+            F_rad = np.sum(dd['Gravitational_Force_on_particles_Rad'].value)
+            F_tan = np.sum(dd['Gravitational_Force_on_particles_Tan'].value)
             
-            
-            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed, "on rank", rit
+            print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed, F_rad, F_tan, "on rank", rit
 
             #send data to rank 0 to append to write out.
-            write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed]
+            write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed, F_rad, F_tan]
         comm.send(write_data, dest=0, tag=2)
         print "Sent data", write_data, "from rank", rank
 
