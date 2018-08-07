@@ -1,22 +1,19 @@
 #!/usr/bin/env python
 import yt
+yt.enable_parallelism()
 import numpy as np
-from subprocess import call
-import pickle
-import os
-import time
 
 center = 0
-n_bins = 100
-adaptive_bins = True
+center_pos = [0.0, 0.0, 0.0]
+center_vel = [0.0, 0.0, 0.0]
 coordinates = 'spherical'
-has_run = False
-global_enc_mass = []
 normal = [1.0, 0.0, 0.0]
+part_pos = yt.YTArray([], 'cm')
+part_mass = yt.YTArray([], 'g')
 
 def set_center(x):
     """
-    Sets the center used when calculateing fields.
+    Sets the center used when calculating fields.
     
     Type: int
     Default: 0
@@ -28,32 +25,37 @@ def set_center(x):
     global_enc_mass = []
     return center
 
-def set_n_bins(x):
+def set_part_pos(x):
     """
-    sets the number of bins used when calculating the enclosed mass
-    Type: int
+    Saves the particles positions.
     """
-    global n_bins
-    n_bins = int(x)
-    return x
+    global part_pos
+    part_pos = x
+    return part_pos
 
-def set_adaptive_bins(x):
+def set_part_mass(x):
     """
-    sets the whether adaptive bins are used when calculating used when calculating the enclosed mass
-    Type: bool
+    Saves the particles positions.
     """
-    global adaptive_bins
-    adaptive_bins = x
-    return x
+    global part_mass
+    part_mass = x
+    return part_mass
 
-def set_image_resolution(x):
+def set_center_vel(x):
     """
-    Sets image resolution (assuming square images) of slices of fields with dependancies on the enclosed mass.
-    Type: int
+    Sets the center velocity when calculating fields.
     """
-    global image_resolution
-    image_resolution = x
-    return image_resolution
+    global center_vel
+    center_vel = x
+    return center_vel
+
+def set_center_pos(x):
+    """
+    Sets the center position when calculating fields.
+    """
+    global center_pos
+    center_pos = x
+    return center_pos
 
 def set_coordinate_system(x):
     """
@@ -62,10 +64,8 @@ def set_coordinate_system(x):
     Default: 'cylindrical'
     Options: 'cylindrical', 'spherical'
     """
-    global global_enc_mass
     global coordinates
     coordinates = x
-    global_enc_mass = []
     return coordinates
 
 def set_normal(x):
@@ -87,26 +87,33 @@ def get_center():
     global center
     return center
 
-def get_n_bins():
+def get_part_pos():
     """
-    returns the currently set number of bins
+    Saves the particles positions.
     """
-    global n_bins
-    return n_bins
+    global part_pos
+    return part_pos
 
-def get_adaptive_bins():
+def get_part_mass():
     """
-    returns the current set adaptive_bins bool
+    Saves the particles positions.
     """
-    global adaptive_bins
-    return adaptive_bins
+    global part_mass
+    return part_mass
 
-def get_image_resolution():
+def get_center_vel():
     """
-    returns the currently set image resolution
+    Gets the center velocity when calculating fields.
     """
-    global image_resolution
-    return image_resolution
+    global center_vel
+    return center_vel
+
+def get_center_pos():
+    """
+    Gets the center position when calculating fields.
+    """
+    global center_pos
+    return center_pos
 
 def get_coordinate_system():
     """
@@ -122,47 +129,25 @@ def get_normal():
     global normal
     return normal
 
-def _CoM(field, data):
-    """
-    Calculate the center of mass. Always includes particles where possible.
-    """
-    TM = np.sum(data['cell_mass'].in_units('g'))
-    x_top = yt.YTArray(0.0, 'cm*g')
-    y_top = yt.YTArray(0.0, 'cm*g')
-    z_top = yt.YTArray(0.0, 'cm*g')
-    if ('all', u'particle_mass') in data.ds.field_list:
-        TM = TM + np.sum(data['particle_mass'].in_units('g'))
-        for part in range(len(data['particle_mass'])):
-            x_top = x_top + data['particle_mass'][part].in_units('g')*data['particle_posx'][part].in_units('cm')
-            y_top = y_top + data['particle_mass'][part].in_units('g')*data['particle_posy'][part].in_units('cm')
-            z_top = z_top + data['particle_mass'][part].in_units('g')*data['particle_posz'][part].in_units('cm')
-    x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
-    y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
-    z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
-    com = [(x_top/TM), (y_top/TM), (z_top/TM)]
-    com = yt.YTArray(com, 'cm')
-    del x_top
-    del y_top
-    del z_top
-    del TM
-    return com
-
-yt.add_field("CoM", function=_CoM, units=r"cm")
-
 def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
     global center
-    dd = data.ds.all_data()
-    if np.shape(data)[0] == 16:
-        center_pos = data['CoM'].in_units('cm')
-    elif center == 0:
-        center_pos = dd['CoM'].in_units('cm')
+    if center == 0:
+        try:
+            dd = data.ds.all_data()
+            try:
+                center_pos = dd.quantities.center_of_mass(use_particles=True)
+            except:
+                center_pos = dd.quantities.center_of_mass(use_particles=False)
+        except:
+            center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
     else:
+        dd = data.ds.all_data()
         center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
         center_pos = yt.YTArray(center_pos, 'cm')
-    del dd
+    set_center_pos(center_pos)
     return center_pos
 
 yt.add_field("Center_Position", function=_Center_Position, units=r"cm")
@@ -172,33 +157,60 @@ def _Center_Velocity(field, data):
     Returns the center velocity for the current set center.
     """
     global center
-    dd = data.ds.all_data()
-    center_vel = yt.YTArray(np.array([0.0,0.0,0.0]), 'cm/s')
-    if center == 0 and ('gas', 'velocity_x') in data.ds.derived_field_list:
-        if ('all', u'particle_mass') in data.ds.field_list:
-            center_vel = dd.quantities.bulk_velocity(use_particles=True)
-        else:
-            center_vel = dd.quantities.bulk_velocity(use_particles=False)
-    elif center == 0 and ('gas', 'velocity_x') not in data.ds.derived_field_list:
-        center_vel = yt.YTArray([np.sum(dd['velx'].in_units('cm/s').value), np.sum(dd['vely'].in_units('cm/s').value), np.sum(dd['velz'].in_units('cm/s').value)], 'cm/s')
+    if center == 0:
+        try:
+            dd = data.ds.all_data()
+            try:
+                center_vel = dd.quantities.bulk_velocity(use_particles=True)
+            except:
+                center_vel = dd.quantities.bulk_velocity(use_particles=False)
+        except:
+            center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     else:
+        dd = data.ds.all_data()
         center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
-    del dd
+    set_center_vel(center_vel)
     return center_vel
 
 yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s")
+
+def _All_Particle_Positions(field, data):
+    """
+    Saves all the particle positions
+    """
+    global part_pos
+    try:
+        dd = data.ds.all_data()
+        pos = np.array([dd['particle_posx'].in_units('cm').value, dd['particle_posy'].in_units('cm').value, dd['particle_posz'].in_units('cm').value])
+        pos = yt.YTArray(pos.T, 'cm')
+    except:
+        pos = yt.YTArray([], 'cm')
+    set_part_pos(pos)
+    return pos
+
+yt.add_field("All_Particle_Positions", function=_All_Particle_Positions, units=r"cm")
+
+def _All_Particle_Masses(field, data):
+    """
+    Saves all the particle masses
+    """
+    global part_mass
+    try:
+        dd = data.ds.all_data()
+        mass = dd['particle_mass']
+    except:
+        mass = yt.YTArray([], 'g')
+    set_part_mass(mass)
+    return mass
+
+yt.add_field("All_Particle_Masses", function=_All_Particle_Masses, units=r"g")
 
 def _dx_from_Center(field, data):
     """
     Calculates the change in x position from the current set center.
     """
-    if ('gas', 'Center_Position') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_pos = dd['Center_Position'][0].in_units('cm')
-    else:
-        center_pos = yt.YTArray(0.0, 'cm')
-    dx = data['x'].in_units('cm')-center_pos
-    del center_pos
+    global center_pos
+    dx = data['x'].in_units('cm')-center_pos[0]
     return dx
 
 yt.add_field("dx_from_Center", function=_dx_from_Center, units=r"cm")
@@ -207,13 +219,8 @@ def _dy_from_Center(field, data):
     """
     Calculates the change in y position from the current set center.
     """
-    if ('gas', 'Center_Position') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_pos = dd['Center_Position'][1].in_units('cm')
-    else:
-        center_pos = yt.YTArray(0.0, 'cm')
-    dy = data['y'].in_units('cm')-center_pos
-    del center_pos
+    global center_pos
+    dy = data['y'].in_units('cm')-center_pos[1]
     return dy
 
 yt.add_field("dy_from_Center", function=_dy_from_Center, units=r"cm")
@@ -222,13 +229,8 @@ def _dz_from_Center(field, data):
     """
     Calculates the change in z position from the current set center.
     """
-    if ('gas', 'Center_Position') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_pos = dd['Center_Position'][2].in_units('cm')
-    else:
-        center_pos = yt.YTArray(0.0, 'cm')
-    dz = data['z'].in_units('cm')-center_pos
-    del center_pos
+    global center_pos
+    dz = data['z'].in_units('cm')-center_pos[2]
     return dz
 
 yt.add_field("dz_from_Center", function=_dz_from_Center, units=r"cm")
@@ -248,51 +250,30 @@ yt.add_field("Distance_from_Center", function=_Distance_from_Center, units=r"cm"
 
 def _Corrected_velx(field, data):
     """
-    Calculates the x-velocity correcnted for the bulk velocity.
+    Calculates the x-velocity corrected for the bulk velocity.
     """
-    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_vel = dd['Center_Velocity'][0].in_units('cm/s')
-    else:
-        center_vel = yt.YTArray(0.0, 'cm/s')
-    velx = data['velx'].in_units('cm/s')
-    dvx = velx - center_vel
-    del velx
-    del center_vel
+    global center_vel
+    dvx = data['velx'].in_units('cm/s') - center_vel[0]
     return dvx
 
 yt.add_field("Corrected_velx", function=_Corrected_velx, units=r"cm/s")
 
 def _Corrected_vely(field, data):
     """
-    Calculates the y-velocity correcnted for the bulk velocity.
+    Calculates the y-velocity corrected for the bulk velocity.
     """
-    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_vel = dd['Center_Velocity'][1].in_units('cm/s')
-    else:
-        center_vel = yt.YTArray(0.0, 'cm/s')
-    vely = data['vely'].in_units('cm/s')
-    dvy = vely - center_vel
-    del vely
-    del center_vel
+    global center_vel
+    dvy = data['vely'].in_units('cm/s') - center_vel[1]
     return dvy
 
 yt.add_field("Corrected_vely", function=_Corrected_vely, units=r"cm/s")
 
 def _Corrected_velz(field, data):
     """
-    Calculates the z-velocity correcnted for the bulk velocity.
+    Calculates the z-velocity corrected for the bulk velocity.
     """
-    if ('gas', 'Center_Velocity') in data.ds.derived_field_list:
-        dd = data.ds.all_data()
-        center_vel = dd['Center_Velocity'][2].in_units('cm/s')
-    else:
-        center_vel = yt.YTArray(0.0, 'cm/s')
-    velz = data['velz'].in_units('cm/s')
-    dvz = velz - center_vel
-    del velz
-    del center_vel
+    global center_vel
+    dvz = data['velz'].in_units('cm/s') - center_vel[2]
     return dvz
 
 yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s")
@@ -315,25 +296,15 @@ def _Projected_Velocity(field, data):
     Calculates the projected velocity on the plane perpendicular to the normal vector L.
     """
     global normal
-    #velx = data[('Corrected_velx')].in_units('cm/s').value
-    #vely = data[('Corrected_vely')].in_units('cm/s').value
-    velx = data['velx'].in_units('cm/s').value
-    vely = data['vely'].in_units('cm/s').value
+    velx = data[('Corrected_velx')].in_units('cm/s').value
+    vely = data[('Corrected_vely')].in_units('cm/s').value
     vels = np.array([velx, vely])
-    del velx
-    del vely
     pos_vec = np.array([-1*normal[1], normal[0]])
-    if np.shape(data)[0] != 16:
-        vels = vels.T
-        c = (np.dot(vels,pos_vec))/(np.dot(pos_vec,pos_vec))
-        pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
-        del pos_vec
-        vels = c*pos_mag
-        del c
-        vels = yt.YTArray(vels, 'cm/s')
-    else:
-        #vels = data['Corrected_vely']
-        vels = data['vely'].in_units('cm/s').value
+    vels = vels.T
+    c = (np.dot(vels,pos_vec))/(np.dot(pos_vec,pos_vec))
+    pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+    vels = c*pos_mag
+    vels = yt.YTArray(vels, 'cm/s')
     return vels
 
 yt.add_field("Projected_Velocity", function=_Projected_Velocity, units=r"cm/s")
@@ -346,19 +317,12 @@ def _Projected_Magnetic_Field(field, data):
     magx = data[('magx')].value
     magy = data[('magy')].value
     mags = np.array([magx, magy])
-    del magx
-    del magy
     pos_vec = np.array([-1*normal[1], normal[0]])
-    if np.shape(data)[0] != 16:
-        mags = mags.T
-        c = (np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec))
-        pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
-        del pos_vec
-        mags = c*pos_mag
-        del c
-        mags = yt.YTArray(mags, 'gauss')
-    else:
-        mags = data['magy']
+    mags = mags.T
+    c = (np.dot(mags,pos_vec))/(np.dot(pos_vec,pos_vec))
+    pos_mag = np.sqrt(pos_vec[0]**2. + pos_vec[1]**2.)
+    mags = c*pos_mag
+    mags = yt.YTArray(mags, 'gauss')
     return mags
 
 yt.add_field("Projected_Magnetic_Field", function=_Projected_Magnetic_Field, units=r"gauss")
@@ -383,8 +347,6 @@ def _Tangential_Velocity(field, data):
     v_mag = data['Corrected_vel_mag']
     v_r = data['Radial_Velocity']
     v_t = np.sqrt(v_mag**2. - v_r**2.)
-    del v_mag
-    del v_r
     return v_t
 
 yt.add_field("Tangential_Velocity", function=_Tangential_Velocity, units=r"cm/s")
@@ -393,25 +355,22 @@ def _Particle_Potential(field, data):
     """
     Calculates the potential from the praticles.
     """
-    Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
-    if ('all', u'particle_mass') in data.ds.field_list:
-        dd = data.ds.all_data()
-        for part in range(len(dd['particle_mass'])):
-            dx = data['x'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
-            dy = data['y'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
-            dz = data['z'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+    global part_pos
+    global part_mass
+    try:
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
+        for part in range(len(part_mass)):
+            dx = data['x'].in_units('cm') - part_pos[part][0].in_units('cm')
+            dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
+            dz = data['z'].in_units('cm') - part_pos[part][2].in_units('cm')
             r = np.sqrt(dx**2. + dy**2. + dz**2.)
-            gpot = -(yt.physical_constants.G*dd['particle_mass'][part].in_units('g'))/r
+            gpot = -(yt.physical_constants.G*part_mass)/r
             Part_gpot = Part_gpot + gpot
-        del dx
-        del dy
-        del dz
-        del r
-        del gpot
-        del dd
+    except:
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
     return Part_gpot
 
-yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2")
+yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2", particle_type=True)
 
 def _Total_Potential(field, data):
     """
@@ -420,8 +379,6 @@ def _Total_Potential(field, data):
     gas_pot = data['gpot']
     part_pot = data['Particle_Potential']
     G_pot_total = gas_pot + part_pot
-    del gas_pot
-    del part_pot
     return G_pot_total
 
 yt.add_field("Total_Potential", function=_Total_Potential, units=r"cm**2/s**2")
@@ -432,7 +389,6 @@ def _Keplerian_Velocity(field, data):
     """
     total_pot = data['Total_Potential']
     keplerian_field = np.sqrt(-1*total_pot)
-    del total_pot
     return keplerian_field
 
 yt.add_field("Keplerian_Velocity", function=_Keplerian_Velocity, units=r"cm/s")
@@ -442,11 +398,8 @@ def _Relative_Keplerian_Velocity(field, data):
     Calculates the Relative Keplerian Velocity.
     """
     v_mag = data['Tangential_Velocity']
-    #v_mag = data['Corrected_vel_mag']
     v_kep = data['Keplerian_Velocity']
     rel_kep = v_mag/v_kep
-    del v_mag
-    del v_kep
     return rel_kep
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
@@ -458,50 +411,9 @@ def _Projected_Velocity_mw(field, data):
     proj_vel = data['Projected_Velocity']
     cell_mass = data['cell_mass']
     vel_mw = proj_vel*cell_mass
-    del proj_vel
-    del cell_mass
     return vel_mw
 
 yt.add_field("Projected_Velocity_mw", function=_Projected_Velocity_mw, units=r"cm*g/s")
-
-def _velz_mw(field, data):
-    """
-    field to be able to created a mass weighted projection of velz
-    """
-    velz = data['velz']
-    cell_mass = data['cell_mass']
-    vel_mw = velz*cell_mass
-    del velz
-    del cell_mass
-    return vel_mw
-
-yt.add_field("velz_mw", function=_velz_mw, units=r"cm*g/s")
-
-def _Projected_Magnetic_Field_mw(field, data):
-    """
-    field to be able to created a mass weighted projection of Projected_Magnetic_Field
-    """
-    proj_mag = data['Projected_Magnetic_Field']
-    cell_mass = data['cell_mass']
-    mag_mw = proj_mag*cell_mass
-    del proj_mag
-    del cell_mass
-    return mag_mw
-
-yt.add_field("Projected_Magnetic_Field_mw", function=_Projected_Magnetic_Field_mw, units=r"gauss*g")
-
-def _magz_mw(field, data):
-    """
-    field to be able to created a mass weighted projection of magz
-    """
-    magz = data['magz']
-    cell_mass = data['cell_mass']
-    mag_mw = magz*cell_mass
-    del magz
-    del cell_mass
-    return mag_mw
-
-yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
 
 def _velx_mw(field, data):
     """
@@ -510,8 +422,6 @@ def _velx_mw(field, data):
     velx = data['velx']
     cell_mass = data['cell_mass']
     vel_mw = velx*cell_mass
-    del velx
-    del cell_mass
     return vel_mw
 
 yt.add_field("velx_mw", function=_velx_mw, units=r"cm*g/s")
@@ -523,11 +433,31 @@ def _vely_mw(field, data):
     vely = data['vely']
     cell_mass = data['cell_mass']
     vel_mw = vely*cell_mass
-    del vely
-    del cell_mass
     return vel_mw
 
 yt.add_field("vely_mw", function=_vely_mw, units=r"cm*g/s")
+
+def _velz_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of velz
+    """
+    velz = data['velz']
+    cell_mass = data['cell_mass']
+    vel_mw = velz*cell_mass
+    return vel_mw
+
+yt.add_field("velz_mw", function=_velz_mw, units=r"cm*g/s")
+
+def _Projected_Magnetic_Field_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of Projected_Magnetic_Field
+    """
+    proj_mag = data['Projected_Magnetic_Field']
+    cell_mass = data['cell_mass']
+    mag_mw = proj_mag*cell_mass
+    return mag_mw
+
+yt.add_field("Projected_Magnetic_Field_mw", function=_Projected_Magnetic_Field_mw, units=r"gauss*g")
 
 def _magx_mw(field, data):
     """
@@ -536,21 +466,209 @@ def _magx_mw(field, data):
     magx = data['magx']
     cell_mass = data['cell_mass']
     mag_mw = magx*cell_mass
-    del magx
-    del cell_mass
     return mag_mw
 
 yt.add_field("magx_mw", function=_magx_mw, units=r"gauss*g")
 
 def _magy_mw(field, data):
     """
-    field to be able to created a mass weighted projection of magy
+    field to be able to created a mass weighted projection of magx
     """
     magy = data['magy']
     cell_mass = data['cell_mass']
     mag_mw = magy*cell_mass
-    del magy
-    del cell_mass
     return mag_mw
 
 yt.add_field("magy_mw", function=_magy_mw, units=r"gauss*g")
+
+def _magz_mw(field, data):
+    """
+    field to be able to created a mass weighted projection of magz
+    """
+    magz = data['magz']
+    cell_mass = data['cell_mass']
+    mag_mw = magz*cell_mass
+    return mag_mw
+
+yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
+
+def _Gravitational_Force_on_particles_x(field, data):
+    """
+    Calculates the x component of the gravitational force on the sink particles
+    """
+    try:
+        dd = data.ds.all_data()
+        F_x = yt.YTArray(np.zeros(np.shape(dd['particle_mass'])), 'cm*g/s**2')
+        cell_mass = dd['cell_mass'].in_units('g')
+        for part in range(len(dd['particle_mass'])):
+            dx = dd['x'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+            dy = dd['y'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+            dz = dd['z'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+            r = np.sqrt(dx**2. + dy**2. + dz**2.)
+            F_x_arr = ((yt.physical_constants.G*dd['particle_mass'][part]*cell_mass)/r**3.)*dx
+            F_x_tot = np.sum(F_x_arr)
+            if len(dd['particle_mass']) > 1:
+                dx = dd['particle_posx'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+                dy = dd['particle_posy'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+                dz = dd['particle_posz'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+                r = np.sqrt(dx**2. + dy**2. + dz**2.)
+                inds = np.argwhere(r != 0.0)[0]
+                F_part = ((yt.physical_constants.G*dd['particle_mass']*dd['particle_mass'][part])/r**3.)*dx
+                F_x_tot = F_x_tot + np.sum(F_part[inds])
+            F_x[part] = F_x_tot
+    except:
+        F_x = yt.YTArray([], 'cm*g/s**2')
+    return F_x
+
+yt.add_field("Gravitational_Force_on_particles_x", function=_Gravitational_Force_on_particles_x, units=r"cm*g/s**2", particle_type=True)
+
+def _Gravitational_Force_on_particles_y(field, data):
+    """
+    Calculates the y component of the gravitational force on the sink particles
+    """
+    try:
+        dd = data.ds.all_data()
+        F_y = yt.YTArray(np.zeros(np.shape(dd['particle_mass'])), 'cm*g/s**2')
+        cell_mass = dd['cell_mass'].in_units('g')
+        for part in range(len(dd['particle_mass'])):
+            dx = dd['x'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+            dy = dd['y'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+            dz = dd['z'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+            r = np.sqrt(dx**2. + dy**2. + dz**2.)
+            F_y_arr = ((yt.physical_constants.G*dd['particle_mass'][part]*cell_mass)/r**3.)*dy
+            F_y_tot = np.sum(F_y_arr)
+            if len(dd['particle_mass']) > 1:
+                dx = dd['particle_posx'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+                dy = dd['particle_posy'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+                dz = dd['particle_posz'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+                r = np.sqrt(dx**2. + dy**2. + dz**2.)
+                inds = np.argwhere(r != 0.0)[0]
+                F_part = ((yt.physical_constants.G*dd['particle_mass']*dd['particle_mass'][part])/r**3.)*dy
+                F_y_tot = F_y_tot + np.sum(F_part[inds])
+            F_y[part] = F_y_tot
+    except:
+        F_y = yt.YTArray([], 'cm*g/s**2')
+    return F_y
+
+yt.add_field("Gravitational_Force_on_particles_y", function=_Gravitational_Force_on_particles_y, units=r"cm*g/s**2", particle_type=True)
+
+def _Gravitational_Force_on_particles_z(field, data):
+    """
+    Calculates the z component of the gravitational force on the sink particles
+    """
+    try:
+        dd = data.ds.all_data()
+        F_z = yt.YTArray(np.zeros(np.shape(dd['particle_mass'])), 'cm*g/s**2')
+        cell_mass = dd['cell_mass'].in_units('g')
+        for part in range(len(dd['particle_mass'])):
+            dx = dd['x'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+            dy = dd['y'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+            dz = dd['z'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+            r = np.sqrt(dx**2. + dy**2. + dz**2.)
+            F_z_arr = ((yt.physical_constants.G*dd['particle_mass'][part]*cell_mass)/r**3.)*dz
+            F_z_tot = np.sum(F_z_arr)
+            if len(dd['particle_mass']) > 1:
+                dx = dd['particle_posx'].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+                dy = dd['particle_posy'].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+                dz = dd['particle_posz'].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+                r = np.sqrt(dx**2. + dy**2. + dz**2.)
+                inds = np.argwhere(r != 0.0)[0]
+                F_part = ((yt.physical_constants.G*dd['particle_mass']*dd['particle_mass'][part])/r**3.)*dz
+                F_z_tot = F_z_tot + np.sum(F_part[inds])
+            F_z[part] = F_z_tot
+    except:
+        F_z = yt.YTArray([], 'cm*g/s**2')
+    return F_z
+
+yt.add_field("Gravitational_Force_on_particles_z", function=_Gravitational_Force_on_particles_z, units=r"cm*g/s**2", particle_type=True)
+
+def _Gravitational_Force_on_particles_mag(field, data):
+    """
+    Calculates the magnitude of the gravitational force on the sink particles
+    """
+    F_mag = np.sqrt(data['Gravitational_Force_on_particles_x']**2. + data['Gravitational_Force_on_particles_y']**2. + data['Gravitational_Force_on_particles_z']**2.)
+    return F_mag
+
+yt.add_field("Gravitational_Force_on_particles_mag", function=_Gravitational_Force_on_particles_mag, units=r"cm*g/s**2", particle_type=True)
+
+def _Gravitational_Force_on_particles_Rad(field, data):
+    """
+    The component of the gravitational force on the particles in the radial direction from the current center.
+    """
+    try:
+        dd = data.ds.all_data()
+        center_pos = dd['Center_Position']
+        F_rad = yt.YTArray(np.zeros(np.shape(dd['particle_mass'])), 'cm*g/s**2')
+        for part in range(len(dd['particle_mass'])):
+            dx = center_pos[0].in_units('cm') - dd['particle_posx'][part].in_units('cm')
+            dy = center_pos[1].in_units('cm') - dd['particle_posy'][part].in_units('cm')
+            dz = center_pos[2].in_units('cm') - dd['particle_posz'][part].in_units('cm')
+            r = np.array([dx.value, dy.value, dz.value])
+            F_x = dd['Gravitational_Force_on_particles_x'][part].value
+            F_y = dd['Gravitational_Force_on_particles_y'][part].value
+            F_z = dd['Gravitational_Force_on_particles_z'][part].value
+            F = np.array([F_x, F_y, F_z])
+            F_proj = (np.dot(F, r)/np.dot(r,r))*r
+            F_mag = np.sqrt(F_proj[0]**2. + F_proj[1]**2. + F_proj[2]**2.)
+            F_rad[part] = F_mag
+    except:
+        F_rad = yt.YTArray([], 'cm*g/s**2')
+    return F_rad
+
+yt.add_field("Gravitational_Force_on_particles_Rad", function=_Gravitational_Force_on_particles_Rad, units=r"cm*g/s**2", particle_type=True)
+
+def _Gravitational_Force_on_particles_Tan(field, data):
+    """
+    The component of the gravitational force on the particles in the radial direction from the current center.
+    """
+    F_mag = data['Gravitational_Force_on_particles_mag']
+    F_rad = data['Gravitational_Force_on_particles_Rad']
+    F_tan = np.sqrt(F_mag**2. - F_rad**2.)
+    return F_tan
+
+yt.add_field("Gravitational_Force_on_particles_Tan", function=_Gravitational_Force_on_particles_Tan, units=r"cm*g/s**2", particle_type=True)
+
+def _Angular_Momentum_x(field, data):
+    """
+    Calculates the angular momentum in the x_direction about current set center.
+    """
+    L_x = data['cell_mass']*(data['Corrected_velx']*data['dy_from_Center']- data['Corrected_vely']*data['dz_from_Center'])
+    return L_x
+
+yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
+
+def _Angular_Momentum_y(field, data):
+    """
+    Calculates the angular momentum in the y_direction about current set center.
+    """
+    L_y = data['cell_mass']*(data['Corrected_velz']*data['dx_from_Center'] - data['Corrected_velx']*data['dz_from_Center'])
+    return L_y
+
+yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s")
+
+def _Angular_Momentum_z(field, data):
+    """
+    Calculates the angular momentum in the z_direction about current set center.
+    """
+    L_z = data['cell_mass']*(data['Corrected_vely']*data['dx_from_Center'] - data['Corrected_velx']*data['dy_from_Center'])
+    return L_z
+
+yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s")
+
+def _Angular_Momentum(field, data):
+    """
+    Calculates the angular momentum about current set center.
+    """
+    L = np.sqrt(data['Angular_Momentum_x']**2. + data['Angular_Momentum_y']**2. + data['Angular_Momentum_z']**2.)
+    return L
+
+yt.add_field("Angular_Momentum", function=_Angular_Momentum, units=r"g*cm**2/s")
+
+def _Specific_Angular_Momentum(field, data):
+    """
+    Calculates the specific angular momentum about current set center.
+    """
+    l = data['Angular_Momentum']/data['cell_mass']
+    return l
+
+yt.add_field("Specific_Angular_Momentum", function=_Specific_Angular_Momentum, units=r"cm**2/s")
