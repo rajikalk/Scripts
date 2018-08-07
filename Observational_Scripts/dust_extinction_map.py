@@ -6,12 +6,13 @@ import pickle
 import csv
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+import numpy as np
 
 Objects = []
 Bayes_factor = []
 
 header = 0
-with open('/short/ek9/rlk100/Bayes_analysis/Mean_velocity/3_sig/bayes_factors_reviewer_response.csv', 'rU') as f:
+with open('/short/ek9/rlk100/Bayes_analysis/Mean_velocity/3_sig/bayes_factors_reviewer_response.csv', 'r') as f:
     reader = csv.reader(f)
     for row in reader:
         if row[0] != 'UCAC4-1253626396':
@@ -23,9 +24,11 @@ RA_US = [[],[]]
 DEC_US = [[],[]]
 RA_UCL = [[],[]]
 DEC_UCL = [[],[]]
+SB2_RA = []
+SB2_DEC = []
 
 header = 0
-with open('/home/100/rlk100/WiFeS_target_spreadsheet_reviewer_response.csv', 'rU') as f:
+with open('/home/100/rlk100/WiFeS_target_spreadsheet_reviewer_response.csv', 'r') as f:
     reader = csv.reader(f)
     for row in reader:
         if header != 0:
@@ -39,6 +42,9 @@ with open('/home/100/rlk100/WiFeS_target_spreadsheet_reviewer_response.csv', 'rU
                     else:
                         RA_US[1].append(c.ra.value - 180)
                         DEC_US[1].append(c.dec.value)
+                    if row[0] == 'RIK-96':
+                        SB2_RA.append(c.ra.value - 180)
+                        SB2_DEC.append(c.dec.value)
                 else:
                     if Bayes_factor[ind] > 300.0:
                         RA_UCL[0].append(c.ra.value - 180)
@@ -46,6 +52,9 @@ with open('/home/100/rlk100/WiFeS_target_spreadsheet_reviewer_response.csv', 'rU
                     else:
                         RA_UCL[1].append(c.ra.value - 180)
                         DEC_UCL[1].append(c.dec.value)
+                    if row[0] == 'UCAC4-161328427':
+                        SB2_RA.append(c.ra.value - 180)
+                        SB2_DEC.append(c.dec.value)
         if header == 0:
             header = 1
 
@@ -113,10 +122,17 @@ pickle.dump((pix_val), temp_file)
 temp_file.close()
 print "wrote out pixel values"
 '''
-print "reading in pixel values"
-temp_file = open('pix_vals.pkl', 'rb')
-pix_val = pickle.load(temp_file)
-temp_file.close()
+print("reading in pixel values")
+#temp_file = open('pix_vals.pkl', 'rb')
+#pix_val = pickle.load(temp_file)
+#temp_file.close()
+pix_val = []
+with open('/short/ek9/rlk100/dust_val.csv', 'r') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        pix_val.append(float(row[0]))
+    f.close()
+pix_val = np.array(pix_val)
 
 lonra=[23, 75]
 latra=[-61, -15]
@@ -130,6 +146,7 @@ plt.scatter(RA_US[0], DEC_US[0], color='b', marker='v')
 plt.scatter(RA_US[1], DEC_US[1], color='b', marker='+', label='Upper Scorpius')
 plt.scatter(RA_UCL[0], DEC_UCL[0], color='r', marker='v')
 plt.scatter(RA_UCL[1], DEC_UCL[1], color='r', marker='+', label='Upper Centaurus-Lupus')
+plt.scatter(SB2_RA, SB2_DEC, s=100, facecolors='none', edgecolors='g')
 plt.legend(loc='lower right')
 plt.xlim(lonra)
 plt.ylim(latra)
