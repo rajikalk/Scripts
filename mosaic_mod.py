@@ -167,7 +167,9 @@ def sim_info(path, file, args):
         else:
             part_file = file[:-12] + 'part' + file[-5:]
             f = yt.load(file, particle_filename=part_file)
-            field = f.field_list[[x[1] for x in f.field_list].index(args.field)]
+            import pdb
+            pdb.set_trace()
+            field = f.derived_field_list[[x[1] for x in f.derived_field_list].index(args.field)]
         dim = 800
         zoom_cell = 0.0
         if args.ax_lim == None:
@@ -188,6 +190,7 @@ def sim_info(path, file, args):
         smoothing = annotate_freq/2
     else:
         smoothing = int(args.smooth_cells)
+    print "PLOT FIELD IS", field
     sim_info = {'angular_momentum':ang_val,
                 'movie_type':movie_type,
                 'field': field,
@@ -609,11 +612,19 @@ def main():
                         del velx_full
                         del vely_full
 
-                        pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-                        file = open(pickle_file, 'w+')
-                        pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
-                        file.close()
-                        print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
+                        if len(frames) == 1:
+                            if rank == 0:
+                                pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                                file = open(pickle_file, 'w+')
+                                pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
+                                file.close()
+                                print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
+                        else:
+                            pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                            file = open(pickle_file, 'w+')
+                            pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
+                            file.close()
+                            print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
                     
                     f.close()
 
