@@ -97,7 +97,7 @@ rows = np.max(positions[:,1])
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
 if plot_type[0] == "outflow":
-    f = plt.figure(figsize=(8, 12))
+    f = plt.figure(figsize=(6, 10))
 else:
     f = plt.figure(figsize=(width, height))
 gs_left = gridspec.GridSpec(rows, columns-1)
@@ -538,7 +538,7 @@ for it in range(len(positions)):
                 axes_dict[ax_label].set_ylabel('Sp. Ang. Mom. (km$^2\,$s$^{-1}$)')
                 #axes_dict[ax_label].set_ylim([1.e7, 1.e11])
             else:
-                axes_dict[ax_label].set_ylabel('Angular Momentum (M$_\odot$km$^2\,$s$^{-1}$)')
+                axes_dict[ax_label].set_ylabel('Ang. Mom. (M$_\odot$km$^2\,$s$^{-1}$)')
                 axes_dict[ax_label].set_ylim([1.e6, 5.e9])
                 #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             #axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
