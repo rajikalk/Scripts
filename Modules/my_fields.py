@@ -358,7 +358,7 @@ def _Particle_Potential(field, data):
     global part_pos
     global part_mass
     try:
-        Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data['x'])), 'cm**2/s**2')
         for part in range(len(part_mass)):
             dx = data['x'].in_units('cm') - part_pos[part][0].in_units('cm')
             dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
@@ -367,7 +367,7 @@ def _Particle_Potential(field, data):
             gpot = -(yt.physical_constants.G*part_mass)/r
             Part_gpot = Part_gpot + gpot
     except:
-        Part_gpot = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s**2')
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
     return Part_gpot
 
 yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2", particle_type=True)
@@ -403,7 +403,7 @@ def _Relative_Keplerian_Velocity(field, data):
     return rel_kep
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
-
+'''
 def _Projected_Velocity_mw(field, data):
     """
     field to be able to created a mass weighted projection of Projected_Velocity
@@ -491,7 +491,7 @@ def _magz_mw(field, data):
     return mag_mw
 
 yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
-
+'''
 def _Gravitational_Force_on_particles_x(field, data):
     """
     Calculates the x component of the gravitational force on the sink particles
