@@ -392,12 +392,14 @@ def main():
                     magy = (proj.frb.data[('gas', 'magz_mw')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm')).value
                     '''
-                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='cell_mass')
-                    image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value
-                    velx_full = (np.sqrt(proj.frb.data[('gas', 'velx')]**2. + proj.frb.data[('gas', 'vely')]**2.)/thickness.in_units('cm')).value
-                    vely_full = (proj.frb.data[('gas', 'velz')].in_units('g*cm**2/s')/thickness.in_units('cm')).value
-                    magx = (np.sqrt(proj.frb.data[('gas', 'magx')]**2. + proj.frb.data[('gas', 'magy')]**2.)/thickness.in_units('cm')).value
-                    magy = (proj.frb.data[('gas', 'magz')].in_units('g*gauss*cm')/thickness.in_units('cm')).value
+                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'velz', 'magx', 'magy', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field='dens')
+                    image = proj.frb.data[simfo['field']]
+                    velx_full = np.sqrt(proj.frb.data[('flash', 'velx')].in_units('cm/s')**2. + proj.frb.data[('flash', 'vely')].in_units('cm/s')**2.)
+                    vely_full = proj.frb.data[('flash', 'velz')].in_units('cm/s')
+                    magx = np.sqrt(proj.frb.data[('flash', 'magx')].in_units('cm/s')**2. + proj.frb.data[('flash', 'magy')].in_units('cm/s')**2.)
+                    magy = proj.frb.data[('flash', 'magz')].in_units('cm/s')
+                    import pdb
+                    pdb.set_trace()
                 else:
                     '''
                     proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'cell_mass', 'velx_mw', 'vely_mw', 'magx_mw', 'magy_mw'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
