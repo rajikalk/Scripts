@@ -10,6 +10,7 @@ coordinates = 'spherical'
 normal = [1.0, 0.0, 0.0]
 part_pos = yt.YTArray([], 'cm')
 part_mass = yt.YTArray([], 'g')
+part_vel = yt.YTArray([], 'cm/s')
 
 def set_center(x):
     """
@@ -32,6 +33,14 @@ def set_part_pos(x):
     global part_pos
     part_pos = x
     return part_pos
+
+def set_part_vel(x):
+    """
+    Saves the particles velocities.
+    """
+    global part_vel
+    part_vel = x
+    return part_vel
 
 def set_part_mass(x):
     """
@@ -89,14 +98,21 @@ def get_center():
 
 def get_part_pos():
     """
-    Saves the particles positions.
+    returns the particles positions.
     """
     global part_pos
     return part_pos
 
+def set_part_vel(x):
+    """
+    returns the particles velocities.
+    """
+    global part_vel
+    return part_vel
+
 def get_part_mass():
     """
-    Saves the particles positions.
+    returns the particles positions.
     """
     global part_mass
     return part_mass
@@ -189,6 +205,22 @@ def _All_Particle_Positions(field, data):
     return pos
 
 yt.add_field("All_Particle_Positions", function=_All_Particle_Positions, units=r"cm")
+
+def _All_Particle_Velocities(field, data):
+    """
+    Saves all the particle velocities
+    """
+    global part_vel
+    try:
+        dd = data.ds.all_data()
+        vel = np.array([dd['particle_velx'].in_units('cm/s').value, dd['particle_vely'].in_units('cm/s').value, dd['particle_velz'].in_units('cm/s').value])
+        vel = yt.YTArray(vel.T, 'cm/s')
+    except:
+        vel = yt.YTArray([], 'cm/s')
+    set_part_vel(vel)
+    return pos
+
+yt.add_field("All_Particle_Velocities", function=_All_Particle_Velocities, units=r"cm/s")
 
 def _All_Particle_Masses(field, data):
     """
@@ -358,7 +390,7 @@ def _Particle_Potential(field, data):
     global part_pos
     global part_mass
     try:
-        Part_gpot = yt.YTArray(np.zeros(np.shape(data['x'])), 'cm**2/s**2')
+        Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
         for part in range(len(part_mass)):
             dx = data['x'].in_units('cm') - part_pos[part][0].in_units('cm')
             dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
@@ -632,7 +664,7 @@ def _Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum in the x_direction about current set center.
     """
-    L_x = data['cell_mass']*(data['Corrected_velx']*data['dy_from_Center']- data['Corrected_vely']*data['dz_from_Center'])
+    L_x = data['cell_mass']*(data['Corrected_velz']*data['dy_from_Center']- data['Corrected_vely']*data['dz_from_Center'])
     return L_x
 
 yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
@@ -672,3 +704,68 @@ def _Specific_Angular_Momentum(field, data):
     return l
 
 yt.add_field("Specific_Angular_Momentum", function=_Specific_Angular_Momentum, units=r"cm**2/s")
+'''
+def _Particle_Angular_Momentum_x(field, data):
+    """
+    Calculates the angular momentum of the particles in the x_direction about current set center.
+    """
+    global part_mass
+    global part_vel
+    global center_vel
+    global part_pos
+    global center_pos
+    L_x = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[1] - center_pos[1]) - (part_vel.T[1] - center_vel[1])*(part_pos.T[2] - center_pos[2]))
+    L_x = yt.YTArray(L_x.value, 'g*cm**2/s')
+    return L_x
+
+yt.add_field("Particle_Angular_Momentum_x", function=_Particle_Angular_Momentum_x, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum_y(field, data):
+    """
+    Calculates the angular momentum of the particles in the y_direction about current set center.
+    """
+    global part_mass
+    global part_vel
+    global center_vel
+    global part_pos
+    global center_pos
+    L_y = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[2] - center_pos[2]))
+    L_y = yt.YTArray(L_y.value, 'g*cm**2/s')
+    return L_y
+
+yt.add_field("Particle_Angular_Momentum_y", function=_Particle_Angular_Momentum_y, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum_z(field, data):
+    """
+    Calculates the angular momentum of the particles in the z_direction about current set center.
+    """
+    global part_mass
+    global part_vel
+    global center_vel
+    global part_pos
+    global center_pos
+    L_z = part_mass*((part_vel.T[1] - center_vel[1])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[1] - center_pos[1]))
+    L_z = yt.YTArray(L_z.value, 'g*cm**2/s')
+    return L_z
+
+yt.add_field("Particle_Angular_Momentum_z", function=_Particle_Angular_Momentum_z, units=r"g*cm**2/s")
+
+def _Particle_Angular_Momentum(field, data):
+    """
+    Calculates the angular momentum about current set center for the particles
+    """
+    L = np.sqrt(data['Particle_Angular_Momentum_x']**2. + data['Particle_Angular_Momentum_y']**2. + data['Particle_Angular_Momentum_z']**2.)
+    return L
+
+yt.add_field("Particle_Angular_Momentum", function=_Particle_Angular_Momentum, units=r"g*cm**2/s")
+
+def _Particle_Specific_Angular_Momentum(field, data):
+    """
+    Calculates the specific angular momentum for the particles about current set center.
+    """
+    global part_mass
+    l = data['Particle_Angular_Momentum']/part_mass
+    return l
+
+yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")
+'''
