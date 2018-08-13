@@ -170,41 +170,42 @@ for it in range(len(positions)):
         else:
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
     if 'movie' in plot_type[it]:
-        axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
-        '''
-        if 'slice' in plot_type:
-            m_times = [float(mov_args[mov_args.index('-pt') + 1])]
-            sim_files = sorted(glob.glob(file_dir[it] + 'WIND_hdf5_plt_cnt_*'))
-            usable_files = mym.find_files(m_times, sim_files)
-            file = usable_files[0]
-            part_file = file[:-12] + 'part' + file[-5:]
-            ds = yt.load(file, particle_filename=part_file)
-            dd = ds.all_data()
-            time_val = ds.current_time.in_units('yr').value - np.min(dd['particle_creation_time'].value)/yt.units.yr.in_units('s').value
-            mov_args[mov_args.index('-pt') + 1] = str(time_val)
-        '''
+
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
+        get_plot_time = False
+        plot_time = 0
+        field_str = 'dens'
+        get_field = False
         for mov_arg in mov_args:
             if get_stdv:
                 standard_vel = float(mov_arg)
             if mov_arg == '-stdv':
                 get_stdv = True
+            if get_plot_time:
+                plot_time = str(float(mov_arg))
+                get_plot_time = False
+            if mov_arg == '-pt':
+                get_plot_time = True
+            if get_field:
+                field_str = mov_arg
+                get_field = False
+            if mov_arg == '-f':
+                get_field = True
             arg_list.append(mov_arg)
         call(arg_list)
 
-        pickle_file = save_dir + 'movie_pickle.pkl'
+        pickle_file = file_dir[it] + field_str + '_movie_time_'+plot_time+'.pkl'
         file = open(pickle_file, 'r')
-        movie_file, X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, margs, magx, magy = pickle.load(file)
+        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
         file.close()
-        movf = h5py.File(movie_file, 'r')
-        plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
-        '''
-        magx = get_image_arrays(movf, 'mag'+margs.axis[0]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
-        magy = get_image_arrays(movf, 'mag'+margs.axis[1]+'_'+simfo['movie_file_type']+'_'+margs.axis, simfo, margs, part_info, X, Y)
-        '''
+        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']):
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
+        else:
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
+        axes_dict[ax_label].set_aspect('equal')
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
@@ -238,7 +239,6 @@ for it in range(len(positions)):
                 axes_dict[ax_label].set_xlabel('Distance from center (AU)', fontsize=args.text_font)
             else:
                 axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
-        #axes_dict[ax_label].set_aspect((args_dict['ylim'][1] - args_dict['ylim'][0])/(args_dict['xlim'][1] - args_dict['xlim'][0]))
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         yt_args = input_args[it].split(' ')
