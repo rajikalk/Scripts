@@ -218,7 +218,7 @@ def _All_Particle_Velocities(field, data):
     except:
         vel = yt.YTArray([], 'cm/s')
     set_part_vel(vel)
-    return pos
+    return vel
 
 yt.add_field("All_Particle_Velocities", function=_All_Particle_Velocities, units=r"cm/s")
 
@@ -396,7 +396,7 @@ def _Particle_Potential(field, data):
             dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
             dz = data['z'].in_units('cm') - part_pos[part][2].in_units('cm')
             r = np.sqrt(dx**2. + dy**2. + dz**2.)
-            gpot = -(yt.physical_constants.G*part_mass)/r
+            gpot = -(yt.physical_constants.G*part_mass[part])/r
             Part_gpot = Part_gpot + gpot
     except:
         Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
