@@ -182,6 +182,7 @@ for it in range(len(positions)):
         for mov_arg in mov_args:
             if get_stdv:
                 standard_vel = float(mov_arg)
+                get_stdv = False
             if mov_arg == '-stdv':
                 get_stdv = True
             if get_plot_time:
@@ -195,9 +196,11 @@ for it in range(len(positions)):
             if mov_arg == '-f':
                 get_field = True
             arg_list.append(mov_arg)
-        call(arg_list)
 
         pickle_file = file_dir[it] + field_str + '_movie_time_'+plot_time+'.pkl'
+        if os.path.isfile(pickle_file) == False:
+            call(arg_list)
+
         file = open(pickle_file, 'r')
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
         file.close()
@@ -239,6 +242,8 @@ for it in range(len(positions)):
                 axes_dict[ax_label].set_xlabel('Distance from center (AU)', fontsize=args.text_font)
             else:
                 axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
+                    
+        print "added movie segment"
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         yt_args = input_args[it].split(' ')
@@ -364,12 +369,14 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
         axes_dict[ax_label].set_aspect((limits[1][1] - limits[1][0])/(limits[0][1] - limits[0][0]))
     if 'profile' in plot_type[it]:
-        #axp = axes_dict[ax_label]
         prof_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
-        #arg_list = ['python', '/Users/rajikak/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         get_rmax = False
         r_max = 500.
+        get_field = False
+        field_str = 'Relative_Keplerian_Velocity'
+        get_plot_time = False
+        plot_time = 0
         for prof_arg in prof_args:
             arg_list.append(prof_arg)
             if get_rmax == True:
@@ -377,32 +384,43 @@ for it in range(len(positions)):
                 get_rmax = False
             if 'rmax' in prof_arg:
                 get_rmax = True
-        call(arg_list)
-        pickle_file = save_dir + 'profile_pickle.pkl'
+            if get_field:
+                field_str = prof_arg
+                get_field = False
+            if prof_arg == '-f':
+                get_field = True
+            if get_plot_time:
+                plot_time = str(float(prof_arg))
+                get_plot_time = False
+            if prof_arg == '-pt':
+                get_plot_time = True
+
+        pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+        if os.path.isfile(pickle_file) == False:
+            call(arg_list)
+
         file = open(pickle_file, 'r')
         prof_x, prof_y, sampled_points = pickle.load(file)
         file.close()
-        cm = plt.cm.get_cmap('RdYlBu')
-        plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm, edgecolors='none')
+
         axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
         axes_dict[ax_label].set_xlim([0.0, r_max])
-        axes_dict[ax_label].set_ylim([0.0, 2.0])
-        #print "SET PROFILE XLIMS:", axes_dict[ax_label].set_xlim()
-        axes_dict[ax_label].axhline(y=1.0, color='k', linestyle='--')
-        #axes_dict[ax_label].set_aspect((axes_dict[ax_label].set_xlim()[1] - axes_dict[ax_label].set_xlim()[0])/(axes_dict[ax_label].set_ylim()[1] - axes_dict[ax_label].set_ylim()[0]))
-        #axes_dict[ax_label].set_xlim([0.0, r_max])
-        #axes_dict[ax_label].set_ylim([0.0, 2.0])
-        #axp.set_aspect(1./axp.get_data_ratio())
-        #axes_dict[ax_label].set_aspect(1./axes_dict[ax_label].get_data_ratio())
-        #axes_dict[ax_label].set_aspect(r_max/2.0)
-        #axes_dict[ax_label].set_aspect(250.)
-        if positions[it][0] == columns and args.share_colourbar == False:
-            cbar = plt.colorbar(plot, pad=0.0)
-            cbar.set_label('|$z$ position| (AU)', rotation=270, labelpad=20, size=args.text_font)
+        if field_str == 'Relative_Keplerian_Velocity':
+            axes_dict[ax_label].set_ylim([0.0, 2.0])
+            axes_dict[ax_label].axhline(y=1.0, color='k', linestyle='--')
+            cm = plt.cm.get_cmap('RdYlBu')
+            plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm, edgecolors='none', vmin=0, vmax=100)
+            if positions[it][0] == columns and args.share_colourbar == False:
+                cbar = plt.colorbar(plot, pad=0.0)
+                cbar.set_label('|$z$ position| (AU)', rotation=270, labelpad=20, size=args.text_font)
         if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)')
+            if field_str != 'Relative_Keplerian_Velocity':
+                axes_dict[ax_label].set_ylabel('field_str')
+            else:
+                axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)')
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('Cyclindral Radius (AU)')
+            axes_dict[ax_label].set_xlabel('Radius (AU)')
+        print "added profile segment"
     if 'force' in plot_type[it]:
         force_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
