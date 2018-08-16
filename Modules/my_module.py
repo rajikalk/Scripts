@@ -469,10 +469,14 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         #print("Annotated particle field")
     return axis
 
-def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None):
+def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False):
     unit_string = str(x.unit_quantity).split(' ')[-1]
     if bin_data is None:
         bin_data = x
+    if bin_min is None:
+        bin_min = np.min(bin_data)
+    if bin_max is None:
+        bin_max = np.max(bin_data)
     if n_bins is None:
         unit_string = str(bin_data.unit_quantity).split(' ')[-1]
         bins = [0] + list(set(bin_data.value))
@@ -486,8 +490,8 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
         else:
             bins = np.logspace(np.log10(bin_min), np.log10(np.max(x)), n_bins+1)
     else:
-        bins = np.linspace(np.min(bin_data), np.max(x), n_bins+1)
-    #print("No of bins:", len(bins))
+        bins = np.linspace(bin_min, bin_max, n_bins+1)
+    print("No of bins:", len(bins))
     neg_inds = np.where(bins < 0)[0]
     #bins[neg_inds[-1]] = -1*(bins[neg_inds[-1]+1] - yt.YTArray(0.01, unit_string))
 
@@ -500,7 +504,11 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
         mid_x = (bin+prev_bin)/2.
         x_array.append(mid_x)
         if len(ind) != 0:
-            if weight is not None:
+            if calc_vel_dispersion:
+                mean_v_phi = np.mean(y[ind])
+                y[ind] = y[ind] - mean_v_phi
+                bin_val = np.std(y[ind].in_units('km/s'))
+            elif weight is not None:
                 bin_val = (np.sum(y[ind]*weight[ind]))/np.sum(weight[ind])
             else:
                 bin_val = np.mean(y[ind])
