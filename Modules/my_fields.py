@@ -103,7 +103,7 @@ def get_part_pos():
     global part_pos
     return part_pos
 
-def set_part_vel(x):
+def get_part_vel():
     """
     returns the particles velocities.
     """
@@ -149,7 +149,7 @@ def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
-    global center
+    center = get_center()
     if center == 0:
         try:
             dd = data.ds.all_data()
@@ -172,7 +172,7 @@ def _Center_Velocity(field, data):
     """
     Returns the center velocity for the current set center.
     """
-    global center
+    center = get_center()
     if center == 0:
         try:
             dd = data.ds.all_data()
@@ -194,12 +194,11 @@ def _All_Particle_Positions(field, data):
     """
     Saves all the particle positions
     """
-    global part_pos
-    try:
+    if ('all', u'particle_posx') in data.ds.field_list:
         dd = data.ds.all_data()
         pos = np.array([dd['particle_posx'].in_units('cm').value, dd['particle_posy'].in_units('cm').value, dd['particle_posz'].in_units('cm').value])
         pos = yt.YTArray(pos.T, 'cm')
-    except:
+    else:
         pos = yt.YTArray([], 'cm')
     set_part_pos(pos)
     return pos
@@ -210,12 +209,11 @@ def _All_Particle_Velocities(field, data):
     """
     Saves all the particle velocities
     """
-    global part_vel
-    try:
+    if ('all', u'particle_velx') in data.ds.field_list:
         dd = data.ds.all_data()
         vel = np.array([dd['particle_velx'].in_units('cm/s').value, dd['particle_vely'].in_units('cm/s').value, dd['particle_velz'].in_units('cm/s').value])
         vel = yt.YTArray(vel.T, 'cm/s')
-    except:
+    else:
         vel = yt.YTArray([], 'cm/s')
     set_part_vel(vel)
     return vel
@@ -226,11 +224,10 @@ def _All_Particle_Masses(field, data):
     """
     Saves all the particle masses
     """
-    global part_mass
-    try:
+    if ('all', u'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         mass = dd['particle_mass']
-    except:
+    else:
         mass = yt.YTArray([], 'g')
     set_part_mass(mass)
     return mass
@@ -241,7 +238,7 @@ def _dx_from_Center(field, data):
     """
     Calculates the change in x position from the current set center.
     """
-    global center_pos
+    center_pos = get_center_pos()
     dx = data['x'].in_units('cm')-center_pos[0]
     return dx
 
@@ -251,7 +248,7 @@ def _dy_from_Center(field, data):
     """
     Calculates the change in y position from the current set center.
     """
-    global center_pos
+    center_pos = get_center_pos()
     dy = data['y'].in_units('cm')-center_pos[1]
     return dy
 
@@ -261,7 +258,7 @@ def _dz_from_Center(field, data):
     """
     Calculates the change in z position from the current set center.
     """
-    global center_pos
+    center_pos = get_center_pos()
     dz = data['z'].in_units('cm')-center_pos[2]
     return dz
 
@@ -271,7 +268,7 @@ def _Distance_from_Center(field, data):
     """
     Calculates the distance from the current set center.
     """
-    global coordinates
+    coordinates = get_coordinate_system()
     if 'cyl' in coordinates.lower():
         distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2.)
     else:
@@ -284,7 +281,7 @@ def _Corrected_velx(field, data):
     """
     Calculates the x-velocity corrected for the bulk velocity.
     """
-    global center_vel
+    center_vel = get_center_vel()
     dvx = data['velx'].in_units('cm/s') - center_vel[0]
     return dvx
 
@@ -294,7 +291,7 @@ def _Corrected_vely(field, data):
     """
     Calculates the y-velocity corrected for the bulk velocity.
     """
-    global center_vel
+    center_vel = get_center_vel()
     dvy = data['vely'].in_units('cm/s') - center_vel[1]
     return dvy
 
@@ -304,7 +301,7 @@ def _Corrected_velz(field, data):
     """
     Calculates the z-velocity corrected for the bulk velocity.
     """
-    global center_vel
+    center_vel = get_center_vel()
     dvz = data['velz'].in_units('cm/s') - center_vel[2]
     return dvz
 
@@ -314,7 +311,7 @@ def _Corrected_vel_mag(field, data):
     """
     Calculates the velocity magnitude corrected for the bulk velocity in the current coordinate system.
     """
-    global coordinates
+    coordinates = get_coordinate_system()
     if 'cyl' in coordinates.lower():
         vmag = np.sqrt((data['Corrected_velx'])**2. + (data['Corrected_vely'])**2.)
     else:
@@ -327,7 +324,7 @@ def _Projected_Velocity(field, data):
     """
     Calculates the projected velocity on the plane perpendicular to the normal vector L.
     """
-    global normal
+    normal = get_normal()
     velx = data[('Corrected_velx')].in_units('cm/s').value
     vely = data[('Corrected_vely')].in_units('cm/s').value
     vels = np.array([velx, vely])
@@ -345,7 +342,7 @@ def _Projected_Magnetic_Field(field, data):
     """
     Calculates the projected magnetic field on the plane perpendicular to the normal vector L.
     """
-    global normal
+    normal = get_normal()
     magx = data[('magx')].value
     magy = data[('magy')].value
     mags = np.array([magx, magy])
@@ -363,7 +360,7 @@ def _Radial_Velocity(field, data):
     """
     Calculates the radial velocity from the current center, in the current coordinate system, corrected for the velocity of the center.
     """
-    global coordinates
+    coordinates = get_coordinate_system()
     if 'cyl' in coordinates.lower():
         rad_vel = (data['Corrected_velx'].in_units('cm/s')*data['dx_from_Center'].in_units('cm') + data['Corrected_vely'].in_units('cm/s')*data['dy_from_Center'].in_units('cm'))/data['Distance_from_Center'].in_units('cm')
     else:
@@ -387,10 +384,16 @@ def _Particle_Potential(field, data):
     """
     Calculates the potential from the praticles.
     """
-    global part_pos
-    global part_mass
-    try:
-        Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
+    part_pos = get_part_pos()
+    part_mass = get_part_mass()
+    if len(part_pos) > 0 and len(part_mass) == 0:
+        data['All_Particle_Masses']
+        part_mass = get_part_mass()
+    if len(part_pos) == 0 and len(part_mass) > 0:
+        data['All_Particle_Positions']
+        part_pos = get_part_pos()
+    Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
+    if len(part_mass) > 0:
         for part in range(len(part_mass)):
             dx = data['x'].in_units('cm') - part_pos[part][0].in_units('cm')
             dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
@@ -398,8 +401,6 @@ def _Particle_Potential(field, data):
             r = np.sqrt(dx**2. + dy**2. + dz**2.)
             gpot = -(yt.physical_constants.G*part_mass[part])/r
             Part_gpot = Part_gpot + gpot
-    except:
-        Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
     return Part_gpot
 
 yt.add_field("Particle_Potential", function=_Particle_Potential, units=r"cm**2/s**2", particle_type=True)
@@ -704,6 +705,18 @@ def _Specific_Angular_Momentum(field, data):
     return l
 
 yt.add_field("Specific_Angular_Momentum", function=_Specific_Angular_Momentum, units=r"cm**2/s")
+
+def _Magnetic_To_Gas_Pressure(field, data):
+    """
+    Calculates the specific angular momentum about current set center.
+    """
+    mag_pres = data['magnetic_pressure']
+    gas_pres = data['pressure']
+    ratio = mag_pres/gas_pres
+    return ratio
+
+yt.add_field("Magnetic_To_Gas_Pressure", function=_Magnetic_To_Gas_Pressure, units=r"")
+
 '''
 def _Particle_Angular_Momentum_x(field, data):
     """
