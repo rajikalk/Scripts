@@ -53,6 +53,7 @@ def parse_inputs():
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=300.)
+    parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -388,9 +389,16 @@ def main():
                 center_vel = dd['Center_Velocity'].value
                 part_pos = dd['All_Particle_Positions']
                 part_mass = dd['All_Particle_Masses']
+                print "np.mean(dd['Particle_Potential']):", np.mean(dd['Particle_Potential'])
                 print "center_vel =", myf.get_center_vel(), "on rank", rank, "for", ds
                 if args.axis == 'xy':
                     center_vel=center_vel[:2]
+                    if args.use_disk_angular_momentum != "False":
+                        disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness*2, 'au'))
+                        tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
+                        tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
+                        L = tot_vec/tot_mag
+                        print "SET PROJECTION ORIENTATION L=", L
                 else:
                     center_vel=center_vel[::2]
                 if args.axis == "xz":
