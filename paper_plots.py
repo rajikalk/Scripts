@@ -242,15 +242,22 @@ if len(movie_files) > 0:
         if args.profile_plot == 'True':
             myf.set_center(args.center)
             myf.set_coordinate_system('spherical')
+            center_pos = dd['Center_Position'].value
+            center_vel = dd['Center_Velocity'].value
+            part_pos = dd['All_Particle_Positions']
+            part_mass = dd['All_Particle_Masses']
+            print "np.mean(dd['Particle_Potential'])", np.mean(dd['Particle_Potential'])
             print "Doing Profile Plot"
             save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
+            L = [0.0, 0.0, 1.0]
             if myf.get_center() == 0:
-                 tot_vec = [np.sum(dd['specific_angular_momentum_x']).value, np.sum(dd['specific_angular_momentum_y']).value, np.sum(dd['specific_angular_momentum_z']).value]
+                measuring_volume = ds.disk(center_pos, L, (args.r_max*2., 'au'), (args.disk_thickness*2., 'au'))
+                tot_vec = [np.sum(measuring_volume['Angular_Momentum_x']).value, np.sum(measuring_volume['Angular_Momentum_y']).value, np.sum(measuring_volume['Angular_Momentum_z']).value]
             else:
                 tot_vec = [dd['particle_x_ang'][args.center-1].value, dd['particle_y_ang'][args.center-1].value, dd['particle_z_ang'][args.center-1].value]
             tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
             L = tot_vec/tot_mag
-            measuring_volume = ds.disk(dd['Center_Position'], L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
+            measuring_volume = ds.disk(center_pos, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
             if args.weight_field != None:
                 w_arr = measuring_volume[args.weight_field]
             else:
@@ -263,7 +270,12 @@ if len(movie_files) > 0:
                 y_arr = measuring_volume[args.field].in_units(args.y_units)
             z_arr = measuring_volume['z'].in_units('AU')
 
-            prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
+            if args.field == "Tangential_Velocity":
+                cal_vd_bool = True
+                print "CALCULATING VELOCITY DISPERSION"
+            else:
+                cal_vd_bool = False
+            prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool)
             sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
             
             if args.pickle_dump == False:
@@ -284,7 +296,7 @@ if len(movie_files) > 0:
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
                 print "created profile plot:", save_image_name
             else:
-                pickle_file = save_dir + 'profile_pickle.pkl'
+                pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
                 file = open(pickle_file, 'w+')
                 pickle.dump((prof_x, prof_y, sampled_points),file)
                 file.close()
@@ -693,7 +705,7 @@ if args.force_comp  == 'True':
 if args.separation == 'True':
     #image_name = save_dir + "separation"
     image_name = save_dir + "binary_system_time_evolution"
-    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
+    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     line_style = ['k-', 'b-', 'r-']
     labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
@@ -725,6 +737,8 @@ if args.separation == 'True':
                     if sink_form_time == 0:
                         sink_form_time = float(row[-1])
                     part_tag = int(row[0])
+                    if part_tag == 65583:
+                        part_tag = 65582
                     if part_tag not in particle_tag:
                         particle_tag.append(part_tag)
                         x_pos.append([])
@@ -807,8 +821,10 @@ if args.separation == 'True':
         total_accretion_rate[high_inds] = np.nan
         
         ax1.semilogy(times[1], sep, line_style[lit], label=labels[lit])
-        #ax2.plot(times[1], total_mass, line_style[lit], label=labels[lit])
-        ax2.semilogy(times[1], total_acc_rate_moving_average, line_style[lit], label=labels[lit])
+        ax2.plot(times[1], mass[0], line_style[lit], linewidth=1, alpha=0.5)
+        ax2.plot(times[1], mass[1], line_style[lit], linewidth=1, alpha=0.5)
+        ax2.plot(times[1], total_mass, line_style[lit], linewidth=2, label=labels[lit])
+        #ax2.semilogy(times[1], total_acc_rate_moving_average, line_style[lit], label=labels[lit])
         sim_times.append(times[1])
         sim_total_mass.append(total_mass)
         sim_total_accretion_rate.append(total_accretion_rate)
@@ -823,10 +839,11 @@ if args.separation == 'True':
     ax1.tick_params(axis='y', which='major', labelsize=args.text_font)
     plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
     ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
-    ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
+    #ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
+    ax2.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
     ax2.legend(loc='best')
     ax2.set_xlim([0, 5000])
-    ax2.set_ylim([1.e-10, 1.e-20])
+    #ax2.set_ylim([1.e-10, 1.e-20])
     ax2.tick_params(axis='y', which='major', labelsize=args.text_font)
     ax2.tick_params(axis='x', which='major', labelsize=args.text_font)
     plt.setp([ax2.get_yticklabels()[-2]], visible=False)
