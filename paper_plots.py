@@ -243,7 +243,7 @@ if len(movie_files) > 0:
         if args.profile_plot == 'True':
             myf.set_center(args.center)
             myf.set_coordinate_system('spherical')
-            center_pos = dd['Center_Position'].value
+            center_pos = dd['Center_Position']
             center_vel = dd['Center_Velocity'].value
             part_pos = dd['All_Particle_Positions']
             part_mass = dd['All_Particle_Masses']
@@ -252,13 +252,13 @@ if len(movie_files) > 0:
             save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
             L = [0.0, 0.0, 1.0]
             if myf.get_center() == 0:
-                measuring_volume = ds.disk(center_pos, L, (args.r_max*2., 'au'), (args.disk_thickness*2., 'au'))
+                measuring_volume = ds.disk(center_pos.value, L, (args.r_max*2., 'au'), (args.disk_thickness*2., 'au'))
                 tot_vec = [np.sum(measuring_volume['Angular_Momentum_x']).value, np.sum(measuring_volume['Angular_Momentum_y']).value, np.sum(measuring_volume['Angular_Momentum_z']).value]
             else:
                 tot_vec = [dd['particle_x_ang'][args.center-1].value, dd['particle_y_ang'][args.center-1].value, dd['particle_z_ang'][args.center-1].value]
             tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
             L = tot_vec/tot_mag
-            measuring_volume = ds.disk(center_pos, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
+            measuring_volume = ds.disk(center_pos.value, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
             if args.weight_field != None:
                 w_arr = measuring_volume[args.weight_field]
             else:
@@ -280,9 +280,9 @@ if len(movie_files) > 0:
             sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
             separation = []
             for particle in range(len(part_pos)):
-                dx = center_pos[0] - part_pos[particle][0]
-                dy = center_pos[1] - part_pos[particle][1]
-                dz = center_pos[2] - part_pos[particle][2]
+                dx = center_pos[0].in_units('au') - part_pos[particle][0].in_units('au')
+                dy = center_pos[1].in_units('au') - part_pos[particle][1].in_units('au')
+                dz = center_pos[2].in_units('au') - part_pos[particle][2].in_units('au')
                 r = np.sqrt(dx**2. + dy**2. + dz**2.)
                 separation.append(r)
             
