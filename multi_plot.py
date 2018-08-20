@@ -400,7 +400,7 @@ for it in range(len(positions)):
             call(arg_list)
 
         file = open(pickle_file, 'r')
-        prof_x, prof_y, sampled_points = pickle.load(file)
+        prof_x, prof_y, sampled_points, separation = pickle.load(file)
         file.close()
 
         axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
@@ -439,9 +439,11 @@ for it in range(len(positions)):
             time_val = int(file.split('_profile_pickle_')[-1].split('.pkl')[0])
             times.append(time_val)
             open_file = open(file, 'r')
-            prof_x, prof_y, sampled_points = pickle.load(open_file)
+            prof_x, prof_y, sampled_points, separation = pickle.load(open_file)
             open_file.close()
             axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            for sep in separation:
+                axes_dict[ax_label].axhline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
         if positions[it][0] == columns and args.share_colourbar == False:
             axes_dict[ax_label].legend(loc='best')
         if positions[it][0] == 1:
