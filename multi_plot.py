@@ -404,6 +404,8 @@ for it in range(len(positions)):
         file.close()
 
         axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
+        for sep in separation:
+            axes_dict[ax_label].axvline(x=sep, alpha=0.5)
         axes_dict[ax_label].set_xlim([0.0, r_max])
         if field_str == 'Relative_Keplerian_Velocity':
             axes_dict[ax_label].set_ylim([0.0, 2.0])
@@ -443,7 +445,7 @@ for it in range(len(positions)):
             open_file.close()
             axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
             for sep in separation:
-                axes_dict[ax_label].axhline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
+                axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
         if positions[it][0] == columns and args.share_colourbar == False:
             axes_dict[ax_label].legend(loc='best')
         if positions[it][0] == 1:
