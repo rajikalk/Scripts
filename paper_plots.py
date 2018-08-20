@@ -33,6 +33,7 @@ def parse_inputs():
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-c", "--center", help="What center do you want to set for everything?, if 3 it combines all centers", type=int, default=0)
     parser.add_argument("-ic", "--image_center", help="Where would you like to center the image?", type=int, default=0)
+    parser.add_argument("-ppm", "--profile_plot_multi", help="Did you want to plot a profile plot with multiple lines?", default=False)
     
     #movie plot args
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", default=True)
@@ -277,6 +278,13 @@ if len(movie_files) > 0:
                 cal_vd_bool = False
             prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool)
             sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
+            separation = []
+            for particle in range(len(part_pos)):
+                dx = center_pos[0] - part_pos[particle][0]
+                dy = center_pos[1] - part_pos[particle][1]
+                dz = center_pos[2] - part_pos[particle][2]
+                r = np.sqrt(dx**2. + dy**2. + dz**2.)
+                separation.append(r)
             
             if args.pickle_dump == False:
                 plt.clf()
@@ -298,9 +306,28 @@ if len(movie_files) > 0:
             else:
                 pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
                 file = open(pickle_file, 'w+')
-                pickle.dump((prof_x, prof_y, sampled_points),file)
+                pickle.dump((prof_x, prof_y, sampled_points, separation),file)
                 file.close()
                 print "created profile pickle:", pickle_file
+
+        if args.profile_plot_multi == 'True':
+            files = sorted(glob.glob(path + args.field + '_profile_pickle_*.pkl'))
+            times = []
+            plt.clf()
+            colors = ['k', 'b', 'c', 'g', 'r', 'm']
+            dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+            for f_it, file in enumerate(files):
+                time_val = int(file.split('_profile_pickle_')[-1].split('.pkl')[0])
+                times.append(time_val)
+                open_file = open(file, 'r')
+                prof_x, prof_y, sampled_points = pickle.load(open_file)
+                open_file.close()
+                plt.plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            plt.legend(loc='best')
+            plt.xlim([np.min(prof_x), np.max(prof_x)])
+            plt.xlabel('Radius (AU)')
+            plt.ylabel('velocity dispersion (km/s)')
+            plt.savefig('velocity_dispersion.eps', bbox_inches='tight', pad_inches = 0.02)
 
         if args.b_mag == 'True':
             files = sorted(glob.glob(path + '*_plt_cnt*'))
@@ -339,8 +366,8 @@ if len(movie_files) > 0:
             if args.pickle_dump == False:
                 plt.clf()
                 colors = ['k', 'b', 'c', 'g', 'r', 'm']
-                dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
-                dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
+                dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+                #dash_list = [(None, None), (None, None), (None, None), (None, None), (None, None), (None, None)]
                 for time in range(len(x)):
                     plt.scatter(x[time], y[time], c=colors[-len(x) + time], label=str(times[time])+"yr", alpha=0.4, edgecolors='none')
                     plt.xlim([0., args.r_max])
