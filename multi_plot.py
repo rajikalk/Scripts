@@ -421,6 +421,37 @@ for it in range(len(positions)):
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('Radius (AU)')
         print "added profile segment"
+    if 'multi' in plot_type[it]:
+        prof_args = input_args[it].split(' ')
+        get_field = False
+        field_str = 'Tangential_Velocity'
+        for prof_arg in prof_args:
+            if get_field:
+                field_str = prof_arg
+                get_field = False
+            if prof_arg == '-f':
+                get_field = True
+        files = sorted(glob.glob(file_dir[it] + field_str + '_profile_pickle_*.pkl'))
+        times = []
+        colors = ['k', 'b', 'c', 'g', 'r', 'm']
+        dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
+        for f_it, file in enumerate(files):
+            time_val = int(file.split('_profile_pickle_')[-1].split('.pkl')[0])
+            times.append(time_val)
+            open_file = open(file, 'r')
+            prof_x, prof_y, sampled_points = pickle.load(open_file)
+            open_file.close()
+            axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+        if positions[it][0] == columns and args.share_colourbar == False:
+            axes_dict[ax_label].legend(loc='best')
+        if positions[it][0] == 1:
+            axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)')
+        axes_dict[ax_label].set_xlim([np.min(prof_x), np.max(prof_x)])
+        axes_dict[ax_label].set_xlabel('Radius (AU)')
+        axes_dict[ax_label].set_xlim([0.0, 150.0])
+        axes_dict[ax_label].set_ylim([0.0, 100.0])
+        xticklabels = axes_dict[ax_label].get_xticklabels()
+        plt.setp(xticklabels[-1], visible=True)
     if 'force' in plot_type[it]:
         force_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
@@ -681,6 +712,7 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
     f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
