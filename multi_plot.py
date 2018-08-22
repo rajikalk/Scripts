@@ -169,6 +169,26 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit-1]])})
         else:
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+    if 'amb' in plot_type[it]:
+        file = file_dir[it]
+        times = []
+        ang_labels = []
+        ang_arrays = []
+        header = True
+        with open(file, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if header == False:
+                    times.append(float(row[0]))
+                    for col_it in range(len(row[1:])):
+                        ang_arrays[col_it].append(float(row[col_it+1]))
+                if header == True:
+                    for col in row[1:]:
+                        ang_labels.append(col)
+                        ang_arrays.append([])
+                    header = False
+        for arr in range(len(ang_arrays)):
+            plt.semilogy(times, ang_arrays[arr], label=ang_labels[arr])
     if 'movie' in plot_type[it]:
         mov_args = input_args[it].split(' ')
 
@@ -444,16 +464,21 @@ for it in range(len(positions)):
             prof_x, prof_y, sampled_points, separation = pickle.load(open_file)
             open_file.close()
             axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
-            for sep in separation:
-                axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
+            #for sep in separation:
+            #    axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
         if positions[it][0] == columns and args.share_colourbar == False:
             axes_dict[ax_label].legend(loc='best')
-        if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)')
+        if field_str == 'Tangential_Velocity':
+            if positions[it][0] == 1:
+                axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)')
+            axes_dict[ax_label].set_ylim(bottom=0.0)
+        else:
+            if positions[it][0] == 1:
+                axes_dict[ax_label].set_ylabel('$P_{\mathrm{mag}}/P_{\mathrm{gas}}$')
+            axes_dict[ax_label].set_ylim([0.0, 60.0])
         axes_dict[ax_label].set_xlim([np.min(prof_x), np.max(prof_x)])
         axes_dict[ax_label].set_xlabel('Radius (AU)')
         axes_dict[ax_label].set_xlim([0.0, 150.0])
-        axes_dict[ax_label].set_ylim([0.0, 100.0])
         xticklabels = axes_dict[ax_label].get_xticklabels()
         plt.setp(xticklabels[-1], visible=True)
     if 'force' in plot_type[it]:
