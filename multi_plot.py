@@ -529,6 +529,11 @@ for it in range(len(positions)):
                                 mass[-1].append(m)
                         if header == 0:
                             header = 1
+                    time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    dm = np.array(mass[-1][:time_it+1])[1:] - np.array(mass[-1][:time_it+1])[:-1]
+                    dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
+                    time_averaged_mass = np.sum(dm*dt)/np.sum(dt)
+                    print "time averaged outflow mass for", csv_files[file_it], "is", time_averaged_mass
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
@@ -610,6 +615,11 @@ for it in range(len(positions)):
                                 angular_momentum[-1].append(L)
                         if header == 0:
                             header = 1
+                    time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    dl = np.array(angular_momentum[-1][:time_it+1])[1:] - np.array(angular_momentum[-1][:time_it+1])[:-1]
+                    dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
+                    time_averaged_angular_momentum = np.sum(dl*dt)/np.sum(dt)
+                    print "time averaged outflow angular for", csv_files[file_it], "is", time_averaged_angular_momentum
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], angular_momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
@@ -643,6 +653,11 @@ for it in range(len(positions)):
                                 momentum[-1].append(p)
                         if header == 0:
                             header = 1
+                    time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    dp = np.array(momentum[-1][:time_it+1])[1:] - np.array(momentum[-1][:time_it+1])[:-1]
+                    dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
+                    time_averaged_linear_momentum = np.sum(dp*dt)/np.sum(dt)
+                    print "time averaged outflow linear for", csv_files[file_it], "is", time_averaged_linear_momentum
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
