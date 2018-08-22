@@ -83,17 +83,8 @@ dd = ds.all_data()
 sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
 
 #find times:
-if rank == 0:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, start_time=args.start_time)
-    usable_files = mym.find_files(m_times, files)
-    for other_rank in range(1, size):
-        comm.send(usable_files, dest=other_rank, tag=1)
-        print "Sent usable files to rank", other_rank
-else:
-    usable_files = comm.recv(source=0, tag=1)
-    print "Received usable files to rank", rank
-
-print "usable_files =", usable_files
+m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, start_time=args.start_time)
+usable_files = mym.find_files(m_times, files)
 
 #open files to read data out to:
 if rank == 0:
@@ -110,7 +101,7 @@ if rank == 0:
     f.close()
 
 storage = {}
-ts = yt.DatasetSeries(usable_files, parallel=size/16.)
+ts = yt.DatasetSeries(usable_files, parallel=True)
 for sto, ds in ts.piter(storage=storage):
     if args.measure_disks != "False":
         dd = ds.all_data()
