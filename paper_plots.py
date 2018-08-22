@@ -760,14 +760,14 @@ if args.force_comp  == 'True':
 if args.separation == 'True':
     #image_name = save_dir + "separation"
     image_name = save_dir + "binary_system_time_evolution"
-    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
+    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     line_style = ['k-', 'b-', 'r-']
     labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
     lit = 0
     plt.clf()
     fig = plt.figure()
-    fig.set_size_inches(6, 7.)
+    fig.set_size_inches(6, 8.)
     #gs = gridspec.GridSpec(2, 1)
     gs = gridspec.GridSpec(3, 1)
     gs.update(hspace=0.0)
@@ -777,6 +777,7 @@ if args.separation == 'True':
     sim_times = []
     sim_total_mass = []
     for file in files:
+        print "reading file", file
         sink_form_time = 0
         particle_tag = []
         times = [[],[]]
@@ -786,7 +787,9 @@ if args.separation == 'True':
         mass = []
         with open(file, 'r') as f:
             reader = csv.reader(f, dialect='dat')
+            counter = 0
             for row in reader:
+                counter = counter
                 if row[0][0] != '[':
                     if sink_form_time == 0:
                         sink_form_time = float(row[-1])
@@ -804,72 +807,68 @@ if args.separation == 'True':
                         pit = 0
                     else:
                         pit = 1
-                    time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
-                    times[pit].append(time)
                     x = float(row[2])/yt.units.AU.in_units('cm').value
                     y = float(row[3])/yt.units.AU.in_units('cm').value
                     z = float(row[4])/yt.units.AU.in_units('cm').value
                     m = float(row[14])/yt.units.msun.in_units('g').value
+                    time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
+                    #if time not in times[pit]:
+                    times[pit].append(time)
                     x_pos[pit].append(x)
                     y_pos[pit].append(y)
                     z_pos[pit].append(z)
                     mass[pit].append(m)
-    
+                    '''
+                    else:
+                        ind = times[pit].index(time)
+                        x_pos[pit][ind] = x
+                        y_pos[pit][ind] = y
+                        z_pos[pit][ind] = z
+                        mass[pit][ind] = (m)
+                    '''
         times = np.array(times)
         sorted_inds_1 = np.argsort(times[0])
         sorted_inds_2 = np.argsort(times[1])
-        times[0] = np.array(times[0])[sorted_inds_1]
-        times[1] = np.array(times[1])[sorted_inds_2]
+        first_inds_1 = np.where((np.array(times[0])[sorted_inds_1][1:] - np.array(times[0])[sorted_inds_1][:-1])>0)[0]
+        first_inds_2 = np.where((np.array(times[1])[sorted_inds_2][1:] - np.array(times[1])[sorted_inds_2][:-1])>0)[0]
         
-        x_pos = np.array(x_pos)
-        y_pos = np.array(y_pos)
-        z_pos = np.array(z_pos)
-        mass = np.array(mass)
-        x_pos[0] = np.array(x_pos[0])[sorted_inds_1]
-        x_pos[1] = np.array(x_pos[1])[sorted_inds_2]
-        y_pos[0] = np.array(y_pos[0])[sorted_inds_1]
-        y_pos[1] = np.array(y_pos[1])[sorted_inds_2]
-        z_pos[0] = np.array(z_pos[0])[sorted_inds_1]
-        z_pos[1] = np.array(z_pos[1])[sorted_inds_2]
-        mass[0] = np.array(mass[0])[sorted_inds_1]
-        mass[1] = np.array(mass[1])[sorted_inds_2]
-        x_pos[0] = x_pos[0][-len(x_pos[1]):]
-        y_pos[0] = y_pos[0][-len(y_pos[1]):]
-        z_pos[0] = z_pos[0][-len(z_pos[1]):]
-        mass[0] = mass[0][-len(mass[1]):]
-        dx = x_pos[0] - x_pos[1]
-        dy = y_pos[0] - y_pos[1]
-        dz = z_pos[0] - z_pos[1]
+        refined_time = []
+        refined_time.append(np.array(times[0])[sorted_inds_1][first_inds_1])
+        refined_time.append(np.array(times[1])[sorted_inds_2][first_inds_2])
+        refined_x = []
+        refined_x.append(np.array(x_pos[0])[sorted_inds_1][first_inds_1])
+        refined_x.append(np.array(x_pos[1])[sorted_inds_2][first_inds_2])
+        refined_y = []
+        refined_y.append(np.array(y_pos[0])[sorted_inds_1][first_inds_1])
+        refined_y.append(np.array(y_pos[1])[sorted_inds_2][first_inds_2])
+        refined_z = []
+        refined_z.append(np.array(z_pos[0])[sorted_inds_1][first_inds_1])
+        refined_z.append(np.array(z_pos[1])[sorted_inds_2][first_inds_2])
+        refined_mass = []
+        refined_mass.append(np.array(mass[0])[sorted_inds_1][first_inds_1])
+        refined_mass.append(np.array(mass[1])[sorted_inds_2][first_inds_2])
+        dx = refined_x[0][-len(refined_x[1]):] - refined_x[1]
+        dy = refined_y[0][-len(refined_y[1]):] - refined_y[1]
+        dz = refined_z[0][-len(refined_z[1]):] - refined_z[1]
         sep = np.sqrt(dx**2. + dy**2. + dz**2.)
-        total_mass = mass[0] + mass[1]
+        total_mass = refined_mass[0].tolist()[:-len(refined_mass[1])] + (np.array(refined_mass[0][-len(refined_mass[1]):])+np.array(refined_mass[1])).tolist()
+        dt = 25
         inds = [0]
-        times_sort = [times[1][0]]
-        t_log = np.logspace(np.log10(times[1][0]), np.log10(times[1][-1]), 100)
-        dt = (t_log[1:]-t_log[:-1])[::-1]
-        dt_it = 0
-        for t_it, time in enumerate(times[1]):
-            if time - times_sort[-1] > dt[dt_it]:
+        times_sort = [refined_time[0][0]]
+        for t_it, time in enumerate(refined_time[0]):
+            if time - times_sort[-1] > dt:
                 times_sort.append(time)
                 inds.append(t_it)
-                dt_it = dt_it + 1
         times_sort = np.array(times_sort)
-        #mass_sort_1 = mass[0][inds]
-        #mass_sort_2 = mass[1][inds]
-        total_mass_sort = total_mass[inds]
-        #m_dot_1 = (mass_sort_1[1:] - mass_sort_1[:-1])/(times_sort[1:]-times_sort[:-1])
-        #m_dot_2 = (mass_sort_2[1:] - mass_sort_2[:-1])/(times_sort[1:]-times_sort[:-1])
-        #m_dot = m_dot_1 + m_dot_2
+        total_mass_sort = np.array(total_mass)[inds]
         m_dot = (total_mass_sort[1:] - total_mass_sort[:-1])/(times_sort[1:]-times_sort[:-1])
         time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
         
-        ax1.semilogy(times[1], sep, line_style[lit], label=labels[lit])
-        ax2.plot(times[1], mass[0], line_style[lit], linewidth=1, alpha=0.5)
-        ax2.plot(times[1], mass[1], line_style[lit], linewidth=1, alpha=0.5)
-        ax2.plot(times[1], total_mass, line_style[lit], linewidth=2, label=labels[lit])
-        #ax3.semilogy(time_m_dot, m_dot_1, line_style[lit], linewidth=1, alpha=0.5)
-        #ax3.semilogy(time_m_dot, m_dot_2, line_style[lit], linewidth=1, alpha=0.5)
-        ax3.semilogy(time_m_dot, m_dot, line_style[lit], linewidth=2, label=labels[lit])
-        #ax2.semilogy(times[1], total_acc_rate_moving_average, line_style[lit], label=labels[lit])
+        ax1.semilogy(refined_time[1], sep, line_style[lit], label=labels[lit])
+        ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
+        ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
+        ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
+        ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
         sim_times.append(times[1])
         sim_total_mass.append(total_mass)
         lit = lit + 1
@@ -882,18 +881,18 @@ if args.separation == 'True':
     ax1.tick_params(axis='x', which='major', labelsize=args.text_font)
     ax1.tick_params(axis='y', which='major', labelsize=args.text_font)
     plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
-    ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     #ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
-    ax2.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
-    ax3.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
-    ax2.legend(loc='best')
-    ax2.set_xlim([0, 5000])
+    ax3.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
+    ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
+    ax3.legend(loc='best')
+    ax3.set_xlim([0, 5000])
     #ax2.set_ylim([1.e-10, 1.e-20])
     ax2.tick_params(axis='y', which='major', labelsize=args.text_font)
     ax2.tick_params(axis='x', which='major', labelsize=args.text_font)
     ax3.tick_params(axis='y', which='major', labelsize=args.text_font)
     ax3.tick_params(axis='x', which='major', labelsize=args.text_font)
-    ax3.set_ylim(bottom=1.e-6)
+    ax2.set_ylim(bottom=1.e-6)
     #plt.setp([ax2.get_yticklabels()[-2]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
