@@ -196,8 +196,11 @@ def _All_Particle_Positions(field, data):
     """
     if ('all', u'particle_posx') in data.ds.field_list:
         dd = data.ds.all_data()
-        pos = np.array([dd['particle_posx'].in_units('cm').value, dd['particle_posy'].in_units('cm').value, dd['particle_posz'].in_units('cm').value])
-        pos = yt.YTArray(pos.T, 'cm')
+        if len(dd['particle_posx'].in_units('cm').value) > 1:
+            pos = np.array([dd['particle_posx'].in_units('cm').value, dd['particle_posy'].in_units('cm').value, dd['particle_posz'].in_units('cm').value])
+            pos = yt.YTArray(pos.T, 'cm')
+        else:
+            pos = yt.YTArray([[dd['particle_posx'][0].in_units('cm').value, dd['particle_posy'][0].in_units('cm').value, dd['particle_posz'][0].in_units('cm').value]], 'cm')
     else:
         pos = yt.YTArray([], 'cm')
     set_part_pos(pos)
@@ -211,8 +214,11 @@ def _All_Particle_Velocities(field, data):
     """
     if ('all', u'particle_velx') in data.ds.field_list:
         dd = data.ds.all_data()
-        vel = np.array([dd['particle_velx'].in_units('cm/s').value, dd['particle_vely'].in_units('cm/s').value, dd['particle_velz'].in_units('cm/s').value])
-        vel = yt.YTArray(vel.T, 'cm/s')
+        if len(dd['particle_velx'].in_units('cm/s').value) > 1:
+            vel = np.array([dd['particle_velx'].in_units('cm/s').value, dd['particle_vely'].in_units('cm/s').value, dd['particle_velz'].in_units('cm/s').value])
+            vel = yt.YTArray(vel.T, 'cm/s')
+        else:
+            vel = yt.YTArray([[dd['particle_velx'][0].in_units('cm/s').value, dd['particle_vely'][0].in_units('cm/s').value, dd['particle_velz'][0].in_units('cm/s').value]], 'cm/s')
     else:
         vel = yt.YTArray([], 'cm/s')
     set_part_vel(vel)
@@ -386,14 +392,8 @@ def _Particle_Potential(field, data):
     """
     part_pos = get_part_pos()
     part_mass = get_part_mass()
-    if len(part_pos) > 0 and len(part_mass) == 0:
-        data['All_Particle_Masses']
-        part_mass = get_part_mass()
-    if len(part_pos) == 0 and len(part_mass) > 0:
-        data['All_Particle_Positions']
-        part_pos = get_part_pos()
     Part_gpot = yt.YTArray(np.zeros(np.shape(data['dens'])), 'cm**2/s**2')
-    if len(part_mass) > 0:
+    if len(part_mass) == len(part_pos):
         for part in range(len(part_mass)):
             dx = data['x'].in_units('cm') - part_pos[part][0].in_units('cm')
             dy = data['y'].in_units('cm') - part_pos[part][1].in_units('cm')
@@ -717,18 +717,21 @@ def _Magnetic_To_Gas_Pressure(field, data):
 
 yt.add_field("Magnetic_To_Gas_Pressure", function=_Magnetic_To_Gas_Pressure, units=r"")
 
-'''
+
 def _Particle_Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum of the particles in the x_direction about current set center.
     """
-    global part_mass
-    global part_vel
-    global center_vel
-    global part_pos
-    global center_pos
-    L_x = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[1] - center_pos[1]) - (part_vel.T[1] - center_vel[1])*(part_pos.T[2] - center_pos[2]))
-    L_x = yt.YTArray(L_x.value, 'g*cm**2/s')
+    part_mass = get_part_mass()
+    part_vel = get_part_vel()
+    center_vel = get_center_vel()
+    part_pos = get_part_pos()
+    center_pos = get_center_pos()
+    if len(part_mass) > 0 and len(part_vel) > 0 and len(part_pos) > 0:
+        L_x = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[1] - center_pos[1]) - (part_vel.T[1] - center_vel[1])*(part_pos.T[2] - center_pos[2]))
+        L_x = yt.YTArray(L_x.value, 'g*cm**2/s')
+    else:
+        L_x = yt.YTArray([], 'g*cm**2/s')
     return L_x
 
 yt.add_field("Particle_Angular_Momentum_x", function=_Particle_Angular_Momentum_x, units=r"g*cm**2/s")
@@ -737,13 +740,16 @@ def _Particle_Angular_Momentum_y(field, data):
     """
     Calculates the angular momentum of the particles in the y_direction about current set center.
     """
-    global part_mass
-    global part_vel
-    global center_vel
-    global part_pos
-    global center_pos
-    L_y = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[2] - center_pos[2]))
-    L_y = yt.YTArray(L_y.value, 'g*cm**2/s')
+    part_mass = get_part_mass()
+    part_vel = get_part_vel()
+    center_vel = get_center_vel()
+    part_pos = get_part_pos()
+    center_pos = get_center_pos()
+    if len(part_mass) > 0 and len(part_vel) > 0 and len(part_pos) > 0:
+        L_y = part_mass*((part_vel.T[2] - center_vel[2])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[2] - center_pos[2]))
+        L_y = yt.YTArray(L_y.value, 'g*cm**2/s')
+    else:
+        L_y = yt.YTArray([], 'g*cm**2/s')
     return L_y
 
 yt.add_field("Particle_Angular_Momentum_y", function=_Particle_Angular_Momentum_y, units=r"g*cm**2/s")
@@ -752,13 +758,16 @@ def _Particle_Angular_Momentum_z(field, data):
     """
     Calculates the angular momentum of the particles in the z_direction about current set center.
     """
-    global part_mass
-    global part_vel
-    global center_vel
-    global part_pos
-    global center_pos
-    L_z = part_mass*((part_vel.T[1] - center_vel[1])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[1] - center_pos[1]))
-    L_z = yt.YTArray(L_z.value, 'g*cm**2/s')
+    part_mass = get_part_mass()
+    part_vel = get_part_vel()
+    center_vel = get_center_vel()
+    part_pos = get_part_pos()
+    center_pos = get_center_pos()
+    if len(part_mass) > 0 and len(part_vel) > 0 and len(part_pos) > 0:
+        L_z = part_mass*((part_vel.T[1] - center_vel[1])*(part_pos.T[0] - center_pos[0]) - (part_vel.T[0] - center_vel[0])*(part_pos.T[1] - center_pos[1]))
+        L_z = yt.YTArray(L_z.value, 'g*cm**2/s')
+    else:
+        L_z = yt.YTArray([], 'g*cm**2/s')
     return L_z
 
 yt.add_field("Particle_Angular_Momentum_z", function=_Particle_Angular_Momentum_z, units=r"g*cm**2/s")
@@ -777,8 +786,11 @@ def _Particle_Specific_Angular_Momentum(field, data):
     Calculates the specific angular momentum for the particles about current set center.
     """
     global part_mass
-    l = data['Particle_Angular_Momentum']/part_mass
+    if len(data['Particle_Angular_Momentum']) == len(part_mass):
+        l = data['Particle_Angular_Momentum']/part_mass
+    else:
+        l = yt.YTArray([], "cm**2/s")
     return l
 
 yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")
-'''
+
