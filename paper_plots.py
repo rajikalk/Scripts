@@ -20,23 +20,23 @@ matplotlib.rcParams['ps.fonttype'] = 42
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-sp", "--slice_plot", help="Did you want to plot create a slice plot?", default=False)
-    parser.add_argument("-pp", "--profile_plot", help="Did you want to plot a profile plot?", default=False)
-    parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", default=False)
-    parser.add_argument("-fp", "--force_on_particles", help="Did you want to create a plot of the force on the particles?", default=False)
-    parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", default=False)
-    parser.add_argument("-op", "--outflow_pickle", help="Do you want to measure the outflows?", default=False)
-    parser.add_argument("-po", "--plot_outflows", help="Do you want to plot the outflows now that you've measured them?", default=False)
-    parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", default=False)
+    parser.add_argument("-sp", "--slice_plot", help="Did you want to plot create a slice plot?", type=str, default="False")
+    parser.add_argument("-pp", "--profile_plot", help="Did you want to plot a profile plot?", type=str, default="False")
+    parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", type=str, default="False")
+    parser.add_argument("-fp", "--force_on_particles", help="Did you want to create a plot of the force on the particles?", type=str, default="False")
+    parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", type=str, default="False")
+    parser.add_argument("-op", "--outflow_pickle", help="Do you want to measure the outflows?", type=str, default="False")
+    parser.add_argument("-po", "--plot_outflows", help="Do you want to plot the outflows now that you've measured them?", type=str, default="False")
+    parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", type=str, default="False")
     parser.add_argument("-zt", "--zoom_times", help="4x is default zoom", default=4.1, type=float)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=int, default=0)
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-c", "--center", help="What center do you want to set for everything?, if 3 it combines all centers", type=int, default=0)
     parser.add_argument("-ic", "--image_center", help="Where would you like to center the image?", type=int, default=0)
-    parser.add_argument("-ppm", "--profile_plot_multi", help="Did you want to plot a profile plot with multiple lines?", default=False)
+    parser.add_argument("-ppm", "--profile_plot_multi", help="Did you want to plot a profile plot with multiple lines?", type=str, default="False")
     
     #movie plot args
-    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", default=True)
+    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="True")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-16)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-14)
@@ -52,7 +52,7 @@ def parse_inputs():
     parser.add_argument("-dt", "--disk_thickness", help="How far above and below the midplane do you want your profile to go?", type=float, default=100.)
     parser.add_argument("-xf", "--x_field", help="x axis of the profile plot?", type=str, default="Distance_from_Center")
     parser.add_argument("-wf", "--weight_field", help="any weight field?", type=str, default=None)
-    parser.add_argument("-log", "--logscale", help="Want to use a log scale?", type=bool, default=False)
+    parser.add_argument("-log", "--logscale", help="Want to use a log scale?", type=str, default="False")
     parser.add_argument("-pb", "--profile_bins", help="how many bins do you want for the profile?", type=int, default=None)
     parser.add_argument("-zb", "--z_bins", help="how many z bins do you want when sampling points?", type=int, default=2.)
     parser.add_argument("-nsp", "--no_sampled_points", help="how many random points do you want to randomly sample?", type=int, default=2000)
@@ -64,24 +64,25 @@ def parse_inputs():
     #pressure plot args
     parser.add_argument("-ts", "--time_step", help="would you like to plot multiple times?", type=int, default=500)
     
-    parser.add_argument("-pd", "--pickle_dump", help="do you want to pickle data?", default=False)
+    parser.add_argument("-pd", "--pickle_dump", help="do you want to pickle data?", type=str, default="False")
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=12)
     parser.add_argument("-cu", "--c_units", help="What units do you want the colorbar in")
     parser.add_argument("-et", "--endtime", default=2001, type=int)
     parser.add_argument("-stdv", "--standard_vel", default=5, type=float)
     
     #yt_slice
-    parser.add_argument("-ys", "--yt_slice", help="did you want to make a yt-slice?", default=False)
+    parser.add_argument("-ys", "--yt_slice", help="did you want to make a yt-slice?", type=str, default="False")
     parser.add_argument("-st", "--slice_thickness", help="How thick do you want the slice to be?", default=300.0, type=float)
     
-    parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", default=False, type=bool)
+    parser.add_argument("-mov", "--produce_movie", help="Do you want to make a series of plots for a movie?", type=str, default="False")
     parser.add_argument("-sf", "--start_frame", help="if you don't want to start at frame 0, what frame do you want to start at?", type=int, default=0)
     parser.add_argument("-ef", "--end_frame", help="do you only want to plot up to t a certain number of frames?", default=None, type=int)
     
-    parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", default=False, type=bool)
-    parser.add_argument("-ni", "--non_ideal", help="do you want to plot the non-ideal regimes we shoudl think about", default=False, type=bool)
+    parser.add_argument("-totm", "--total_mass_of_system", help="do you want to plot the total mass of your system?", type=str, default="False")
+    parser.add_argument("-ni", "--non_ideal", help="do you want to plot the non-ideal regimes we should think about", type=str, default="False")
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-proj_ax", "--projection_axis", help="defaults to 'xz' and takes into account any projection orientation. Or can be set to xy", default="xz", type=str)
+    parser.add_argument("-amb", "--angular_momentum_budget", help="do you want plot the angular momenutum budget", type=str, default="False")
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -637,6 +638,33 @@ if len(movie_files) > 0:
 #=============================================================================
 #These plots don't need to iterate over multiple files
 
+if args.angular_momentum_budget == 'True':
+    files = sorted(glob.glob(path + 'angular_momentum_budget_*.csv'))
+    plt.clf()
+    for file in files:
+        times = []
+        ang_labels = []
+        ang_arrays = []
+        header = True
+        with open(file, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if header == False:
+                    times.append(float(row[0]))
+                    for col_it in range(len(row[1:])):
+                        ang_arrays[col_it].append(float(row[col_it+1]))
+                if header == True:
+                    for col in row[1:]:
+                        ang_labels.append(col)
+                        ang_arrays.append([])
+                    header = False
+        for arr in range(len(ang_arrays)):
+            plt.semilogy(times, ang_arrays[arr], label=ang_labels[arr])
+    plt.xlabel('Time since first sink particle formation (years)')
+    plt.ylabel('Total specific angular momentum')
+    plt.legend(loc='best')
+    plt.savefig('Angular_momentum_budget.eps', bbox_inches='tight', pad_inches = 0.02)
+
 if args.force_comp  == 'True':
     field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
@@ -740,13 +768,14 @@ if args.separation == 'True':
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 7.)
-    gs = gridspec.GridSpec(2, 1)
+    #gs = gridspec.GridSpec(2, 1)
+    gs = gridspec.GridSpec(3, 1)
     gs.update(hspace=0.0)
     ax1 = fig.add_subplot(gs[0,0])
     ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+    ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
     sim_times = []
     sim_total_mass = []
-    sim_total_accretion_rate = []
     for file in files:
         sink_form_time = 0
         particle_tag = []
@@ -755,8 +784,6 @@ if args.separation == 'True':
         y_pos = []
         z_pos = []
         mass = []
-        accretion_rate = []
-        acc_rate_mov_av = []
         with open(file, 'r') as f:
             reader = csv.reader(f, dialect='dat')
             for row in reader:
@@ -772,8 +799,6 @@ if args.separation == 'True':
                         y_pos.append([])
                         z_pos.append([])
                         mass.append([])
-                        accretion_rate.append([])
-                        acc_rate_mov_av.append([])
                         pit = len(particle_tag) - 1
                     elif particle_tag[0] == part_tag:
                         pit = 0
@@ -785,26 +810,11 @@ if args.separation == 'True':
                     y = float(row[3])/yt.units.AU.in_units('cm').value
                     z = float(row[4])/yt.units.AU.in_units('cm').value
                     m = float(row[14])/yt.units.msun.in_units('g').value
-                    m_dot = float(row[15])/yt.units.msun.in_units('g').value
                     x_pos[pit].append(x)
                     y_pos[pit].append(y)
                     z_pos[pit].append(z)
                     mass[pit].append(m)
-                    accretion_rate[pit].append(m_dot)
-                    if len(accretion_rate[0]) > 1000:
-                        if len(accretion_rate[pit]) < 1000:
-                            usable_ints = np.where(np.isnan(accretion_rate[pit]) == False)[0]
-                            m_dot_av = (np.sum(np.array(accretion_rate[pit])[usable_ints]))/(len(np.array(accretion_rate[pit])[usable_ints]))
-                        else:
-                            usable_ints = np.where(np.isnan(accretion_rate[pit][-1000:]) == False)[0]
-                            m_dot_av = (np.sum(np.array(accretion_rate[pit][-1000:])[usable_ints]))/len(np.array(accretion_rate[pit][-1000:])[usable_ints])
-                    else:
-                        usable_ints = np.where(np.isnan(accretion_rate[pit]) == False)[0]
-                        if len(usable_ints) == 1:
-                            m_dot_av = (np.sum(np.array(accretion_rate[pit])[usable_ints]))
-                        else:
-                            m_dot_av = (np.sum(np.array(accretion_rate[pit])[usable_ints]))/(len(np.array(accretion_rate[pit])[usable_ints]))
-                    acc_rate_mov_av[pit].append(m_dot_av)
+    
         times = np.array(times)
         sorted_inds_1 = np.argsort(times[0])
         sorted_inds_2 = np.argsort(times[1])
@@ -815,8 +825,6 @@ if args.separation == 'True':
         y_pos = np.array(y_pos)
         z_pos = np.array(z_pos)
         mass = np.array(mass)
-        accretion_rate = np.array(accretion_rate)
-        acc_rate_mov_av = np.array(acc_rate_mov_av)
         x_pos[0] = np.array(x_pos[0])[sorted_inds_1]
         x_pos[1] = np.array(x_pos[1])[sorted_inds_2]
         y_pos[0] = np.array(y_pos[0])[sorted_inds_1]
@@ -825,36 +833,45 @@ if args.separation == 'True':
         z_pos[1] = np.array(z_pos[1])[sorted_inds_2]
         mass[0] = np.array(mass[0])[sorted_inds_1]
         mass[1] = np.array(mass[1])[sorted_inds_2]
-        accretion_rate[0] = np.array(accretion_rate[0])[sorted_inds_1]
-        accretion_rate[1] = np.array(accretion_rate[1])[sorted_inds_2]
-        acc_rate_mov_av[0] = np.array(acc_rate_mov_av[0])[sorted_inds_1]
-        acc_rate_mov_av[1] = np.array(acc_rate_mov_av[1])[sorted_inds_2]
         x_pos[0] = x_pos[0][-len(x_pos[1]):]
         y_pos[0] = y_pos[0][-len(y_pos[1]):]
         z_pos[0] = z_pos[0][-len(z_pos[1]):]
         mass[0] = mass[0][-len(mass[1]):]
-        accretion_rate[0] = accretion_rate[0][-len(accretion_rate[1]):]
-        acc_rate_mov_av[0] = acc_rate_mov_av[0][-len(accretion_rate[1]):]
         dx = x_pos[0] - x_pos[1]
         dy = y_pos[0] - y_pos[1]
         dz = z_pos[0] - z_pos[1]
         sep = np.sqrt(dx**2. + dy**2. + dz**2.)
         total_mass = mass[0] + mass[1]
-        total_accretion_rate = accretion_rate[0] + accretion_rate[1]
-        total_acc_rate_moving_average = acc_rate_mov_av[0] + acc_rate_mov_av[1]
-        nan_inds = np.where(total_accretion_rate == 0.0)[0]
-        high_inds = np.where(np.log10(total_accretion_rate)>0.0)[0]
-        total_accretion_rate[nan_inds] = np.nan
-        total_accretion_rate[high_inds] = np.nan
+        inds = [0]
+        times_sort = [times[1][0]]
+        t_log = np.logspace(np.log10(times[1][0]), np.log10(times[1][-1]), 100)
+        dt = (t_log[1:]-t_log[:-1])[::-1]
+        dt_it = 0
+        for t_it, time in enumerate(times[1]):
+            if time - times_sort[-1] > dt[dt_it]:
+                times_sort.append(time)
+                inds.append(t_it)
+                dt_it = dt_it + 1
+        times_sort = np.array(times_sort)
+        #mass_sort_1 = mass[0][inds]
+        #mass_sort_2 = mass[1][inds]
+        total_mass_sort = total_mass[inds]
+        #m_dot_1 = (mass_sort_1[1:] - mass_sort_1[:-1])/(times_sort[1:]-times_sort[:-1])
+        #m_dot_2 = (mass_sort_2[1:] - mass_sort_2[:-1])/(times_sort[1:]-times_sort[:-1])
+        #m_dot = m_dot_1 + m_dot_2
+        m_dot = (total_mass_sort[1:] - total_mass_sort[:-1])/(times_sort[1:]-times_sort[:-1])
+        time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
         
         ax1.semilogy(times[1], sep, line_style[lit], label=labels[lit])
         ax2.plot(times[1], mass[0], line_style[lit], linewidth=1, alpha=0.5)
         ax2.plot(times[1], mass[1], line_style[lit], linewidth=1, alpha=0.5)
         ax2.plot(times[1], total_mass, line_style[lit], linewidth=2, label=labels[lit])
+        #ax3.semilogy(time_m_dot, m_dot_1, line_style[lit], linewidth=1, alpha=0.5)
+        #ax3.semilogy(time_m_dot, m_dot_2, line_style[lit], linewidth=1, alpha=0.5)
+        ax3.semilogy(time_m_dot, m_dot, line_style[lit], linewidth=2, label=labels[lit])
         #ax2.semilogy(times[1], total_acc_rate_moving_average, line_style[lit], label=labels[lit])
         sim_times.append(times[1])
         sim_total_mass.append(total_mass)
-        sim_total_accretion_rate.append(total_accretion_rate)
         lit = lit + 1
     ax1.set_ylim([1e0,5e2])
     #ax1.set_xlim([0.0, 5000.0])
@@ -868,12 +885,16 @@ if args.separation == 'True':
     ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     #ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
     ax2.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
+    ax3.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
     ax2.legend(loc='best')
     ax2.set_xlim([0, 5000])
     #ax2.set_ylim([1.e-10, 1.e-20])
     ax2.tick_params(axis='y', which='major', labelsize=args.text_font)
     ax2.tick_params(axis='x', which='major', labelsize=args.text_font)
-    plt.setp([ax2.get_yticklabels()[-2]], visible=False)
+    ax3.tick_params(axis='y', which='major', labelsize=args.text_font)
+    ax3.tick_params(axis='x', which='major', labelsize=args.text_font)
+    ax3.set_ylim(bottom=1.e-6)
+    #plt.setp([ax2.get_yticklabels()[-2]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
     print "Created image", image_name
