@@ -424,8 +424,10 @@ for it in range(len(positions)):
         file.close()
 
         axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
+        '''
         for sep in separation:
             axes_dict[ax_label].axvline(x=sep, alpha=0.5)
+        '''
         axes_dict[ax_label].set_xlim([0.0, r_max])
         if field_str == 'Relative_Keplerian_Velocity':
             axes_dict[ax_label].set_ylim([0.0, 2.0])
@@ -437,7 +439,7 @@ for it in range(len(positions)):
                 cbar.set_label('|$z$ position| (AU)', rotation=270, labelpad=20, size=args.text_font)
         if positions[it][0] == 1:
             if field_str != 'Relative_Keplerian_Velocity':
-                axes_dict[ax_label].set_ylabel('field_str')
+                axes_dict[ax_label].set_ylabel(field_str)
             else:
                 axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)')
         if positions[it][1] == rows:
@@ -530,6 +532,7 @@ for it in range(len(positions)):
                         if header == 0:
                             header = 1
                     time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    mass[-1] = np.nan_to_num(mass[-1])
                     dm = np.array(mass[-1][:time_it+1])[1:] - np.array(mass[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_mass = np.sum(dm*dt)/np.sum(dt)
@@ -616,6 +619,7 @@ for it in range(len(positions)):
                         if header == 0:
                             header = 1
                     time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    angular_momentum[-1] = np.nan_to_num(angular_momentum[-1])
                     dl = np.array(angular_momentum[-1][:time_it+1])[1:] - np.array(angular_momentum[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_angular_momentum = np.sum(dl*dt)/np.sum(dt)
@@ -654,6 +658,7 @@ for it in range(len(positions)):
                         if header == 0:
                             header = 1
                     time_it = np.argmin(abs(np.array(time[-1])-5000))
+                    momentum[-1] = np.nan_to_num(momentum[-1])
                     dp = np.array(momentum[-1][:time_it+1])[1:] - np.array(momentum[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_linear_momentum = np.sum(dp*dt)/np.sum(dt)
