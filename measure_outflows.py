@@ -258,6 +258,19 @@ for sto, ds in ts.piter(storage=storage):
 
     sto.result = write_string
     sto.result_id = str(time_val)
+    del write_data
+    del disk_volume
+    del tube_1
+    del tube_2
+    del pos_pos
+    del other_pos_pos
+    del neg_pos
+    del other_neg_pos
+
+pickle_file = save_dir + "AMB_" + float(dir.split('Mach_')[-1].split('/')[0]) + ".pkl"
+file = open(pickle_file, 'w+')
+pickle.dump((storage), file)
+file.close()
 
 if rank == 0:
     del_keys = []
@@ -270,5 +283,5 @@ if rank == 0:
     for it in sorted(np.array(storage.keys()).astype(np.float)):
         f.write(storage[str(it)])
         print "Printed line:", storage[str(it)]
-f.close()
+    f.close()
 print "Completed job on rank", rank
