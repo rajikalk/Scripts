@@ -14,6 +14,7 @@ import os
 import argparse
 import my_module as mym
 import my_fields as myf
+import pickle
 
 def parse_inputs():
     import argparse
@@ -267,7 +268,7 @@ for sto, ds in ts.piter(storage=storage):
     del neg_pos
     del other_neg_pos
 
-pickle_file = save_dir + "AMB_" + float(dir.split('Mach_')[-1].split('/')[0]) + ".pkl"
+pickle_file = save_dir + "AMB_" + str(float(dir.split('Mach_')[-1].split('/')[0])) + ".pkl"
 file = open(pickle_file, 'w+')
 pickle.dump((storage), file)
 file.close()
@@ -279,7 +280,7 @@ if rank == 0:
             del_keys.append(key)
     for key in del_keys:
         del storage[key]
-    f = open(save_dir + output, 'a')
+    f = open(save_dir + output_file, 'a')
     for it in sorted(np.array(storage.keys()).astype(np.float)):
         f.write(storage[str(it)])
         print "Printed line:", storage[str(it)]
