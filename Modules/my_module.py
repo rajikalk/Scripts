@@ -531,11 +531,12 @@ def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000, weight_arr=
     big_array = np.array([z, x_field, y_field])
     plot_array = []
     z_bins = np.linspace(np.min(np.abs(z)), np.max(np.abs(z)), bin_no+1)
+    z_bins = z_bins[::-1]
     import random
     prev_z = z_bins[0]
     counter_max = no_of_points/bin_no
     for z_bin in z_bins[1:]:
-        filtered_z = (z > prev_z)*(z < z_bin)
+        filtered_z = (z < prev_z)*(z > z_bin)
         temp_array = filtered_z*big_array
         temp_array = temp_array.transpose()
         counter = 0
