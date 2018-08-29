@@ -27,6 +27,7 @@ def parse_inputs():
     parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=12)
     parser.add_argument("-sn", "--savename", help="what do you want to save the plot as?", type=str, default='multiplot')
     parser.add_argument("-ylp", "--y_label_pad", help="y lable pad", default=-20, type=float)
+    parser.add_argument("-title", "--multiplot_title", help="Do you want to title the multiplot", type=str, default="")
     args = parser.parse_args()
     return args
 
@@ -237,8 +238,9 @@ for it in range(len(positions)):
             time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
             time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), "$t$="+time_string+"yr", va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
-        title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        if args.multiplot_title == "":
+            title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
+            title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axes_dict[ax_label].set_xlim(args_dict['xlim'])
         axes_dict[ax_label].set_ylim(args_dict['ylim'])
         for line in axes_dict[ax_label].xaxis.get_ticklines():
@@ -250,18 +252,21 @@ for it in range(len(positions)):
         if args.share_colourbar == False:
             if positions[it][0] == columns:
                 cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
-                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                if field_str == 'dens':
+                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                else:
+                    cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
             if cbar_plotted == False:
                 cax = f.add_axes([0.9, 0.1, 0.02, 0.8])
                 f.colorbar(plot, pad=0.0, cax=cax)
-                cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                if field_str == 'dens':
+                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                else:
+                    cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
                 cbar_plotted = True
         if positions[it][1] == rows:
-            if positions[it][0] == 2:
-                axes_dict[ax_label].set_xlabel('Distance from center (AU)', fontsize=args.text_font)
-            else:
-                axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
+            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
                     
         print "added movie segment"
     if 'yt_proj' in plot_type[it]:
@@ -397,6 +402,8 @@ for it in range(len(positions)):
         field_str = 'Relative_Keplerian_Velocity'
         get_plot_time = False
         plot_time = 0
+        is_log = False
+        get_log = False
         for prof_arg in prof_args:
             arg_list.append(prof_arg)
             if get_rmax == True:
@@ -414,6 +421,12 @@ for it in range(len(positions)):
                 get_plot_time = False
             if prof_arg == '-pt':
                 get_plot_time = True
+            if get_log:
+                if prof_arg == "True":
+                    is_log = True
+                get_log = False
+            if prof_arg == '-log':
+                get_log = True
 
         pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         if os.path.isfile(pickle_file) == False:
@@ -423,14 +436,17 @@ for it in range(len(positions)):
         prof_x, prof_y, sampled_points, separation = pickle.load(file)
         file.close()
 
-        axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
+        if is_log:
+            axes_dict[ax_label].semilogy(prof_x, prof_y, 'k-', linewidth=2.)
+        else:
+            axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
         '''
         for sep in separation:
             axes_dict[ax_label].axvline(x=sep, alpha=0.5)
         '''
         axes_dict[ax_label].set_xlim([0.0, r_max])
         if field_str == 'Relative_Keplerian_Velocity':
-            axes_dict[ax_label].set_ylim([0.0, 2.0])
+            axes_dict[ax_label].set_ylim([0.0, 3.5])
             axes_dict[ax_label].axhline(y=1.0, color='k', linestyle='--')
             cm = plt.cm.get_cmap('RdYlBu')
             plot = axes_dict[ax_label].scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=0.4, cmap=cm, edgecolors='none', vmin=0, vmax=100)
@@ -441,9 +457,9 @@ for it in range(len(positions)):
             if field_str != 'Relative_Keplerian_Velocity':
                 axes_dict[ax_label].set_ylabel(field_str)
             else:
-                axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)')
+                axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', size=args.text_font)
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('Radius (AU)')
+            axes_dict[ax_label].set_xlabel('Radius (AU)', size=args.text_font)
         print "added profile segment"
     if 'multi' in plot_type[it]:
         prof_args = input_args[it].split(' ')
@@ -465,21 +481,23 @@ for it in range(len(positions)):
             open_file = open(file, 'r')
             prof_x, prof_y, sampled_points, separation = pickle.load(open_file)
             open_file.close()
-            axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            #axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            #axes_dict[ax_label].semilogy(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            axes_dict[ax_label].loglog(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
             #for sep in separation:
-            #    axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
+            #   axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
         if positions[it][0] == columns and args.share_colourbar == False:
-            axes_dict[ax_label].legend(loc='best')
+            axes_dict[ax_label].legend(loc='best', fontsize=args.text_font)
         if field_str == 'Tangential_Velocity':
             if positions[it][0] == 1:
-                axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)')
+                axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)', size=args.text_font)
             axes_dict[ax_label].set_ylim(bottom=0.0)
         else:
             if positions[it][0] == 1:
-                axes_dict[ax_label].set_ylabel('$P_{\mathrm{mag}}/P_{\mathrm{gas}}$')
-            axes_dict[ax_label].set_ylim([0.0, 60.0])
+                axes_dict[ax_label].set_ylabel('Density (g/cm$^3$)', size=args.text_font)
+        #axes_dict[ax_label].set_ylim([0.0, 60.0])
         axes_dict[ax_label].set_xlim([np.min(prof_x), np.max(prof_x)])
-        axes_dict[ax_label].set_xlabel('Radius (AU)')
+        axes_dict[ax_label].set_xlabel('Radius (AU)', size=args.text_font)
         axes_dict[ax_label].set_xlim([0.0, 150.0])
         xticklabels = axes_dict[ax_label].get_xticklabels()
         plt.setp(xticklabels[-1], visible=True)
@@ -761,6 +779,8 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+    if args.multiplot_title != "":
+        plt.suptitle(args.multiplot_title, y=0.95, fontsize=18)
 
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
