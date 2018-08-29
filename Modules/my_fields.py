@@ -11,6 +11,40 @@ normal = [1.0, 0.0, 0.0]
 part_pos = yt.YTArray([], 'cm')
 part_mass = yt.YTArray([], 'g')
 part_vel = yt.YTArray([], 'cm/s')
+n_bins = 100
+adaptive_bins = True
+
+def set_n_bins(x):
+    """
+    sets the number of bins used when calculating the enclosed mass
+    Type: int
+    """
+    global n_bins
+    n_bins = int(x)
+    return x
+
+def set_adaptive_bins(x):
+    """
+    sets the whether adaptive bins are used when calculating used when calculating the enclosed mass
+    Type: bool
+    """
+    global adaptive_bins
+    adaptive_bins = x
+    return x
+
+def get_n_bins():
+    """
+    returns the currently set number of bins
+    """
+    global n_bins
+    return n_bins
+
+def get_adaptive_bins():
+    """
+    returns the current set adaptive_bins bool
+    """
+    global adaptive_bins
+    return adaptive_bins
 
 def set_center(x):
     """
@@ -794,3 +828,112 @@ def _Particle_Specific_Angular_Momentum(field, data):
 
 yt.add_field("Particle_Specific_Angular_Momentum", function=_Particle_Specific_Angular_Momentum, units=r"cm**2/s")
 
+def Gradient(x_field, y_field, bin_data):
+    global n_bins
+    global adaptive_bins
+    import time
+    import pickle
+    from subprocess import call
+    import os
+    
+    print "X_FIELD =", x_field
+    print "Y_FIELD =", y_field
+    
+    time_str = str(time.time()).split('.')[0] + '_' + str(time.time()).split('.')[1]
+    gradient_input = '/short/ek9/rlk100/temp_pickles/gradient_input_' + time_str + '.pkl'
+    gradient_output = '/short/ek9/rlk100/temp_pickles/gradient_' + time_str + '.pkl'
+    temp_file = open(gradient_input, 'w')
+    pickle.dump((x_field.value, y_field.value, bin_data.value), temp_file)
+    temp_file.close()
+    call(['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/Modules/gradient.py', '-f', gradient_input, '-sf', gradient_output, '-bins', str(n_bins), '-ab', str(adaptive_bins)])
+    
+    file = open(gradient_output, 'r')
+    gradient = pickle.load(file)
+    os.remove(gradient_output)
+    return gradient
+
+def _Squared_B_Mag(field, data):
+    """
+        Just calculates the dquare of the magnetic fields magnitude
+        """
+    if ('gas', 'magnetic_field_magnitude') in data.ds.derived_field_list:
+        B = data['magnetic_field_magnitude']**2.
+    else:
+        B = yt.YTArray(np.zeros(np.shape(data)), 'G**2')
+    return B
+
+yt.add_field("Squared_B_Mag", function=_Squared_B_Mag, units=r"G**2")
+
+def _B_gradient(field, data):
+    """
+        Calculates the magnetic field gradient in the z direction
+        """
+    if np.shape(data)[0] != 16:
+        y = data['Squared_B_Mag']
+        #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
+        #x = np.abs(data['dz_from_Center'].in_units('cm'))
+        bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2)
+        x = data['dz_from_Center'].in_units('cm')
+        gradient = Gradient(x, y, bin_data)
+        dB = yt.YTArray(np.abs(gradient), 'G**2/cm')
+    else:
+        dB = yt.YTArray(np.zeros(np.shape(data)), 'G**2/cm')
+    return dB
+
+yt.add_field("B_gradient", function=_B_gradient, units=r"G**2/cm")
+
+def _Magnetic_Acceleration(field, data):
+    """
+        Calculates the magnetic pressure in sphere
+        """
+    magnetic_acceleration = 1/(data['dens'].in_units('g/cm**3')*8.*np.pi) * data['B_gradient']
+    magnetic_acceleration = np.sign(data['dz_from_Center'])*(np.abs(magnetic_acceleration.in_units('cm/s**2')))
+    return magnetic_acceleration
+
+yt.add_field("Magnetic_Acceleration", function=_Magnetic_Acceleration, units=r"cm/s**2")
+
+def _Gravitational_Acceleration(field, data):
+    """
+    Calculates gravitational acceleration, from gravitational force.
+    """
+    gravitational_acceleration = (data['Total_Potential']*data['cell_mass'])/data['Distance_from_Center']
+    return gravitational_acceleration
+
+yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration, units=r"cm/s**2")
+
+def _Gravitational_Acceleration_z(field, data):
+    """
+        Calculates gravitational pressure, from gravitational force.
+        """
+    y = data['Total_Potential']
+    if np.shape(data)[0] != 16:
+        #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
+        #x = np.abs(data['dz_from_Center'].in_units('cm'))
+        bin_data = data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.)
+        x = data['dz_from_Center'].in_units('cm')
+        gradient = Gradient(x, y, bin_data)
+        gravitational_acceleration = yt.YTArray(-1*np.sign(data['dz_from_Center'])*np.abs(gradient), 'cm/s**2')
+    else:
+        gravitational_acceleration = yt.YTArray(np.zeros(np.shape(data)), 'cm/s**2')
+    del y
+    return gravitational_acceleration
+
+yt.add_field("Gravitational_Acceleration_z", function=_Gravitational_Acceleration_z, units=r"cm/s**2")
+
+def _Acceleration_Ratio(field, data):
+    """
+        Ratio of the magnetic acceleration to the gravitational acceleration calculated from enclosed_mass
+        """
+    A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration'])
+    return A_ratio
+
+yt.add_field("Acceleration_Ratio", function=_Acceleration_Ratio, units=r"")
+
+def _Acceleration_Ratio_z(field, data):
+    """
+        Ratio of the magnetic acceleration to the gravitational acceleration calculated from the potential gradient
+        """
+    A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration_z'])
+    return A_ratio
+
+yt.add_field("Acceleration_Ratio_z", function=_Acceleration_Ratio_z, units=r"")
