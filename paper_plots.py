@@ -22,6 +22,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-sp", "--slice_plot", help="Did you want to plot create a slice plot?", type=str, default="False")
     parser.add_argument("-pp", "--profile_plot", help="Did you want to plot a profile plot?", type=str, default="False")
+    parser.add_argument("-col_mean", "--calc_column_mean", help="Did you want calculate the column mean? eg. for column density", type=str, default="False")
     parser.add_argument("-fc", "--force_comp", help="Did you want to create a plot comparing pressure?", type=str, default="False")
     parser.add_argument("-fp", "--force_on_particles", help="Did you want to create a plot of the force on the particles?", type=str, default="False")
     parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", type=str, default="False")
@@ -54,8 +55,8 @@ def parse_inputs():
     parser.add_argument("-wf", "--weight_field", help="any weight field?", type=str, default=None)
     parser.add_argument("-log", "--logscale", help="Want to use a log scale?", type=str, default="False")
     parser.add_argument("-pb", "--profile_bins", help="how many bins do you want for the profile?", type=int, default=None)
-    parser.add_argument("-zb", "--z_bins", help="how many z bins do you want when sampling points?", type=int, default=2.)
-    parser.add_argument("-nsp", "--no_sampled_points", help="how many random points do you want to randomly sample?", type=int, default=2000)
+    parser.add_argument("-zb", "--z_bins", help="how many z bins do you want when sampling points?", type=int, default=5.)
+    parser.add_argument("-nsp", "--no_sampled_points", help="how many random points do you want to randomly sample?", type=int, default=2500)
     parser.add_argument("-xu", "--x_units", help="x units for profile plot", type=str, default="AU")
     parser.add_argument("-yu", "--y_units", help="y units for profile plot", type=str, default=None)
     parser.add_argument("-yl", "--y_label", help="what is the y_label you will use", type=str, default=None)
@@ -97,7 +98,7 @@ path = sys.argv[1]
 save_dir = sys.argv[2]
 if save_dir[-1] != '/':
     save_dir = save_dir + '/'
-if os.path.exists(save_dir) == False:
+if os.path.exists(save_dir) == "False":
     os.makedirs(save_dir)
 
 myf.set_center(args.center)
@@ -107,7 +108,7 @@ sim_files = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt_*'))
 if len(movie_files) > 0:
     sink_form_time = mym.find_sink_formation_time(movie_files)
 
-    if args.produce_movie != False:
+    if args.produce_movie != "False":
         m_times = mym.generate_frame_times(sim_files, args.time_step, presink_frames=0)
     else:
         m_times = [args.plot_time]
@@ -118,7 +119,7 @@ if len(movie_files) > 0:
     else:
         m_times = m_times[args.start_frame:]
 
-    if args.slice_plot != False:
+    if args.slice_plot != "False":
         usable_movie_files = mym.find_files(m_times, movie_files)
     usable_files = mym.find_files(m_times, sim_files)
     del movie_files
@@ -132,7 +133,7 @@ if len(movie_files) > 0:
     for fit in range(len(usable_files)):
         if fit == 0 or usable_files[fit] != usable_files[fit-1]:
             print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit]
-            if args.slice_plot != False:
+            if args.slice_plot != "False":
                 movie_file = usable_movie_files[fit]
             file = usable_files[fit]
             part_file = file[:-12] + 'part' + file[-5:]
@@ -213,7 +214,7 @@ if len(movie_files) > 0:
             limits = [xlim, ylim]
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
-            if args.pickle_dump == False:
+            if args.pickle_dump == "False":
                 if fit == 0 and len(usable_files) != 1:
                     plt.streamplot(xy[0], xy[1], magx_grid.value, magy_grid.value, density=4, linewidth=0.25, minlength=0.5)
                 else:
@@ -243,7 +244,7 @@ if len(movie_files) > 0:
 
         if args.profile_plot == 'True':
             myf.set_center(args.center)
-            myf.set_coordinate_system('spherical')
+            myf.set_coordinate_system('cylindrical')
             center_pos = dd['Center_Position']
             center_vel = dd['Center_Velocity'].value
             part_pos = dd['All_Particle_Positions']
@@ -278,6 +279,8 @@ if len(movie_files) > 0:
             else:
                 cal_vd_bool = False
             prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool)
+            if args.calc_column_mean != "False":
+                prof_y = prof_y/disk.height.in_units('cm')
             sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
             separation = []
             for particle in range(len(part_pos)):
@@ -287,11 +290,14 @@ if len(movie_files) > 0:
                 r = np.sqrt(dx**2. + dy**2. + dz**2.)
                 separation.append(r)
             
-            if args.pickle_dump == False:
+            if args.pickle_dump == "False":
                 plt.clf()
                 cm = plt.cm.get_cmap('RdYlBu')
                 plot = plt.scatter(sampled_points[1], sampled_points[2], c=sampled_points[0], alpha=(1-w_arr/np.max(w_arr)), cmap=cm, edgecolors='none')
-                plt.plot(prof_x, prof_y, 'k-', linewidth=2.)
+                if args.logscale != "False":
+                    plt.semilogy(prof_x, prof_y, 'k-', linewidth=2.)
+                else:
+                    plt.plot(prof_x, prof_y, 'k-', linewidth=2.)
                 cbar = plt.colorbar(plot, pad=0.0)
                 cbar.set_label('|z position| (AU)', rotation=270, labelpad=13, size=14)
                 plt.xlabel('Cyclindral Radius (AU)', labelpad=-1)
@@ -352,7 +358,7 @@ if len(movie_files) > 0:
                 inds = np.where((measuring_volume['B_angle']>59.5)&(measuring_volume['B_angle']<60.5))[0]
                 x.append(measuring_volume['Distance_from_Center'].in_units('AU')[inds])
                 y.append(measuring_volume['dz_from_Center'].in_units('AU')[inds])
-                if args.pickle_dump == False:
+                if args.pickle_dump == "False":
                     plt.clf()
                     for time in range(len(x)):
                         plt.scatter(x[time], y[time], alpha=0.4, edgecolors='none')
@@ -364,7 +370,7 @@ if len(movie_files) > 0:
                     plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
                     print "created force comparison plot:", save_image_name
                 fit = fit + 1
-            if args.pickle_dump == False:
+            if args.pickle_dump == "False":
                 plt.clf()
                 colors = ['k', 'b', 'c', 'g', 'r', 'm']
                 dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
@@ -580,7 +586,7 @@ if len(movie_files) > 0:
 
             velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full)
 
-            if args.pickle_dump == False:
+            if args.pickle_dump == "False":
                 fig, ax = plt.subplots()
                 plot = ax.pcolormesh(X, Y, image_data.value, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args.colourbar_min, vmax=args.colourbar_max), rasterized=True)
                 plt.gca().set_aspect('equal')
@@ -628,7 +634,7 @@ if len(movie_files) > 0:
 
 
         #saving the figure
-        if args.produce_movie != False:
+        if args.produce_movie != "False":
             save_image_name = save_dir + "movie_frame_" + ("%06d" % (args.start_frame + fit))
             plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
             call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', save_image_name+'.eps', save_image_name+'.jpg'])
@@ -668,25 +674,26 @@ if args.angular_momentum_budget == 'True':
 if args.force_comp  == 'True':
     field = args.field
     files = sorted(glob.glob(path + '*_plt_cnt*'))
-    times = [1000.0, 2000.0, 3000.0, 4000.0, 5000.0]
+    #times = [0.0, 500.0, 1000.0, 1500.0]
+    times = [2000.0, 3000.0, 4000.0, 5000.0]
     plot_files = mym.find_files(times, files)
     if args.save_name == None:
         save_image_name = save_dir + field + "_abs.eps"
     else:
         save_image_name = args.save_name + ".eps"
     myf.set_coordinate_system('sph')
-    #myf.set_center(1)
+    myf.set_center(args.center)
     plt.clf()
     x = []
     y = []
     fit = 0
-    height = 1000
+    height = 500
     for file in plot_files:
         time = times[fit]
         part_file = file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (50, 'au'), (height+100, 'au'))
+        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (1000, 'au'), (height+100, 'au'))
         bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
         x_field = column['dz_from_Center'].in_units('AU')
         dummy = column['magx']
@@ -703,12 +710,12 @@ if args.force_comp  == 'True':
             w_field = column[args.weight_field]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data, bin_min=0.1)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data.value, bin_min=0.1)
         prof_x = np.array(prof_x)
         prof_y = np.array(prof_y)
         x.append(prof_x)
         y.append(prof_y)
-        if args.pickle_dump == False:
+        if args.pickle_dump == "False":
             plt.clf()
             plt.axhline(y=1.0, color='k', linestyle='--')
             for time in range(len(x)):
@@ -728,7 +735,7 @@ if args.force_comp  == 'True':
             print "created force comparison plot:", save_image_name
         fit = fit + 1
             
-    if args.pickle_dump == False:
+    if args.pickle_dump == "False":
         plt.clf()
         colors = ['k', 'b', 'c', 'g', 'r', 'm']
         dash_list = [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
@@ -878,8 +885,12 @@ if args.separation == 'True':
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
     ax1.set_ylabel("Separation (AU)", fontsize=args.text_font)
-    ax1.tick_params(axis='x', which='major', labelsize=args.text_font)
-    ax1.tick_params(axis='y', which='major', labelsize=args.text_font)
+    ax1.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax1.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax1.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax1.yaxis.set_ticks_position('both')
+    ax2.yaxis.set_ticks_position('both')
+    ax3.yaxis.set_ticks_position('both')
     plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
     ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     #ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
@@ -888,11 +899,13 @@ if args.separation == 'True':
     ax3.legend(loc='best')
     ax3.set_xlim([0, 5000])
     #ax2.set_ylim([1.e-10, 1.e-20])
-    ax2.tick_params(axis='y', which='major', labelsize=args.text_font)
-    ax2.tick_params(axis='x', which='major', labelsize=args.text_font)
-    ax3.tick_params(axis='y', which='major', labelsize=args.text_font)
-    ax3.tick_params(axis='x', which='major', labelsize=args.text_font)
+    ax2.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax2.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax2.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
     ax2.set_ylim(bottom=1.e-6)
+    ax3.set_ylim(bottom=0.0)
     #plt.setp([ax2.get_yticklabels()[-2]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
