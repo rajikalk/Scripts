@@ -243,35 +243,67 @@ if len(movie_files) > 0:
                 print "Created Pickle"
 
         if args.profile_plot == 'True':
-            myf.set_center(args.center)
-            myf.set_coordinate_system('cylindrical')
-            center_pos = dd['Center_Position']
-            center_vel = dd['Center_Velocity'].value
-            part_pos = dd['All_Particle_Positions']
-            part_mass = dd['All_Particle_Masses']
-            print "np.mean(dd['Particle_Potential'])", np.mean(dd['Particle_Potential'])
-            print "Doing Profile Plot"
-            save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
-            L = [0.0, 0.0, 1.0]
-            if myf.get_center() == 0:
-                measuring_volume = ds.disk(center_pos.value, L, (args.r_max*2., 'au'), (args.disk_thickness*2., 'au'))
-                tot_vec = [np.sum(measuring_volume['Angular_Momentum_x']).value, np.sum(measuring_volume['Angular_Momentum_y']).value, np.sum(measuring_volume['Angular_Momentum_z']).value]
+            if args.calc_column_mean != "False":
+                time_stamp = (ds.current_time.value - np.min(dd['particle_creation_time'].value))/yt.units.yr.in_units('s').value
+                time_string = '$t=$'+str(int(np.round(time_stamp/1000.)*1000.)) + 'yr'
+                pickle_file = path + args.field + '_movie_time_' + str(m_times[fit]) + '.0_unweighted.pkl'
+                file = open(pickle_file, 'r')
+                X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+                file.close()
+                #calc center of mass:
+                image = image.in_units('g/cm**2')
+                X = yt.YTArray(X, 'au')
+                Y = yt.YTArray(Y, 'au')
+                x_dim = (np.max(X) - np.min(X)).in_units('cm')
+                y_dim = (np.max(Y) - np.min(Y)).in_units('cm')
+                cube = ((np.max(X[0][-1]) - np.min(X[0][-2])).in_units('cm'))*((np.max(X[0][-1]) - np.min(X[0][-2])).in_units('cm'))
+                TM = np.sum(image*(x_dim*y_dim))
+                x_top = yt.YTArray(0.0, 'cm*g')
+                y_top = yt.YTArray(0.0, 'cm*g')
+                part_mass = yt.YTArray(part_info['particle_mass'], 'msun')
+                part_pos_x = yt.YTArray(part_info['particle_position'][0], 'AU')
+                part_pos_y = yt.YTArray(part_info['particle_position'][1], 'AU')
+                TM = TM + np.sum(part_mass.in_units('g'))
+                for part in range(len(part_info['particle_mass'])):
+                    x_top = x_top + part_mass[part].in_units('g')*part_pos_x[part].in_units('cm')
+                    y_top = y_top + part_mass[part].in_units('g')*part_pos_y[part].in_units('cm')
+                x_top = x_top + np.sum(image*cube*X.in_units('cm'))
+                y_top = y_top + np.sum(image*cube*Y.in_units('cm'))
+                com = yt.YTArray([(x_top.value/TM.value), (y_top.value/TM.value), 0.0], 'cm')
+                x_arr = yt.YTArray(np.sqrt((X-com[0].in_units('au'))**2. + (Y-com[1].in_units('au'))**2.), 'au')
+                y_arr = image/(2.8*yt.units.mass_hydrogen.in_units('g'))
+                w_arr = None
+                z_arr = None
             else:
-                tot_vec = [dd['particle_x_ang'][args.center-1].value, dd['particle_y_ang'][args.center-1].value, dd['particle_z_ang'][args.center-1].value]
-            tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
-            L = tot_vec/tot_mag
-            measuring_volume = ds.disk(center_pos.value, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
-            if args.weight_field != None:
-                w_arr = measuring_volume[args.weight_field]
-            else:
-                w_arr = args.weight_field
-            x_arr = measuring_volume[args.x_field].in_units(args.x_units)
-            if args.y_units == None:
-                y_arr = measuring_volume[args.field]
-                args.y_units = str(y_arr.units)
-            else:
-                y_arr = measuring_volume[args.field].in_units(args.y_units)
-            z_arr = measuring_volume['z'].in_units('AU')
+                myf.set_center(args.center)
+                myf.set_coordinate_system('cylindrical')
+                center_pos = dd['Center_Position']
+                center_vel = dd['Center_Velocity'].value
+                part_pos = dd['All_Particle_Positions']
+                part_mass = dd['All_Particle_Masses']
+                print "np.mean(dd['Particle_Potential'])", np.mean(dd['Particle_Potential'])
+                print "Doing Profile Plot"
+                save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
+                L = [0.0, 0.0, 1.0]
+                if myf.get_center() == 0:
+                    measuring_volume = ds.disk(center_pos.value, L, (args.r_max*2., 'au'), (args.disk_thickness*2., 'au'))
+                    tot_vec = [np.sum(measuring_volume['Angular_Momentum_x']).value, np.sum(measuring_volume['Angular_Momentum_y']).value, np.sum(measuring_volume['Angular_Momentum_z']).value]
+                else:
+                    tot_vec = [dd['particle_x_ang'][args.center-1].value, dd['particle_y_ang'][args.center-1].value, dd['particle_z_ang'][args.center-1].value]
+                tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
+                L = tot_vec/tot_mag
+                measuring_volume = ds.disk(center_pos.value, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
+                if args.weight_field != None:
+                    w_arr = measuring_volume[args.weight_field]
+                else:
+                    w_arr = args.weight_field
+                x_arr = measuring_volume[args.x_field].in_units(args.x_units)
+                if args.y_units == None:
+                    y_arr = measuring_volume[args.field]
+                    args.y_units = str(y_arr.units)
+                else:
+                    y_arr = measuring_volume[args.field].in_units(args.y_units)
+                z_arr = measuring_volume['z'].in_units('AU')
 
             if args.field == "Tangential_Velocity":
                 cal_vd_bool = True
@@ -279,16 +311,10 @@ if len(movie_files) > 0:
             else:
                 cal_vd_bool = False
             prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool)
-            if args.calc_column_mean != "False":
-                prof_y = prof_y/disk.height.in_units('cm')
-            sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
-            separation = []
-            for particle in range(len(part_pos)):
-                dx = center_pos[0].in_units('au') - part_pos[particle][0].in_units('au')
-                dy = center_pos[1].in_units('au') - part_pos[particle][1].in_units('au')
-                dz = center_pos[2].in_units('au') - part_pos[particle][2].in_units('au')
-                r = np.sqrt(dx**2. + dy**2. + dz**2.)
-                separation.append(r)
+            if z_arr is not None:
+                sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
+            else:
+                sampled_points = None
             
             if args.pickle_dump == "False":
                 plt.clf()
@@ -311,9 +337,12 @@ if len(movie_files) > 0:
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
                 print "created profile plot:", save_image_name
             else:
-                pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
+                if args.calc_column_mean != "False":
+                    pickle_file = path + 'column_density_profile_pickle_'+str(args.plot_time)+'.pkl'
+                else:
+                    pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
                 file = open(pickle_file, 'w+')
-                pickle.dump((prof_x, prof_y, sampled_points, separation),file)
+                pickle.dump((prof_x, prof_y, sampled_points),file)
                 file.close()
                 print "created profile pickle:", pickle_file
 
@@ -710,7 +739,7 @@ if args.force_comp  == 'True':
             w_field = column[args.weight_field]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_data=bin_data.value, bin_min=0.1)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
         prof_x = np.array(prof_x)
         prof_y = np.array(prof_y)
         x.append(prof_x)
