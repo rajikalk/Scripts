@@ -179,6 +179,14 @@ def get_normal():
     global normal
     return normal
 
+def _Neg_z(field, data):
+    """
+    returns the negative of the z-positions
+    """
+    return -1*data['z']
+
+yt.add_field("Neg_z", function=_Neg_z, units=r"cm")
+
 def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
@@ -470,6 +478,16 @@ def _Relative_Keplerian_Velocity(field, data):
     return rel_kep
 
 yt.add_field("Relative_Keplerian_Velocity", function=_Relative_Keplerian_Velocity, units=r"")
+
+def _Relative_Keplerian_Velocity_mw(field, data):
+    """
+    Calculates the mass-weighted Relative Keplerian Velocity to be able to make meighted projections.
+    """
+    rel_kep_mw = data['Relative_Keplerian_Velocity']*data['cell_mass']
+    return rel_kep_mw
+
+yt.add_field("Relative_Keplerian_Velocity_mw", function=_Relative_Keplerian_Velocity_mw, units=r"g")
+
 '''
 def _Projected_Velocity_mw(field, data):
     """
@@ -866,8 +884,8 @@ yt.add_field("Squared_B_Mag", function=_Squared_B_Mag, units=r"G**2")
 
 def _B_gradient(field, data):
     """
-        Calculates the magnetic field gradient in the z direction
-        """
+    Calculates the magnetic field gradient in the z direction
+    """
     if np.shape(data)[0] != 16:
         y = data['Squared_B_Mag']
         #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
@@ -903,8 +921,8 @@ yt.add_field("Gravitational_Acceleration", function=_Gravitational_Acceleration,
 
 def _Gravitational_Acceleration_z(field, data):
     """
-        Calculates gravitational pressure, from gravitational force.
-        """
+    Calculates gravitational pressure, from gravitational force.
+    """
     y = data['Total_Potential']
     if np.shape(data)[0] != 16:
         #bin_data = np.abs(data['dz_from_Center'].in_units('cm') - (data['dz'].in_units('cm')/2.))
@@ -922,8 +940,8 @@ yt.add_field("Gravitational_Acceleration_z", function=_Gravitational_Acceleratio
 
 def _Acceleration_Ratio(field, data):
     """
-        Ratio of the magnetic acceleration to the gravitational acceleration calculated from enclosed_mass
-        """
+    Ratio of the magnetic acceleration to the gravitational acceleration calculated from enclosed_mass
+    """
     A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration'])
     return A_ratio
 
@@ -931,9 +949,80 @@ yt.add_field("Acceleration_Ratio", function=_Acceleration_Ratio, units=r"")
 
 def _Acceleration_Ratio_z(field, data):
     """
-        Ratio of the magnetic acceleration to the gravitational acceleration calculated from the potential gradient
-        """
+    Ratio of the magnetic acceleration to the gravitational acceleration calculated from the potential gradient
+    """
     A_ratio = np.abs(data['Magnetic_Acceleration']/data['Gravitational_Acceleration_z'])
     return A_ratio
 
 yt.add_field("Acceleration_Ratio_z", function=_Acceleration_Ratio_z, units=r"")
+
+def _dens_mw(field, data):
+    """
+    test field! Delete when not being used. This is to test creating mass weighted projections with YT
+    """
+    return data['dens']*data['cell_mass']
+
+yt.add_field("dens_mw", function=_dens_mw, units=r"g**2/cm**3")
+
+def _B_Rad(field, data):
+    """
+    Calculates the radial magnetic field component from (0, 0, 0) coordinate in cylindrical
+    """
+    B_rad = (data['magx'].in_units('gauss')*data['x'].in_units('cm') + data['magy'].in_units('gauss')*data['y'].in_units('cm'))/np.sqrt(data['x'].in_units('cm')**2 + data['y'].in_units('cm')**2)
+    return B_rad
+
+yt.add_field("B_Rad", function=_B_Rad, units=r"gauss")
+
+def _B_Tor(field, data):
+    """
+    Calculates the toroidal magnetic field component from (0, 0, 0) coordinate in cylindrical
+    """
+    B_x = data['magx'].in_units('gauss')
+    B_y = data['magy'].in_units('gauss')
+    B_rad = data['B_Rad'].in_units('gauss')
+    B_tor = np.sqrt(B_x**2. + B_y**2. - B_rad**2.)
+    return B_tor
+
+yt.add_field("B_Tor", function=_B_Tor, units=r"gauss")
+
+def _B_Pol(field, data):
+    """
+    Calculates the poloidal magnetic field component from (0, 0, 0) coordinate in cylindrical
+    """
+    B_pol = data['magz'].in_units('gauss')
+    return B_pol
+
+yt.add_field("B_Pol", function=_B_Pol, units=r"gauss")
+
+def _B_Tor_to_B_mag(field, data):
+    """
+    Calculates the ratio of B_tor to B_mag
+    """
+    B_mag = data['magnetic_field_magnitude'].in_units('gauss')
+    B_tor = data['B_Tor'].in_units('gauss')
+    ratio = np.abs(B_tor)/B_mag
+    return ratio
+
+yt.add_field("B_Tor_to_B_mag", function=_B_Tor_to_B_mag, units=r"")
+
+def _B_Pol_to_B_mag(field, data):
+    """
+    Calculates the ratio of B_pol to B_mag
+    """
+    B_mag = data['magnetic_field_magnitude'].in_units('gauss')
+    B_pol = data['B_Pol'].in_units('gauss')
+    ratio = np.abs(B_pol)/B_mag
+    return ratio
+
+yt.add_field("B_Pol_to_B_mag", function=_B_Pol_to_B_mag, units=r"")
+
+def _B_Pol_to_B_Tor(field, data):
+    """
+    Calculates the ratio of B_Pol to B_Tor
+    """
+    B_pol = data['B_Pol'].in_units('gauss')
+    B_tor = data['B_Tor'].in_units('gauss')
+    ratio = np.abs(B_pol)/np.abs(B_tor)
+    return ratio
+
+yt.add_field("B_Pol_to_B_Tor", function=_B_Pol_to_B_Tor, units=r"")
