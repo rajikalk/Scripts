@@ -469,14 +469,17 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         #print("Annotated particle field")
     return axis
 
-def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False):
+def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False, cumulative=False):
     unit_string = str(x.unit_quantity).split(' ')[-1]
     if bin_data is None:
         bin_data = x
     if bin_min is None:
         bin_min = np.min(bin_data)
     if bin_max is None:
-        bin_max = np.max(bin_data)
+        try:
+            bin_max = np.max(bin_data.value)
+        except:
+            bin_max = np.max(bin_data)
     if n_bins is None:
         unit_string = str(bin_data.unit_quantity).split(' ')[-1]
         bins = [0] + list(set(bin_data.value))
@@ -499,6 +502,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
     y_array = []
     
     prev_bin = bins[0]
+    cum_val = yt.YTQuantity(0.0, str(y.unit_quantity).split(' ')[-1])
     for bin in bins[1:]:
         ind = np.where((x >= prev_bin) & (x < bin))[0]
         mid_x = (bin+prev_bin)/2.
@@ -516,6 +520,9 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
             bin_val = np.nan
             print "FOUND EMPTY BIN"
         prev_bin = bin
+        if cumulative:
+            cum_val = cum_val + np.sum(y[ind])
+            bin_val = cum_val
         y_array.append(bin_val)
         print "Value =", bin_val, ", at radius=", mid_x
 
