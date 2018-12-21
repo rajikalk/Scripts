@@ -57,6 +57,8 @@ if args.share_x == 'True':
     args.share_x = True
 if args.share_y == 'False':
     args.share_y = False
+elif args.share_y == 'True':
+    args.share_y = True
 if args.share_ax == 'False':
     args.share_ax = False
 if args.share_colourbar == 'False':
@@ -80,7 +82,7 @@ input_args = []
 with open(args.in_file, 'rU') as f:
     reader = csv.reader(f)
     for row in reader:
-        if row[0] == 'Grid_inputs:':
+        if row[0].lower() == 'grid_inputs:':
             glr = float(row[1])
             grl = float(row[2])
             glw = float(row[3])
@@ -133,11 +135,40 @@ gs_right.update(hspace=0.05)
 cbar_plotted = False
 '''
 axes_dict = {}
-counter = 1
 
 for it in range(len(positions)):
-    ax_label = 'ax' + str(counter)
-    counter = counter + 1
+    #ax_label = 'ax' + str(counter)
+    ax_label = 'ax' + str(positions[it][0])+str(positions[it][1])
+    if positions[it][0] == 1 and positions[it][1] == 1:
+        if columns > 1:
+            axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
+        else:
+            axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
+    elif positions[it][0] != columns:
+        if args.share_x and args.share_y == True:
+            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+        elif args.share_x and args.share_y == 'row':
+            if positions[it][0] == 1:
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
+            else:
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+        elif args.share_x:
+            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
+        else:
+            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
+    else:
+        if args.share_x and args.share_y == True:
+            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+        elif args.share_x and args.share_y == 'row':
+            if positions[it][0] == 1:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+            else:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+        elif args.share_x:
+            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+        else:
+            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+    '''
     yit = np.where(positions[:,1] == positions[it][1])[0][0]
     if positions[it][0] == 1 and positions[it][1] == 1:
         if columns > 1:
@@ -157,6 +188,9 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
         elif args.share_y:
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
+        elif args.share_y == 'row':
+            yit = np.where(positions[:,1] == positions[it][1])[0][0]
+            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
         else:
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
     else:
@@ -170,6 +204,7 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit-1]])})
         else:
             axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+    '''
     if 'amb' in plot_type[it]:
         file = file_dir[it]
         times = []
@@ -191,8 +226,8 @@ for it in range(len(positions)):
         for arr in range(len(ang_arrays)):
             plt.semilogy(times, ang_arrays[arr], label=ang_labels[arr])
     if 'movie' in plot_type[it]:
+        #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
-
         arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
@@ -200,6 +235,12 @@ for it in range(len(positions)):
         plot_time = 0
         field_str = 'dens'
         get_field = False
+        weight_field = 'dens'
+        get_weight_field = False
+        cbar_lims = [None, None]
+        get_cbar_lim = (False, None)
+        ax_string = 'xz'
+        get_axis_string = False
         for mov_arg in mov_args:
             if get_stdv:
                 standard_vel = float(mov_arg)
@@ -216,22 +257,50 @@ for it in range(len(positions)):
                 get_field = False
             if mov_arg == '-f':
                 get_field = True
+            if get_weight_field:
+                weight_field = mov_arg
+                get_weight_field = False
+            if mov_arg == '-wf':
+                get_weight_field = True
+            if get_cbar_lim[0] == True:
+                cbar_lims[get_cbar_lim[1]] = float(mov_arg)
+                get_cbar_lim = (False, None)
+            if mov_arg == '-cmin':
+                get_cbar_lim = (True, 0)
+            if mov_arg == '-cmax':
+                get_cbar_lim = (True, 1)
+            if get_axis_string:
+                ax_string = mov_arg
+                get_axis_string = False
+            if mov_arg == '-ax':
+                get_axis_string = True
             arg_list.append(mov_arg)
 
-        pickle_file = file_dir[it] + field_str + '_movie_time_'+plot_time+'.pkl'
+        if weight_field == 'None':
+            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_movie_time_'+plot_time+'_unweighted.pkl'
+        else:
+            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_movie_time_'+plot_time+'.pkl'
         if os.path.isfile(pickle_file) == False:
             call(arg_list)
 
         file = open(pickle_file, 'r')
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
         file.close()
-        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']):
+        if cbar_lims != [None, None]:
+            args_dict['cbar_min'] = cbar_lims[0]
+            args_dict['cbar_max'] = cbar_lims[1]
+        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']) or 'Relative_Keplerian_Velocity' in field_str:
+            #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
-        else:
+        elif weight_field == 'None':
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
-        axes_dict[ax_label].set_aspect('equal')
+            #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(), rasterized=True)
+        else:
+            print "plotted with log scale"
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
+        part_info['particle_mass'] = np.sort(part_info['particle_mass'])[::-1]
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in args_dict.keys():
             time_string  = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
@@ -254,6 +323,16 @@ for it in range(len(positions)):
                 cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
                 if field_str == 'dens':
                     cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'magnetic_field_poloidal':
+                    cbar.set_label('$B_\mathrm{Pol}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'magnetic_field_toroidal':
+                    cbar.set_label('$B_\mathrm{Tor}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'Pol_to_Tor_Ratio':
+                    cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{Tor}$', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'B_Tor_to_B_mag':
+                    cbar.set_label('$B_\mathrm{Tor}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'B_Tor_to_B_mag':
+                    cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
@@ -262,12 +341,26 @@ for it in range(len(positions)):
                 f.colorbar(plot, pad=0.0, cax=cax)
                 if field_str == 'dens':
                     cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'magnetic_field_poloidal':
+                    cbar.set_label('$B_\mathrm{Pol}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'magnetic_field_toroidal':
+                    cbar.set_label('$B_\mathrm{Tor}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'Pol_to_Tor_Ratio':
+                    cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{Tor}$', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'B_Tor_to_B_mag':
+                    cbar.set_label('$B_\mathrm{Tor}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'B_Tor_to_B_mag':
+                    cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
                 cbar_plotted = True
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
-                    
+        axes_dict[ax_label].set_aspect('equal')
+        if positions[it][0] != 1:
+            xticklabels = axes_dict[ax_label].get_xticklabels()
+            plt.setp(xticklabels[1], visible=False)
+        #axes_dict[ax_label].set_adjustable('box', share=True)
         print "added movie segment"
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
@@ -404,6 +497,10 @@ for it in range(len(positions)):
         plot_time = 0
         is_log = False
         get_log = False
+        title = ''
+        get_title = False
+        cal_col_dens = False
+        get_col_mean = False
         for prof_arg in prof_args:
             arg_list.append(prof_arg)
             if get_rmax == True:
@@ -427,13 +524,22 @@ for it in range(len(positions)):
                 get_log = False
             if prof_arg == '-log':
                 get_log = True
+            if get_col_mean:
+                if prof_arg == "True":
+                    cal_col_dens = True
+                get_col_mean = False
+            if prof_arg == '-col_mean':
+                get_col_mean = True
 
-        pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+        if cal_col_dens:
+            pickle_file = file_dir[it] + 'column_density_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+        else:
+            pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         if os.path.isfile(pickle_file) == False:
             call(arg_list)
 
         file = open(pickle_file, 'r')
-        prof_x, prof_y, sampled_points, separation = pickle.load(file)
+        prof_x, prof_y, sampled_points = pickle.load(file)
         file.close()
 
         if is_log:
@@ -465,49 +571,139 @@ for it in range(len(positions)):
         prof_args = input_args[it].split(' ')
         get_field = False
         field_str = 'Tangential_Velocity'
+        cal_col_dens = False
+        get_col_mean = False
+        title = ''
+        get_title = False
+        log_scale = True
+        get_log_scale = False
         for prof_arg in prof_args:
             if get_field:
                 field_str = prof_arg
                 get_field = False
             if prof_arg == '-f':
                 get_field = True
-        files = sorted(glob.glob(file_dir[it] + field_str + '_profile_pickle_*.pkl'))
+            if get_col_mean:
+                if prof_arg == "True":
+                    cal_col_dens = True
+                get_col_mean = False
+            if prof_arg == '-col_mean':
+                get_col_mean = True
+            if get_title:
+                title = ' '.join(prof_arg.split('_'))
+                get_title = False
+            if prof_arg == '-t':
+                get_title = True
+            if get_log_scale:
+                if prof_arg == 'False':
+                    log_scale = False
+                get_title = False
+            if prof_arg == '-log':
+                get_log_scale = True
+        if cal_col_dens == True:
+            files = sorted(glob.glob(file_dir[it] + 'column_density_profile_pickle_*.pkl'))
+        else:
+            files = sorted(glob.glob(file_dir[it] + field_str + '_profile_pickle_*.pkl'))
         times = []
         colors = ['k', 'b', 'c', 'g', 'r', 'm']
         dash_list =  [[1,3], [5,3,1,3,1,3,1,3], [5,3,1,3,1,3], [5,3,1,3], [5,5], (None, None)]
         for f_it, file in enumerate(files):
             time_val = int(file.split('_profile_pickle_')[-1].split('.pkl')[0])
             times.append(time_val)
-            open_file = open(file, 'r')
-            prof_x, prof_y, sampled_points, separation = pickle.load(open_file)
-            open_file.close()
-            #axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
-            #axes_dict[ax_label].semilogy(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
-            axes_dict[ax_label].loglog(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
-            #for sep in separation:
-            #   axes_dict[ax_label].axvline(x=sep, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], alpha=0.5)
-        if positions[it][0] == columns and args.share_colourbar == False:
+            try:
+                open_file = open(file, 'r')
+                prof_x, prof_y, sampled_points, separation = pickle.load(open_file)
+                open_file.close()
+            except:
+                open_file = open(file, 'r')
+                prof_x, prof_y, sampled_points = pickle.load(open_file)
+                open_file.close()
+            if log_scale:
+                #axes_dict[ax_label].semilogy(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+                axes_dict[ax_label].loglog(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            else:
+                axes_dict[ax_label].plot(prof_x, prof_y, c=colors[-len(files) + f_it], dashes=dash_list[-len(files) + f_it], label=str(time_val)+"yr")
+            if time_val == 2000:
+                if positions[it][1] == 1:
+                    prof_y_2 = 150*8.e-14*(1/(prof_x**2))
+                    #axes_dict[ax_label].semilogy(prof_x, prof_y_2, 'k:', alpha = 0.5)
+                    axes_dict[ax_label].loglog(prof_x, prof_y_2, 'k:', alpha = 0.5)
+                    axes_dict[ax_label].set_ylim([5.e-16, 8.e-14])
+                if positions[it][1] == 2:
+                    prof_y_2 = 150*3.2e24*(1/prof_x)
+                    #axes_dict[ax_label].semilogy(prof_x, prof_y_2, 'k:', alpha = 0.5)
+                    axes_dict[ax_label].loglog(prof_x, prof_y_2, 'k:', alpha = 0.5)
+                    axes_dict[ax_label].set_ylim([1.e24, 8.e24])
+
+            if time_val == 5000:
+                if positions[it][1] == 3:
+                    if positions[it][0] == 3:
+                        rad1_ind = np.argmin(np.abs(np.array(prof_x)-70))
+                        rad2_ind = np.argmin(np.abs(np.array(prof_x)-82.5))
+                        mass_1 = prof_y[rad1_ind]
+                        mass_2 = prof_y[rad2_ind-1]
+                        print "disk mass is between", mass_1, mass_2
+                        y1 = np.zeros(np.shape(prof_y))
+                        axes_dict[ax_label].fill_between(prof_x[rad1_ind:rad2_ind], np.zeros(np.shape(prof_x[rad1_ind:rad2_ind])), np.ones(np.shape(prof_x[rad1_ind:rad2_ind]))*mass_1, facecolor='grey', alpha=0.5)
+                        mass_1_arr = np.ones(np.shape(prof_x[:rad2_ind]))*mass_1
+                        mass_2_arr = np.ones(np.shape(prof_x[:rad2_ind]))*mass_2
+                        axes_dict[ax_label].fill_between(prof_x[:rad2_ind], mass_1_arr, mass_2_arr, facecolor='grey', alpha=0.5)
+                    else:
+                        mass_1, mass_2 = 0.11395946798614512, 0.12237884009714563
+                        mass_1_arr = np.ones(np.shape(prof_x))*mass_1
+                        mass_2_arr = np.ones(np.shape(prof_x))*mass_2
+                        axes_dict[ax_label].fill_between(prof_x, mass_1_arr, mass_2_arr, facecolor='grey', alpha=0.5)
+            
+            #axes_dict[ax_label].set_ylim([1.e24, 1.e25])
+        if title != '':
+            axes_dict[ax_label].set_title(title)
+        if positions[it][0] == columns and args.share_colourbar == False and positions[it][1] == 1:
             axes_dict[ax_label].legend(loc='best', fontsize=args.text_font)
         if field_str == 'Tangential_Velocity':
             if positions[it][0] == 1:
                 axes_dict[ax_label].set_ylabel('Velocity Dispersion (km/s)', size=args.text_font)
+                axes_dict[ax_label].set_ylim(bottom=0.0)
+        elif field_str == 'cell_mass':
+            if positions[it][0] == 1:
+                axes_dict[ax_label].set_ylabel('Cumulative Mass ($M_\odot$)', size=args.text_font)
             axes_dict[ax_label].set_ylim(bottom=0.0)
+            '''
+            if positions[it][0] == columns:
+                axes_dict[ax_label].axvspan(65, 75, alpha=0.5, color='grey')
+            '''
+        elif cal_col_dens:
+            if positions[it][0] == 1:
+                axes_dict[ax_label].set_ylabel('H2 Column Density (cm$^{-2}$)', size=args.text_font)
         else:
             if positions[it][0] == 1:
                 axes_dict[ax_label].set_ylabel('Density (g/cm$^3$)', size=args.text_font)
+        '''
+        if positions[it][1] == 1:
+            axes_dict[ax_label].axhline(y=5.e-15, linestyle='--', color='k', alpha=0.5)
+        if positions[it][1] == 2:
+            axes_dict[ax_label].axhline(y=3.2e24, linestyle='--', color='k', alpha=0.5)
+        '''
         #axes_dict[ax_label].set_ylim([0.0, 60.0])
         axes_dict[ax_label].set_xlim([np.min(prof_x), np.max(prof_x)])
-        axes_dict[ax_label].set_xlabel('Radius (AU)', size=args.text_font)
         axes_dict[ax_label].set_xlim([0.0, 150.0])
-        xticklabels = axes_dict[ax_label].get_xticklabels()
-        plt.setp(xticklabels[-1], visible=True)
+        axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+        if positions[it][1] == rows:
+            axes_dict[ax_label].set_xlabel('Radius (AU)', size=args.text_font)
+            '''
+            if positions[it][0] != columns:
+                xticklabels = axes_dict[ax_label].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=True)
+            '''
     if 'force' in plot_type[it]:
         force_args = input_args[it].split(' ')
         arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         for force_args in force_args:
             arg_list.append(force_args)
-        call(arg_list)
-        pickle_file = save_dir + 'force_comp_pickle.pkl'
+    
+        pickle_file = file_dir[it] + 'force_comp_pickle.pkl'
+        if os.path.isfile(pickle_file) == False:
+            call(arg_list)
+        
         file = open(pickle_file, 'r')
         x, y, times, y_label = pickle.load(file)
         file.close()
@@ -525,12 +721,12 @@ for it in range(len(positions)):
         axes_dict[ax_label].set_xlim([1.0, 1000.0])
         #data_aspect = (np.log(plt.ylim()[1])-np.log(plt.ylim()[0]))/(np.log(1000.0)-np.log(1.0))
         #axes_dict[ax_label].set_aspect(1./data_aspect)
-        #axes_dict[ax_label].set_xlim([1.0, 1000.0])
     if 'outflow' in plot_type[it]:
-        legend_labels = ['Mach 0.0', 'Mach 0.1', 'Mach 0.2']
+        legend_labels = ['NT', 'T1', 'T2']
         linestyles = ['k-', 'b--', 'r-.']
         #csv_files = sorted(glob.glob(file_dir[it] + "mach*.csv"))
         csv_files = [file_dir[it]+"mach_0.csv", file_dir[it]+"mach_1.csv", file_dir[it]+"mach_2.csv"]
+        panel_label_x_pos = 250
         if 'mass' in input_args[it]:
             time = []
             mass = []
@@ -557,11 +753,12 @@ for it in range(len(positions)):
                     print "time averaged outflow mass for", csv_files[file_it], "is", time_averaged_mass
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
+            axes_dict[ax_label].text(panel_label_x_pos, 5.5e-2, 'a', fontsize=args.text_font+2)
             axes_dict[ax_label].set_ylabel('Outflow Mass (M$_\odot$)')
             axes_dict[ax_label].set_xlim([0, 5000])
             axes_dict[ax_label].set_ylim([1.e-4, 1.5e-1])
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
-            axes_dict[ax_label].legend(loc='best')
+            axes_dict[ax_label].legend(loc='lower right')
         elif 'max' in input_args[it]:
             time = []
             speed = []
@@ -586,6 +783,7 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_xlim([0, 5000])
             axes_dict[ax_label].set_ylim([1.e0, 1.e2])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
+            axes_dict[ax_label].text(panel_label_x_pos, 0.5*1.e2, 'd', fontsize=args.text_font+2)
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             #axes_dict[ax_label].legend(loc='best')
         elif 'mean' in input_args[it]:
@@ -612,6 +810,7 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_xlim([0, 5000])
             axes_dict[ax_label].set_ylim([1.e0, 1.e2])
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
+            axes_dict[ax_label].text(panel_label_x_pos, 0.5*1.e2, 'd', fontsize=args.text_font+2)
             #axes_dict[ax_label].set_ylim([1.e-3, 1.e-1])
             #axes_dict[ax_label].legend(loc='best')
         elif 'ang' in input_args[it]:
@@ -650,6 +849,7 @@ for it in range(len(positions)):
             else:
                 axes_dict[ax_label].set_ylabel('Ang. Mom. (M$_\odot$km$^2\,$s$^{-1}$)')
                 axes_dict[ax_label].set_ylim([1.e6, 5.e9])
+                axes_dict[ax_label].text(panel_label_x_pos, 1.5e9, 'c', fontsize=args.text_font+2)
                 #axes_dict[ax_label].set_ylim([1.e5, 1.e10])
             #axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
             axes_dict[ax_label].set_xlim([0, 5000])
@@ -689,6 +889,7 @@ for it in range(len(positions)):
             else:
                 axes_dict[ax_label].set_ylabel('Momentum (M$_\odot$km$\,$s$^{-1}$)')
                 axes_dict[ax_label].set_ylim([1.e-4, 2.5e-1])
+                axes_dict[ax_label].text(panel_label_x_pos, 8.e-2, 'b', fontsize=args.text_font+2)
                 #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
             axes_dict[ax_label].set_xlim([0, 5000])
             print "CREATED OUTFLOWS PLOT"
@@ -766,6 +967,8 @@ for it in range(len(positions)):
     if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
+        yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
+        plt.setp(yticklabels, visible=False)
     if positions[it][1] != rows:
         xticklabels = axes_dict[ax_label].get_xticklabels()
         plt.setp(xticklabels, visible=False)
@@ -779,8 +982,13 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+
+    if 'multi' in plot_type[it]:
+        if positions[it][1] == rows and positions[it][0] == columns:
+            yticklabels = axes_dict['ax13'].get_yticklabels()
+            plt.setp(yticklabels[-1], visible=False)
     if args.multiplot_title != "":
-        plt.suptitle(args.multiplot_title, y=0.95, fontsize=18)
+        plt.suptitle(args.multiplot_title, x=0.45, y=0.91, fontsize=18)
 
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
