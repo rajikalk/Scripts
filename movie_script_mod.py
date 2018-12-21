@@ -25,6 +25,7 @@ import my_fields as myf
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("-abs", "--absolute_image", help="do you want to get the absolute value of the image field?", default="False")
     parser.add_argument("-zt", "--zoom_times", help="0 is default zoom", default=0)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
@@ -52,9 +53,9 @@ def parse_inputs():
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=5000, type=int)
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
-    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 100AU", type=float, default=300.)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=300.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
-    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='dens')
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='cell_volume')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -265,6 +266,10 @@ def main():
         os.makedirs(save_dir)
     
     args = parse_inputs()
+    if args.weight_field == 'None':
+        weight_field = None
+    else:
+        weight_field = args.weight_field
     mym.set_global_font_size(args.text_font)
     files = get_files(path, args)
     simfo = sim_info(path, files[0], args)
@@ -348,10 +353,10 @@ def main():
         if args.plot_time != None:
             if args.weight_field == 'None':
                 weight_field = None
-                pickle_file = path + args.field + "_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+                pickle_file = path + args.axis + '_' + args.field + "_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
             else:
                 weight_field = args.weight_field
-                pickle_file = path + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
+                pickle_file = path + args.axis + '_' + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
         for ds in ts.piter():
             #for usable_file in usable_files:
             file_int = usable_files.index(path + str(ds))# (usable_file) #(path + str(ds))
@@ -395,7 +400,7 @@ def main():
                 center_vel = dd['Center_Velocity'].value
                 part_pos = dd['All_Particle_Positions']
                 part_mass = dd['All_Particle_Masses']
-                print "np.mean(dd['Particle_Potential']):", np.mean(dd['Particle_Potential'])
+                #print "np.mean(dd['Particle_Potential']):", np.mean(dd['Particle_Potential'])
                 print "center_vel =", myf.get_center_vel(), "on rank", rank, "for", ds
                 if args.axis == 'xy':
                     center_vel=center_vel[:2]
@@ -422,19 +427,63 @@ def main():
                         magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('gauss').value
                         magy = proj.frb.data[('flash', 'magz')].in_units('gauss').value
                 else:
-                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
-                    if weight_field == None:
-                        image = proj.frb.data[simfo['field']]
-                        velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value
-                        vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value
-                        magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')
-                        magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')
+                    if args.use_disk_angular_momentum == "False":
+                        #Hm... with test of cell-mass weighting and density weighting on plotting the density (I had to test on density since I forgot to download the particle file), the cell_mass weighting produces less block-i-ness. But I guess that means theres still a problem of these blocks.
+                        print "MAKING XY PROJECTION:"
+                        thickness = yt.YTQuantity(args.slice_thickness, 'AU')
+                        left_corner = yt.YTArray([-0.75*x_width, -0.75*y_width, -1*0.5*args.slice_thickness], 'AU')
+                        right_corner = yt.YTArray([0.75*x_width, 0.75*y_width, 0.5*args.slice_thickness], 'AU')
+                        region = ds.box(left_corner, right_corner)
+                        '''
+                        if 'Relative_Keplerian_Velocity' in simfo['field']:
+                            proj = yt.ProjectionPlot(ds, 2, ['Relative_Keplerian_Velocity_mw', 'velx', 'vely', 'magx', 'magy', 'cell_mass'], width=(x_width,'au'), weight_field=None, data_source=region, method='integrate')
+                            image = proj.frb.data[('gas', 'Relative_Keplerian_Velocity_mw')].in_units('cm*g').value/proj.frb.data[('gas', 'cell_mass')].in_units('cm*g').value
+                        else:
+                            proj = yt.ProjectionPlot(ds, 2, [simfo['field'], 'velx', 'vely', 'magx', 'magy', 'cell_mass'], width=(x_width,'au'), weight_field=None, data_source=region, method='integrate')
+                            image = proj.frb.data[simfo['field']].value/thickness.in_units('cm').value
+                        print "IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image)
+                        velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                        print "IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full)
+                        vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                        print "IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full)
+                        magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                        print "IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx)
+                        magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                        print "IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy)
+                        '''
+                        proj = yt.ProjectionPlot(ds, 2, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
+                        if weight_field == None:
+                            proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
+                            image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print "IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image)
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print "IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full)
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print "IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full)
+                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                            print "IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx)
+                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                            print "IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy)
+                        else:
+                            image = proj.frb.data[simfo['field']].value
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
+                            magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
                     else:
-                        image = proj.frb.data[simfo['field']].value
-                        velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
-                        vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
-                        magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
-                        magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
+                        proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
+                        if weight_field == None:
+                            image = proj.frb.data[simfo['field']]
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')
+                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')
+                        else:
+                            image = proj.frb.data[simfo['field']].value
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
+                            magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
 
                 velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
                 del velx_full
@@ -461,6 +510,8 @@ def main():
 
                 if rank == 0:
                     file = open(pickle_file, 'w+')
+                    if args.absolute_image != "False":
+                        image = abs(image)
                     pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
                     file.close()
                 print "Created Pickle:", pickle_file, "for  file:", str(ds)
@@ -496,7 +547,11 @@ def main():
                     pickle_file = path + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
             else:
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-            if args.yt_proj and os.path.isfile(pickle_file):
+                if os.path.isfile(pickle_file):
+                    print "FOUND MOVIE PICKLE"
+                else:
+                    print "HAVEN'T FOUND MOVIE FILE"
+            if os.path.isfile(pickle_file):
                 print "USING PICKLED FILE:", pickle_file
                 file = open(pickle_file, 'r')
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
@@ -603,7 +658,7 @@ def main():
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
                 cbar = plt.colorbar(plot, pad=0.0)
-                if simfo['field'] == 'dens':
+                if 'dens' in simfo['field']:
                     cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
                 else:
                     cbar.set_label(simfo['field'], rotation=270, labelpad=14, size=args.text_font)
@@ -630,11 +685,11 @@ def main():
                 call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
                 os.remove(file_name + '.eps')
                 print 'Created frame', (frames[frame_val]+1), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
-                del image
-                del magx
-                del magy
-                del velx
-                del vely
+                #del image
+                #del magx
+                #del magy
+                #del velx
+                #del vely
                 
                 if args.image_center != 0 and has_particles:
                     X, Y, X_vel, Y_vel = original_positions
@@ -662,7 +717,7 @@ def main():
                 args_dict.update({'ylim':ylim})
                 args_dict.update({'has_particles':has_particles})
                 print "Built dictionary"
-                pickle_file = save_dir + 'movie_pickle.pkl'
+                pickle_file = path + args_dict['field'][1] +'_movie_time_' + str(float(args_dict['time_val'])) + '.pkl'
                 print "Got pickle file name"
                 file = open(pickle_file, 'w+')
                 print "Opened pickle file"
