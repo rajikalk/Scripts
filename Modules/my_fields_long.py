@@ -960,6 +960,7 @@ def _magz_mw(field, data):
         return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
 
 yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
+
 '''
 def _Is_Unbound(field, data):
     """
