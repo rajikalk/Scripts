@@ -9,7 +9,7 @@ with open('Magnitude_table.csv', 'rU') as f:
     for row in reader:
         if header != 0:
             if row[9] != '':
-                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[5] + '&' + row[7] + '&' + row[10] + '&' + row[12] + '&' + row[14] + '\\'
+                line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[5] + '&' + row[7] + '&' + str(np.round(float(row[10])*1000)/1000.) + '&' + str(np.round(float(row[12])*1000)/1000.) + '&' + str(np.round(float(row[14])*1000)/1000.) + '\\'
             else:
                 line = row[0] + '&' + row[1] + '&' + row[2] + '&' + row[3] + '&' + row[5] + '&' + row[7] + '& & & \\'
             Write_lines.append(line)
