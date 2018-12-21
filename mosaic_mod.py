@@ -285,8 +285,8 @@ def main():
     positions = []
     paths = []
     args_dict = []
-    with open(input_file, 'rU') as f:
-        reader = csv.reader(f)
+    with open(input_file, 'rU') as mosaic_file:
+        reader = csv.reader(mosaic_file)
         for row in reader:
             if row[0] == 'Grid_inputs:':
                 glr = float(row[1])
@@ -321,6 +321,7 @@ def main():
     X_vel = []
     Y_vel = []
     sim_files = []
+    L = None
     for pit in range(len(paths)):
         fs = get_files(paths[pit], args_dict[pit])
         files.append(fs)
@@ -367,6 +368,7 @@ def main():
                     if L[0] > 0.0:
                         L = [-1.0*L[0], -1.0*L[1], 0.0]
             print "SET PROJECTION ORIENTATION L=", L
+            L = np.array(L)
             X.append(x)
             Y.append(y)
             X_vel.append(x_vel)
@@ -383,7 +385,6 @@ def main():
         sim_files.append(sim_fs)
     #myf.set_normal(L)
     #print "SET PROJECTION ORIENTATION L=", myf.get_normal()
-    L = np.array(L)
 
     # Initialise Grid and build lists
     if args.plot_time != None:
@@ -421,6 +422,12 @@ def main():
     cbar_max = args.colourbar_max
     cbar_min = args.colourbar_min
 
+    if L is None:
+        if args.axis == 'xy':
+            L = [0.0, 0.0, 1.0]
+        else:
+            L = [1.0, 0.0, 0.0]
+        L = np.array(L)
     if args.axis == 'xy':
         y_int = 1
     else:
@@ -571,7 +578,7 @@ def main():
                             ylim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
 
                     if args_dict[pit].yt_proj == False:
-                        
+                        f = h5py.File(usable_files[pit][frame_val], 'r')
                         image = get_image_arrays(f, simfo[pit]['field'], simfo[pit], args_dict[pit], X[pit], Y[pit])
                         magx = get_image_arrays(f, 'mag'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
                         magy = get_image_arrays(f, 'mag'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
