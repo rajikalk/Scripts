@@ -61,6 +61,7 @@ def parse_inputs():
     parser.add_argument("-yu", "--y_units", help="y units for profile plot", type=str, default=None)
     parser.add_argument("-yl", "--y_label", help="what is the y_label you will use", type=str, default=None)
     parser.add_argument("-sn", "--save_name", help="If not defined, it's the same as the field", type=str, default=None)
+    parser.add_argument("-cumul", "--cumulative", help="do you want to calculate the cumulative bin values?", type=str, default='False')
     
     #pressure plot args
     parser.add_argument("-ts", "--time_step", help="would you like to plot multiple times?", type=int, default=500)
@@ -293,6 +294,12 @@ if len(movie_files) > 0:
                 tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
                 L = tot_vec/tot_mag
                 measuring_volume = ds.disk(center_pos.value, L, (args.r_max, 'au'), (args.disk_thickness, 'au'))
+                if m_times[fit] == 5000:
+                    disk_radii = [30, 35, 65]
+                    sim_int = int(10*float(ds.directory.split('Mach_')[-1]))
+                    disk_mass_measuring_volume = ds.disk(center_pos.value, L, (disk_radii[sim_int], 'au'), (args.disk_thickness, 'au'))
+                    disk_mass = np.sum(disk_mass_measuring_volume['cell_mass'].in_units('msun'))
+                    print "DISK MASS FOR MACH", sim_int/10., "IS", disk_mass
                 if args.weight_field != None:
                     w_arr = measuring_volume[args.weight_field]
                 else:
@@ -310,7 +317,13 @@ if len(movie_files) > 0:
                 print "CALCULATING VELOCITY DISPERSION"
             else:
                 cal_vd_bool = False
-            prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool)
+
+            if args.cumulative == 'False':
+                cumulative = False
+            else:
+                cumulative = True
+
+            prof_x, prof_y = mym.profile_plot(x_arr, y_arr, weight=w_arr, log=args.logscale, n_bins=args.profile_bins, bin_min=0.0, bin_max=args.r_max, calc_vel_dispersion=cal_vd_bool, cumulative=cumulative)
             if z_arr is not None:
                 sampled_points = mym.sample_points(x_arr, y_arr, z_arr, bin_no=args.z_bins, no_of_points=args.no_sampled_points, weight_arr=w_arr)
             else:
@@ -716,14 +729,15 @@ if args.force_comp  == 'True':
     x = []
     y = []
     fit = 0
-    height = 500
+    radius = 100
+    height = 1000
     for file in plot_files:
         time = times[fit]
         part_file = file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
-        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (1000, 'au'), (height+100, 'au'))
-        bin_data = column['dz_from_Center'].in_units('AU') - column['dz'].in_units('AU')
+        column = ds.disk(dd['Center_Position'], [0.0, 0.0, 1.0], (radius, 'au'), (height, 'au'))
+        bin_data = yt.YTArray(np.linspace(0, 1000, 1001), 'AU')
         x_field = column['dz_from_Center'].in_units('AU')
         dummy = column['magx']
         dummy = column['magy']
@@ -739,7 +753,7 @@ if args.force_comp  == 'True':
             w_field = column[args.weight_field]
         else:
             w_field = None
-        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, log=args.logscale, n_bins=args.profile_bins, bin_min=0.1)
+        prof_x, prof_y= mym.profile_plot(x_field, y_field, weight=w_field, bin_data=bin_data, log=False, n_bins=args.profile_bins, bin_min=0.1)
         prof_x = np.array(prof_x)
         prof_y = np.array(prof_y)
         x.append(prof_x)
@@ -787,7 +801,7 @@ if args.force_comp  == 'True':
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
         print "created force comparison plot:", save_image_name
     else:
-        pickle_file = save_dir + 'force_comp_pickle.pkl'
+        pickle_file = path + 'force_comp_pickle.pkl'
         file = open(pickle_file, 'w+')
         pickle.dump((x, y, times, args.y_label),file)
         file.close()
@@ -799,17 +813,17 @@ if args.separation == 'True':
     files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     line_style = ['k-', 'b-', 'r-']
-    labels=["Mach 0.0", "Mach 0.1", "Mach 0.2"]
+    labels=["NT", "T1", "T2"]
     lit = 0
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 8.)
-    #gs = gridspec.GridSpec(2, 1)
-    gs = gridspec.GridSpec(3, 1)
+    gs = gridspec.GridSpec(2, 1)
+    #gs = gridspec.GridSpec(3, 1)
     gs.update(hspace=0.0)
     ax1 = fig.add_subplot(gs[0,0])
     ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
-    ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+    #ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
     sim_times = []
     sim_total_mass = []
     for file in files:
@@ -888,6 +902,7 @@ if args.separation == 'True':
         dz = refined_z[0][-len(refined_z[1]):] - refined_z[1]
         sep = np.sqrt(dx**2. + dy**2. + dz**2.)
         total_mass = refined_mass[0].tolist()[:-len(refined_mass[1])] + (np.array(refined_mass[0][-len(refined_mass[1]):])+np.array(refined_mass[1])).tolist()
+        mass_ratio = (np.nan*np.zeros(np.shape(refined_mass[0].tolist()[:-len(refined_mass[1])]))).tolist() +  ((np.array(refined_mass[1]))/(np.array(refined_mass[0][-len(refined_mass[1]):]))).tolist()
         dt = 25
         inds = [0]
         times_sort = [refined_time[0][0]]
@@ -901,15 +916,16 @@ if args.separation == 'True':
         time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
         
         ax1.semilogy(refined_time[1], sep, line_style[lit], label=labels[lit])
-        ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
-        ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
-        ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
-        ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
+        #ax2.plot(refined_time[0], mass_ratio, line_style[lit], label=labels[lit])
+        ax2.plot(time_m_dot, m_dot, line_style[lit], label=labels[lit])
+        #ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
+        #ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
+        #ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
         sim_times.append(times[1])
         sim_total_mass.append(total_mass)
         lit = lit + 1
     ax1.set_ylim([1e0,5e2])
-    #ax1.set_xlim([0.0, 5000.0])
+    ax1.set_xlim([0.0, 5000.0])
     ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
@@ -919,23 +935,23 @@ if args.separation == 'True':
     ax1.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
     ax1.yaxis.set_ticks_position('both')
     ax2.yaxis.set_ticks_position('both')
-    ax3.yaxis.set_ticks_position('both')
+    #ax3.yaxis.set_ticks_position('both')
     plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
-    ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
-    #ax2.set_ylabel("Total accreted mass (M$_\odot$)", fontsize=args.text_font)
-    ax3.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
+    ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    #ax2.set_ylabel("Mass ratio ($M_s/M_p$)", fontsize=args.text_font)
+    #ax2.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
     ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
-    ax3.legend(loc='best')
-    ax3.set_xlim([0, 5000])
+    ax2.legend(loc='best', fontsize=args.text_font)
+    ax2.set_xlim([0, 5000])
     #ax2.set_ylim([1.e-10, 1.e-20])
     ax2.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
     ax2.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
     ax2.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
-    ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
-    ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
-    ax2.set_ylim(bottom=1.e-6)
-    ax3.set_ylim(bottom=0.0)
-    #plt.setp([ax2.get_yticklabels()[-2]], visible=False)
+    #ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    #ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax2.set_ylim([0.0, 0.0006])
+    #ax3.set_ylim(bottom=0.0)
+    plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
     print "Created image", image_name
