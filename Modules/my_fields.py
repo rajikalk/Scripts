@@ -1026,3 +1026,13 @@ def _B_Pol_to_B_Tor(field, data):
     return ratio
 
 yt.add_field("B_Pol_to_B_Tor", function=_B_Pol_to_B_Tor, units=r"")
+
+def _B_angle(field, data):
+    """
+    Calculates the angle of the magnetic field to the cylindrical radius
+    """
+    angle = np.arctan(data['magz'].in_units('gauss')/(np.sqrt(data['magx'].in_units('gauss')**2. + data['magy'].in_units('gauss')**2.)))
+    angle = yt.YTArray(angle, 'rad')
+    return angle.in_units('deg')
+
+yt.add_field("B_angle", function=_B_angle, units=r"deg")
