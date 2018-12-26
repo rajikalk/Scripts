@@ -346,8 +346,7 @@ def main():
     CW.Barrier()
 
     if args.yt_proj:
-        yt.enable_parallelism()
-        ts = yt.DatasetSeries(usable_files, parallel=size/16.)
+        #ts = yt.DatasetSeries(usable_files, parallel=size/4.)
         center_pos = np.array([0.0, 0.0, 0.0])
         thickness = yt.YTArray(args.slice_thickness, 'AU')
         if args.plot_time != None:
@@ -357,9 +356,9 @@ def main():
             else:
                 weight_field = args.weight_field
                 pickle_file = path + args.axis + '_' + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
-        for ds in ts.piter():
-            #for usable_file in usable_files:
-            file_int = usable_files.index(path + str(ds))# (usable_file) #(path + str(ds))
+        #for ds in ts.piter():
+        for file_int in range(len(usable_files)):
+            ds = yt.load(usable_files[file_int])
             if args.plot_time is None:
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
             if os.path.isfile(pickle_file) == False:
@@ -529,10 +528,8 @@ def main():
                 del velx
                 del vely
                 del part_info
-                
     sys.stdout.flush()
     CW.Barrier()
-
 
     rit = args.working_rank
     for frame_val in range(len(frames)):
