@@ -241,6 +241,8 @@ for it in range(len(positions)):
         get_cbar_lim = (False, None)
         ax_string = 'xz'
         get_axis_string = False
+        ax_limits = None
+        get_axis_limits = False
         for mov_arg in mov_args:
             if get_stdv:
                 standard_vel = float(mov_arg)
@@ -274,6 +276,11 @@ for it in range(len(positions)):
                 get_axis_string = False
             if mov_arg == '-ax':
                 get_axis_string = True
+            if get_axis_limits:
+                ax_limits = float(mov_arg)
+                get_axis_limits = False
+            if mov_arg == '-al':
+                get_axis_limits = True
             arg_list.append(mov_arg)
 
         if weight_field == 'None':
@@ -289,9 +296,12 @@ for it in range(len(positions)):
         if cbar_lims != [None, None]:
             args_dict['cbar_min'] = cbar_lims[0]
             args_dict['cbar_max'] = cbar_lims[1]
-        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']) or 'Relative_Keplerian_Velocity' in field_str:
+        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']):
             #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
-            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
+            if 'Relative_Keplerian_Velocity' in field_str or 'B_angle' in field_str:
+                plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
+            else:
+                plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.RdBu, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
         elif weight_field == 'None':
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
             #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(), rasterized=True)
@@ -327,12 +337,14 @@ for it in range(len(positions)):
                     cbar.set_label('$B_\mathrm{Pol}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'magnetic_field_toroidal':
                     cbar.set_label('$B_\mathrm{Tor}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
-                elif field_str == 'Pol_to_Tor_Ratio':
+                elif field_str == 'B_Pol_to_B_Tor':
                     cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{Tor}$', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'B_Tor_to_B_mag':
                     cbar.set_label('$B_\mathrm{Tor}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
-                elif field_str == 'B_Tor_to_B_mag':
+                elif field_str == 'B_Pol_to_B_mag':
                     cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'B_angle':
+                    cbar.set_label(r"$\theta$", rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
