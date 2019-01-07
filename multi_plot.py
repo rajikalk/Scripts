@@ -243,6 +243,10 @@ for it in range(len(positions)):
         get_axis_string = False
         ax_limits = None
         get_axis_limits = False
+        title = ''
+        get_title = False
+        thickness = 300
+        get_thickness = False
         for mov_arg in mov_args:
             if get_stdv:
                 standard_vel = float(mov_arg)
@@ -281,12 +285,22 @@ for it in range(len(positions)):
                 get_axis_limits = False
             if mov_arg == '-al':
                 get_axis_limits = True
+            if get_title:
+                title = mov_arg
+                get_title = False
+            if mov_arg == '-t':
+                get_title = True
+            if get_thickness:
+                thickness = int(mov_arg)
+                get_thickness = False
+            if mov_arg == '-thickness':
+                get_thickness = True
             arg_list.append(mov_arg)
 
         if weight_field == 'None':
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_movie_time_'+plot_time+'_unweighted.pkl'
+            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'_unweighted.pkl'
         else:
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_movie_time_'+plot_time+'.pkl'
+            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
         if os.path.isfile(pickle_file) == False:
             call(arg_list)
 
@@ -318,6 +332,8 @@ for it in range(len(positions)):
             time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), "$t$="+time_string+"yr", va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         if args.multiplot_title == "":
+            if title != args_dict['title']:
+                args_dict[title] = title
             title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
             title.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axes_dict[ax_label].set_xlim(args_dict['xlim'])
@@ -344,7 +360,7 @@ for it in range(len(positions)):
                 elif field_str == 'B_Pol_to_B_mag':
                     cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'B_angle':
-                    cbar.set_label(r"$\theta$", rotation=270, labelpad=15, size=args.text_font)
+                    cbar.set_label(r"$\theta$ ($^{\circ}$)", rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
@@ -369,9 +385,11 @@ for it in range(len(positions)):
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
         axes_dict[ax_label].set_aspect('equal')
+        '''
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
             plt.setp(xticklabels[1], visible=False)
+        '''
         #axes_dict[ax_label].set_adjustable('box', share=True)
         print "added movie segment"
     if 'yt_proj' in plot_type[it]:
