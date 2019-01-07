@@ -521,7 +521,7 @@ def main():
                     print "USING PICKLED FILE:", pickle_file
                     file = open(pickle_file, 'r')
                     #weight_fieldstuff = pickle.load(file)
-                    X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val, xabel, yabel = pickle.load(file)
+                    X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, part_info, args_dict[pit], simfo[pit] = pickle.load(file)
 
                     #file_time = stuff[17]
                     file.close()
@@ -642,7 +642,7 @@ def main():
                 else:
                     axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 
-                mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=args_dict[pit].plot_velocity_legend, limits=[xlim, ylim], standard_vel=args_dict[pit].standard_vel)
+                mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=bool(args_dict[pit]['annotate_velocity']), limits=[args_dict[pit]['xlim'], args_dict[pit]['ylim']], standard_vel=args_dict[pit].standard_vel)
                 if has_particles:
                     if args_dict[pit].annotate_particles_mass == True:
                         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
