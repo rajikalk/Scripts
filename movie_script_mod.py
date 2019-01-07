@@ -352,10 +352,10 @@ def main():
         if args.plot_time != None:
             if args.weight_field == 'None':
                 weight_field = None
-                pickle_file = path + args.axis + '_' + args.field + "_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+                pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
             else:
                 weight_field = args.weight_field
-                pickle_file = path + args.axis + '_' + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
+                pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
         #for ds in ts.piter():
         for file_int in range(len(usable_files)):
             ds = yt.load(usable_files[file_int])
