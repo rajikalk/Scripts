@@ -458,7 +458,10 @@ def main():
 
             for pit in range(len(paths)):
                 
-                title_parts = args_dict[pit].title.split('_')
+                try:
+                    title_parts = args_dict[pit].title
+                except:
+                    title_parts = args_dict[pit]['title']
                 title = ''
                 for part in title_parts:
                     if part != title_parts[-1]:
@@ -516,7 +519,7 @@ def main():
                 axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
                 
 
-                if args_dict[pit].yt_proj and args_dict[pit].plot_time==None and os.path.isfile(paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
+                if args.yt_proj and args.plot_time==None and os.path.isfile(paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
                     pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                     print "USING PICKLED FILE:", pickle_file
                     file = open(pickle_file, 'r')
@@ -535,16 +538,16 @@ def main():
                     else:
                         part_info = {}
                     center_vel = [0.0, 0.0, 0.0]
-                    if args_dict[pit].image_center != 0 and has_particles:
+                    if args.image_center != 0 and has_particles:
                         original_positions = [X[pit], Y[pit], X_vel[pit], y_vel[pit]]
-                        x_pos = np.round(part_info['particle_position'][0][args_dict[pit].image_center - 1]/cl)*cl
-                        y_pos = np.round(part_info['particle_position'][1][args_dict[pit].image_center - 1]/cl)*cl
-                        pos = np.array([part_info['particle_position'][0][args_dict[pit].image_center - 1], part_info['particle_position'][1][args_dict[pit].image_center - 1]])
+                        x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
+                        y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
+                        pos = np.array([part_info['particle_position'][0][args.image_center - 1], part_info['particle_position'][1][args.image_center - 1]])
                         X[pit] = X[pit] + x_pos
                         Y[pit] = Y[pit] + y_pos
                         X_vel[pit] = X_vel[pit] + x_pos
                         Y_vel[pit] = Y_vel[pit] + y_pos
-                        if args_dict[pit].yt_proj == False:
+                        if args.yt_proj == False:
                             sim_file = usable_sim_files[frame_val][:-12] + 'part' + usable_sim_files[frame_val][-5:]
                         else:
                             sim_file = part_file
@@ -577,26 +580,26 @@ def main():
                             xlim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
                             ylim = [-1*args_dict[pit].ax_lim, args_dict[pit].ax_lim]
 
-                    if args_dict[pit].yt_proj == False:
+                    if args.yt_proj == False:
                         f = h5py.File(usable_files[pit][frame_val], 'r')
                         image = get_image_arrays(f, simfo[pit]['field'], simfo[pit], args_dict[pit], X[pit], Y[pit])
-                        magx = get_image_arrays(f, 'mag'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
-                        magy = get_image_arrays(f, 'mag'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
+                        magx = get_image_arrays(f, 'mag'+args.axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
+                        magy = get_image_arrays(f, 'mag'+args.axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis, simfo[pit], args_dict[pit], X[pit], Y[pit])
                         x_pos_min = int(np.round(np.min(X[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
                         y_pos_min = int(np.round(np.min(Y[pit]) - simfo[pit]['xmin_full'])/simfo[pit]['cell_length'])
-                        if np.shape(f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]) == (2048, 2048):
-                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis]]
-                        elif args_dict[pit].axis == 'xy':
-                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,:,0]]
+                        if np.shape(f['vel'+args.axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis]) == (2048, 2048):
+                            velocity_data = [f['vel'+args.axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis], f['vel'+args.axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis]]
+                        elif args.axis == 'xy':
+                            velocity_data = [f['vel'+args.axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis][:,:,0], f['vel'+args.axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis][:,:,0]]
                         else:
-                            velocity_data = [f['vel'+args_dict[pit].axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:], f['vel'+args_dict[pit].axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args_dict[pit].axis][:,0,:]]
+                            velocity_data = [f['vel'+args.axis[0]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo[pit]['movie_file_type']+'_'+args.axis][:,0,:]]
                         velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X[pit], velocity_data[0], velocity_data[1], center_vel=center_vel)
                     else:
                         if args_dict[pit].image_center == 0 or has_particles == False:
                             center_pos = np.array([0.0, 0.0, 0.0])
                         else:
                             dd = f.all_data()
-                            center_pos = np.array([dd['particle_posx'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posy'][args_dict[pit].image_center-1].in_units('AU'), dd['particle_posz'][args_dict[pit].image_center-1].in_units('AU')])
+                            center_pos = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
                         x_width = (xlim[1] -xlim[0])
                         y_width = (ylim[1] -ylim[0])
                         thickness = yt.YTArray(args.slice_thickness, 'AU')
@@ -641,30 +644,31 @@ def main():
                     axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 else:
                     axes_dict[ax_label].streamplot(X[pit], Y[pit], magx, magy, density=4, linewidth=0.25, minlength=0.5)
-                
-                mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=bool(args_dict[pit]['annotate_velocity']), limits=[args_dict[pit]['xlim'], args_dict[pit]['ylim']], standard_vel=args_dict[pit].standard_vel)
-                if has_particles:
-                    if args_dict[pit].annotate_particles_mass == True:
+
+                xlim = args_dict[pit]['xlim']
+                ylim = args_dict[pit]['ylim']
+                mym.my_own_quiver_function(axes_dict[ax_label], X_vel[pit], Y_vel[pit], velx, vely, plot_velocity_legend=bool(args_dict[pit]['annotate_velocity']), limits=[xlim, ylim], standard_vel=args.standard_vel)
+                if args_dict[pit]['has_particles']:
+                    if args.annotate_particles_mass == True:
                         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
                     else:
                         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
-                if args_dict[pit].plot_lref == True:
+                if args.plot_lref == True:
                     r_acc = np.round(part_info['accretion_rad'])
                     axes_dict[ax_label].annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo[pit]['xmax'], 0.93*simfo[pit]['ymax']), va="center", ha="right", color='w', fontsize=args_dict[pit].text_font)
-                if args_dict[pit].annotate_time == "True":
-                    time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args_dict[pit].text_font)
+                if args_dict[pit]['annotate_time'] == "True":
+                    time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
                     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                     #ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
-                    
-                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args_dict[pit].text_font+2))
+                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+2))
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
                 if positions[pit][0] == columns:
                     cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
-                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args_dict[pit].text_font)
-                axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args_dict[pit].text_font)
+                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
+                axes_dict[ax_label].set_xlabel(args_dict[pit]['xabel'], labelpad=-1, fontsize=args.text_font)
                 if positions[pit][0] == 1:
-                    axes_dict[ax_label].set_ylabel(yabel, labelpad=-20, fontsize=args_dict[pit].text_font)
+                    axes_dict[ax_label].set_ylabel(args_dict[pit]['yabel'], labelpad=-20, fontsize=args.text_font)
                 axes_dict[ax_label].set_xlim(xlim)
                 axes_dict[ax_label].set_ylim(ylim)
                 for line in axes_dict[ax_label].xaxis.get_ticklines():
@@ -683,9 +687,9 @@ def main():
                     plt.setp(yticklabels, visible=False)
 
                 if positions[pit][0] == 1:
-                    axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args_dict[pit].text_font)
+                    axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font)
                 if positions[pit][1] == rows:
-                    axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args_dict[pit].text_font)
+                    axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
                     if positions[pit][0] != 1:
                         xticklabels = axes_dict[ax_label].get_xticklabels()
                         plt.setp(xticklabels[0], visible=False)
@@ -714,7 +718,7 @@ def main():
                 del velx
                 del vely
                 
-                if args_dict[pit].image_center != 0 and has_particles:
+                if args.image_center != 0 and has_particles:
                     X[pit], Y[pit], X_vel[pit], Y_vel[pit] = original_positions
             print 'Created frame', (frames[frame_val]), 'of', str(frames[-1]), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
 
