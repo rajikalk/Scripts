@@ -305,6 +305,7 @@ for it in range(len(positions)):
             call(arg_list)
 
         file = open(pickle_file, 'r')
+        print "pickle file:", pickle_file
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
         file.close()
         if cbar_lims != [None, None]:
@@ -386,7 +387,7 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font)
         axes_dict[ax_label].set_aspect('equal')
         '''
-        if positions[it][0] != 1:
+        if positions[it][0] != 1 and ax_string!='xz':
             xticklabels = axes_dict[ax_label].get_xticklabels()
             plt.setp(xticklabels[1], visible=False)
         '''
@@ -1012,6 +1013,8 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+                if positions[it][0] == 3:
+                    plt.setp(xticklabels[1], visible=False)
 
     if 'multi' in plot_type[it]:
         if positions[it][1] == rows and positions[it][0] == columns:
