@@ -1107,7 +1107,7 @@ if args.phasefolded_accretion == 'True':
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
     for key in particle_data.keys():
-        if key != 'particle_tag' or key != 'time':
+        if key != 'particle_tag' and key != 'time':
             particle_data[key] = np.array(particle_data[key]).T
             particle_data[key][0] = particle_data[key][0][sorted_inds]
             particle_data[key][1] = particle_data[key][1][sorted_inds]
