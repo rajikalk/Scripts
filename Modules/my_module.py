@@ -95,8 +95,8 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=20
         sink_form_time = find_sink_formation_time(files)
         max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
         f.close()
-    if end_time is not None and end_time < max_time:
-        max_time = end_time
+    #if end_time is not None and end_time < max_time:
+    max_time = end_time
 
     if presink_frames != 0:
         m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
