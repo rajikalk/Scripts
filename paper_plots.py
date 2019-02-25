@@ -1109,5 +1109,39 @@ if args.phasefolded_accretion == 'True':
     for key in particle_data.keys():
         if key != 'particle_tag' and key != 'time':
             particle_data[key] = np.array(particle_data[key]).T
-            particle_data[key][0] = particle_data[key][0][sorted_inds]
-            particle_data[key][1] = particle_data[key][1][sorted_inds]
+            try:
+                particle_data[key] = particle_data[key][:,sorted_inds]
+            except:
+                particle_data[key] = particle_data[key][sorted_inds]
+            #particle_data[key][0] = particle_data[key][0][sorted_inds]
+            #particle_data[key][1] = particle_data[key][1][sorted_inds]
+    particle_data.update({'separation':np.sqrt((particle_data['posx'][0] - particle_data['posx'][1])**2. + (particle_data['posy'][0] - particle_data['posy'][1])**2. + (particle_data['posz'][0] - particle_data['posz'][1])**2.)})
+    usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
+    for key in particle_data.keys():
+        if key != 'particle_tag':
+            try:
+                particle_data[key] = particle_data[key][:,usable_inds]
+            except:
+                particle_data[key] = particle_data[key][usable_inds]
+    #particle_data['time'] = particle_data['time'][usable_inds]
+    #particle_data['separation'] = particle_data['separation'][usable_inds]
+    periastron_inds = [np.argmin(particle_data['separation'])]
+    index = periastron_inds[0] + 1000
+    passed_apastron = False
+    while index < len(particle_data['time']):
+        if np.min(particle_data['separation'][index-1000:index]) != np.min(particle_data['separation'][np.array([index-1000,index-1])]) and np.min(particle_data['separation'][index-1000:index]) < 15.:
+            periastron_ind = np.argmin(particle_data['separation'][index-1000:index]) + index-1000
+            periastron_inds.append(periastron_ind)
+            print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
+        index = index + 1000
+    plt.clf()
+    hist_ind = 1
+    phase = np.linspace(0, 1, 100)
+    #FIND BINNED DATA
+    while hist_ind < len(periastron_inds):
+        time_bins = np.linspace(particle_data['time'][hist_ind-1], particle_data['time'][hist_ind],101)
+        for
+        hist_ind = hist_ind + 1
+    
+    
+    #find perihelions!
