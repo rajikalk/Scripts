@@ -88,6 +88,7 @@ def parse_inputs():
     
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
+    parser.add_argument("-plot_lum", "--plot_luminosity_evolution", help="do you want to plot the luminosity evolution", type=str, default="False")
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -1071,7 +1072,7 @@ if args.read_particle_file == 'True':
                         particle_data['mdot'].append([np.nan, np.nan])
                     time_ind = particle_data['time'].index(time_val)
                     if np.isnan(particle_data['posx'][time_ind][part_ind]) == False:
-                        print "replacing data at time", time_valparti
+                        print "replacing data at time", time_val
                     particle_data['posx'][time_ind][part_ind] = float(row[2])/yt.units.au.in_units('cm').value
                     particle_data['posy'][time_ind][part_ind] = float(row[3])/yt.units.au.in_units('cm').value
                     particle_data['posz'][time_ind][part_ind] = float(row[4])/yt.units.au.in_units('cm').value
@@ -1087,23 +1088,16 @@ if args.read_particle_file == 'True':
                     particle_data['mass'][time_ind][part_ind] = float(row[14])/yt.units.msun.in_units('g').value
                     particle_data['mdot'][time_ind][part_ind] = float(row[15])/(yt.units.msun.in_units('g').value/yt.units.yr.in_units('s').value)
                 if np.remainder(line_counter,10000) == 0:
-                    pickle_file = save_dir + 'particle_data.pkl'
                     file_open = open(pickle_file, 'w+')
                     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
                     file_open.close()
                     print "dumped pickle after line", line_counter
             line_counter = line_counter + 1
-        pickle_file = save_dir + 'particle_data.pkl'
         file_open = open(pickle_file, 'w+')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
         print "dumped pickle after line", line_counter
-
-if args.phasefolded_accretion == 'True':
-    pickle_file = save_dir + 'particle_data.pkl'
-    file_open = open(pickle_file, 'r')
-    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-    file_open.close()
+    print "sorting data"
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
     for key in particle_data.keys():
@@ -1113,8 +1107,6 @@ if args.phasefolded_accretion == 'True':
                 particle_data[key] = particle_data[key][:,sorted_inds]
             except:
                 particle_data[key] = particle_data[key][sorted_inds]
-            #particle_data[key][0] = particle_data[key][0][sorted_inds]
-            #particle_data[key][1] = particle_data[key][1][sorted_inds]
     particle_data.update({'separation':np.sqrt((particle_data['posx'][0] - particle_data['posx'][1])**2. + (particle_data['posy'][0] - particle_data['posy'][1])**2. + (particle_data['posz'][0] - particle_data['posz'][1])**2.)})
     usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
     for key in particle_data.keys():
@@ -1123,8 +1115,16 @@ if args.phasefolded_accretion == 'True':
                 particle_data[key] = particle_data[key][:,usable_inds]
             except:
                 particle_data[key] = particle_data[key][usable_inds]
-    #particle_data['time'] = particle_data['time'][usable_inds]
-    #particle_data['separation'] = particle_data['separation'][usable_inds]
+    print "sorted data and save"
+    file_open = open(pickle_file, 'w+')
+    pickle.dump((particle_data, sink_form_time, line_counter),file_open)
+    file_open.close()
+
+if args.phasefolded_accretion == 'True':
+    pickle_file = save_dir + 'particle_data.pkl'
+    file_open = open(pickle_file, 'r')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
     periastron_inds = [np.argmin(particle_data['separation'])]
     index = periastron_inds[0] + 1000
     passed_apastron = False
@@ -1136,12 +1136,61 @@ if args.phasefolded_accretion == 'True':
         index = index + 1000
     plt.clf()
     hist_ind = 1
-    phase = np.linspace(0, 1, 100)
+    phase = np.linspace(0, 1, 20)
     #FIND BINNED DATA
+    plt.clf()
+    averaged_binned_accretion = [[],[]]
+    averaged_total_accretion = []
+    fig, axs = plt.subplots(2, 1, sharex=True)
     while hist_ind < len(periastron_inds):
-        time_bins = np.linspace(particle_data['time'][hist_ind-1], particle_data['time'][hist_ind],101)
-        for
+        binned_accretion = [[],[]]
+        total_accretion = []
+        time_bins = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][periastron_inds[hist_ind]],21)
+        bin_ind = 1
+        while bin_ind < len(time_bins):
+            time_bin_inds = np.where((particle_data['time'] > time_bins[bin_ind-1]) & (particle_data['time'] < time_bins[bin_ind]))[0]
+            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds]))
+            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds]))
+            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds]))
+            bin_ind = bin_ind + 1
+        axs[0].plot(phase, binned_accretion[0], 'k-')
+        axs[1].plot(phase, binned_accretion[1], 'k-')
         hist_ind = hist_ind + 1
-    
-    
-    #find perihelions!
+        averaged_binned_accretion[0].append(binned_accretion[0])
+        averaged_binned_accretion[1].append(binned_accretion[1])
+        averaged_total_accretion.append(total_accretion)
+    plt.xlabel("Phase")
+    plt.xlim([0.0, 1.0])
+    plt.savefig('accretion.png')
+    plt.clf()
+    phase_2 = np.linspace(1, 2, 20)
+    phase_2 = phase.tolist() + phase_2[1:].tolist()
+    median_accretion = []
+    median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
+    median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
+    median_total = np.median(averaged_total_accretion, axis=0)
+    plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
+    plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
+    plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
+    plt.legend(loc='best')
+    plt.xlabel("Orbital Phase")
+    plt.ylabel("Normalised accretion")
+    plt.xlim([0.0, 1.3])
+    plt.savefig('accretion_median.png')
+
+if args.plot_luminosity_evolution == 'True':
+    pickle_file = save_dir + 'particle_data.pkl'
+    file_open = open(pickle_file, 'r')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    luminosity_1 = particle_data['mass'][0]*particle_data['mdot'][0]
+    luminosity_2 = particle_data['mass'][1]*particle_data['mdot'][1]
+    total_luminosty = luminosity_1 + luminosity_2
+    plt.clf()
+    plt.plot(particle_data['time'], luminosity_1, alpha=0.5, label='Primary')
+    plt.plot(particle_data['time'], luminosity_2, alpha=0.5, label='Secondary')
+    plt.plot(particle_data['time'], total_luminosity, label='Total')
+    plt.legend()
+    plt.xlabel("Time (yr)")
+    plt.ylabel("$\propto$ Luminosity")
+    plt.savefig('luminosity_evolution.png')
