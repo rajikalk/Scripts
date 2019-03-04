@@ -14,6 +14,7 @@ from matplotlib.colors import LogNorm
 import csv
 import matplotlib.patheffects as path_effects
 import matplotlib
+import shutil
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
@@ -1014,9 +1015,15 @@ if args.read_particle_file == 'True':
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     pickle_file = save_dir + 'particle_data.pkl'
     if os.path.exists(pickle_file):
-        file_open = open(pickle_file, 'r')
-        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-        file_open.close()
+        try:
+            file_open = open(pickle_file, 'r')
+            particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+            file_open.close()
+        except:
+            shutil.copy(pickle_file.split('pkl')[0]+'_tmp.pkl',pickle_file)
+            file_open = open(pickle_file, 'r')
+            particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+            file_open.close()
     else:
         init_line_counter = 0
         particle_data = {}
@@ -1092,11 +1099,18 @@ if args.read_particle_file == 'True':
                     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
                     file_open.close()
                     print "dumped pickle after line", line_counter
+                    del particle_data
+                    del sink_form_time
+                    del line_counter
+                    file_open = open(pickle_file, 'r')
+                    particle_data, sink_form_time, line_counter = pickle.load(file_open)
+                    file_open.close()
             line_counter = line_counter + 1
         file_open = open(pickle_file, 'w+')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
         print "dumped pickle after line", line_counter
+        shutil.copy(pickle_file, pickle_file.split('pkl')[0]+'_tmp.pkl')
     print "sorting data"
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
@@ -1119,6 +1133,13 @@ if args.read_particle_file == 'True':
     file_open = open(pickle_file, 'w+')
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
     file_open.close()
+
+if args.obtain_limunosity == 'True':
+    pickle_file = save_dir + 'particle_data.pkl'
+    file_open = open(pickle_file, 'r')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    
 
 if args.phasefolded_accretion == 'True':
     pickle_file = save_dir + 'particle_data.pkl'
