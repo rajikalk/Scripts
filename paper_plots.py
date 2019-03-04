@@ -1020,7 +1020,7 @@ if args.read_particle_file == 'True':
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
         except:
-            shutil.copy(pickle_file.split('pkl')[0]+'_tmp.pkl',pickle_file)
+            shutil.copy(pickle_file.split('.pkl')[0]+'_tmp.pkl',pickle_file)
             file_open = open(pickle_file, 'r')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
@@ -1110,7 +1110,7 @@ if args.read_particle_file == 'True':
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
         print "dumped pickle after line", line_counter
-        shutil.copy(pickle_file, pickle_file.split('pkl')[0]+'_tmp.pkl')
+        shutil.copy(pickle_file, pickle_file.split('.pkl')[0]+'_tmp.pkl')
     print "sorting data"
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
