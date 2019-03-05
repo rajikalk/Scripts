@@ -89,7 +89,6 @@ def parse_inputs():
     
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
-    parser.add_argument("-plot_lum", "--plot_luminosity_evolution", help="do you want to plot the luminosity evolution", type=str, default="False")
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -1024,6 +1023,16 @@ if args.read_particle_file == 'True':
             file_open = open(pickle_file, 'r')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
+        if 'velx' in particle_data.keys():
+            particle_data.pop('velx')
+            particle_data.pop('vely')
+            particle_data.pop('velz')
+            particle_data.pop('accelx')
+            particle_data.pop('accely')
+            particle_data.pop('accelz')
+            particle_data.pop('anglx')
+            particle_data.pop('angly')
+            particle_data.pop('anglz')
     else:
         init_line_counter = 0
         particle_data = {}
@@ -1032,15 +1041,15 @@ if args.read_particle_file == 'True':
         particle_data.update({'posx':[]})
         particle_data.update({'posy':[]})
         particle_data.update({'posz':[]})
-        particle_data.update({'velx':[]})
-        particle_data.update({'vely':[]})
-        particle_data.update({'velz':[]})
-        particle_data.update({'accelx':[]})
-        particle_data.update({'accely':[]})
-        particle_data.update({'accelz':[]})
-        particle_data.update({'anglx':[]})
-        particle_data.update({'angly':[]})
-        particle_data.update({'anglz':[]})
+        #particle_data.update({'velx':[]})
+        #particle_data.update({'vely':[]})
+        #particle_data.update({'velz':[]})
+        #particle_data.update({'accelx':[]})
+        #particle_data.update({'accely':[]})
+        #particle_data.update({'accelz':[]})
+        #particle_data.update({'anglx':[]})
+        #particle_data.update({'angly':[]})
+        #particle_data.update({'anglz':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         sink_form_time = 0
@@ -1066,15 +1075,15 @@ if args.read_particle_file == 'True':
                         particle_data['posx'].append([np.nan, np.nan])
                         particle_data['posy'].append([np.nan, np.nan])
                         particle_data['posz'].append([np.nan, np.nan])
-                        particle_data['velx'].append([np.nan, np.nan])
-                        particle_data['vely'].append([np.nan, np.nan])
-                        particle_data['velz'].append([np.nan, np.nan])
-                        particle_data['accelx'].append([np.nan, np.nan])
-                        particle_data['accely'].append([np.nan, np.nan])
-                        particle_data['accelz'].append([np.nan, np.nan])
-                        particle_data['anglx'].append([np.nan, np.nan])
-                        particle_data['angly'].append([np.nan, np.nan])
-                        particle_data['anglz'].append([np.nan, np.nan])
+                        #particle_data['velx'].append([np.nan, np.nan])
+                        #particle_data['vely'].append([np.nan, np.nan])
+                        #particle_data['velz'].append([np.nan, np.nan])
+                        #particle_data['accelx'].append([np.nan, np.nan])
+                        #particle_data['accely'].append([np.nan, np.nan])
+                        #particle_data['accelz'].append([np.nan, np.nan])
+                        #particle_data['anglx'].append([np.nan, np.nan])
+                        #particle_data['angly'].append([np.nan, np.nan])
+                        #particle_data['anglz'].append([np.nan, np.nan])
                         particle_data['mass'].append([np.nan, np.nan])
                         particle_data['mdot'].append([np.nan, np.nan])
                     time_ind = particle_data['time'].index(time_val)
@@ -1083,15 +1092,15 @@ if args.read_particle_file == 'True':
                     particle_data['posx'][time_ind][part_ind] = float(row[2])/yt.units.au.in_units('cm').value
                     particle_data['posy'][time_ind][part_ind] = float(row[3])/yt.units.au.in_units('cm').value
                     particle_data['posz'][time_ind][part_ind] = float(row[4])/yt.units.au.in_units('cm').value
-                    particle_data['velx'][time_ind][part_ind] = float(row[5])
-                    particle_data['vely'][time_ind][part_ind] = float(row[6])
-                    particle_data['velz'][time_ind][part_ind] = float(row[7])
-                    particle_data['accelx'][time_ind][part_ind] = float(row[8])
-                    particle_data['accely'][time_ind][part_ind] = float(row[9])
-                    particle_data['accelz'][time_ind][part_ind] = float(row[10])
-                    particle_data['anglx'][time_ind][part_ind] = float(row[11])
-                    particle_data['angly'][time_ind][part_ind] = float(row[12])
-                    particle_data['anglz'][time_ind][part_ind] = float(row[13])
+                    #particle_data['velx'][time_ind][part_ind] = float(row[5])
+                    #particle_data['vely'][time_ind][part_ind] = float(row[6])
+                    #particle_data['velz'][time_ind][part_ind] = float(row[7])
+                    #particle_data['accelx'][time_ind][part_ind] = float(row[8])
+                    #particle_data['accely'][time_ind][part_ind] = float(row[9])
+                    #particle_data['accelz'][time_ind][part_ind] = float(row[10])
+                    #particle_data['anglx'][time_ind][part_ind] = float(row[11])
+                    #particle_data['angly'][time_ind][part_ind] = float(row[12])
+                    #particle_data['anglz'][time_ind][part_ind] = float(row[13])
                     particle_data['mass'][time_ind][part_ind] = float(row[14])/yt.units.msun.in_units('g').value
                     particle_data['mdot'][time_ind][part_ind] = float(row[15])/(yt.units.msun.in_units('g').value/yt.units.yr.in_units('s').value)
                 if np.remainder(line_counter,10000) == 0:
@@ -1134,28 +1143,35 @@ if args.read_particle_file == 'True':
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
     file_open.close()
 
-if args.obtain_limunosity == 'True':
-    pickle_file = save_dir + 'particle_data.pkl'
-    file_open = open(pickle_file, 'r')
-    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-    file_open.close()
-    
-
 if args.phasefolded_accretion == 'True':
     pickle_file = save_dir + 'particle_data.pkl'
     file_open = open(pickle_file, 'r')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
     periastron_inds = [np.argmin(particle_data['separation'])]
-    index = periastron_inds[0] + 1000
+    index_interval = 100
+    index = periastron_inds[0] + index_interval
     passed_apastron = False
     while index < len(particle_data['time']):
-        if np.min(particle_data['separation'][index-1000:index]) != np.min(particle_data['separation'][np.array([index-1000,index-1])]) and np.min(particle_data['separation'][index-1000:index]) < 15.:
-            periastron_ind = np.argmin(particle_data['separation'][index-1000:index]) + index-1000
+        if np.min(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == True and np.min(particle_data['separation'][index-index_interval:index]) < 12:
+            periastron_ind = np.argmin(particle_data['separation'][index-index_interval:index]) + index-index_interval
             periastron_inds.append(periastron_ind)
             print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
-        index = index + 1000
+            passed_apastron = False
+        elif np.max(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == False:
+            passed_apastron = True
+        index = index + index_interval
     plt.clf()
+    plt.plot(particle_data['time'][periastron_inds[10]:], particle_data['separation'][periastron_inds[10]:], 'k-')
+    plt.xlabel('time (yr)')
+    plt.ylabel('separation (au)')
+    for periastron in periastron_inds[10:]:
+        plt.axvline(x=particle_data['time'][periastron])
+    plt.savefig('separation.png')
+    plt.clf()
+
+    periastron_inds = periastron_inds[10:]
+
     hist_ind = 1
     phase = np.linspace(0, 1, 20)
     #FIND BINNED DATA
@@ -1198,20 +1214,3 @@ if args.phasefolded_accretion == 'True':
     plt.ylabel("Normalised accretion")
     plt.xlim([0.0, 1.3])
     plt.savefig('accretion_median.png')
-
-if args.plot_luminosity_evolution == 'True':
-    pickle_file = save_dir + 'particle_data.pkl'
-    file_open = open(pickle_file, 'r')
-    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-    file_open.close()
-    luminosity_1 = particle_data['mass'][0]*particle_data['mdot'][0]
-    luminosity_2 = particle_data['mass'][1]*particle_data['mdot'][1]
-    total_luminosty = luminosity_1 + luminosity_2
-    plt.clf()
-    plt.plot(particle_data['time'], luminosity_1, alpha=0.5, label='Primary')
-    plt.plot(particle_data['time'], luminosity_2, alpha=0.5, label='Secondary')
-    plt.plot(particle_data['time'], total_luminosity, label='Total')
-    plt.legend()
-    plt.xlabel("Time (yr)")
-    plt.ylabel("$\propto$ Luminosity")
-    plt.savefig('luminosity_evolution.png')
