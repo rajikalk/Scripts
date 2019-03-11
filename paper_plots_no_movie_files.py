@@ -687,14 +687,23 @@ if args.phasefolded_accretion == 'True':
     file_open = open(pickle_file, 'r')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
-    import pdb
-    pdb.set_trace()
-    moving_average_time = (particle_data['time'][10:] + particle_data['time'][:-10])/10.
-    particle_data['time'] = moving_average_time
-    moving_average_sep = (particle_data['separation'][10:] + particle_data['separation'][:-10])/10.
-    particle_data['separation'] = moving_average_sep
+    window = 10
+    moving_index = window
+    moving_average_time = []
+    moving_average_sep = []
+    moving_average_accretion = [[],[]]
+    while moving_index < len(particle_data['time']):
+        moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
+        moving_average_sep.append(np.mean(particle_data['separation'][moving_index-window: moving_index]))
+        moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
+        moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
+        moving_index = moving_index + 1
+    particle_data['time'] = np.array(moving_average_time)
+    particle_data['separation'] = np.array(moving_average_sep)
+    particle_data['mdot'] = np.array(moving_average_accretion)
     periastron_inds = [np.argmin(particle_data['separation'])]
-    index_interval = 100
+    apastron_inds = []
+    index_interval = 500
     index = periastron_inds[0] + index_interval
     passed_apastron = False
     while index < len(particle_data['time']):
@@ -703,23 +712,29 @@ if args.phasefolded_accretion == 'True':
             periastron_inds.append(periastron_ind)
             print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
             passed_apastron = False
-            #import pdb
-            #pdb.set_trace()
-        elif np.max(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == False:
+        elif np.max(particle_data['separation'][index-index_interval:index]) != np.max(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == False:
+            apastron_ind = np.argmax(particle_data['separation'][index-index_interval:index]) + index-index_interval
+            apastron_inds.append(apastron_ind)
+            print "found apastron at time", particle_data['time'][apastron_ind], "of separation", particle_data['separation'][apastron_ind]
             passed_apastron = True
-        index = index + index_interval
+        index = index + index_interval/2
     plt.clf()
-    plt.plot(particle_data['time'][periastron_inds[0]:], particle_data['separation'][periastron_inds[0]:], 'k-')
+    plot_start_ind = 0
+    plt.plot(particle_data['time'][periastron_inds[plot_start_ind]:], particle_data['separation'][periastron_inds[plot_start_ind]:], 'k-')
     plt.xlabel('time (yr)')
     plt.ylabel('separation (au)')
-    for periastron in periastron_inds:
-        plt.axvline(x=particle_data['time'][periastron])
-    plt.savefig('separation.png')
+    for periastron in periastron_inds[plot_start_ind:]:
+        plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
+    for apastron in apastron_inds[plot_start_ind:]:
+        plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
+    plt.savefig('separation.jpg')
     plt.clf()
+    print "Created separation evolution plot"
 
-    periastron_inds = periastron_inds[10:]
+    #periastron_inds = periastron_inds[10:]
 
     hist_ind = 1
+    ap_ind = 0
     phase = np.linspace(0, 1, 20)
     #FIND BINNED DATA
     plt.clf()
@@ -729,39 +744,61 @@ if args.phasefolded_accretion == 'True':
     while hist_ind < len(periastron_inds):
         binned_accretion = [[],[]]
         total_accretion = []
-        time_bins = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][periastron_inds[hist_ind]],21)
+        time_bins_1 = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11)
+        time_bins_2 = np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11)
         bin_ind = 1
-        while bin_ind < len(time_bins):
-            time_bin_inds = np.where((particle_data['time'] > time_bins[bin_ind-1]) & (particle_data['time'] < time_bins[bin_ind]))[0]
-            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds]))
-            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds]))
-            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds]))
+        while bin_ind < len(time_bins_1):
+            time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
+            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds_1]))
+            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds_1]))
+            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds_1]))
             #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
             #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
             #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
             bin_ind = bin_ind + 1
+        bin_ind = 1
+        while bin_ind < len(time_bins_2):
+            time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
+            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds_2]))
+            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds_2]))
+            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds_2]))
+            bin_ind = bin_ind + 1
         axs[0].plot(phase, binned_accretion[0], 'k-')
         axs[1].plot(phase, binned_accretion[1], 'k-')
         hist_ind = hist_ind + 1
+        ap_ind = ap_ind + 1
         averaged_binned_accretion[0].append(binned_accretion[0])
         averaged_binned_accretion[1].append(binned_accretion[1])
         averaged_total_accretion.append(total_accretion)
     plt.xlabel("Phase")
     plt.xlim([0.0, 1.0])
-    plt.savefig('accretion.png')
+    plt.savefig('accretion.jpg')
     plt.clf()
     phase_2 = np.linspace(1, 2, 20)
     phase_2 = phase.tolist() + phase_2[1:].tolist()
-    median_accretion = []
-    median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
-    median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
-    median_total = np.median(averaged_total_accretion, axis=0)
-    plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
-    plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
-    plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
-    plt.legend(loc='best')
-    plt.xlabel("Orbital Phase")
-    plt.ylabel("Normalised accretion")
-    plt.xlim([0.0, 1.3])
-    plt.ylim(bottom=0.0)
-    plt.savefig('accretion_median.png')
+    start_ind = len(periastron_inds) - 17
+    while start_ind > -1:
+        plt.clf()
+        median_accretion = []
+        standard_deviation = []
+        median_accretion.append(np.median(averaged_binned_accretion[0][start_ind:start_ind+15], axis=0))
+        median_accretion.append(np.median(averaged_binned_accretion[1][start_ind:start_ind+15], axis=0))
+        standard_deviation.append(np.std(averaged_binned_accretion[0][start_ind:start_ind+15], axis=0))
+        standard_deviation.append(np.std(averaged_binned_accretion[1][start_ind:start_ind+15], axis=0))
+        median_total = np.median(averaged_total_accretion[start_ind:start_ind+15], axis=0)
+        standard_deviation_total = np.std(averaged_total_accretion[start_ind:start_ind+15], axis=0)
+        #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
+        #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
+        #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
+        plt.errorbar(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), yerr=standard_deviation[0].tolist()+standard_deviation[0][1:].tolist(), ls='steps-mid', alpha=0.5, label='Primary')
+        plt.errorbar(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), yerr=standard_deviation[1].tolist()+standard_deviation[1][1:].tolist(), ls='steps-mid', alpha=0.5, label='Secondary')
+        plt.errorbar(phase_2, median_total.tolist() + median_total[1:].tolist(), yerr=standard_deviation_total.tolist()+standard_deviation_total[1:].tolist(), ls='steps-mid', label='Total')
+        
+        plt.legend(loc='best')
+        plt.xlabel("Orbital Phase")
+        plt.ylabel("Normalised accretion")
+        plt.title(str(len(periastron_inds)-start_ind-1) + " Orbits")
+        plt.xlim([0.0, 1.3])
+        plt.ylim(bottom=0.0)
+        plt.savefig('accretion_median_start_orbit_'+ ("%02d" % (start_ind-1)) +'.jpg')
+        start_ind = start_ind - 1
