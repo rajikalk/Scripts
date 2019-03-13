@@ -550,7 +550,7 @@ if args.force_on_particles == 'True':
 if args.read_particle_file == 'True':
     file = path + 'sinks_evol.dat'
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-    pickle_file = save_dir + 'particle_data.pkl'
+    pickle_file = path + 'particle_data.pkl'
     if os.path.exists(pickle_file):
         try:
             file_open = open(pickle_file, 'r')
@@ -683,53 +683,66 @@ if args.read_particle_file == 'True':
     file_open.close()
 
 if args.phasefolded_accretion == 'True':
-    pickle_file = save_dir + 'particle_data.pkl'
+    pickle_file = path + 'particle_data.pkl'
     file_open = open(pickle_file, 'r')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
-    window = 10
-    moving_index = window
-    moving_average_time = []
-    moving_average_sep = []
-    moving_average_accretion = [[],[]]
-    while moving_index < len(particle_data['time']):
-        moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
-        moving_average_sep.append(np.mean(particle_data['separation'][moving_index-window: moving_index]))
-        moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
-        moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
-        moving_index = moving_index + 1
-    particle_data['time'] = np.array(moving_average_time)
-    particle_data['separation'] = np.array(moving_average_sep)
-    particle_data['mdot'] = np.array(moving_average_accretion)
-    periastron_inds = [np.argmin(particle_data['separation'])]
-    apastron_inds = []
-    index_interval = 500
-    index = periastron_inds[0] + index_interval
-    passed_apastron = False
-    while index < len(particle_data['time']):
-        if np.min(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == True:
-            periastron_ind = np.argmin(particle_data['separation'][index-index_interval:index]) + index-index_interval
-            periastron_inds.append(periastron_ind)
-            print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
-            passed_apastron = False
-        elif np.max(particle_data['separation'][index-index_interval:index]) != np.max(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == False:
-            apastron_ind = np.argmax(particle_data['separation'][index-index_interval:index]) + index-index_interval
-            apastron_inds.append(apastron_ind)
-            print "found apastron at time", particle_data['time'][apastron_ind], "of separation", particle_data['separation'][apastron_ind]
-            passed_apastron = True
-        index = index + index_interval/2
-    plt.clf()
-    plot_start_ind = 0
-    plt.plot(particle_data['time'][periastron_inds[plot_start_ind]:], particle_data['separation'][periastron_inds[plot_start_ind]:], 'k-')
-    plt.xlabel('time (yr)')
-    plt.ylabel('separation (au)')
-    for periastron in periastron_inds[plot_start_ind:]:
-        plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
-    for apastron in apastron_inds[plot_start_ind:]:
-        plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
-    plt.savefig('separation.jpg')
-    plt.clf()
-    print "Created separation evolution plot"
+    
+    apsis_pickle = path + 'apsis_data.pkl'
+    if os.path.exists(apsis_pickle):
+        file_open = open(apsis_pickle, 'r')
+        periastron_inds, apastron_inds = pickle.load(file_open)
+        file_open.close()
+    else:
+        window = 10
+        moving_index = window
+        moving_average_time = []
+        moving_average_sep = []
+        moving_average_accretion = [[],[]]
+        while moving_index < len(particle_data['time']):
+            moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
+            moving_average_sep.append(np.mean(particle_data['separation'][moving_index-window: moving_index]))
+            moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
+            moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
+            moving_index = moving_index + 1
+        particle_data['time'] = np.array(moving_average_time)
+        particle_data['separation'] = np.array(moving_average_sep)
+        particle_data['mdot'] = np.array(moving_average_accretion)
+        periastron_inds = [np.argmin(particle_data['separation'])]
+        apastron_inds = []
+        index_interval = 500
+        index = periastron_inds[0] + index_interval
+        passed_apastron = False
+        while index < len(particle_data['time']):
+            if np.min(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval, index-index_interval+1, index-2, index-1])]) and passed_apastron == True:
+                periastron_ind = np.argmin(particle_data['separation'][index-index_interval:index]) + index-index_interval
+                periastron_inds.append(periastron_ind)
+                print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
+                passed_apastron = False
+            elif np.max(particle_data['separation'][index-index_interval:index]) != np.max(particle_data['separation'][np.array([index-index_interval, index-index_interval+1, index-2, index-1])]) and passed_apastron == False:
+                apastron_ind = np.argmax(particle_data['separation'][index-index_interval:index]) + index-index_interval
+                apastron_inds.append(apastron_ind)
+                print "found apastron at time", particle_data['time'][apastron_ind], "of separation", particle_data['separation'][apastron_ind]
+                passed_apastron = True
+            index = index + index_interval/2
+        plt.clf()
+        plot_start_ind = 0
+        plot_end_ind = len(periastron_inds)-1
+        plt.plot(particle_data['time'][periastron_inds[plot_start_ind]:periastron_inds[plot_end_ind]], particle_data['separation'][periastron_inds[plot_start_ind]:periastron_inds[plot_end_ind]], 'k-')
+        plt.xlabel('time (yr)')
+        plt.ylabel('separation (au)')
+        for periastron in periastron_inds[plot_start_ind:plot_end_ind]:
+            plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
+        for apastron in apastron_inds[plot_start_ind:plot_end_ind]:
+            plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
+        plt.savefig(save_dir + 'separation.eps')
+        plt.clf()
+
+        file_open = open(apsis_pickle, 'w+')
+        pickle.dump((periastron_inds, apastron_inds),file_open)
+        file_open.close()
+        print "Created separation evolution plot"
+
 
     #periastron_inds = periastron_inds[10:]
 
@@ -772,12 +785,13 @@ if args.phasefolded_accretion == 'True':
         averaged_total_accretion.append(total_accretion)
     plt.xlabel("Phase")
     plt.xlim([0.0, 1.0])
-    plt.savefig('accretion.jpg')
+    plt.savefig(save_dir + 'accretion.pdf')
     plt.clf()
     phase_2 = np.linspace(1, 2, 20)
     phase_2 = phase.tolist() + phase_2[1:].tolist()
-    start_ind = len(periastron_inds) - 17
-    while start_ind > -1:
+    start_ind = 0
+    ymax = None
+    while start_ind+15 < len(averaged_binned_accretion[0]):
         plt.clf()
         median_accretion = []
         standard_deviation = []
@@ -797,8 +811,14 @@ if args.phasefolded_accretion == 'True':
         plt.legend(loc='best')
         plt.xlabel("Orbital Phase")
         plt.ylabel("Normalised accretion")
-        plt.title(str(len(periastron_inds)-start_ind-1) + " Orbits")
+        plt.title("Start orbit:" + str(start_ind))
         plt.xlim([0.0, 1.3])
-        plt.ylim(bottom=0.0)
-        plt.savefig('accretion_median_start_orbit_'+ ("%02d" % (start_ind-1)) +'.jpg')
-        start_ind = start_ind - 1
+        if ymax == None:
+            plt.ylim(bottom=0.0)
+            ymax = plt.ylim()[1]
+        else:
+            plt.ylim([0.0, ymax])
+        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (start_ind))
+        plt.savefig(file_name +'.eps')
+        call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
+        start_ind = start_ind + 1
