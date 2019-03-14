@@ -56,6 +56,7 @@ def parse_inputs():
     
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
+    parser.add_argument("-start_orb", "--starting_orbit", help="which orbit do you want to start folding at", type=int, default=1)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -562,9 +563,6 @@ if args.read_particle_file == 'True':
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
         if 'velx' in particle_data.keys():
-            particle_data.pop('velx')
-            particle_data.pop('vely')
-            particle_data.pop('velz')
             particle_data.pop('accelx')
             particle_data.pop('accely')
             particle_data.pop('accelz')
@@ -579,9 +577,9 @@ if args.read_particle_file == 'True':
         particle_data.update({'posx':[]})
         particle_data.update({'posy':[]})
         particle_data.update({'posz':[]})
-        #particle_data.update({'velx':[]})
-        #particle_data.update({'vely':[]})
-        #particle_data.update({'velz':[]})
+        particle_data.update({'velx':[]})
+        particle_data.update({'vely':[]})
+        particle_data.update({'velz':[]})
         #particle_data.update({'accelx':[]})
         #particle_data.update({'accely':[]})
         #particle_data.update({'accelz':[]})
@@ -613,9 +611,9 @@ if args.read_particle_file == 'True':
                         particle_data['posx'].append([np.nan, np.nan])
                         particle_data['posy'].append([np.nan, np.nan])
                         particle_data['posz'].append([np.nan, np.nan])
-                        #particle_data['velx'].append([np.nan, np.nan])
-                        #particle_data['vely'].append([np.nan, np.nan])
-                        #particle_data['velz'].append([np.nan, np.nan])
+                        particle_data['velx'].append([np.nan, np.nan])
+                        particle_data['vely'].append([np.nan, np.nan])
+                        particle_data['velz'].append([np.nan, np.nan])
                         #particle_data['accelx'].append([np.nan, np.nan])
                         #particle_data['accely'].append([np.nan, np.nan])
                         #particle_data['accelz'].append([np.nan, np.nan])
@@ -630,9 +628,9 @@ if args.read_particle_file == 'True':
                     particle_data['posx'][time_ind][part_ind] = float(row[2])/yt.units.au.in_units('cm').value
                     particle_data['posy'][time_ind][part_ind] = float(row[3])/yt.units.au.in_units('cm').value
                     particle_data['posz'][time_ind][part_ind] = float(row[4])/yt.units.au.in_units('cm').value
-                    #particle_data['velx'][time_ind][part_ind] = float(row[5])
-                    #particle_data['vely'][time_ind][part_ind] = float(row[6])
-                    #particle_data['velz'][time_ind][part_ind] = float(row[7])
+                    particle_data['velx'][time_ind][part_ind] = float(row[5])
+                    particle_data['vely'][time_ind][part_ind] = float(row[6])
+                    particle_data['velz'][time_ind][part_ind] = float(row[7])
                     #particle_data['accelx'][time_ind][part_ind] = float(row[8])
                     #particle_data['accely'][time_ind][part_ind] = float(row[9])
                     #particle_data['accelz'][time_ind][part_ind] = float(row[10])
@@ -743,18 +741,17 @@ if args.phasefolded_accretion == 'True':
         file_open.close()
         print "Created separation evolution plot"
 
-
     #periastron_inds = periastron_inds[10:]
 
-    hist_ind = 1
-    ap_ind = 0
-    phase = np.linspace(0, 1, 20)
+    hist_ind = args.starting_orbit
+    ap_ind = hist_ind - 1
+    phase = np.linspace(0.0, 1.0, 21)
     #FIND BINNED DATA
     plt.clf()
     averaged_binned_accretion = [[],[]]
     averaged_total_accretion = []
     fig, axs = plt.subplots(2, 1, sharex=True)
-    while hist_ind < len(periastron_inds):
+    while hist_ind < len(periastron_inds[hist_ind-1:hist_ind+15]):
         binned_accretion = [[],[]]
         total_accretion = []
         time_bins_1 = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11)
@@ -762,9 +759,10 @@ if args.phasefolded_accretion == 'True':
         bin_ind = 1
         while bin_ind < len(time_bins_1):
             time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
-            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds_1]))
-            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds_1]))
-            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds_1]))
+            intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_1], particle_data['time'][time_bin_inds_1])/(particle_data['time'][time_bin_inds_1[-1]]-particle_data['time'][time_bin_inds_1[0]])
+            binned_accretion[0].append(intergrated_values[0])
+            binned_accretion[1].append(intergrated_values[1])
+            total_accretion.append(np.sum(intergrated_values))
             #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
             #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
             #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
@@ -772,12 +770,14 @@ if args.phasefolded_accretion == 'True':
         bin_ind = 1
         while bin_ind < len(time_bins_2):
             time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
-            binned_accretion[0].append(np.sum(particle_data['mdot'][0][time_bin_inds_2]))
-            binned_accretion[1].append(np.sum(particle_data['mdot'][1][time_bin_inds_2]))
-            total_accretion.append(np.sum(particle_data['mdot'][:,time_bin_inds_2]))
+            intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_2], particle_data['time'][time_bin_inds_2])/(particle_data['time'][time_bin_inds_2[-1]]-particle_data['time'][time_bin_inds_2[0]])
+            binned_accretion[0].append(intergrated_values[0])
+            binned_accretion[1].append(intergrated_values[1])
+            total_accretion.append(np.sum(intergrated_values))
             bin_ind = bin_ind + 1
-        axs[0].plot(phase, binned_accretion[0], 'k-')
-        axs[1].plot(phase, binned_accretion[1], 'k-')
+        phase_centers = (phase[1:] + phase[:-1])/2.
+        axs[0].plot(phase_centers, binned_accretion[0], 'k-')
+        axs[1].plot(phase_centers, binned_accretion[1], 'k-')
         hist_ind = hist_ind + 1
         ap_ind = ap_ind + 1
         averaged_binned_accretion[0].append(binned_accretion[0])
@@ -787,38 +787,37 @@ if args.phasefolded_accretion == 'True':
     plt.xlim([0.0, 1.0])
     plt.savefig(save_dir + 'accretion.pdf')
     plt.clf()
-    phase_2 = np.linspace(1, 2, 20)
-    phase_2 = phase.tolist() + phase_2[1:].tolist()
-    start_ind = 0
-    ymax = None
-    while start_ind+15 < len(averaged_binned_accretion[0]):
-        plt.clf()
-        median_accretion = []
-        standard_deviation = []
-        median_accretion.append(np.median(averaged_binned_accretion[0][start_ind:start_ind+15], axis=0))
-        median_accretion.append(np.median(averaged_binned_accretion[1][start_ind:start_ind+15], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[0][start_ind:start_ind+15], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[1][start_ind:start_ind+15], axis=0))
-        median_total = np.median(averaged_total_accretion[start_ind:start_ind+15], axis=0)
-        standard_deviation_total = np.std(averaged_total_accretion[start_ind:start_ind+15], axis=0)
-        #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
-        #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
-        #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
-        plt.errorbar(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), yerr=standard_deviation[0].tolist()+standard_deviation[0][1:].tolist(), ls='steps-mid', alpha=0.5, label='Primary')
-        plt.errorbar(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), yerr=standard_deviation[1].tolist()+standard_deviation[1][1:].tolist(), ls='steps-mid', alpha=0.5, label='Secondary')
-        plt.errorbar(phase_2, median_total.tolist() + median_total[1:].tolist(), yerr=standard_deviation_total.tolist()+standard_deviation_total[1:].tolist(), ls='steps-mid', label='Total')
-        
-        plt.legend(loc='best')
-        plt.xlabel("Orbital Phase")
-        plt.ylabel("Normalised accretion")
-        plt.title("Start orbit:" + str(start_ind))
-        plt.xlim([0.0, 1.3])
-        if ymax == None:
-            plt.ylim(bottom=0.0)
-            ymax = plt.ylim()[1]
-        else:
-            plt.ylim([0.0, ymax])
-        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (start_ind))
-        plt.savefig(file_name +'.eps')
-        call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-        start_ind = start_ind + 1
+    phase_pre = np.linspace(-1.0, 0.0, 21)
+    phase_2 = np.linspace(1.0, 2.0, 21)
+    phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
+    phase_centers = (np.array(phase_2[1:]) + np.array(phase_2[:-1]))/2.
+    median_accretion = []
+    standard_deviation = []
+    median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
+    median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
+    standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
+    standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
+    median_total = np.median(averaged_total_accretion, axis=0)
+    standard_deviation_total = np.std(averaged_total_accretion, axis=0)
+    #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
+    #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
+    #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
+    long_median_accretion_1 = median_accretion[0].tolist()+median_accretion[0].tolist()+median_accretion[0].tolist()
+    long_median_accretion_2 = median_accretion[1].tolist()+median_accretion[1].tolist()+median_accretion[1].tolist()
+    long_median_total = median_total.tolist() + median_total.tolist() + median_total.tolist()
+    yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
+    yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
+    yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
+    plt.errorbar(phase_centers, long_median_accretion_1, yerr=yerr_1, ls='steps-mid', alpha=0.5, label='Primary')
+    plt.errorbar(phase_centers, long_median_accretion_2, yerr=yerr_2, ls='steps-mid', alpha=0.5, label='Secondary')
+    plt.errorbar(phase_centers, long_median_total, yerr=yerr, ls='steps-mid', label='Total')
+
+    plt.legend(loc='best')
+    plt.xlabel("Orbital Phase")
+    plt.ylabel("Normalised accretion")
+    plt.title("Start orbit:" + str(args.starting_orbit-1))
+    plt.xlim([0.0, 1.3])
+    plt.ylim(bottom=0.0)
+    file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit-1))
+    plt.savefig(file_name +'.eps')
+    call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
