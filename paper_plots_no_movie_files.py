@@ -57,7 +57,8 @@ def parse_inputs():
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
     parser.add_argument("-start_orb", "--starting_orbit", help="which orbit do you want to start folding at", type=int, default=1)
-    
+    parser.add_argument("-n_orb", "--n_orbits", help="How many orbits do you want to fold over?", type=int, default=5)
+    parser.add_argument("-calc_e", "--calculate_eccentricity", help="do you want to calculate eccentricity", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -562,7 +563,7 @@ if args.read_particle_file == 'True':
             file_open = open(pickle_file, 'r')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
-        if 'velx' in particle_data.keys():
+        if 'accelx' in particle_data.keys():
             particle_data.pop('accelx')
             particle_data.pop('accely')
             particle_data.pop('accelz')
@@ -662,7 +663,10 @@ if args.read_particle_file == 'True':
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
     for key in particle_data.keys():
         if key != 'particle_tag' and key != 'time':
-            particle_data[key] = np.array(particle_data[key]).T
+            if len(particle_data[key][0]) == 2:
+                particle_data[key] = np.array(particle_data[key]).T
+            else:
+                particle_data[key] = np.array(particle_data[key])
             try:
                 particle_data[key] = particle_data[key][:,sorted_inds]
             except:
@@ -679,6 +683,127 @@ if args.read_particle_file == 'True':
     file_open = open(pickle_file, 'w+')
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
     file_open.close()
+
+if args.calculate_eccentricity == 'True':
+    pickle_file = path + 'particle_data.pkl'
+    file_open = open(pickle_file, 'r')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    
+    
+
+    Mass = yt.YTArray(particle_data['mass'], 'msun')
+    velx = yt.YTArray(particle_data['velx'], 'cm/s')
+    vely = yt.YTArray(particle_data['vely'], 'cm/s')
+    velz = yt.YTArray(particle_data['velz'], 'cm/s')
+    posx = yt.YTArray(particle_data['posx'], 'au')
+    posy = yt.YTArray(particle_data['posy'], 'au')
+    posz = yt.YTArray(particle_data['posz'], 'au')
+    comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+    comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+    comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+    mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
+    dvx = velx[0] - velx[1]
+    dvy = vely[0] - vely[1]
+    dvz = velz[0] - velz[1]
+    dv = yt.YTArray(np.array([dvx, dvy, dvz]).T, 'cm/s')
+    drx = (posx[0] - posx[1]).in_units('cm')
+    dry = (posy[0] - posy[1]).in_units('cm')
+    drz = (posz[0] - posz[1]).in_units('cm')
+    dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm/s')
+    v = np.sqrt(dvx**2. + dvy**2. + dvz**2.)
+    r_tot = np.sqrt(drx**2. + dry**2. + drz**2.)
+    r_1 = [posx[0].in_units('cm')-comx.in_units('cm'), posy[0].in_units('cm')-comy.in_units('cm'), posz[0].in_units('cm')-comz.in_units('cm')]
+    r_2 = [posx[1].in_units('cm')-comx.in_units('cm'), posy[1].in_units('cm')-comy.in_units('cm'), posz[1].in_units('cm')-comz.in_units('cm')]
+    v_1 = [velx[0], vely[0], velz[0]]
+    v_2 = [velx[1], vely[1], velz[1]]
+    E_pot = -1*(yt.units.G*Mass[0].in_units('g')*Mass[1].in_units('g'))/r_tot
+    E_kin = 0.5*Mass[0].in_units('g')*(velx[0]**2.+vely[0]**2.+velz[0]**2.) + 0.5*Mass[1].in_units('g')*(velx[1]**2.+vely[1]**2.+velz[1]**2.)
+    reduced_mass = (Mass[0].in_units('g')*Mass[1].in_units('g'))/(Mass[0].in_units('g') + Mass[1].in_units('g'))
+    epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+    #epsilon = (v**2.)/2. + mu/r
+    m_x_r_1 = yt.YTArray(np.cross(np.array(r_1).T, np.array(v_1).T), 'cm**2/s').T
+    m_x_r_2 = yt.YTArray(np.cross(np.array(r_2).T, np.array(v_2).T), 'cm**2/s').T
+    L_1 = [Mass[0].in_units('g')*m_x_r_1[0], Mass[0].in_units('g')*m_x_r_1[1], Mass[0].in_units('g')*m_x_r_1[2]]
+    L_2 = [Mass[1].in_units('g')*m_x_r_2[0], Mass[1].in_units('g')*m_x_r_2[1], Mass[1].in_units('g')*m_x_r_2[2]]
+    L_tot = yt.YTArray(np.array(L_1), 'cm**2*g/s') + yt.YTArray(np.array(L_2), 'cm**2*g/s')
+    h = np.sqrt(L_tot[0]**2. + L_tot[1]**2. + L_tot[2]**2.)/reduced_mass
+    e = np.sqrt(1 + (2.*epsilon*h**2.)/(mu**2.))
+
+    #plot separation and eccentricity
+    plt.clf()
+    fig = plt.figure()
+    fig.set_size_inches(6, 8.)
+    gs = gridspec.GridSpec(3, 1)
+    #gs = gridspec.GridSpec(3, 1)
+    gs.update(hspace=0.0)
+    ax1 = fig.add_subplot(gs[0,0])
+    ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+    ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+    ax1.semilogy(particle_data['time'], particle_data['separation'])
+    ax2.semilogy(particle_data['time'], e)
+    
+    #Calculate smoothed accretion
+    
+    window = 500
+    moving_index = window
+    moving_average_time = []
+    moving_average_accretion = [[],[]]
+    while moving_index < len(particle_data['time']):
+        moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
+        moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
+        moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
+        moving_index = moving_index + 1
+    moving_average_time = np.array(moving_average_time)
+    moving_average_accretion = np.array(moving_average_accretion)
+    ax3.semilogy(moving_average_time, (moving_average_accretion[0]+moving_average_accretion[1]))
+    '''
+    smoothed_time = (particle_data['time'][::100][1:]+particle_data['time'][::100][:-1])/2.
+    smoothed_accretion_1 = (particle_data['mass'][0,::100][1:]-particle_data['mass'][0,::100][:-1])/(particle_data['time'][::100][1:]-particle_data['time'][::100][:-1])
+    smoothed_accretion_2 = (particle_data['mass'][1,::100][1:]-particle_data['mass'][1,::100][:-1])/(particle_data['time'][::100][1:]-particle_data['time'][::100][:-1])
+    ax3.semilogy(smoothed_time, (smoothed_accretion_1+smoothed_accretion_2))
+    '''
+    ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    ax1.set_ylabel("Separation (AU)", fontsize=args.text_font)
+    ax2.set_ylabel("Eccentricity", fontsize=args.text_font)
+    ax3.set_ylabel("Accretion (M$_\odot$/yr)", fontsize=args.text_font)
+    ax1.set_ylim([1e0,5e2])
+    ax2.set_ylim(top=2.0)
+    ax3.set_ylim([1e-6,1e-3])
+    ax1.set_xlim(left=0.0)
+    #ax2.set_xlim([0, 5000])
+    ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
+    ax1.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax1.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax1.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax2.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax2.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax2.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax3.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax1.yaxis.set_ticks_position('both')
+    ax2.yaxis.set_ticks_position('both')
+    ax3.yaxis.set_ticks_position('both')
+    plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
+    plt.setp([ax2.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
+    plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+    
+    apsis_pickle = path + 'apsis_data.pkl'
+    file_open = open(apsis_pickle, 'r')
+    periastron_inds, apastron_inds = pickle.load(file_open)
+    file_open.close()
+    
+    e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
+    e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
+    ax2.fill_between([0, 5500], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
+    
+    e_max_2 = np.max(e[periastron_inds[-16]:periastron_inds[-1]])
+    e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
+    ax2.fill_between([0, 5500], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
+    
+    plt.savefig(save_dir+'system_evolution.eps', bbox_inches='tight')
+    plt.savefig(save_dir+'system_evolution.pdf', bbox_inches='tight')
 
 if args.phasefolded_accretion == 'True':
     pickle_file = path + 'particle_data.pkl'
@@ -743,7 +868,9 @@ if args.phasefolded_accretion == 'True':
 
     #periastron_inds = periastron_inds[10:]
 
+
     hist_ind = args.starting_orbit
+    n_folded_orbits = args.n_orbits
     ap_ind = hist_ind - 1
     phase = np.linspace(0.0, 1.0, 21)
     #FIND BINNED DATA
@@ -751,11 +878,11 @@ if args.phasefolded_accretion == 'True':
     averaged_binned_accretion = [[],[]]
     averaged_total_accretion = []
     fig, axs = plt.subplots(2, 1, sharex=True)
-    while hist_ind < len(periastron_inds[hist_ind-1:hist_ind+15]):
+    while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits]):
         binned_accretion = [[],[]]
         total_accretion = []
-        time_bins_1 = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11)
-        time_bins_2 = np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11)
+        time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
+        time_bins_2 = sorted(np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11))
         bin_ind = 1
         while bin_ind < len(time_bins_1):
             time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
@@ -814,10 +941,12 @@ if args.phasefolded_accretion == 'True':
 
     plt.legend(loc='best')
     plt.xlabel("Orbital Phase")
-    plt.ylabel("Normalised accretion")
-    plt.title("Start orbit:" + str(args.starting_orbit-1))
+    plt.ylabel("Median Accretion (M$_\odot$/yr)")
     plt.xlim([0.0, 1.3])
     plt.ylim(bottom=0.0)
-    file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit-1))
-    plt.savefig(file_name +'.eps')
+    file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
+    plt.savefig(file_name +'.eps', bbox_inches='tight')
+    plt.savefig(file_name +'.pdf', bbox_inches='tight')
     call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
+
+
