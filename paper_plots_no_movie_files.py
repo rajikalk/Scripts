@@ -56,6 +56,8 @@ def parse_inputs():
     
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
+    parser.add_argument("-window", "--smoothing_window", help="How wide in years do you want the smoothing window to be?", default=1.0, type=float)
+    parser.add_argument("-rep", "--repeats", help="how many phasefoles do you want to plot on one image?", type=int, default=1)
     parser.add_argument("-start_orb", "--starting_orbit", help="which orbit do you want to start folding at", type=int, default=1)
     parser.add_argument("-n_orb", "--n_orbits", help="How many orbits do you want to fold over?", type=int, default=5)
     parser.add_argument("-calc_e", "--calculate_eccentricity", help="do you want to calculate eccentricity", type=str, default="False")
@@ -687,49 +689,52 @@ if args.read_particle_file == 'True':
 if args.calculate_eccentricity == 'True':
     pickle_file = path + 'particle_data.pkl'
     file_open = open(pickle_file, 'r')
-    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    particle_data, sink_form_time, line_counter = pickle.load(file_open)
     file_open.close()
     
+    if 'eccentricity' not in particle_data.keys():
+        Mass = yt.YTArray(particle_data['mass'], 'msun')
+        velx = yt.YTArray(particle_data['velx'], 'cm/s')
+        vely = yt.YTArray(particle_data['vely'], 'cm/s')
+        velz = yt.YTArray(particle_data['velz'], 'cm/s')
+        posx = yt.YTArray(particle_data['posx'], 'au')
+        posy = yt.YTArray(particle_data['posy'], 'au')
+        posz = yt.YTArray(particle_data['posz'], 'au')
+        comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+        comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+        comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+        mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
+        dvx = velx[0] - velx[1]
+        dvy = vely[0] - vely[1]
+        dvz = velz[0] - velz[1]
+        dv = yt.YTArray(np.array([dvx, dvy, dvz]).T, 'cm/s')
+        drx = (posx[0] - posx[1]).in_units('cm')
+        dry = (posy[0] - posy[1]).in_units('cm')
+        drz = (posz[0] - posz[1]).in_units('cm')
+        dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm/s')
+        v = np.sqrt(dvx**2. + dvy**2. + dvz**2.)
+        r_tot = np.sqrt(drx**2. + dry**2. + drz**2.)
+        r_1 = [posx[0].in_units('cm')-comx.in_units('cm'), posy[0].in_units('cm')-comy.in_units('cm'), posz[0].in_units('cm')-comz.in_units('cm')]
+        r_2 = [posx[1].in_units('cm')-comx.in_units('cm'), posy[1].in_units('cm')-comy.in_units('cm'), posz[1].in_units('cm')-comz.in_units('cm')]
+        v_1 = [velx[0], vely[0], velz[0]]
+        v_2 = [velx[1], vely[1], velz[1]]
+        E_pot = -1*(yt.units.G*Mass[0].in_units('g')*Mass[1].in_units('g'))/r_tot
+        E_kin = 0.5*Mass[0].in_units('g')*(velx[0]**2.+vely[0]**2.+velz[0]**2.) + 0.5*Mass[1].in_units('g')*(velx[1]**2.+vely[1]**2.+velz[1]**2.)
+        reduced_mass = (Mass[0].in_units('g')*Mass[1].in_units('g'))/(Mass[0].in_units('g') + Mass[1].in_units('g'))
+        epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+        #epsilon = (v**2.)/2. + mu/r
+        m_x_r_1 = yt.YTArray(np.cross(np.array(r_1).T, np.array(v_1).T), 'cm**2/s').T
+        m_x_r_2 = yt.YTArray(np.cross(np.array(r_2).T, np.array(v_2).T), 'cm**2/s').T
+        L_1 = [Mass[0].in_units('g')*m_x_r_1[0], Mass[0].in_units('g')*m_x_r_1[1], Mass[0].in_units('g')*m_x_r_1[2]]
+        L_2 = [Mass[1].in_units('g')*m_x_r_2[0], Mass[1].in_units('g')*m_x_r_2[1], Mass[1].in_units('g')*m_x_r_2[2]]
+        L_tot = yt.YTArray(np.array(L_1), 'cm**2*g/s') + yt.YTArray(np.array(L_2), 'cm**2*g/s')
+        h = np.sqrt(L_tot[0]**2. + L_tot[1]**2. + L_tot[2]**2.)/reduced_mass
+        e = np.sqrt(1 + (2.*epsilon*h**2.)/(mu**2.))
+        particle_data.update({'eccentricity': e})
+        file_open = open(pickle_file, 'w+')
+        pickle.dump((particle_data, sink_form_time, line_counter),file_open)
+        file_open.close()
     
-
-    Mass = yt.YTArray(particle_data['mass'], 'msun')
-    velx = yt.YTArray(particle_data['velx'], 'cm/s')
-    vely = yt.YTArray(particle_data['vely'], 'cm/s')
-    velz = yt.YTArray(particle_data['velz'], 'cm/s')
-    posx = yt.YTArray(particle_data['posx'], 'au')
-    posy = yt.YTArray(particle_data['posy'], 'au')
-    posz = yt.YTArray(particle_data['posz'], 'au')
-    comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
-    comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
-    comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
-    mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
-    dvx = velx[0] - velx[1]
-    dvy = vely[0] - vely[1]
-    dvz = velz[0] - velz[1]
-    dv = yt.YTArray(np.array([dvx, dvy, dvz]).T, 'cm/s')
-    drx = (posx[0] - posx[1]).in_units('cm')
-    dry = (posy[0] - posy[1]).in_units('cm')
-    drz = (posz[0] - posz[1]).in_units('cm')
-    dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm/s')
-    v = np.sqrt(dvx**2. + dvy**2. + dvz**2.)
-    r_tot = np.sqrt(drx**2. + dry**2. + drz**2.)
-    r_1 = [posx[0].in_units('cm')-comx.in_units('cm'), posy[0].in_units('cm')-comy.in_units('cm'), posz[0].in_units('cm')-comz.in_units('cm')]
-    r_2 = [posx[1].in_units('cm')-comx.in_units('cm'), posy[1].in_units('cm')-comy.in_units('cm'), posz[1].in_units('cm')-comz.in_units('cm')]
-    v_1 = [velx[0], vely[0], velz[0]]
-    v_2 = [velx[1], vely[1], velz[1]]
-    E_pot = -1*(yt.units.G*Mass[0].in_units('g')*Mass[1].in_units('g'))/r_tot
-    E_kin = 0.5*Mass[0].in_units('g')*(velx[0]**2.+vely[0]**2.+velz[0]**2.) + 0.5*Mass[1].in_units('g')*(velx[1]**2.+vely[1]**2.+velz[1]**2.)
-    reduced_mass = (Mass[0].in_units('g')*Mass[1].in_units('g'))/(Mass[0].in_units('g') + Mass[1].in_units('g'))
-    epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
-    #epsilon = (v**2.)/2. + mu/r
-    m_x_r_1 = yt.YTArray(np.cross(np.array(r_1).T, np.array(v_1).T), 'cm**2/s').T
-    m_x_r_2 = yt.YTArray(np.cross(np.array(r_2).T, np.array(v_2).T), 'cm**2/s').T
-    L_1 = [Mass[0].in_units('g')*m_x_r_1[0], Mass[0].in_units('g')*m_x_r_1[1], Mass[0].in_units('g')*m_x_r_1[2]]
-    L_2 = [Mass[1].in_units('g')*m_x_r_2[0], Mass[1].in_units('g')*m_x_r_2[1], Mass[1].in_units('g')*m_x_r_2[2]]
-    L_tot = yt.YTArray(np.array(L_1), 'cm**2*g/s') + yt.YTArray(np.array(L_2), 'cm**2*g/s')
-    h = np.sqrt(L_tot[0]**2. + L_tot[1]**2. + L_tot[2]**2.)/reduced_mass
-    e = np.sqrt(1 + (2.*epsilon*h**2.)/(mu**2.))
-
     #plot separation and eccentricity
     plt.clf()
     fig = plt.figure()
@@ -817,16 +822,17 @@ if args.phasefolded_accretion == 'True':
         periastron_inds, apastron_inds = pickle.load(file_open)
         file_open.close()
     else:
-        window = 10
-        moving_index = window
+        window = args.smoothing_window
+        moving_index = 100
         moving_average_time = []
         moving_average_sep = []
         moving_average_accretion = [[],[]]
         while moving_index < len(particle_data['time']):
-            moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
-            moving_average_sep.append(np.mean(particle_data['separation'][moving_index-window: moving_index]))
-            moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
-            moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
+            window_inds = np.where((particle_data['time'] < particle_data['time'][moving_index])&(particle_data['time'] > particle_data['time'][moving_index]-window))[0]
+            moving_average_time.append(np.mean(particle_data['time'][window_inds]))
+            moving_average_sep.append(np.mean(particle_data['separation'][window_inds]))
+            moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][window_inds]))
+            moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][window_inds]))
             moving_index = moving_index + 1
         particle_data['time'] = np.array(moving_average_time)
         particle_data['separation'] = np.array(moving_average_sep)
@@ -867,86 +873,107 @@ if args.phasefolded_accretion == 'True':
         print "Created separation evolution plot"
 
     #periastron_inds = periastron_inds[10:]
-
-
-    hist_ind = args.starting_orbit
+    repeats = args.repeats
+    rit = 0
     n_folded_orbits = args.n_orbits
-    ap_ind = hist_ind - 1
-    phase = np.linspace(0.0, 1.0, 21)
-    #FIND BINNED DATA
-    plt.clf()
-    averaged_binned_accretion = [[],[]]
-    averaged_total_accretion = []
-    fig, axs = plt.subplots(2, 1, sharex=True)
-    while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits]):
-        binned_accretion = [[],[]]
-        total_accretion = []
-        time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
-        time_bins_2 = sorted(np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11))
-        bin_ind = 1
-        while bin_ind < len(time_bins_1):
-            time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
-            intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_1], particle_data['time'][time_bin_inds_1])/(particle_data['time'][time_bin_inds_1[-1]]-particle_data['time'][time_bin_inds_1[0]])
-            binned_accretion[0].append(intergrated_values[0])
-            binned_accretion[1].append(intergrated_values[1])
-            total_accretion.append(np.sum(intergrated_values))
-            #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
-            #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
-            #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
-            bin_ind = bin_ind + 1
-        bin_ind = 1
-        while bin_ind < len(time_bins_2):
-            time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
-            intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_2], particle_data['time'][time_bin_inds_2])/(particle_data['time'][time_bin_inds_2[-1]]-particle_data['time'][time_bin_inds_2[0]])
-            binned_accretion[0].append(intergrated_values[0])
-            binned_accretion[1].append(intergrated_values[1])
-            total_accretion.append(np.sum(intergrated_values))
-            bin_ind = bin_ind + 1
-        phase_centers = (phase[1:] + phase[:-1])/2.
-        axs[0].plot(phase_centers, binned_accretion[0], 'k-')
-        axs[1].plot(phase_centers, binned_accretion[1], 'k-')
-        hist_ind = hist_ind + 1
-        ap_ind = ap_ind + 1
-        averaged_binned_accretion[0].append(binned_accretion[0])
-        averaged_binned_accretion[1].append(binned_accretion[1])
-        averaged_total_accretion.append(total_accretion)
-    plt.xlabel("Phase")
-    plt.xlim([0.0, 1.0])
-    plt.savefig(save_dir + 'accretion.pdf')
-    plt.clf()
-    phase_pre = np.linspace(-1.0, 0.0, 21)
-    phase_2 = np.linspace(1.0, 2.0, 21)
-    phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
-    phase_centers = (np.array(phase_2[1:]) + np.array(phase_2[:-1]))/2.
-    median_accretion = []
-    standard_deviation = []
-    median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
-    median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
-    standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
-    standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
-    median_total = np.median(averaged_total_accretion, axis=0)
-    standard_deviation_total = np.std(averaged_total_accretion, axis=0)
-    #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
-    #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
-    #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
-    long_median_accretion_1 = median_accretion[0].tolist()+median_accretion[0].tolist()+median_accretion[0].tolist()
-    long_median_accretion_2 = median_accretion[1].tolist()+median_accretion[1].tolist()+median_accretion[1].tolist()
-    long_median_total = median_total.tolist() + median_total.tolist() + median_total.tolist()
-    yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
-    yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
-    yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
-    plt.errorbar(phase_centers, long_median_accretion_1, yerr=yerr_1, ls='steps-mid', alpha=0.5, label='Primary')
-    plt.errorbar(phase_centers, long_median_accretion_2, yerr=yerr_2, ls='steps-mid', alpha=0.5, label='Secondary')
-    plt.errorbar(phase_centers, long_median_total, yerr=yerr, ls='steps-mid', label='Total')
+    multiple_folds = []
+    mean_eccentricity = []
+    while rit < repeats:
+        hist_ind = args.starting_orbit + rit*n_folded_orbits
+        ap_ind = hist_ind - 1
+        phase = np.linspace(0.0, 1.0, 21)
+        #FIND BINNED DATA
+        plt.clf()
+        averaged_binned_accretion = [[],[]]
+        averaged_total_accretion = []
+        fig, axs = plt.subplots(2, 1, sharex=True)
+        while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits + rit*n_folded_orbits]):
+            binned_accretion = [[],[]]
+            total_accretion = []
+            time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
+            time_bins_2 = sorted(np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11))
+            bin_ind = 1
+            while bin_ind < len(time_bins_1):
+                time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
+                intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_1], particle_data['time'][time_bin_inds_1])/(particle_data['time'][time_bin_inds_1[-1]]-particle_data['time'][time_bin_inds_1[0]])
+                binned_accretion[0].append(intergrated_values[0])
+                binned_accretion[1].append(intergrated_values[1])
+                total_accretion.append(np.sum(intergrated_values))
+                #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
+                #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
+                #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
+                bin_ind = bin_ind + 1
+            bin_ind = 1
+            while bin_ind < len(time_bins_2):
+                time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
+                intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_2], particle_data['time'][time_bin_inds_2])/(particle_data['time'][time_bin_inds_2[-1]]-particle_data['time'][time_bin_inds_2[0]])
+                binned_accretion[0].append(intergrated_values[0])
+                binned_accretion[1].append(intergrated_values[1])
+                total_accretion.append(np.sum(intergrated_values))
+                bin_ind = bin_ind + 1
+            mean_eccentricity.append(np.mean(particle_data['eccentricity'][time_bin_inds_1[0]:time_bin_inds_2[-1]]).value)
+            phase_centers = (phase[1:] + phase[:-1])/2.
+            axs[0].plot(phase_centers, binned_accretion[0], 'k-')
+            axs[1].plot(phase_centers, binned_accretion[1], 'k-')
+            hist_ind = hist_ind + 1
+            ap_ind = ap_ind + 1
+            averaged_binned_accretion[0].append(binned_accretion[0])
+            averaged_binned_accretion[1].append(binned_accretion[1])
+            averaged_total_accretion.append(total_accretion)
+        plt.xlabel("Phase")
+        plt.xlim([0.0, 1.0])
+        plt.savefig(save_dir + 'accretion.pdf')
+        plt.clf()
+        phase_pre = np.linspace(-1.0, 0.0, 21)
+        phase_2 = np.linspace(1.0, 2.0, 21)
+        phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
+        phase_centers = (np.array(phase_2[1:]) + np.array(phase_2[:-1]))/2.
+        median_accretion = []
+        standard_deviation = []
+        median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
+        median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
+        standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
+        standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
+        median_total = np.median(averaged_total_accretion, axis=0)
+        standard_deviation_total = np.std(averaged_total_accretion, axis=0)
+        #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
+        #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
+        #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
+        long_median_accretion_1 = median_accretion[0].tolist()+median_accretion[0].tolist()+median_accretion[0].tolist()
+        long_median_accretion_2 = median_accretion[1].tolist()+median_accretion[1].tolist()+median_accretion[1].tolist()
+        long_median_total = median_total.tolist() + median_total.tolist() + median_total.tolist()
+        yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
+        yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
+        yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
+        plt.errorbar(phase_centers, long_median_accretion_1, yerr=yerr_1, ls='steps-mid', alpha=0.5, label='Primary')
+        plt.errorbar(phase_centers, long_median_accretion_2, yerr=yerr_2, ls='steps-mid', alpha=0.5, label='Secondary')
+        plt.errorbar(phase_centers, long_median_total, yerr=yerr, ls='steps-mid', label='Total')
+        multiple_folds.append(long_median_total)
 
+        plt.legend(loc='best')
+        plt.xlabel("Orbital Phase")
+        plt.ylabel("Median Accretion (M$_\odot$/yr)")
+        plt.xlim([0.0, 1.3])
+        plt.ylim(bottom=0.0)
+        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit+(rit*n_folded_orbits)-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
+        plt.savefig(file_name +'.eps', bbox_inches='tight')
+        plt.savefig(file_name +'.pdf', bbox_inches='tight')
+        call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
+        rit = rit + 1
+
+    plt.clf()
+    mean_eccentricity = np.round(np.array(mean_eccentricity)[::2]*100)/100.
+    n_lines = len(multiple_folds[::2])
+    c_index = np.linspace(0.0, 1.0, n_lines)
+    e_int = 0
+    for i, shift in zip(c_index, multiple_folds[::2]):
+        plt.plot(phase_centers, shift, color=plt.cm.rainbow(i), label='e='+str(mean_eccentricity[e_int]), ls='steps-mid',)
+        e_int = e_int + 1
     plt.legend(loc='best')
     plt.xlabel("Orbital Phase")
     plt.ylabel("Median Accretion (M$_\odot$/yr)")
     plt.xlim([0.0, 1.3])
     plt.ylim(bottom=0.0)
-    file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
+    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits'
     plt.savefig(file_name +'.eps', bbox_inches='tight')
     plt.savefig(file_name +'.pdf', bbox_inches='tight')
-    call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-
-
