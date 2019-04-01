@@ -15,8 +15,17 @@ import csv
 import matplotlib.patheffects as path_effects
 import matplotlib
 import shutil
+from scipy.stats import skewnorm
+import scipy.stats as stats
+from scipy import optimize
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
+
+def skew_norm_pdf(x,e=0,w=1,a=0):
+    # adapated from:
+    # http://stackoverflow.com/questions/5884768/skew-normal-distribution-in-scipy
+    t = (x-e) / w
+    return 2.0 * w * stats.norm.pdf(t) * stats.norm.cdf(a*t)
 
 def parse_inputs():
     import argparse
@@ -126,7 +135,7 @@ if args.b_mag == 'True':
                 plt.scatter(x[time], y[time], alpha=0.4, edgecolors='none')
                 plt.xlim([0., args.r_max])
                 plt.ylim([0.,50.])
-        
+            
             plt.xlabel('Cylindrical distance (AU)')
             plt.ylabel('Z-distance (AU)')
             plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
@@ -801,11 +810,11 @@ if args.calculate_eccentricity == 'True':
     
     e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
     e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
-    ax2.fill_between([0, 5500], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
+    ax2.fill_between([0, particle_data['time'][-1]], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
     
     e_max_2 = np.max(e[periastron_inds[-16]:periastron_inds[-1]])
     e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
-    ax2.fill_between([0, 5500], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
+    ax2.fill_between([0, particle_data['time'][-1]], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
     
     plt.savefig(save_dir+'system_evolution.eps', bbox_inches='tight')
     plt.savefig(save_dir+'system_evolution.pdf', bbox_inches='tight')
@@ -864,6 +873,7 @@ if args.phasefolded_accretion == 'True':
             plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
         for apastron in apastron_inds[plot_start_ind:plot_end_ind]:
             plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
+        plt.xlim(left=4000)
         plt.savefig(save_dir + 'separation.eps')
         plt.clf()
 
@@ -887,6 +897,7 @@ if args.phasefolded_accretion == 'True':
         averaged_binned_accretion = [[],[]]
         averaged_total_accretion = []
         fig, axs = plt.subplots(2, 1, sharex=True)
+        mean_eccentricity.append(np.mean(particle_data['eccentricity'][periastron_inds[hist_ind-1]:periastron_inds[hist_ind+n_folded_orbits-1]]))
         while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits + rit*n_folded_orbits]):
             binned_accretion = [[],[]]
             total_accretion = []
@@ -911,7 +922,6 @@ if args.phasefolded_accretion == 'True':
                 binned_accretion[1].append(intergrated_values[1])
                 total_accretion.append(np.sum(intergrated_values))
                 bin_ind = bin_ind + 1
-            mean_eccentricity.append(np.mean(particle_data['eccentricity'][time_bin_inds_1[0]:time_bin_inds_2[-1]]).value)
             phase_centers = (phase[1:] + phase[:-1])/2.
             axs[0].plot(phase_centers, binned_accretion[0], 'k-')
             axs[1].plot(phase_centers, binned_accretion[1], 'k-')
@@ -945,14 +955,20 @@ if args.phasefolded_accretion == 'True':
         yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
         yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
         yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
-        plt.errorbar(phase_centers, long_median_accretion_1, yerr=yerr_1, ls='steps-mid', alpha=0.5, label='Primary')
-        plt.errorbar(phase_centers, long_median_accretion_2, yerr=yerr_2, ls='steps-mid', alpha=0.5, label='Secondary')
-        plt.errorbar(phase_centers, long_median_total, yerr=yerr, ls='steps-mid', label='Total')
-        multiple_folds.append(long_median_total)
+        plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
+        plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
+        plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
+        import pdb
+        pdb.set_trace()
+        popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
+        x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
+        y_fit = skew_norm_pdf(x_fit, *popt)
+        plt.plot(x_fit, y_fit)
+        multiple_folds.append(np.array(long_median_total)*(1.e4))
 
         plt.legend(loc='best')
         plt.xlabel("Orbital Phase")
-        plt.ylabel("Median Accretion (M$_\odot$/yr)")
+        plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
         plt.xlim([0.0, 1.3])
         plt.ylim(bottom=0.0)
         file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit+(rit*n_folded_orbits)-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
@@ -962,16 +978,19 @@ if args.phasefolded_accretion == 'True':
         rit = rit + 1
 
     plt.clf()
-    mean_eccentricity = np.round(np.array(mean_eccentricity)[::2]*100)/100.
-    n_lines = len(multiple_folds[::2])
-    c_index = np.linspace(0.0, 1.0, n_lines)
+    #multiple_folds = multiple_folds[::2]
+    #mean_eccentricity = mean_eccentricity[::2]
+    mean_eccentricity = np.round(np.array(mean_eccentricity)*100)/100.
+    n_lines = len(multiple_folds)
+    c_index = np.linspace(0.0, 0.95, n_lines)
+    alpha_values = np.linspace(1.0, 0.2, n_lines)
     e_int = 0
-    for i, shift in zip(c_index, multiple_folds[::2]):
-        plt.plot(phase_centers, shift, color=plt.cm.rainbow(i), label='e='+str(mean_eccentricity[e_int]), ls='steps-mid',)
+    for i, shift in zip(c_index, multiple_folds):
+        plt.plot(phase_centers, shift, color=plt.cm.gnuplot(i), label='e='+str(mean_eccentricity[e_int]), ls='steps-mid', alpha=alpha_values[e_int])
         e_int = e_int + 1
     plt.legend(loc='best')
     plt.xlabel("Orbital Phase")
-    plt.ylabel("Median Accretion (M$_\odot$/yr)")
+    plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
     plt.xlim([0.0, 1.3])
     plt.ylim(bottom=0.0)
     file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits'
