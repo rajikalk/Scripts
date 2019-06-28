@@ -821,13 +821,13 @@ if args.calculate_eccentricity == 'True':
 
 if args.phasefolded_accretion == 'True':
     pickle_file = path + 'particle_data.pkl'
-    file_open = open(pickle_file, 'r')
+    file_open = open(pickle_file, 'rb')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
     
     apsis_pickle = path + 'apsis_data.pkl'
     if os.path.exists(apsis_pickle):
-        file_open = open(apsis_pickle, 'r')
+        file_open = open(apsis_pickle, 'rb')
         periastron_inds, apastron_inds = pickle.load(file_open)
         file_open.close()
     else:
@@ -877,7 +877,7 @@ if args.phasefolded_accretion == 'True':
         plt.savefig(save_dir + 'separation.eps')
         plt.clf()
 
-        file_open = open(apsis_pickle, 'w+')
+        file_open = open(apsis_pickle, 'wb ')
         pickle.dump((periastron_inds, apastron_inds),file_open)
         file_open.close()
         print("Created separation evolution plot")
