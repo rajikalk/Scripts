@@ -1,8 +1,8 @@
-#REGGIE'S VERSION!
 """After analysis with WiFeS, this suite of routines can extract a star optimally
 and calculate its radial velocity.
 
-WARNING - this code is extremely rough in its initial commit
+WARNING - this code is still not properly documented or complete. Any contributions
+welcome!
 
 example lines of code...
 
@@ -12,57 +12,9 @@ rv_process_dir('PROCESSED_DATA_DIRECTORY', outdir =/priv/mulga1/mstream/wifes/wi
 fn = 'T2m3wr-20140617.144009-0167.p11.fits'
 flux,sig,wave = read_and_find_star_p11(fn)
 
-fn = 'T2m3wr-20140617.144009-0167.p08.fits'
-
-*** 5 lines below to run todcor ***
-%run process_stellar
-#fn = 'C:/Users/Margaret/MPhil/rvs_p08files/T2m3wb-20141110.103724-0816.p08.fits'
-#flux,wave = read_and_find_star_p08(fn)
-
-
-files = glob.glob('C:/Users/Margaret/MPhil/rvs_p08files_TTHor_2016/*.fits')
-base_path = 'C:/Users/Margaret/MPhil/rvs_p08files_TTHor_2016/'
-for file in files:  
-    file_num = int(file.split('.')[1].split('-')[1])
-    flux,wave = read_and_find_star_p08(file)
-    spectrum,sig = weighted_extract_spectrum(flux)
-    helcor = pyfits.getheader(file)['RADVEL']
-    wave_log, spect_int, model_spect = calc_rv_todcor(spectrum,wave,sig,\
-        ['C:/Users/Margaret/MPhil/RV_templates/8500g40p00k2v50.txt',\
-        'C:/Users/Margaret/MPhil/RV_templates/5000g35p00k2v50.txt'],\
-        alpha=0.1,out_fn='rvs.txt',jd=file_num,return_fitted=True,\
-        heliocentric_correction=helcor)
-
-    plt.clf()
-    plt.plot(wave_log, spect_int, label='Data')
-    plt.plot(wave_log, model_spect, label='Model')
-    plt.legend()
-    plt.xlabel('Wavelength')
-
-*** lines below test todcor ***
-binspect,binwave,binsig=make_fake_binary(spectrum, wave, sig, ['RV_templates/9000g40p00k2v150.txt','RV_templates/5250g35p00k2v150.txt'],0.5,-200,+200)
-calc_rv_todcor(binspect,binwave,binsig,['RV_templates/9000g40p00k2v150.txt','RV_templates/5250g35p00k2v150.txt'],alpha=0.5)
-
-rv,rv_sig = calc_rv_template(spectrum,wave,sig,'template_conv', ([0,5400],[6870,6890]))
-rv,rv_sig = calc_rv_template(spectrum,wave,sig,template_fns, ([0,5400],[6870,6890]))
-
-** To test the flux normalization of todcor **
-margaret_dir = '/Users/mireland/Dropbox/Margaret Masters/RV_templates_flux/'
-margaret_dir = '/Users/mireland/python/pywifes/tools/margaret/'
-template_fns = glob.glob(margaret_dir+'*txt')
-margaret_dir = '/Users/mireland/data/wifes/rvs_p08files/'
-
-#flux, wave = read_and_find_star_p08(margaret_dir + 'T2m3wb-20141110.113949-0831.p08.fits')
-#flux, wave = read_and_find_star_p08(margaret_dir + 'T2m3wb-20141108.120006-0389.p08.fits')
-flux, wave = read_and_find_star_p08(margaret_dir + 'T2m3wb-20141110.114748-0832.p08.fits')
-spectrum, sig = weighted_extract_spectrum(flux)
-dummy = calc_rv_todcor(spectrum, wave,sig, [template_fns[3], template_fns[1]], bad_intervals=[[0,3810], [5005, 5028]], alpha=0.25, plotit=True)
-dummy = calc_rv_todcor(spectrum, wave,sig, [template_fns[3], template_fns[1]], bad_intervals=[[0,4200], [5067,5075],[5500,6000]], alpha=0.25, plotit=True)
-dummy = calc_rv_todcor(spectrum, wave,sig, [template_fns[2], template_fns[1]], bad_intervals=[[0,4200], [5067,5075],[5500,6000]], alpha=0.25, plotit=True)
-
 """
 
-from __future__ import print_function
+
 try:
     import pyfits
 except:
@@ -74,10 +26,12 @@ import scipy.optimize as op
 import pdb
 import glob
 import pickle
-#from readcol import readcol
+from readcol import readcol
+from scipy.interpolate import InterpolatedUnivariateSpline
 from mpl_toolkits.mplot3d import Axes3D
 from astropy.modeling import models, fitting
 import sep
+plt.ion()
 
 def find_nearest(array,value):
     idx = (np.abs(array-value)).argmin()
@@ -123,7 +77,7 @@ def read_and_find_star_p11(fn, manual_click=False, npix=7, subtract_sky=True,sky
     plt.imshow(image,interpolation='nearest')
     plt.plot(maxpx[1],maxpx[0],'wx')
     if subtract_sky:
-        xy = np.meshgrid(range(image.shape[1]),range(image.shape[0]))
+        xy = np.meshgrid(list(range(image.shape[1])),list(range(image.shape[0])))
         dist = np.sqrt((xy[0]-maxpx[1])**2.0 + (xy[1]-maxpx[0])**2.0)
         sky = np.where( (xy[0] > 0) & (xy[1] > 0) & 
             (xy[0] < image.shape[1]-1) & (xy[1] < image.shape[0]-1) &
@@ -137,7 +91,7 @@ def read_and_find_star_p11(fn, manual_click=False, npix=7, subtract_sky=True,sky
     wave = a[0].header['CRVAL3'] + np.arange(flux.shape[0])*a[0].header['CDELT3']
     return flux_stamp,sig_stamp,wave
     
-def read_and_find_star_p08(fn, manual_click=False, npix=7, subtract_sky=True,sky_rad=2,fig_fn='', return_sky=False, max_px=[], return_maxpx=False):
+def read_and_find_star_p08(fn, manual_click=False, npix=7, subtract_sky=True,sky_rad=2,fig_fn=''):
     """Read in a cube and find the star.
     Return a postage stamp around the star and the wavelength scale
     
@@ -158,86 +112,49 @@ def read_and_find_star_p08(fn, manual_click=False, npix=7, subtract_sky=True,sky
     DEC = a[0].header['DEC']
     #Assume Stellar mode.
     flux = np.array([a[i].data for i in range(1,13)])
-    var = np.array([a[i].data for i in range(26,38)])
     wave = a[1].header['CRVAL1'] + np.arange(flux.shape[2])*a[1].header['CDELT1']
     image = np.median(flux,axis=2)
-    data = image[:,4:]
-    data = data.copy(order='C')
-    objects = sep.extract(data, 1.5)
-    objects['x'] = objects['x'] + 4
     #!!! 1->7 is a HACK - because WiFeS seems to often fail on the edge pixels !!!
     plt.clf()
     global fig
     fig = plt.figure(1)
     plt.imshow(image,interpolation='nearest')
-    if max_px != []:
-        maxpx = (max_px[0],max_px[1])
-    elif manual_click == True:
+    if manual_click == True:
         global coords
 
         # Call click func
         global cid
         cid = fig.canvas.mpl_connect('button_press_event', onclick)
 
-        plt.show()
+        plt.show(1)
         maxpx = (int(round(np.min([coords[0][1], coords[1][1]]))), int(round(np.min([coords[0][0], coords[1][0]]))))
         coords = []
-        '''
-        image_stamp = image[maxpx[0]-3:maxpx[0]+4][:, maxpx[1]-3:maxpx[1]+4]
-        x_pos = np.arange(np.shape(image_stamp)[0])
-        y_pos = np.arange(np.shape(image_stamp)[1])
-        X, Y = np.meshgrid(y_pos, x_pos)
-        compx = [((np.sum(Y*image_stamp))/np.sum(image_stamp))+maxpx[0]-3, ((np.sum(X*image_stamp))/np.sum(image_stamp))+maxpx[1]-3]
-        '''
     else:
         maxpx = np.unravel_index(np.argmax(image[:,10:-10]),image[:,10:-10].shape)
         maxpx = (maxpx[0],maxpx[1]+10)
-        '''
-        x_pos = np.arange(np.shape(image[:,10:-10])[0])
-        y_pos = np.arange(np.shape(image[:,10:-10])[1])
-        X, Y = np.meshgrid(y_pos, x_pos)
-        compx = [((np.sum(Y*image[:,10:-10]))/np.sum(image[:,10:-10])), ((np.sum(X*image[:,10:-10]))/np.sum(image[:,10:-10]))+10]
-        '''
     plt.clf()
     plt.imshow(image,interpolation='nearest')
     plt.plot(maxpx[1],maxpx[0],'wx')
-    for obj in range(len(objects['x'])):
-        plt.plot(objects['x'][obj],objects['y'][obj],'w+')
     plt.colorbar(fraction=0.0155, pad=0.0)
     plt.xlabel('x pixel')
     plt.ylabel('y pixel')
-    #plt.show()
     plt.title(str(Obj_name) + '_' + str(Obs_date) + '_(' + str(RA) + ',' + str(DEC) + ')')
-    
-    xy = np.meshgrid(range(image.shape[1]),range(image.shape[0]))
-    dist = np.sqrt((xy[0]-maxpx[1])**2.0 + (xy[1]-maxpx[0])**2.0)
-    sky = (xy[0] >= 0) & (xy[1] >= 0) & (xy[0] < image.shape[1]) & (xy[1] < image.shape[0]) & (dist > sky_rad) & (dist < image.shape[1]) & (xy[0] > 7)
-    for obj in range(len(objects['x'])):
-        dist = np.sqrt((xy[0]-objects['x'][obj])**2.0 + (xy[1]-objects['y'][obj])**2.0)
-        sky = sky * ((xy[0] >= 0) & (xy[1] >= 0) & (xy[0] < image.shape[1]) & (xy[1] < image.shape[0]) & (dist > sky_rad) & (dist < image.shape[1]) & (xy[0] > 7))
-    sky_temp = np.where(sky)
     if subtract_sky:
+        xy = np.meshgrid(list(range(image.shape[1])),list(range(image.shape[0])))
+        dist = np.sqrt((xy[0]-maxpx[1])**2.0 + (xy[1]-maxpx[0])**2.0)
+        sky = np.where( (xy[0] > 0) & (xy[1] > 0) & 
+            (xy[0] < image.shape[1]-1) & (xy[1] < image.shape[0]-1) &
+            (dist > sky_rad) & (dist < image.shape[1]))
         for i in range(flux.shape[2]):
-            flux[:,:,i] -= np.median(flux[sky_temp[0],sky_temp[1],i])
-    sky = np.dstack([sky]*np.shape(flux)[-1])
-    sky = sky*flux
+            flux[:,:,i] -= np.median(flux[sky[0],sky[1],i])
     ymin = np.min([np.max([maxpx[0]-npix//2,0]),image.shape[0]-npix])
     xmin = np.min([np.max([maxpx[1]-npix//2,0]),image.shape[1]-npix])
     flux_stamp = flux[ymin:ymin+npix,xmin:xmin+npix,:]
-    var_stamp = var[ymin:ymin+npix,xmin:xmin+npix,:]
-    #flux_stamp = flux[int(compx[0]):int(compx[0])+2,int(compx[1]):int(compx[1])+2,:]
     if len(fig_fn)>0:
         plt.savefig(fig_fn, bbox_inches='tight')
-    if return_sky and return_maxpx:
-        return flux_stamp,wave,var_stamp,sky,maxpx
-    elif return_sky:
-        return flux_stamp,wave,var_stamp,sky
-    elif return_maxpx:
-        return flux_stamp,wave,var_stamp,maxpx
-    else:
-        return flux_stamp,wave,var_stamp
+    return flux_stamp,wave
     
-def weighted_extract_spectrum(flux_stamp, variance, readout_var=11.0):
+def weighted_extract_spectrum(flux_stamp, readout_var=11.0):
     """Optimally extract the spectrum based on a constant weighting
     
     Based on a p08 file axis ordering.
@@ -257,14 +174,7 @@ def weighted_extract_spectrum(flux_stamp, variance, readout_var=11.0):
     2) Remove dodgy constant for readout_var.
     """
     #Find the median flux over all wavelengths, limiting to be >0
-    if np.max(np.median(flux_stamp,axis=2)) > 0.0:
-        flux_med = np.maximum(np.median(flux_stamp,axis=2),0)
-        var_med = np.maximum(np.median(variance,axis=2),0)
-    else:
-        flux_stamp = flux_stamp - np.min(flux_stamp)
-        flux_med = np.maximum(np.median(flux_stamp,axis=2),0)
-        var_med = np.maximum(np.median(variance,axis=2),0)
-        #flux_med = np.median(flux_stamp,axis=2) - np.min(np.median(flux_stamp,axis=2))
+    flux_med = np.maximum(np.median(flux_stamp,axis=2),0)
     
     pixel_var = flux_med + readout_var
     weights = flux_med/pixel_var
@@ -296,7 +206,7 @@ def conv_ambre_spect(ambre_dir,ambre_conv_dir):
         ix_end = infn.rfind('.')
         outfn = infn[ix_start:ix_end] + 'conv.fits'
         pyfits.writeto(ambre_conv_dir + '/' + outfn,conv_data, clobber=True)
-'''
+    
 def conv_tlusty_spect(tlusty_dir,tlusty_conv_dir):    
     """
     Take all Tlusty spectra from a directory, convole to 0.1A, 
@@ -307,19 +217,19 @@ def conv_tlusty_spect(tlusty_dir,tlusty_conv_dir):
     """
     infns = glob.glob(tlusty_dir + '/*.vis.7')
     for ii,infn in enumerate(infns):
-        indata = readcol(infn)
-        wav    = indata[:,0]
-        data   = indata[:,1]
-        cdata  = np.convolve(data,np.ones(10)/10.0,'same')
-        intwav = 0.1*np.arange(90000)+3000.0
-        icdata = np.interp(intwav,wav,cdata)
-        n1     = infn.split('/')[-1].split('BG')[1].split('g')
-        n2     = 'g+'+str(float(n1[1].split('v')[0])/100.0)
-        n1     = 'p'+str(int(n1[0])/1)
-        outname = tlusty_conv_dir+'/'+n1 + ':'+n2+':m0.0:t01:z+0.00:a+0.00.TLUSTYconv.fits'
-        pyfits.writeto(outname,icdata,clobber=True)
-        print('convolving '+ str(ii+1) +' out of ' + str(len(infns)))
-'''
+		indata = readcol(infn)
+		wav    = indata[:,0]
+		data   = indata[:,1]
+		cdata  = np.convolve(data,np.ones(10)/10.0,'same')
+		intwav = 0.1*np.arange(90000)+3000.0
+		icdata = np.interp(intwav,wav,cdata)
+		n1     = infn.split('/')[-1].split('BG')[1].split('g')	
+		n2     = 'g+'+str(float(n1[1].split('v')[0])/100.0)
+		n1     = 'p'+str(int(n1[0])/1)
+		outname = tlusty_conv_dir+'/'+n1 + ':'+n2+':m0.0:t01:z+0.00:a+0.00.TLUSTYconv.fits'
+		pyfits.writeto(outname,icdata,clobber=True)
+		print('convolving '+ str(ii+1) +' out of ' + str(len(infns)))
+
 def conv_phoenix_spect(pho_dir,pho_conv_dir):    
     """
     Take all phoenix spectra from a directory, convolve to 0.1A, 
@@ -330,22 +240,22 @@ def conv_phoenix_spect(pho_dir,pho_conv_dir):
     """
     infns = glob.glob(pho_dir + '/*.fits')    
     for ii,infn in enumerate(infns):
-        data = pyfits.getdata(infn)
-        wav  = pyfits.getdata('WAVE_PHOENIX-ACES-AGSS-COND-2011.fits')
-        ##go from vacuum to air wavelengths
-        wav = wav/(1.0+2.735182E-4+131.4182/wav**2+2.76249e8/wav**4)
-        cdata  = np.convolve(data,np.ones(10)/10.0,'same')
-        intwav = 0.1*np.arange(90000)+3000.0
-        icdata = np.interp(intwav,wav,cdata)
-        n1     = infn.split('/')[-1].split('lte')[1].split('-')
-        n2     = 'g'+n1[1]
-        n1     = 'p'+n1[0]
-        outname = pho_conv_dir+'/'+n1 + ':'+n2+':m0.0:t01:z+0.00:a+0.00.PHOENIXconv.fits'
-        pyfits.writeto(outname,icdata,clobber=True)
-        print('convolving '+ str(ii+1) +' out of ' + str(len(infns)))
+		data = pyfits.getdata(infn)
+		wav  = pyfits.getdata('WAVE_PHOENIX-ACES-AGSS-COND-2011.fits')
+		##go from vacuum to air wavelengths
+		wav = wav/(1.0+2.735182E-4+131.4182/wav**2+2.76249e8/wav**4)
+		cdata  = np.convolve(data,np.ones(10)/10.0,'same')
+		intwav = 0.1*np.arange(90000)+3000.0
+		icdata = np.interp(intwav,wav,cdata)
+		n1     = infn.split('/')[-1].split('lte')[1].split('-')
+		n2     = 'g'+n1[1]
+		n1     = 'p'+n1[0]
+		outname = pho_conv_dir+'/'+n1 + ':'+n2+':m0.0:t01:z+0.00:a+0.00.PHOENIXconv.fits'
+		pyfits.writeto(outname,icdata,clobber=True)
+		print('convolving '+ str(ii+1) +' out of ' + str(len(infns)))
    
     
-def make_wifes_p08_template(fn, out_dir,outfn='',rv=0.0, click=False, h_corr=None, correct_absorption=False, correct_skylines=False):
+def make_wifes_p08_template(fn, out_dir,rv=0.0):
     """From a p08 file, create a template spectrum for future cross-correlation.
     The template is interpolated onto a 0.1 Angstrom grid (to match higher resolution 
     templates.
@@ -362,64 +272,15 @@ def make_wifes_p08_template(fn, out_dir,outfn='',rv=0.0, click=False, h_corr=Non
         Output directory
     
     """
-    flux_stamp,wave,var,sky = read_and_find_star_p08(fn, sky_rad=10,manual_click=click, return_sky=True)
-    
-    spectrum,sig = weighted_extract_spectrum(flux_stamp, var)
-    if correct_absorption:
-        abs_temps = glob.glob('/Users/rajikak/tools/absorption_spec_F.fits')
-        abs_bad_ints =([0,5500],[5500,6860],[6910,7000])
-        rv_abs,rv_sig_abs,temp_used = calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), heliocentric_correction=0.0)
-        print("MAKING TEMPLATE AND ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_sig_abs))
-        if np.isnan(rv_abs) or np.isnan(rv_sig_abs):
-            print("COULD NOT GET A RELIABLE ABSORPTION RV")
-            rv_abs = 0.0
-        if np.isnan(rv_sig_abs):
-            rv_sig_abs = np.inf
-    elif correct_absorption == False:
-        rv_abs = 0.0
-
-    if correct_skylines:
-        sky_spectrum,sky_sig = weighted_extract_spectrum(sky, var)
-        sky_intervals=([0,5500],[5700,5850],[6000,6100],[6700,7000])
-        sky_temp = glob.glob('/Users/rajikak/tools/wifes_sky.fits')
-        rv_sky,rv_sig_sky, temp_used = calc_rv_template(sky_spectrum,wave,sky_sig,sky_temp, (sky_intervals), heliocentric_correction=0.0)
-        print("MAKING TEMPLATE AND SKY OFFSET= " + str(rv_sky) + ', '+ str(rv_sig_sky))
-        if np.isnan(rv_sky) or np.isnan(rv_sig_sky) or np.abs(rv_sky)>150.:
-            print("COULD NOT GET A RELIABLE SKY RV")
-            rv_sky = 0.0
-            rv_sig_sky = np.nan
-        if np.isnan(rv_sig_sky):
-            rv_sig_sky = np.inf
-    elif correct_skylines == False:
-        rv_sky = 0.0
-
-    if correct_absorption and correct_skylines:
-        if rv_sig_sky < rv_sig_abs:
-            rv_abs = 0.0
-            print("USING CORRECTION FROM SKYLINES")
-        elif rv_sig_sky > rv_sig_abs:
-            rv_sky = 0.0
-            print("USING CORRECTION FROM ABSORPTION")
-
-    if h_corr == None:
-        heliocentric_correction = pyfits.getheader(fn)['RADVEL']
-    else:
-        heliocentric_correction = h_corr
-    star = pyfits.getheader(fn)['OBJNAME']
-    if star == 'object' or star == '':
-        star = pyfits.getheader(fn)['OBJECT']
-    spectrum,sig = weighted_extract_spectrum(flux_stamp, var)
-    wave = wave[:-500]
-    spectrum = spectrum[:-500]
+    flux_stamp,wave = read_and_find_star_p08(fn)
+    heliocentric_correction = pyfits.getheader(fn)['RADVEL']
+    star = pyfits.getheader(fn)['OBJECT']
+    spectrum,sig = weighted_extract_spectrum(flux_stamp)
     dell_template = 0.1
     wave_template=np.arange(90000)*dell_template + 3000
-    spectrum_interp = np.interp(wave_template,wave*(1 - (rv - heliocentric_correction + rv_abs+rv_sky)/2.998e5),spectrum)
-    if outfn == '':
-        outfn = out_dir + star + '_' + fn.split('/')[-1].split('p08')[0] + 'fits'
-    else:
-        outfn = out_dir + outfn + '.fits'
+    spectrum_interp = np.interp(wave_template,wave*(1 - (rv - heliocentric_correction)/2.998e5),spectrum)
+    outfn = out_dir + star + ':' + fn.split('/')[-1]
     pyfits.writeto(outfn,spectrum_interp,clobber=True)
-    print('saved template:'+outfn)
     
 
 def rv_fit_mlnlike(shift,modft,data,errors,gaussian_offset):
@@ -475,23 +336,28 @@ def make_fake_binary(spect,wave,sig, template_fns, flux_ratio, rv0, rv1):
     return fake_binary, wave_templates[0], np.ones(len(wave_templates[0]))*0.01
 
 def interpolate_spectra_onto_log_grid(spect,wave,sig, template_dir,bad_intervals=[],\
-        smooth_distance=201,convolve_template=True, nwave_log=int(1e4), subtract_smoothed=True):
+        smooth_distance=201,convolve_template=True, nwave_log=int(1e4), \
+        subtract_smoothed=True, interp_k=1):
     """Interpolate both the target and template spectra onto a common wavelength grid"""
     
     #Create our logarithmic wavelength scale with the same min and max wavelengths as the
     #target spectrum, and nwave_log wavelengths.
-    wave_log = np.min(wave)*np.exp(np.log(np.max(wave)/np.min(wave))/\
+    wave_log = np.min(wave)*np.exp( np.log(np.max(wave)/np.min(wave))/\
         nwave_log*np.arange(nwave_log))
     
     #Interpolate the target spectrum onto this scale
-    spect_int = np.interp(wave_log,wave,spect)
-    sig_int = np.interp(wave_log,wave,sig)
+    #spect_int = np.interp(wave_log,wave,spect)
+    #sig_int = np.interp(wave_log,wave,sig)
+    spl = InterpolatedUnivariateSpline(wave, spect, k=interp_k)
+    spect_int = spl(wave_log)
+    spl = InterpolatedUnivariateSpline(wave, sig, k=interp_k)
+    sig_int = spl(wave_log)
     
     #Normalise 
     sig_int /= np.median(spect_int)
     spect_int /= np.median(spect_int)
     
-    #Remove bad intervals
+    #Remove bad intervals 
     for interval in bad_intervals:
         wlo = np.where(wave_log > interval[0])[0]
         if len(wlo)==0: 
@@ -535,7 +401,7 @@ def interpolate_spectra_onto_log_grid(spect,wave,sig, template_dir,bad_intervals
                 spect_template = dd[:,1]
             #Finally try the Ambre convolved spectral format.
             elif template_fn.find('fit') >= len(template_fn)-4:
-                #print('Using ambre models (fits with fixed wavelength grid)')
+                print('Using ambre models (fits with fixed wavelength grid)')
                 spect_template = pyfits.getdata(template_fn)
                 dell_template = 0.1
                 wave_template=np.arange(90000)*dell_template + 3000
@@ -545,18 +411,24 @@ def interpolate_spectra_onto_log_grid(spect,wave,sig, template_dir,bad_intervals
         except:
             print('Error loading model spectrum')
             raise UserWarning
-            
-        #Amount of subsampling in the template
-        template_subsamp = int((wave[1]-wave[0])/dell_template)
-        #Make sure it is an odd number to prevent shifting...
-        template_subsamp = np.maximum((template_subsamp//2)*2 - 1,1)
-        spect_template = np.convolve(np.convolve(spect_template,np.ones(template_subsamp)/template_subsamp,'same'),\
-                                  np.ones(2*template_subsamp+1)/(2*template_subsamp+1),'same')
+          
+        if convolve_template:  
+            #Amount of subsampling in the template
+            template_subsamp = int((wave[1]-wave[0])/dell_template)
+        
+            #Make sure it is an odd number to prevent shifting...
+            template_subsamp = np.maximum((template_subsamp//2)*2 - 1,1)
+            spect_template = np.convolve(np.convolve(spect_template,np.ones(template_subsamp)/template_subsamp,'same'),\
+                                      np.ones(2*template_subsamp+1)/(2*template_subsamp+1),'same')
 
         #Interpolate onto the log wavelength grid.
-        template_int = np.interp(wave_log,wave_template,spect_template)
+        #template_int = np.interp(wave_log,wave_template,spect_template)
+        spl = InterpolatedUnivariateSpline(wave_template,spect_template, k=interp_k)
+        template_int = spl(wave_log)
+        
         #Normalise 
         template_int /= np.median(template_int)
+        
         #Remove bad intervals 
         for interval in bad_intervals:
             wlo = np.where(wave_log > interval[0])[0]
@@ -633,49 +505,42 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
     peaks = np.zeros(len(template_fns))
     for i,template_fn in enumerate(template_fns):
         template_int = template_ints[i]
-        '''
         if save_figures == True:
             plt.clf()
             plt.plot(wave_log, template_int, label='template')
             plt.plot(wave_log, spect_int, label='spectrum')
             plt.title('Template no.'+str(i+1))
-            #plt.xlim([6800,7000])
-            plt.savefig(save_dir + 'spectrum_vs_template_' + template_fns[i].split('/')[-1].split('.fits')[0] + '.eps')
+            plt.savefig(save_dir + 'spectrum_vs_template_' + template_fns[i].split('/')[-1].split('.fits')[0] + '.png')
             plt.clf()
-        '''
         cor = np.correlate(spect_int,template_int,'same')
         ##here it's a good idea to limit where the peak Xcorrelation can be, only search for a peak within 1000 of rv=0
         ## that's and RV range of -778 to 778 for the default spacings in the code
         peaks[i] = np.max(cor[int(nwave_log/2)-100:int(nwave_log/2)+100])/np.sqrt(np.sum(np.abs(template_int)**2))
         rvs[i] = (np.argmax(cor[int(nwave_log/2)-100:int(nwave_log/2)+100])-100)*drv
-        #if starnumber == 0: print('Correlating Template ' + str(i+1)+' out of ' + str(len(template_fns)))
-        #if starnumber >0  : print('Correlating Template ' + str(i+1)+' out of ' + str(len(template_fns)) +' for star '+str(starnumber))
+        if starnumber == 0: print('Correlating Template ' + str(i+1)+' out of ' + str(len(template_fns)))
+        if starnumber >0  : print('Correlating Template ' + str(i+1)+' out of ' + str(len(template_fns)) +' for star '+str(starnumber))
         this_rvs = drv*(np.arange(2*smooth_distance)-smooth_distance)
         correlation = cor[int(nwave_log/2)-100:int(nwave_log/2)+100]/np.sqrt(np.sum(np.abs(template_int)**2))
         best_ind = np.argmax(correlation)
-        #print("best RV for template "+str(i+1)+" is "+str(this_rvs[best_ind+1] + heliocentric_correction))
+        print("best RV for template "+str(i+1)+" is "+str(this_rvs[best_ind+1] + heliocentric_correction))
         if save_figures == True:
-            temp_file = open(save_dir + 'cross_correlation.pkl', 'w')
-            pickle.dump((this_rvs[1:-1], correlation/np.max(correlation)), temp_file)
-            temp_file.close()
             plt.clf()
             plt.plot(this_rvs[1:-1], correlation/np.max(correlation))
-            plt.title('Correlation_with_template_'+template_fn.split('/')[-1])
-            plt.show()
-            plt.savefig(save_dir + 'Correlation_with_template_' + template_fn.split('/')[-1] + '.png')
+            plt.title('Correlation_with_template_no.'+str(i+1))
+            plt.savefig(save_dir + 'Correlation_with_template_no' + str(i+1) + '.png')
             plt.clf()
     
     
     #Find the best cross-correlation.
     ix = np.argmax(peaks)
-    #print("BEST TEMPLATE:"+template_fns[ix].split('/')[-1])
+    print("BEST TEMPLATE:"+template_fns[ix].split('/')[-1])
 
     #Recompute and plot the best cross-correlation
     template_int = template_ints[ix,:]
     cor = np.correlate(spect_int,template_int,'same')
     plt.clf()
     plt.plot(drv*(np.arange(2*smooth_distance)-smooth_distance), 
-        cor[int(nwave_log/2)-smooth_distance:int(nwave_log/2)+smooth_distance])
+             cor[int(nwave_log/2)-smooth_distance:int(nwave_log/2)+smooth_distance])
 
     ##store the figure data for later use
     outsave = np.array([drv*(np.arange(2*smooth_distance)-smooth_distance),cor[int(nwave_log/2)-smooth_distance:int(nwave_log/2)+smooth_distance]])
@@ -733,12 +598,8 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
         
         if (hess_inv < 0) | (fplus < fval) | (fminus < fval):
             print("WARNING: Radial velocity fit did not work, giving up with NaN uncertainty")
-            print("rv =", rv)
-            #rv = np.nan
-
+        
     rv_sig = np.sqrt(hess_inv*nwave_log/len(spect)/oversamp)*drv
-    if rv == np.nan:
-        rv_sig = np.nan
 
     plt.title('RV, RV_sigma:' + str(rv) + ',' +str(rv_sig))
     plt.savefig(save_dir + 'Best_correlation_temp_' + template_fns[ix].split('/')[-1] + '.png')
@@ -752,7 +613,7 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
     plt.title(name_string + ', RV = {0:4.1f}+/-{1:4.1f} km/s'.format(rv,rv_sig))
     if len(fig_fn) > 0:
         fig_fn_new = fig_fn.split('_xcor.png')[0] + 'fitplot.png' 
-        plt.savefig(fig_fn_new)
+    	plt.savefig(fig_fn_new)
     #again save the figure data for use later in making nicer plots with IDL
     outsave = np.array([wave_log,spect_int,shifted_mod])
     saveoutname = fig_fn.split('_xcor.png')[0] + 'fitplot_figdat.pkl'
@@ -763,7 +624,7 @@ def calc_rv_template(spect,wave,sig, template_dir,bad_intervals,smooth_distance=
 def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     smooth_distance=201,convolve_template=True, alpha=0.3,\
     nwave_log=int(1e4),ncor=1000, return_fitted=False,jd=0.0,out_fn='',\
-    heliocentric_correction=0, plotit=False):
+    heliocentric_correction=0, plotit=False, window_divisor=20):
     """Compute a radial velocity based on an best fitting template spectrum.
     Teff is estimated at the same time.
     
@@ -793,7 +654,7 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     rv_sig1: float
         Uncertainty in radial velocity (NB assumes good model fit)
     rv2: float
-        Radial velocity of star 2 in km/s
+        Radial velocity of star 1 in km/s
     rv_sig2: float
         Uncertainty in radial velocity (NB assumes good model fit)
     corpeak: float
@@ -803,14 +664,14 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
         interpolate_spectra_onto_log_grid(spect,wave,sig, template_fns,\
             bad_intervals=bad_intervals, smooth_distance=smooth_distance, \
             convolve_template=convolve_template, nwave_log=nwave_log)
-        
+                
     rvs = np.zeros(len(template_fns))
     peaks = np.zeros(len(template_fns))
     drv = np.log(wave_log[1]/wave_log[0])*2.998e5
       
     #*** Next (hopefully with two templates only!) we continue and apply the TODCOR algorithm.
     
-    window_width = nwave_log//20
+    window_width = nwave_log//window_divisor
     ramp = np.arange(1,window_width+1,dtype=float)/window_width
     window = np.ones(nwave_log)
     window[:window_width] *= ramp
@@ -842,8 +703,8 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     ix_c12 = np.minimum(np.maximum(xy[0]-xy[1]+ncor//2,0),ncor-1) #!!!This was the old line !!!
     #ix_c12 = np.minimum(np.maximum(xy[1]-xy[0]+ncor//2,0),ncor-1) #XXX New (temporary?) line XXX
     todcor = (c1[xy[0]] + alpha_norm*c2[xy[1]])/np.sqrt(1 + 2*alpha_norm*c12[ix_c12] + alpha_norm**2)
-    
-    #print("Max correlation: {0:5.2f}".format(np.max(todcor)))
+        
+    print("Max correlation: {0:5.2f}".format(np.max(todcor)))
     #print(alpha_norm)
     #plt.plot(drv*(np.arange(nwave_log)-nwave_log//2),np.roll(c1,nwave_log//2))
     #Figure like TODCOR paper:
@@ -855,25 +716,33 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
     plt.imshow(todcor, cmap=cm.gray,interpolation='nearest',extent=[-drv*ncor/2,drv*ncor/2,-drv*ncor/2,drv*ncor/2])
 
     xym = np.unravel_index(np.argmax(todcor), todcor.shape)
-    hw_fit = 2
     
-    if (xym[0]< hw_fit) | (xym[1]< hw_fit) | (xym[0]>= ncor-hw_fit) | (xym[1]>= ncor-hw_fit):
-        print("Error: TODCOR peak to close to edge!")
-        raise UserWarning
+    old_fit = False
+    if (old_fit):
+        hw_fit = 1 #2
     
-    ix_fit = np.arange(-hw_fit, hw_fit + 1).astype(int)
-    xy_fit = np.meshgrid(ix_fit,ix_fit)
-    p_init = models.Gaussian2D(amplitude=np.max(todcor),x_mean=0, y_mean=0, 
-        x_stddev = 50.0/drv, y_stddev = 50.0/drv)
-    fit_p = fitting.LevMarLSQFitter()
+        if (xym[0]< hw_fit) | (xym[1]< hw_fit) | (xym[0]>= ncor-hw_fit) | (xym[1]>= ncor-hw_fit):
+            print("Error: TODCOR peak to close to edge!")
+            raise UserWarning
     
-    p = fit_p(p_init, xy_fit[0], xy_fit[1], todcor[xym[0]-hw_fit:xym[0]+hw_fit+1, 
-                                                   xym[1]-hw_fit:xym[1]+hw_fit+1])
+        ix_fit = np.arange(-hw_fit, hw_fit + 1).astype(int)
+        xy_fit = np.meshgrid(ix_fit,ix_fit)
+        p_init = models.Gaussian2D(amplitude=np.max(todcor),x_mean=0, y_mean=0, 
+            x_stddev = 50.0/drv, y_stddev = 50.0/drv)
+        fit_p = fitting.LevMarLSQFitter()
+    
+        p = fit_p(p_init, xy_fit[0], xy_fit[1], todcor[xym[0]-hw_fit:xym[0]+hw_fit+1, 
+                                                       xym[1]-hw_fit:xym[1]+hw_fit+1])
 
-    #import pdb; pdb.set_trace()
-
-    rv_x = drv*((p.parameters[1] + xym[1]) - ncor//2)
-    rv_y = drv*((p.parameters[2] + xym[0]) - ncor//2)
+        rv_x = drv*((p.parameters[1] + xym[1]) - ncor//2)
+        rv_y = drv*((p.parameters[2] + xym[0]) - ncor//2)
+    else:
+        pix = todcor[xym[0]-1:xym[0]+2, xym[1]]
+        xym_frac0 = (pix[2] - pix[0])/(2*pix[1] - pix[0] - pix[2])/2
+        pix = todcor[xym[0], xym[1]-1:xym[1]+2]
+        xym_frac1 = (pix[2] - pix[0])/(2*pix[1] - pix[0] - pix[2])/2
+        rv_x = drv*((xym_frac1 + xym[1]) - ncor//2)
+        rv_y = drv*((xym_frac0 + xym[0]) - ncor//2)
 
     model_spect = rv_shift_binary(rv_x/drv, rv_y/drv, alpha, np.fft.rfft(template_ints[0]), np.fft.rfft(template_ints[1]))
     
@@ -889,14 +758,22 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
             np.fft.rfft(template_int_norm[0]), np.fft.rfft(template_int_norm[1]))
         model_spect_sec = rv_shift_binary(rv_x/drv, rv_y/drv, 1e6, \
             np.fft.rfft(template_int_norm[0]), np.fft.rfft(template_int_norm[1]))
-        ss = np.ones(5e2)/5e2
-        model_ss = np.convolve(model_spect_norm, ss, mode='same')
-        spect_ss = np.convolve(spect_int_norm, ss, mode='same')
-        plt.clf()
-        plt.plot(wave_log, model_spect_norm/model_ss, label='Joint Model')
-        plt.plot(wave_log, model_spect_prim/model_ss/(1+alpha), label='Primary')
-        plt.plot(wave_log, model_spect_sec/model_ss*alpha/(1+alpha), label='Secondary')
-        plt.plot(wave_log, spect_int_norm/spect_ss, label='Data')
+        
+        #--- Old divisors as a dodgy attempt to deal with non-normalised
+        # data...  ---
+        #ss = np.ones(5e2)/5e2
+        #model_ss = np.convolve(model_spect_norm, ss, mode='same')
+        #spect_ss = np.convolve(spect_int_norm, ss, mode='same')
+        #plt.plot(wave_log, model_spect_norm/model_ss, label='Joint Model')
+        #plt.plot(wave_log, model_spect_prim/model_ss/(1+alpha), label='Primary')
+        #plt.plot(wave_log, model_spect_sec/model_ss*alpha/(1+alpha), label='Secondary')
+        #plt.plot(wave_log, spect_int_norm/spect_ss, label='Data')
+        
+        plt.clf()        
+        plt.plot(wave_log, model_spect_norm, label='Joint Model')
+        plt.plot(wave_log, model_spect_prim/(1+alpha), label='Primary')
+        plt.plot(wave_log, model_spect_sec*alpha/(1+alpha), label='Secondary')
+        plt.plot(wave_log, spect_int_norm, label='Data')
         plt.legend()
         plt.axis([3810, 5610, 0, 1.45])
         plt.xlabel(r'Wavelength ($\AA$)')
@@ -917,6 +794,11 @@ def calc_rv_todcor(spect,wave,sig, template_fns,bad_intervals=[],fig_fn='',\
         q_factor = np.sqrt(np.mean(wave2_on_s*model_spect_deriv**2))
         photon_rv_error = 3e5/q_factor*np.median(sig_int)/np.sqrt(len(spect))
         errors.append(photon_rv_error)
+        print("Q factor: {:5.2f}".format(q_factor))
+        #plt.clf()
+        #plt.plot(template_int)
+        #plt.pause(.01)
+        #import pdb; pdb.set_trace()
 
     #ISSUES: 
     #1) Error (below) not computed.

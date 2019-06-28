@@ -15,9 +15,13 @@ header = 0
 with open('/short/ek9/rlk100/Bayes_analysis/Mean_velocity/3_sig/bayes_factors_reviewer_response.csv', 'r') as f:
     reader = csv.reader(f)
     for row in reader:
+        '''
         if row[0] != 'UCAC4-1253626396':
             Objects.append(row[0])
-            Bayes_factor.append(float(row[2]))
+            Bayes_factor.append(float(row[2])
+        '''
+        Objects.append(row[0])
+        Bayes_factor.append(float(row[2])
 
 #set up lists and arrays
 RA_US = [[],[]]

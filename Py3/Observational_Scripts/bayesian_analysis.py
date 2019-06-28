@@ -5,7 +5,7 @@ import csv
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-print "THIS IS THE LATEST VERSION OF BAYESIAN ANALYSIS"
+print("THIS IS THE LATEST VERSION OF BAYESIAN ANALYSIS")
 
 def parse_inputs():
     import argparse
@@ -60,7 +60,7 @@ with open('/home/100/rlk100/RV_standard_list.csv', 'rU') as f:
         else:
             header = 1
 
-print "Reading in current spreadsheet"
+print("Reading in current spreadsheet")
 header = 0
 reshape_len = -1
 with open(args.input_file, 'rU') as f:
@@ -178,8 +178,8 @@ if args.calculate_bayes == 'False':
     plt.clf()
     plt.plot(gamma, p_gamma_US_norm)
     #plt.title('US:' + "{0:5.1f}".format(mean_US*100.)+'$^{' + "{0:5.1f}".format(US_pos_error*100.)+'}_{' + "{0:5.1f}".format(US_neg_error*100.)+'}$%')
-    print "US:", max_US, "(+", US_pos_error, ", -",US_neg_error,")"
-    print "US_mean:", mean_US
+    print("US:", max_US, "(+", US_pos_error, ", -",US_neg_error,")")
+    print("US_mean:", mean_US)
     plt.savefig('Binary_fraction_US'+args.image_suffix+'.png')
 
     #UCL
@@ -217,8 +217,8 @@ if args.calculate_bayes == 'False':
     plt.clf()
     plt.plot(gamma, p_gamma_UCL_norm)
     #plt.title('UCL:' + "{0:5.1f}".format(mean_UCL*100.)+'$^{' + "{0:5.1f}".format(UCL_pos_error*100.)+'}_{' + "{0:5.1f}".format(UCL_neg_error*100.)+'}$%')
-    print "UCL:", max_UCL, "(+", UCL_pos_error, ", -",UCL_neg_error,")"
-    print "UCL_mean:", mean_UCL
+    print("UCL:", max_UCL, "(+", UCL_pos_error, ", -",UCL_neg_error,")")
+    print("UCL_mean:", mean_UCL)
     plt.savefig('Binary_fraction_UCL'+args.image_suffix+'.png')
 
     US_inds = np.where((gamma > (max_US - US_neg_error))&(gamma < (max_US + US_pos_error)))[0]
@@ -392,7 +392,7 @@ if args.calculate_bayes == 'True':
             observed_rv = Obs_info[obj][:,2].astype(float)
             
             #IN A LOOP iterate over random orbits:
-            for orb in tqdm(range(n_orb)):
+            for orb in tqdm(list(range(n_orb))):
                 #FIXME: Figure out which velocity to use!
                 if Region[obj] == 'US':
                     #v_group = np.random.normal(np.mean(observed_rv), np.sqrt(US_group_std**2 + RV_standard_err**2), n_systems)
@@ -419,17 +419,17 @@ if args.calculate_bayes == 'True':
                     if (this_likelihood > 0.95) and plotit:
                         #if np.sum(np.abs(observed_rv-actual_vr) < err) > 3.:
                         #plot orbit
-                        print "PLOTTING ORBIT for maximum_likelihood =", this_likelihood
+                        print("PLOTTING ORBIT for maximum_likelihood =", this_likelihood)
                         plt.clf()
                         plt.plot(jds_more, actual_vr_more)
                         plt.scatter(jds, actual_vr, color='k')
                         plt.errorbar(jds, observed_rv, yerr=err, fmt='o', color='r')
                         plt.show()
-                        print "MOVING ONTO NEXT ORBIT"
+                        print("MOVING ONTO NEXT ORBIT")
             
             #THEN CALCULATE BAYES FACTOR
             bayes_factor = np.mean(likelihoods)/np.mean(single_likelihoods)
-            print("Bayes Factor: {0:5.2f} for ".format(bayes_factor) + Object[obj])
+            print(("Bayes Factor: {0:5.2f} for ".format(bayes_factor) + Object[obj]))
             if np.isinf(bayes_factor):
                 bayes_factor = np.nan_to_num(bayes_factor)
             if Region[obj] == 'US':
