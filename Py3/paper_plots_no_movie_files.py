@@ -70,6 +70,7 @@ def parse_inputs():
     parser.add_argument("-start_orb", "--starting_orbit", help="which orbit do you want to start folding at", type=int, default=1)
     parser.add_argument("-n_orb", "--n_orbits", help="How many orbits do you want to fold over?", type=int, default=5)
     parser.add_argument("-calc_e", "--calculate_eccentricity", help="do you want to calculate eccentricity", type=str, default="False")
+    parser.add_argument("-calc_a", "--calculate_apsis", help="do you want to calculate the apsis times?", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -697,7 +698,7 @@ if args.read_particle_file == 'True':
 
 if args.calculate_eccentricity == 'True':
     pickle_file = path + 'particle_data.pkl'
-    file_open = open(pickle_file, 'r')
+    file_open = open(pickle_file, 'rb')
     particle_data, sink_form_time, line_counter = pickle.load(file_open)
     file_open.close()
     
@@ -740,9 +741,11 @@ if args.calculate_eccentricity == 'True':
         h = np.sqrt(L_tot[0]**2. + L_tot[1]**2. + L_tot[2]**2.)/reduced_mass
         e = np.sqrt(1 + (2.*epsilon*h**2.)/(mu**2.))
         particle_data.update({'eccentricity': e})
-        file_open = open(pickle_file, 'w+')
+        file_open = open(pickle_file, 'wb')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
+    else:
+        e = particle_data['eccentricity']
     
     #plot separation and eccentricity
     plt.clf()
@@ -804,22 +807,22 @@ if args.calculate_eccentricity == 'True':
     plt.setp([ax3.get_yticklabels()[-1]], visible=False)
     
     apsis_pickle = path + 'apsis_data.pkl'
-    file_open = open(apsis_pickle, 'r')
+    file_open = open(apsis_pickle, 'rb')
     periastron_inds, apastron_inds = pickle.load(file_open)
     file_open.close()
     
     e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
     e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
-    ax2.fill_between([0, particle_data['time'][-1]], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
+    #ax2.fill_between([0, particle_data['time'][-1]], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
     
     e_max_2 = np.max(e[periastron_inds[-16]:periastron_inds[-1]])
     e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
-    ax2.fill_between([0, particle_data['time'][-1]], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
+    #ax2.fill_between([0, particle_data['time'][-1]], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
     
     plt.savefig(save_dir+'system_evolution.eps', bbox_inches='tight')
     plt.savefig(save_dir+'system_evolution.pdf', bbox_inches='tight')
 
-if args.phasefolded_accretion == 'True':
+if args.calculate_apsis == 'True':
     pickle_file = path + 'particle_data.pkl'
     file_open = open(pickle_file, 'rb')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
@@ -862,7 +865,7 @@ if args.phasefolded_accretion == 'True':
                 apastron_inds.append(apastron_ind)
                 print("found apastron at time", particle_data['time'][apastron_ind], "of separation", particle_data['separation'][apastron_ind])
                 passed_apastron = True
-            index = index + index_interval/2
+            index = index + int(index_interval/2)
         plt.clf()
         plot_start_ind = 0
         plot_end_ind = len(periastron_inds)-1
@@ -873,15 +876,26 @@ if args.phasefolded_accretion == 'True':
             plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
         for apastron in apastron_inds[plot_start_ind:plot_end_ind]:
             plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
-        plt.xlim(left=4000)
+        #plt.xlim(left=4000)
         plt.savefig(save_dir + 'separation.eps')
         plt.clf()
 
-        file_open = open(apsis_pickle, 'wb ')
+        file_open = open(apsis_pickle, 'wb')
         pickle.dump((periastron_inds, apastron_inds),file_open)
         file_open.close()
         print("Created separation evolution plot")
 
+if args.phasefolded_accretion == 'True':
+    pickle_file = path + 'particle_data.pkl'
+    file_open = open(pickle_file, 'rb')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    
+    apsis_pickle = path + 'apsis_data.pkl'
+    file_open = open(apsis_pickle, 'rb')
+    periastron_inds, apastron_inds = pickle.load(file_open)
+    file_open.close()
+    
     #periastron_inds = periastron_inds[10:]
     repeats = args.repeats
     rit = 0
@@ -958,8 +972,6 @@ if args.phasefolded_accretion == 'True':
         plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
         plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
         plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
-        import pdb
-        pdb.set_trace()
         popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
         x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
         y_fit = skew_norm_pdf(x_fit, *popt)
