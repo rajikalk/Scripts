@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 #import matplotlib.patches as mpatches
 #from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
-from subprocess import call
 import csv
 import sys
 import os
@@ -685,8 +684,8 @@ def main():
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
             
-                call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-                os.remove(file_name + '.eps')
+                os.system('convert -antialias -quality 100 -density 200 -resize 100% -flatten ' + file_name + '.eps ' + file_name + '.jpg')
+                #os.remove(file_name + '.eps')
                 print('Created frame', (frames[frame_val]+1), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps')
                 #del image
                 #del magx
