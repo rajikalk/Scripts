@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 #import matplotlib.patches as mpatches
 #from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
-from subprocess import call
 import csv
 import sys
 import os
