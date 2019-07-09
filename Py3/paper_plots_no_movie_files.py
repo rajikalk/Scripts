@@ -575,6 +575,8 @@ if args.read_particle_file == 'True':
             file_open = open(pickle_file, 'rb')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
+        if 'eccentricity' in list(particle_data.keys()):
+            particle_data.pop('eccentricity')
         if 'accelx' in list(particle_data.keys()):
             particle_data.pop('accelx')
             particle_data.pop('accely')
@@ -632,20 +634,20 @@ if args.read_particle_file == 'True':
                             particle_data['mdot'].append([np.nan, np.nan])
                         except:
                             particle_data['time'] = np.append(particle_data['time'], time_val)
-                            particle_data['posx'] = np.vstack((particle_data['posx'].T, [np.nan, np.nan]))
-                            particle_data['posy'] = np.vstack((particle_data['posy'].T, [np.nan, np.nan]))
-                            particle_data['posz'] = np.vstack((particle_data['posz'].T, [np.nan, np.nan]))
-                            particle_data['velx'] = np.vstack((particle_data['velx'].T, [np.nan, np.nan]))
-                            particle_data['vely'] = np.vstack((particle_data['vely'].T, [np.nan, np.nan]))
-                            particle_data['velz'] = np.vstack((particle_data['velz'].T, [np.nan, np.nan]))
+                            particle_data['posx'] = np.vstack((particle_data['posx'].T, [np.nan, np.nan])).T
+                            particle_data['posy'] = np.vstack((particle_data['posy'].T, [np.nan, np.nan])).T
+                            particle_data['posz'] = np.vstack((particle_data['posz'].T, [np.nan, np.nan])).T
+                            particle_data['velx'] = np.vstack((particle_data['velx'].T, [np.nan, np.nan])).T
+                            particle_data['vely'] = np.vstack((particle_data['vely'].T, [np.nan, np.nan])).T
+                            particle_data['velz'] = np.vstack((particle_data['velz'].T, [np.nan, np.nan])).T
                             #particle_data['accelx'].append([np.nan, np.nan])
                             #particle_data['accely'].append([np.nan, np.nan])
                             #particle_data['accelz'].append([np.nan, np.nan])
                             #particle_data['anglx'].append([np.nan, np.nan])
                             #particle_data['angly'].append([np.nan, np.nan])
                             #particle_data['anglz'].append([np.nan, np.nan])
-                            particle_data['mass'] = np.vstack((particle_data['mass'].T, [np.nan, np.nan]))
-                            particle_data['mdot'] = np.vstack((particle_data['mdot'].T, [np.nan, np.nan]))
+                            particle_data['mass'] = np.vstack((particle_data['mass'].T, [np.nan, np.nan])).T
+                            particle_data['mdot'] = np.vstack((particle_data['mdot'].T, [np.nan, np.nan])).T
                     try:
                         time_ind = particle_data['time'].index(time_val)
                     except:
@@ -672,9 +674,6 @@ if args.read_particle_file == 'True':
                     file_open.close()
                     print("dumped pickle after line", line_counter)
                     shutil.copy(pickle_file, pickle_file.split('.pkl')[0]+'_tmp.pkl')
-                    del particle_data
-                    del sink_form_time
-                    del line_counter
                     file_open = open(pickle_file, 'rb')
                     particle_data, sink_form_time, line_counter = pickle.load(file_open)
                     file_open.close()
@@ -688,23 +687,14 @@ if args.read_particle_file == 'True':
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
     for key in list(particle_data.keys()):
-        if key != 'particle_tag' and key != 'time':
-            if len(particle_data[key][0]) == 2:
-                particle_data[key] = np.array(particle_data[key]).T
-            else:
-                particle_data[key] = np.array(particle_data[key])
-            try:
-                particle_data[key] = particle_data[key][:,sorted_inds]
-            except:
-                particle_data[key] = particle_data[key][sorted_inds]
-    particle_data.update({'separation':np.sqrt((particle_data['posx'][0] - particle_data['posx'][1])**2. + (particle_data['posy'][0] - particle_data['posy'][1])**2. + (particle_data['posz'][0] - particle_data['posz'][1])**2.)})
+        if key != 'particle_tag' and key != 'time' and key != 'separation':
+            particle_data[key] = np.array(particle_data[key])
+            particle_data[key] = particle_data[key][sorted_inds]
+    particle_data.update({'separation':np.sqrt((particle_data['posx'].T[0] - particle_data['posx'].T[1])**2. + (particle_data['posy'].T[0] - particle_data['posy'].T[1])**2. + (particle_data['posz'].T[0] - particle_data['posz'].T[1])**2.)})
     usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
     for key in list(particle_data.keys()):
         if key != 'particle_tag':
-            try:
-                particle_data[key] = particle_data[key][:,usable_inds]
-            except:
-                particle_data[key] = particle_data[key][usable_inds]
+            particle_data[key] = particle_data[key][usable_inds].tolist()
     print("sorted data and save")
     file_open = open(pickle_file, 'wb')
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
@@ -716,14 +706,22 @@ if args.calculate_eccentricity == 'True':
     particle_data, sink_form_time, line_counter = pickle.load(file_open)
     file_open.close()
     
-    if 'eccentricity' not in list(particle_data.keys()):
-        Mass = yt.YTArray(particle_data['mass'], 'msun')
-        velx = yt.YTArray(particle_data['velx'], 'cm/s')
-        vely = yt.YTArray(particle_data['vely'], 'cm/s')
-        velz = yt.YTArray(particle_data['velz'], 'cm/s')
-        posx = yt.YTArray(particle_data['posx'], 'au')
-        posy = yt.YTArray(particle_data['posy'], 'au')
-        posz = yt.YTArray(particle_data['posz'], 'au')
+    if 'eccentricity' in list(particle_data.keys()):
+        e = particle_data['eccentricity']
+        if len(e) == 0:
+            calculate_e = True
+        else:
+            calculate_e = False
+    else:
+        calculate_e = True
+    if calculate_e == True:
+        Mass = yt.YTArray(np.array(particle_data['mass']).T, 'msun')
+        velx = yt.YTArray(np.array(particle_data['velx']).T, 'cm/s')
+        vely = yt.YTArray(np.array(particle_data['vely']).T, 'cm/s')
+        velz = yt.YTArray(np.array(particle_data['velz']).T, 'cm/s')
+        posx = yt.YTArray(np.array(particle_data['posx']).T, 'au')
+        posy = yt.YTArray(np.array(particle_data['posy']).T, 'au')
+        posz = yt.YTArray(np.array(particle_data['posz']).T, 'au')
         comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
@@ -754,12 +752,13 @@ if args.calculate_eccentricity == 'True':
         L_tot = yt.YTArray(np.array(L_1), 'cm**2*g/s') + yt.YTArray(np.array(L_2), 'cm**2*g/s')
         h = np.sqrt(L_tot[0]**2. + L_tot[1]**2. + L_tot[2]**2.)/reduced_mass
         e = np.sqrt(1 + (2.*epsilon*h**2.)/(mu**2.))
-        particle_data.update({'eccentricity': e})
+        try:
+            particle_data['eccentricity'] = e.tolist()
+        except:
+            particle_data.update({'eccentricity': e.tolist()})
         file_open = open(pickle_file, 'wb')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
-    else:
-        e = particle_data['eccentricity']
     
     #plot separation and eccentricity
     plt.clf()
@@ -780,6 +779,7 @@ if args.calculate_eccentricity == 'True':
     moving_index = window
     moving_average_time = []
     moving_average_accretion = [[],[]]
+    particle_data['mdot'] = np.array(particle_data['mdot']).T
     while moving_index < len(particle_data['time']):
         moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
         moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
@@ -849,20 +849,24 @@ if args.calculate_apsis == 'True':
         file_open.close()
     else:
         window = args.smoothing_window
-        moving_index = 100
+        moving_index = int(window)
         moving_average_time = []
         moving_average_sep = []
-        moving_average_accretion = [[],[]]
+        particle_data['time'] = np.array(particle_data['time'])
+        particle_data['separation'] = np.array(particle_data['separation'])
+        '''
+        for window_int in range(window):
+            particle_data['time'] = np.array(particle_data['time'])
+            moving_average_time.append(particle_data['time'][moving_index-int(window/2):-int(window)])
+            moving_average_sep.append(particle_data['separation'][moving_index-int(window/2):-int(window)])
+        '''
         while moving_index < len(particle_data['time']):
             window_inds = np.where((particle_data['time'] < particle_data['time'][moving_index])&(particle_data['time'] > particle_data['time'][moving_index]-window))[0]
             moving_average_time.append(np.mean(particle_data['time'][window_inds]))
             moving_average_sep.append(np.mean(particle_data['separation'][window_inds]))
-            moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][window_inds]))
-            moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][window_inds]))
             moving_index = moving_index + 1
         particle_data['time'] = np.array(moving_average_time)
         particle_data['separation'] = np.array(moving_average_sep)
-        particle_data['mdot'] = np.array(moving_average_accretion)
         periastron_inds = [np.argmin(particle_data['separation'])]
         apastron_inds = []
         index_interval = 500
@@ -916,6 +920,8 @@ if args.phasefolded_accretion == 'True':
     n_folded_orbits = args.n_orbits
     multiple_folds = []
     mean_eccentricity = []
+    particle_data['time'] = np.array(particle_data['time'])
+    particle_data['mdot'] = np.array(particle_data['mdot']).T
     while rit < repeats:
         hist_ind = args.starting_orbit + rit*n_folded_orbits
         ap_ind = hist_ind - 1
@@ -986,10 +992,10 @@ if args.phasefolded_accretion == 'True':
         plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
         plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
         plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
-        popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
-        x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
-        y_fit = skew_norm_pdf(x_fit, *popt)
-        plt.plot(x_fit, y_fit)
+        #popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
+        #x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
+        #y_fit = skew_norm_pdf(x_fit, *popt)
+        #plt.plot(x_fit, y_fit)
         multiple_folds.append(np.array(long_median_total)*(1.e4))
 
         plt.legend(loc='best')
