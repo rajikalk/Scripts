@@ -963,7 +963,7 @@ if args.phasefolded_accretion == 'True':
         popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
         x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
         y_fit = skew_norm_pdf(x_fit, *popt)
-        plt.plot(x_fit, y_fit)
+        #plt.plot(x_fit, y_fit)
         multiple_folds.append(np.array(long_median_total)*(1.e4))
 
         plt.legend(loc='best')
