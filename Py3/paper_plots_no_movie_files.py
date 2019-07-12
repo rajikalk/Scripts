@@ -35,6 +35,7 @@ def parse_inputs():
     parser.add_argument("-bp", "--b_mag", help="Did you want to create a plot of where the magnetic fiedl is 30 degrees", type=str, default="False")
     parser.add_argument("-op", "--outflow_pickle", help="Do you want to measure the outflows?", type=str, default="False")
     parser.add_argument("-sep", "--separation", help="Do you want to plot the separation of the particles?", type=str, default="False")
+    parser.add_argument("-plot_e", "--plot_eccentricity", help="Do you want to plot the eccentricity with the separation?", type=str, default="False")
     parser.add_argument("-c", "--center", help="What center do you want to set for everything?, if 3 it combines all centers", type=int, default=0)
     parser.add_argument("-ppm", "--profile_plot_multi", help="Did you want to plot a profile plot with multiple lines?", type=str, default="False")
     
@@ -71,6 +72,7 @@ def parse_inputs():
     parser.add_argument("-n_orb", "--n_orbits", help="How many orbits do you want to fold over?", type=int, default=5)
     parser.add_argument("-calc_e", "--calculate_eccentricity", help="do you want to calculate eccentricity", type=str, default="False")
     parser.add_argument("-calc_a", "--calculate_apsis", help="do you want to calculate the apsis times?", type=str, default="False")
+    parser.add_argument("-overlap", "--overlapping_folds", help="do you want cosnsecutive folds to overlap in when orbits are used?", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -366,122 +368,162 @@ if args.force_comp  == 'True':
 if args.separation == 'True':
     #image_name = save_dir + "separation"
     image_name = save_dir + "binary_system_time_evolution"
-    files = ["/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.0/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.1/sinks_evol_copy.dat", "/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/Turbulent_sims/CircumbinaryOutFlow_0.50_lref_10/Mach_0.2/sinks_evol.dat"]
-    csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-    line_style = ['k-', 'b-', 'r-']
-    labels=["NT", "T1", "T2"]
+    line_style = ['b-', 'r-']
+    labels=["T1", "T2"]
     lit = 0
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 8.)
-    gs = gridspec.GridSpec(2, 1)
-    #gs = gridspec.GridSpec(3, 1)
-    gs.update(hspace=0.0)
-    ax1 = fig.add_subplot(gs[0,0])
-    ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
-    #ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
-    sim_times = []
-    sim_total_mass = []
-    for file in files:
-        print("reading file", file)
-        sink_form_time = 0
-        particle_tag = []
-        times = [[],[]]
-        x_pos = []
-        y_pos = []
-        z_pos = []
-        mass = []
-        with open(file, 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            counter = 0
-            for row in reader:
-                counter = counter
-                if row[0][0] != '[':
-                    if sink_form_time == 0:
-                        sink_form_time = float(row[-1])
-                    part_tag = int(row[0])
-                    if part_tag == 65583:
-                        part_tag = 65582
-                    if part_tag not in particle_tag:
-                        particle_tag.append(part_tag)
-                        x_pos.append([])
-                        y_pos.append([])
-                        z_pos.append([])
-                        mass.append([])
-                        pit = len(particle_tag) - 1
-                    elif particle_tag[0] == part_tag:
-                        pit = 0
-                    else:
-                        pit = 1
-                    x = float(row[2])/yt.units.AU.in_units('cm').value
-                    y = float(row[3])/yt.units.AU.in_units('cm').value
-                    z = float(row[4])/yt.units.AU.in_units('cm').value
-                    m = float(row[14])/yt.units.msun.in_units('g').value
-                    time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
-                    #if time not in times[pit]:
-                    times[pit].append(time)
-                    x_pos[pit].append(x)
-                    y_pos[pit].append(y)
-                    z_pos[pit].append(z)
-                    mass[pit].append(m)
-                    '''
-                    else:
-                        ind = times[pit].index(time)
-                        x_pos[pit][ind] = x
-                        y_pos[pit][ind] = y
-                        z_pos[pit][ind] = z
-                        mass[pit][ind] = (m)
-                    '''
-        times = np.array(times)
-        sorted_inds_1 = np.argsort(times[0])
-        sorted_inds_2 = np.argsort(times[1])
-        first_inds_1 = np.where((np.array(times[0])[sorted_inds_1][1:] - np.array(times[0])[sorted_inds_1][:-1])>0)[0]
-        first_inds_2 = np.where((np.array(times[1])[sorted_inds_2][1:] - np.array(times[1])[sorted_inds_2][:-1])>0)[0]
-        
-        refined_time = []
-        refined_time.append(np.array(times[0])[sorted_inds_1][first_inds_1])
-        refined_time.append(np.array(times[1])[sorted_inds_2][first_inds_2])
-        refined_x = []
-        refined_x.append(np.array(x_pos[0])[sorted_inds_1][first_inds_1])
-        refined_x.append(np.array(x_pos[1])[sorted_inds_2][first_inds_2])
-        refined_y = []
-        refined_y.append(np.array(y_pos[0])[sorted_inds_1][first_inds_1])
-        refined_y.append(np.array(y_pos[1])[sorted_inds_2][first_inds_2])
-        refined_z = []
-        refined_z.append(np.array(z_pos[0])[sorted_inds_1][first_inds_1])
-        refined_z.append(np.array(z_pos[1])[sorted_inds_2][first_inds_2])
-        refined_mass = []
-        refined_mass.append(np.array(mass[0])[sorted_inds_1][first_inds_1])
-        refined_mass.append(np.array(mass[1])[sorted_inds_2][first_inds_2])
-        dx = refined_x[0][-len(refined_x[1]):] - refined_x[1]
-        dy = refined_y[0][-len(refined_y[1]):] - refined_y[1]
-        dz = refined_z[0][-len(refined_z[1]):] - refined_z[1]
-        sep = np.sqrt(dx**2. + dy**2. + dz**2.)
-        total_mass = refined_mass[0].tolist()[:-len(refined_mass[1])] + (np.array(refined_mass[0][-len(refined_mass[1]):])+np.array(refined_mass[1])).tolist()
-        mass_ratio = (np.nan*np.zeros(np.shape(refined_mass[0].tolist()[:-len(refined_mass[1])]))).tolist() +  ((np.array(refined_mass[1]))/(np.array(refined_mass[0][-len(refined_mass[1]):]))).tolist()
-        dt = 25
-        inds = [0]
-        times_sort = [refined_time[0][0]]
-        for t_it, time in enumerate(refined_time[0]):
-            if time - times_sort[-1] > dt:
-                times_sort.append(time)
-                inds.append(t_it)
-        times_sort = np.array(times_sort)
-        total_mass_sort = np.array(total_mass)[inds]
-        m_dot = (total_mass_sort[1:] - total_mass_sort[:-1])/(times_sort[1:]-times_sort[:-1])
-        time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
-        
-        ax1.semilogy(refined_time[1], sep, line_style[lit], label=labels[lit])
-        #ax2.plot(refined_time[0], mass_ratio, line_style[lit], label=labels[lit])
-        ax2.plot(time_m_dot, m_dot, line_style[lit], label=labels[lit])
-        #ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
-        #ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
-        #ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
-        sim_times.append(times[1])
-        sim_total_mass.append(total_mass)
-        lit = lit + 1
-    ax1.set_ylim([1e0,5e2])
-    ax1.set_xlim([0.0, 5000.0])
+    if args.plot_eccentricity == 'True':
+        files = ["/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.1/Lref_10/particle_data.pkl", "/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.2/Lref_10/particle_data.pkl"]
+        gs = gridspec.GridSpec(3, 1)
+        gs.update(hspace=0.0)
+        ax1 = fig.add_subplot(gs[0,0])
+        ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+        ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+        for file in files:
+            file_open = open(file, 'rb')
+            particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+            file_open.close()
+            ax1.semilogy(particle_data['time'][1:], particle_data['separation'][1:], line_style[lit], label=labels[lit])
+            total_mass = np.array(particle_data['mass']).T[0] + np.array(particle_data['mass']).T[1]
+            dt = 10
+            prev_time = particle_data['time'][1]
+            time_short = [particle_data['time'][1]]
+            total_mass_short= [total_mass[1]]
+            for time_it in range(len(particle_data['time'][1:])):
+                if particle_data['time'][1:][time_it] - prev_time > dt:
+                    time_short.append(particle_data['time'][1:][time_it])
+                    total_mass_short.append(total_mass[time_it])
+                    prev_time = particle_data['time'][1:][time_it]
+            time_short = np.array(time_short)
+            total_mass_short = np.array(total_mass_short)
+            m_dot = (total_mass_short[1:] - total_mass_short[:-1])/(time_short[1:]-time_short[:-1])
+            time_m_dot = (time_short[:-1] + time_short[1:])/2.
+            
+            ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
+            ax3.semilogy(particle_data['time'][1:], particle_data['eccentricity'][1:], line_style[lit], label=labels[lit])
+            lit = lit + 1
+        ax3.yaxis.set_ticks_position('both')
+        ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+        ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+        ax3.set_ylim(top=1.3)
+        ax2.set_ylim([1.e-6, 6.e-4])
+        ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
+        ax3.set_ylabel("Eccentricity", fontsize=args.text_font)
+        plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+        plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+    else:
+        gs = gridspec.GridSpec(2, 1)
+        gs.update(hspace=0.0)
+        ax1 = fig.add_subplot(gs[0,0])
+        ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
+        files = ["/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.1/Lref_10/sinks_evol.dat", "/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.2/Lref_10/sinks_evol.dat"]
+        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
+
+        #ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+        sim_times = []
+        sim_total_mass = []
+        for file in files:
+            print("reading file", file)
+            sink_form_time = 0
+            particle_tag = []
+            times = [[],[]]
+            x_pos = []
+            y_pos = []
+            z_pos = []
+            mass = []
+            with open(file, 'r') as f:
+                reader = csv.reader(f, dialect='dat')
+                counter = 0
+                for row in reader:
+                    counter = counter
+                    if row[0][0] != '[':
+                        if sink_form_time == 0:
+                            sink_form_time = float(row[-1])
+                        part_tag = int(row[0])
+                        if part_tag == 65583:
+                            part_tag = 65582
+                        if part_tag not in particle_tag:
+                            particle_tag.append(part_tag)
+                            x_pos.append([])
+                            y_pos.append([])
+                            z_pos.append([])
+                            mass.append([])
+                            pit = len(particle_tag) - 1
+                        elif particle_tag[0] == part_tag:
+                            pit = 0
+                        else:
+                            pit = 1
+                        x = float(row[2])/yt.units.AU.in_units('cm').value
+                        y = float(row[3])/yt.units.AU.in_units('cm').value
+                        z = float(row[4])/yt.units.AU.in_units('cm').value
+                        m = float(row[14])/yt.units.msun.in_units('g').value
+                        time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
+                        #if time not in times[pit]:
+                        times[pit].append(time)
+                        x_pos[pit].append(x)
+                        y_pos[pit].append(y)
+                        z_pos[pit].append(z)
+                        mass[pit].append(m)
+                        '''
+                        else:
+                            ind = times[pit].index(time)
+                            x_pos[pit][ind] = x
+                            y_pos[pit][ind] = y
+                            z_pos[pit][ind] = z
+                            mass[pit][ind] = (m)
+                        '''
+            times = np.array(times)
+            sorted_inds_1 = np.argsort(times[0])
+            sorted_inds_2 = np.argsort(times[1])
+            first_inds_1 = np.where((np.array(times[0])[sorted_inds_1][1:] - np.array(times[0])[sorted_inds_1][:-1])>0)[0]
+            first_inds_2 = np.where((np.array(times[1])[sorted_inds_2][1:] - np.array(times[1])[sorted_inds_2][:-1])>0)[0]
+            
+            refined_time = []
+            refined_time.append(np.array(times[0])[sorted_inds_1][first_inds_1])
+            refined_time.append(np.array(times[1])[sorted_inds_2][first_inds_2])
+            refined_x = []
+            refined_x.append(np.array(x_pos[0])[sorted_inds_1][first_inds_1])
+            refined_x.append(np.array(x_pos[1])[sorted_inds_2][first_inds_2])
+            refined_y = []
+            refined_y.append(np.array(y_pos[0])[sorted_inds_1][first_inds_1])
+            refined_y.append(np.array(y_pos[1])[sorted_inds_2][first_inds_2])
+            refined_z = []
+            refined_z.append(np.array(z_pos[0])[sorted_inds_1][first_inds_1])
+            refined_z.append(np.array(z_pos[1])[sorted_inds_2][first_inds_2])
+            refined_mass = []
+            refined_mass.append(np.array(mass[0])[sorted_inds_1][first_inds_1])
+            refined_mass.append(np.array(mass[1])[sorted_inds_2][first_inds_2])
+            dx = refined_x[0][-len(refined_x[1]):] - refined_x[1]
+            dy = refined_y[0][-len(refined_y[1]):] - refined_y[1]
+            dz = refined_z[0][-len(refined_z[1]):] - refined_z[1]
+            sep = np.sqrt(dx**2. + dy**2. + dz**2.)
+            total_mass = refined_mass[0].tolist()[:-len(refined_mass[1])] + (np.array(refined_mass[0][-len(refined_mass[1]):])+np.array(refined_mass[1])).tolist()
+            mass_ratio = (np.nan*np.zeros(np.shape(refined_mass[0].tolist()[:-len(refined_mass[1])]))).tolist() +  ((np.array(refined_mass[1]))/(np.array(refined_mass[0][-len(refined_mass[1]):]))).tolist()
+            dt = 25
+            inds = [0]
+            times_sort = [refined_time[0][0]]
+            for t_it, time in enumerate(refined_time[0]):
+                if time - times_sort[-1] > dt:
+                    times_sort.append(time)
+                    inds.append(t_it)
+            times_sort = np.array(times_sort)
+            total_mass_sort = np.array(total_mass)[inds]
+            m_dot = (total_mass_sort[1:] - total_mass_sort[:-1])/(times_sort[1:]-times_sort[:-1])
+            time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
+            
+            ax1.semilogy(refined_time[1], sep, line_style[lit], label=labels[lit])
+            #ax2.plot(refined_time[0], mass_ratio, line_style[lit], label=labels[lit])
+            ax2.plot(time_m_dot, m_dot, line_style[lit], label=labels[lit])
+            #ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
+            #ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
+            #ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
+            sim_times.append(times[1])
+            sim_total_mass.append(total_mass)
+            lit = lit + 1
+    ax1.set_ylim(top=5e2)
+    ax1.set_xlim(left=0.0)
     ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
@@ -497,15 +539,15 @@ if args.separation == 'True':
     #ax2.set_ylabel("Mass ratio ($M_s/M_p$)", fontsize=args.text_font)
     #ax2.set_ylabel("Accreted Mass (M$_\odot$)", fontsize=args.text_font)
     ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
-    ax2.legend(loc='best', fontsize=args.text_font)
-    ax2.set_xlim([0, 5000])
+    ax1.legend(loc='best', fontsize=args.text_font)
+    #ax2.set_xlim([0, 5000])
     #ax2.set_ylim([1.e-10, 1.e-20])
     ax2.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
     ax2.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
     ax2.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
     #ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
     #ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
-    ax2.set_ylim([0.0, 0.0006])
+    #ax2.set_ylim([0.0, 0.006])
     #ax3.set_ylim(bottom=0.0)
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
@@ -923,7 +965,10 @@ if args.phasefolded_accretion == 'True':
     particle_data['time'] = np.array(particle_data['time'])
     particle_data['mdot'] = np.array(particle_data['mdot']).T
     while rit < repeats:
-        hist_ind = args.starting_orbit + rit*n_folded_orbits
+        if args.overlapping_folds == 'False':
+            hist_ind = args.starting_orbit + rit*n_folded_orbits
+        else:
+            hist_ind = args.starting_orbit + rit
         ap_ind = hist_ind - 1
         phase = np.linspace(0.0, 1.0, 21)
         #FIND BINNED DATA
@@ -932,7 +977,11 @@ if args.phasefolded_accretion == 'True':
         averaged_total_accretion = []
         fig, axs = plt.subplots(2, 1, sharex=True)
         mean_eccentricity.append(np.mean(particle_data['eccentricity'][periastron_inds[hist_ind-1]:periastron_inds[hist_ind+n_folded_orbits-1]]))
-        while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits + rit*n_folded_orbits]):
+        if args.overlapping_folds == 'False':
+            end_ind = args.starting_orbit+n_folded_orbits + rit*n_folded_orbits
+        else:
+            end_ind = args.starting_orbit+n_folded_orbits + rit
+        while hist_ind < len(periastron_inds[:end_ind]):
             binned_accretion = [[],[]]
             total_accretion = []
             time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
@@ -1003,7 +1052,7 @@ if args.phasefolded_accretion == 'True':
         plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
         plt.xlim([0.0, 1.3])
         plt.ylim(bottom=0.0)
-        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit+(rit*n_folded_orbits)-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
+        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (hist_ind-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
         plt.savefig(file_name +'.eps', bbox_inches='tight')
         plt.savefig(file_name +'.pdf', bbox_inches='tight')
         call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
@@ -1025,6 +1074,6 @@ if args.phasefolded_accretion == 'True':
     plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
     plt.xlim([0.0, 1.3])
     plt.ylim(bottom=0.0)
-    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits'
+    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits_repeats_' + str(repeats) + '_overlap_' + args.overlapping_folds
     plt.savefig(file_name +'.eps', bbox_inches='tight')
     plt.savefig(file_name +'.pdf', bbox_inches='tight')
