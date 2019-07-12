@@ -3,7 +3,6 @@ import pickle
 import csv
 import numpy as np
 import os
-from subprocess import call
 from matplotlib.colors import LogNorm
 import h5py
 import my_module as mym
