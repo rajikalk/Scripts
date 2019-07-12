@@ -302,7 +302,7 @@ for it in range(len(positions)):
         else:
             pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
         if os.path.isfile(pickle_file) == False:
-            call(arg_list)
+            os.system(" ".join(arg_list))
 
         file = open(pickle_file, 'r')
         print("pickle file:", pickle_file)
