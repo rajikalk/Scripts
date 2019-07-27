@@ -960,7 +960,7 @@ if args.phasefolded_accretion == 'True':
     folded_pickle = path + file_name + '.pkl'
     if os.path.exists(folded_pickle):
         file_open = open(apsis_pickle, 'r')
-        phase_centers, shift, mean_eccentricity = pickle.load(file_open)
+        phase_centers, shift, mean_eccentricity, n_lines = pickle.load(file_open)
         file_open.close()
     else:
         #periastron_inds = periastron_inds[10:]
@@ -1082,8 +1082,8 @@ if args.phasefolded_accretion == 'True':
     plt.ylim(bottom=0.0)
     if args.pickle_dump != 'False':
         file = open(folded_pickle, 'w+')
-        pickle.dump((phase_centers, shift, mean_eccentricity),file)
+        pickle.dump((phase_centers, shift, mean_eccentricity, n_lines),file)
         file.close()
-        file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits_repeats_' + str(repeats) + '_overlap_' + args.overlapping_folds
+    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits_repeats_' + str(repeats) + '_overlap_' + args.overlapping_folds
     plt.savefig(file_name +'.eps', bbox_inches='tight')
     plt.savefig(file_name +'.pdf', bbox_inches='tight')
