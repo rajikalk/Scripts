@@ -78,7 +78,7 @@ plot_type = []
 file_dir = []
 input_args = []
 
-with open(args.in_file, 'rU') as f:
+with open(args.in_file, 'r') as f:
     reader = csv.reader(f)
     for row in reader:
         if row[0].lower() == 'grid_inputs:':
@@ -227,7 +227,7 @@ for it in range(len(positions)):
     if 'movie' in plot_type[it]:
         #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
-        arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
+        arg_list = ['python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)] #['srun', '-n', '20', 'python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
         get_plot_time = False
@@ -303,7 +303,7 @@ for it in range(len(positions)):
         if os.path.isfile(pickle_file) == False:
             os.system(" ".join(arg_list))
 
-        file = open(pickle_file, 'r')
+        file = open(pickle_file, 'rb')
         print("pickle file:", pickle_file)
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
         file.close()
