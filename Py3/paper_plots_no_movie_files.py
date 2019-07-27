@@ -956,109 +956,115 @@ if args.phasefolded_accretion == 'True':
     periastron_inds, apastron_inds = pickle.load(file_open)
     file_open.close()
     
-    #periastron_inds = periastron_inds[10:]
-    repeats = args.repeats
-    rit = 0
-    n_folded_orbits = args.n_orbits
-    multiple_folds = []
-    mean_eccentricity = []
-    particle_data['time'] = np.array(particle_data['time'])
-    particle_data['mdot'] = np.array(particle_data['mdot']).T
-    while rit < repeats:
-        if args.overlapping_folds == 'False':
-            hist_ind = args.starting_orbit + rit*n_folded_orbits
-        else:
-            hist_ind = args.starting_orbit + rit
-        ap_ind = hist_ind - 1
-        phase = np.linspace(0.0, 1.0, 21)
-        #FIND BINNED DATA
-        plt.clf()
-        averaged_binned_accretion = [[],[]]
-        averaged_total_accretion = []
-        fig, axs = plt.subplots(2, 1, sharex=True)
-        mean_eccentricity.append(np.mean(particle_data['eccentricity'][periastron_inds[hist_ind-1]:periastron_inds[hist_ind+n_folded_orbits-1]]))
-        if args.overlapping_folds == 'False':
-            end_ind = args.starting_orbit+n_folded_orbits + rit*n_folded_orbits
-        else:
-            end_ind = args.starting_orbit+n_folded_orbits + rit
-        while hist_ind < len(periastron_inds[:end_ind]):
-            binned_accretion = [[],[]]
-            total_accretion = []
-            time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
-            time_bins_2 = sorted(np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11))
-            bin_ind = 1
-            while bin_ind < len(time_bins_1):
-                time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
-                intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_1], particle_data['time'][time_bin_inds_1])/(particle_data['time'][time_bin_inds_1[-1]]-particle_data['time'][time_bin_inds_1[0]])
-                binned_accretion[0].append(intergrated_values[0])
-                binned_accretion[1].append(intergrated_values[1])
-                total_accretion.append(np.sum(intergrated_values))
-                #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
-                #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
-                #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
-                bin_ind = bin_ind + 1
-            bin_ind = 1
-            while bin_ind < len(time_bins_2):
-                time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
-                intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_2], particle_data['time'][time_bin_inds_2])/(particle_data['time'][time_bin_inds_2[-1]]-particle_data['time'][time_bin_inds_2[0]])
-                binned_accretion[0].append(intergrated_values[0])
-                binned_accretion[1].append(intergrated_values[1])
-                total_accretion.append(np.sum(intergrated_values))
-                bin_ind = bin_ind + 1
-            phase_centers = (phase[1:] + phase[:-1])/2.
-            axs[0].plot(phase_centers, binned_accretion[0], 'k-')
-            axs[1].plot(phase_centers, binned_accretion[1], 'k-')
-            hist_ind = hist_ind + 1
-            ap_ind = ap_ind + 1
-            averaged_binned_accretion[0].append(binned_accretion[0])
-            averaged_binned_accretion[1].append(binned_accretion[1])
-            averaged_total_accretion.append(total_accretion)
-        plt.xlabel("Phase")
-        plt.xlim([0.0, 1.0])
-        plt.savefig(save_dir + 'accretion.pdf')
-        plt.clf()
-        phase_pre = np.linspace(-1.0, 0.0, 21)
-        phase_2 = np.linspace(1.0, 2.0, 21)
-        phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
-        phase_centers = (np.array(phase_2[1:]) + np.array(phase_2[:-1]))/2.
-        median_accretion = []
-        standard_deviation = []
-        median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
-        median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
-        median_total = np.median(averaged_total_accretion, axis=0)
-        standard_deviation_total = np.std(averaged_total_accretion, axis=0)
-        #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
-        #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
-        #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
-        long_median_accretion_1 = median_accretion[0].tolist()+median_accretion[0].tolist()+median_accretion[0].tolist()
-        long_median_accretion_2 = median_accretion[1].tolist()+median_accretion[1].tolist()+median_accretion[1].tolist()
-        long_median_total = median_total.tolist() + median_total.tolist() + median_total.tolist()
-        yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
-        yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
-        yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
-        plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
-        plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
-        plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
-        #popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
-        #x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
-        #y_fit = skew_norm_pdf(x_fit, *popt)
-        #plt.plot(x_fit, y_fit)
-        multiple_folds.append(np.array(long_median_total)*(1.e4))
+    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits'
+    folded_pickle = path + file_name + '.pkl'
+    if os.path.exists(folded_pickle):
+        file_open = open(apsis_pickle, 'r')
+        phase_centers, shift, mean_eccentricity = pickle.load(file_open)
+        file_open.close()
+    else:
+        #periastron_inds = periastron_inds[10:]
+        repeats = args.repeats
+        rit = 0
+        n_folded_orbits = args.n_orbits
+        multiple_folds = []
+        mean_eccentricity = []
+        particle_data['time'] = np.array(particle_data['time'])
+        particle_data['mdot'] = np.array(particle_data['mdot']).T
+        while rit < repeats:
+            if args.overlapping_folds == 'False':
+                hist_ind = args.starting_orbit + rit*n_folded_orbits
+            else:
+                hist_ind = args.starting_orbit + rit
+            ap_ind = hist_ind - 1
+            phase = np.linspace(0.0, 1.0, 21)
+            #FIND BINNED DATA
+            plt.clf()
+            averaged_binned_accretion = [[],[]]
+            averaged_total_accretion = []
+            fig, axs = plt.subplots(2, 1, sharex=True)
+            mean_eccentricity.append(np.mean(particle_data['eccentricity'][periastron_inds[hist_ind-1]:periastron_inds[hist_ind+n_folded_orbits-1]]))
+            if args.overlapping_folds == 'False':
+                end_ind = args.starting_orbit+n_folded_orbits + rit*n_folded_orbits
+            else:
+                end_ind = args.starting_orbit+n_folded_orbits + rit
+            while hist_ind < len(periastron_inds[:end_ind]):
+                binned_accretion = [[],[]]
+                total_accretion = []
+                time_bins_1 = sorted(np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11))
+                time_bins_2 = sorted(np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11))
+                bin_ind = 1
+                while bin_ind < len(time_bins_1):
+                    time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
+                    intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_1], particle_data['time'][time_bin_inds_1])/(particle_data['time'][time_bin_inds_1[-1]]-particle_data['time'][time_bin_inds_1[0]])
+                    binned_accretion[0].append(intergrated_values[0])
+                    binned_accretion[1].append(intergrated_values[1])
+                    total_accretion.append(np.sum(intergrated_values))
+                    #binned_accretion[0].append(np.median(particle_data['mdot'][0][time_bin_inds]))
+                    #binned_accretion[1].append(np.median(particle_data['mdot'][1][time_bin_inds]))
+                    #total_accretion.append(np.median(particle_data['mdot'][:,time_bin_inds]))
+                    bin_ind = bin_ind + 1
+                bin_ind = 1
+                while bin_ind < len(time_bins_2):
+                    time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
+                    intergrated_values = np.trapz(particle_data['mdot'][:,time_bin_inds_2], particle_data['time'][time_bin_inds_2])/(particle_data['time'][time_bin_inds_2[-1]]-particle_data['time'][time_bin_inds_2[0]])
+                    binned_accretion[0].append(intergrated_values[0])
+                    binned_accretion[1].append(intergrated_values[1])
+                    total_accretion.append(np.sum(intergrated_values))
+                    bin_ind = bin_ind + 1
+                phase_centers = (phase[1:] + phase[:-1])/2.
+                axs[0].plot(phase_centers, binned_accretion[0], 'k-')
+                axs[1].plot(phase_centers, binned_accretion[1], 'k-')
+                hist_ind = hist_ind + 1
+                ap_ind = ap_ind + 1
+                averaged_binned_accretion[0].append(binned_accretion[0])
+                averaged_binned_accretion[1].append(binned_accretion[1])
+                averaged_total_accretion.append(total_accretion)
+            plt.xlabel("Phase")
+            plt.xlim([0.0, 1.0])
+            plt.savefig(save_dir + 'accretion.pdf')
+            plt.clf()
+            phase_pre = np.linspace(-1.0, 0.0, 21)
+            phase_2 = np.linspace(1.0, 2.0, 21)
+            phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
+            phase_centers = (np.array(phase_2[1:]) + np.array(phase_2[:-1]))/2.
+            median_accretion = []
+            standard_deviation = []
+            median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
+            median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
+            standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
+            standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
+            median_total = np.median(averaged_total_accretion, axis=0)
+            standard_deviation_total = np.std(averaged_total_accretion, axis=0)
+            #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
+            #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
+            #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
+            long_median_accretion_1 = median_accretion[0].tolist()+median_accretion[0].tolist()+median_accretion[0].tolist()
+            long_median_accretion_2 = median_accretion[1].tolist()+median_accretion[1].tolist()+median_accretion[1].tolist()
+            long_median_total = median_total.tolist() + median_total.tolist() + median_total.tolist()
+            yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
+            yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
+            yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
+            plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
+            plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
+            plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
+            #popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
+            #x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
+            #y_fit = skew_norm_pdf(x_fit, *popt)
+            #plt.plot(x_fit, y_fit)
+            multiple_folds.append(np.array(long_median_total)*(1.e4))
 
-        plt.legend(loc='best')
-        plt.xlabel("Orbital Phase")
-        plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
-        plt.xlim([0.0, 1.3])
-        plt.ylim(bottom=0.0)
-        file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (hist_ind-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
-        plt.savefig(file_name +'.eps', bbox_inches='tight')
-        plt.savefig(file_name +'.pdf', bbox_inches='tight')
-        call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
-        rit = rit + 1
-
-    plt.clf()
+            plt.legend(loc='best')
+            plt.xlabel("Orbital Phase")
+            plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
+            plt.xlim([0.0, 1.3])
+            plt.ylim(bottom=0.0)
+            file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (hist_ind-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
+            plt.savefig(file_name +'.eps', bbox_inches='tight')
+            plt.savefig(file_name +'.pdf', bbox_inches='tight')
+            call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
+            rit = rit + 1
+            plt.clf()
     #multiple_folds = multiple_folds[::2]
     #mean_eccentricity = mean_eccentricity[::2]
     mean_eccentricity = np.round(np.array(mean_eccentricity)*100)/100.
@@ -1074,6 +1080,10 @@ if args.phasefolded_accretion == 'True':
     plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
     plt.xlim([0.0, 1.3])
     plt.ylim(bottom=0.0)
-    file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits_repeats_' + str(repeats) + '_overlap_' + args.overlapping_folds
+    if args.pickle_dump != 'False':
+        file = open(folded_pickle, 'w+')
+        pickle.dump((phase_centers, shift, mean_eccentricity),file)
+        file.close()
+        file_name = save_dir + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits_repeats_' + str(repeats) + '_overlap_' + args.overlapping_folds
     plt.savefig(file_name +'.eps', bbox_inches='tight')
     plt.savefig(file_name +'.pdf', bbox_inches='tight')
