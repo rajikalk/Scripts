@@ -305,7 +305,10 @@ for it in range(len(positions)):
 
         file = open(pickle_file, 'rb')
         print("pickle file:", pickle_file)
-        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        try:
+            X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        except:
+            X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file, encoding="latin1")
         file.close()
         if cbar_lims != [None, None]:
             args_dict['cbar_min'] = cbar_lims[0]
@@ -327,8 +330,8 @@ for it in range(len(positions)):
         part_info['particle_mass'] = np.sort(part_info['particle_mass'])[::-1]
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in list(args_dict.keys()):
-            time_string  = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
-            time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
+            time_string = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
+            #time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
             time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), "$t$="+time_string+"yr", va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         if args.multiplot_title == "":
@@ -993,27 +996,32 @@ for it in range(len(positions)):
         if positions[it][0] == columns:
             print("plotting legend")
             axes_dict[ax_label].legend(loc='best', ncol=3) #prop={'size':16},
-                
-    if 'phasefolded' in plot_type[it]:
-        file_name = file_dir[it] + 'multiple_folds_over_' + str(n_folded_orbits) + '_orbits'
-        folded_pickle = path + file_name + '.pkl'
-        file_open = open(apsis_pickle, 'r')
-        phase_centers, shift, mean_eccentricity, n_lines = pickle.load(file_open)
-        file_open.close()
 
-        c_index = np.linspace(0.0, 0.95, n_lines)
-        alpha_values = np.linspace(1.0, 0.2, n_lines)
-        e_int = 0
-        for i, shift in zip(c_index, multiple_folds):
-            axes_dict[ax_label].plot(phase_centers, shift, color=plt.cm.gnuplot(i), label='e='+str(mean_eccentricity[e_int]), ls='steps-mid', alpha=alpha_values[e_int])
-            e_int = e_int + 1
-        axes_dict[ax_label].legend(loc='best')
-        if positions[it][1] == rows:
-            axes_dict[ax_label].xlabel("Orbital Phase")
-        axes_dict[ax_label].ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
-        axes_dict[ax_label].xlim([0.0, 1.3])
-        axes_dict[ax_label].ylim(bottom=0.0)
+    if 'component_phase' in plot_type[it]:
+        component_args = input_args[it].split(' ')
+        n_orbits = 5
+        starting_orbit = 1
+        get_start = False
+        for component_arg in component_args:
+            if get_start:
+                starting_orbit = component_arg
+                get_start = False
+            if component_arg == '-start_orb':
+                get_start = True
+        pickle_file = file_dir[it] + 'accretion_median_start_orbit_'+ ("%02d" % (starting_orbit-1)) + '_' + str(n_orbits) + '_folded_orbits.pkl'
+        file_open = open(pickle_file, 'r')
+        phase_centers, long_median_accretion, yerr = pickle.load(file_open)
+        file.close()
 
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[0], yerr=yerr[0], ls='steps-mid', alpha=0.5, label='Primary')
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[1], yerr=yerr[1], ls='steps-mid', alpha=0.5, label='Secondary')
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[2], yerr=yerr[2], ls='steps-mid', label='Total')
+        #plt.legend(loc='best')
+        #plt.xlabel("Orbital Phase")
+        #plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
+        plt.xlim([0.0, 1.3])
+        plt.ylim(bottom=0.0)
+    
     if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
@@ -1031,7 +1039,7 @@ for it in range(len(positions)):
             if 'force' in plot_type[it]:
                 plt.setp(xticklabels[1], visible=False)
             else:
-                plt.setp(xticklabels[0], visible=False)
+                plt.setp(xticklabels[1], visible=False)
                 if positions[it][0] == 3:
                     plt.setp(xticklabels[1], visible=False)
 
@@ -1040,9 +1048,9 @@ for it in range(len(positions)):
             yticklabels = axes_dict['ax13'].get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
     if args.multiplot_title != "":
-        plt.suptitle(args.multiplot_title, x=0.45, y=0.91, fontsize=18)
+        plt.suptitle(args.multiplot_title, x=0.45, y=0.895, fontsize=18)
 
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
-    f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
-    f.savefig(savename + '.eps', format='eps', bbox_inches='tight')
+    f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
