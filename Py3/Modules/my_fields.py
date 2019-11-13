@@ -191,20 +191,18 @@ def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
-    center = get_center()
-    if center == 0:
-        try:
-            dd = data.ds.all_data()
+    center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
+    if ('gas', 'x') in data.ds.derived_field_list:
+        center = get_center()
+        dd = data.ds.all_data()
+        if center == 0:
             try:
                 center_pos = dd.quantities.center_of_mass(use_particles=True)
             except:
                 center_pos = dd.quantities.center_of_mass(use_particles=False)
-        except:
-            center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
-    else:
-        dd = data.ds.all_data()
-        center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
-        center_pos = yt.YTArray(center_pos, 'cm')
+        else:
+            center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
+            center_pos = yt.YTArray(center_pos, 'cm')
     set_center_pos(center_pos)
     return center_pos
 
@@ -214,19 +212,17 @@ def _Center_Velocity(field, data):
     """
     Returns the center velocity for the current set center.
     """
-    center = get_center()
-    if center == 0:
-        try:
-            dd = data.ds.all_data()
+    center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+    if ('gas', 'x') in data.ds.derived_field_list:
+        center = get_center()
+        dd = data.ds.all_data()
+        if center == 0:
             try:
                 center_vel = dd.quantities.bulk_velocity(use_particles=True)
             except:
                 center_vel = dd.quantities.bulk_velocity(use_particles=False)
-        except:
-            center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
-    else:
-        dd = data.ds.all_data()
-        center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
+        else:
+            center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
     set_center_vel(center_vel)
     return center_vel
 
