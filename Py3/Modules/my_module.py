@@ -27,7 +27,7 @@ def get_global_font_size():
 
 def yt_file_type(file):
     try:
-        part_file=file[:-12] + 'part' + file[-5:]
+        part_file=file[:-13] + 'part' + file[-6:]
         ds = yt.load(file, particle_filename=part_file)
         yt_file = True
     except YTOutputNotIdentified:
@@ -37,7 +37,7 @@ def yt_file_type(file):
 def find_sink_formation_time(files):
     try:
         file = files[-2]
-        part_file=file[:-12] + 'part' + file[-5:]
+        part_file=file[:-13] + 'part' + file[-6:]
         '''
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
@@ -84,7 +84,7 @@ def get_image_mesh(file, zoom_times):
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=2000.):
     try:
         file = files[-1]
-        part_file=file[:-12] + 'part' + file[-5:]
+        part_file=file[:-13] + 'part' + file[-6:]
         #ds = yt.load(file, particle_filename=part_file)
         #dd = ds.all_data()
         f = h5py.File(part_file, 'r')
@@ -129,7 +129,7 @@ def find_files(m_times, files):
         #print 'search iterator =', it
         try:
             file = files[it]
-            part_file=file[:-12] + 'part' + file[-6:]
+            part_file=file[:-13] + 'part' + file[-6:]
             f = h5py.File(part_file, 'r')
             time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
         except:
@@ -147,7 +147,7 @@ def find_files(m_times, files):
             diff_arr = []
             for pfile in pot_files:
                 try:
-                    part_file=pfile[:-12] + 'part' + pfile[-5:]
+                    part_file=pfile[:-13] + 'part' + pfile[-6:]
                     f = h5py.File(part_file, 'r')
                     time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
                 except:
@@ -178,7 +178,7 @@ def find_files(m_times, files):
                         append_file = pot_files[np.argmin(diff_arr)+1]
             usable_files.append(append_file)
             try:
-                part_file=append_file[:-12] + 'part' + append_file[-5:]
+                part_file=append_file[:-13] + 'part' + append_file[-6:]
                 f = h5py.File(part_file, 'r')
                 time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
             except:
@@ -211,32 +211,38 @@ def get_particle_data(file, axis='xz', proj_or=None):
     accretion_rad = []
     #center_pos = myf.get_center_pos()
     try:
-        part_file=file[:-12] + 'part' + file[-5:]
+        part_file=file[:-13] + 'part' + file[-6:]
         f = h5py.File(part_file, 'r')
-        ordered_inds = np.argsort(f['tracer particles'][:,17])
-        part_mass = f['tracer particles'][:,8][ordered_inds]/yt.units.msun.in_units('g').value
+        tag_ind = np.where(f['particle names'][:] == b'tag                     ')[0][0]
+        ordered_inds = np.argsort(f['tracer particles'][:,tag_ind])
+        mass_ind = np.where(f['particle names'][:] == b'mass                    ')[0][0]
+        part_mass = f['tracer particles'][:,mass_ind][ordered_inds]/yt.units.msun.in_units('g').value
+        posx_ind = np.where(f['particle names'][:] == b'posx                    ')[0][0]
+        posy_ind = np.where(f['particle names'][:] == b'posy                    ')[0][0]
         if axis == 'xy':
-            part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[0]/yt.units.au.in_units('cm').value
-            part_pos_y = f['tracer particles'][:,14][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[1]/yt.units.au.in_units('cm').value
+            part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[0]/yt.units.au.in_units('cm').value
+            part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[1]/yt.units.au.in_units('cm').value
             depth_pos = list(range(len(part_mass)))
         else:
             if proj_or is not None:
                 L = np.array([proj_or[0],proj_or[1]])
                 L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
-                part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value
-                part_pos_y = f['tracer particles'][:,14][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value
                 r = np.array([part_pos_x, part_pos_y])
                 part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
                 part_pos_x = part_pos_x.T[0]
                 depth_pos = -1*np.dot(r.T,(L/L_len))
                 depth_pos = np.argsort(depth_pos)[::-1]
             else:
-                part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value
-                depth_pos = f['tracer particles'][:,14]/yt.units.au.in_units('cm').value
+                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
+                depth_pos = f['tracer particles'][:,posy_ind]/yt.units.au.in_units('cm').value
                 depth_pos = depth_pos[::-1]
-            part_pos_y = f['tracer particles'][:,15][ordered_inds]/yt.units.au.in_units('cm').value - center_pos[2].in_units('au')
-        accretion_rad = f['real runtime parameters'][109][1]/yt.units.au.in_units('cm').value
+            posz_ind = np.where(f['particle names'][:] == b'posz                    ')[0][0]
+            part_pos_y = f['tracer particles'][:,posz_ind][ordered_inds]/yt.units.au.in_units('cm').value
+        radius_ind = [i for i, v in enumerate(f['real runtime parameters'][:]) if v[0] == b'sink_accretion_radius                                                           '][0]
+        accretion_rad = f['real runtime parameters'][radius_ind][1]/yt.units.au.in_units('cm').value
     except:
         f = h5py.File(file, 'r')
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
