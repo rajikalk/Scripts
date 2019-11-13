@@ -129,7 +129,7 @@ def find_files(m_times, files):
         #print 'search iterator =', it
         try:
             file = files[it]
-            part_file=file[:-12] + 'part' + file[-5:]
+            part_file=file[:-12] + 'part' + file[-6:]
             f = h5py.File(part_file, 'r')
             time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
         except:
@@ -209,14 +209,15 @@ def get_particle_data(file, axis='xz', proj_or=None):
     part_pos_x = []
     part_pos_y = []
     accretion_rad = []
+    #center_pos = myf.get_center_pos()
     try:
         part_file=file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
         ordered_inds = np.argsort(f['tracer particles'][:,17])
         part_mass = f['tracer particles'][:,8][ordered_inds]/yt.units.msun.in_units('g').value
         if axis == 'xy':
-            part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value
-            part_pos_y = f['tracer particles'][:,14][ordered_inds]/yt.units.au.in_units('cm').value
+            part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[0]/yt.units.au.in_units('cm').value
+            part_pos_y = f['tracer particles'][:,14][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[1]/yt.units.au.in_units('cm').value
             depth_pos = list(range(len(part_mass)))
         else:
             if proj_or is not None:
@@ -234,7 +235,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
                 part_pos_x = f['tracer particles'][:,13][ordered_inds]/yt.units.au.in_units('cm').value
                 depth_pos = f['tracer particles'][:,14]/yt.units.au.in_units('cm').value
                 depth_pos = depth_pos[::-1]
-            part_pos_y = f['tracer particles'][:,15][ordered_inds]/yt.units.au.in_units('cm').value
+            part_pos_y = f['tracer particles'][:,15][ordered_inds]/yt.units.au.in_units('cm').value - center_pos[2].in_units('au')
         accretion_rad = f['real runtime parameters'][109][1]/yt.units.au.in_units('cm').value
     except:
         f = h5py.File(file, 'r')
@@ -399,6 +400,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     global fontgize_global
     if depth_array is None:
         depth_array = np.arange(len(particle_position[0]))
+    if np.max(depth_array) > len(depth_array):
+        depth_array = np.argsort(depth_array)
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
     part_color = ['cyan','cyan','r','c','y','w','k']
@@ -407,8 +410,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     ymin = limits[1][0]
     ymax = limits[1][1]
     box_size = xmax - xmin
-    if accretion_rad/box_size < 0.025:
-        line_rad = 0.025*box_size
+    if accretion_rad/box_size < 0.05:
+        line_rad = 0.005*box_size
     else:
         line_rad = accretion_rad
     try:
@@ -446,7 +449,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 p_t = field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
             else:
                 p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
-            #print("p_t =", p_t)
+            print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
     if annotate_field is not None:
         part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
         part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
