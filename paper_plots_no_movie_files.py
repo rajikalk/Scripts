@@ -66,7 +66,8 @@ def parse_inputs():
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
     parser.add_argument("-window", "--smoothing_window", help="How wide in years do you want the smoothing window to be?", default=1.0, type=float)
-    parser.add_argument("-rep", "--repeats", help="how many phasefoles do you want to plot on one image?", type=int, default=1)
+    parser.add_argument("-rep", "--repeats", help="how many phasefolds do you want to plot on one image?", type=int, default=1)
+    parser.add_argument("-plot_reps", "--plot_repetitions", help="Do you want to plot multiple phasefolds next to each other?", type=str, default="False")
     parser.add_argument("-start_orb", "--starting_orbit", help="which orbit do you want to start folding at", type=int, default=1)
     parser.add_argument("-n_orb", "--n_orbits", help="How many orbits do you want to fold over?", type=int, default=5)
     parser.add_argument("-calc_e", "--calculate_eccentricity", help="do you want to calculate eccentricity", type=str, default="False")
@@ -701,7 +702,7 @@ if args.calculate_eccentricity == 'True':
     particle_data, sink_form_time, line_counter = pickle.load(file_open)
     file_open.close()
     
-    if 'eccentricity' not in particle_data.keys():
+    if 'dist_from_com' not in particle_data.keys():
         Mass = yt.YTArray(particle_data['mass'], 'msun')
         velx = yt.YTArray(particle_data['velx'], 'cm/s')
         vely = yt.YTArray(particle_data['vely'], 'cm/s')
@@ -712,6 +713,9 @@ if args.calculate_eccentricity == 'True':
         comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
+        import pdb
+        pdb.set_trace()
+        dist_from_com = np.sqrt((posx - comx)**2. + (posy - comy)**2. + (posz - comz)**2.)
         mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
         dvx = velx[0] - velx[1]
         dvy = vely[0] - vely[1]
@@ -820,6 +824,8 @@ if args.calculate_eccentricity == 'True':
     plt.savefig(save_dir+'system_evolution.pdf', bbox_inches='tight')
 
 if args.phasefolded_accretion == 'True':
+    import pdb
+    pdb.set_trace()
     pickle_file = path + 'particle_data.pkl'
     file_open = open(pickle_file, 'r')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
@@ -895,7 +901,19 @@ if args.phasefolded_accretion == 'True':
         n_folded_orbits = args.n_orbits
         multiple_folds = []
         mean_eccentricity = []
+
+        plt.clf()
+        fig = plt.figure()
+        fig.set_size_inches(4, 4*repeats)
+        gs = gridspec.GridSpec(1, repeats)
+        plt.xlim([0.0, 1.3])
+        plt.ylim(bottom=0.0)
+
+        gs.update(vspace=0.0)
+        axes_dict = {}
         while rit < repeats:
+            ax_label = 'ax' + str(rep_it)
+            axes_dict.update({ax_label:fig.add_subplot(gs[0,rep_it])})
             hist_ind = args.starting_orbit + rit*n_folded_orbits
             ap_ind = hist_ind - 1
             phase = np.linspace(0.0, 1.0, 21)
@@ -903,7 +921,6 @@ if args.phasefolded_accretion == 'True':
             plt.clf()
             averaged_binned_accretion = [[],[]]
             averaged_total_accretion = []
-            fig, axs = plt.subplots(2, 1, sharex=True)
             mean_eccentricity.append(np.mean(particle_data['eccentricity'][periastron_inds[hist_ind-1]:periastron_inds[hist_ind+n_folded_orbits-1]]))
             while hist_ind < len(periastron_inds[:args.starting_orbit+n_folded_orbits + rit*n_folded_orbits]):
                 binned_accretion = [[],[]]
@@ -930,17 +947,11 @@ if args.phasefolded_accretion == 'True':
                     total_accretion.append(np.sum(intergrated_values))
                     bin_ind = bin_ind + 1
                 phase_centers = (phase[1:] + phase[:-1])/2.
-                axs[0].plot(phase_centers, binned_accretion[0], 'k-')
-                axs[1].plot(phase_centers, binned_accretion[1], 'k-')
                 hist_ind = hist_ind + 1
                 ap_ind = ap_ind + 1
                 averaged_binned_accretion[0].append(binned_accretion[0])
                 averaged_binned_accretion[1].append(binned_accretion[1])
                 averaged_total_accretion.append(total_accretion)
-            plt.xlabel("Phase")
-            plt.xlim([0.0, 1.0])
-            plt.savefig(save_dir + 'accretion.pdf')
-            plt.clf()
             phase_pre = np.linspace(-1.0, 0.0, 21)
             phase_2 = np.linspace(1.0, 2.0, 21)
             phase_2 = phase_pre.tolist()[:-1] + phase.tolist() + phase_2[1:].tolist()
@@ -962,9 +973,9 @@ if args.phasefolded_accretion == 'True':
             yerr_1 = standard_deviation[0].tolist()+standard_deviation[0].tolist()+standard_deviation[0].tolist()
             yerr_2 = standard_deviation[1].tolist()+standard_deviation[1].tolist()+standard_deviation[1].tolist()
             yerr = standard_deviation_total.tolist()+standard_deviation_total.tolist()+standard_deviation_total.tolist()
-            plt.errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
-            plt.errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
-            plt.errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
+            axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
+            axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
+            axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
             import pdb
             pdb.set_trace()
             popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
@@ -973,17 +984,16 @@ if args.phasefolded_accretion == 'True':
             #plt.plot(x_fit, y_fit)
             multiple_folds.append(np.array(long_median_total)*(1.e4))
 
-            plt.legend(loc='best')
-            plt.xlabel("Orbital Phase")
-            plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
-            plt.xlim([0.0, 1.3])
-            plt.ylim(bottom=0.0)
+            axes_dict[ax_label].legend(loc='best')
+            axes_dict[ax_label].xlabel("Orbital Phase")
+            axes_dict[ax_label].ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
             file_name = save_dir + 'accretion_median_start_orbit_'+ ("%02d" % (args.starting_orbit+(rit*n_folded_orbits)-1)) + '_' + str(n_folded_orbits) + '_folded_orbits'
             plt.savefig(file_name +'.eps', bbox_inches='tight')
             plt.savefig(file_name +'.pdf', bbox_inches='tight')
             call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', file_name+'.eps', file_name+'.jpg'])
             rit = rit + 1
-            plt.clf()
+
+    plt.clf()
     #multiple_folds = multiple_folds[::2]
     #mean_eccentricity = mean_eccentricity[::2]
     mean_eccentricity = np.round(np.array(mean_eccentricity)*100)/100.
