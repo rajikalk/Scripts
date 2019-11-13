@@ -34,7 +34,6 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
-    parser.add_argument("-plr", "--plot_lref", help="would you like to annotate the refinement level?", default=False)
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-sc", "--smooth_cells", help="how many cells would you like the smooth the velocities over? If not defined it is set to half the annotatation frequency")
     parser.add_argument("-wr", "--working_rank", default=0, type=int)
@@ -79,7 +78,7 @@ def has_sinks(file):
     Checks particle file to see if particles exists, or tries the plot file.
     '''
     try:
-        part_file = file[:-12] + 'part' + file[-5:]
+        part_file = file[:-13] + 'part' + file[-6:]
         f = h5py.File(part_file, 'r')
         if f[list(f.keys())[1]][-1][-1] > 0:
             f.close()
@@ -131,7 +130,7 @@ def sim_info(path, file, args):
         if args.field == 'dens':
             field = ('flash', 'dens')
         else:
-            part_file = file[:-12] + 'part' + file[-5:]
+            part_file = file[:-13] + 'part' + file[-6:]
             f = yt.load(file, particle_filename=part_file)
             field = f.derived_field_list[[x[1] for x in f.derived_field_list].index(args.field)]
             f.close()
@@ -165,8 +164,6 @@ def sim_info(path, file, args):
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
                 'smoothing': smoothing,
-                'refinement_level': lref,
-                'den_pert': den_pert,
                 'xmin_full':  xmin_full
                 }
     f.close()
@@ -449,8 +446,6 @@ def main():
                     magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
                     magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
                     
-                import pdb
-                pdb.set_trace()
                 
                 '''
                 if args.axis == "xz":
@@ -543,8 +538,6 @@ def main():
                 args_dict = {}
                 if args.annotate_time == "True":
                     args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                if args.plot_lref == True:
-                    args_dict.update({'annotate_lref': '$r_{acc}$='+str(r_acc)+'AU'})
                 args_dict.update({'field':simfo['field']})
                 args_dict.update({'annotate_velocity': args.plot_velocity_legend})
                 args_dict.update({'time_val': time_val})
@@ -622,7 +615,7 @@ def main():
                     X_vel = X_vel + x_pos
                     Y_vel = Y_vel + y_pos
                     
-                    part_file = usable_files[frame_val][:-12] + 'part' + usable_files[frame_val][-5:]
+                    part_file = usable_files[frame_val][:-13] + 'part' + usable_files[frame_val][-6:]
                     f = h5py.File(part_file, 'r')
                     ordered_inds = np.argsort(f[list(f.keys())[11]][:,np.where(f[list(f.keys())[5]][:] == ['tag                     '])[0][0]])
                     center_vel_x = f[list(f.keys())[11]][:,np.where(f[list(f.keys())[5]][:] == ['velx                    '])[0][0]][ordered_inds][args.image_center - 1]
@@ -664,8 +657,6 @@ def main():
                 args_dict = {}
                 if args.annotate_time == "True":
                     args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                if args.plot_lref == True:
-                    args_dict.update({'annotate_lref': '$r_{acc}$='+str(r_acc)+'AU'})
                 args_dict.update({'field':simfo['field']})
                 args_dict.update({'annotate_velocity': args.plot_velocity_legend})
                 args_dict.update({'time_val': time_val})
@@ -724,10 +715,6 @@ def main():
                     else:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None,depth_array=part_info['depth_position'])
 
-                if args.plot_lref == True:
-                    r_acc = np.round(part_info['accretion_rad'])
-                    ax.annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo['xmax'], 0.93*simfo['ymax']), va="center", ha="right", color='w', fontsize=args.text_font)
-
                 if args.annotate_time == "True":
                     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
                     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -781,8 +768,6 @@ def main():
                 args_dict = {}
                 if args.annotate_time == "True":
                     args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                if args.plot_lref == True:
-                    args_dict.update({'annotate_lref': '$r_{acc}$='+str(r_acc)+'AU'})
                 args_dict.update({'field':simfo['field']})
                 args_dict.update({'annotate_velocity': args.plot_velocity_legend})
                 args_dict.update({'time_val': time_val})
