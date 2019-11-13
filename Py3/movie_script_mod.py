@@ -55,11 +55,15 @@ def parse_inputs():
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=300.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
     parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='cell_volume')
+    parser.add_argument("-db", "--debug", help="Wanting to use the debugger where you inserted it?", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
 
 def get_files(path, args):
+    '''
+    Gets movie files (proj or slice) files if possible, if not it find the plt files
+    '''
     if args.yt_proj == False:
         if args.axis == "xz":
             type = "proj"
@@ -71,6 +75,9 @@ def get_files(path, args):
     return source_directory
 
 def has_sinks(file):
+    '''
+    Checks particle file to see if particles exists, or tries the plot file.
+    '''
     try:
         part_file = file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
@@ -93,28 +100,6 @@ def sim_info(path, file, args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
-    path_split = path.split('/')
-    for p_s in path_split:
-        if 'omega' in p_s:
-            ang_val = p_s.split('_')[-1]
-        else:
-            ang_val = 0.2
-        if 'lref' in p_s:
-            temp_split = p_s.split('_')
-            for t_s_it in range(len(temp_split)):
-                if 'lref' == temp_split[t_s_it]:
-                    lref = temp_split[t_s_it+1]
-                if '0.' in temp_split[t_s_it]:
-                    den_pert = temp_split[t_s_it]
-                else:
-                    den_pert = '0.0'
-    lref = path.split('lref')[-1].split('/')[0].split('_')[-1]
-    if '0.' in  path.split('lref')[0].split('/')[-1]:
-        den_pert = path.split('lref')[0].split('/')[-1].split('_')[-2]
-    else:
-        den_pert = '0.0'
-    movie_type = path.split('/')[-2].split('_')[0]
-
     try:
         f = h5py.File(file, 'r')
         for key in list(f.keys()):
@@ -139,10 +124,6 @@ def sim_info(path, file, args):
             ymin = f['minmax_xyz'][2][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
             ymax = f['minmax_xyz'][2][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
         f.close()
-        if args.axis == "xz":
-            type = "proj"
-        else:
-            type = "slice"
         annotate_freq = ((xmax/cl) - (xmin/cl))/31.
     except:
         f = h5py.File(file, 'r')
@@ -168,15 +149,12 @@ def sim_info(path, file, args):
             ymax = args.ax_lim
         cl = (xmax-xmin)/dim
         xmin_full = xmin
-        type = "hdf5_plt_cnt"
         annotate_freq = dim/31.
     if args.smooth_cells == None:
         smoothing = annotate_freq/2
     else:
         smoothing = int(args.smooth_cells)
-    sim_info = {'angular_momentum':ang_val,
-                'movie_type':movie_type,
-                'field': field,
+    sim_info = {'field': field,
                 'dimension': dim,
                 'zoom_cell': zoom_cell,
                 'movie_file_type': type,
@@ -186,7 +164,6 @@ def sim_info(path, file, args):
                 'ymax': ymax,
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
-                'type': type,
                 'smoothing': smoothing,
                 'refinement_level': lref,
                 'den_pert': den_pert,
@@ -196,6 +173,9 @@ def sim_info(path, file, args):
     return sim_info
 
 def get_image_arrays(f, field, simfo, args, X, Y):
+    '''
+    Gets image array from MOVIE files, not plot files
+    '''
     dim = int(simfo['dimension'])
     image = []
     xpos = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
@@ -213,7 +193,6 @@ def get_image_arrays(f, field, simfo, args, X, Y):
     if np.shape(image)[-1] == 1:
         image = image[:, :, 0]
     return image
-
 
 def image_properties(X, Y, args, sim_info):
     if args.axis == "xy":
@@ -234,7 +213,7 @@ def image_properties(X, Y, args, sim_info):
 def rainbow_text(x,y,ls,lc,**kw):
     """
     Take a list of strings ``ls`` and colors ``lc`` and place them next to each
-    other, with text ls[i] being shown in color lc[i].
+    other, with text ls[i] being shown in color lc[i]
     
     This example shows how to do both vertical and horizontal text, and will
     pass all keyword arguments to plt.text, so you can set the font size,
@@ -345,7 +324,6 @@ def main():
     CW.Barrier()
 
     if args.yt_proj:
-        center_pos = np.array([0.0, 0.0, 0.0])
         thickness = yt.YTArray(args.slice_thickness, 'AU')
         if args.plot_time != None:
             if args.weight_field == 'None':
@@ -354,161 +332,254 @@ def main():
             else:
                 weight_field = args.weight_field
                 pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
-        rit = 0
-        for file_int in range(len(usable_files)):
-            if rank == rit:
-                ds = yt.load(usable_files[file_int])
-                if args.plot_time is None:
-                    pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-                if os.path.isfile(pickle_file) == False:
-                    print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank)
-                    time_val = m_times[file_int]
-                    has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
-                    if has_particles:
-                        part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
-                    else:
-                        part_info = {}
-                    if args.ax_lim != None:
-                        if has_particles and args.image_center != 0:
-                            xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center - 1], args.ax_lim + part_info['particle_position'][0][args.image_center - 1]]
-                            ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center - 1], args.ax_lim + part_info['particle_position'][1][args.image_center - 1]]
-                    x_width = (xlim[1] -xlim[0])
-                    y_width = (ylim[1] -ylim[0])
-                    thickness = yt.YTArray(args.slice_thickness, 'AU')
+        rit = args.working_rank - 1
+        ts = yt.load(usable_files)#, parallel=1)
+        file_int = -1
+        yt.enable_parallelism()
+        #ds = yt.load(usable_files[0])
+        #dd = ds.all_data()
+        #print("loaded initial file")
+        #center_pos = dd['Center_Position'].in_units('au').value
+        #for file_int in range(len(usable_files)):
+        for dataset in ts.piter():
+            ds = dataset
+            file_int = usable_files.index(path + str(ds))
+            #rit = rit + 1
+            #print('rit=', rit, ', file_int=', file_int)
+            #if rit == size:
+            #    rit = 0
+            #rit = rank
+            #if rank == rit:
+            #ds = yt.load(usable_files[file_int])
+            if args.plot_time is None:
+                pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+            if os.path.isfile(pickle_file) == False:
+                sys.stdout.flush()
+                CW.Barrier()
+                print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank, "USING FILE", ds)
+                sys.stdout.flush()
+                CW.Barrier()
+                time_val = m_times[file_int]
+                has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
+                if has_particles:
+                    part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                    #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                '''
+                if args.ax_lim != None:
+                    if has_particles and args.image_center != 0:
+                        xlim = [-1*args.ax_lim + part_info['particle_position'][0][args.image_center - 1], args.ax_lim + part_info['particle_position'][0][args.image_center - 1]]
+                        ylim = [-1*args.ax_lim + part_info['particle_position'][1][args.image_center - 1], args.ax_lim + part_info['particle_position'][1][args.image_center - 1]]
+                '''
+                x_width = (xlim[1] -xlim[0])
+                y_width = (ylim[1] -ylim[0])
+                thickness = yt.YTArray(args.slice_thickness, 'AU')
+                '''
+                if args.image_center != 0 and has_particles:
+                    original_positions = [X, Y, X_vel, Y_vel]
+        
+                    #x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/simfo['cell_length'])*simfo['cell_length']
+                    #y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/simfo['cell_length'])*simfo['cell_length']
+                    x_pos = 0
+                    y_pos = 0
+                    X = X + x_pos
+                    Y = Y + y_pos
+                    X_vel = X_vel + x_pos
+                    Y_vel = Y_vel + y_pos
+                '''
 
-                    if args.image_center != 0 and has_particles:
-                        original_positions = [X, Y, X_vel, Y_vel]
-            
-                        x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
-                        y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
-                        X = X + x_pos
-                        Y = Y + y_pos
-                        X_vel = X_vel + x_pos
-                        Y_vel = Y_vel + y_pos
-
-                    print("in time series loop")
-                    #ds = yt.load(usable_file)
-                    dd = ds.all_data()
-                    print("loaded all data")
-                    center_pos = dd['Center_Position'].value
-                    if args.image_center != 0 and has_particles == True:
-                        center_pos = dd['Center_Position'].value
-                    else:
-                        center_pos = np.array([0.0, 0.0, 0.0])
-                    center_vel = dd['Center_Velocity'].value
-                    part_pos = dd['All_Particle_Positions']
-                    part_mass = dd['All_Particle_Masses']
-                    #print "np.mean(dd['Particle_Potential']):", np.mean(dd['Particle_Potential'])
-                    print("center_vel =", myf.get_center_vel(), "on rank", rank, "for", ds)
+                print("in time series loop")
+                #ds = yt.load(usable_file)
+                dd = ds.all_data()
+                print("loaded all data")
+                
+                center_pos = dd['Center_Position'].in_units('au').value
+                print('Center Pos=' + str(center_pos))
+                
+                if has_particles:
+                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
                     if args.axis == 'xy':
-                        center_vel=center_vel[:2]
-                        if args.use_disk_angular_momentum != "False":
-                            disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness/2., 'au'))
-                            tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
-                            tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
-                            L = tot_vec/tot_mag
-                            print("SET PROJECTION ORIENTATION L=", L)
+                        part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
                     else:
-                        center_vel=center_vel[::2]
-                    if args.axis == "xz":
-                        proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'Projected_Velocity', 'velz', 'Projected_Magnetic_Field', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
+                        part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                
+                print("initialised fields")
+                center_vel = dd['Center_Velocity'].value
+                print("center_vel =", center_vel, "on rank", rank, "for", ds)
+                
+                if args.debug == 'True':
+                    import pdb
+                    pdb.set_trace()
+                if args.axis == 'xy':
+                    center_vel=center_vel[:2]
+                    if args.use_disk_angular_momentum != "False":
+                        disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness/2., 'au'))
+                        tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
+                        tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
+                        L = tot_vec/tot_mag
+                        print("SET PROJECTION ORIENTATION L=", L)
+                else:
+                    center_vel=center_vel[::2]
+                    
+                thickness = yt.YTQuantity(args.slice_thickness, 'AU')
+                
+                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
+                region = ds.box(left_corner, right_corner)
+                if args.axis == 'xy':
+                    axis_ind = 2
+                else:
+                    axis_ind = 1
+                proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
+                if weight_field == None:
+                    proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
+                    image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
+                    velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
+                    vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
+                    magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                    print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
+                    magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                    print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
+                else:
+                    image = proj.frb.data[simfo['field']].value
+                    velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
+                    vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
+                    magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
+                    magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
+                    
+                import pdb
+                pdb.set_trace()
+                
+                '''
+                if args.axis == "xz":
+                    
+                    #part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                    #part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+                    #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                    #print("particle_pos=", part_info['particle_position'])
+                    
+                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'Projected_Velocity', 'velz', 'Projected_Magnetic_Field', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
+                    if weight_field == None:
+                        image = proj.frb.data[simfo['field']]
+                        velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value
+                        vely_full = proj.frb.data[('flash', 'velz')].in_units('cm**2/s').value
+                        magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss')
+                        magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss')
+                    else:
+                        image = proj.frb.data[simfo['field']].value
+                        velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm/s').value
+                        vely_full = proj.frb.data[('flash', 'velz')].in_units('cm/s').value
+                        magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('gauss').value
+                        magy = proj.frb.data[('flash', 'magz')].in_units('gauss').value
+                else:
+                    if args.use_disk_angular_momentum == "False":
+                        #if has_particles:
+                        #    part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                        #else:
+                        #    part_info = {}
+                        
+                        #part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                        #if args.image_center == 0:
+                        #part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+                        #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
+                    
+                        print("particle_pos=", part_info['particle_position'])
+                        
+                        thickness = yt.YTQuantity(args.slice_thickness, 'AU')
+                        
+                        left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
+                        right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
+                        region = ds.box(left_corner, right_corner)
+                        proj = yt.ProjectionPlot(ds, 2, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
                         if weight_field == None:
-                            image = proj.frb.data[simfo['field']]
-                            velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value
-                            vely_full = proj.frb.data[('flash', 'velz')].in_units('cm**2/s').value
-                            magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss')
-                            magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss')
+                            proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
+                            image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                            print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
+                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                            print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
+                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                            print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
                         else:
                             image = proj.frb.data[simfo['field']].value
-                            velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm/s').value
-                            vely_full = proj.frb.data[('flash', 'velz')].in_units('cm/s').value
-                            magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('gauss').value
-                            magy = proj.frb.data[('flash', 'magz')].in_units('gauss').value
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
+                            magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
                     else:
-                        if args.use_disk_angular_momentum == "False":
-                            thickness = yt.YTQuantity(args.slice_thickness, 'AU')
-                            left_corner = yt.YTArray([-0.75*x_width, -0.75*y_width, -1*0.5*args.slice_thickness], 'AU')
-                            right_corner = yt.YTArray([0.75*x_width, 0.75*y_width, 0.5*args.slice_thickness], 'AU')
-                            region = ds.box(left_corner, right_corner)
-                            proj = yt.ProjectionPlot(ds, 2, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
-                            if weight_field == None:
-                                proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
-                                image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                                print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
-                                velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                                print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
-                                vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                                print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
-                                magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
-                                print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
-                                magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
-                                print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
-                            else:
-                                image = proj.frb.data[simfo['field']].value
-                                velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
-                                vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
-                                magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
-                                magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
+
+                        #part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                        #if args.image_center == 0:
+                        #    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+                        #    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
+                        #else:
+                        #    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][args.image_center-1]
+                        #    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][args.image_center-1]
+                        print("particle_pos=", part_info['particle_position'])
+                        
+                        proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
+                        if weight_field == None:
+                            image = proj.frb.data[simfo['field']]
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')
+                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')
                         else:
-                            proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
-                            if weight_field == None:
-                                image = proj.frb.data[simfo['field']]
-                                velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value
-                                vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value
-                                magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')
-                                magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')
-                            else:
-                                image = proj.frb.data[simfo['field']].value
-                                velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
-                                vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
-                                magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
-                                magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
+                            image = proj.frb.data[simfo['field']].value
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm/s').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('gauss').value
+                            magy = proj.frb.data[('flash', 'magy')].in_units('gauss').value
+                '''
+                velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
+                del velx_full
+                del vely_full
 
-                    velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
-                    del velx_full
-                    del vely_full
+                args_dict = {}
+                if args.annotate_time == "True":
+                    args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
+                if args.plot_lref == True:
+                    args_dict.update({'annotate_lref': '$r_{acc}$='+str(r_acc)+'AU'})
+                args_dict.update({'field':simfo['field']})
+                args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+                args_dict.update({'time_val': time_val})
+                args_dict.update({'cbar_min': cbar_min})
+                args_dict.update({'cbar_max': cbar_max})
+                args_dict.update({'title': title})
+                args_dict.update({'xabel': xabel})
+                args_dict.update({'yabel': yabel})
+                args_dict.update({'axlim':args.ax_lim})
+                args_dict.update({'xlim':xlim})
+                args_dict.update({'ylim':ylim})
+                args_dict.update({'has_particles':has_particles})
 
-                    args_dict = {}
-                    if args.annotate_time == "True":
-                        args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                    if args.plot_lref == True:
-                        args_dict.update({'annotate_lref': '$r_{acc}$='+str(r_acc)+'AU'})
-                    args_dict.update({'field':simfo['field']})
-                    args_dict.update({'annotate_velocity': args.plot_velocity_legend})
-                    args_dict.update({'time_val': time_val})
-                    args_dict.update({'cbar_min': cbar_min})
-                    args_dict.update({'cbar_max': cbar_max})
-                    args_dict.update({'title': title})
-                    args_dict.update({'xabel': xabel})
-                    args_dict.update({'yabel': yabel})
-                    args_dict.update({'axlim':args.ax_lim})
-                    args_dict.update({'xlim':xlim})
-                    args_dict.update({'ylim':ylim})
-                    args_dict.update({'has_particles':has_particles})
-
-                    file = open(pickle_file, 'wb')
-                    if args.absolute_image != "False":
-                        image = abs(image)
-                    pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
-                    file.close()
-                    print("Created Pickle:", pickle_file, "for  file:", str(ds))
-                    del has_particles
-                    del time_val
-                    del x_width
-                    del y_width
-                    del thickness
-                    del dd
-                    del center_vel
-                    del proj
-                    del image
-                    del magx
-                    del magy
-                    del velx
-                    del vely
-                    del part_info
-            rit = rit + 1
-            if rit == size:
-                rit = 0
+                file = open(pickle_file, 'wb')
+                if args.absolute_image != "False":
+                    image = abs(image)
+                pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
+                file.close()
+                print("Created Pickle:", pickle_file, "for  file:", str(ds))
+                del has_particles
+                del time_val
+                del x_width
+                del y_width
+                del thickness
+                del dd
+                del center_vel
+                del proj
+                del image
+                del magx
+                del magy
+                del velx
+                del vely
+                del part_info
+            
+        print('FINISHED MAKING YT PROJECTIONS')
                 
     sys.stdout.flush()
     CW.Barrier()
@@ -544,8 +615,8 @@ def main():
                 if args.image_center != 0 and has_particles:
                     original_positions = [X, Y, X_vel, Y_vel]
                     
-                    x_pos = np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
-                    y_pos = np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
+                    x_pos = 0#np.round(part_info['particle_position'][0][args.image_center - 1]/cl)*cl
+                    y_pos = 0#np.round(part_info['particle_position'][1][args.image_center - 1]/cl)*cl
                     X = X + x_pos
                     Y = Y + y_pos
                     X_vel = X_vel + x_pos
@@ -562,6 +633,8 @@ def main():
                     print("CENTER_VEL=", center_vel)
                     f.close()
                 xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
+                #xlim = xlim - center_pos[0]
+                #ylim = ylim - center_pos[1]
                 if args.axis == 'xy':
                     center_vel=center_vel[:2]
                 else:
@@ -584,7 +657,7 @@ def main():
                         except:
                             velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis]]
                     else:
-                        velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,0,:]]
+                        velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:]]
                     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, velocity_data[0], velocity_data[1], center_vel=center_vel)
                     f.close()
                 #makine movie frame pickle
@@ -614,6 +687,8 @@ def main():
             
             if args.pickle_dump == False:
                 print("on rank,", rank, "using pickle_file", pickle_file)
+                #import pdb
+                #pdb.set_trace()
                 file = open(pickle_file, 'rb')
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
                 #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
@@ -641,7 +716,8 @@ def main():
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
-
+                #import pdb
+                #pdb.set_trace()
                 if has_particles:
                     if args.annotate_particles_mass == True:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'],depth_array=part_info['depth_position'])
@@ -684,7 +760,7 @@ def main():
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
             
-                os.system('convert -antialias -quality 100 -density 200 -resize 100% -flatten ' + file_name + '.eps ' + file_name + '.jpg')
+                #os.system('convert -antialias -quality 100 -density 200 -resize 100% -flatten ' + file_name + '.eps ' + file_name + '.jpg')
                 #os.remove(file_name + '.eps')
                 print('Created frame', (frames[frame_val]+1), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps')
                 #del image
@@ -692,9 +768,10 @@ def main():
                 #del magy
                 #del velx
                 #del vely
-                
+                '''
                 if args.image_center != 0 and has_particles:
                     X, Y, X_vel, Y_vel = original_positions
+                '''
             
                 sys.stdout.flush()
                 CW.Barrier()
