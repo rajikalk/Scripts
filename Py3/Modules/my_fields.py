@@ -191,7 +191,7 @@ def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
-    center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
+    center_pos = data.ds.domain_center
     if ('gas', 'x') in data.ds.derived_field_list:
         center = get_center()
         dd = data.ds.all_data()
