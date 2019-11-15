@@ -20,6 +20,7 @@ import pickle
 import matplotlib.patheffects as path_effects
 import yt
 import my_fields as myf
+from PIL import Image
 
 def parse_inputs():
     import argparse
@@ -422,6 +423,8 @@ def main():
                 left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
                 right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
                 region = ds.box(left_corner, right_corner)
+                import pdb
+                pdb.set_trace()
                 if args.axis == 'xy':
                     axis_ind = 2
                 else:
@@ -746,6 +749,10 @@ def main():
                         file_name = save_dir + "time_" + str(args.plot_time)
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
+                #Convert to jpeg
+                eps_image = Image.open(file_name + ".eps")
+                eps_image.load(scale=4)
+                eps_image.save(file_name + ".jpg")
             
                 #os.system('convert -antialias -quality 100 -density 200 -resize 100% -flatten ' + file_name + '.eps ' + file_name + '.jpg')
                 #os.remove(file_name + '.eps')
