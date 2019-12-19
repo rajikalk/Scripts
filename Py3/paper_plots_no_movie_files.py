@@ -82,6 +82,8 @@ def parse_inputs():
     parser.add_argument("-p_beta", "--plot_beta", help="Do you want to plot the ratio of the max accretion against the base accretion?", type=str, default="False")
     parser.add_argument("-p_best", "--plot_best_fit", help="Do you want to plot the best fitting phasefolded curve", type=str, default="False")
     parser.add_argument("-method", "--beta_method", help="How do you want to calculate beta?", type=int, default=1)
+    parser.add_argument("-res_study", "--resolution_study", help="plot resolution study?", type=str, default="False")
+    
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -382,20 +384,24 @@ if args.force_comp  == 'True':
 
 if args.separation == 'True':
     #image_name = save_dir + "separation"
-    image_name = save_dir + "binary_system_time_evolution"
-    line_style = ['b-', 'r-']
-    labels=["T1", "T2"]
+    image_name = save_dir + "binary_system_time_evolution_Mach_0.2"
+    line_style = ['b-', 'r-', 'g-']
+    #labels=["T1", "T2"]
+    labels=["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13"]
     lit = 0
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 8.)
     if args.plot_eccentricity == 'True':
-        files = ["Mach_0.1/particle_data.pkl", "Mach_0.2/particle_data.pkl"]
+        #files = ["Mach_0.1/Lref_09/particle_data.pkl", "Mach_0.2/Lref_09/particle_data.pkl"]
+        files = ["Mach_0.2/Lref_09/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl", "Mach_0.2/Lref_11/particle_data.pkl"]
         gs = gridspec.GridSpec(3, 1)
+        #gs = gridspec.GridSpec(4, 1)
         gs.update(hspace=0.0)
         ax1 = fig.add_subplot(gs[0,0])
         ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
         ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+        #ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
         for file in files:
             file_open = open(file, 'rb')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
@@ -418,18 +424,26 @@ if args.separation == 'True':
             
             ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
             ax3.semilogy(particle_data['time'][1:], particle_data['eccentricity'][1:], line_style[lit], label=labels[lit])
+            #ax4.plot(particle_data['time'][1:], np.array(particle_data['mass']).T[1][1:]/np.array(particle_data['mass']).T[0][1:], line_style[lit], label=labels[lit])
             lit = lit + 1
         ax3.yaxis.set_ticks_position('both')
         ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+        ax3.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
         ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
-        ax1.set_xlim([0, 6500])
+        #ax4.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+        #ax4.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+        #ax4.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+        #ax1.set_xlim([0, 6500])
         ax3.set_ylim(top=1.3)
         ax2.set_ylim([1.e-6, 6.e-4])
         ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
         ax3.set_ylabel("Eccentricity", fontsize=args.text_font)
+        #ax4.set_ylabel("Mass ratio ($q=M_\mathrm{p}/M_\mathrm{s}$)", fontsize=args.text_font)
         ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+        #ax4.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
         plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
-        plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+        #plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+        #plt.setp([ax3.get_yticklabels()[-1]], visible=False)
     else:
         gs = gridspec.GridSpec(2, 1)
         gs.update(hspace=0.0)
@@ -888,12 +902,12 @@ if args.calculate_eccentricity == 'True':
     periastron_inds, apastron_inds = pickle.load(file_open)
     file_open.close()
     
-    e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
-    e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
+    #e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
+    #e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
     #ax2.fill_between([0, particle_data['time'][-1]], e_min_1, e_max_1, facecolor='grey', alpha=0.5)
     
-    e_max_2 = np.max(e[periastron_inds[-16]:periastron_inds[-1]])
-    e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
+    #e_max_2 = np.max(e[periastron_inds[-16]:periastron_inds[-1]])
+    #e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
     #ax2.fill_between([0, particle_data['time'][-1]], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
     
     plt.savefig(save_dir+'system_evolution.eps', bbox_inches='tight')
@@ -967,9 +981,10 @@ if args.calculate_apsis == 'True':
         print("Created separation evolution plot")
 
 if args.phasefolded_accretion == 'True':
-    use_e_bins = False
+    use_e_bins = True
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
     #e_bins = [1.1, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
-    e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
+    #e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
 
     pickle_file = path + 'particle_data.pkl'
     file_open = open(pickle_file, 'rb')
@@ -979,6 +994,10 @@ if args.phasefolded_accretion == 'True':
     apsis_pickle = path + 'apsis_data.pkl'
     file_open = open(apsis_pickle, 'rb')
     periastron_inds, apastron_inds = pickle.load(file_open)
+    if periastron_inds[0] == 0:
+        periastron_inds = periastron_inds[1:]
+    if apastron_inds[0] == 0:
+        apastron_inds = apastron_inds[1:]
     file_open.close()
     n_folded_orbits = args.n_orbits
     
@@ -1064,7 +1083,7 @@ if args.phasefolded_accretion == 'True':
                 axes_dict.update({ax_label:fig.add_subplot(gs[0,plot_it])})
                 axes_dict[ax_label].tick_params(axis="x",direction="in")
                 axes_dict[ax_label].set_xlim([0.0, 1.3])
-                axes_dict[ax_label].set_ylim([0.0, 3.5])
+                axes_dict[ax_label].set_ylim([0.0, 5.0])
                 axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
                 yticklabels = axes_dict[ax_label].get_yticklabels()
                 plt.setp(yticklabels[0], visible=False)
@@ -1127,7 +1146,7 @@ if args.phasefolded_accretion == 'True':
             axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_accretion_1)*(1.e4), yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
             axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_accretion_2)*(1.e4), yerr=np.array(yerr_2)*(1.e4), ls='steps-mid', alpha=0.5, label='Secondary')
             axes_dict[ax_label].errorbar(phase_centers, np.array(long_median_total)*(1.e4), yerr=np.array(yerr)*(1.e4), ls='steps-mid', label='Total')
-            time_text = plt.text(0.1, 3.3, '$e$=['+str(e_bins[e_bin_it-1])+','+str(e_bins[e_bin_it])+'] using '+str(len(usable_periastrons))+' orbits', va="center", ha="left", color='k', fontsize=args.text_font)
+            time_text = plt.text(0.1, axes_dict[ax_label].get_ylim()[1]-0.3, '$e$=['+str(e_bins[e_bin_it-1])+','+str(e_bins[e_bin_it])+'] using '+str(len(usable_periastrons))+' orbits', va="center", ha="left", color='k', fontsize=args.text_font)
             #popt, pcov = optimize.curve_fit(skew_norm_pdf, phase_centers[22:43], (np.array(long_median_total[22:43])*(1.e4)))
             #x_fit = np.linspace(phase_centers[22], phase_centers[43], 1000)
             #y_fit = skew_norm_pdf(x_fit, *popt)
@@ -1205,7 +1224,7 @@ if args.phasefolded_accretion == 'True':
         plt.xlabel("Orbital Phase ($\phi$)")
         plt.ylabel("Accretion Rate ($10^{-4}$M$_\odot$/yr)")
         plt.xlim([0.0, 1.3])
-        plt.ylim(bottom=0.0)
+        plt.ylim([0.0, 5.0])
         if args.pickle_dump != 'False':
             folded_pickle = path + 'using_e_bins.pkl'
             file = open(folded_pickle, 'wb')
@@ -1276,7 +1295,7 @@ if args.phasefolded_accretion == 'True':
                     axes_dict.update({ax_label:fig.add_subplot(gs[0,plot_it])})
                     axes_dict[ax_label].tick_params(axis="x",direction="in")
                     axes_dict[ax_label].set_xlim([0.0, 1.3])
-                    axes_dict[ax_label].set_ylim([0.0, 3.5])
+                    axes_dict[ax_label].set_ylim(bottom=0.0)
                     axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
                     yticklabels = axes_dict[ax_label].get_yticklabels()
                     plt.setp(yticklabels[0], visible=False)
@@ -1455,7 +1474,8 @@ if args.phasefolded_multi == 'True':
     fig = plt.figure()
     fig.set_size_inches(4.0, 6.0)
     #files = ["Mach_0.1/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl", "Mach_0.2/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl"]
-    files = ["Mach_0.1/using_e_bins.pkl", "Mach_0.2/using_e_bins.pkl"]
+    #files = ["Mach_0.1/using_e_bins.pkl", "Mach_0.2/using_e_bins.pkl"]
+    files = ["Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl"]
     #plot_eccentricities = [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     gs = gridspec.GridSpec(2, 1)
     gs.update(hspace=0.0)
@@ -1475,7 +1495,8 @@ if args.phasefolded_multi == 'True':
     #if len(stuff) > 6:
     #    multiple_folds_normalised = stuff[6]
     file_open.close()
-    e_bins = [1.1, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
+    #e_bins = [1.1, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
 
     x_data = phase_centers[23:-15]
     x = np.linspace(np.min(x_data),np.max(x_data),100)
@@ -1607,7 +1628,8 @@ if args.phasefolded_multi == 'True':
             n_lines = n_lines + 1
             plotted_int = str(e)[2]
     '''
-    e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
+    #e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
     c_index = np.linspace(0.0, 0.95, n_lines)
 
     multiple_folds_normalised = []
@@ -1744,7 +1766,8 @@ if args.phasefolded_multi == 'True':
 
 if args.plot_beta == "True":
     #files = ["Mach_0.1/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl", "Mach_0.2/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl"]
-    files = ["Mach_0.1/using_e_bins.pkl", "Mach_0.2/using_e_bins.pkl"]
+    #files = ["Mach_0.1/using_e_bins.pkl", "Mach_0.2/using_e_bins.pkl"]
+    files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl"]
     file_name = save_dir + 'beta_vs_e_'+str(args.n_orbits)
     top_bins = 3
     use_accretion_err = True
@@ -1766,8 +1789,10 @@ if args.plot_beta == "True":
     label_it = 0
     periastron_inds = [0.8, 1.1]
     quiescent_ind = [0.2, 0.75]
-    markers = ['o', '^']
-    labels = ['T1', 'T2']
+    #markers = ['o', '^']
+    #labels = ['T1', 'T2']
+    markers = ['o', '^', 's']
+    labels = ['$L_\mathrm{ref}=11$', '$L_\mathrm{ref}=12$', '$L_\mathrm{ref}=13$']
     for file in files:
         file_open = open(file, 'rb')
         multiple_folds, phase_centers, median_eccentricity, std_eccentricity, accretion_err, n_lines, y_fits, multiple_folds_normalised = pickle.load(file_open)
@@ -1852,9 +1877,91 @@ if args.plot_beta == "True":
     plt.axhline(y=1.0, ls='--', color='k')
     #plt.axvline(x=3.5, ls='--')
     plt.xlim(left=0)
-    plt.ylim([0.0, np.max(beta_total)+1])
+    plt.ylim([0.0, np.max(np.nan_to_num(np.array(beta_total)[np.where(np.isinf(beta_total)==False)[0]]))+1])
     plt.ylabel('$\\beta$')
     ymax = np.max(beta_total) + 1
     plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
     plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
 
+if args.resolution_study == 'True':
+    file_name = 'resolution_study'
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
+    dirs = ['Mach_0.2/Lref_09/', 'Mach_0.2/Lref_10/', 'Mach_0.2/Lref_11/']
+    
+    plt.clf()
+    fig = plt.figure()
+    columns = 4
+    rows = 2#int((len(e_bins)-1)/4)
+    fig.set_size_inches(3.25*columns, 3.25*rows)
+    gs = gridspec.GridSpec(rows, columns)
+    
+    gs.update(wspace=0.0, hspace=0.0)
+    axes_dict = {}
+    
+    e_bin_it = 1
+    plot_it=0
+    
+    while e_bin_it < len(e_bins):
+        ax_label = 'ax' + str(plot_it)
+        if plot_it == 0:
+            axes_dict.update({ax_label:fig.add_subplot(gs[0,plot_it])})
+            axes_dict[ax_label].tick_params(axis="x",direction="in")
+            axes_dict[ax_label].set_xlim([0.0, 1.3])
+            axes_dict[ax_label].set_ylim([0.0, 5.0])
+            axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
+            yticklabels = axes_dict[ax_label].get_yticklabels()
+            #plt.setp(yticklabels[0], visible=False)
+            xticklabels = axes_dict[ax_label].get_xticklabels()
+            #plt.setp(xticklabels[-2], visible=False)
+            #plt.setp(xticklabels, visible=False)
+            axes_dict[ax_label].set_xlabel("Orbital Phase ($\phi$)", fontsize=args.text_font)
+        else:
+            axes_dict.update({ax_label:fig.add_subplot(gs[int(plot_it/columns),np.remainder(plot_it,columns)], sharex=axes_dict['ax0'], sharey=axes_dict['ax0'])})
+            if plot_it < 1:
+                xticklabels = axes_dict[ax_label].get_xticklabels()
+                plt.setp(xticklabels, visible=False)
+            elif plot_it > 0:
+                if plot_it != len(e_bins)-2:
+                    xticklabels = axes_dict[ax_label].get_xticklabels()
+                    plt.setp(xticklabels[0], visible=False)
+            elif plot_it > columns-1:
+                if plot_it != len(e_bins)-2:
+                    xticklabels = axes_dict[ax_label].get_xticklabels()
+                    plt.setp(xticklabels[-2], visible=False)
+            if np.remainder(plot_it,columns) != 0:
+                yticklabels = axes_dict[ax_label].get_yticklabels()
+                plt.setp(yticklabels, visible=False)
+                yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
+                plt.setp(yticklabels, visible=False)
+            else:
+                axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
+            axes_dict[ax_label].set_xlabel("Orbital Phase ($\phi$)", fontsize=args.text_font)
+            axes_dict[ax_label].tick_params(axis="x",direction="in")
+            
+        refinement_label = ["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13"]
+        linestyles = ['steps-mid:', 'steps-mid--', 'steps-mid']
+        color = ['b', 'r', 'g']
+        for dir_it in range(len(dirs)):
+            pickle_file = dirs[dir_it] + "accretion_median_start_orbit_from_" + str(e_bins[e_bin_it-1]) + "_" + str(e_bins[e_bin_it]) + ".pkl"
+            
+            if os.path.exists(pickle_file):
+                file = open(pickle_file, 'rb')
+                phase_centers, long_median_accretion, yerr_tot, popt = pickle.load(file)
+                file.close()
+                axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[2], yerr=yerr_tot[2], ls=linestyles[dir_it], label=refinement_label[dir_it], color=color[dir_it])
+            
+        time_text = plt.text(0.1, axes_dict[ax_label].get_ylim()[1]-0.3, '$e$=['+str(e_bins[e_bin_it-1])+','+str(e_bins[e_bin_it])+']', va="center", ha="left", color='k', fontsize=args.text_font)
+        if e_bin_it == 1:
+        #axes_dict[ax_label].legend(loc='center right', fontsize=args.text_font)#(loc='center left', bbox_to_anchor=(0.985, 0.5), fontsize=args.text_font)
+            axes_dict[ax_label].legend(loc='center left', fontsize=args.text_font)
+        if plot_it == 2:
+            #fig.text(0.5, 0.07, "Orbital Phase ($\phi$)", va='center', ha='center')
+            plt.xlabel("Orbital Phase ($\phi$)", fontsize=args.text_font)
+        
+        plot_it = plot_it + 1
+        e_bin_it = e_bin_it + 1
+        plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
+        plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
+    
+            
+    
