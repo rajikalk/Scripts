@@ -27,7 +27,7 @@ def get_global_font_size():
 
 def yt_file_type(file):
     try:
-        part_file=file[:-13] + 'part' + file[-6:]
+        part_file=file[:-12] + 'part' + file[-5:]
         ds = yt.load(file, particle_filename=part_file)
         yt_file = True
     except YTOutputNotIdentified:
@@ -37,7 +37,7 @@ def yt_file_type(file):
 def find_sink_formation_time(files):
     try:
         file = files[-2]
-        part_file=file[:-13] + 'part' + file[-6:]
+        part_file=file[:-12] + 'part' + file[-5:]
         '''
         ds = yt.load(file, particle_filename=part_file)
         dd = ds.all_data()
@@ -82,9 +82,11 @@ def get_image_mesh(file, zoom_times):
     return X, Y
 
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=2000.):
+    import pdb
+    pdb.set_trace()
     try:
         file = files[-1]
-        part_file=file[:-13] + 'part' + file[-6:]
+        part_file=file[:-12] + 'part' + file[-5:]
         #ds = yt.load(file, particle_filename=part_file)
         #dd = ds.all_data()
         f = h5py.File(part_file, 'r')
@@ -129,7 +131,7 @@ def find_files(m_times, files):
         #print 'search iterator =', it
         try:
             file = files[it]
-            part_file=file[:-13] + 'part' + file[-6:]
+            part_file=file[:-12] + 'part' + file[-5:]
             f = h5py.File(part_file, 'r')
             time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
         except:
@@ -147,7 +149,7 @@ def find_files(m_times, files):
             diff_arr = []
             for pfile in pot_files:
                 try:
-                    part_file=pfile[:-13] + 'part' + pfile[-6:]
+                    part_file=pfile[:-12] + 'part' + pfile[-5:]
                     f = h5py.File(part_file, 'r')
                     time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
                 except:
@@ -178,7 +180,7 @@ def find_files(m_times, files):
                         append_file = pot_files[np.argmin(diff_arr)+1]
             usable_files.append(append_file)
             try:
-                part_file=append_file[:-13] + 'part' + append_file[-6:]
+                part_file=append_file[:-12] + 'part' + append_file[-5:]
                 f = h5py.File(part_file, 'r')
                 time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
             except:
@@ -211,7 +213,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
     accretion_rad = []
     #center_pos = myf.get_center_pos()
     try:
-        part_file=file[:-13] + 'part' + file[-6:]
+        part_file=file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
         tag_ind = np.where(f['particle names'][:] == b'tag                     ')[0][0]
         ordered_inds = np.argsort(f['tracer particles'][:,tag_ind])
