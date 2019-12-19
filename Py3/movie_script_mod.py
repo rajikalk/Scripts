@@ -69,9 +69,9 @@ def get_files(path, args):
             type = "proj"
         else:
             type = "slice"
-        source_directory = sorted(glob.glob(path + 'WIND_' + type + '*'))
+        source_directory = sorted(glob.glob(path + 'WIND_' + type + '*'))[:-1]
     else:
-        source_directory = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))
+        source_directory = sorted(glob.glob(path + 'WIND_hdf5_plt_cnt*'))[:-1]
     return source_directory
 
 def has_sinks(file):
@@ -79,7 +79,7 @@ def has_sinks(file):
     Checks particle file to see if particles exists, or tries the plot file.
     '''
     try:
-        part_file = file[:-13] + 'part' + file[-6:]
+        part_file = file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
         if f[list(f.keys())[1]][-1][-1] > 0:
             f.close()
@@ -131,7 +131,7 @@ def sim_info(path, file, args):
         if args.field == 'dens':
             field = ('flash', 'dens')
         else:
-            part_file = file[:-13] + 'part' + file[-6:]
+            part_file = file[:-12] + 'part' + file[-5:]
             f = yt.load(file, particle_filename=part_file)
             field = f.derived_field_list[[x[1] for x in f.derived_field_list].index(args.field)]
             f.close()
@@ -154,6 +154,10 @@ def sim_info(path, file, args):
         smoothing = annotate_freq/2
     else:
         smoothing = int(args.smooth_cells)
+    if args.axis == "xz":
+        type = "proj"
+    else:
+        type = "slice"
     sim_info = {'field': field,
                 'dimension': dim,
                 'zoom_cell': zoom_cell,
@@ -333,7 +337,7 @@ def main():
         rit = args.working_rank - 1
         ts = yt.load(usable_files)#, parallel=1)
         file_int = -1
-        yt.enable_parallelism()
+        #yt.enable_parallelism()
         #ds = yt.load(usable_files[0])
         #dd = ds.all_data()
         #print("loaded initial file")
