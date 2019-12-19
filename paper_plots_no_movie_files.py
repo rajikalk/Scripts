@@ -751,15 +751,18 @@ if args.calculate_eccentricity == 'True':
     #plot separation and eccentricity
     plt.clf()
     fig = plt.figure()
-    fig.set_size_inches(6, 8.)
-    gs = gridspec.GridSpec(3, 1)
+    #fig.set_size_inches(6, 8.)
+    fig.set_size_inches(6, 10.)
     #gs = gridspec.GridSpec(3, 1)
+    gs = gridspec.GridSpec(4, 1)
     gs.update(hspace=0.0)
     ax1 = fig.add_subplot(gs[0,0])
     ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
     ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+    ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
     ax1.semilogy(particle_data['time'], particle_data['separation'])
     ax2.semilogy(particle_data['time'], e)
+    ax4.plot(particle_data['time'], Mass[0]/Mass[1])
     
     #Calculate smoothed accretion
     
@@ -781,7 +784,9 @@ if args.calculate_eccentricity == 'True':
     smoothed_accretion_2 = (particle_data['mass'][1,::100][1:]-particle_data['mass'][1,::100][:-1])/(particle_data['time'][::100][1:]-particle_data['time'][::100][:-1])
     ax3.semilogy(smoothed_time, (smoothed_accretion_1+smoothed_accretion_2))
     '''
-    ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    #ax3.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    ax4.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+    ax4.set_ylabel("Mass ratio ($q=M_\mathrm{p}/M_\mathrm{s}$)", fontsize=args.text_font)
     ax1.set_ylabel("Separation (AU)", fontsize=args.text_font)
     ax2.set_ylabel("Eccentricity", fontsize=args.text_font)
     ax3.set_ylabel("Accretion (M$_\odot$/yr)", fontsize=args.text_font)
@@ -800,12 +805,18 @@ if args.calculate_eccentricity == 'True':
     ax3.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
     ax3.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
     ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
+    ax4.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
+    ax4.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
+    ax4.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
     ax1.yaxis.set_ticks_position('both')
     ax2.yaxis.set_ticks_position('both')
     ax3.yaxis.set_ticks_position('both')
+    ax4.yaxis.set_ticks_position('both')
     plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
     plt.setp([ax2.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
-    plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+    plt.setp([ax3.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
+    #plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+    plt.setp([ax4.get_yticklabels()[-1]], visible=False)
     
     apsis_pickle = path + 'apsis_data.pkl'
     file_open = open(apsis_pickle, 'r')
@@ -820,8 +831,8 @@ if args.calculate_eccentricity == 'True':
     e_min_2 = np.min(e[periastron_inds[-16]:periastron_inds[-1]])
     ax2.fill_between([0, particle_data['time'][-1]], e_min_2, e_max_2, facecolor='grey', alpha=0.5)
     
-    plt.savefig(save_dir+'system_evolution.eps', bbox_inches='tight')
-    plt.savefig(save_dir+'system_evolution.pdf', bbox_inches='tight')
+    plt.savefig(save_dir+'system_evolution_with_q.eps', bbox_inches='tight')
+    plt.savefig(save_dir+'system_evolution_with_q.pdf', bbox_inches='tight')
 
 if args.phasefolded_accretion == 'True':
     import pdb
