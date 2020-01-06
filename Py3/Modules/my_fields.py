@@ -13,6 +13,7 @@ part_mass = yt.YTArray([], 'g')
 part_vel = yt.YTArray([], 'cm/s')
 n_bins = 100
 adaptive_bins = True
+use_gas = True
 
 def set_n_bins(x):
     """
@@ -123,6 +124,16 @@ def set_normal(x):
     normal = x
     return normal
 
+def set_use_gas(x):
+    """
+    Sets whether to use gas when calculate center velocity and position
+    
+    Default: True
+    """
+    global use_gas
+    use_gas = x
+    return use_gas
+
 def get_center():
     """
     returns the currently set center
@@ -178,6 +189,13 @@ def get_normal():
     """
     global normal
     return normal
+    
+def set_use_gas():
+    """
+    returns whether to use gas when calculate center velocity and position
+    """
+    global use_gas
+    return use_gas
 
 def _Neg_z(field, data):
     """
@@ -186,20 +204,35 @@ def _Neg_z(field, data):
     return -1*data['z']
 
 yt.add_field("Neg_z", function=_Neg_z, units=r"cm")
+    
+def _Neg_dz(field, data):
+    """
+    returns the negative of the dz
+    """
+    return -1*data['dz']
+
+yt.add_field("Neg_dz", function=_Neg_z, units=r"cm")
 
 def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
+    global use_gas
     center_pos = data.ds.domain_center
     if ('gas', 'x') in data.ds.derived_field_list:
         center = get_center()
         dd = data.ds.all_data()
         if center == 0:
-            try:
-                center_pos = dd.quantities.center_of_mass(use_particles=True)
-            except:
-                center_pos = dd.quantities.center_of_mass(use_particles=False)
+            if use_gas == False:
+                try:
+                    center_pos = dd.quantities.center_of_mass(use_particles=True, use_gas=False)
+                except:
+                    center_pos = data.ds.domain_center
+            else:
+                try:
+                    center_pos = dd.quantities.center_of_mass(use_particles=True)
+                except:
+                    center_pos = dd.quantities.center_of_mass(use_particles=False)
         else:
             center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
             center_pos = yt.YTArray(center_pos, 'cm')
@@ -212,15 +245,22 @@ def _Center_Velocity(field, data):
     """
     Returns the center velocity for the current set center.
     """
+    global use_gas
     center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     if ('gas', 'x') in data.ds.derived_field_list:
         center = get_center()
         dd = data.ds.all_data()
         if center == 0:
-            try:
-                center_vel = dd.quantities.bulk_velocity(use_particles=True)
-            except:
-                center_vel = dd.quantities.bulk_velocity(use_particles=False)
+            if use_gas == False:
+                try:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=True, use_gas=False)
+                except:
+                    center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+            else:
+                try:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=True)
+                except:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=False)
         else:
             center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
     set_center_vel(center_vel)
