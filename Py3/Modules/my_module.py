@@ -82,8 +82,6 @@ def get_image_mesh(file, zoom_times):
     return X, Y
 
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=2000.):
-    import pdb
-    pdb.set_trace()
     try:
         file = files[-1]
         part_file=file[:-12] + 'part' + file[-5:]
