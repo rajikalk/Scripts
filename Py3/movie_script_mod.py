@@ -54,8 +54,9 @@ def parse_inputs():
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=300.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
-    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='cell_volume')
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-db", "--debug", help="Wanting to use the debugger where you inserted it?", type=str, default='False')
+    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -246,6 +247,7 @@ def main():
         os.makedirs(save_dir)
     
     args = parse_inputs()
+    
     if args.weight_field == 'None':
         weight_field = None
     else:
@@ -289,7 +291,15 @@ def main():
     if args.ax_lim != None:
         xlim = [-1*args.ax_lim, args.ax_lim]
         ylim = [-1*args.ax_lim, args.ax_lim]
+    #Sets center for calculating center position and velocity
     myf.set_center(args.image_center)
+    
+    #Sets whether to use gas for center posiiton and velocity calculation
+    if args.use_gas_center_calc == 'True':
+        myf.set_use_gas(True)
+    else:
+        myf.set_use_gas(False)
+   
 
     title_parts = args.title.split('_')
     title = ''
@@ -408,9 +418,6 @@ def main():
                 center_vel = dd['Center_Velocity'].value
                 print("center_vel =", center_vel, "on rank", rank, "for", ds)
                 
-                if args.debug == 'True':
-                    import pdb
-                    pdb.set_trace()
                 if args.axis == 'xy':
                     center_vel=center_vel[:2]
                     if args.use_disk_angular_momentum != "False":
@@ -427,25 +434,46 @@ def main():
                 left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
                 right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
                 region = ds.box(left_corner, right_corner)
-                import pdb
-                pdb.set_trace()
+
                 if args.axis == 'xy':
                     axis_ind = 2
                 else:
                     axis_ind = 1
+                has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
+                if has_particles:
+                    part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
+                else:
+                    part_info = {}
                 proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
+                #proj.set_buff_size(1024)
                 if weight_field == None:
-                    proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
-                    image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
+                    '''
+                    image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                     print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
-                    velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                     print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
-                    vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                     print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
-                    magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                    magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
                     print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
-                    magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                    magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
                     print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
+                    '''
+                    image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                    print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
+                    velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                    print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
+                    vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                    print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
+                    magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                    print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
+                    magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                    print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
+                    velx_full = np.array(velx_full.value)
+                    vely_full = np.array(vely_full.value)
+                    magx = np.array(magx.value)
+                    magy = np.array(magy.value)
                 else:
                     image = proj.frb.data[simfo['field']].value
                     velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
@@ -685,8 +713,6 @@ def main():
             
             if args.pickle_dump == False:
                 print("on rank,", rank, "using pickle_file", pickle_file)
-                #import pdb
-                #pdb.set_trace()
                 file = open(pickle_file, 'rb')
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
                 #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
@@ -703,6 +729,18 @@ def main():
                 ax.set_ylabel(yabel, labelpad=-20, fontsize=args.text_font)
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
+                
+                if len(usable_files) > 1:
+                    if args.output_filename == None:
+                        file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
+                    else:
+                        file_name = args.output_filename + "_" + str(int(time_val))
+                else:
+                    if args.output_filename != None:
+                        file_name = args.output_filename
+                    else:
+                        file_name = save_dir + "time_" + str(args.plot_time)
+                
                 if 0.0 in (cbar_min, cbar_max):
                     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
                 else:
@@ -712,7 +750,7 @@ def main():
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 else:
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
-                
+                cbar = plt.colorbar(plot, pad=0.0)
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
                 #import pdb
                 #pdb.set_trace()
@@ -729,7 +767,6 @@ def main():
                 title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-                cbar = plt.colorbar(plot, pad=0.0)
                 if 'dens' in simfo['field']:
                     cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=14, size=args.text_font)
                 else:
@@ -740,17 +777,6 @@ def main():
                     line.set_color('white')
                 for line in ax.yaxis.get_ticklines():
                     line.set_color('white')
-        
-                if len(usable_files) > 1:
-                    if args.output_filename == None:
-                        file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
-                    else:
-                        file_name = args.output_filename + "_" + str(int(time_val))
-                else:
-                    if args.output_filename != None:
-                        file_name = args.output_filename
-                    else:
-                        file_name = save_dir + "time_" + str(args.plot_time)
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
                 #Convert to jpeg
