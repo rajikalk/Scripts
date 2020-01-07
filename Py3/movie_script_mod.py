@@ -365,7 +365,7 @@ def main():
             #ds = yt.load(usable_files[file_int])
             if args.plot_time is None:
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-            if os.path.isfile(pickle_file) == False:
+            if os.path.isfile(pickle_file) == False or elif os.stat(pickle_file).st_size == 0:
                 sys.stdout.flush()
                 CW.Barrier()
                 print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank, "USING FILE", ds)
@@ -407,6 +407,18 @@ def main():
                 center_pos = dd['Center_Position'].in_units('au').value
                 print('Center Pos=' + str(center_pos))
                 
+                #Update X and Y to be centered on center position
+                if args.axis == 'xy':
+                    X = X + center_pos[0]
+                    Y = Y + center_pos[1]
+                    X_vel = X_vel + center_pos[0]
+                    Y_vel = Y_vel + center_pos[1]
+                else:
+                    X = X + center_pos[0]
+                    Y = Y + center_pos[2]
+                    X_vel = X_vel + center_pos[0]
+                    Y_vel = Y_vel + center_pos[2]
+                
                 if has_particles:
                     part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
                     if args.axis == 'xy':
@@ -444,10 +456,10 @@ def main():
                     part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
                 else:
                     part_info = {}
-                proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
+                proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm')[:2])
                 #proj.set_buff_size(1024)
                 if weight_field == None:
-                    proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
+                    proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm')[:2])
                     '''
                     image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                     print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
