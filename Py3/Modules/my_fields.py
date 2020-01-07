@@ -190,7 +190,7 @@ def get_normal():
     global normal
     return normal
     
-def set_use_gas():
+def get_use_gas():
     """
     returns whether to use gas when calculate center velocity and position
     """
