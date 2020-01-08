@@ -320,7 +320,6 @@ def main():
     CW.Barrier()
 
     usable_files = mym.find_files(m_times, files)
-    del files
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
         del sim_files
@@ -365,7 +364,7 @@ def main():
             #ds = yt.load(usable_files[file_int])
             if args.plot_time is None:
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-            if os.path.isfile(pickle_file) == False or elif os.stat(pickle_file).st_size == 0:
+            if os.path.isfile(pickle_file) == False or os.stat(pickle_file).st_size == 0:
                 sys.stdout.flush()
                 CW.Barrier()
                 print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank, "USING FILE", ds)
@@ -409,15 +408,15 @@ def main():
                 
                 #Update X and Y to be centered on center position
                 if args.axis == 'xy':
-                    X = X + center_pos[0]
-                    Y = Y + center_pos[1]
-                    X_vel = X_vel + center_pos[0]
-                    Y_vel = Y_vel + center_pos[1]
+                    X_image = X + center_pos[0]
+                    Y_image = Y + center_pos[1]
+                    X_image_vel = X_vel + center_pos[0]
+                    Y_image_vel = Y_vel + center_pos[1]
                 else:
-                    X = X + center_pos[0]
-                    Y = Y + center_pos[2]
-                    X_vel = X_vel + center_pos[0]
-                    Y_vel = Y_vel + center_pos[2]
+                    X_image = X + center_pos[0]
+                    Y_image = Y + center_pos[2]
+                    X_image_vel = X_vel + center_pos[0]
+                    Y_image_vel = Y_vel + center_pos[2]
                 
                 if has_particles:
                     part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
@@ -601,7 +600,7 @@ def main():
                 file = open(pickle_file, 'wb')
                 if args.absolute_image != "False":
                     image = abs(image)
-                pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
+                pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, simfo), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", str(ds))
                 del has_particles
@@ -700,28 +699,28 @@ def main():
                         velocity_data = [f['vel'+args.axis[0]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:], f['vel'+args.axis[1]+'_'+simfo['movie_file_type']+'_'+args.axis][:,:]]
                     velx, vely = mym.get_quiver_arrays(y_pos_min, x_pos_min, X, velocity_data[0], velocity_data[1], center_vel=center_vel)
                     f.close()
-                #makine movie frame pickle
-                args_dict = {}
-                if args.annotate_time == "True":
-                    args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                args_dict.update({'field':simfo['field']})
-                args_dict.update({'annotate_velocity': args.plot_velocity_legend})
-                args_dict.update({'time_val': time_val})
-                args_dict.update({'cbar_min': cbar_min})
-                args_dict.update({'cbar_max': cbar_max})
-                args_dict.update({'title': title})
-                args_dict.update({'xabel': xabel})
-                args_dict.update({'yabel': yabel})
-                args_dict.update({'axlim':args.ax_lim})
-                args_dict.update({'xlim':xlim})
-                args_dict.update({'ylim':ylim})
-                args_dict.update({'has_particles':has_particles})
-                file = open(pickle_file, 'wb')
-                print("Opened pickle file")
-                #pickle.dump((usable_files[frame_val], X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, args, magx, magy), file)
-                pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
-                print("Dumped data into pickle")
-                file.close()
+                    #makine movie frame pickle
+                    args_dict = {}
+                    if args.annotate_time == "True":
+                        args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
+                    args_dict.update({'field':simfo['field']})
+                    args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+                    args_dict.update({'time_val': time_val})
+                    args_dict.update({'cbar_min': cbar_min})
+                    args_dict.update({'cbar_max': cbar_max})
+                    args_dict.update({'title': title})
+                    args_dict.update({'xabel': xabel})
+                    args_dict.update({'yabel': yabel})
+                    args_dict.update({'axlim':args.ax_lim})
+                    args_dict.update({'xlim':xlim})
+                    args_dict.update({'ylim':ylim})
+                    args_dict.update({'has_particles':has_particles})
+                    file = open(pickle_file, 'wb')
+                    print("Opened pickle file")
+                    #pickle.dump((usable_files[frame_val], X, Y, X_vel, Y_vel, image, velx, vely, part_info, args_dict, simfo, args, magx, magy), file)
+                    pickle.dump((X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
+                    print("Dumped data into pickle")
+                    file.close()
             
             if args.pickle_dump == False:
                 print("on rank,", rank, "using pickle_file", pickle_file)
@@ -729,8 +728,13 @@ def main():
                 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
                 #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                 file.close()
-                xlim = args_dict['xlim']
-                ylim = args_dict['ylim']
+                
+                if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
+                    xlim = args_dict['xlim']
+                    ylim = args_dict['ylim']
+                else:
+                    xlim = args_dict['xlim'] + np.mean(X)
+                    ylim = args_dict['ylim'] + np.mean(Y)
                 has_particles = args_dict['has_particles']
                 time_val = args_dict['time_val']
                 xabel = args_dict['xabel']
