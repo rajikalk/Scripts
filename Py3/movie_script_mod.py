@@ -352,6 +352,7 @@ def main():
         #print("loaded initial file")
         #center_pos = dd['Center_Position'].in_units('au').value
         #for file_int in range(len(usable_files)):
+        file_int = -1
         for dataset in ts.piter():
             ds = dataset
             file_int = usable_files.index(path + str(ds))
@@ -364,7 +365,13 @@ def main():
             #ds = yt.load(usable_files[file_int])
             if args.plot_time is None:
                 pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-            if os.path.isfile(pickle_file) == False or os.stat(pickle_file).st_size == 0:
+            make_pickle = False
+            if os.path.isfile(pickle_file) == False:
+                make_pickle = True
+            elif os.path.isfile(pickle_file) == True:
+                if os.stat(pickle_file).st_size == 0:
+                    make_pickle = True
+            if make_pickle == True:
                 sys.stdout.flush()
                 CW.Barrier()
                 print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank, "USING FILE", ds)
