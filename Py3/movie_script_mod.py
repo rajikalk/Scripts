@@ -355,7 +355,12 @@ def main():
         file_int = -1
         for dataset in ts.piter():
             ds = dataset
-            file_int = usable_files.index(path + str(ds))
+            if size > 1:
+                file_int = usable_files.index(path + str(ds))
+            else:
+                file_int = file_int + 1
+                if usable_files[file_int] == usable_files[file_int-1]:
+                    os.system('cp '+ path + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             #rit = rit + 1
             #print('rit=', rit, ', file_int=', file_int)
             #if rit == size:
