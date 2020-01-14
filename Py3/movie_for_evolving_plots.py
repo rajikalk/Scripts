@@ -52,6 +52,8 @@ def has_sinks(file):
 #=======MAIN=======
 def main():
     # Read in directories:
+    path = sys.argv[1]
+    save_dir = sys.argv[2]
     try:
         os.makedirs(save_dir)
     except:
@@ -68,6 +70,7 @@ def main():
     
     #get end time and set xlim
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time)
+    usable_files = mym.find_files(m_times, files)
     xlim = [0.0, args.end_time]
     xlabel = "Time ($yr$)"
     ylabel = "Accretion Rate ($M_\odot/yr$)"
@@ -76,10 +79,10 @@ def main():
     sink_formation_time = mym.find_sink_formation_time(files)
     
     frame_counter = 0
-    for file in files:
+    for file in usable_files:
         file_name = save_dir + "movie_frame_" + ("%06d" % frame_counter)
         frame_counter = frame_counter + 1
-        f = h5py.File(file, 'rf')
+        f = h5py.File(file, 'r')
         time = yt.YTQuantity(f['time'][0], 's').in_units('yr').value - sink_formation_time
         mass = yt.YTQuantity(np.sum(f['particlemasses'][:]), 'g').in_units('Msun').value
         if len(mass_array):
