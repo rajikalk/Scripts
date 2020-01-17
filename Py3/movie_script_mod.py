@@ -754,7 +754,7 @@ def main():
                 plt.clf()
                 fig, ax = plt.subplots()
                 ax.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-                ax.set_ylabel(yabel, labelpad=-20, fontsize=args.text_font)
+                ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 
