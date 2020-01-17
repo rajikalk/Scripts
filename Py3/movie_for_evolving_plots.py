@@ -10,11 +10,14 @@ import glob
 import my_module as mym
 import pickle
 import yt
+from PIL import Image
 
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
+    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="mdot")
+    parser.add_argument("-y_times", "--y_multiplier", help="What field to you wish to plot?", default=10000)
+    parser.add_argument("-ylab", "--y_label", help="What is the label you want for the yaxis??", default="Accretion Rate ($10^{-4}M_\odot/yr$)")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
@@ -52,7 +55,7 @@ def has_sinks(file):
 #=======MAIN=======
 def main():
     # Read in directories:
-    path = sys.argv[1]
+    pickle_file = sys.argv[1]
     save_dir = sys.argv[2]
     try:
         os.makedirs(save_dir)
@@ -61,51 +64,57 @@ def main():
     
     args = parse_inputs()
     mym.set_global_font_size(args.text_font)
-    files = sorted(glob.glob(path + '*slice*'))
+    #files = sorted(glob.glob(path + '*slice*'))
 
-    #Define arrays
-    time_array = []
-    mass_array = []
-    accr_array = []
     
     #get end time and set xlim
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time)
-    usable_files = mym.find_files(m_times, files)
+    m_times = mym.generate_frame_times(pickle_file, args.time_step, presink_frames=0, end_time=args.end_time)
+    m_times = m_times[args.start_frame:]
+    #usable_files = mym.find_files(m_times, files)
     xlim = [0.0, args.end_time]
     xlabel = "Time ($yr$)"
-    ylabel = "Accretion Rate ($M_\odot/yr$)"
+    ylabel = args.y_label
     
     #Find sink formation time
-    sink_formation_time = mym.find_sink_formation_time(files)
+    #sink_formation_time = mym.find_sink_formation_time(files)
     
-    frame_counter = 0
-    for file in usable_files:
-        file_name = save_dir + "movie_frame_" + ("%06d" % frame_counter)
-        frame_counter = frame_counter + 1
-        f = h5py.File(file, 'r')
-        time = yt.YTQuantity(f['time'][0], 's').in_units('yr').value - sink_formation_time
-        mass = yt.YTQuantity(np.sum(f['particlemasses'][:]), 'g').in_units('Msun').value
-        if len(mass_array):
-            accretion = np.nan
-        else:
-            accretion = (mass - mass_array[-1])/(time - time_array[-1])
-        time_array.append(time)
-        mass_array.append(mass)
-        accr_array.append(accretion)
+    #Open pickle
+    file_open = open(pickle_file, 'rb')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    
+    #Smooth accretion
+    window = 10 #in units years
+    smoothed_time = []
+    smoothed_quantity = []
+    particle_data_time = np.array(particle_data['time'])
+    particle_data_quantity = np.array(particle_data[args.field])
+    for ind in range(len(particle_data['mdot'])):
+        smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
+        time = np.mean(particle_data_time[smoothing_inds])
+        quantity = np.mean(particle_data_quantity[smoothing_inds])
+        smoothed_time.append(time)
+        smoothed_quantity.append(quantity)
+        
+    for m_time in m_times:
+        file_name = save_dir + "movie_frame_" + ("%06d" % (args.start_frame + m_times.index(m_time)))
+        
+        plot_ind = np.argmin(abs(np.array(smoothed_time) - m_time))
         
         plt.clf()
-        fig, ax = plt.subplots()
-        ax.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-        ax.set_ylabel(yabel, labelpad=-20, fontsize=args.text_font)
-        ax.set_xlim(xlim)
-        ax.plot(time_array, accretion)
-        plt.gca().set_aspect('equal')
-        plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
+        plt.plot(smoothed_time, np.array(smoothed_quantity)*args.y_multiplier)
+        plt.plot(smoothed_time[plot_ind], np.array(smoothed_quantity[plot_ind])*args.y_multiplier, 'ro')
+        #plt.ticklabel_format(axis='y', style='sci')
+        plt.xlabel(xlabel, labelpad=-1, fontsize=args.text_font)
+        plt.ylabel(ylabel, labelpad=-2, fontsize=args.text_font)
+        plt.ylim(bottom=0)
+        plt.tight_layout()
+        plt.savefig(file_name + ".eps", format='eps')#, bbox_inches='tight')#, pad_inches = 0.02)
         eps_image = Image.open(file_name + ".eps")
         eps_image.load(scale=4)
         eps_image.save(file_name + ".jpg")
-        print('Created frame', frame_counter-1)
-
+        print('Created frame:', file_name)
+    
 if __name__ == '__main__': main()
 
 
