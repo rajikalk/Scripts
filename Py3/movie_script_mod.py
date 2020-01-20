@@ -49,7 +49,7 @@ def parse_inputs():
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=None)
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default=True)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
-    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=5000, type=int)
+    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-yt", "--yt_proj", help="Do you want to use yt to create projections as opposed to the movie files?", default=False)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=300.)
@@ -57,6 +57,7 @@ def parse_inputs():
     parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-db", "--debug", help="Wanting to use the debugger where you inserted it?", type=str, default='False')
     parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
+    parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -319,7 +320,14 @@ def main():
     sys.stdout.flush()
     CW.Barrier()
 
-    usable_files = mym.find_files(m_times, files)
+    if args.use_all_files != 'False':
+        usable_files = mym.find_files(m_times, files)
+    elif args.use_all_files == 'True' and args.plot_time != None:
+        usable_files = mym.find_files(m_times, files)
+        start_index = files.index(usable_files[0])
+        end_file = mym.find_files([args.end_time], files)
+        end_index = files.index(end_file[0])
+        usable_files = files[start_index:end_index]
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
         del sim_files
