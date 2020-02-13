@@ -277,7 +277,7 @@ def main():
         if args.projection_orientation != None:
             y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
             L = [1.0, y_val, 0.0]
-        else:
+        elif:
             if args.axis == 'xz':
                 L = [1.0, 0.0, 0.0]
             else:
@@ -315,25 +315,32 @@ def main():
         m_times = [args.plot_time]
     else:
         m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
-    no_frames = len(m_times)
-    m_times = m_times[args.start_frame:]
     sys.stdout.flush()
     CW.Barrier()
 
-    if args.use_all_files != 'False':
+    if args.use_all_files == 'False':
+        no_frames = len(m_times)
+        m_times = m_times[args.start_frame:]
         usable_files = mym.find_files(m_times, files)
-    elif args.use_all_files == 'True' and args.plot_time != None:
-        usable_files = mym.find_files(m_times, files)
+        frames = list(range(args.start_frame, no_frames))
+    elif args.use_all_files != 'False' and args.plot_time != None:
+        usable_files = mym.find_files([args.plot_time], files)
         start_index = files.index(usable_files[0])
+        args.plot_time = None
         end_file = mym.find_files([args.end_time], files)
         end_index = files.index(end_file[0])
         usable_files = files[start_index:end_index]
+        frames = list(range(len(usable_files)))
+        no_frames = len(usable_files)
+    else:
+        usable_files = files
+        frames = list(range(len(usable_files)))
+        no_frames = len(usable_files)
     if args.image_center != 0 and args.yt_proj == False:
         usable_sim_files = mym.find_files(m_times, sim_files)
         del sim_files
     sys.stdout.flush()
     CW.Barrier()
-    frames = list(range(args.start_frame, no_frames))
 
     # Define colourbar bounds
     cbar_max = args.colourbar_max
@@ -347,10 +354,10 @@ def main():
         if args.plot_time != None:
             if args.weight_field == 'None':
                 weight_field = None
-                pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+                pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
             else:
                 weight_field = args.weight_field
-                pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+                pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
         rit = args.working_rank - 1
         ts = yt.load(usable_files)#, parallel=1)
         file_int = -1
@@ -368,7 +375,7 @@ def main():
             else:
                 file_int = file_int + 1
                 if usable_files[file_int] == usable_files[file_int-1]:
-                    os.system('cp '+ path + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+                    os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             #rit = rit + 1
             #print('rit=', rit, ', file_int=', file_int)
             #if rit == size:
@@ -377,7 +384,7 @@ def main():
             #if rank == rit:
             #ds = yt.load(usable_files[file_int])
             if args.plot_time is None:
-                pickle_file = path + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+                pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
             make_pickle = False
             if os.path.isfile(pickle_file) == False:
                 make_pickle = True
@@ -390,7 +397,7 @@ def main():
                 print("PICKLE:", pickle_file,"DOESN'T EXIST. MAKING PROJECTION  FOR FRAME", frames[file_int], "ON RANK", rank, "USING FILE", ds)
                 sys.stdout.flush()
                 CW.Barrier()
-                time_val = m_times[file_int]
+                    
                 has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
                 if has_particles:
                     part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
@@ -422,6 +429,13 @@ def main():
                 #ds = yt.load(usable_file)
                 dd = ds.all_data()
                 print("loaded all data")
+                
+                try:
+                    time_val = m_times[file_int]
+                except:
+                    sink_creation_time = np.min(dd['particle_creation_time'].value)
+                    time_real = yt.YTQuantity(ds.current_time.value - sink_creation_time, 's')
+                    time_val = np.round(time_real.in_units('yr'))
                 
                 center_pos = dd['Center_Position'].in_units('au').value
                 print('Center Pos=' + str(center_pos))
@@ -650,13 +664,13 @@ def main():
             if args.plot_time != None:
                 if args.weight_field == 'None':
                     weight_field = None
-                    pickle_file = path + args.field + "_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+                    pickle_file = save_dir + args.field + "_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
                 else:
                     weight_field = args.weight_field
                     #pickle_file = path + args.field + "_movie_time_" + (str(args.plot_time)) + ".pkl"
-                    pickle_file = path + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+                    pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
             else:
-                pickle_file = path + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
+                pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
             if os.path.isfile(pickle_file) == False:
                 print("NOT USING PICKLE ON RANK", rank)
                 time_val = m_times[frame_val]
@@ -855,9 +869,9 @@ def main():
                 args_dict.update({'has_particles':has_particles})
                 print("Built dictionary")
                 try:
-                    pickle_file = path + str(args.axis) +'_' + args_dict['field'].split('_')[0] + "_thickness_" + str(int(args.slice_thickness)) +'_AU_movie_time_' + str(float(args_dict['time_val'])) + '.pkl'
+                    pickle_file = save_dir + str(args.axis) +'_' + args_dict['field'].split('_')[0] + "_thickness_" + str(int(args.slice_thickness)) +'_AU_movie_time_' + str(float(args_dict['time_val'])) + '.pkl'
                 except:
-                    pickle_file = path + str(args.axis) +'_' + args_dict['field'][1] + "_thickness_" + str(int(args.slice_thickness)) +'_AU_movie_time_' + str(float(args_dict['time_val'])) + '.pkl'
+                    pickle_file = save_dir + str(args.axis) +'_' + args_dict['field'][1] + "_thickness_" + str(int(args.slice_thickness)) +'_AU_movie_time_' + str(float(args_dict['time_val'])) + '.pkl'
                 print("Got pickle file name:", pickle_file)
                 file = open(pickle_file, 'wb')
                 print("Opened pickle file")
