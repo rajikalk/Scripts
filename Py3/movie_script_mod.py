@@ -58,6 +58,7 @@ def parse_inputs():
     parser.add_argument("-db", "--debug", help="Wanting to use the debugger where you inserted it?", type=str, default='False')
     parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
+    parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits bu taking away the center position values or not?", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -277,11 +278,8 @@ def main():
         if args.projection_orientation != None:
             y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
             L = [1.0, y_val, 0.0]
-        elif:
-            if args.axis == 'xz':
-                L = [1.0, 0.0, 0.0]
-            else:
-                L = [0.0, 0.0, 1.0]
+        else:
+            L = [0.0, 0.0, 1.0]
         myf.set_normal(L)
         print("SET PROJECTION ORIENTATION L=", myf.get_normal())
     if args.yt_proj == False and args.image_center != 0:
@@ -333,7 +331,8 @@ def main():
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     else:
-        usable_files = files
+        start_file = mym.find_files([0], files)
+        usable_files = files[files.index(start_file[0]):]
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     if args.image_center != 0 and args.yt_proj == False:
@@ -402,6 +401,7 @@ def main():
                 if has_particles:
                     part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
                     #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                    
                 '''
                 if args.ax_lim != None:
                     if has_particles and args.image_center != 0:
@@ -441,23 +441,36 @@ def main():
                 print('Center Pos=' + str(center_pos))
                 
                 #Update X and Y to be centered on center position
-                if args.axis == 'xy':
-                    X_image = X + center_pos[0]
-                    Y_image = Y + center_pos[1]
-                    X_image_vel = X_vel + center_pos[0]
-                    Y_image_vel = Y_vel + center_pos[1]
+                if args.update_ax_lim == 'True':
+                    if args.axis == 'xy':
+                        X_image = X + center_pos[0]
+                        Y_image = Y + center_pos[1]
+                        X_image_vel = X_vel + center_pos[0]
+                        Y_image_vel = Y_vel + center_pos[1]
+                    else:
+                        X_image = X + center_pos[0]
+                        Y_image = Y + center_pos[2]
+                        X_image_vel = X_vel + center_pos[0]
+                        Y_image_vel = Y_vel + center_pos[2]
                 else:
-                    X_image = X + center_pos[0]
-                    Y_image = Y + center_pos[2]
-                    X_image_vel = X_vel + center_pos[0]
-                    Y_image_vel = Y_vel + center_pos[2]
+                    if args.axis == 'xy':
+                        X_image = X
+                        Y_image = Y
+                        X_image_vel = X_vel
+                        Y_image_vel = Y_vel
+                    else:
+                        X_image = X
+                        Y_image = Y
+                        X_image_vel = X_vel
+                        Y_image_vel = Y_vel
                 
                 if has_particles:
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
-                    if args.axis == 'xy':
-                        part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
-                    else:
-                        part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                    if args.update_ax_lim == 'False':
+                        part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+                        if args.axis == 'xy':
+                            part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
+                        else:
+                            part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
                 
                 print("initialised fields")
                 center_vel = dd['Center_Velocity'].value
@@ -484,11 +497,7 @@ def main():
                     axis_ind = 2
                 else:
                     axis_ind = 1
-                has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
-                if has_particles:
-                    part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
-                else:
-                    part_info = {}
+                 #(usable_file)#(path + str(ds))
                 proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm')[:2])
                 #proj.set_buff_size(1024)
                 if weight_field == None:
