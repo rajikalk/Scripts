@@ -299,7 +299,6 @@ def main():
     else:
         myf.set_use_gas(False)
    
-
     title_parts = args.title.split('_')
     title = ''
     for part in title_parts:
