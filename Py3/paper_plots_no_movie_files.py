@@ -1963,6 +1963,3 @@ if args.resolution_study == 'True':
         e_bin_it = e_bin_it + 1
         plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
         plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
-    
-            
-    
