@@ -996,7 +996,40 @@ for it in range(len(positions)):
         if positions[it][0] == columns:
             print("plotting legend")
             axes_dict[ax_label].legend(loc='best', ncol=3) #prop={'size':16},
-
+    if 'accretion_profile' in plot_type[it]:
+        pickle_file = file_dir[it] + 'particle_data.pkl'
+        file_open = open(pickle_file, 'r')
+        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+        file_open.close()
+        
+        dot_times = [1488, 1496, 1504, 1512, 1520]
+        xlim = [1450, 1550]
+        xlabel = "Time ($yr$)"
+        ylabel = "Accretion Rate ($10^{-4}M_\odot/yr$)"
+        
+        window = 10 #in units years
+        smoothed_time = []
+        smoothed_quantity = []
+        particle_data_time = np.array(particle_data['time'])
+        particle_data_quantity = np.array(particle_data[args.field])
+        for ind in range(len(particle_data['mdot'])):
+            smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
+            time = np.mean(particle_data_time[smoothing_inds])
+            quantity = np.mean(particle_data_quantity[smoothing_inds])
+            smoothed_time.append(time)
+            smoothed_quantity.append(quantity)
+        
+        axes_dict[ax_label].smoothed_time, np.array(smoothed_quantity)*10000)
+        for dot in dot_times:
+            dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
+            axes_dict[ax_label].plot(smoothed_time[plot_ind], np.array(smoothed_quantity[dot_ind])*args.10000, 'ro')
+        axes_dict[ax_label].set_xlabel(xlabel, labelpad=-1, fontsize=args.text_font)
+        axes_dict[ax_label].set_ylabel(ylabel, labelpad=-1, fontsize=args.text_font)
+        axes_dict[ax_label].set_xlim(xlim])
+        axes_dict[ax_label].set_ylim(bottom=0)
+        axes_dict[ax_label].xaxis.set_ticks_position('both')
+        axes_dict[ax_label].yaxis.set_ticks_position('both')
+        axes_dict[ax_label].tick_params(direction='in')
     if 'component_phase' in plot_type[it]:
         component_args = input_args[it].split(' ')
         n_orbits = 5
