@@ -555,9 +555,9 @@ if args.separation == 'True':
             sim_times.append(times[1])
             sim_total_mass.append(total_mass)
             lit = lit + 1
-    ax1.set_ylim(top=5e2)
+    #ax1.set_ylim(top=5e2)
     ax1.set_xlim(left=0.0)
-    ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
+    #ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
     ax1.set_ylabel("Separation (AU)", fontsize=args.text_font)
