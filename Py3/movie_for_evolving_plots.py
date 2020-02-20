@@ -25,6 +25,7 @@ def parse_inputs():
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=5000, type=int)
+    parser.add_argument("-log", "--logscale", help="Di you want to use a logarithmic scale?", default='False', type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -103,8 +104,12 @@ def main():
         
         plt.clf()
         f, (ax) = plt.subplots(1, 1)
-        ax.plot(smoothed_time, np.array(smoothed_quantity)*args.y_multiplier)
-        ax.plot(smoothed_time[plot_ind], np.array(smoothed_quantity[plot_ind])*args.y_multiplier, 'ro')
+        if args.logscale == 'False':
+            ax.plot(smoothed_time, np.array(smoothed_quantity)*args.y_multiplier)
+            ax.plot(smoothed_time[plot_ind], np.array(smoothed_quantity[plot_ind])*args.y_multiplier, 'ro')
+        else:
+            ax.semilogy(smoothed_time, np.array(smoothed_quantity)*args.y_multiplier)
+            ax.semilogy(smoothed_time[plot_ind], np.array(smoothed_quantity[plot_ind])*args.y_multiplier, 'ro')
         #plt.ticklabel_format(axis='y', style='sci')
         ax.set_xlabel(xlabel, labelpad=-1, fontsize=args.text_font)
         ax.set_ylabel(ylabel, labelpad=-1, fontsize=args.text_font)
