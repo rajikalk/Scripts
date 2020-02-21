@@ -138,7 +138,11 @@ axes_dict = {}
 for it in range(len(positions)):
     #ax_label = 'ax' + str(counter)
     ax_label = 'ax' + str(positions[it][0])+str(positions[it][1])
-    if positions[it][0] == 1 and positions[it][1] == 1:
+    if positions[it][0] == 0:
+        axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,:])})
+    elif positions[it][1] == 0:
+        axes_dict.update({ax_label:f.add_subplot(gs_left[:,positions[it][0]-1])})
+    elif positions[it][0] == 1 and positions[it][1] == 1:
         if columns > 1:
             axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
         else:
@@ -227,7 +231,7 @@ for it in range(len(positions)):
     if 'movie' in plot_type[it]:
         #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
-        arg_list = ['python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)] #['srun', '-n', '20', 'python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
+        arg_list = ['python', '~/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)] #['srun', '-n', '20', 'python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
         standard_vel = 5.
         get_plot_time = False
@@ -297,9 +301,9 @@ for it in range(len(positions)):
             arg_list.append(mov_arg)
 
         if weight_field == 'None':
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'_unweighted.pkl'
+            pickle_file = save_dir + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'_unweighted.pkl'
         else:
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
+            pickle_file = save_dir + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
         if os.path.isfile(pickle_file) == False:
             os.system(" ".join(arg_list))
 
@@ -398,10 +402,11 @@ for it in range(len(positions)):
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         yt_args = input_args[it].split(' ')
-        arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
+        arg_list = ['python', '~/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         for yt_arg in yt_args:
             arg_list.append(yt_arg)
-        call(arg_list)
+        call_line = " ".join(arg_list)
+        os.system(call_line)
 
         pickle_file = save_dir + 'yt_proj_pickle.pkl'
         file = open(pickle_file, 'r')
@@ -521,7 +526,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].set_aspect((limits[1][1] - limits[1][0])/(limits[0][1] - limits[0][0]))
     if 'profile' in plot_type[it]:
         prof_args = input_args[it].split(' ')
-        arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
+        arg_list = ['python', '~/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         get_rmax = False
         r_max = 500.
         get_field = False
@@ -569,7 +574,8 @@ for it in range(len(positions)):
         else:
             pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         if os.path.isfile(pickle_file) == False:
-            call(arg_list)
+            call_line = " ".join(arg_list)
+            os.system(call_line)
 
         file = open(pickle_file, 'r')
         prof_x, prof_y, sampled_points = pickle.load(file)
@@ -996,36 +1002,50 @@ for it in range(len(positions)):
         if positions[it][0] == columns:
             print("plotting legend")
             axes_dict[ax_label].legend(loc='best', ncol=3) #prop={'size':16},
-    if 'accretion_profile' in plot_type[it]:
-        pickle_file = file_dir[it] + 'particle_data.pkl'
-        file_open = open(pickle_file, 'r')
-        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-        file_open.close()
+    if 'accr_prof' in plot_type[it]:
+        accretion_profile_pickle = file_dir[it] + 'accretion_profile.pkl'
+        if os.isfile(accretion_profile_pickle)
+            file_open = open(accretion_profile_pickle, 'rb')
+            particle_data_time, particle_data_quantity = pickle.load(file_open)
+            file_open.close()
+        else:
+            pickle_file = file_dir[it] + 'particle_data.pkl'
+            file_open = open(pickle_file, 'rb')
+            particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+            file_open.close()
+            
+            window = 10 #in units years
+            smoothed_time = []
+            smoothed_quantity = []
+            particle_data_time = np.array(particle_data['time'])
+            particle_data_quantity = np.array(particle_data['mdot'])
+            print("Smoothing accretion profile")
+            for ind in range(len(particle_data_quantity)):
+                smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
+                time = np.mean(particle_data_time[smoothing_inds])
+                quantity = np.mean(particle_data_quantity[smoothing_inds])
+                smoothed_time.append(time)
+                smoothed_quantity.append(quantity)
+            print("smoothed accretion profile")
+            
+            print("writing accretion profile pickle")
+            file = open(accretion_profile_pickle, 'rb')
+            pickle.dump((particle_data_time, particle_data_quantity), file)
+            file.close()
+            print("Created Pickle:", accretion_profile_pickle
         
         dot_times = [1488, 1496, 1504, 1512, 1520]
         xlim = [1450, 1550]
-        xlabel = "Time ($yr$)"
-        ylabel = "Accretion Rate ($10^{-4}M_\odot/yr$)"
+        xlabel = r"Time ($yr$)"
+        ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
         
-        window = 10 #in units years
-        smoothed_time = []
-        smoothed_quantity = []
-        particle_data_time = np.array(particle_data['time'])
-        particle_data_quantity = np.array(particle_data[args.field])
-        for ind in range(len(particle_data['mdot'])):
-            smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
-            time = np.mean(particle_data_time[smoothing_inds])
-            quantity = np.mean(particle_data_quantity[smoothing_inds])
-            smoothed_time.append(time)
-            smoothed_quantity.append(quantity)
-        
-        axes_dict[ax_label].smoothed_time, np.array(smoothed_quantity)*10000)
+        axes_dict[ax_label].plot(smoothed_time, np.array(smoothed_quantity)*10000)
         for dot in dot_times:
             dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
-            axes_dict[ax_label].plot(smoothed_time[plot_ind], np.array(smoothed_quantity[dot_ind])*args.10000, 'ro')
-        axes_dict[ax_label].set_xlabel(xlabel, labelpad=-1, fontsize=args.text_font)
+            axes_dict[ax_label].plot(smoothed_time[dot_ind], np.array(smoothed_quantity[dot_ind])*10000, 'ro')
+        axes_dict[ax_label].set_xlabel(xlabel, fontsize=args.text_font)
         axes_dict[ax_label].set_ylabel(ylabel, labelpad=-1, fontsize=args.text_font)
-        axes_dict[ax_label].set_xlim(xlim])
+        axes_dict[ax_label].set_xlim(xlim)
         axes_dict[ax_label].set_ylim(bottom=0)
         axes_dict[ax_label].xaxis.set_ticks_position('both')
         axes_dict[ax_label].yaxis.set_ticks_position('both')
@@ -1061,8 +1081,9 @@ for it in range(len(positions)):
         yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
         plt.setp(yticklabels, visible=False)
     if positions[it][1] != rows:
-        xticklabels = axes_dict[ax_label].get_xticklabels()
-        plt.setp(xticklabels, visible=False)
+        if 'movie' in plot_type[it]:
+            xticklabels = axes_dict[ax_label].get_xticklabels()
+            plt.setp(xticklabels, visible=False)
     if positions[it][0] == 1:
         axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font)
     if positions[it][1] == rows:
