@@ -14,6 +14,7 @@ import yt
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -93,20 +94,34 @@ with open(args.in_file, 'r') as f:
             input_args.append(row[4])
 positions = np.array(positions)
 
+if 0 in positions:
+    make_right_gs = False
+else:
+    make_right_gs = True
+
 columns = np.max(positions[:,0])
 rows = np.max(positions[:,1])
 
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
+
+#Testing height ratios
+#height_ratios = [1,2]
+
 if plot_type[0] == "outflow":
     f = plt.figure(figsize=(6, 10))
 else:
     f = plt.figure(figsize=(width, height))
-gs_left = gridspec.GridSpec(rows, columns-1)
-gs_right = gridspec.GridSpec(rows, 1)
 
-gs_left.update(right=glr, wspace=glw, hspace=ghspace)
-gs_right.update(left=grl, hspace=ghspace)
+if make_right_gs:
+    gs_left = gridspec.GridSpec(rows, columns-1)
+    gs_right = gridspec.GridSpec(rows, 1)
+
+    gs_left.update(right=glr, wspace=glw, hspace=ghspace)
+    gs_right.update(left=grl, hspace=ghspace)
+else:
+    gs_left = gridspec.GridSpec(rows, columns, height_ratios=height_ratios)
+    gs_left.update(right=glr, wspace=glw, hspace=ghspace)
 
 '''
 #single and tight binary slices
@@ -146,7 +161,10 @@ for it in range(len(positions)):
         if columns > 1:
             axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
         else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
+            else:
+                axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
     elif positions[it][0] != columns:
         if args.share_x and args.share_y == True:
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
@@ -161,16 +179,36 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
     else:
         if args.share_x and args.share_y == True:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+            else:
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
         elif args.share_x and args.share_y == 'row':
             if positions[it][0] == 1:
+                if make_right_gs:
+                    axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+                else:
+                    #spoofing this line. Not sure what to use.
+                    axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
+            else:
+                if make_right_gs:
+                    axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+                else:
+                    #spoofing this line. Not sure what to use.
+                    axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+        elif args.share_x:
+            if make_right_gs:
                 axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
             else:
-                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
-        elif args.share_x:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
         else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+            else:
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
     '''
     yit = np.where(positions[:,1] == positions[it][1])[0][0]
     if positions[it][0] == 1 and positions[it][1] == 1:
@@ -233,6 +271,7 @@ for it in range(len(positions)):
         mov_args = input_args[it].split(' ')
         arg_list = ['python', '~/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)] #['srun', '-n', '20', 'python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
+        get_pvl = False
         standard_vel = 5.
         get_plot_time = False
         plot_time = 0
@@ -250,7 +289,16 @@ for it in range(len(positions)):
         get_title = False
         thickness = 300
         get_thickness = False
+        plot_velocity_legend = False
         for mov_arg in mov_args:
+            if get_pvl:
+                if mov_arg == 'False':
+                    plot_velocity_legend = False
+                else:
+                    plot_velocity_legend = True
+                get_pvl = False
+            if mov_arg == '-pvl':
+                get_pvl = True
             if get_stdv:
                 standard_vel = float(mov_arg)
                 get_stdv = False
@@ -330,7 +378,7 @@ for it in range(len(positions)):
             print("plotted with log scale")
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
-        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
+        #mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         part_info['particle_mass'] = np.sort(part_info['particle_mass'])[::-1]
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in list(args_dict.keys()):
@@ -1003,10 +1051,10 @@ for it in range(len(positions)):
             print("plotting legend")
             axes_dict[ax_label].legend(loc='best', ncol=3) #prop={'size':16},
     if 'accr_prof' in plot_type[it]:
-        accretion_profile_pickle = file_dir[it] + 'accretion_profile.pkl'
-        if os.isfile(accretion_profile_pickle)
+        accretion_profile_pickle = save_dir + 'accretion_profile.pkl'
+        if os.path.isfile(accretion_profile_pickle):
             file_open = open(accretion_profile_pickle, 'rb')
-            particle_data_time, particle_data_quantity = pickle.load(file_open)
+            smoothed_time, smoothed_quantity = pickle.load(file_open)
             file_open.close()
         else:
             pickle_file = file_dir[it] + 'particle_data.pkl'
@@ -1029,22 +1077,22 @@ for it in range(len(positions)):
             print("smoothed accretion profile")
             
             print("writing accretion profile pickle")
-            file = open(accretion_profile_pickle, 'rb')
-            pickle.dump((particle_data_time, particle_data_quantity), file)
+            file = open(accretion_profile_pickle, 'wb')
+            pickle.dump((smoothed_time, smoothed_quantity), file)
             file.close()
-            print("Created Pickle:", accretion_profile_pickle
+            print("Created Pickle:", accretion_profile_pickle)
         
         dot_times = [1488, 1496, 1504, 1512, 1520]
         xlim = [1450, 1550]
-        xlabel = r"Time ($yr$)"
-        ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
+        #xlabel = r"Time ($yr$)"
+        #ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
         
         axes_dict[ax_label].plot(smoothed_time, np.array(smoothed_quantity)*10000)
         for dot in dot_times:
             dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
             axes_dict[ax_label].plot(smoothed_time[dot_ind], np.array(smoothed_quantity[dot_ind])*10000, 'ro')
-        axes_dict[ax_label].set_xlabel(xlabel, fontsize=args.text_font)
-        axes_dict[ax_label].set_ylabel(ylabel, labelpad=-1, fontsize=args.text_font)
+        axes_dict[ax_label].set_xlabel(r'Time ($yr$)', fontsize=args.text_font)
+        axes_dict[ax_label].set_ylabel(r'Accretion Rate ($10^{-4}\,M_{\odot}/yr$)', fontsize=args.text_font)
         axes_dict[ax_label].set_xlim(xlim)
         axes_dict[ax_label].set_ylim(bottom=0)
         axes_dict[ax_label].xaxis.set_ticks_position('both')
@@ -1075,7 +1123,7 @@ for it in range(len(positions)):
         plt.xlim([0.0, 1.3])
         plt.ylim(bottom=0.0)
     
-    if positions[it][0] != 1:
+    if positions[it][0] != 1 and 'accr_prof' not in plot_type[it]:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
         yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
@@ -1093,9 +1141,9 @@ for it in range(len(positions)):
             if 'force' in plot_type[it]:
                 plt.setp(xticklabels[1], visible=False)
             else:
-                plt.setp(xticklabels[1], visible=False)
-                if positions[it][0] == 3:
-                    plt.setp(xticklabels[1], visible=False)
+                plt.setp(xticklabels[0], visible=False)
+                #if positions[it][0] == 3:
+                #    plt.setp(xticklabels[1], visible=False)
 
     if 'multi' in plot_type[it]:
         if positions[it][1] == rows and positions[it][0] == columns:
