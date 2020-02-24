@@ -449,118 +449,35 @@ if args.separation == 'True':
         gs.update(hspace=0.0)
         ax1 = fig.add_subplot(gs[0,0])
         ax2 = fig.add_subplot(gs[1,0], sharex=ax1)
-        files = [path+'sinks_evol.dat']
-        #files = ["/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.1/Lref_10/sinks_evol.dat", "/groups/astro/rlk/rlk/Simulations/Turbulent/Mach_0.2/Lref_10/sinks_evol.dat"]
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-
-        #ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
-        sim_times = []
-        sim_total_mass = []
-        for file in files:
-            print("reading file", file)
-            sink_form_time = 0
-            particle_tag = []
-            times = [[],[]]
-            x_pos = []
-            y_pos = []
-            z_pos = []
-            mass = []
-            with open(file, 'r') as f:
-                reader = csv.reader(f, dialect='dat')
-                counter = 0
-                for row in reader:
-                    counter = counter
-                    if row[0][0] != '[':
-                        if sink_form_time == 0:
-                            sink_form_time = float(row[-1])
-                        part_tag = int(row[0])
-                        if part_tag == 65583:
-                            part_tag = 65582
-                        if part_tag not in particle_tag:
-                            particle_tag.append(part_tag)
-                            x_pos.append([])
-                            y_pos.append([])
-                            z_pos.append([])
-                            mass.append([])
-                            pit = len(particle_tag) - 1
-                        elif particle_tag[0] == part_tag:
-                            pit = 0
-                        else:
-                            pit = 1
-                        x = float(row[2])/yt.units.AU.in_units('cm').value
-                        y = float(row[3])/yt.units.AU.in_units('cm').value
-                        z = float(row[4])/yt.units.AU.in_units('cm').value
-                        m = float(row[14])/yt.units.msun.in_units('g').value
-                        time = (float(row[1]) - sink_form_time)/yt.units.yr.in_units('s').value
-                        #if time not in times[pit]:
-                        times[pit].append(time)
-                        x_pos[pit].append(x)
-                        y_pos[pit].append(y)
-                        z_pos[pit].append(z)
-                        mass[pit].append(m)
-                        '''
-                        else:
-                            ind = times[pit].index(time)
-                            x_pos[pit][ind] = x
-                            y_pos[pit][ind] = y
-                            z_pos[pit][ind] = z
-                            mass[pit][ind] = (m)
-                        '''
-            times = np.array(times)
-            sorted_inds_1 = np.argsort(times[0])
-            sorted_inds_2 = np.argsort(times[1])
-            first_inds_1 = np.where((np.array(times[0])[sorted_inds_1][1:] - np.array(times[0])[sorted_inds_1][:-1])>0)[0]
-            first_inds_2 = np.where((np.array(times[1])[sorted_inds_2][1:] - np.array(times[1])[sorted_inds_2][:-1])>0)[0]
+        particle_pickle = path + 'particle_data.pkl'
+        file_open = open(particle_pickle, 'rb')
+        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+        file_open.close()
             
-            refined_time = []
-            refined_time.append(np.array(times[0])[sorted_inds_1][first_inds_1])
-            refined_time.append(np.array(times[1])[sorted_inds_2][first_inds_2])
-            refined_x = []
-            refined_x.append(np.array(x_pos[0])[sorted_inds_1][first_inds_1])
-            refined_x.append(np.array(x_pos[1])[sorted_inds_2][first_inds_2])
-            refined_y = []
-            refined_y.append(np.array(y_pos[0])[sorted_inds_1][first_inds_1])
-            refined_y.append(np.array(y_pos[1])[sorted_inds_2][first_inds_2])
-            refined_z = []
-            refined_z.append(np.array(z_pos[0])[sorted_inds_1][first_inds_1])
-            refined_z.append(np.array(z_pos[1])[sorted_inds_2][first_inds_2])
-            refined_mass = []
-            refined_mass.append(np.array(mass[0])[sorted_inds_1][first_inds_1])
-            refined_mass.append(np.array(mass[1])[sorted_inds_2][first_inds_2])
-            dx = refined_x[0][-len(refined_x[1]):] - refined_x[1]
-            dy = refined_y[0][-len(refined_y[1]):] - refined_y[1]
-            dz = refined_z[0][-len(refined_z[1]):] - refined_z[1]
-            sep = np.sqrt(dx**2. + dy**2. + dz**2.)
-            total_mass = refined_mass[0].tolist()[:-len(refined_mass[1])] + (np.array(refined_mass[0][-len(refined_mass[1]):])+np.array(refined_mass[1])).tolist()
-            mass_ratio = (np.nan*np.zeros(np.shape(refined_mass[0].tolist()[:-len(refined_mass[1])]))).tolist() +  ((np.array(refined_mass[1]))/(np.array(refined_mass[0][-len(refined_mass[1]):]))).tolist()
-            dt = 25
-            inds = [0]
-            times_sort = [refined_time[0][0]]
-            for t_it, time in enumerate(refined_time[0]):
-                if time - times_sort[-1] > dt:
-                    times_sort.append(time)
-                    inds.append(t_it)
-            times_sort = np.array(times_sort)
-            total_mass_sort = np.array(total_mass)[inds]
-            m_dot = (total_mass_sort[1:] - total_mass_sort[:-1])/(times_sort[1:]-times_sort[:-1])
-            time_m_dot = (times_sort[:-1] + times_sort[1:])/2.
-            
-            ax1.semilogy(refined_time[1], sep, line_style[lit], label=labels[lit])
-            #ax2.plot(refined_time[0], mass_ratio, line_style[lit], label=labels[lit])
-            ax2.plot(time_m_dot, m_dot, line_style[lit], label=labels[lit])
-            ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
-            #ax3.plot(refined_time[0], refined_mass[0], line_style[lit], linewidth=1, alpha=0.5)
-            #ax3.plot(refined_time[1], refined_mass[1], line_style[lit], linewidth=1, alpha=0.5)
-            #ax3.plot(refined_time[0], total_mass, line_style[lit], linewidth=2, label=labels[lit])
-            sim_times.append(times[1])
-            sim_total_mass.append(total_mass)
-            lit = lit + 1
+        ax1.semilogy(particle_data['time'][1:], particle_data['separation'][1:], line_style[lit], label=labels[lit])
+        total_mass = np.array(particle_data['mass']).T[0] + np.array(particle_data['mass']).T[1]
+        dt = 10
+        prev_time = particle_data['time'][1]
+        time_short = [particle_data['time'][1]]
+        total_mass_short= [total_mass[1]]
+        for time_it in range(len(particle_data['time'][1:])):
+            if particle_data['time'][1:][time_it] - prev_time > dt:
+                time_short.append(particle_data['time'][1:][time_it])
+                total_mass_short.append(total_mass[time_it])
+                prev_time = particle_data['time'][1:][time_it]
+        time_short = np.array(time_short)
+        total_mass_short = np.array(total_mass_short)
+        m_dot = (total_mass_short[1:] - total_mass_short[:-1])/(time_short[1:]-time_short[:-1])
+        time_m_dot = (time_short[:-1] + time_short[1:])/2.
+        
+        ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
     #ax1.set_ylim(top=5e2)
     ax1.set_xlim(left=0.0)
     #ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
     ax1.set_ylabel("Separation (AU)", fontsize=args.text_font)
+    ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
     ax1.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
     ax1.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
     ax1.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
