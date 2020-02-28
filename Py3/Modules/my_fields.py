@@ -235,8 +235,9 @@ def _Center_Position(field, data):
                 except:
                     center_pos = dd.quantities.center_of_mass(use_particles=False)
         else:
-            center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
-            center_pos = yt.YTArray(center_pos, 'cm')
+            particle_tag = np.argsort(dd['particle_tag'])
+            center_tag = particle_tag[center-1]
+            center_pos = yt.YTArray([dd['particle_posx'][center_tag].in_units('cm').value, dd['particle_posy'][center_tag].in_units('cm').value, dd['particle_posz'][center_tag].in_units('cm').value], 'cm')
     set_center_pos(center_pos)
     return center_pos
 
@@ -263,7 +264,9 @@ def _Center_Velocity(field, data):
                 except:
                     center_vel = dd.quantities.bulk_velocity(use_particles=False)
         else:
-            center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
+            particle_tag = np.argsort(dd['particle_tag'])
+            center_tag = particle_tag[center-1]
+            center_vel = yt.YTArray([dd['particle_velx'][center_tag].in_units('cm/s').value, dd['particle_vely'][center_tag].in_units('cm/s').value, dd['particle_velz'][center_tag].in_units('cm/s').value], 'cm/s')
     set_center_vel(center_vel)
     return center_vel
 
@@ -1073,3 +1076,30 @@ def _B_angle(field, data):
     return angle.in_units('deg')
 
 yt.add_field("B_angle", function=_B_angle, units=r"deg")
+
+def _Is_Unbound(field, data):
+    """
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
+    """
+    Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg').value
+    unbound_inds = np.where(Total_Energy > 0.0)[0]
+    bound_inds = np.where(Total_Energy < 0.0)[0]
+    Unbound = Total_Energy
+    Unbound[unbound_inds] = True
+    Unbound[bound_inds] = False
+    del Total_Energy
+    del unbound_inds
+    del bound_inds
+    return Unbound
+
+yt.add_field("Is_Unbound", function=_Is_Unbound, units=r"")
+
+def _Total_Energy(field, data):
+    """
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
+    """
+    Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg')
+    return Total_Energy
+
+yt.add_field("Total_Energy", function=_Total_Energy, units=r"erg")
+
