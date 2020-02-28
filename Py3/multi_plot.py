@@ -30,6 +30,26 @@ def parse_inputs():
     parser.add_argument("-title", "--multiplot_title", help="Do you want to title the multiplot", type=str, default="")
     args = parser.parse_args()
     return args
+    
+def rainbow_text(x,y,ls,lc,**kw):
+    """
+    Take a list of strings ``ls`` and colors ``lc`` and place them next to each
+    other, with text ls[i] being shown in color lc[i]
+
+    This example shows how to do both vertical and horizontal text, and will
+    pass all keyword arguments to plt.text, so you can set the font size,
+    family, etc.
+    """
+    t = plt.gca().transData
+    fig = plt.gcf()
+    plt.show()
+
+    #horizontal version
+    for s,c in zip(ls,lc):
+        text = plt.text(x,y," "+s+" ",color=c, transform=t, **kw)
+        text.draw(fig.canvas.get_renderer())
+        ex = text.get_window_extent()
+        t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
 
 def get_image_arrays(f, field, simfo, args, X, Y):
     dim = int(simfo['dimension'])
@@ -87,6 +107,12 @@ with open(args.in_file, 'r') as f:
             grl = float(row[2])
             glw = float(row[3])
             ghspace = float(row[4])
+            try:
+                height_ratios = []
+                for ratio in row[5].split(':'):
+                    height_ratios.append(float(ratio))
+            except:
+                continue
         elif row[0][0]!= '#':
             positions.append((int(row[0]), int(row[1])))
             plot_type.append(row[2])
@@ -120,7 +146,10 @@ if make_right_gs:
     gs_left.update(right=glr, wspace=glw, hspace=ghspace)
     gs_right.update(left=grl, hspace=ghspace)
 else:
-    gs_left = gridspec.GridSpec(rows, columns, height_ratios=height_ratios)
+    try:
+        gs_left = gridspec.GridSpec(rows, columns, height_ratios=height_ratios)
+    except:
+        gs_left = gridspec.GridSpec(rows, columns)
     gs_left.update(right=glr, wspace=glw, hspace=ghspace)
 
 '''
@@ -320,7 +349,10 @@ for it in range(len(positions)):
             if mov_arg == '-wf':
                 get_weight_field = True
             if get_cbar_lim[0] == True:
-                cbar_lims[get_cbar_lim[1]] = float(mov_arg)
+                if mov_arg[1] == "-":
+                    cbar_lims[get_cbar_lim[1]] = float(mov_arg[1:])
+                else:
+                    cbar_lims[get_cbar_lim[1]] = float(mov_arg)
                 get_cbar_lim = (False, None)
             if mov_arg == '-cmin':
                 get_cbar_lim = (True, 0)
@@ -365,9 +397,9 @@ for it in range(len(positions)):
         if cbar_lims != [None, None]:
             args_dict['cbar_min'] = cbar_lims[0]
             args_dict['cbar_max'] = cbar_lims[1]
-        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']):
+        if np.min([args_dict['cbar_min'], args_dict['cbar_max']]) <= 0.0:
             #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
-            if 'Relative_Keplerian_Velocity' in field_str or 'B_angle' in field_str:
+            if 'Relative_Keplerian_Velocity' in field_str or 'B_angle' in field_str or 'Total_Energy' in field_str:
                 plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
             else:
                 plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.RdBu, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
@@ -378,7 +410,7 @@ for it in range(len(positions)):
             print("plotted with log scale")
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
-        #mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         part_info['particle_mass'] = np.sort(part_info['particle_mass'])[::-1]
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
         if 'annotate_time' in list(args_dict.keys()):
@@ -394,16 +426,17 @@ for it in range(len(positions)):
         axes_dict[ax_label].set_xlim(args_dict['xlim'])
         axes_dict[ax_label].set_ylim(args_dict['ylim'])
         for line in axes_dict[ax_label].xaxis.get_ticklines():
-            line.set_color('white')
+            line.set_color('black')
         for line in axes_dict[ax_label].yaxis.get_ticklines():
-            line.set_color('white')
+            line.set_color('black')
+        axes_dict[ax_label].tick_params(direction='in')
         if positions[it][0] == 1:
             axes_dict[ax_label].set_ylabel(args_dict['yabel'], labelpad=args.y_label_pad, fontsize=args.text_font)
         if args.share_colourbar == False:
             if positions[it][0] == columns:
                 cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
                 if field_str == 'dens':
-                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                    cbar.set_label('Density (g$\,$cm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'magnetic_field_poloidal':
                     cbar.set_label('$B_\mathrm{Pol}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'magnetic_field_toroidal':
@@ -416,6 +449,10 @@ for it in range(len(positions)):
                     cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'B_angle':
                     cbar.set_label(r"$\theta$ ($^{\circ}$)", rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'pressure':
+                    cbar.set_label('Pressure (g$\,$cm$\,$s$^{-2}$)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'Total_Energy':
+                    cbar.set_label('Total Energy (erg)', rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
@@ -618,21 +655,24 @@ for it in range(len(positions)):
                 get_col_mean = True
 
         if cal_col_dens:
-            pickle_file = file_dir[it] + 'column_density_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+            pickle_file = save_dir + 'column_density_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         else:
-            pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+            pickle_file = save_dir + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         if os.path.isfile(pickle_file) == False:
             call_line = " ".join(arg_list)
             os.system(call_line)
 
-        file = open(pickle_file, 'r')
-        prof_x, prof_y, sampled_points = pickle.load(file)
+        file = open(pickle_file, 'rb')
+        prof_x, prof_y, sampled_points, part_pos = pickle.load(file)
         file.close()
 
         if is_log:
             axes_dict[ax_label].semilogy(prof_x, prof_y, 'k-', linewidth=2.)
         else:
             axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
+            separation = np.sqrt(np.sum((part_pos[0] - part_pos[1])**2)).in_units('AU')
+            if separation < r_max:
+                axes_dict[ax_label].axvline(x=separation.value, linestyle=':', alpha=0.5)
         '''
         for sep in separation:
             axes_dict[ax_label].axvline(x=sep, alpha=0.5)
@@ -1123,11 +1163,17 @@ for it in range(len(positions)):
         plt.xlim([0.0, 1.3])
         plt.ylim(bottom=0.0)
     
-    if positions[it][0] != 1 and 'accr_prof' not in plot_type[it]:
+    if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
         yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
         plt.setp(yticklabels, visible=False)
+        if positions[it][1] == 2 and positions[it][0] == 2:
+            yticklabels = axes_dict[ax_label].get_yticklabels()
+            plt.setp(yticklabels, visible=True)
+            yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
+            plt.setp(yticklabels, visible=True)
+            axes_dict[ax_label].set_ylabel('$y$ (AU)', fontsize=args.text_font)
     if positions[it][1] != rows:
         if 'movie' in plot_type[it]:
             xticklabels = axes_dict[ax_label].get_xticklabels()
@@ -1142,6 +1188,8 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+                if positions[it][1] == 2 and positions[it][0] == 2:
+                    plt.setp(xticklabels[0], visible=True)
                 #if positions[it][0] == 3:
                 #    plt.setp(xticklabels[1], visible=False)
 
