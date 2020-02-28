@@ -964,7 +964,7 @@ yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
 '''
 def _Is_Unbound(field, data):
     """
-    returned boolean array about whether the gas is bound or unbound using the total potential energy adn the kinetic energy
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
     """
     Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg').value
     unbound_inds = np.where(Total_Energy > 0.0)[0]
