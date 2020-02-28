@@ -36,12 +36,12 @@ def parse_inputs():
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
-    parser.add_argument("-sc", "--smooth_cells", help="how many cells would you like the smooth the velocities over? If not defined it is set to half the annotatation frequency")
+    parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
     parser.add_argument("-wr", "--working_rank", default=0, type=int)
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
     parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=list, default=[])
-    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-16)
+    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default='1.e-16')
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-14)
     parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
@@ -127,7 +127,7 @@ def sim_info(path, file, args):
             ymin = f['minmax_xyz'][2][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
             ymax = f['minmax_xyz'][2][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
         f.close()
-        annotate_freq = ((xmax/cl) - (xmin/cl))/31.
+        annotate_freq = ((xmax/cl) - (xmin/cl))/args.velocity_annotation_frequency
     except:
         f = h5py.File(file, 'r')
         f.close()
@@ -152,11 +152,8 @@ def sim_info(path, file, args):
             ymax = args.ax_lim
         cl = (xmax-xmin)/dim
         xmin_full = xmin
-        annotate_freq = dim/31.
-    if args.smooth_cells == None:
-        smoothing = annotate_freq/2
-    else:
-        smoothing = int(args.smooth_cells)
+        annotate_freq = dim/args.velocity_annotation_frequency
+    smoothing = annotate_freq/2
     if args.axis == "xz":
         type = "proj"
     else:
@@ -258,18 +255,18 @@ def main():
     files = get_files(path, args)
     simfo = sim_info(path, files[0], args)
     if args.yt_proj == False:
-        X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times)
+        X, Y, X_vel, Y_vel, cl = mym.initialise_grid(files[-1], zoom_times=args.zoom_times, num_of_vectors=args.velocity_annotation_frequency)
         L=None
     else:
         x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
         y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
         X, Y = np.meshgrid(x, y)
                 
-        annotate_space = (simfo['xmax'] - simfo['xmin'])/31.
+        annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
         x_ind = []
         y_ind = []
         counter = 0
-        while counter < 31:
+        while counter < args.velocity_annotation_frequency:
             val = annotate_space*counter + annotate_space/2. + simfo['xmin']
             x_ind.append(int(val))
             y_ind.append(int(val))
@@ -342,7 +339,10 @@ def main():
 
     # Define colourbar bounds
     cbar_max = args.colourbar_max
-    cbar_min = args.colourbar_min
+    try:
+        cbar_min = float(args.colourbar_min)
+    except:
+        cbar_min = float(args.colourbar_min[1:])
     
     sys.stdout.flush()
     CW.Barrier()
@@ -810,8 +810,7 @@ def main():
                     plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 cbar = plt.colorbar(plot, pad=0.0)
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
-                #import pdb
-                #pdb.set_trace()
+
                 if has_particles:
                     if args.annotate_particles_mass == True:
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'],depth_array=part_info['depth_position'])
