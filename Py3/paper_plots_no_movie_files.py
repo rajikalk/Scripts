@@ -83,6 +83,9 @@ def parse_inputs():
     parser.add_argument("-p_best", "--plot_best_fit", help="Do you want to plot the best fitting phasefolded curve", type=str, default="False")
     parser.add_argument("-method", "--beta_method", help="How do you want to calculate beta?", type=int, default=1)
     parser.add_argument("-res_study", "--resolution_study", help="plot resolution study?", type=str, default="False")
+    parser.add_argument("-accr_prof", "--accretion_profile", help="Do you want to plot only the accretion profile?", type=str, default="False")
+    parser.add_argument("-p_num", "--periastron_number", help="Which periastron do you want to plot?", type=int, default=1)
+    parser.add_argument("-accr_prof_width", "--accretion_profile_width", help="How many yrs form periastron do you want to plot ofn either side?", type=float, default=50)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -377,7 +380,7 @@ if args.force_comp  == 'True':
         print("created force comparison plot:", save_image_name)
     else:
         pickle_file = path + 'force_comp_pickle.pkl'
-        file = open(pickle_file, 'w+')
+        file = open(pickle_file, 'wb')
         pickle.dump((x, y, times, args.y_label),file)
         file.close()
         print("created force comp pickle:", pickle_file)
@@ -394,7 +397,7 @@ if args.separation == 'True':
     fig.set_size_inches(6, 8.)
     if args.plot_eccentricity == 'True':
         #files = ["Mach_0.1/Lref_09/particle_data.pkl", "Mach_0.2/Lref_09/particle_data.pkl"]
-        files = ["Mach_0.2/Lref_09/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl", "Mach_0.2/Lref_11/particle_data.pkl", "Mach_0.2/Lref_12/particle_data.pkl"]
+        files = ["Mach_0.2/Lref_9/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl", "Mach_0.2/Lref_11/particle_data.pkl", "Mach_0.2/Lref_12/particle_data.pkl"]
         gs = gridspec.GridSpec(3, 1)
         #gs = gridspec.GridSpec(4, 1)
         gs.update(hspace=0.0)
@@ -835,6 +838,7 @@ if args.calculate_apsis == 'True':
     file_open = open(pickle_file, 'rb')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
+    print("Read in particle pickle")
     
     apsis_pickle = path + 'apsis_data.pkl'
     if os.path.exists(apsis_pickle):
@@ -861,7 +865,8 @@ if args.calculate_apsis == 'True':
             moving_index = moving_index + 1
         particle_data['time'] = np.array(moving_average_time)
         particle_data['separation'] = np.array(moving_average_sep)
-        periastron_inds = [np.argmin(particle_data['separation'][:np.argmin(abs(particle_data['time']-1550))])]
+        non_nan_inds = np.where(np.isnan(particle_data['separation'])==False)[0]
+        periastron_inds = [np.argmin(np.nan_to_num(particle_data['separation'][non_nan_inds][:np.argmin(abs(particle_data['time'][non_nan_inds]-2000))]))]
         apastron_inds = []
         index_interval = 1000
         index = periastron_inds[0] + index_interval
@@ -1798,6 +1803,84 @@ if args.plot_beta == "True":
     plt.ylim([0.0, 55])
     plt.ylabel('$\\beta$')
     ymax = np.max(beta_total) + 1
+    plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
+    plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
+    
+if args.accretion_profile == 'True':
+    plt.clf()
+    fig, ax1 = plt.subplots()
+    fig.set_size_inches(12.5,2.5)
+    
+    pickle_file = save_dir + 'particle_data.pkl'
+    file_open = open(pickle_file, 'rb')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
+    
+    accretion_profile_pickle = save_dir + 'accretion_profile.pkl'
+    if os.path.isfile(accretion_profile_pickle):
+        file_open = open(accretion_profile_pickle, 'rb')
+        smoothed_time, smoothed_quantity = pickle.load(file_open)
+        file_open.close()
+    else:
+        window = 10 #in units years
+        smoothed_time = []
+        smoothed_quantity = []
+        particle_data_time = np.array(particle_data['time'])
+        particle_data_quantity = np.array(particle_data['mdot'])
+        print("Smoothing accretion profile")
+        for ind in range(len(particle_data_quantity)):
+            smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
+            time = np.mean(particle_data_time[smoothing_inds])
+            quantity = np.mean(particle_data_quantity[smoothing_inds])
+            smoothed_time.append(time)
+            smoothed_quantity.append(quantity)
+        print("smoothed accretion profile")
+        
+        print("writing accretion profile pickle")
+        file = open(accretion_profile_pickle, 'wb')
+        pickle.dump((smoothed_time, smoothed_quantity), file)
+        file.close()
+        print("Created Pickle:", accretion_profile_pickle)
+        
+    apsis_pickle = path + 'apsis_data.pkl'
+    file_open = open(apsis_pickle, 'rb')
+    periastron_inds, apastron_inds = pickle.load(file_open)
+    file_open.close()
+    
+    central_time = particle_data['time'][periastron_inds[args.periastron_number-1]]
+    xlim = [central_time-args.accretion_profile_width, central_time+args.accretion_profile_width]
+    start_ind = np.argmin(abs(np.array(smoothed_time)-xlim[0]))
+    end_ind = np.argmin(abs(np.array(smoothed_time)-xlim[1]))
+    
+    dot_times = [central_time-16, central_time-8, central_time, central_time+8, central_time+16]
+    print("dot times=", dot_times)
+    #xlabel = r"Time ($yr$)"
+    #ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
+    
+    ax1.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_quantity[start_ind:end_ind])*10000)
+    for dot in dot_times:
+        dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
+        ax1.plot(smoothed_time[dot_ind], np.array(smoothed_quantity[dot_ind])*10000, 'ro')
+    ax1.set_xlabel(r'Time ($yr$)', fontsize=args.text_font)
+    ax1.set_ylabel(r'Accretion Rate ($10^{-4}\,M_{\odot}/yr$)', fontsize=args.text_font)
+    ax1.set_xlim(xlim)
+    ax1.set_ylim([np.min(np.array(smoothed_quantity[start_ind:end_ind])*10000) - 0.5,np.max(np.array(smoothed_quantity[start_ind:end_ind])*10000) + 0.5])
+    #ax1.axvline(x=central_time, ls='--', color='k', alpha=0.75)
+    
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+
+    start_ind = np.argmin(abs(np.array(particle_data['time'])-xlim[0]))
+    end_ind = np.argmin(abs(np.array(particle_data['time'])-xlim[1]))
+    
+    ax2.set_ylabel('Separation (AU)')  # we already handled the x-label with ax1
+    ax2.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], 'k:')
+    ax2.set_ylim([0,np.max(np.array(particle_data['separation'][start_ind:end_ind])) + 0.5])
+    ax2.tick_params(axis='y')
+    
+    #plt.xaxis.set_ticks_position('both')
+    #plt.yaxis.set_ticks_position('both')
+    #plt.tick_params(direction='in')
+    file_name = save_dir + 'accretion_profile_zoom_'+str(args.periastron_number)
     plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
     plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
 
