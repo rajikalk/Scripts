@@ -13,9 +13,26 @@ import my_fields as myf
 import scipy.spatial as spatial
 import pickle
 import matplotlib.patheffects as path_effects
+from matplotlib import transforms
 
 fontgize_global=12
 
+def rainbow_text(x,y,ls,lc,**kw):
+
+    t = plt.gca().transData
+    figlocal = plt.gcf()
+
+    #horizontal version
+    for s,c in zip(ls,lc):
+        text = plt.text(x,y,""+s+"",color=c, transform=t, **kw)
+        text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        text.draw(figlocal.canvas.get_renderer())
+        ex = text.get_window_extent()
+        if "odot" in s:
+            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+        else:
+            t = transforms.offset_copy(text._transform, x=0.85*ex.width, units='dots')
+        
 def set_global_font_size(x):
     global fontgize_global
     fontgize_global = x
@@ -267,7 +284,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
                  'depth_position':depth_pos}
     return part_info
 
-def initialise_grid(file, zoom_times=0):#, center=0):
+def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
     f = h5py.File(file, 'r')
     for key in list(f.keys()):
         if 'dens' in key:
@@ -282,7 +299,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     cl = (xmax-xmin)/dim
     xmin = f['minmax_xyz'][0][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
     xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
-    annotate_freq = ((xmax/cl) - (xmin/cl))/31.
+    annotate_freq = ((xmax/cl) - (xmin/cl))/num_of_vectors
     x = np.arange(xmin+cl/2., xmax+cl/2., cl)
     #x = np.arange(xmin, xmax, cl)[:-1]
     '''
@@ -292,7 +309,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     x_ind = []
     y_ind = []
     counter = 0
-    while counter < 31:
+    while counter < num_of_vectors:
         val = annotate_freq*counter + annotate_freq/2.
         x_ind.append(int(val))
         y_ind.append(int(val))
@@ -412,7 +429,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         depth_array = np.argsort(depth_array)
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    part_color = ['cyan','cyan','r','c','y','w','k']
+    part_color = ['cyan','magenta','r','c','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
     ymin = limits[1][0]
@@ -436,6 +453,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         unit_string = 'M$_\odot$'
     field_symbol = '$' + field_symbol + '_'
     p_t = ''
+    rainbow_text_colors = []
     for pos_it in depth_array:
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=2., c='k')
@@ -454,13 +472,18 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = '{:0.1e}'.format(annotate_field[pos_it])
             if p_t == '':
-                p_t = field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
+                p_t = field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
             else:
-                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
+                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
             print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
+            rainbow_text_colors.append(part_color[pos_it])
+            rainbow_text_colors.append('white')
+            rainbow_text_colors.append('white')
+    print('annotation_string =', p_t)
     if annotate_field is not None:
-        part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
-        part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontgize_global)
+        #part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
+        #part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         #axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
         #print("Annotated particle field")
     return axis
