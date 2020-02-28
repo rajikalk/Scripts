@@ -279,6 +279,7 @@ if len(movie_files) > 0:
                 y_arr = image/(2.8*yt.units.mass_hydrogen.in_units('g'))
                 w_arr = None
                 z_arr = None
+                part_pos = np.array([part_pos_x, part_pos_y])
             else:
                 myf.set_center(args.center)
                 myf.set_coordinate_system('cylindrical')
@@ -355,11 +356,11 @@ if len(movie_files) > 0:
                 print("created profile plot:", save_image_name)
             else:
                 if args.calc_column_mean != "False":
-                    pickle_file = path + 'column_density_profile_pickle_'+str(args.plot_time)+'.pkl'
+                    pickle_file = save_dir + 'column_density_profile_pickle_'+str(args.plot_time)+'.pkl'
                 else:
-                    pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
-                file = open(pickle_file, 'w+')
-                pickle.dump((prof_x, prof_y, sampled_points),file)
+                    pickle_file = save_dir + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
+                file = open(pickle_file, 'wb')
+                pickle.dump((prof_x, prof_y, sampled_points, part_pos),file)
                 file.close()
                 print("created profile pickle:", pickle_file)
 
