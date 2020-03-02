@@ -349,8 +349,11 @@ for it in range(len(positions)):
             if mov_arg == '-wf':
                 get_weight_field = True
             if get_cbar_lim[0] == True:
-                if mov_arg[1] == "-":
-                    cbar_lims[get_cbar_lim[1]] = float(mov_arg[1:])
+                if len(mov_arg) > 1:
+                    if mov_arg[1] == "-":
+                        cbar_lims[get_cbar_lim[1]] = float(mov_arg[1:])
+                    else:
+                        cbar_lims[get_cbar_lim[1]] = float(mov_arg)
                 else:
                     cbar_lims[get_cbar_lim[1]] = float(mov_arg)
                 get_cbar_lim = (False, None)
