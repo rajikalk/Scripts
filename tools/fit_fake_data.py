@@ -1,7 +1,7 @@
 """Here we create some fake data using templates, and try to fit to this data 
 using process_stellar to extract the radial velocities using TODCOR"""
 
-from __future__ import division, print_function
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline

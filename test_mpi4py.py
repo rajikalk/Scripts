@@ -1,5 +1,5 @@
-from __future__ import print_function
-from __future__ import division
+
+
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 import yt

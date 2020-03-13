@@ -35,10 +35,10 @@ def main():
     center_pos = dd['Center_Position']
     part_pos = dd['All_Particle_Positions']
     part_mass = dd['All_Particle_Masses']
-    print "center vel =", myf.get_center_vel()
-    print "center pos for field calculations", myf.get_center_pos()
-    print "particle positions are:", myf.get_part_pos()
-    print "particle masses are:", myf.get_part_mass()
+    print("center vel =", myf.get_center_vel())
+    print("center pos for field calculations", myf.get_center_pos())
+    print("particle positions are:", myf.get_part_pos())
+    print("particle masses are:", myf.get_part_mass())
     center_pos = np.array([0.0, 0.0, 0.0])
     proj = yt.OffAxisProjectionPlot(ds, L, [field, 'cell_mass', 'velx_mw', 'vely_mw', 'magx_mw', 'magy_mw'], center=(center_pos, 'AU'), width=(args.ax_lim, 'AU'), depth=(args.slice_thickness, 'AU'))
     image = (proj.frb.data[simfo['field']]/thickness.in_units('cm')).value

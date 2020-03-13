@@ -92,11 +92,11 @@ if args.make_paper_plot == 'False':
                 if args.absorption != 'False':
                     if args.all_spectral_types != 'False':
                         rv_abs, rv_abs_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), heliocentric_correction=0.0)
-                        print("ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig))
+                        print(("ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig)))
                     else:
                         if RV_standard_data[ind][1][0] in abs_corr_spt:
                             rv_abs, rv_abs_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), heliocentric_correction=0.0)
-                            print("ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig))
+                            print(("ABSORPTION OFFSET= " + str(rv_abs) + ', '+ str(rv_abs_sig)))
                         else:
                             rv_abs = 0.0
                             rv_abs_sig = np.nan
@@ -111,7 +111,7 @@ if args.make_paper_plot == 'False':
                 if args.skylines != 'False':
                     spectrum,sig = ps.weighted_extract_spectrum(sky,var)
                     rv_sky, rv_sky_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,sky_temp, (sky_intervals), heliocentric_correction=0.0)
-                    print("SKYLINE OFFSET= " + str(rv_sky) + ', '+ str(rv_sky_sig))
+                    print(("SKYLINE OFFSET= " + str(rv_sky) + ', '+ str(rv_sky_sig)))
                     if np.isnan(rv_sky) or np.isnan(rv_sky_sig) or np.abs(rv_sky)>100.:
                         print("COULD NOT GET A RELIABLE SKYLINE RV")
                         rv_sky = 0.0
@@ -163,12 +163,12 @@ if args.make_paper_plot == 'False':
                 print ("#")
                 print ("#")
                 print ("#")
-                print ("FILE =", obj_name + '_' + file)
-                print ("TEMP_USED", temp_used)
-                print ("SPECTRAL TYPE =", sptype)
-                print ("OBJECT RV =", RV_standard_data[ind][0])
-                print ("OBTAINED RV=", rv)
-                print ("DELTA RV=", np.abs(float(RV_standard_data[ind][0]) - float(rv)))
+                print(("FILE =", obj_name + '_' + file))
+                print(("TEMP_USED", temp_used))
+                print(("SPECTRAL TYPE =", sptype))
+                print(("OBJECT RV =", RV_standard_data[ind][0]))
+                print(("OBTAINED RV=", rv))
+                print(("DELTA RV=", np.abs(float(RV_standard_data[ind][0]) - float(rv))))
                 print ("#")
                 print ("#")
                 print ("#")
@@ -235,10 +235,10 @@ if args.make_paper_plot == 'False':
     #y_fit = function(x_fit, *popt_M)
 
     #print "For F: mu = ", np.mean(D_rvs[0]), "std = ", np.std(D_rvs[0], ddof=1)
-    print("For G: mu = ", np.mean(D_rvs[1]), "std = ", np.std(D_rvs[1], ddof=1))
-    print("For K: mu = ", np.mean(D_rvs[2]), "std = ", np.std(D_rvs[2], ddof=1))
-    print("For M: mu = ", np.mean(D_rvs[3]), "std = ", np.std(D_rvs[3], ddof=1))
-    print("Total: mu = ", popt[1], "std = ", popt[2])
+    print(("For G: mu = ", np.mean(D_rvs[1]), "std = ", np.std(D_rvs[1], ddof=1)))
+    print(("For K: mu = ", np.mean(D_rvs[2]), "std = ", np.std(D_rvs[2], ddof=1)))
+    print(("For M: mu = ", np.mean(D_rvs[3]), "std = ", np.std(D_rvs[3], ddof=1)))
+    print(("Total: mu = ", popt[1], "std = ", popt[2]))
 
     temp_file = open('histogram'+args.plot_suffix+'.pkl', 'wb')
     pickle.dump((centers, hist_M, hist_K, hist_G, total_gauss_fit), temp_file)

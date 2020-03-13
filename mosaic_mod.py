@@ -85,7 +85,7 @@ def has_sinks(file):
     try:
         part_file = file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
-        if f[f.keys()[1]][-1][-1] > 0:
+        if f[list(f.keys())[1]][-1][-1] > 0:
             f.close()
             return True
         else:
@@ -93,7 +93,7 @@ def has_sinks(file):
             return False
     except:
         f = h5py.File(file, 'r')
-        if "particlepositions" in f.keys():
+        if "particlepositions" in list(f.keys()):
             f.close()
             return True
         else:
@@ -125,11 +125,11 @@ def sim_info(path, file, args):
 
     try:
         f = h5py.File(file, 'r')
-        if 'r_accretion' in f.keys():
+        if 'r_accretion' in list(f.keys()):
             racc = f['r_accretion'][0]/yt.units.AU.in_units('cm').value
         else:
             racc = 0.0
-        for key in f.keys():
+        for key in list(f.keys()):
             if args.field in key:
                 field = key
         dim = np.shape(f[field])[0]
@@ -158,7 +158,7 @@ def sim_info(path, file, args):
     except:
         f = h5py.File(file, 'r')
         if has_sinks(file):
-            racc = f[f.keys()[18]][109][-1]/yt.units.AU.in_units('cm').value
+            racc = f[list(f.keys())[18]][109][-1]/yt.units.AU.in_units('cm').value
         else:
             racc = 0.0
         f.close()
@@ -190,7 +190,7 @@ def sim_info(path, file, args):
         smoothing = annotate_freq/2
     else:
         smoothing = int(args.smooth_cells)
-    print "PLOT FIELD IS", field
+    print("PLOT FIELD IS", field)
     sim_info = {'angular_momentum':ang_val,
                 'movie_type':movie_type,
                 'field': field,
@@ -272,7 +272,7 @@ def main():
     size = CW.Get_size()
     args = parse_inputs()
     prev_args = args
-    print "Starting mosaic_mod_script on rank", rank
+    print("Starting mosaic_mod_script on rank", rank)
 
     # Read in directories:
     input_file = args.input_file
@@ -281,7 +281,7 @@ def main():
         os.makedirs(save_dir)
 
     # Read in input file
-    print "Reading in input mosaic file on rank", rank
+    print("Reading in input mosaic file on rank", rank)
     positions = []
     paths = []
     args_dict = []
@@ -303,7 +303,7 @@ def main():
                         dict = dict + ','
                 dict = ast.literal_eval(dict)
                 args_temp = argparse.Namespace(**vars(args))
-                for key in dict.keys():
+                for key in list(dict.keys()):
                     if key in args:
                         exec("args_temp."+ key + " = " + "str(dict[key])")
                 args_dict.append(args_temp)
@@ -367,14 +367,14 @@ def main():
                     L.append(0.0)
                     if L[0] > 0.0:
                         L = [-1.0*L[0], -1.0*L[1], 0.0]
-            print "SET PROJECTION ORIENTATION L=", L
+            print("SET PROJECTION ORIENTATION L=", L)
             L = np.array(L)
             X.append(x)
             Y.append(y)
             X_vel.append(x_vel)
             Y_vel.append(y_vel)
         if rank == 0:
-            print "shape of x, y", np.shape(x), np.shape(y)
+            print("shape of x, y", np.shape(x), np.shape(y))
 
         if args_dict[pit].yt_proj == False and args_dict[pit].image_center != 0:
             sim_fs = sorted(glob.glob(paths[pit] + 'WIND_hdf5_plt_cnt*'))
@@ -409,12 +409,12 @@ def main():
             usable_sim_files.append([])
     sys.stdout.flush()
     CW.Barrier()
-    frames = range(args.start_frame, no_frames)
+    frames = list(range(args.start_frame, no_frames))
 
     sink_form_time = []
     for pit in range(len(paths)):
         sink_form = mym.find_sink_formation_time(files[pit])
-        print "sink_form_time", sink_form_time
+        print("sink_form_time", sink_form_time)
         sink_form_time.append(sink_form)
     del files
 
@@ -484,14 +484,14 @@ def main():
                             axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
                             #print "ADDED SUBPLOT:", counter, "on rank", rank
                         else:
-                            axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
+                            axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'], sharey=axes_dict[list(axes_dict.keys())[yit]])})
                             #print "ADDED SUBPLOT:", counter, "on rank", rank
                     elif args.share_x:
                         axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[it][1]-1,positions[pit][0]-1], sharex=axes_dict['ax1'])})
                         #print "ADDED SUBPLOT:", counter, "on rank", rank
                     elif args.share_y and positions[pit][0]!=1:
                         yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1], sharey=axes_dict[list(axes_dict.keys())[yit]])})
                         #print "ADDED SUBPLOT:", counter, "on rank", rank
                     elif args.share_y:
                         axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
@@ -502,14 +502,14 @@ def main():
                 else:
                     if args.share_x and args.share_y:
                         yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'], sharey=axes_dict[list(axes_dict.keys())[yit]])})
                         #print "ADDED SUBPLOT:", counter, "on rank", rank
                     elif args.share_x:
                         axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharex=axes_dict['ax1'])})
                         #print "ADDED SUBPLOT:", counter, "on rank", rank
                     elif args.share_y:
                         yit = np.where(positions[:,1] == positions[pit][1])[0][0]
-                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit]])})
+                        axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0], sharey=axes_dict[list(axes_dict.keys())[yit]])})
                         #print "ADDED SUBPLOT:", counter, "on rank", rank
                     else:
                         axes_dict.update({ax_label:fig.add_subplot(gs_right[positions[pit][1]-1,0])})
@@ -521,7 +521,7 @@ def main():
 
                 if args.yt_proj and args.plot_time==None and os.path.isfile(paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"):
                     pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
-                    print "USING PICKLED FILE:", pickle_file
+                    print("USING PICKLED FILE:", pickle_file)
                     file = open(pickle_file, 'r')
                     #weight_fieldstuff = pickle.load(file)
                     X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, part_info, args_dict[pit], simfo[pit] = pickle.load(file)
@@ -531,7 +531,7 @@ def main():
 
                 else:
                     time_val = m_times[frame_val]
-                    print "FILE =", usable_files[pit][frame_val]
+                    print("FILE =", usable_files[pit][frame_val])
                     has_particles = has_sinks(usable_files[pit][frame_val])
                     if has_particles:
                         part_info = mym.get_particle_data(usable_files[pit][frame_val], args_dict[pit].axis, proj_or=L)
@@ -557,14 +557,14 @@ def main():
                             min_dist = 1000.0
                             for part in range(len(part_info['particle_mass'])):
                                 f = h5py.File(sim_file, 'r')
-                                temp_pos = np.array([f[f.keys()[11]][part][13]/c['au'], f[f.keys()[11]][part][13+y_int]/c['au']])
+                                temp_pos = np.array([f[list(f.keys())[11]][part][13]/c['au'], f[list(f.keys())[11]][part][13+y_int]/c['au']])
                                 f.close()
                                 dist = np.sqrt(np.abs(np.diff((temp_pos - pos)**2)))[0]
                                 if dist < min_dist:
                                     min_dist = dist
                                     part_ind = part
                         f = h5py.File(sim_file, 'r')
-                        center_vel = [f[f.keys()[11]][part_ind][18], f[f.keys()[11]][part_ind][19], f[f.keys()[11]][part_ind][20]]
+                        center_vel = [f[list(f.keys())[11]][part_ind][18], f[list(f.keys())[11]][part_ind][19], f[list(f.keys())[11]][part_ind][20]]
                         f.close()
                     xabel, yabel, xlim, ylim = image_properties(X[pit], Y[pit], args_dict[pit], simfo[pit])
                     if args_dict[pit].axis == 'xy':
@@ -628,13 +628,13 @@ def main():
                                 file = open(pickle_file, 'w+')
                                 pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
                                 file.close()
-                                print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
+                                print("Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val])
                         else:
                             pickle_file = paths[pit] + "movie_frame_" + ("%06d" % frames[frame_val]) + ".pkl"
                             file = open(pickle_file, 'w+')
                             pickle.dump((X[pit], Y[pit], image, magx, magy, X_vel[pit], Y_vel[pit], velx, vely, xlim, ylim, has_particles, part_info, simfo[pit], time_val,xabel, yabel), file)
                             file.close()
-                            print "Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val]
+                            print("Created Pickle:", pickle_file, "for  file:", usable_files[pit][frame_val])
                     
                     f.close()
 
@@ -657,7 +657,7 @@ def main():
                     r_acc = np.round(part_info['accretion_rad'])
                     axes_dict[ax_label].annotate('$r_{acc}$='+str(r_acc)+'AU', xy=(0.98*simfo[pit]['xmax'], 0.93*simfo[pit]['ymax']), va="center", ha="right", color='w', fontsize=args_dict[pit].text_font)
                 if args.annotate_time == "True" and pit == 0:
-                    print "ANNONTATING TIME:", str(int(time_val))+'yr'
+                    print("ANNONTATING TIME:", str(int(time_val))+'yr')
                     time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
                     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                     #ax.annotate('$t$='+str(int(time_val))+'yr', xy=(xlim[0]+0.01*(xlim[1]-xlim[0]), ylim[1]-0.03*(ylim[1]-ylim[0])), va="center", ha="left", color='w', fontsize=args.text_font)
@@ -721,13 +721,13 @@ def main():
                 
                 if args.image_center != 0 and has_particles:
                     X[pit], Y[pit], X_vel[pit], Y_vel[pit] = original_positions
-            print 'Created frame', (frames[frame_val]), 'of', str(frames[-1]), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps'
+            print('Created frame', (frames[frame_val]), 'of', str(frames[-1]), 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.eps')
 
         rit = rit +1
         if rit == size:
             rit = 0
 
-    print "completed making movie frames on rank", rank
+    print("completed making movie frames on rank", rank)
 
 if __name__ == '__main__': main()
 

@@ -35,12 +35,12 @@ for fn in fns:
     for temp in templates:
         if Obj_name in temp and ''.join(Obs_date.split('-')) not in temp and use_self == True:
             templates = [temp]
-            print "Observed before so will compare with itself"
+            print("Observed before so will compare with itself")
             break
         else:
             templates = glob.glob('/Users/rajikak/tools/templates/*')
     if len(templates) >1:
-        print "Using RV standards"
+        print("Using RV standards")
     #templates = glob.glob('/Users/rajikak/tools/self_templates/*')
     #templates = glob.glob('/Users/rajikak/Observational_Data/Reduced_Wifes_Obs/20140622/*-0030*')
     '''
@@ -54,7 +54,7 @@ for fn in fns:
     rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,templates, ([0,5400],[6870,6890]), save_figures=True, save_dir=temp_dir, heliocentric_correction=h_corr)
 
     write_string = Obj_name+','+RA+','+DEC+','+str(Obs_date)+','+str(rv)+','+str(rv_sig)+','+str(h_corr)+','+str(temp_used)+'\n'
-    print write_string
+    print(write_string)
     f.write(write_string)
     f.close()
     #MAKE LATEX

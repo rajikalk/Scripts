@@ -22,10 +22,12 @@ def parse_inputs():
     parser.add_argument("-ff", "--file_frequency", help="every how many files do you want to use?", default=100, type=int)
     parser.add_argument("-dt", "--time_step", help="How frequently do you want to measure the outflow?", default=2, type=int)
     parser.add_argument("-lb", "--lower_bounds", help="lower bounds of box", type=float, default=50.0)
-    parser.add_argument("-rad", "--radius", help="What is the radius of the measuring cylindar", type=float, default=6000.0)
     parser.add_argument("-vthres", "--velocity_threshold", help="what velocity threshold do you want to use to outflowing material?", type=float, default=0.0)
     parser.add_argument("-center", "--disk_center", help="do you want two disks centered on the particles or a volume centered on the CoM?", default='CoM', type=str)
+    parser.add_argument("-radius", "--disk_radius", help="Measuring cylinder radius", default=100.0, type=float)
+    parser.add_argument("-thickness", "--disk_height", help="Measuring cylinder thickness", default=100.0, type=float)
     parser.add_argument("-st", "--start_time", help="default is -500yr", default=-500.0, type=float)
+    parser.add_argument("-measure_disk", "--measure_disk_mass", help="Do you want to measure disk mass?", default='True', type=str)
     #parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -51,14 +53,10 @@ file_name = 'WIND_hdf5_plt_cnt_*'
 files = sorted(glob.glob(dir + file_name))
 
 #define analysis cylinder:
-if args.disk_center == 'CoM':
-    radius = 100.0
-    height = 100.0
-    tube_center_1 = None
-else:
-    radius = 20.0
-    height = 20.0
-    tube_center_1 = None
+radius = args.disk_radius
+height = args.disk_height
+ube_center_1 = None
+if args.disk_center != 'CoM':
     tube_center_2 = None
 
 #read in sink creation time
@@ -71,7 +69,7 @@ sink_form = np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value
 m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, start_time=args.start_time)
 usable_files = mym.find_files(m_times, files)
 
-print "usable_files =", usable_files
+print("usable_files =", usable_files)
 
 #open files to read data out to:
 if os.path.isfile(save_dir + output_file) == False:
@@ -86,25 +84,48 @@ for file in usable_files:
     part_file = file[:-12] + 'part' + file[-5:]
     ds = yt.load(file, particle_filename=part_file)
     dd = ds.all_data()
-    dist = np.sqrt(dd['CoM'][0]**2. + dd['CoM'][1]**2. + dd['CoM'][2]**2.).in_units('AU').value
-    print "CoM dist =", dist, "(AU)"
+    #dist = np.sqrt(np.sum(dd.quantities.center_of_mass(use_gas=True,use_particles=True).in_units('AU')**2)).value
+    #print("CoM dist =", dist, "(AU)")
     
 
     if args.disk_center == 'CoM':
-        center_1 = [dd['CoM'][0].in_units('cm'), dd['CoM'][1].in_units('cm'), dd['CoM'][2].in_units('cm')]
+        center_1 = dd.quantities.center_of_mass(use_gas=True,use_particles=True)
+        L_1 = [0.0, 0.0, 1.0]
         center_2 = None
     else:
         center_1 = [dd['particle_posx'][0].in_units('cm'), dd['particle_posy'][0].in_units('cm'), dd['particle_posz'][0].in_units('cm')]
-        center_2 = [dd['particle_posx'][1].in_units('cm'), dd['particle_posy'][1].in_units('cm'), dd['particle_posz'][1].in_units('cm')]
+        L_1 = (np.array([dd['particle_angular_momentum_x'][0], dd['particle_angular_momentum_y'][0], dd['particle_angular_momentum_z'][0]])/dd['particle_angular_momentum_magnitude'][0]).value
+        try:
+            center_2 = [dd['particle_posx'][1].in_units('cm'), dd['particle_posy'][1].in_units('cm'), dd['particle_posz'][1].in_units('cm')]
+            L_2 = (np.array([dd['particle_angular_momentum_x'][1], dd['particle_angular_momentum_y'][1], dd['particle_angular_momentum_z'][1]])/dd['particle_angular_momentum_magnitude'][1]).value
+        except:
+            center_2 = None
         
     time_val = ds.current_time.in_units('yr').value - sink_form
 
     #define cylinders:
-    tube_1 = ds.disk(center_1, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
+    tube_1 = ds.disk(center_1, L_1, (radius, 'au'), (height/2., 'au'))
     if center_2 != None:
-        tube_2 = ds.disk(center_2, [0.0, 0.0, 1.0], (radius, 'au'), (height/2., 'au'))
+        tube_2 = ds.disk(center_2, L_2, (radius, 'au'), (height/2., 'au'))
         
-    if center_2 != None:
+    if args.measure_disk_mass == 'True':
+        myf.set_center(0)
+        myf.set_coordinate_system('sph')
+        
+        v_kep_1 = tube_1['Relative_Keplerian_Velocity']
+        keplerian_inds_1 = np.where((v_kep_1>0.8) & (v_kep_1<1.2))[0]
+        disk_mass_1 = np.sum(tube_1['cell_mass'][keplerian_inds_1].in_units('msun'))
+        
+        try:
+            v_kep_2 = tube_2['Relative_Keplerian_Velocity']
+            keplerian_inds_2 = np.where((v_kep_2>0.8) & (v_kep_2<1.2))[0]
+            disk_mass_2 = np.sum(tube_2['cell_mass'][keplerian_inds_2].in_units('msun'))
+        except:
+            disk_mass_2 = yt.YTQuantity(0.0, 'msun')
+        
+        print("OUTPUT=", time_val, disk_mass_1, disk_mass_2)
+        write_data = [time_val, disk_mass_1.value, disk_mass_2.value]
+    elif center_2 != None:
         myf.set_center(1)
         #print "doing center 1, with center_vel =", dd['Center_Velocity']
         Lz_1 = np.sum(tube_1['Angular_Momentum_z'].in_units("Msun * km**2 / s").value)
@@ -114,18 +135,10 @@ for file in usable_files:
         #print "doing center 2, with center_vel =", dd['Center_Velocity']
         Lz_2 = np.sum(tube_2['Angular_Momentum_z'].in_units("Msun * km**2 / s").value)
         del dd
-        print "OUTPUT=", time_val, Lz_1, Lz_2, "on rank", rit
+        print("OUTPUT=", time_val, Lz_1, Lz_2, "on rank", rit)
             
         #send data to rank 0 to append to write out.
         write_data = [time_val, Lz_1, Lz_2]
-    else:
-        myf.set_center(0)
-        myf.set_coordinate_system('sph')
-        v_kep = tube_1['Relative_Keplerian_Velocity']
-        keplerian_inds = np.where((v_kep>0.8) & (v_kep<1.2))[0]
-        disk_mass = np.sum(tube_1['cell_mass'][keplerian_inds].in_units('msun'))
-        print "OUTPUT=", time_val, disk_mass
-        write_data = [time_val, disk_mass]
 
     f = open(save_dir + output_file, 'a')
     write_string = ''
@@ -134,15 +147,15 @@ for file in usable_files:
             write_string = write_string + str(write_data[dit]) + ','
         else:
             write_string = write_string + str(write_data[dit]) + '\n'
-            print "finished creating write line"
-    print "write_string =", write_string
+            print("finished creating write line")
+    print("write_string =", write_string)
     f.write(write_string)
     f.close()
 
     file_no = file_no + 1
-    print "Progress:", file_no, "/", len(usable_files)
+    print("Progress:", file_no, "/", len(usable_files))
     if file_no == len(usable_files):
-        print "BREAKING ON RANK", rank
+        print("BREAKING ON RANK", rank)
         break
 
     #print "file =", file

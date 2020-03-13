@@ -52,7 +52,7 @@ with open(file, 'r') as f:
             mass[pit].append(m)
             accretion.append(mdot)
 
-print "Read sink file"
+print("Read sink file")
 
 particle_tags = np.array(particle_tags)
 time = np.array(time)

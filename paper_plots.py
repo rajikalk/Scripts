@@ -137,7 +137,7 @@ if len(movie_files) > 0:
         final_frame = args.end_frame + 1
     for fit in range(len(usable_files)):
         if fit == 0 or usable_files[fit] != usable_files[fit-1]:
-            print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit]
+            print("CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit])
             if args.slice_plot != "False":
                 movie_file = usable_movie_files[fit]
             file = usable_files[fit]
@@ -145,7 +145,7 @@ if len(movie_files) > 0:
             ds = yt.load(file, particle_filename=part_file)
             dd = ds.all_data()
         else:
-            print "CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit-1]
+            print("CREATING FRAME", args.start_frame + fit, "WITH FILE", usable_files[fit-1])
 
         if args.non_ideal == 'True':
             inds = np.where((dd['temperature']<281)&(dd['temperature']>279))
@@ -161,10 +161,10 @@ if len(movie_files) > 0:
             plt.title('At time '+ times_str + 'yr')
             save_name = save_dir + 'konigl_salmeron_time_'+times_str+'.eps'
             plt.savefig(save_name)
-            print "created file:", save_name
+            print("created file:", save_name)
 
         if args.slice_plot == 'True':
-            print "MAKING SLICE PLOT WIHT FILE:", file
+            print("MAKING SLICE PLOT WIHT FILE:", file)
             n_bins = np.ceil(np.sqrt((args.resolution/2.)**2. + (args.resolution/2.)**2.))
             #myf.set_n_bins(n_bins)
             save_image_name = save_dir + "Slice_Plot_time_" + str(args.plot_time) + ".eps"
@@ -238,14 +238,14 @@ if len(movie_files) > 0:
                     line.set_color('white')
 
                 fig.savefig(save_image_name)
-                print "created slice plot:", save_image_name
+                print("created slice plot:", save_image_name)
             else:
-                print "CREATING PICKLE"
+                print("CREATING PICKLE")
                 pickle_file = save_dir + 'slice_pickle.pkl'
                 file = open(pickle_file, 'w+')
                 pickle.dump((X_vel, Y_vel, xy, field_grid, weight_field, velx, vely, magx_grid, magy_grid, part_info, limits, time_string),file)
                 file.close()
-                print "Created Pickle"
+                print("Created Pickle")
 
         if args.profile_plot == 'True':
             if args.calc_column_mean != "False":
@@ -279,6 +279,7 @@ if len(movie_files) > 0:
                 y_arr = image/(2.8*yt.units.mass_hydrogen.in_units('g'))
                 w_arr = None
                 z_arr = None
+                part_pos = np.array([part_pos_x, part_pos_y])
             else:
                 myf.set_center(args.center)
                 myf.set_coordinate_system('cylindrical')
@@ -286,8 +287,8 @@ if len(movie_files) > 0:
                 center_vel = dd['Center_Velocity'].value
                 part_pos = dd['All_Particle_Positions']
                 part_mass = dd['All_Particle_Masses']
-                print "np.mean(dd['Particle_Potential'])", np.mean(dd['Particle_Potential'])
-                print "Doing Profile Plot"
+                print("np.mean(dd['Particle_Potential'])", np.mean(dd['Particle_Potential']))
+                print("Doing Profile Plot")
                 save_image_name = save_dir + "Profile_Plot_time_" + str(args.plot_time) + ".pdf"
                 L = [0.0, 0.0, 1.0]
                 if myf.get_center() == 0:
@@ -303,7 +304,7 @@ if len(movie_files) > 0:
                     sim_int = int(10*float(ds.directory.split('Mach_')[-1]))
                     disk_mass_measuring_volume = ds.disk(center_pos.value, L, (disk_radii[sim_int], 'au'), (args.disk_thickness, 'au'))
                     disk_mass = np.sum(disk_mass_measuring_volume['cell_mass'].in_units('msun'))
-                    print "DISK MASS FOR MACH", sim_int/10., "IS", disk_mass
+                    print("DISK MASS FOR MACH", sim_int/10., "IS", disk_mass)
                 if args.weight_field != None:
                     w_arr = measuring_volume[args.weight_field]
                 else:
@@ -318,7 +319,7 @@ if len(movie_files) > 0:
 
             if args.field == "Tangential_Velocity":
                 cal_vd_bool = True
-                print "CALCULATING VELOCITY DISPERSION"
+                print("CALCULATING VELOCITY DISPERSION")
             else:
                 cal_vd_bool = False
 
@@ -352,16 +353,16 @@ if len(movie_files) > 0:
                 #plt.axes().set_aspect(1./plt.axes().get_data_ratio())
                 #plt.axes().set_aspect((args.r_max)/(2.0))
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-                print "created profile plot:", save_image_name
+                print("created profile plot:", save_image_name)
             else:
                 if args.calc_column_mean != "False":
-                    pickle_file = path + 'column_density_profile_pickle_'+str(args.plot_time)+'.pkl'
+                    pickle_file = save_dir + 'column_density_profile_pickle_'+str(args.plot_time)+'.pkl'
                 else:
-                    pickle_file = path + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
-                file = open(pickle_file, 'w+')
-                pickle.dump((prof_x, prof_y, sampled_points),file)
+                    pickle_file = save_dir + args.field + '_profile_pickle_'+str(args.plot_time)+'.pkl'
+                file = open(pickle_file, 'wb')
+                pickle.dump((prof_x, prof_y, sampled_points, part_pos),file)
                 file.close()
-                print "created profile pickle:", pickle_file
+                print("created profile pickle:", pickle_file)
 
         if args.profile_plot_multi == 'True':
             files = sorted(glob.glob(path + args.field + '_profile_pickle_*.pkl'))
@@ -414,7 +415,7 @@ if len(movie_files) > 0:
                     plt.xlabel('Cylindrical distance (AU)')
                     plt.ylabel('Z-distance (AU)')
                     plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-                    print "created force comparison plot:", save_image_name
+                    print("created force comparison plot:", save_image_name)
                 fit = fit + 1
             if args.pickle_dump == "False":
                 plt.clf()
@@ -430,13 +431,13 @@ if len(movie_files) > 0:
                 plt.xlabel('Cylindrical distance (AU)')
                 plt.ylabel('Z-distance (AU)')
                 plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-                print "created force comparison plot:", save_image_name
+                print("created force comparison plot:", save_image_name)
             else:
                 pickle_file = save_dir + 'force_comp_pickle.pkl'
                 file = open(pickle_file, 'w+')
                 pickle.dump((x, y, times, args.y_label),file)
                 file.close()
-                print "created force comp pickle:", pickle_file
+                print("created force comp pickle:", pickle_file)
 
         if args.outflow_pickle == 'True':
             pickle_file = save_dir + "outflow_quantities.pkl"
@@ -496,11 +497,11 @@ if len(movie_files) > 0:
                 maximum_speed.append(max_speed)
                 momentum.append(mom)
                 ang_momentum.append(L)
-                print "outflow_mass", outflow_mass
-                print "max_speed", max_speed
-                print "mom", mom
-                print "L", L
-                print "DONE FILE", file
+                print("outflow_mass", outflow_mass)
+                print("max_speed", max_speed)
+                print("mom", mom)
+                print("L", L)
+                print("DONE FILE", file)
             file = open(pickle_file, 'w+')
             pickle.dump((times, mass, maximum_speed, momentum, ang_momentum),file)
             file.close()
@@ -516,23 +517,23 @@ if len(movie_files) > 0:
 
             if args.projection_axis == 'xy':
                 part_info = mym.get_particle_data(file, axis='xy')
-            elif ('all', u'particle_mass') in ds.field_list:
+            elif ('all', 'particle_mass') in ds.field_list:
                 part_info = mym.get_particle_data(file)
                 part_plane_position = np.array([dd['particle_posx'].in_units('AU'), dd['particle_posy'].in_units('AU')])
                 part_info['particle_position'][0] = np.sign(part_plane_position[0])*np.sqrt((part_plane_position[0])**2. + (part_plane_position[1])**2.)
-            print "MAKING YT SLICE FOR TIME =", m_times[fit]
-            if args.image_center == 0 or ('all', u'particle_mass') not in ds.field_list:
+            print("MAKING YT SLICE FOR TIME =", m_times[fit])
+            if args.image_center == 0 or ('all', 'particle_mass') not in ds.field_list:
                 c = np.array([0.0, 0.0, 0.0])
             else:
                 c = np.array([dd['particle_posx'][args.image_center-1].in_units('AU'), dd['particle_posy'][args.image_center-1].in_units('AU'), dd['particle_posz'][args.image_center-1].in_units('AU')])
-            if ('all', u'particle_mass') not in ds.field_list:
+            if ('all', 'particle_mass') not in ds.field_list:
                 L = [0.0, 1.0, 0.0]
             elif len(dd['particle_posx']) == 1:
                 L = [0.0, 1.0, 0.0]
             elif args.projection_orientation != None:
                 y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
                 L = [1, y_val, 0]
-                print "SET PROJECTION ORIENTATION L=", L
+                print("SET PROJECTION ORIENTATION L=", L)
             elif args.projection_axis == 'xy':
                 L = [0.0, 0.0, 1.0]
             else:
@@ -543,7 +544,7 @@ if len(movie_files) > 0:
                     L = [-1*L[0], -1*L[1], 0.0]
             myf.set_normal(L)
             if args.ax_lim != None:
-                if args.image_center == 0 or ('all', u'particle_mass') not in ds.field_list:
+                if args.image_center == 0 or ('all', 'particle_mass') not in ds.field_list:
                     xlim = [-1*args.ax_lim, args.ax_lim]
                     ylim = [-1*args.ax_lim, args.ax_lim]
                 else:
@@ -563,7 +564,7 @@ if len(movie_files) > 0:
             temp = dd['velx']
             temp = dd['vely']
             temp = dd['velz']
-            if ('all', u'particle_mass') in ds.field_list:
+            if ('all', 'particle_mass') in ds.field_list:
                 temp = dd['particle_posx']
                 temp = dd['particle_posy']
             temp = dd['velocity_magnitude']
@@ -586,10 +587,10 @@ if len(movie_files) > 0:
                 else:
                     proj = yt.OffAxisProjectionPlot(ds, L, [field, 'velx', 'vely', 'magx', 'magy', 'cell_mass'], center=(c, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'))
                     image_data = (proj.frb.data[full_field]/thickness.in_units('cm'))#.T#[:][::-1]
-                    velx_full = (proj.frb.data[('flash', u'velx')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
-                    vely_full = (proj.frb.data[('flash', u'vely')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
-                    magx = (proj.frb.data[('flash', u'magx')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
-                    magy = (proj.frb.data[('flash', u'magy')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                    velx_full = (proj.frb.data[('flash', 'velx')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                    vely_full = (proj.frb.data[('flash', 'vely')].in_units('cm**2/s')/thickness.in_units('cm'))#.T#[:][::-1]
+                    magx = (proj.frb.data[('flash', 'magx')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
+                    magy = (proj.frb.data[('flash', 'magy')].in_units('gauss*cm')/thickness.in_units('cm'))#.T#[:][::-1]
                     mass = (proj.frb.data[('gas', 'cell_mass')].in_units('cm*g')/thickness.in_units('cm'))#.T#[:][::-1]
                 '''
                 if np.median(image_data[200:600,400]) > 1.e-15:
@@ -641,7 +642,7 @@ if len(movie_files) > 0:
 
                 plt.streamplot(X, Y, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
-                if ('all', u'particle_mass') in ds.field_list:
+                if ('all', 'particle_mass') in ds.field_list:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), '$t$='+str(int(m_times[fit]))+'yr', va="center", ha="left", color='w', fontsize=args.text_font)
                 time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -657,7 +658,7 @@ if len(movie_files) > 0:
                     save_image_name = args.save_name
                 plt.savefig(save_image_name+'.eps', format='eps', bbox_inches='tight')
                 plt.savefig(save_image_name+'.pdf', format='pdf', bbox_inches='tight')
-                print "SAVED PLOT AS", save_image_name
+                print("SAVED PLOT AS", save_image_name)
             else:
                 args_dict = {}
                 if args.annotate_time == "True":
@@ -676,7 +677,7 @@ if len(movie_files) > 0:
                 file = open(pickle_file, 'w+')
                 pickle.dump((X, Y, X_vel, Y_vel, image_data.value, velx, vely, magx.value, magy.value, part_info, args_dict),file)
                 file.close()
-                print "created force comp pickle:", pickle_file
+                print("created force comp pickle:", pickle_file)
 
 
         #saving the figure
@@ -685,7 +686,7 @@ if len(movie_files) > 0:
             plt.savefig(save_image_name + ".eps", format='eps', bbox_inches='tight')
             call(['convert', '-antialias', '-quality', '100', '-density', '200', '-resize', '100%', '-flatten', save_image_name+'.eps', save_image_name+'.jpg'])
             os.remove(save_image_name + '.eps')
-            print "CREATED MOVIE FRAME No.", args.start_frame + fit, "OF", no_of_frames, "saved as:", save_image_name
+            print("CREATED MOVIE FRAME No.", args.start_frame + fit, "OF", no_of_frames, "saved as:", save_image_name)
 
 #=============================================================================
 #These plots don't need to iterate over multiple files
@@ -779,7 +780,7 @@ if args.force_comp  == 'True':
         else:
             plt.ylabel(args.y_label, fontsize=14)
             plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-            print "created force comparison plot:", save_image_name
+            print("created force comparison plot:", save_image_name)
         fit = fit + 1
             
     if args.pickle_dump == "False":
@@ -803,13 +804,13 @@ if args.force_comp  == 'True':
         else:
             plt.ylabel(args.y_label, fontsize=14)
         plt.savefig(save_image_name, bbox_inches='tight', pad_inches = 0.02)
-        print "created force comparison plot:", save_image_name
+        print("created force comparison plot:", save_image_name)
     else:
         pickle_file = path + 'force_comp_pickle.pkl'
         file = open(pickle_file, 'w+')
         pickle.dump((x, y, times, args.y_label),file)
         file.close()
-        print "created force comp pickle:", pickle_file
+        print("created force comp pickle:", pickle_file)
 
 if args.separation == 'True':
     #image_name = save_dir + "separation"
@@ -831,7 +832,7 @@ if args.separation == 'True':
     sim_times = []
     sim_total_mass = []
     for file in files:
-        print "reading file", file
+        print("reading file", file)
         sink_form_time = 0
         particle_tag = []
         times = [[],[]]
@@ -958,7 +959,7 @@ if args.separation == 'True':
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight')
     plt.savefig(image_name + ".pdf", bbox_inches='tight')
-    print "Created image", image_name
+    print("Created image", image_name)
 
 if args.force_on_particles == 'True':
     image_name = save_dir + "force_on_sinks"
@@ -1023,7 +1024,7 @@ if args.read_particle_file == 'True':
             file_open = open(pickle_file, 'r')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
-        if 'velx' in particle_data.keys():
+        if 'velx' in list(particle_data.keys()):
             particle_data.pop('velx')
             particle_data.pop('vely')
             particle_data.pop('velz')
@@ -1064,7 +1065,7 @@ if args.read_particle_file == 'True':
                     time_val = (float(row[1])-sink_form_time)/yt.units.yr.in_units('s').value
                     part_tag = int(row[0])
                     if part_tag not in particle_data['particle_tag']:
-                        print "adding particle", part_tag
+                        print("adding particle", part_tag)
                         particle_data['particle_tag'].append(part_tag)
                     if len(particle_data['particle_tag']) == 1:
                         part_ind = 0
@@ -1088,7 +1089,7 @@ if args.read_particle_file == 'True':
                         particle_data['mdot'].append([np.nan, np.nan])
                     time_ind = particle_data['time'].index(time_val)
                     if np.isnan(particle_data['posx'][time_ind][part_ind]) == False:
-                        print "replacing data at time", time_val
+                        print("replacing data at time", time_val)
                     particle_data['posx'][time_ind][part_ind] = float(row[2])/yt.units.au.in_units('cm').value
                     particle_data['posy'][time_ind][part_ind] = float(row[3])/yt.units.au.in_units('cm').value
                     particle_data['posz'][time_ind][part_ind] = float(row[4])/yt.units.au.in_units('cm').value
@@ -1107,7 +1108,7 @@ if args.read_particle_file == 'True':
                     file_open = open(pickle_file, 'w+')
                     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
                     file_open.close()
-                    print "dumped pickle after line", line_counter
+                    print("dumped pickle after line", line_counter)
                     del particle_data
                     del sink_form_time
                     del line_counter
@@ -1118,12 +1119,12 @@ if args.read_particle_file == 'True':
         file_open = open(pickle_file, 'w+')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
         file_open.close()
-        print "dumped pickle after line", line_counter
+        print("dumped pickle after line", line_counter)
         shutil.copy(pickle_file, pickle_file.split('.pkl')[0]+'_tmp.pkl')
-    print "sorting data"
+    print("sorting data")
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
-    for key in particle_data.keys():
+    for key in list(particle_data.keys()):
         if key != 'particle_tag' and key != 'time':
             particle_data[key] = np.array(particle_data[key]).T
             try:
@@ -1132,13 +1133,13 @@ if args.read_particle_file == 'True':
                 particle_data[key] = particle_data[key][sorted_inds]
     particle_data.update({'separation':np.sqrt((particle_data['posx'][0] - particle_data['posx'][1])**2. + (particle_data['posy'][0] - particle_data['posy'][1])**2. + (particle_data['posz'][0] - particle_data['posz'][1])**2.)})
     usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
-    for key in particle_data.keys():
+    for key in list(particle_data.keys()):
         if key != 'particle_tag':
             try:
                 particle_data[key] = particle_data[key][:,usable_inds]
             except:
                 particle_data[key] = particle_data[key][usable_inds]
-    print "sorted data and save"
+    print("sorted data and save")
     file_open = open(pickle_file, 'w+')
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
     file_open.close()
@@ -1156,7 +1157,7 @@ if args.phasefolded_accretion == 'True':
         if np.min(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == True and np.min(particle_data['separation'][index-index_interval:index]) < 12:
             periastron_ind = np.argmin(particle_data['separation'][index-index_interval:index]) + index-index_interval
             periastron_inds.append(periastron_ind)
-            print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
+            print("found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind])
             passed_apastron = False
         elif np.max(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval,index-1])]) and passed_apastron == False:
             passed_apastron = True

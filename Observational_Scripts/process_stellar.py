@@ -62,7 +62,7 @@ dummy = calc_rv_todcor(spectrum, wave,sig, [template_fns[2], template_fns[1]], b
 
 """
 
-from __future__ import print_function
+
 try:
     import pyfits
 except:
@@ -123,7 +123,7 @@ def read_and_find_star_p11(fn, manual_click=False, npix=7, subtract_sky=True,sky
     plt.imshow(image,interpolation='nearest')
     plt.plot(maxpx[1],maxpx[0],'wx')
     if subtract_sky:
-        xy = np.meshgrid(range(image.shape[1]),range(image.shape[0]))
+        xy = np.meshgrid(list(range(image.shape[1])),list(range(image.shape[0])))
         dist = np.sqrt((xy[0]-maxpx[1])**2.0 + (xy[1]-maxpx[0])**2.0)
         sky = np.where( (xy[0] > 0) & (xy[1] > 0) & 
             (xy[0] < image.shape[1]-1) & (xy[1] < image.shape[0]-1) &
@@ -209,7 +209,7 @@ def read_and_find_star_p08(fn, manual_click=False, npix=7, subtract_sky=True,sky
     #plt.show()
     plt.title(str(Obj_name) + '_' + str(Obs_date) + '_(' + str(RA) + ',' + str(DEC) + ')')
     
-    xy = np.meshgrid(range(image.shape[1]),range(image.shape[0]))
+    xy = np.meshgrid(list(range(image.shape[1])),list(range(image.shape[0])))
     dist = np.sqrt((xy[0]-maxpx[1])**2.0 + (xy[1]-maxpx[0])**2.0)
     sky = (xy[0] >= 0) & (xy[1] >= 0) & (xy[0] < image.shape[1]) & (xy[1] < image.shape[0]) & (dist > sky_rad) & (dist < image.shape[1]) & (xy[0] > 7)
     for obj in range(len(objects['x'])):

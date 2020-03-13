@@ -80,7 +80,7 @@ dell_template = 0.1
 wave_template=np.arange(90000)*dell_template + 3000
 
 #read in current data
-print "Reading in current spreadsheet"
+print("Reading in current spreadsheet")
 header = 0
 with open(args.input_file, 'rU') as f:
     reader = csv.reader(f)
@@ -197,7 +197,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
             #alt_date = Obs_date.split('-')[-1]+'/'+Obs_date.split('-')[-2]+'/'+Obs_date.split('-')[-3][2:]
             
             if [Obj_name, Obs_date] in ignore_obs_list or Obj_name not in Object:
-                print "SKIPPING FILE:", fn, " BECAUSE DATA IS NOT GOOD"
+                print("SKIPPING FILE:", fn, " BECAUSE DATA IS NOT GOOD")
             elif (Obj_name in Object and args.obj_name == "") or (Obj_name == args.obj_name) or ([item for item in Manual_click_flag if item[0] == Obj_name and item[1] == '/'.join([str(int(Obs_date.split('-')[2])), Obs_date.split('-')[1], Obs_date.split('-')[0][2:]])] != []) or (Obj_name in save_plots):
                 ind = Object.index(Obj_name)
                 if (str(np.round(MJD, decimals=5)) not in Obs_info[ind]) or (Obs_date == args.date) or ((Obj_name, Obs_date) in Manual_click_flag) or (Obj_name in save_plots):
@@ -211,7 +211,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                         manual_click_data = [item for item in Manual_click_flag if item[0] == Obj_name and item[1] == '/'.join([str(int(Obs_date.split('-')[2])), Obs_date.split('-')[1], Obs_date.split('-')[0][2:]])]
                         if manual_click_data[-1][-1] != []:
                             click = False
-                        print "SELECTION NOTE:", manual_click_data[0][-2]
+                        print("SELECTION NOTE:", manual_click_data[0][-2])
                     else:
                         click = False
                         manual_click_data = [[[]]]
@@ -256,10 +256,10 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                             temp_hdu = fits.open('/Users/rajikak/tools/'+temp_used)
                             spectrum_interp = np.interp(wave_template,wave*(1 - (rv_sky)/2.998e5),spectrum)
                             
-                            print "Skyline offset=  " + str(rv_sky) + ',    '+ str(rv_sky_sig)
+                            print("Skyline offset=  " + str(rv_sky) + ',    '+ str(rv_sky_sig))
                             
                             if np.isnan(rv_sky) or np.isnan(rv_sky_sig) or np.abs(rv_sky) > 50.:
-                                print "Could not get reliable sky RV"
+                                print("Could not get reliable sky RV")
                                 rv_sky = 0.0
                                 rv_sky_sig = np.inf
                             
@@ -277,10 +277,10 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                             temp_hdu = fits.open('/Users/rajikak/tools/'+temp_used)
                             spectrum_interp = np.interp(wave_template,wave*(1 - (rv_abs)/2.998e5),spectrum)
                             
-                            print "Absorption offset=   " + str(rv_abs) + ',    '+ str(rv_abs_sig)
+                            print("Absorption offset=   " + str(rv_abs) + ',    '+ str(rv_abs_sig))
                        
                             if np.isnan(rv_abs) or np.isnan(rv_abs_sig) or (Temp_sptype[ind][0] not in abs_corr_spt):
-                                print "Could not get reliable absorption RV or wrong spectral type"
+                                print("Could not get reliable absorption RV or wrong spectral type")
                                 rv_abs = 0.0
                                 rv_abs_sig = np.nan
                             
@@ -303,11 +303,11 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     if which_sky == 'sky': #rv_sky_sig < rv_abs_sig or :
                         rv_abs = 0.0
                         rv_err = rv_sky_sig
-                        print("USING CORRECTION FROM SKYLINES:  " + str(rv_sky) + ",    " + str(rv_sky_sig))
+                        print(("USING CORRECTION FROM SKYLINES:  " + str(rv_sky) + ",    " + str(rv_sky_sig)))
                     elif which_sky == 'abs':
                         rv_sky = 0.0
                         rv_err = rv_abs_sig
-                        print("USING CORRECTION FROM ABSORPTION:    " + str(rv_abs) + ",    " + str(rv_abs_sig))
+                        print(("USING CORRECTION FROM ABSORPTION:    " + str(rv_abs) + ",    " + str(rv_abs_sig)))
 
                     spectrum,sig = ps.weighted_extract_spectrum(flux, var)
                     plt.clf()
@@ -327,7 +327,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                         wave_h_alpha = wave[h_alpha_ind-ind_width:h_alpha_ind+ind_width]
                         spectrum_h_alpha = spectrum[h_alpha_ind-ind_width:h_alpha_ind+ind_width]
                         F_0 = np.median(np.concatenate((spectrum_h_alpha[:5],spectrum_h_alpha[-5:])))
-                        print 'F_0=',F_0
+                        print('F_0=',F_0)
                         diff = np.abs(F_0 - F_0_prev)/F_0
                         F_0_prev = F_0
                         ind_width = ind_width + 1
@@ -371,19 +371,19 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                 
                     if np.isinf(rv_err) == False:
                         rv_sig = np.sqrt(np.square(rv_sig) + np.square(rv_err))
-                    print "***************************************************"
-                    print "*"
-                    print "*"
-                    print "RV for object:", Obj_name, "is", rv, rv_sig
+                    print("***************************************************")
+                    print("*")
+                    print("*")
+                    print("RV for object:", Obj_name, "is", rv, rv_sig)
                     if np.abs(H_alpha - wave[np.argmax(spectrum)]) < 2.0:
                         h_alpha_bool = True
-                        print "HAS H_ALPHA EMISSION"
+                        print("HAS H_ALPHA EMISSION")
                     else:
                         h_alpha_bool = False
-                    print "H_alpha EW is:", equiv_width
-                    print "*"
-                    print "*"
-                    print "***************************************************"
+                    print("H_alpha EW is:", equiv_width)
+                    print("*")
+                    print("*")
+                    print("***************************************************")
                     
                     if args.plot_curves == 'True':
                         corr_img = glob.glob('/Users/rajikak/Observational_Data/PDF_dirs/'+Obj_name+'/Best_correlation_temp_*')
@@ -398,7 +398,7 @@ if args.mode == 'update' or (args.mode != 'update' and len(save_plots) > 0):
                     No_obs[ind] = len(Obs_info[ind])
 
             elif Obj_name not in Object:
-                print "SKIPPING FILE:", fn, " WITH OBJECT", Obj_name, "CHECK IF TYPO OR OTHER OBJECT"
+                print("SKIPPING FILE:", fn, " WITH OBJECT", Obj_name, "CHECK IF TYPO OR OTHER OBJECT")
 
 f = open('/Users/rajikak/Observational_Data/manual_click_details.csv', 'w')
 
@@ -434,7 +434,7 @@ if args.mode == 'update':
             h_alpha_variation = 0.0
         H_alpha_average[obj]=h_alpha_median
         H_alpha_variation[obj]=h_alpha_variation
-        print "Object:", Object[obj], "has H_alpha EW of", h_alpha_median, "with variation", h_alpha_variation
+        print("Object:", Object[obj], "has H_alpha EW of", h_alpha_median, "with variation", h_alpha_variation)
         Mean_RV[obj] = mean_rv
         if (Region[obj]) == 'US' and ('Y' in IR_excess[obj]):
             V_avg[0].append(mean_rv)
@@ -461,7 +461,7 @@ if args.mode == 'update':
             elif (Region[obj]) == 'UCL' and ('Y' in IR_excess[obj]):
                 RV_dist[1].append(spread_val)
 
-            print "RV DIST FOR OBJ:", Object[obj], "IS:", spread_val
+            print("RV DIST FOR OBJ:", Object[obj], "IS:", spread_val)
             
             if Temp_sptype[obj][0] == 'F':
                 RV_dist_sptype[0].append(spread_val)
@@ -503,7 +503,7 @@ if args.mode == 'update':
                 plt.xlim([start_time, end_time])
                 #plt.ylim([-20.0, 20.0])
                 plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/'+Object[obj]+'/RV_vs_MJD_'+Pref_template[obj]+'.png')
-                print "CREATED RV CURVE FOR", Object[obj]
+                print("CREATED RV CURVE FOR", Object[obj])
 
             RV_variation[obj] = spread_val
         else:
@@ -542,7 +542,7 @@ if args.mode == 'update':
         '''
 
 #write out updated data
-print "REWRITING SPREADSHEET"
+print("REWRITING SPREADSHEET")
 f = open(args.input_file, 'w')
 f.write('Object,Region,RA,DEC,Pmem,Disk, H_alpha_average,H_alpha_variation,Visual inspection,K_mag,V_mag,B_mag,No. Obs,SB1_flag,SB2 flag,V_n,V_avg,RV_variation,Pref_temp,Temp_SpT,Observations,MJD,RV,RV_err,RV_sky,H_alpha_bool, H_alpha,Template\n')
 
@@ -563,7 +563,7 @@ if RV_dist[0] == []:
     temp_file = open('RV_dist_histogram'+args.plot_suffix+'.pkl', 'w')
     pickle.dump((RV_dist,V_n,V_avg), temp_file)
     temp_file.close()
-    print "Saved pickle with RV distributions"
+    print("Saved pickle with RV distributions")
 
 plt.clf()
 no_bins = 30
@@ -612,7 +612,7 @@ plt.xlabel('RV Variation (km/s)')
 plt.ylabel('#')
 plt.xlim([0.0, 100.0])
 plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution' + args.plot_suffix + '.pdf')
-print "CREATED RV DISTRIBUTION HISTOGRAM"
+print("CREATED RV DISTRIBUTION HISTOGRAM")
 
 for Spt in range(len(RV_dist_sptype)):
     if len(RV_dist_sptype[Spt]) > 0:
@@ -628,17 +628,17 @@ for Spt in range(len(RV_dist_sptype)):
         plt.ylabel('#')
         plt.xlim([0.0, 100.0])
         plt.savefig('/Users/rajikak/Observational_Data/PDF_dirs/Radial_Velocity_distribution_' + sp_label[Spt] + args.plot_suffix +'.pdf')
-        print "CREATED RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
+        print("CREATED RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt])
     
     
     else:
-        print "Couldn't make RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt]
+        print("Couldn't make RV DISTRIBUTION HISTOGRAM FOR SPECTRAL TYPE", sp_label[Spt])
 
 
 images_RIK = images = glob.glob('/Users/rajikak/Observational_Data/PDF_dirs/RIK*/RV_vs_MJD.png')
-images_RIK.sort(key=lambda f: int(filter(str.isdigit, f)))
+images_RIK.sort(key=lambda f: int(list(filter(str.isdigit, f))))
 images_UCAC = images = glob.glob('/Users/rajikak/Observational_Data/PDF_dirs/UCAC*/RV_vs_MJD.png')
-images_UCAC.sort(key=lambda f: int(filter(str.isdigit, f)))
+images_UCAC.sort(key=lambda f: int(list(filter(str.isdigit, f))))
 images = images_RIK + images_UCAC
 pdf = FPDF()
 pdf.add_page()
@@ -693,7 +693,7 @@ if args.mode == 'make_paper_plot':
     x_fit = np.linspace(-10.,10.,1000.)
     #x_fit = np.logspace(-1.0, 2.0, 1000)
     y_fit = function(x_fit, *popt)
-    print "mean:", popt[-2], "std:", popt[-1]
+    print("mean:", popt[-2], "std:", popt[-1])
     
 
     h_US = ax1.bar(centers, hist_US, width=width, align='center', label='Upper Scorpius', color='b')
@@ -718,7 +718,7 @@ if args.mode == 'make_paper_plot':
     x_fit = np.linspace(-10.,10.,1000.)
     #x_fit = np.logspace(-1.0, 2.0, 1000)
     y_fit = function(x_fit, *popt)
-    print "mean:", popt[-2], "std:", popt[-1]
+    print("mean:", popt[-2], "std:", popt[-1])
     
     
     h_US = ax2.bar(centers, hist_US, width=width, align='center', label='Upper Scorpius', color='b')
@@ -733,7 +733,7 @@ if args.mode == 'make_paper_plot':
     ax2.text(text_x_pos, text_ypos, text_labels[2])
     ax2.text(text_x_pos, text_ypos-2, text_labels[3])
     ax2.text(text_x_pos, text_ypos-4, "FWHM="+str(np.round((2.355*popt[-1]),decimals=2))+"km/s")
-    print "median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1])))
+    print("median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1]))))
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     fig.subplots_adjust(hspace=0)
@@ -751,7 +751,7 @@ if args.mode == 'make_paper_plot':
     plt.legend(loc='upper right')
     #plt.text(1.5e-1, text_ypos, text_labels[1])
     #plt.text(1.5e-1, text_ypos-1.5, text_labels[2])
-    print "median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1])))
+    print("median RV variation =", np.median(np.concatenate((RV_dist[0], RV_dist[1]))))
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.setp([a.get_xticklabels() for a in fig.axes[:-1]], visible=False)
     fig.subplots_adjust(hspace=0)

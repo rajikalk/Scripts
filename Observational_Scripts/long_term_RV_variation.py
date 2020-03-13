@@ -18,7 +18,7 @@ Time_line = []
 RV_variation = []
 
 for file in files:
-    print 'DOING FILE:', file
+    print('DOING FILE:', file)
     hdu = pyfits.open(file)
     Obj_name = hdu[0].header['OBJNAME']
     if Obj_name == 'object' or Obj_name == '':

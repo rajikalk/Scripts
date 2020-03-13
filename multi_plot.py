@@ -1,9 +1,8 @@
-                                                                                                                                                                                                                                                                                                                                                                                         import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import pickle
 import csv
 import numpy as np
 import os
-from subprocess import call
 from matplotlib.colors import LogNorm
 import h5py
 import my_module as mym
@@ -11,9 +10,12 @@ import matplotlib.gridspec as gridspec
 import glob
 import matplotlib.patheffects as path_effects
 import matplotlib
+import matplotlib.colors as colors
 import yt
+from scipy.ndimage import zoom
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
+
 
 def parse_inputs():
     import argparse
@@ -30,13 +32,33 @@ def parse_inputs():
     parser.add_argument("-title", "--multiplot_title", help="Do you want to title the multiplot", type=str, default="")
     args = parser.parse_args()
     return args
+    
+def rainbow_text(x,y,ls,lc,**kw):
+    """
+    Take a list of strings ``ls`` and colors ``lc`` and place them next to each
+    other, with text ls[i] being shown in color lc[i]
+
+    This example shows how to do both vertical and horizontal text, and will
+    pass all keyword arguments to plt.text, so you can set the font size,
+    family, etc.
+    """
+    t = plt.gca().transData
+    fig = plt.gcf()
+    plt.show()
+
+    #horizontal version
+    for s,c in zip(ls,lc):
+        text = plt.text(x,y," "+s+" ",color=c, transform=t, **kw)
+        text.draw(fig.canvas.get_renderer())
+        ex = text.get_window_extent()
+        t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
 
 def get_image_arrays(f, field, simfo, args, X, Y):
     dim = int(simfo['dimension'])
     image = []
     xpos = int(np.round(np.min(X) - simfo['xmin_full'])/simfo['cell_length'])
     ypos = int(np.round(np.min(Y) - simfo['xmin_full'])/simfo['cell_length'])
-    print "XPOS =", xpos
+    print("XPOS =", xpos)
     for x in range(ypos, ypos+len(X[0])):
         image_val = f[field][x]
         if np.shape(image_val)[0] == 1:
@@ -79,7 +101,7 @@ plot_type = []
 file_dir = []
 input_args = []
 
-with open(args.in_file, 'rU') as f:
+with open(args.in_file, 'r') as f:
     reader = csv.reader(f)
     for row in reader:
         if row[0].lower() == 'grid_inputs:':
@@ -87,6 +109,12 @@ with open(args.in_file, 'rU') as f:
             grl = float(row[2])
             glw = float(row[3])
             ghspace = float(row[4])
+            try:
+                height_ratios = []
+                for ratio in row[5].split(':'):
+                    height_ratios.append(float(ratio))
+            except:
+                continue
         elif row[0][0]!= '#':
             positions.append((int(row[0]), int(row[1])))
             plot_type.append(row[2])
@@ -94,20 +122,37 @@ with open(args.in_file, 'rU') as f:
             input_args.append(row[4])
 positions = np.array(positions)
 
+if 0 in positions:
+    make_right_gs = False
+else:
+    make_right_gs = True
+
 columns = np.max(positions[:,0])
 rows = np.max(positions[:,1])
 
 width = float(columns)*(14.5/3.)
 height = float(rows)*(17./4.)
+
+#Testing height ratios
+#height_ratios = [1,2]
+
 if plot_type[0] == "outflow":
     f = plt.figure(figsize=(6, 10))
 else:
     f = plt.figure(figsize=(width, height))
-gs_left = gridspec.GridSpec(rows, columns-1)
-gs_right = gridspec.GridSpec(rows, 1)
 
-gs_left.update(right=glr, wspace=glw, hspace=ghspace)
-gs_right.update(left=grl, hspace=ghspace)
+if make_right_gs:
+    gs_left = gridspec.GridSpec(rows, columns-1)
+    gs_right = gridspec.GridSpec(rows, 1)
+
+    gs_left.update(right=glr, wspace=glw, hspace=ghspace)
+    gs_right.update(left=grl, hspace=ghspace)
+else:
+    try:
+        gs_left = gridspec.GridSpec(rows, columns, height_ratios=height_ratios)
+    except:
+        gs_left = gridspec.GridSpec(rows, columns)
+    gs_left.update(right=glr, wspace=glw, hspace=ghspace)
 
 '''
 #single and tight binary slices
@@ -139,11 +184,18 @@ axes_dict = {}
 for it in range(len(positions)):
     #ax_label = 'ax' + str(counter)
     ax_label = 'ax' + str(positions[it][0])+str(positions[it][1])
-    if positions[it][0] == 1 and positions[it][1] == 1:
+    if positions[it][0] == 0:
+        axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,:])})
+    elif positions[it][1] == 0:
+        axes_dict.update({ax_label:f.add_subplot(gs_left[:,positions[it][0]-1])})
+    elif positions[it][0] == 1 and positions[it][1] == 1:
         if columns > 1:
             axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
         else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
+            else:
+                axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
     elif positions[it][0] != columns:
         if args.share_x and args.share_y == True:
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
@@ -158,16 +210,36 @@ for it in range(len(positions)):
             axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
     else:
         if args.share_x and args.share_y == True:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
+            else:
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax11'])})
         elif args.share_x and args.share_y == 'row':
             if positions[it][0] == 1:
+                if make_right_gs:
+                    axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+                else:
+                    #spoofing this line. Not sure what to use.
+                    axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
+            else:
+                if make_right_gs:
+                    axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+                else:
+                    #spoofing this line. Not sure what to use.
+                    axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
+        elif args.share_x:
+            if make_right_gs:
                 axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
             else:
-                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'], sharey=axes_dict['ax1'+str(positions[it][1])])})
-        elif args.share_x:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax11'])})
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax11'])})
         else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+            if make_right_gs:
+                axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
+            else:
+                #spoofing this line. Not sure what to use.
+                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
     '''
     yit = np.where(positions[:,1] == positions[it][1])[0][0]
     if positions[it][0] == 1 and positions[it][1] == 1:
@@ -228,8 +300,9 @@ for it in range(len(positions)):
     if 'movie' in plot_type[it]:
         #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         mov_args = input_args[it].split(' ')
-        arg_list = ['mpirun', '-np', '16', 'python', '/home/100/rlk100/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
+        arg_list = ['python', '~/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)] #['srun', '-n', '20', 'python', '/groups/astro/rlk/Scripts/movie_script_mod.py', file_dir[it], save_dir, '-pd', 'True', '-tf', str(args.text_font)]
         get_stdv = False
+        get_pvl = False
         standard_vel = 5.
         get_plot_time = False
         plot_time = 0
@@ -247,7 +320,16 @@ for it in range(len(positions)):
         get_title = False
         thickness = 300
         get_thickness = False
+        plot_velocity_legend = False
         for mov_arg in mov_args:
+            if get_pvl:
+                if mov_arg == 'False':
+                    plot_velocity_legend = False
+                else:
+                    plot_velocity_legend = True
+                get_pvl = False
+            if mov_arg == '-pvl':
+                get_pvl = True
             if get_stdv:
                 standard_vel = float(mov_arg)
                 get_stdv = False
@@ -269,7 +351,13 @@ for it in range(len(positions)):
             if mov_arg == '-wf':
                 get_weight_field = True
             if get_cbar_lim[0] == True:
-                cbar_lims[get_cbar_lim[1]] = float(mov_arg)
+                if len(mov_arg) > 1:
+                    if mov_arg[1] == "-":
+                        cbar_lims[get_cbar_lim[1]] = float(mov_arg[1:])
+                    else:
+                        cbar_lims[get_cbar_lim[1]] = float(mov_arg)
+                else:
+                    cbar_lims[get_cbar_lim[1]] = float(mov_arg)
                 get_cbar_lim = (False, None)
             if mov_arg == '-cmin':
                 get_cbar_lim = (True, 0)
@@ -298,38 +386,49 @@ for it in range(len(positions)):
             arg_list.append(mov_arg)
 
         if weight_field == 'None':
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'_unweighted.pkl'
+            pickle_file = save_dir + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'_unweighted.pkl'
         else:
-            pickle_file = file_dir[it] + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
+            pickle_file = save_dir + ax_string + '_' + field_str + '_thickness_' + str(thickness) + '_AU_movie_time_'+plot_time+'.pkl'
         if os.path.isfile(pickle_file) == False:
-            call(arg_list)
+            os.system(" ".join(arg_list))
 
-        file = open(pickle_file, 'r')
-        print "pickle file:", pickle_file
-        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        file = open(pickle_file, 'rb')
+        print("pickle file:", pickle_file)
+        try:
+            X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        except:
+            X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file, encoding="latin1")
         file.close()
         if cbar_lims != [None, None]:
             args_dict['cbar_min'] = cbar_lims[0]
             args_dict['cbar_max'] = cbar_lims[1]
-        if 0.0 in (args_dict['cbar_min'], args_dict['cbar_max']):
+        if np.min([args_dict['cbar_min'], args_dict['cbar_max']]) <= 0.0:
             #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
             if 'Relative_Keplerian_Velocity' in field_str or 'B_angle' in field_str:
                 plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
+            elif 'Total_Energy' in field_str:
+                #axes_dict[ax_label].set_yscale('symlog')
+                plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=colors.SymLogNorm(linthresh=0.03, linscale=0.03, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
             else:
                 plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.RdBu, rasterized=True, vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max'])
         elif weight_field == 'None':
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
             #plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(), rasterized=True)
         else:
-            print "plotted with log scale"
+            print("plotted with log scale")
             plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=args_dict['cbar_min'], vmax=args_dict['cbar_max']), rasterized=True)
+        #pw = 50 #power of the smooth
+        #X_contour = zoom(X, pw)
+        #Y_contour = zoom(Y, pw)
+        #image_contour = zoom(image, pw)
+        #axes_dict[ax_label].contour(X, Y, image, levels=np.logspace(np.log10(args_dict['cbar_max'])-2, np.log10(args_dict['cbar_max']), 6), linestyles='-')
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
-        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=standard_vel)
         part_info['particle_mass'] = np.sort(part_info['particle_mass'])[::-1]
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
-        if 'annotate_time' in args_dict.keys():
-            time_string  = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
-            time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
+        if 'annotate_time' in list(args_dict.keys()):
+            time_string = args_dict['annotate_time'].split('=')[-1].split('yr')[0]
+            #time_string = str(int(np.round(float(time_string)/(10**(len(str(int(time_string)))-1)))*(10**(len(str(int(time_string)))-1))))
             time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), "$t$="+time_string+"yr", va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         if args.multiplot_title == "":
@@ -340,16 +439,17 @@ for it in range(len(positions)):
         axes_dict[ax_label].set_xlim(args_dict['xlim'])
         axes_dict[ax_label].set_ylim(args_dict['ylim'])
         for line in axes_dict[ax_label].xaxis.get_ticklines():
-            line.set_color('white')
+            line.set_color('black')
         for line in axes_dict[ax_label].yaxis.get_ticklines():
-            line.set_color('white')
+            line.set_color('black')
+        axes_dict[ax_label].tick_params(direction='in')
         if positions[it][0] == 1:
             axes_dict[ax_label].set_ylabel(args_dict['yabel'], labelpad=args.y_label_pad, fontsize=args.text_font)
         if args.share_colourbar == False:
             if positions[it][0] == columns:
                 cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
                 if field_str == 'dens':
-                    cbar.set_label('Density (gcm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
+                    cbar.set_label('Density (g$\,$cm$^{-3}$)', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'magnetic_field_poloidal':
                     cbar.set_label('$B_\mathrm{Pol}$ (gauss)', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'magnetic_field_toroidal':
@@ -362,6 +462,10 @@ for it in range(len(positions)):
                     cbar.set_label('$B_\mathrm{Pol}/B_\mathrm{mag}$', rotation=270, labelpad=15, size=args.text_font)
                 elif field_str == 'B_angle':
                     cbar.set_label(r"$\theta$ ($^{\circ}$)", rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'pressure':
+                    cbar.set_label('Pressure (g$\,$cm$\,$s$^{-2}$)', rotation=270, labelpad=15, size=args.text_font)
+                elif field_str == 'Total_Energy':
+                    cbar.set_label('Total Energy (erg)', rotation=270, labelpad=15, size=args.text_font)
                 else:
                     cbar.set_label('Relative Keplerian Velocity ($v_{\phi}/v_{\mathrm{kep}}$)', rotation=270, labelpad=15, size=args.text_font)
         else:
@@ -392,14 +496,15 @@ for it in range(len(positions)):
             plt.setp(xticklabels[1], visible=False)
         '''
         #axes_dict[ax_label].set_adjustable('box', share=True)
-        print "added movie segment"
+        print("added movie segment")
     if 'yt_proj' in plot_type[it]:
         axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
         yt_args = input_args[it].split(' ')
-        arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
+        arg_list = ['python', '~/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         for yt_arg in yt_args:
             arg_list.append(yt_arg)
-        call(arg_list)
+        call_line = " ".join(arg_list)
+        os.system(call_line)
 
         pickle_file = save_dir + 'yt_proj_pickle.pkl'
         file = open(pickle_file, 'r')
@@ -410,7 +515,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].streamplot(X, Y, magx, magy, density=3, linewidth=0.5, minlength=0.5, arrowstyle='-', color='royalblue')
         mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=args_dict['annotate_velocity'], limits=[args_dict['xlim'], args_dict['ylim']], standard_vel=args_dict['standard_vel'])
         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], [args_dict['xlim'], args_dict['ylim']], annotate_field=part_info['particle_mass'])
-        if 'annotate_time' in args_dict.keys():
+        if 'annotate_time' in list(args_dict.keys()):
             time_text = axes_dict[ax_label].text((args_dict['xlim'][0]+0.01*(args_dict['xlim'][1]-args_dict['xlim'][0])), (args_dict['ylim'][1]-0.03*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['annotate_time'], va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         title = axes_dict[ax_label].text(np.mean(args_dict['xlim']), (args_dict['ylim'][1]-0.04*(args_dict['ylim'][1]-args_dict['ylim'][0])), args_dict['title'], va="center", ha="center", color='w', fontsize=(args.text_font+2))
@@ -519,7 +624,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].set_aspect((limits[1][1] - limits[1][0])/(limits[0][1] - limits[0][0]))
     if 'profile' in plot_type[it]:
         prof_args = input_args[it].split(' ')
-        arg_list = ['python', '/home/100/rlk100/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
+        arg_list = ['python', '~/Scripts/paper_plots.py', file_dir[it], save_dir, '-pd', 'True']
         get_rmax = False
         r_max = 500.
         get_field = False
@@ -563,20 +668,24 @@ for it in range(len(positions)):
                 get_col_mean = True
 
         if cal_col_dens:
-            pickle_file = file_dir[it] + 'column_density_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+            pickle_file = save_dir + 'column_density_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         else:
-            pickle_file = file_dir[it] + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
+            pickle_file = save_dir + field_str + '_profile_pickle_' + str(int(float(plot_time))) + '.pkl'
         if os.path.isfile(pickle_file) == False:
-            call(arg_list)
+            call_line = " ".join(arg_list)
+            os.system(call_line)
 
-        file = open(pickle_file, 'r')
-        prof_x, prof_y, sampled_points = pickle.load(file)
+        file = open(pickle_file, 'rb')
+        prof_x, prof_y, sampled_points, part_pos = pickle.load(file)
         file.close()
 
         if is_log:
             axes_dict[ax_label].semilogy(prof_x, prof_y, 'k-', linewidth=2.)
         else:
             axes_dict[ax_label].plot(prof_x, prof_y, 'k-', linewidth=2.)
+            separation = np.sqrt(np.sum((part_pos[0] - part_pos[1])**2)).in_units('AU')
+            if separation < r_max:
+                axes_dict[ax_label].axvline(x=separation.value, linestyle=':', alpha=0.5)
         '''
         for sep in separation:
             axes_dict[ax_label].axvline(x=sep, alpha=0.5)
@@ -597,7 +706,7 @@ for it in range(len(positions)):
                 axes_dict[ax_label].set_ylabel('Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)', size=args.text_font)
         if positions[it][1] == rows:
             axes_dict[ax_label].set_xlabel('Radius (AU)', size=args.text_font)
-        print "added profile segment"
+        print("added profile segment")
     if 'multi' in plot_type[it]:
         prof_args = input_args[it].split(' ')
         get_field = False
@@ -673,7 +782,7 @@ for it in range(len(positions)):
                         rad2_ind = np.argmin(np.abs(np.array(prof_x)-82.5))
                         mass_1 = prof_y[rad1_ind]
                         mass_2 = prof_y[rad2_ind-1]
-                        print "disk mass is between", mass_1, mass_2
+                        print("disk mass is between", mass_1, mass_2)
                         y1 = np.zeros(np.shape(prof_y))
                         axes_dict[ax_label].fill_between(prof_x[rad1_ind:rad2_ind], np.zeros(np.shape(prof_x[rad1_ind:rad2_ind])), np.ones(np.shape(prof_x[rad1_ind:rad2_ind]))*mass_1, facecolor='grey', alpha=0.5)
                         mass_1_arr = np.ones(np.shape(prof_x[:rad2_ind]))*mass_1
@@ -781,7 +890,7 @@ for it in range(len(positions)):
                     dm = np.array(mass[-1][:time_it+1])[1:] - np.array(mass[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_mass = np.sum(dm*dt)/np.sum(dt)
-                    print "time averaged outflow mass for", csv_files[file_it], "is", time_averaged_mass
+                    print("time averaged outflow mass for", csv_files[file_it], "is", time_averaged_mass)
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], mass[t], linestyles[t], label=legend_labels[t])
             axes_dict[ax_label].text(panel_label_x_pos, 5.5e-2, 'a', fontsize=args.text_font+2)
@@ -871,7 +980,7 @@ for it in range(len(positions)):
                     dl = np.array(angular_momentum[-1][:time_it+1])[1:] - np.array(angular_momentum[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_angular_momentum = np.sum(dl*dt)/np.sum(dt)
-                    print "time averaged outflow angular for", csv_files[file_it], "is", time_averaged_angular_momentum
+                    print("time averaged outflow angular for", csv_files[file_it], "is", time_averaged_angular_momentum)
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], angular_momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
@@ -911,7 +1020,7 @@ for it in range(len(positions)):
                     dp = np.array(momentum[-1][:time_it+1])[1:] - np.array(momentum[-1][:time_it+1])[:-1]
                     dt = np.array(time[-1][:time_it+1])[1:] - np.array(time[-1][:time_it+1])[:-1]
                     time_averaged_linear_momentum = np.sum(dp*dt)/np.sum(dt)
-                    print "time averaged outflow linear for", csv_files[file_it], "is", time_averaged_linear_momentum
+                    print("time averaged outflow linear for", csv_files[file_it], "is", time_averaged_linear_momentum)
             for t in range(len(time)):
                 axes_dict[ax_label].semilogy(time[t], momentum[t], linestyles[t])
             if 'specific' in input_args[it]:
@@ -923,7 +1032,7 @@ for it in range(len(positions)):
                 axes_dict[ax_label].text(panel_label_x_pos, 8.e-2, 'b', fontsize=args.text_font+2)
                 #axes_dict[ax_label].set_ylim([1.e-3, 1.e0])
             axes_dict[ax_label].set_xlim([0, 5000])
-            print "CREATED OUTFLOWS PLOT"
+            print("CREATED OUTFLOWS PLOT")
     if 'appendix' in plot_type[it]:
         lref_labels = ['10', '11', '12', '13', '14', '15']
         colors = ['k', 'b', 'c', 'g', 'r', 'm']
@@ -983,7 +1092,7 @@ for it in range(len(positions)):
 
         for sim in range(len(Time)):
             axes_dict[ax_label].semilogy(Time[sim], plot_field[sim], color=colors[sim], dashes=dash_list[sim], label='$L_\mathrm{ref}=$'+lref_labels[sim])
-            print "plotted lref=", lref_labels[sim]
+            print("plotted lref=", lref_labels[sim])
         axes_dict[ax_label].set_xlim([0,3000])
         axes_dict[ax_label].set_ylim(y_limits)
             
@@ -992,160 +1101,90 @@ for it in range(len(positions)):
         if positions[it][1] == rows and positions[it][0] == 2:
             axes_dict[ax_label].set_xlabel('Time since protostar formation (yr)')
         if positions[it][0] == columns:
-            print "plotting legend"
+            print("plotting legend")
             axes_dict[ax_label].legend(loc='best', ncol=3) #prop={'size':16},
+    if 'accr_prof' in plot_type[it]:
+        accretion_profile_pickle = save_dir + 'accretion_profile.pkl'
+        if os.path.isfile(accretion_profile_pickle):
+            file_open = open(accretion_profile_pickle, 'rb')
+            smoothed_time, smoothed_quantity = pickle.load(file_open)
+            file_open.close()
+        else:
+            pickle_file = file_dir[it] + 'particle_data.pkl'
+            file_open = open(pickle_file, 'rb')
+            particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+            file_open.close()
             
-    if 'accretion_profile' in plot_type[it]:
-        pickle_file = file_dir[it] + 'particle_data.pkl'
-        file_open = open(pickle_file, 'r')
-        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-        file_open.close()
+            window = 10 #in units years
+            smoothed_time = []
+            smoothed_quantity = []
+            particle_data_time = np.array(particle_data['time'])
+            particle_data_quantity = np.array(particle_data['mdot'])
+            print("Smoothing accretion profile")
+            for ind in range(len(particle_data_quantity)):
+                smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
+                time = np.mean(particle_data_time[smoothing_inds])
+                quantity = np.mean(particle_data_quantity[smoothing_inds])
+                smoothed_time.append(time)
+                smoothed_quantity.append(quantity)
+            print("smoothed accretion profile")
+            
+            print("writing accretion profile pickle")
+            file = open(accretion_profile_pickle, 'wb')
+            pickle.dump((smoothed_time, smoothed_quantity), file)
+            file.close()
+            print("Created Pickle:", accretion_profile_pickle)
         
         dot_times = [1488, 1496, 1504, 1512, 1520]
         xlim = [1450, 1550]
-        xlabel = "Time ($yr$)"
-        ylabel = "Accretion Rate ($10^{-4}M_\odot/yr$)"
+        #xlabel = r"Time ($yr$)"
+        #ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
         
-        window = 10 #in units years
-        smoothed_time = []
-        smoothed_quantity = []
-        particle_data_time = np.array(particle_data['time'])
-        particle_data_quantity = np.array(particle_data[args.field])
-        for ind in range(len(particle_data['mdot'])):
-            smoothing_inds = np.where((particle_data_time > particle_data['time'][ind]-window/2.)&(particle_data_time < particle_data['time'][ind]+window/2.))[0]
-            time = np.mean(particle_data_time[smoothing_inds])
-            quantity = np.mean(particle_data_quantity[smoothing_inds])
-            smoothed_time.append(time)
-            smoothed_quantity.append(quantity)
-        
-        axes_dict[ax_label].smoothed_time, np.array(smoothed_quantity)*10000)
+        axes_dict[ax_label].plot(smoothed_time, np.array(smoothed_quantity)*10000)
         for dot in dot_times:
             dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
-            axes_dict[ax_label].plot(smoothed_time[plot_ind], np.array(smoothed_quantity[dot_ind])*args.10000, 'ro')
-        axes_dict[ax_label].set_xlabel(xlabel, labelpad=-1, fontsize=args.text_font)
-        axes_dict[ax_label].set_ylabel(ylabel, labelpad=-1, fontsize=args.text_font)
-        axes_dict[ax_label].set_xlim(xlim])
+            axes_dict[ax_label].plot(smoothed_time[dot_ind], np.array(smoothed_quantity[dot_ind])*10000, 'ro')
+        axes_dict[ax_label].set_xlabel(r'Time ($yr$)', fontsize=args.text_font)
+        axes_dict[ax_label].set_ylabel(r'Accretion Rate ($10^{-4}\,M_{\odot}/yr$)', fontsize=args.text_font)
+        axes_dict[ax_label].set_xlim(xlim)
         axes_dict[ax_label].set_ylim(bottom=0)
         axes_dict[ax_label].xaxis.set_ticks_position('both')
         axes_dict[ax_label].yaxis.set_ticks_position('both')
         axes_dict[ax_label].tick_params(direction='in')
-        
-                
-    if 'phasefolded' in plot_type[it]:
-        pickle_file = file_dir[it] + 'particle_data.pkl'
+    if 'component_phase' in plot_type[it]:
+        component_args = input_args[it].split(' ')
+        n_orbits = 5
+        starting_orbit = 1
+        get_start = False
+        for component_arg in component_args:
+            if get_start:
+                starting_orbit = component_arg
+                get_start = False
+            if component_arg == '-start_orb':
+                get_start = True
+        pickle_file = file_dir[it] + 'accretion_median_start_orbit_'+ ("%02d" % (starting_orbit-1)) + '_' + str(n_orbits) + '_folded_orbits.pkl'
         file_open = open(pickle_file, 'r')
-        particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-        file_open.close()
-        window = 10
-        moving_index = window
-        moving_average_time = []
-        moving_average_sep = []
-        moving_average_accretion = [[],[]]
-        while moving_index < len(particle_data['time']):
-            moving_average_time.append(np.mean(particle_data['time'][moving_index-window: moving_index]))
-            moving_average_sep.append(np.mean(particle_data['separation'][moving_index-window: moving_index]))
-            moving_average_accretion[0].append(np.mean(particle_data['mdot'][0][moving_index-window: moving_index]))
-            moving_average_accretion[1].append(np.mean(particle_data['mdot'][1][moving_index-window: moving_index]))
-            moving_index = moving_index + 1
-        particle_data['time'] = np.array(moving_average_time)
-        particle_data['separation'] = np.array(moving_average_sep)
-        particle_data['mdot'] = np.array(moving_average_accretion)
-        periastron_inds = [np.argmin(particle_data['separation'])]
-        apastron_inds = []
-        index_interval = 500
-        index = periastron_inds[0] + index_interval
-        passed_apastron = False
-        while index < len(particle_data['time']):
-            if np.min(particle_data['separation'][index-index_interval:index]) != np.min(particle_data['separation'][np.array([index-index_interval, index-index_interval+1, index-2, index-1])]) and passed_apastron == True:
-                periastron_ind = np.argmin(particle_data['separation'][index-index_interval:index]) + index-index_interval
-                periastron_inds.append(periastron_ind)
-                print "found periastron at time", particle_data['time'][periastron_ind], "of separation", particle_data['separation'][periastron_ind]
-                passed_apastron = False
-            elif np.max(particle_data['separation'][index-index_interval:index]) != np.max(particle_data['separation'][np.array([index-index_interval, index-index_interval+1, index-2, index-1])]) and passed_apastron == False:
-                apastron_ind = np.argmax(particle_data['separation'][index-index_interval:index]) + index-index_interval
-                apastron_inds.append(apastron_ind)
-                print "found apastron at time", particle_data['time'][apastron_ind], "of separation", particle_data['separation'][apastron_ind]
-                passed_apastron = True
-            index = index + index_interval/2
-    
-        no_of_folded_orbits = 15
-        plot_start_ind = int(input_args[it])
-        plot_end_ind = plot_start_ind + no_of_folded_orbits
-        '''
-        plt.plot(particle_data['time'][periastron_inds[plot_start_ind]:periastron_inds[plot_end_ind]], particle_data['separation'][periastron_inds[plot_start_ind]:periastron_inds[plot_end_ind]], 'k-')
-        plt.xlabel('time (yr)')
-        plt.ylabel('separation (au)')
-        for periastron in periastron_inds[plot_start_ind:plot_end_ind]:
-            plt.axvline(x=particle_data['time'][periastron], alpha=0.5)
-        for apastron in apastron_inds[plot_start_ind:plot_end_ind-1]:
-            plt.axvline(x=particle_data['time'][apastron], color='r', alpha=0.5)
-        plt.savefig(save_dir + 'separation_start_orbit_'+ str(plot_start_ind) +'.eps')
-        plt.clf()
-        print "Created separation evolution plot"
-        '''
+        phase_centers, long_median_accretion, yerr = pickle.load(file_open)
+        file.close()
 
-        hist_ind = 1
-        ap_ind = 0
-        phase = np.linspace(0, 1, 20)
-        #FIND BINNED DATA
-        averaged_binned_accretion = [[],[]]
-        averaged_total_accretion = []
-        while hist_ind < len(periastron_inds[plot_start_ind:plot_end_ind]):
-            binned_accretion = [[],[]]
-            total_accretion = []
-            time_bins_1 = np.linspace(particle_data['time'][periastron_inds[hist_ind-1]], particle_data['time'][apastron_inds[ap_ind]],11)
-            time_bins_2 = np.linspace(particle_data['time'][apastron_inds[ap_ind]], particle_data['time'][periastron_inds[hist_ind]],11)
-            bin_ind = 1
-            while bin_ind < len(time_bins_1):
-                time_bin_inds_1 = np.where((particle_data['time'] > time_bins_1[bin_ind-1]) & (particle_data['time'] < time_bins_1[bin_ind]))[0]
-                binned_accretion[0].append(np.mean(particle_data['mdot'][0][time_bin_inds_1]))
-                binned_accretion[1].append(np.mean(particle_data['mdot'][1][time_bin_inds_1]))
-                total_accretion.append(np.mean(particle_data['mdot'][:,time_bin_inds_1]))
-                bin_ind = bin_ind + 1
-            bin_ind = 1
-            while bin_ind < len(time_bins_2):
-                time_bin_inds_2 = np.where((particle_data['time'] > time_bins_2[bin_ind-1]) & (particle_data['time'] < time_bins_2[bin_ind]))[0]
-                binned_accretion[0].append(np.mean(particle_data['mdot'][0][time_bin_inds_2]))
-                binned_accretion[1].append(np.mean(particle_data['mdot'][1][time_bin_inds_2]))
-                total_accretion.append(np.mean(particle_data['mdot'][:,time_bin_inds_2]))
-                bin_ind = bin_ind + 1
-            hist_ind = hist_ind + 1
-            ap_ind = ap_ind + 1
-            averaged_binned_accretion[0].append(binned_accretion[0])
-            averaged_binned_accretion[1].append(binned_accretion[1])
-            averaged_total_accretion.append(total_accretion)
-        phase_2 = np.linspace(1, 2, 20)
-        phase_2 = phase.tolist() + phase_2[1:].tolist()
-        median_accretion = []
-        standard_deviation = []
-        median_accretion.append(np.median(averaged_binned_accretion[0], axis=0))
-        median_accretion.append(np.median(averaged_binned_accretion[1], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[0], axis=0))
-        standard_deviation.append(np.std(averaged_binned_accretion[1], axis=0))
-        median_total = np.median(averaged_total_accretion, axis=0)
-        standard_deviation_total = np.std(averaged_total_accretion, axis=0)
-        #plt.plot(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), ls='steps', alpha=0.5, label='Primary')
-        #plt.plot(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), ls='steps', alpha=0.5, label='Secondary')
-        #plt.plot(phase_2, median_total.tolist() + median_total[1:].tolist(),ls='steps', label='Total')
-        axes_dict[ax_label].errorbar(phase_2, median_accretion[0].tolist()+median_accretion[0][1:].tolist(), yerr=standard_deviation[0].tolist()+standard_deviation[0][1:].tolist(), ls='steps-mid', alpha=0.5, label='Primary')
-        axes_dict[ax_label].errorbar(phase_2, median_accretion[1].tolist()+median_accretion[1][1:].tolist(), yerr=standard_deviation[1].tolist()+standard_deviation[1][1:].tolist(), ls='steps-mid', alpha=0.5, label='Secondary')
-        axes_dict[ax_label].errorbar(phase_2, median_total.tolist() + median_total[1:].tolist(), yerr=standard_deviation_total.tolist()+standard_deviation_total[1:].tolist(), ls='steps-mid', label='Total')
-        
-        #axes_dict[ax_label].legend(loc='best')
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[0], yerr=yerr[0], ls='steps-mid', alpha=0.5, label='Primary')
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[1], yerr=yerr[1], ls='steps-mid', alpha=0.5, label='Secondary')
+        axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[2], yerr=yerr[2], ls='steps-mid', label='Total')
+        #plt.legend(loc='best')
         #plt.xlabel("Orbital Phase")
-        axes_dict[ax_label].set_ylabel("Normalised accretion")
-        #plt.title("Start orbit:" + str(start_ind))
-        axes_dict[ax_label].set_xlim([0.0, 1.3])
-        axes_dict[ax_label].set_ylim(bottom=0.0)
-
+        #plt.ylabel("Median Accretion ($10^{-4}$M$_\odot$/yr)")
+        plt.xlim([0.0, 1.3])
+        plt.ylim(bottom=0.0)
+    
     if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
         plt.setp(yticklabels, visible=False)
         yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
         plt.setp(yticklabels, visible=False)
     if positions[it][1] != rows:
-        xticklabels = axes_dict[ax_label].get_xticklabels()
-        plt.setp(xticklabels, visible=False)
+        if 'movie' in plot_type[it]:
+            xticklabels = axes_dict[ax_label].get_xticklabels()
+            plt.setp(xticklabels, visible=False)
     if positions[it][0] == 1:
         axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font)
     if positions[it][1] == rows:
@@ -1156,17 +1195,17 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
-                if positions[it][0] == 3:
-                    plt.setp(xticklabels[1], visible=False)
+                #if positions[it][0] == 3:
+                #    plt.setp(xticklabels[1], visible=False)
 
     if 'multi' in plot_type[it]:
         if positions[it][1] == rows and positions[it][0] == columns:
             yticklabels = axes_dict['ax13'].get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
     if args.multiplot_title != "":
-        plt.suptitle(args.multiplot_title, x=0.45, y=0.91, fontsize=18)
+        plt.suptitle(args.multiplot_title, x=0.45, y=0.895, fontsize=18)
 
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
-    f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight')
-    f.savefig(savename + '.eps', format='eps', bbox_inches='tight')
+    f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)

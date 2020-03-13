@@ -47,6 +47,6 @@ ch2 = np.where(x == (find_nearest(x, coords[1][0])))
 # Calculate integral
 y_int = trapz(y[ch1[0][0]:ch2[0][0]], x = x[ch1[0][0]:ch2[0][0]])
 
-print ''
-print 'x_pos '+str(coords[0][0])+ ' & ' +str(coords[1][0])
-print y_int
+print('')
+print('x_pos '+str(coords[0][0])+ ' & ' +str(coords[1][0]))
+print(y_int)

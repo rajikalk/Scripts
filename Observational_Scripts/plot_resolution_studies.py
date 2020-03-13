@@ -4,7 +4,7 @@ import glob
 import numpy as np
 
 def __unicode__(self):
-    return unicode(self.some_field) or u''
+    return str(self.some_field) or ''
 
 def parse_inputs():
     import argparse
@@ -43,7 +43,7 @@ for file in files:
             x.append(int(float(file.split('/')[1].split('_')[0])))
         else:
             x.append(int(float(file.split('/')[0].split('_')[0])))
-    print "for file:", file, "line_count =", line_count
+    print("for file:", file, "line_count =", line_count)
 
 x = np.array(x)
 

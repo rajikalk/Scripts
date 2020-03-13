@@ -38,7 +38,7 @@ K_W4_err = [[],[]]
 
 
 #read in current data
-print "Reading in current spreadsheet"
+print("Reading in current spreadsheet")
 header = 0
 with open(args.input_file, 'rU') as f:
     reader = csv.reader(f)

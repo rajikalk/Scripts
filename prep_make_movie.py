@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
-import commands
+import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -9,7 +9,7 @@ parser.add_argument("-a", "--additions", help="additional inputs", default='', t
 parser.add_argument("files", nargs='*')
 args = parser.parse_args()
 
-cur_dir = commands.getoutput('pwd')+'/'
+cur_dir = subprocess.getoutput('pwd')+'/'
 split_cur = cur_dir.split('/O')
 save_dir = split_cur[0] + '/YT_O' + split_cur[1] + 'Movie/'
 
@@ -42,13 +42,13 @@ for dir in dirs:
     job_name = sim_name+dir
     if not os.path.exists(save_dir + dir + '/'):
         os.makedirs(save_dir + dir + '/')
-    movie_ls = commands.getoutput('ls ' + save_dir+dir + '/').split('\n')
+    movie_ls = subprocess.getoutput('ls ' + save_dir+dir + '/').split('\n')
     if len(movie_ls) == 1:
         start_frame = '0'
     else:
-        movie_ls = commands.getoutput('ls ' + save_dir+dir+'/*jpg').split('\n')
+        movie_ls = subprocess.getoutput('ls ' + save_dir+dir+'/*jpg').split('\n')
         if "No such file or directory" in movie_ls[0]:
-            movie_ls = commands.getoutput('ls ' + save_dir+dir+'/*eps').split('\n')
+            movie_ls = subprocess.getoutput('ls ' + save_dir+dir+'/*eps').split('\n')
         start_frame = movie_ls[-1].split('_')[-1].split('.')[0]
     script_name = 'movie_'+dir+'.sh'
     if not os.path.isfile(script_name):

@@ -143,7 +143,7 @@ for sto, ds in ts.piter(storage=storage):
     elif args.measure_all != "False":
         disk_volume = ds.disk([0.0, 0.0, 0.0], [0.0, 0.0, 1.0], (radius, 'au'), (upper_cylinder_bound, 'au'))
         ang_disk = np.sum(disk_volume['Angular_Momentum'].value)
-        if ('all', u'particle_mass') in ds.field_list:
+        if ('all', 'particle_mass') in ds.field_list:
             ang_part = np.sum(disk_volume['Particle_Angular_Momentum'].value)
         else:
             ang_part = 0.0
@@ -167,7 +167,7 @@ for sto, ds in ts.piter(storage=storage):
         ang_in = ang_in_1 + ang_in_2
         ang_out = ang_out_1 + ang_out_2
         write_data = [time_val, ang_part, ang_disk, ang_in, ang_out]
-        print "OUTPUT=", time_val, ang_part, ang_disk, ang_in, ang_out
+        print("OUTPUT=", time_val, ang_part, ang_disk, ang_in, ang_out)
     else:
         myf.set_center(0)
         pos_pos = np.where(tube_1['velz'].in_units('km/s') > args.velocity_threshold)[0]
@@ -245,7 +245,7 @@ for sto, ds in ts.piter(storage=storage):
             unbound_mass = np.nan
 
 
-        print "OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed
+        print("OUTPUT=", time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed)
             
         #send data to rank 0 to append to write out.
         write_data = [time_val, outflow_mass, mom, L, max_speed, unbound_mass, dist, mean_speed]
@@ -275,14 +275,14 @@ file.close()
 
 if rank == 0:
     del_keys = []
-    for key, value in storage.iteritems():
+    for key, value in storage.items():
         if value is None:
             del_keys.append(key)
     for key in del_keys:
         del storage[key]
     f = open(save_dir + output_file, 'a')
-    for it in sorted(np.array(storage.keys()).astype(np.float)):
+    for it in sorted(np.array(list(storage.keys())).astype(np.float)):
         f.write(storage[str(it)])
-        print "Printed line:", storage[str(it)]
+        print("Printed line:", storage[str(it)])
     f.close()
-print "Completed job on rank", rank
+print("Completed job on rank", rank)

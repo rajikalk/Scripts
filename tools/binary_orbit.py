@@ -222,7 +222,7 @@ def binary_orbit_rv(params, jds, niter_anomaly=5, do_deriv=False,plot_orbit_no=0
         if k > 0:
             convergence = np.mean(np.abs(prev_bE - bE)/prev_bE * 100.)
             if k == 4:
-                print 'convergence =', str(convergence), '%'
+                print('convergence =', str(convergence), '%')
         prev_bE = bE
 
     #The `true anomaly'. With a pi ambiguity,
@@ -349,7 +349,7 @@ def binary_orbit(params, jds, niter_anomaly=5, do_deriv=False,plot_orbit_no=0):
         if k > 0:
             convergence = np.mean(np.abs(prev_bE - bE)/prev_bE * 100.)
             if k == 4:
-                print 'convergence =', str(convergence), '%'
+                print('convergence =', str(convergence), '%')
         prev_bE = bE
 
     #The `true anomaly'. With a pi ambiguity,

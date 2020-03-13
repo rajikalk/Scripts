@@ -16,14 +16,14 @@ with open('save_red_metadata_no_arc.py', 'r') as f:
     for row in reader:
         if len(row) > 0 and row[0][0:7] == 'arc_obs':
             writer.writerow(row)
-            row = reader.next()
+            row = next(reader)
             while row[0][0:4] == "   '":
                 arcs.append(row[0][4:-1])
                 writer.writerow(row)
-                row=reader.next()
+                row=next(reader)
         if len(row) > 0 and row[0][0:7] == 'sci_obs':
             writer.writerow(row)
-            row = reader.next()
+            row = next(reader)
             it_pos=0
             while len(row) > 0 and row[0][0:4] == "    ":
                 if row[0][6:9] == 'sci':
@@ -49,9 +49,9 @@ with open('save_red_metadata_no_arc.py', 'r') as f:
                             arc2 = i
                     line = ['     \'arc\'  : [\'' + arc1 + '\'', '\'' + arc2 + '\']','']
                     writer.writerow(line)
-                    row = reader.next()
+                    row = next(reader)
                 writer.writerow(row)
-                row = reader.next()
+                row = next(reader)
         writer.writerow(row)
 f.close()
 fout.close()

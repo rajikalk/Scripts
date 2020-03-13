@@ -4,7 +4,7 @@ To run, type:
 %run process_stellar
 %run test_process_stellar
 """
-from __future__ import print_function
+
 try:
     import pyfits
 except:

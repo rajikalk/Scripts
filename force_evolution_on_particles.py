@@ -53,11 +53,11 @@ for sto, ds in ts.piter(storage=storage):
     part_pos = dd['All_Particle_Positions']
     part_mass = dd['All_Particle_Masses']
     part_vel = dd['All_Particle_Velocities']
-    print "part_mass =", myf.get_part_mass()
-    print "part_vel =", myf.get_part_vel()
-    print "center_vel =", myf.get_center_vel()
-    print "part_pos =", myf.get_part_pos()
-    print "center_pos =", myf.get_center_pos()
+    print("part_mass =", myf.get_part_mass())
+    print("part_vel =", myf.get_part_vel())
+    print("center_vel =", myf.get_center_vel())
+    print("part_pos =", myf.get_part_pos())
+    print("center_pos =", myf.get_center_pos())
     if ('io', 'particle_mass') in ds.derived_field_list:
         '''
         F_rad = dd['Gravitational_Force_on_particles_Rad']
@@ -83,14 +83,14 @@ for sto, ds in ts.piter(storage=storage):
 
 if rank == 0:
     del_keys = []
-    for key, value in storage.iteritems():
+    for key, value in storage.items():
         if value is None:
             del_keys.append(key)
     for key in del_keys:
         del storage[key]
     f = open(save_dir + output, 'a')
-    for it in sorted(np.array(storage.keys()).astype(np.float)):
+    for it in sorted(np.array(list(storage.keys())).astype(np.float)):
         f.write(storage[str(it)])
-        print "Printed line:", storage[str(it)]
+        print("Printed line:", storage[str(it)])
     f.close()
-print "finished saving data to", save_dir + output
+print("finished saving data to", save_dir + output)

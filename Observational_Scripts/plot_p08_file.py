@@ -37,7 +37,7 @@ with open(csv_file, 'rU') as f:
             date = row[1]
             mjd = float(row[2])
             median = float(row[3])
-            if Objects.has_key(name) == False:
+            if (name in Objects) == False:
                 Objects.update({name:np.array([[date,mjd,median]])})
             else:
                 obj_data = Objects[name]
@@ -85,7 +85,7 @@ for fn in files:
     spectrum,sig = ps.weighted_extract_spectrum(flux)
 
     median_value = np.median(spectrum)
-    if Objects.has_key(objname):
+    if objname in Objects:
         obj_data = Objects[objname]
         if str(obsmjd) not in obj_data[:,1]:
             dict_date = np.append(obj_data.T[0],obsdate)
@@ -102,7 +102,7 @@ for fn in files:
     plt.xlabel('wavelength')
     plt.ylabel('flux')
     plt.savefig(save_name, bbox_inches='tight')
-    print "created figure:", save_name
+    print("created figure:", save_name)
     '''
     flux = np.array([a[i].data for i in range(1,13)])
     wave = a[1].header['CRVAL1'] + np.arange(flux.shape[2])*a[1].header['CDELT1']
@@ -123,8 +123,8 @@ for fn in files:
 if args.update_database:
     f = open(csv_file, 'w')
     f.write('#Object, Date, MJD, Median \n')
-    for object in range(len(Objects.keys())):
-        obj_name = Objects.keys()[object]
+    for object in range(len(list(Objects.keys()))):
+        obj_name = list(Objects.keys())[object]
         obj_data = Objects[obj_name]
         for data_point in range(len(obj_data)):
             obj_date = obj_data[data_point][0]
