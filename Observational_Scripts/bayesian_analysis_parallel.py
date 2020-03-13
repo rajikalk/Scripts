@@ -21,7 +21,7 @@ def parse_inputs():
     return args
 
 def __unicode__(self):
-    return unicode(self.some_field) or u''
+    return str(self.some_field) or ''
 
 #=======MAIN=======
 def main():
@@ -70,7 +70,7 @@ def main():
     sys.stdout.flush()
     CW.Barrier()
 
-    print "Reading in current spreadsheet", args.input_file
+    print("Reading in current spreadsheet", args.input_file)
     header = 0
     reshape_len = -1
     with open(args.input_file, 'rU') as f:
@@ -114,7 +114,7 @@ def main():
 
     #Read in currently calculated Bayes Factors:
     if args.restart_calc != 'False':
-        print "Reading in calulated Bayes factors"
+        print("Reading in calulated Bayes factors")
         header = 0
         with open(args.bayes_file, 'rU') as f:
             reader = csv.reader(f)
@@ -136,7 +136,7 @@ def main():
     CW.Barrier()
 
     if args.restart_calc != 'False' and rank == 0:
-        print "Creating new bayes file"
+        print("Creating new bayes file")
         f = open(args.bayes_file, 'w')
         f.write('Object,Region,Bayes_factor\n')
         f.close()
@@ -144,7 +144,7 @@ def main():
     sys.stdout.flush()
     CW.Barrier()
 
-    inds = range(len(Object))
+    inds = list(range(len(Object)))
     skip_inds = np.where(np.array(IR_excess)=='NN')[0]
     for skit in skip_inds:
         inds.remove(skit)
@@ -160,7 +160,7 @@ def main():
     for obj in inds:
         Pref_template_name = Pref_template[obj].split('_')[0]
         if np.isnan(Obj_bayes[obj]) and rank == rit:
-            print "Doing object:", Object[obj], "on rank:", rank            
+            print("Doing object:", Object[obj], "on rank:", rank)            
             likelihoods = []
             single_likelihoods = []
         
@@ -225,7 +225,7 @@ def main():
             
             #THEN CALCULATE BAYES FACTOR
             bayes_factor = np.mean(likelihoods)/np.mean(single_likelihoods)
-            print("Bayes Factor: {0:5.2f} for ".format(bayes_factor) + Object[obj]), "on rank", rank, "with SpT", Temp_sptype[obj]
+            print(("Bayes Factor: {0:5.2f} for ".format(bayes_factor) + Object[obj]), "on rank", rank, "with SpT", Temp_sptype[obj])
             del likelihoods
             del single_likelihoods
             if Region[obj] == 'US':
@@ -246,7 +246,7 @@ def main():
             if rank == 0:
                 all_bayes[int(bayes_update[0])].append(bayes_update[2])
                 Obj_bayes[int(bayes_update[1])] = bayes_update[2]
-                print "Updated Bayes factors retrieved from rank 0 for object", Object[int(bayes_update[1])]
+                print("Updated Bayes factors retrieved from rank 0 for object", Object[int(bayes_update[1])])
                 f = open(args.bayes_file, 'a')
                 write_string = Object[int(bayes_update[1])] + ',' + Region[int(bayes_update[1])] + ',' + str(bayes_update[2]) + ',' + str(bayes_update[3]) + '\n'
                 f.write(write_string)
@@ -262,12 +262,12 @@ def main():
             rit = 0
             if rank == 0:
                 
-                print "UPDATING CALCULATED BAYES VALUES"
+                print("UPDATING CALCULATED BAYES VALUES")
                 for orit in range(1,size):
                     bayes_update = CW.recv(source=orit, tag=orit)
                     all_bayes[int(bayes_update[0])].append(bayes_update[2])
                     Obj_bayes[int(bayes_update[1])] = bayes_update[2]
-                    print "Updated Bayes factors retrieved from rank", orit, "for object", Object[int(bayes_update[1])]
+                    print("Updated Bayes factors retrieved from rank", orit, "for object", Object[int(bayes_update[1])])
                     f = open(args.bayes_file, 'a')
                     write_string = Object[int(bayes_update[1])] + ',' + Region[int(bayes_update[1])] + ',' + str(bayes_update[2]) + ',' + str(bayes_update[3]) + '\n'
                     f.write(write_string)
@@ -281,12 +281,12 @@ def main():
     CW.Barrier()
     if rank == 0:
         
-        print "UPDATING CALCULATED BAYES VALUES"
+        print("UPDATING CALCULATED BAYES VALUES")
         for orit in range(1,size):
             bayes_update = CW.recv(source=orit, tag=orit)
             all_bayes[int(bayes_update[0])].append(bayes_update[2])
             Obj_bayes[int(bayes_update[1])] = bayes_update[2]
-            print "Updated Bayes factors retrieved from rank", orit, "for object", Object[int(bayes_update[1])]
+            print("Updated Bayes factors retrieved from rank", orit, "for object", Object[int(bayes_update[1])])
             f = open(args.bayes_file, 'a')
             write_string = Object[int(bayes_update[1])] + ',' + Region[int(bayes_update[1])] + ',' + str(bayes_update[2]) + ',' + str(bayes_update[3]) + '\n'
             f.write(write_string)
@@ -295,6 +295,6 @@ def main():
             del write_string
         sys.stdout.flush()
         CW.Barrier()
-    print "Finished Calculating bayes factors!"
+    print("Finished Calculating bayes factors!")
 
 if __name__ == '__main__': main()

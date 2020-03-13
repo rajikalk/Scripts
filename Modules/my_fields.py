@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#Created by Rajika Kuruwita, 2019
 import yt
 yt.enable_parallelism()
 import numpy as np
@@ -13,6 +14,7 @@ part_mass = yt.YTArray([], 'g')
 part_vel = yt.YTArray([], 'cm/s')
 n_bins = 100
 adaptive_bins = True
+use_gas = True
 
 def set_n_bins(x):
     """
@@ -123,6 +125,16 @@ def set_normal(x):
     normal = x
     return normal
 
+def set_use_gas(x):
+    """
+    Sets whether to use gas when calculate center velocity and position
+    
+    Default: True
+    """
+    global use_gas
+    use_gas = x
+    return use_gas
+
 def get_center():
     """
     returns the currently set center
@@ -178,6 +190,13 @@ def get_normal():
     """
     global normal
     return normal
+    
+def get_use_gas():
+    """
+    returns whether to use gas when calculate center velocity and position
+    """
+    global use_gas
+    return use_gas
 
 def _Neg_z(field, data):
     """
@@ -186,25 +205,39 @@ def _Neg_z(field, data):
     return -1*data['z']
 
 yt.add_field("Neg_z", function=_Neg_z, units=r"cm")
+    
+def _Neg_dz(field, data):
+    """
+    returns the negative of the dz
+    """
+    return -1*data['dz']
+
+yt.add_field("Neg_dz", function=_Neg_z, units=r"cm")
 
 def _Center_Position(field, data):
     """
     Returns the center position for the current set center.
     """
-    center = get_center()
-    if center == 0:
-        try:
-            dd = data.ds.all_data()
-            try:
-                center_pos = dd.quantities.center_of_mass(use_particles=True)
-            except:
-                center_pos = dd.quantities.center_of_mass(use_particles=False)
-        except:
-            center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
-    else:
+    global use_gas
+    center_pos = data.ds.domain_center
+    if ('gas', 'x') in data.ds.derived_field_list:
+        center = get_center()
         dd = data.ds.all_data()
-        center_pos = [dd['particle_posx'][center-1].in_units('cm').value, dd['particle_posy'][center-1].in_units('cm').value, dd['particle_posz'][center-1].in_units('cm').value]
-        center_pos = yt.YTArray(center_pos, 'cm')
+        if center == 0:
+            if use_gas == False:
+                try:
+                    center_pos = dd.quantities.center_of_mass(use_particles=True, use_gas=False)
+                except:
+                    center_pos = data.ds.domain_center
+            else:
+                try:
+                    center_pos = dd.quantities.center_of_mass(use_particles=True)
+                except:
+                    center_pos = dd.quantities.center_of_mass(use_particles=False)
+        else:
+            particle_tag = np.argsort(dd['particle_tag'])
+            center_tag = particle_tag[center-1]
+            center_pos = yt.YTArray([dd['particle_posx'][center_tag].in_units('cm').value, dd['particle_posy'][center_tag].in_units('cm').value, dd['particle_posz'][center_tag].in_units('cm').value], 'cm')
     set_center_pos(center_pos)
     return center_pos
 
@@ -214,19 +247,26 @@ def _Center_Velocity(field, data):
     """
     Returns the center velocity for the current set center.
     """
-    center = get_center()
-    if center == 0:
-        try:
-            dd = data.ds.all_data()
-            try:
-                center_vel = dd.quantities.bulk_velocity(use_particles=True)
-            except:
-                center_vel = dd.quantities.bulk_velocity(use_particles=False)
-        except:
-            center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
-    else:
+    global use_gas
+    center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+    if ('gas', 'x') in data.ds.derived_field_list:
+        center = get_center()
         dd = data.ds.all_data()
-        center_vel = yt.YTArray([dd['particle_velx'][center-1].in_units('cm/s').value, dd['particle_vely'][center-1].in_units('cm/s').value, dd['particle_velz'][center-1].in_units('cm/s').value], 'cm/s')
+        if center == 0:
+            if use_gas == False:
+                try:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=True, use_gas=False)
+                except:
+                    center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+            else:
+                try:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=True)
+                except:
+                    center_vel = dd.quantities.bulk_velocity(use_particles=False)
+        else:
+            particle_tag = np.argsort(dd['particle_tag'])
+            center_tag = particle_tag[center-1]
+            center_vel = yt.YTArray([dd['particle_velx'][center_tag].in_units('cm/s').value, dd['particle_vely'][center_tag].in_units('cm/s').value, dd['particle_velz'][center_tag].in_units('cm/s').value], 'cm/s')
     set_center_vel(center_vel)
     return center_vel
 
@@ -236,7 +276,7 @@ def _All_Particle_Positions(field, data):
     """
     Saves all the particle positions
     """
-    if ('all', u'particle_posx') in data.ds.field_list:
+    if ('all', 'particle_posx') in data.ds.field_list:
         dd = data.ds.all_data()
         if len(dd['particle_posx'].in_units('cm').value) > 1:
             pos = np.array([dd['particle_posx'].in_units('cm').value, dd['particle_posy'].in_units('cm').value, dd['particle_posz'].in_units('cm').value])
@@ -254,7 +294,7 @@ def _All_Particle_Velocities(field, data):
     """
     Saves all the particle velocities
     """
-    if ('all', u'particle_velx') in data.ds.field_list:
+    if ('all', 'particle_velx') in data.ds.field_list:
         dd = data.ds.all_data()
         if len(dd['particle_velx'].in_units('cm/s').value) > 1:
             vel = np.array([dd['particle_velx'].in_units('cm/s').value, dd['particle_vely'].in_units('cm/s').value, dd['particle_velz'].in_units('cm/s').value])
@@ -272,7 +312,7 @@ def _All_Particle_Masses(field, data):
     """
     Saves all the particle masses
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         mass = dd['particle_mass']
     else:
@@ -749,6 +789,51 @@ def _Angular_Momentum(field, data):
 
 yt.add_field("Angular_Momentum", function=_Angular_Momentum, units=r"g*cm**2/s")
 
+def _Orbital_Angular_Momentum_x(field, data):
+    """
+    Calculates the orbital angular momentum x about current set center.
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        L_x = data['particle_mass']*((data['particle_velz'] - data['Center_Velocity'][2])*(data['particle_posy']-data['Center_Position'][1])-(data['particle_vely'] - data['Center_Velocity'][1])*(data['particle_posz']-data['Center_Position'][2]))
+    else:
+        L_x = yt.YTArray(0.0, 'g*cm**2/s')
+    return L_x
+
+yt.add_field("Orbital_Angular_Momentum_x", function=_Orbital_Angular_Momentum_x, units=r"g*cm**2/s")
+
+def _Orbital_Angular_Momentum_y(field, data):
+    """
+    Calculates the orbital angular momentum y about current set center.
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        L_x = data['particle_mass']*((data['particle_velz'] - data['Center_Velocity'][2])*(data['particle_posx']-data['Center_Position'][0])-(data['particle_velx'] - data['Center_Velocity'][0])*(data['particle_posz']-data['Center_Position'][2]))
+    else:
+        L_x = yt.YTArray(0.0, 'g*cm**2/s')
+    return L_x
+
+yt.add_field("Orbital_Angular_Momentum_y", function=_Orbital_Angular_Momentum_y, units=r"g*cm**2/s")
+
+def _Orbital_Angular_Momentum_z(field, data):
+    """
+    Calculates the orbital angular momentum z about current set center.
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        L_x = data['particle_mass']*((data['particle_vely'] - data['Center_Velocity'][1])*(data['particle_posx']-data['Center_Position'][0])-(data['particle_velx'] - data['Center_Velocity'][0])*(data['particle_posy']-data['Center_Position'][1]))
+    else:
+        L_x = yt.YTArray(0.0, 'g*cm**2/s')
+    return L_x
+
+yt.add_field("Orbital_Angular_Momentum_z", function=_Orbital_Angular_Momentum_z, units=r"g*cm**2/s")
+
+def _Orbital_Angular_Momentum(field, data):
+    """
+    Calculates the orbital angular momentum about current set center.
+    """
+    L = np.sqrt(data['Orbital_Angular_Momentum_x']**2. + data['Orbital_Angular_Momentum_y']**2. + data['Orbital_Angular_Momentum_z']**2.)
+    return L
+
+yt.add_field("Orbital_Angular_Momentum", function=_Orbital_Angular_Momentum, units=r"g*cm**2/s")
+
 def _Specific_Angular_Momentum(field, data):
     """
     Calculates the specific angular momentum about current set center.
@@ -854,8 +939,8 @@ def Gradient(x_field, y_field, bin_data):
     from subprocess import call
     import os
     
-    print "X_FIELD =", x_field
-    print "Y_FIELD =", y_field
+    print("X_FIELD =", x_field)
+    print("Y_FIELD =", y_field)
     
     time_str = str(time.time()).split('.')[0] + '_' + str(time.time()).split('.')[1]
     gradient_input = '/short/ek9/rlk100/temp_pickles/gradient_input_' + time_str + '.pkl'
@@ -1036,3 +1121,30 @@ def _B_angle(field, data):
     return angle.in_units('deg')
 
 yt.add_field("B_angle", function=_B_angle, units=r"deg")
+
+def _Is_Unbound(field, data):
+    """
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
+    """
+    Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg').value
+    unbound_inds = np.where(Total_Energy > 0.0)[0]
+    bound_inds = np.where(Total_Energy < 0.0)[0]
+    Unbound = Total_Energy
+    Unbound[unbound_inds] = True
+    Unbound[bound_inds] = False
+    del Total_Energy
+    del unbound_inds
+    del bound_inds
+    return Unbound
+
+yt.add_field("Is_Unbound", function=_Is_Unbound, units=r"")
+
+def _Total_Energy(field, data):
+    """
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
+    """
+    Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg')
+    return Total_Energy
+
+yt.add_field("Total_Energy", function=_Total_Energy, units=r"erg")
+

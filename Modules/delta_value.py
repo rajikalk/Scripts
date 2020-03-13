@@ -87,7 +87,7 @@ def main():
             else:
                 y_2_3 = np.mean(y[shell_2_3])
             grad_val = ((y_1_2 - y_0_1)/(r_1 - r_0) + (y_2_3 - y_1_2)/(r_2 - r_1))/2.
-            print "Gradient =", grad_val, "at Distance =", r_1, "on rank", rank
+            print("Gradient =", grad_val, "at Distance =", r_1, "on rank", rank)
             grad_add[shell_1_2] = grad_val
             if len(enclosed_dist) == 0:
                 enclosed_dist = np.where(distance < (dist_min+1))
@@ -111,7 +111,7 @@ def main():
                     #print "Added both particles with mass", np.sum(part_mass)/1.98841586e+33
                     printed = True
             enclosed_mass[ind] = enclosed_mass_val
-            print "enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank
+            print("enclosed mass =", enclosed_mass_val/1.98841586e+33, ", Radius =", rs[r]/1.49597870751e+13, "on rank", rank)
             CW.send(enclosed_mass, dest=0, tag=rank)
         if rank == 0:
             enclosed_mass_add = CW.recv(source=rit, tag=rit)
@@ -123,7 +123,7 @@ def main():
     if rank == 0:
         os.remove(args.file)
         file = open(args.save_file, 'w+')
-        print "pickle file:", args.save_file
+        print("pickle file:", args.save_file)
         pickle.dump(enclosed_mass, file)
         file.close()
 

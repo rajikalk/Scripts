@@ -50,7 +50,7 @@ BP_RP = [[],[]]
 BP_RP_err = [[],[]]
 
 
-print "reading in Known ScoCen members"
+print("reading in Known ScoCen members")
 header = 0
 with open(args.member_file, 'rU') as f:
     reader = csv.reader(f)
@@ -71,7 +71,7 @@ with open(args.member_file, 'rU') as f:
             header = 1
 f.close()
 
-print "reading in our targets"
+print("reading in our targets")
 header = 0
 with open(args.input_file, 'rU') as f:
     reader = csv.reader(f)

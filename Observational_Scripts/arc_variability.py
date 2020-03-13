@@ -34,7 +34,7 @@ else:
     slits = 12
 
 #Make template of arc for each slitlet at the same pixel
-print "MAKING TEMPLATES"
+print("MAKING TEMPLATES")
 #read in file
 temp_file = files[0]
 hdu = pyfits.open(temp_file)
@@ -74,15 +74,15 @@ for slit in range(slits):
     spectrum_interp = np.interp(wave_template,wave_0*(1 - (0.0 - 0.0)/2.998e5),spectrum)
     outfn = 'templates/slit_'+str(slit)+'.fits'
     pyfits.writeto(outfn,spectrum_interp,clobber=True)
-    print('saved template:'+outfn)
+    print(('saved template:'+outfn))
 
-print "MADE TEMPLATES FOR EACH SLIT"
-print "NOW CALCULATING RV VARIATION FOR EACH SLIT"
+print("MADE TEMPLATES FOR EACH SLIT")
+print("NOW CALCULATING RV VARIATION FOR EACH SLIT")
 
 bad_intervals= ([0,5400],[6700,7000]) #([0,5400],[6000,7000]) #([0,6100],[6700,7000])# ([0,5400],[6700,7000])
 
 for file in files[1:]:
-    print "DOING FILE:", file
+    print("DOING FILE:", file)
     hdu = pyfits.open(file)
     flux = np.array([hdu[i].data for i in range(1,13)])
     #get wavelength scale and convert to log scale
@@ -102,7 +102,7 @@ for file in files[1:]:
     Cam_Temp.append(cam)
 
     for slit in range(slits):
-        print "DOING SLIT:", slit
+        print("DOING SLIT:", slit)
         if args.weight_direction != 'hor':
             flux_stamp = flux[:, slit, :]
         else:
@@ -113,7 +113,7 @@ for file in files[1:]:
         template = ['templates/slit_'+str(slit)+'.fits']
         rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,template, ([0,5400],[6870,6890]), save_figures=False, save_dir='Images/', heliocentric_correction=0.0)
         RV[slit].append(rv)
-        print 'rv =', rv
+        print('rv =', rv)
 
 
 RV = np.array(RV)
@@ -125,7 +125,7 @@ for obs in range(len(RV[0])):
 
 
 
-print "NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!"
+print("NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!")
 plt.clf()
 #marker = ['v','^','<','>','8','s','p','*','h','D','o','x']
 fig = plt.figure()

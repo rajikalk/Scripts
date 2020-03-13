@@ -131,7 +131,7 @@ def _CoM(field, data):
     x_top = yt.YTArray(0.0, 'cm*g')
     y_top = yt.YTArray(0.0, 'cm*g')
     z_top = yt.YTArray(0.0, 'cm*g')
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         TM = TM + np.sum(data['particle_mass'].in_units('g'))
         for part in range(len(data['particle_mass'])):
             x_top = x_top + data['particle_mass'][part].in_units('g')*data['particle_posx'][part].in_units('cm')
@@ -154,7 +154,7 @@ def _Semimajor_Axis(field, data):
     """
     Calculates the semimajor axis of the binary. If there are no stars, or only one star, the semimajor axis is set to zero.
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         if len(data['particle_mass']) == 2:
             pos1 = [data['particle_posx'][0].in_units('cm'), data['particle_posy'][0].in_units('cm'), data['particle_posz'][0].in_units('cm')]
             pos2 = [data['particle_posx'][1].in_units('cm'), data['particle_posy'][1].in_units('cm'), data['particle_posz'][1].in_units('cm')]
@@ -175,7 +175,7 @@ def _My_Bulk_Velocity(field, data):
     y_vel = np.sum(data['vely'].in_units('cm/s')*data['cell_mass'].in_units('g'))
     z_vel = np.sum(data['velz'].in_units('cm/s')*data['cell_mass'].in_units('g'))
     TM = np.sum(data['cell_mass'].in_units('g'))
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         TM = TM + np.sum(data['particle_mass'].in_units('g'))
         for part in range(len(data['particle_mass'])):
             x_vel = x_vel + data['particle_mass'][part].in_units('g')*data['particle_velx'][part].in_units('cm/s')
@@ -217,7 +217,7 @@ def _Center_Velocity(field, data):
     dd = data.ds.all_data()
     center_vel = yt.YTArray(np.array([0.0,0.0,0.0]), 'cm/s')
     if center == 0 and ('gas', 'velocity_x') in data.ds.derived_field_list:
-        if ('all', u'particle_mass') in data.ds.field_list:
+        if ('all', 'particle_mass') in data.ds.field_list:
             center_vel = dd.quantities.bulk_velocity(use_particles=True)
         else:
             center_vel = dd.quantities.bulk_velocity(use_particles=False)
@@ -349,10 +349,10 @@ def _Projected_Velocity(field, data):
     if np.shape(data)[0] != 16:
         if normal != [1.0,0.0,0.0]:
             pos_vec = np.array([normal[1], -1*normal[0]])
-        elif ('all', u'particle_mass') in data.ds.field_list:
+        elif ('all', 'particle_mass') in data.ds.field_list:
             dd = data.ds.all_data()
             if len(dd['particle_mass']) == 2:
-                pos_vec = np.array([np.diff(dd[('all', u'particle_posx')].value)[0], np.diff(dd[('all', u'particle_posy')].value)[0]])
+                pos_vec = np.array([np.diff(dd[('all', 'particle_posx')].value)[0], np.diff(dd[('all', 'particle_posy')].value)[0]])
             else:
                 pos_vec = np.array([0.0, -1.0])
         else:
@@ -384,10 +384,10 @@ def _Projected_Magnetic_Field(field, data):
     global normal
     if normal != [1.0,0.0,0.0]:
         pos_vec = np.array([normal[1], -1*normal[0]])
-    elif ('all', u'particle_mass') in data.ds.field_list:
+    elif ('all', 'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         if len(dd['particle_mass']) == 2:
-            pos_vec = np.array([np.diff(dd[('all', u'particle_posx')].value)[0], np.diff(dd[('all', u'particle_posy')].value)[0]])
+            pos_vec = np.array([np.diff(dd[('all', 'particle_posx')].value)[0], np.diff(dd[('all', 'particle_posy')].value)[0]])
         else:
             pos_vec = np.array([0.0, -1.0])
         del dd
@@ -627,7 +627,7 @@ def _Particle_Potential(field, data):
         data_comb = data['x'].value + data['y'].in_units('km').value + data['z'].in_units('au').value
         inds = np.where(np.in1d(comb, data_comb))[0]
         Part_gpot = yt.YTArray(np.zeros(np.shape(dd)), 'cm**2/s**2')
-        if ('all', u'particle_mass') in data.ds.field_list:
+        if ('all', 'particle_mass') in data.ds.field_list:
             for part in range(len(dd['particle_mass'])):
                 gpot = -(yt.physical_constants.G*dd['particle_mass'][part].in_units('g'))/(dd['Distance_from_Center'].in_units('cm'))
                 Part_gpot = Part_gpot + gpot
@@ -768,7 +768,7 @@ def _Particle_dx_from_Center(field, data):
     """
     Calculates the change in x position from the current set center.
     """
-    if ('all', u'particle_posx') in data.ds.field_list:
+    if ('all', 'particle_posx') in data.ds.field_list:
         dx = data['particle_posx'].in_units('cm')-data['Center_Position'][0]
     else:
         dx = yt.YTArray(np.zeros(np.shape(data)), 'cm')
@@ -780,7 +780,7 @@ def _Particle_dy_from_Center(field, data):
     """
     Calculates the change in y position from the current set center.
     """
-    if ('all', u'particle_posy') in data.ds.field_list:
+    if ('all', 'particle_posy') in data.ds.field_list:
         dy = data['particle_posy'].in_units('cm')-data['Center_Position'][1]
     else:
         dy = yt.YTArray(np.zeros(np.shape(data)), 'cm')
@@ -792,7 +792,7 @@ def _Particle_dz_from_Center(field, data):
     """
     Calculates the change in z position from the current set center.
     """
-    if ('all', u'particle_posz') in data.ds.field_list:
+    if ('all', 'particle_posz') in data.ds.field_list:
         dz = data['particle_posz'].in_units('cm')-data['Center_Position'][2]
     else:
         dz = yt.YTArray(np.zeros(np.shape(data)), 'cm')
@@ -817,7 +817,7 @@ def _Particle_Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum in the x_direction about current set center.
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         L_x = data['particle_mass']*(data['particle_vely']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dy_from_Center'])
     else:
         L_x = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
@@ -829,7 +829,7 @@ def _Particle_Angular_Momentum_y(field, data):
     """
     Calculates the angular momentum in the y_direction about current set center.
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         L_y = data['particle_mass']*(data['particle_velx']*data['Particle_dz_from_Center'] - data['particle_velz']*data['Particle_dx_from_Center'])
     else:
         L_y = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
@@ -841,7 +841,7 @@ def _Particle_Angular_Momentum_z(field, data):
     """
     Calculates the angular momentum in the z_direction about current set center.
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         L_z = data['particle_mass']*(data['particle_velx']*data['Particle_dy_from_Center'] - data['particle_vely']*data['Particle_dx_from_Center'])
     else:
         L_z = yt.YTArray(np.zeros(np.shape(data)), 'g*cm**2/s')
@@ -863,7 +863,7 @@ def _Particle_Specific_Angular_Momentum(field, data):
     """
     Calculates the specific angular momentum about current set center.
     """
-    if ('all', u'particle_mass') in data.ds.field_list:
+    if ('all', 'particle_mass') in data.ds.field_list:
         l = data['Particle_Angular_Momentum']/data['particle_mass']
     else:
         l = yt.YTArray(np.zeros(np.shape(data)), 'cm**2/s')
@@ -932,7 +932,7 @@ def _magx_mw(field, data):
     """
     field to be able to created a mass weighted projection of magz
     """
-    if ('flash', u'magx') in data.ds.field_list:
+    if ('flash', 'magx') in data.ds.field_list:
         return data['magx']*data['cell_mass']
     else:
         return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
@@ -943,7 +943,7 @@ def _magy_mw(field, data):
     """
     field to be able to created a mass weighted projection of magz
     """
-    if ('flash', u'magy') in data.ds.field_list:
+    if ('flash', 'magy') in data.ds.field_list:
         return data['magy']*data['cell_mass']
     else:
         return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
@@ -954,7 +954,7 @@ def _magz_mw(field, data):
     """
     field to be able to created a mass weighted projection of magz
     """
-    if ('flash', u'magz') in data.ds.field_list:
+    if ('flash', 'magz') in data.ds.field_list:
         return data['magz']*data['cell_mass']
     else:
         return yt.YTArray(np.ones(np.shape(data['cell_mass'])), 'gauss*g')
@@ -964,7 +964,7 @@ yt.add_field("magz_mw", function=_magz_mw, units=r"gauss*g")
 '''
 def _Is_Unbound(field, data):
     """
-    returned boolean array about whether the gas is bound or unbound using the total potential energy adn the kinetic energy
+    returned boolean array about whether the gas is bound or unbound using the total potential energy and the kinetic energy
     """
     Total_Energy = (data['Total_Potential']*data['cell_mass'] + data['kinetic_energy']*data['cell_volume']).in_units('erg').value
     unbound_inds = np.where(Total_Energy > 0.0)[0]

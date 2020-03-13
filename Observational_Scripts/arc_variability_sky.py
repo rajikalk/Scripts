@@ -55,7 +55,7 @@ abs_bad_ints =([0,5500],[5500,6860],[6910,7000])
 good_file = np.ones(len(files))
 
 for file in files:
-    print "DOING FILE:", file
+    print("DOING FILE:", file)
     hdu = pyfits.open(file)
     MJD_obs = hdu[0].header['MJD-OBS']
     MJD.append(MJD_obs)
@@ -98,7 +98,7 @@ for file in files:
         '''
         #ps.make_wifes_p08_template(file, 'templates/', rv=0.0, )
     else:
-        print "SNR TOO LOW"
+        print("SNR TOO LOW")
         rv = np.nan
         rv_sig = np.nan
     RV.append(rv)
@@ -108,7 +108,7 @@ for file in files:
     rv,rv_sig, temp_used = ps.calc_rv_template(spectrum,wave,sig,abs_temps, (abs_bad_ints), save_figures=True, save_dir='Images/', heliocentric_correction=0.0, fig_fn='Images/xcorr_abs_'+file.split('-')[-1].split('.')[0])
     RV_abs.append(rv)
     RV_abs_sig.append(rv_sig)
-    print 'rv_abs =', rv
+    print('rv_abs =', rv)
 
 '''
 import pdb
@@ -133,7 +133,7 @@ for obs in range(len(RV_slits[0])):
 #x_av = movingaverage(interval, r)
 #plot(x_av, y)
 
-print "NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!"
+print("NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!")
 
 #marker = ['v','^','<','>','8','s','p','*','h','D','o','x']
 '''

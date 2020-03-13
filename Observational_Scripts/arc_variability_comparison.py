@@ -45,7 +45,7 @@ width = (bins[1] - bins[0])
 centers = bins[:-1] + width*0.5
 
 
-print "NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!"
+print("NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!")
 plt.clf()
 #marker = ['v','^','<','>','8','s','p','*','h','D','o','x']
 fig = plt.figure()

@@ -13,9 +13,26 @@ import my_fields as myf
 import scipy.spatial as spatial
 import pickle
 import matplotlib.patheffects as path_effects
+from matplotlib import transforms
 
 fontgize_global=12
 
+def rainbow_text(x,y,ls,lc,**kw):
+
+    t = plt.gca().transData
+    figlocal = plt.gcf()
+
+    #horizontal version
+    for s,c in zip(ls,lc):
+        text = plt.text(x,y,""+s+"",color=c, transform=t, **kw)
+        text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        text.draw(figlocal.canvas.get_renderer())
+        ex = text.get_window_extent()
+        if "odot" in s:
+            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+        else:
+            t = transforms.offset_copy(text._transform, x=0.85*ex.width, units='dots')
+        
 def set_global_font_size(x):
     global fontgize_global
     fontgize_global = x
@@ -47,15 +64,15 @@ def find_sink_formation_time(files):
             sink_form = 0.0
         '''
         f = h5py.File(part_file, 'r')
-        if f[f.keys()[1]][-1][-1] > 0:
-            sink_form = np.min(f[f.keys()[11]][:,5])/yt.units.yr.in_units('s').value
+        if f[list(f.keys())[1]][-1][-1] > 0:
+            sink_form = np.min(f[list(f.keys())[11]][:,5])/yt.units.yr.in_units('s').value
         else:
             sink_form = 0.0
     except:
         sink_form = None
         for source in range(len(files)):
             f = h5py.File(files[source], 'r')
-            if 'particlemasses' in f.keys():
+            if 'particlemasses' in list(f.keys()):
                 sink_form = f['time'][0]/yt.units.yr.in_units('s').value
                 break
         if sink_form is None:
@@ -64,7 +81,7 @@ def find_sink_formation_time(files):
 
 def get_image_mesh(file, zoom_times):
     f = h5py.File(file, 'r')
-    for key in f.keys():
+    for key in list(f.keys()):
         if 'dens' in key:
             field = key
     dim = np.shape(f[field])[0]
@@ -81,22 +98,24 @@ def get_image_mesh(file, zoom_times):
     X, Y = np.meshgrid(x, x)
     return X, Y
 
-def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=2000.):
-    try:
-        file = files[-1]
-        part_file=file[:-12] + 'part' + file[-5:]
-        #ds = yt.load(file, particle_filename=part_file)
-        #dd = ds.all_data()
-        f = h5py.File(part_file, 'r')
-        sink_form_time = find_sink_formation_time(files)
-        max_time = f[f.keys()[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
-    except:
-        f = h5py.File(files[-1], 'r')
-        sink_form_time = find_sink_formation_time(files)
-        max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
-        f.close()
-    #if end_time is not None and end_time < max_time:
-    max_time = end_time
+def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=None):
+    if end_time == None:
+        try:
+            file = files[-1]
+            part_file=file[:-12] + 'part' + file[-5:]
+            #ds = yt.load(file, particle_filename=part_file)
+            #dd = ds.all_data()
+            f = h5py.File(part_file, 'r')
+            sink_form_time = find_sink_formation_time(files)
+            max_time = f[list(f.keys())[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
+        except:
+            f = h5py.File(files[-1], 'r')
+            sink_form_time = find_sink_formation_time(files)
+            max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
+            f.close()
+    else:
+        #if end_time is not None and end_time < max_time:
+        max_time = end_time
 
     if presink_frames != 0:
         m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
@@ -131,12 +150,12 @@ def find_files(m_times, files):
             file = files[it]
             part_file=file[:-12] + 'part' + file[-5:]
             f = h5py.File(part_file, 'r')
-            time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+            time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
         except:
             f = h5py.File(files[it], 'r')
             time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
         f.close()
-        print "Current file time =", time, "for interator =", it
+        print("Current file time =", time, "for interator =", it)
         if pit == it or time == m_times[mit]:
             if it == (len(files)-1):
                 pot_files = files[it-1:it]
@@ -149,7 +168,7 @@ def find_files(m_times, files):
                 try:
                     part_file=pfile[:-12] + 'part' + pfile[-5:]
                     f = h5py.File(part_file, 'r')
-                    time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+                    time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
                 except:
                     f = h5py.File(pfile, 'r')
                     time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
@@ -159,48 +178,33 @@ def find_files(m_times, files):
             append_file = pot_files[np.argmin(diff_arr)]
             if m_times[mit] == 0.0:
                 try:
-                    '''
-                    part_file=append_file[:-12] + 'part' + append_file[-5:]
-                    ds = yt.load(append_file, particle_filename=part_file)
-                    if ('all', u'particle_mass') not in ds.field_list:
-                        found_first_particle_file = False
-                        app_ind = files.index(append_file) + 1
-                        while found_first_particle_file == False:
-                            append_file = files[app_ind]
-                            part_file=append_file[:-12] + 'part' + append_file[-5:]
-                            ds = yt.load(append_file, particle_filename=part_file)
-                            if ('all', u'particle_mass') in ds.field_list:
-                                found_first_particle_file = True
-                            else:
-                                app_ind = app_ind + 1
-                    '''
                     f = h5py.File(append_file, 'r')
-                    print "found file", append_file, ", checking if particles exist"
-                    if f[f.keys()[9]][-1][-1] == 0:
+                    print("found file", append_file, ", checking if particles exist")
+                    if f[list(f.keys())[9]][-1][-1] == 0:
                         found_first_particle_file = False
                         app_ind = files.index(append_file) + 1
                         while found_first_particle_file == False:
                             append_file = files[app_ind]
                             f = h5py.File(append_file, 'r')
-                            if f[f.keys()[9]][-1][-1] > 0:
+                            if f[list(f.keys())[9]][-1][-1] > 0:
                                 found_first_particle_file = True
-                                print "found particles in file", append_file
+                                print("found particles in file", append_file)
                             else:
                                 app_ind = app_ind + 1
                 except:
                     f = h5py.File(append_file, 'r')
-                    if 'particlemasses' not in f.keys():
+                    if 'particlemasses' not in list(f.keys()):
                         append_file = pot_files[np.argmin(diff_arr)+1]
             usable_files.append(append_file)
             try:
                 part_file=append_file[:-12] + 'part' + append_file[-5:]
                 f = h5py.File(part_file, 'r')
-                time = f[u'real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+                time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
             except:
                 f = h5py.File(append_file, 'r')
                 time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
             f.close()
-            print "found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1]
+            print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             #append_file = files[it]
             #usable_files.append(append_file)
             mit = mit + 1
@@ -224,33 +228,40 @@ def get_particle_data(file, axis='xz', proj_or=None):
     part_pos_x = []
     part_pos_y = []
     accretion_rad = []
+    #center_pos = myf.get_center_pos()
     try:
         part_file=file[:-12] + 'part' + file[-5:]
         f = h5py.File(part_file, 'r')
-        ordered_inds = np.argsort(f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['tag                     '])[0][0]])
-        part_mass = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['mass                    '])[0][0]][ordered_inds]/yt.units.msun.in_units('g').value
+        tag_ind = np.where(f['particle names'][:] == b'tag                     ')[0][0]
+        ordered_inds = np.argsort(f['tracer particles'][:,tag_ind])
+        mass_ind = np.where(f['particle names'][:] == b'mass                    ')[0][0]
+        part_mass = f['tracer particles'][:,mass_ind][ordered_inds]/yt.units.msun.in_units('g').value
+        posx_ind = np.where(f['particle names'][:] == b'posx                    ')[0][0]
+        posy_ind = np.where(f['particle names'][:] == b'posy                    ')[0][0]
         if axis == 'xy':
-            part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
-            part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
-            depth_pos = range(len(part_mass))
+            part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[0]/yt.units.au.in_units('cm').value
+            part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[1]/yt.units.au.in_units('cm').value
+            depth_pos = list(range(len(part_mass)))
         else:
             if proj_or is not None:
                 L = np.array([proj_or[0],proj_or[1]])
                 L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
                 L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
-                part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
-                part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value
                 r = np.array([part_pos_x, part_pos_y])
                 part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
                 part_pos_x = part_pos_x.T[0]
                 depth_pos = -1*np.dot(r.T,(L/L_len))
                 depth_pos = np.argsort(depth_pos)[::-1]
             else:
-                part_pos_x = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posx                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
-                depth_pos = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posy                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
+                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
+                depth_pos = f['tracer particles'][:,posy_ind]/yt.units.au.in_units('cm').value
                 depth_pos = depth_pos[::-1]
-            part_pos_y = f[f.keys()[11]][:,np.where(f[f.keys()[5]][:] == ['posz                    '])[0][0]][ordered_inds]/yt.units.au.in_units('cm').value
-        accretion_rad = [item for item in f[f.keys()[6]][:] if 'sink_accretion_radius' in item[0]][0][1]/yt.units.au.in_units('cm').value
+            posz_ind = np.where(f['particle names'][:] == b'posz                    ')[0][0]
+            part_pos_y = f['tracer particles'][:,posz_ind][ordered_inds]/yt.units.au.in_units('cm').value
+        radius_ind = [i for i, v in enumerate(f['real runtime parameters'][:]) if v[0] == b'sink_accretion_radius                                                           '][0]
+        accretion_rad = f['real runtime parameters'][radius_ind][1]/yt.units.au.in_units('cm').value
     except:
         f = h5py.File(file, 'r')
         part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
@@ -259,7 +270,7 @@ def get_particle_data(file, axis='xz', proj_or=None):
         if axis == 'xy':
             part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
             part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
-            depth_pos = range(len(part_mass))
+            depth_pos = list(range(len(part_mass)))
         else:
             part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
             depth_pos = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
@@ -273,9 +284,9 @@ def get_particle_data(file, axis='xz', proj_or=None):
                  'depth_position':depth_pos}
     return part_info
 
-def initialise_grid(file, zoom_times=0):#, center=0):
+def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
     f = h5py.File(file, 'r')
-    for key in f.keys():
+    for key in list(f.keys()):
         if 'dens' in key:
             field = key
     dim = np.shape(f[field])[0]
@@ -288,7 +299,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     cl = (xmax-xmin)/dim
     xmin = f['minmax_xyz'][0][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
     xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
-    annotate_freq = ((xmax/cl) - (xmin/cl))/31.
+    annotate_freq = ((xmax/cl) - (xmin/cl))/num_of_vectors
     x = np.arange(xmin+cl/2., xmax+cl/2., cl)
     #x = np.arange(xmin, xmax, cl)[:-1]
     '''
@@ -298,7 +309,7 @@ def initialise_grid(file, zoom_times=0):#, center=0):
     x_ind = []
     y_ind = []
     counter = 0
-    while counter < 31:
+    while counter < num_of_vectors:
         val = annotate_freq*counter + annotate_freq/2.
         x_ind.append(int(val))
         y_ind.append(int(val))
@@ -414,16 +425,18 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     global fontgize_global
     if depth_array is None:
         depth_array = np.arange(len(particle_position[0]))
+    if np.max(depth_array) > len(depth_array):
+        depth_array = np.argsort(depth_array)
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    part_color = ['cyan','cyan','r','c','y','w','k']
+    part_color = ['cyan','magenta','r','c','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
     ymin = limits[1][0]
     ymax = limits[1][1]
     box_size = xmax - xmin
-    if accretion_rad/box_size < 0.025:
-        line_rad = 0.025*box_size
+    if accretion_rad/box_size < 0.05:
+        line_rad = 0.005*box_size
     else:
         line_rad = accretion_rad
     try:
@@ -440,6 +453,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         unit_string = 'M$_\odot$'
     field_symbol = '$' + field_symbol + '_'
     p_t = ''
+    rainbow_text_colors = []
     for pos_it in depth_array:
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=2., c='k')
@@ -458,13 +472,18 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = '{:0.1e}'.format(annotate_field[pos_it])
             if p_t == '':
-                p_t = field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
+                p_t = field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
             else:
-                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$='+P_msun+unit_string
-            #print("p_t =", p_t)
+                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
+            print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
+            rainbow_text_colors.append(part_color[pos_it])
+            rainbow_text_colors.append('white')
+            rainbow_text_colors.append('white')
+    print('annotation_string =', p_t)
     if annotate_field is not None:
-        part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
-        part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontgize_global)
+        #part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
+        #part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         #axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
         #print("Annotated particle field")
     return axis
@@ -494,7 +513,7 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
             bins = np.logspace(np.log10(bin_min), np.log10(np.max(x)), n_bins+1)
     else:
         bins = np.linspace(bin_min, bin_max, n_bins+1)
-    print("No of bins:", len(bins))
+    print(("No of bins:", len(bins)))
     neg_inds = np.where(bins < 0)[0]
     #bins[neg_inds[-1]] = -1*(bins[neg_inds[-1]+1] - yt.YTArray(0.01, unit_string))
 
@@ -518,13 +537,13 @@ def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_m
                 bin_val = np.mean(y[ind])
         else:
             bin_val = np.nan
-            print "FOUND EMPTY BIN"
+            print("FOUND EMPTY BIN")
         prev_bin = bin
         if cumulative:
             cum_val = cum_val + np.sum(y[ind])
             bin_val = cum_val
         y_array.append(bin_val)
-        print "Value =", bin_val, ", at radius=", mid_x
+        print("Value =", bin_val, ", at radius=", mid_x)
 
     x_array = np.array(x_array)
     y_array = np.array(y_array)
@@ -595,7 +614,7 @@ def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolutio
         field_grid = np.zeros_like(xy[0])
         for cen in range(len(dd['particle_mass'])+1):
             myf.set_center(cen)
-            print("Doing center =", cen)
+            print(("Doing center =", cen))
             del dd
             dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
             field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.

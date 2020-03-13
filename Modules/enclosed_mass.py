@@ -98,7 +98,7 @@ def main():
     if rank == 0:
         os.remove(args.file)
         file = open(args.save_file, 'w+')
-        print "pickle file:", args.save_file
+        print("pickle file:", args.save_file)
         pickle.dump(enclosed_mass, file)
         file.close()
 

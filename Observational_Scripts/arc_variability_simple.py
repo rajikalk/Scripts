@@ -12,7 +12,7 @@ MJD = []
 RV = []
 
 #Make template of arc for each slitlet at the same pixel
-print "MAKING TEMPLATES"
+print("MAKING TEMPLATES")
 #read in file
 temp_file = files[0]
 hdu = pyfits.open(temp_file)
@@ -29,11 +29,11 @@ for slit in range(12):
     
     #interpolate spectrum onto log scale
     flux_0.append(flux_stamp[19])
-print "MADE TEMPLATES FOR EACH SLIT"
-print "NOW CALCULATING RV VARIATION FOR EACH SLIT"
+print("MADE TEMPLATES FOR EACH SLIT")
+print("NOW CALCULATING RV VARIATION FOR EACH SLIT")
 
 for file in files[1:]:
-    print "DOING FILE:", file
+    print("DOING FILE:", file)
     hdu = pyfits.open(file)
     flux = np.array([hdu[i].data for i in range(1,13)])
     #get wavelength scale and convert to log scale
@@ -42,7 +42,7 @@ for file in files[1:]:
     MJD_obs = hdu[0].header['MJD-OBS']
     MJD.append(MJD_obs)
     for slit in range(12):
-        print "DOING SLIT:", slit
+        print("DOING SLIT:", slit)
         template_int = flux_0[slit]
         template_int = np.nan_to_num(template_int)
         
@@ -72,9 +72,9 @@ for file in files[1:]:
         gaussian_offset=1e-4
         sig_int = np.ones(len(spect_int))
         x,fval,ierr,numfunc = op.fminbound(ps.rv_fit_mlnlike,rvs[0]/drv-5/drv,rvs[0]/drv+5/drv,args=(modft,spect_int,sig_int,gaussian_offset),full_output=True)
-        print x, drv, x*drv
+        print(x, drv, x*drv)
         rv = x*drv
-        print rv
+        print(rv)
         shifted_mod = np.fft.irfft(modft * np.exp(-2j * np.pi * np.arange(len(modft))/len(spect_int) * x))
         
         fplus = ps.rv_fit_mlnlike(x+0.5,modft,spect_int,sig_int,gaussian_offset)
@@ -85,9 +85,9 @@ for file in files[1:]:
             #raise UserWarning
             #print("WARNING: Radial velocity fit did not work - trying again with wider range for: " + fig_fn)
             x,fval,ierr,numfunc = op.fminbound(ps.rv_fit_mlnlike,rvs[0]/drv-10/drv,rvs[0]/drv+10/drv,args=(modft,spect_int,sig_int,gaussian_offset),full_output=True)
-            print x, drv, x*drv
+            print(x, drv, x*drv)
             rv = x*drv
-            print rv
+            print(rv)
             #print("RV ="+str(rv)+", fval ="+str(fval))
             fplus = ps.rv_fit_mlnlike(x+0.5,modft,spect_int,sig_int,gaussian_offset)
             #print("fplus ="+str(fplus))
@@ -108,7 +108,7 @@ for file in files[1:]:
         #spectrum,sig = ps.weighted_extract_spectrum(flux_stamp)
 
 
-print "NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!"
+print("NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!")
 plt.clf()
 marker = ['v','^','<','>','8','s','p','*','h','D','o','x']
 for slit in range(12):

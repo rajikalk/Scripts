@@ -42,7 +42,7 @@ for slit in range(11):
     slit_temp.append(spectrum_interp)
     outfn = 'templates/slit_'+str(slit+1)+'.fits'
     pyfits.writeto(outfn,spectrum_interp,clobber=True)
-    print('saved template:'+outfn)
+    print(('saved template:'+outfn))
 
 #import pdb
 #pdb.set_trace()
@@ -51,7 +51,7 @@ for slit in range(11):
 bad_intervals=([0,5400],[6700,7000])
 
 for file in files[1:]:
-    print "DOING FILE:", file
+    print("DOING FILE:", file)
     hdu = pyfits.open(file)
     #get wavelength scale and convert to log scale
     
@@ -67,10 +67,10 @@ for file in files[1:]:
         x_arr = pix_arr - pix_arr[-1]/2.
         pix_shift = x_arr[np.argmax(cor)]
         RV[slit].append(pix_shift)
-        print 'rv =', pix_shift
+        print('rv =', pix_shift)
 
 
-print "NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!"
+print("NOW THAT WE'VE GONE THROUGH ALL THE FILES, LETS PLOT THIS!")
 plt.clf()
 #marker = ['v','^','<','>','8','s','p','*','h','D','o','x']
 fig = plt.figure()

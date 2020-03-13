@@ -12,7 +12,7 @@ from tempfile import mkstemp
 from shutil import move, copyfile
 from os import remove, close, makedirs, symlink
 import argparse
-import commands
+import subprocess
 
 # ===== MAIN Start =====
 
@@ -27,7 +27,7 @@ args = parser.parse_args()
 # define inputfiles and outputfile
 inputfiles = args.inputfiles
 if args.outputfile == None:
-    cur_dir = commands.getoutput('pwd')+'/'
+    cur_dir = subprocess.getoutput('pwd')+'/'
     outputfile = cur_dir.split('YT_Output')[0] + 'Videos' + cur_dir.split('YT_Output')[1].split('Movie/')[0] + cur_dir.split('YT_Output')[1].split('Movie/')[1][:-1] + '.avi'
 else:
     outputfile = args.outputfile
@@ -38,16 +38,16 @@ fileliststr = ""
 for i in range(0,len(inputfiles),args.step):
 	fileliststr += inputfiles[i]+" "
 shellcmd = 'ls '+fileliststr+' > '+tmpfilelist
-print shellcmd
+print(shellcmd)
 subprocess.call(shellcmd, shell=True)
 
 # make movie with ffmpeg
 shellcmd = 'cat $(cat '+tmpfilelist+') | ffmpeg -f image2pipe -vcodec mjpeg -i - -b:v 50000k '+' '.join(args.ffmpeg_args)+' -y '+outputfile
-print shellcmd+' -pass 1'
+print(shellcmd+' -pass 1')
 subprocess.call(shellcmd+' -pass 1', shell=True)
-print shellcmd+' -pass 2'
+print(shellcmd+' -pass 2')
 subprocess.call(shellcmd+' -pass 2', shell=True)
-print outputfile+' written.'
+print(outputfile+' written.')
 
 # remove jpg tmp file list
 remove(tmpfilelist)

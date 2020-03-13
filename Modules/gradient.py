@@ -76,13 +76,13 @@ def main():
             shell_12 = np.where((distance >= r_1) & (distance < r_2))[0]
             shell_23 = np.where((distance >= r_2) & (distance < r_3))[0]
             if len(shell_01) == 0:
-                print "FOUND EMPTY SHELL"
+                print("FOUND EMPTY SHELL")
                 y_01 = 0.0
             else:
                 y_01 = np.mean(y[shell_01])
             if len(shell_23) == 0:
                 y_23= 0.0
-                print "FOUND EMPTY SHELL"
+                print("FOUND EMPTY SHELL")
             else:
                 y_23 = np.mean(y[shell_23])
             grad_val = (y_23 - y_01)/(2.*(mid_23 - mid_01))
@@ -105,7 +105,7 @@ def main():
     if rank == 0:
         os.remove(args.file)
         file = open(args.save_file, 'w+')
-        print "pickle file:", args.save_file
+        print("pickle file:", args.save_file)
         pickle.dump(gradient, file)
         file.close()
 

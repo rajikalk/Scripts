@@ -12,7 +12,7 @@ dir = sys.argv[1]
 files = glob.glob(dir + '/*p08.fits')
 templates = glob.glob('/home/rajikak/tools/RV_standards/*')
 
-print "*************"
+print("*************")
 
 for file in files:
     a = pyfits.open(file)
@@ -29,7 +29,7 @@ for file in files:
     rv,rv_sig = ps.calc_rv_template(spectrum,wave,sig,templates, ([0,5400],[6870,6890]))
     rv += a[1].header['RADVEL']
 
-    print "object_name: " + object_name
-    print "object RV: " + str(object_RV) +"km/s"
-    print "Retrieved RV from standards: "+ str(rv) + "km/s"
-    print "*************"
+    print("object_name: " + object_name)
+    print("object RV: " + str(object_RV) +"km/s")
+    print("Retrieved RV from standards: "+ str(rv) + "km/s")
+    print("*************")
