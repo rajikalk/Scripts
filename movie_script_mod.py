@@ -400,7 +400,7 @@ def main():
                 has_particles = has_sinks(path + str(ds)) #(usable_file)#(path + str(ds))
                 if has_particles:
                     part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L)
-                else
+                else:
                     part_info = {}
                     #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
                     
