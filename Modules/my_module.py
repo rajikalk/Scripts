@@ -99,20 +99,27 @@ def get_image_mesh(file, zoom_times):
     return X, Y
 
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=None):
-    if end_time == None:
-        try:
-            file = files[-1]
-            part_file=file[:-12] + 'part' + file[-5:]
-            #ds = yt.load(file, particle_filename=part_file)
-            #dd = ds.all_data()
-            f = h5py.File(part_file, 'r')
-            sink_form_time = find_sink_formation_time(files)
+    try:
+        file = files[-1]
+        part_file=file[:-12] + 'part' + file[-5:]
+        #ds = yt.load(file, particle_filename=part_file)
+        #dd = ds.all_data()
+        f = h5py.File(part_file, 'r')
+        sink_form_time = find_sink_formation_time(files)
+        if end_time == None:
             max_time = f[list(f.keys())[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
-        except:
-            f = h5py.File(files[-1], 'r')
-            sink_form_time = find_sink_formation_time(files)
+        else:
+            max_time = end_time
+    except:
+        f = h5py.File(files[-1], 'r')
+        sink_form_time = find_sink_formation_time(files)
+        if end_time == None:
             max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
-            f.close()
+        else:
+            max_time = end_time
+        f.close()
+    
+    
     else:
         #if end_time is not None and end_time < max_time:
         max_time = end_time
