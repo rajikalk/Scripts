@@ -1890,25 +1890,33 @@ if args.plot_beta == "True":
     print("figure name:", file_name)
     
 if args.accretion_profile == 'True':
+    print("making accretion profile plot")
     plt.clf()
     fig = plt.figure()
-    fig.set_size_inches(12.5,5)
+    fig.set_size_inches(12,5)
     gs = gridspec.GridSpec(2, 1)
     gs.update(hspace=0.0)
     ax1 = fig.add_subplot(gs[0,0])
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
     ax3 = fig.add_subplot(gs[1,0], sharex=ax1)
+    ax4 = fig.add_subplot(gs[2,0], sharex=ax1)
+    ax5 = fig.add_subplot(gs[3,0], sharex=ax1)
+    ax6 = fig.add_subplot(gs[4,0], sharex=ax1)
+    print("initialised grid")
     
     pickle_file = save_dir + 'particle_data.pkl'
     file_open = open(pickle_file, 'rb')
     particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
     file_open.close()
+    print("read in particle pickle")
     
     accretion_profile_pickle = save_dir + 'accretion_profile.pkl'
     if os.path.isfile(accretion_profile_pickle):
+        print("reading accretion_profile.pkl")
         file_open = open(accretion_profile_pickle, 'rb')
-        smoothed_time, smoothed_accretion, smoothed_specific_L_spin, smoothed_specific_L_spin_rate, smoother_specific_L_orb, smoother_specific_L_orb_rate = pickle.load(file_open)
+        smoothed_time, smoothed_accretion, smoothed_specific_L_spin, smoothed_specific_L_spin_rate, smoothed_specific_L_orb, smoothed_specific_L_orb_rate = pickle.load(file_open)
         file_open.close()
+        print("read accretion_profile.pkl")
     else:
         window = 10 #in units years
         smoothed_time = []
@@ -1973,20 +1981,11 @@ if args.accretion_profile == 'True':
     
     dot_times = [1488, 1492, 1496, 1500, 1504, 1508, 1512, 1516]
     print("dot times=", dot_times)
-    #xlabel = r"Time ($yr$)"
-    #ylabel = r"Accretion Rate ($10^{-4}M_\odot/yr$)"
     
     ax1.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_accretion[start_ind:end_ind])*10000)
-    #ax1.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_quantity[0][start_ind:end_ind]), label="Primary")
-    #ax1.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_quantity[1][start_ind:end_ind]), label="Secondary")
-    for dot in dot_times:
-        dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
-        ax1.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
     ax1.set_ylabel(r'\\dot M ($10^{-4}\,$M$_{\odot}/$yr)', fontsize=args.text_font)
-    #ax1.set_ylabel(r'L$_{orb}$ ($g\,cm^{2}/s$)', fontsize=args.text_font)
     ax1.set_xlim(xlim)
     ax1.set_ylim([np.min(np.array(smoothed_accretion[start_ind:end_ind]))*10000,np.max(np.array(smoothed_accretion[start_ind:end_ind]))*10000 + 0.5])
-    #ax1.axvline(x=central_time, ls='--', color='k', alpha=0.75)
 
     start_ind = np.argmin(abs(np.array(particle_data['time'])-xlim[0]))
     end_ind = np.argmin(abs(np.array(particle_data['time'])-xlim[1]))
@@ -1996,22 +1995,39 @@ if args.accretion_profile == 'True':
     ax2.set_ylim([0,np.max(np.array(particle_data['separation'][start_ind:end_ind])) + 0.5])
     ax2.tick_params(axis='y')
     
-    ax3.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin_rate[0][start_ind:end_ind])/1.e50, label="Primary")
-    ax3.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin_rate[1][start_ind:end_ind])/1.e50, label="Secondary")
+    ax3.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin[0][start_ind:end_ind])/1.e50, label="Primary")
+    ax3.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin[1][start_ind:end_ind])/1.e50, label="Secondary")
+    #ax3.set_xlabel(r'Time (yr)', fontsize=args.text_font)
+    ax3.set_ylabel(r'L_spin (cm$^{2}/$s)', fontsize=args.text_font)
+    ax3.legend(loc="center right")
+    
+    ax4.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin_rate[0][start_ind:end_ind])/1.e50, label="Primary")
+    ax4.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_spin_rate[1][start_ind:end_ind])/1.e50, label="Secondary")
+    #ax3.set_xlabel(r'Time (yr)', fontsize=args.text_font)
+    ax4.set_ylabel(r'L_spin_rate (cm$^{2}/$s$^{2}$)', fontsize=args.text_font)
+    #ax4.legend(loc="center right")
+    
+    ax5.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_orb[0][start_ind:end_ind])/1.e50, label="Primary")
+    ax5.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_orb[1][start_ind:end_ind])/1.e50, label="Secondary")
+    #ax3.set_xlabel(r'Time (yr)', fontsize=args.text_font)
+    ax5.set_ylabel(r'L_orb (cm$^{2}/$s)', fontsize=args.text_font)
+    #ax5.legend(loc="center right")
+    
+    ax6.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_orb_rate[0][start_ind:end_ind])/1.e50, label="Primary")
+    ax6.plot(smoothed_time[start_ind:end_ind], np.array(smoothed_specific_L_orb_rate[1][start_ind:end_ind])/1.e50, label="Secondary")
+    ax6.set_xlabel(r'Time (yr)', fontsize=args.text_font)
+    ax6.set_ylabel(r'L_orb_rate (cm$^{2}/$s$^{2}$)', fontsize=args.text_font)
+    #ax6.legend(loc="center right")
+    
     for dot in dot_times:
         dot_ind = np.argmin(abs(np.array(smoothed_time)-dot))
+        ax1.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
         ax3.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
-    ax3.set_xlabel(r'Time (yr)', fontsize=args.text_font)
-    ax3.set_ylabel(r'L_spin_rate (cm$^{2}/$s$^{2}$)', fontsize=args.text_font)
-    ax3.legend(loc="center right")
-    #ax1.set_ylabel(r'L$_{orb}$ ($g\,cm^{2}/s$)', fontsize=args.text_font)
-    ax3.set_xlim(xlim)
-    #ax3.set_ylim([np.min(np.array(smoothed_L_orb).T[start_ind:end_ind])/1.e50 - 0.5,np.max(np.array(smoothed_accretion).T[start_ind:end_ind])/1.e50 + 0.5])
-    
-    #plt.xaxis.set_ticks_position('both')
-    #plt.yaxis.set_ticks_position('both')
-    #plt.tick_params(direction='in')
-    file_name = save_dir + 'specific_momentum_rate_profile_zoom_'+str(args.periastron_number)
+        ax4.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
+        ax5.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
+        ax6.axvline(x=smoothed_time[dot_ind], linestyle=':', alpha=0.5, color='k')
+
+    file_name = save_dir + 'paper_profile_zoom_'+str(args.periastron_number)
     plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
     plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
 
