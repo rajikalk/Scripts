@@ -668,7 +668,7 @@ if args.read_particle_file == 'True':
                     file_open = open(pickle_file, 'wb')
                     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
                     file_open.close()
-                    print("dumped pickle after line", line_counter)
+                    print("dumped pickle after line", line_counter):
                     shutil.copy(pickle_file, pickle_file.split('.pkl')[0]+'_tmp.pkl')
                     file_open = open(pickle_file, 'rb')
                     particle_data, sink_form_time, line_counter = pickle.load(file_open)
