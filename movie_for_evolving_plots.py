@@ -23,7 +23,7 @@ def parse_inputs():
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
+    parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot data as a pickle? If true, image won't be plotted", default=False)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=5000, type=int)
     parser.add_argument("-log", "--logscale", help="Di you want to use a logarithmic scale?", default='False', type=str)
     parser.add_argument("files", nargs='*')
@@ -66,10 +66,14 @@ def main():
     args = parse_inputs()
     mym.set_global_font_size(args.text_font)
     #files = sorted(glob.glob(path + '*slice*'))
+    
+    file_open = open(pickle_file, 'rb')
+    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
+    file_open.close()
 
     
     #get end time and set xlim
-    m_times = mym.generate_frame_times(pickle_file, args.time_step, presink_frames=0, end_time=args.end_time)
+    m_times = mym.generate_frame_times(pickle_file, args.time_step, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
     m_times = m_times[args.start_frame:]
     #usable_files = mym.find_files(m_times, files)
     xlim = [0.0, args.end_time]
@@ -80,9 +84,7 @@ def main():
     #sink_formation_time = mym.find_sink_formation_time(files)
     
     #Open pickle
-    file_open = open(pickle_file, 'rb')
-    particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
-    file_open.close()
+    
     
     #Smooth accretion
     window = 10 #in units years
@@ -120,6 +122,7 @@ def main():
         ax.tick_params(direction='in')
         plt.tight_layout()
         plt.savefig(file_name + ".eps", format='eps')#, bbox_inches='tight')#, pad_inches = 0.02)
+        plt.savefig(file_name + ".pdf", format='pdf')
         ax.xaxis.tick_top()
         eps_image = Image.open(file_name + ".eps")
         eps_image.load(scale=4)
