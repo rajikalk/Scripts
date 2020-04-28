@@ -1,0 +1,132 @@
+
+(1)
+Astron. Astrophys. Suppl. Ser. , 120, pp. 57-61 (1996)
+
+Grids of pre-main sequence stellar models.
+The accretion scenario at Z=0.001 and 0.020
+(by P.A. Bernasconi)
+
+Keywords: Stars: evolution - Stars: pre-main sequence - 
+          Hertzsprung-Russel (HR) diagram
+
+(2)
+Astron. Astrophys. Main J. , 307, pp. 829-839 (1996)
+
+About the absence of a proper zero age main sequence for massive stars
+Appendix A: grids of canonical pre-main sequence stellar models
+            (Z=0.001, Z=0.020)
+(by P.A. Bernasconi and A. Maeder)
+
+Keywords: Stars: evolution - Stars: pre-main sequence - 
+          Hertzsprung-Russel (HR) diagram
+
+===========================================================================
+File Summary: The directories \modelz001 and \modelz020 contain evolutionary
+              tracks at metallicities 001 and 020, computed in the 
+              framework of the accretion scenario. The directory \canonical
+              contains evolutionary tracks at metallicities 001 and 020
+              computed in the standard, canonical scenario. Finally, in the
+              directory \isochronesPMS one find the input files for the
+              computation of isochrones (read the isodes.text file in the
+              pub\evol\isochrones directory to known how to proceed).
+              
+
+Directory        File Name    Explanations
+---------        ---------    ------------
+
+               Read.Me        This file     
+modelz001\     birthline001   Z=0.001, M=0.8-8.0, 27 intermediate mass points
+               tabloid001     Z=0.001, M=0.8/0.9/1.0/1.25/1.5/1.7/2.0/2.5/
+                              3.0/4.0/5.0/ 
+modelz020\     birthline020   Z=0.020, M=0.8-8.0, 27 intermediate mass points
+               tabloid020     Z=0.020, M=0.8/0.9/1.0/1.25/1.5/1.7/2.0/2.5/
+                              3.0/4.0/5.0/
+canonical\     Read.me        structure of the files
+               tabloid001c    Z=0.001, M=0.8/1.0/1.5/2.0/3.0/5.0/9.0/15.0/
+                              25.0/60.0/ 50 selected models each
+               tabloid020c    Z=0.020, M=0.8/1.0/1.5/2.0/3.0/5.0/9.0/15.0/
+                              25.0/60.0/ 50 selected models each
+isochronesPMS\ isoPMS.f       contain the code for computing PMS isochrones.
+               mod001_acc.dat Z=0.001, M=0.8-7.4, accretion scenario
+               mod001_can.dat Z=0.001, M=0.8-9.0, canonical scenario
+               mod020_acc.dat Z=0.020, M=0.8-7.0, accretion scenario
+               mod020_acc.dat Z=0.020, M=0.8-9.0, canonical scenario
+
+===========================================================================
+To obtain the full track followed by a given star of final mass M (on the
+ZAMS) and metallicity Z, the accreted models of any intermediate mass along 
+the birthline must be joined to the corresponding PMS track of (fixed) mass
+M. Example: for a star of mass 1.5 Ms on the ZAMS, the PMS models from the
+corresponding table in the file 'tabloidxxx' must follow the first 9 models
+coming from 'birthlinexxx'.
+
+Nota: The data points in files /isochronesPMS/mod***_***.dat are more
+homogeneously distributed in time than those selected for tabloidZZZ, and
+their pictural representation in a HR diagram is smoother. They contain
+both the accretion and canonically contracting part of the track. These
+files however only list logt,logTeff,logL/Ls and surface abundances.
+
+===========================================================================
+Contents of the tables in files 'tabloidxxx':
+
+- Lines 1-2: Header 
+- Line  3  : blank
+- Line  4  : Identification of the variables 
+- Line  5  : blank
+- Line  6 to end: Data of selected points
+
+Generally between 13 to 27 POINTS have been selected to describe the tracks. 
+The selection criteria have been choosen in order to allow accurate enough 
+interpolation in the various quantities. The structure of each line is the
+following:
+
+Bytes	Format	Units			Explanations
+-----	------ 	-----	 		-------------
+
+ 1- 3	I3				number of selected point
+ 5-13	1PE9.3	years			age
+16-20	F5.3	solar luminosities      log(luminosity)
+22-26	F5.3	K               	log(effective temperature)
+28-32	F5.3	solar radii		total radius
+34-39	F6.2    solar luminosities      gravitational luminosity
+41-46	F6.2    solar luminosities	nuclear luminosity
+48-52	F5.3	total mass      	mass of the convective core
+54-58	F5.3	K		        log(temperature at the base of the
+                                         convective envelope)
+60-64	F5.3	total mass	        mass of the convective envelope
+66-74	1PE9.3	initial (IM) content    2H surface abundance
+76-84	1PE9.3	initial (IM) content 	6Li surface abundance
+86-94	1PE9.3	initial (IM) content 	7Li surface abundance
+
+===========================================================================
+Contents of the table in files 'birthlinexxx':
+
+- Lines 1-2 : Header 
+- Line  3   : blank
+- Line  4   : Identification of the variables 
+- Line  5-6 : blank
+- Line  7-34: Data of selected points
+
+27 intermediate mass POINTS have been selected to describe the birthlines. 
+The selection criteria have been choosen in order to allow accurate enough 
+interpolation in the various quantities. The structure of each line is the
+following:
+
+Bytes	Format	Units			Explanations
+-----	------ 	-----	 		-------------
+
+ 1- 3	I3				number of selected point
+ 5-13	1PE9.3	years			age
+16-20	F5.3	solar masses            mass
+22-26	F5.3	solar luminosities      log(luminosity)
+28-32	F5.3	K        		log(effective temperature)
+34-38	F5.3    solar radii             total radius
+40-47	F8.2    solar luminosities	gravitational luminosity
+49-55	F7.2	solar luminosities      nuclear luminosity
+57-61	F5.3	total mass		mass of the convective core
+63-67	F5.3	K                       log(temperature at the base of the
+                                         convective envelope)
+69-73	F5.3	total mass	        mass of the convective envelope
+75-83	1PE9.3	initial (IM) content 	2H surface abundance
+
+===========================================================================

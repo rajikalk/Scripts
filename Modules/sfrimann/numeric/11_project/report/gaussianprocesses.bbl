@@ -1,0 +1,37 @@
+\begin{thebibliography}{1}
+
+\bibitem{gregory2005}
+Phil Gregory.
+\newblock {\em Bayesian Logical Data Analysis for the Physical Sciences: A
+  Comparative Approach with Mathematica Support}.
+\newblock Cambridge University Press, 2005.
+
+\bibitem{press2007}
+William~H. Press, Saul~A. Teukolsky, William~T. Vetterling, and Brian~P.
+  Flannery.
+\newblock {\em Numerical Recipes 3rd Edition: The Art of Scientific Computing}.
+\newblock Cambridge University Press, 2007.
+
+\bibitem{rasmussen2006}
+Carl~Edward Rasmussen and Christopher K.~I. Williams.
+\newblock {\em Gaussian Processes for Machine Learning (Adaptive Computation
+  and Machine Learning series)}.
+\newblock The MIT Press, 2006.
+
+\bibitem{wiki:chol}
+Wikipedia.
+\newblock Cholesky decomposition --- wikipedia{,} the free encyclopedia, 2011.
+\newblock [Online; accessed 28-August-2011].
+
+\bibitem{wiki:gram}
+Wikipedia.
+\newblock Gramian matrix --- wikipedia{,} the free encyclopedia, 2011.
+\newblock [Online; accessed 29-August-2011].
+
+\bibitem{wiki:gauss}
+Wikipedia.
+\newblock Multivariate normal distribution --- wikipedia{,} the free
+  encyclopedia, 2011.
+\newblock [Online; accessed 24-August-2011].
+
+\end{thebibliography}
