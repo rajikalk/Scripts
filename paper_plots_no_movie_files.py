@@ -391,15 +391,16 @@ if args.separation == 'True':
     image_name = save_dir + "binary_system_evolution"
     #line_style = [':', '-.', '--', '-']
     line_style = ['-', '-']
-    labels=["T1", "T2"]
+    labels=["Primary", "Secondary"]
     #labels=["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13", "$L_\mathrm{ref}$ = 14"]
     lit = 0
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 8.)
+    
     if args.plot_eccentricity == 'True':
-        files = ["Mach_0.1/Lref_10/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl"]
-        #files = ["Mach_0.2/Lref_09/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl", "Mach_0.2/Lref_11/particle_data.pkl", "Mach_0.2/Lref_12/particle_data.pkl"]
+        #files = ["Mach_0.1/Lref_10/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl"]
+        files = ["particle_data.pkl"]
         gs = gridspec.GridSpec(3, 1)
         #gs = gridspec.GridSpec(4, 1)
         gs.update(hspace=0.0)
@@ -438,9 +439,9 @@ if args.separation == 'True':
         #ax4.tick_params(axis='y', which='major', labelsize=args.text_font, direction="in")
         #ax4.tick_params(axis='y', which='minor', labelsize=args.text_font, direction="in")
         #ax4.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
-        ax1.set_xlim([0, 6500])
-        ax3.set_ylim(top=1.3)
-        ax2.set_ylim([1.e-6, 6.e-4])
+        #ax1.set_xlim([0, 6500])
+        ax3.set_ylim(top=2)
+        #ax2.set_ylim([1.e-6, 6.e-4])
         ax2.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
         ax3.set_ylabel("Eccentricity", fontsize=args.text_font)
         #ax4.set_ylabel("Mass ratio ($q=M_\mathrm{p}/M_\mathrm{s}$)", fontsize=args.text_font)
@@ -458,7 +459,7 @@ if args.separation == 'True':
         file_open = open(particle_pickle, 'rb')
         particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
         file_open.close()
-            
+        """
         ax1.semilogy(particle_data['time'][1:], particle_data['separation'][1:], line_style[lit], label=labels[lit])
         total_mass = np.array(particle_data['mass']).T[0] + np.array(particle_data['mass']).T[1]
         dt = 10
@@ -474,10 +475,52 @@ if args.separation == 'True':
         total_mass_short = np.array(total_mass_short)
         m_dot = (total_mass_short[1:] - total_mass_short[:-1])/(time_short[1:]-time_short[:-1])
         time_m_dot = (time_short[:-1] + time_short[1:])/2.
-        
         ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
+        """
+        Mass_1 = np.array(particle_data['mass']).T[0]
+        Mass_2 = np.array(particle_data['mass']).T[1]
+        dt = 100
+        prev_time = particle_data['time'][1]
+        time_short = [particle_data['time'][1]]
+        Mass_1_short = [Mass_1[0]]
+        Mass_2_short = [Mass_2[0]]
+        print("calculating smoothed accretion")
+        for time_it in range(len(particle_data['time'][1:])):
+            if particle_data['time'][1:][time_it] - prev_time > dt:
+                time_short.append(particle_data['time'][1:][time_it])
+                Mass_1_short.append(Mass_1[time_it])
+                Mass_2_short.append(Mass_2[time_it])
+                prev_time = particle_data['time'][1:][time_it]
+        print("finished calculating smoothed accretion")
+        time_short = np.array(time_short)
+        Mass_1_short = np.array(Mass_1_short)
+        Mass_2_short = np.array(Mass_2_short)
+        M_dot_1 = (Mass_1_short[1:] - Mass_1_short[:-1])/(time_short[1:]-time_short[:-1])
+        M_dot_2 = (Mass_2_short[1:] - Mass_2_short[:-1])/(time_short[1:]-time_short[:-1])
+        time_m_dot = (time_short[:-1] + time_short[1:])/2.
+        """
+        ramses_file = "/lustre/astro/troels/IMF_512_cores/sink_165/rerun_l18/sink_164.pkl"
+        file = open(ramses_file, 'rb')
+        t1, m1, mdot1, t2, m2, mdot2, o, i_sink, dist = pickle.load(file)
+        file.close()
+        
+        ax1.loglog(t1, mdot1, '--', label=labels[0])
+        ax1.loglog(t2[1:], mdot2, '--', label=labels[1])
+        ax2.semilogy(t1, m1, '--', label=labels[0])
+        ax2.semilogy(t2, m2, '--', label=labels[1])
+        """
+        ax1.loglog(time_m_dot, M_dot_1, line_style[0], label=labels[0])
+        ax1.loglog(time_m_dot, M_dot_2, line_style[1], label=labels[1])
+        ax2.semilogx(particle_data['time'][1:], Mass_1[1:], line_style[0], label=labels[0])
+        ax2.semilogx(particle_data['time'][1:], Mass_2[1:], line_style[1], label=labels[1])
+        
+        ax2.set_xlabel("Time since first protostar formation (yr)", fontsize=args.text_font)
+        ax1.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
+        ax2.set_ylabel("Mass (M$_\odot$)", fontsize=args.text_font)
+        ax2.legend(loc='best', fontsize=args.text_font)
+    """
     #ax1.set_ylim(top=5e2)
-    ax1.set_xlim(left=0.0)
+    ax1.set_xlim(left=10000.0)
     #ax1.axhline(y=4.89593796548, linestyle='--', color='k', alpha=0.5)
     #ax1.legend(loc='best')
     #plt.xlabel("Time since formaton of first protostar (yr)", fontsize=14)
@@ -503,6 +546,7 @@ if args.separation == 'True':
     #ax3.tick_params(axis='x', which='major', labelsize=args.text_font, direction="in")
     #ax2.set_ylim([0.0, 0.006])
     #ax3.set_ylim(bottom=0.0)
+    """
     plt.setp([ax2.get_yticklabels()[-1]], visible=False)
     plt.savefig(image_name + ".eps", bbox_inches='tight', pad_inches=0.02)
     plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
@@ -668,7 +712,7 @@ if args.read_particle_file == 'True':
                     file_open = open(pickle_file, 'wb')
                     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
                     file_open.close()
-                    print("dumped pickle after line", line_counter):
+                    print("dumped pickle after line", line_counter)
                     shutil.copy(pickle_file, pickle_file.split('.pkl')[0]+'_tmp.pkl')
                     file_open = open(pickle_file, 'rb')
                     particle_data, sink_form_time, line_counter = pickle.load(file_open)
@@ -683,14 +727,17 @@ if args.read_particle_file == 'True':
     sorted_inds = np.argsort(particle_data['time'])
     particle_data['time'] = np.array(particle_data['time'])[sorted_inds]
     for key in list(particle_data.keys()):
-        if key != 'particle_tag' and key != 'time' and key != 'separation':
+        try:
             particle_data[key] = np.array(particle_data[key])
             particle_data[key] = particle_data[key][sorted_inds]
-    particle_data.update({'separation':np.sqrt((particle_data['posx'].T[0] - particle_data['posx'].T[1])**2. + (particle_data['posy'].T[0] - particle_data['posy'].T[1])**2. + (particle_data['posz'].T[0] - particle_data['posz'].T[1])**2.)})
-    usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
-    for key in list(particle_data.keys()):
-        if key != 'particle_tag':
-            particle_data[key] = particle_data[key][usable_inds].tolist()
+        except:
+            continue
+    if len(particle_data['particle_tag']) == 2:
+        particle_data.update({'separation':np.sqrt((particle_data['posx'].T[0] - particle_data['posx'].T[1])**2. + (particle_data['posy'].T[0] - particle_data['posy'].T[1])**2. + (particle_data['posz'].T[0] - particle_data['posz'].T[1])**2.)})
+        usable_inds = np.where(np.isnan(particle_data['separation']) == False)[0]
+        for key in list(particle_data.keys()):
+            if key != 'particle_tag':
+                particle_data[key] = particle_data[key][usable_inds].tolist()
     print("sorted data and save")
     file_open = open(pickle_file, 'wb')
     pickle.dump((particle_data, sink_form_time, line_counter),file_open)
@@ -762,8 +809,8 @@ if args.calculate_eccentricity == 'True':
         L_1_mag = np.sqrt(L_1[0]**2 + L_1[1]**2 + L_1[2]**2)
         L_2_mag = np.sqrt(L_2[0]**2 + L_2[1]**2 + L_2[2]**2)
         L_tot_mag = np.sqrt(L_tot[0]**2 + L_tot[1]**2 + L_tot[2]**2)
-        particle_data.update({'L_orb':np.array([L_1_mag, L_2_mag]).tolist()})
-        particle_data.update({'L_tot':L_tot_mag.tolist()})
+        particle_data.update({'L_orb':np.array([L_1_mag, L_2_mag]).T.tolist()})
+        particle_data.update({'L_tot':L_tot_mag.T.tolist()})
         Total_spin_angular_momentum = np.sqrt(anglx**2 + angly**2 + anglz**2)
         particle_data.update({'Spin': Total_spin_angular_momentum.value.tolist()})
         try:
@@ -773,8 +820,8 @@ if args.calculate_eccentricity == 'True':
             L_1_mag = np.sqrt(L_1[0]**2 + L_1[1]**2 + L_1[2]**2)
             L_2_mag = np.sqrt(L_2[0]**2 + L_2[1]**2 + L_2[2]**2)
             L_tot_mag = np.sqrt(L_tot[0]**2 + L_tot[1]**2 + L_tot[2]**2)
-            particle_data.update({'L_orb':np.array([L_1_mag, L_2_mag]).tolist()})
-            particle_data.update({'L_tot':L_tot_mag.tolist()})
+            particle_data.update({'L_orb':np.array([L_1_mag, L_2_mag]).T.tolist()})
+            particle_data.update({'L_tot':L_tot_mag.T.tolist()})
         particle_data.update({'period': period.tolist()})
         file_open = open(pickle_file, 'wb')
         pickle.dump((particle_data, sink_form_time, line_counter),file_open)
@@ -840,10 +887,10 @@ if args.calculate_eccentricity == 'True':
     plt.setp([ax2.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
     plt.setp([ax3.get_yticklabels()[-1]], visible=False)
     
-    apsis_pickle = path + 'apsis_data.pkl'
-    file_open = open(apsis_pickle, 'rb')
-    periastron_inds, apastron_inds = pickle.load(file_open)
-    file_open.close()
+    #apsis_pickle = path + 'apsis_data.pkl'
+    #file_open = open(apsis_pickle, 'rb')
+    #periastron_inds, apastron_inds = pickle.load(file_open)
+    #file_open.close()
     
     #e_max_1 = np.max(e[periastron_inds[0]:periastron_inds[6]])
     #e_min_1 = np.min(e[periastron_inds[0]:periastron_inds[6]])
@@ -1761,9 +1808,9 @@ if args.phasefolded_multi == 'True':
 
 if args.plot_beta == "True":
     #files = ["Mach_0.1/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl", "Mach_0.2/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl"]
-    #files = ["Mach_0.1/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl"]
-    files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
-    file_name = save_dir + 'resolution_study_beta_vs_e_'+str(args.n_orbits)
+    files = ["Mach_0.1/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_10/using_5_e_bins.pkl"]
+    #files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
+    file_name = save_dir + 'paper_beta_vs_e_'+str(args.n_orbits)
     top_bins = 3
     if args.beta_method == 1:
         file_name = file_name + '_mean'
@@ -1784,9 +1831,9 @@ if args.plot_beta == "True":
     periastron_inds = [0.8, 1.1]
     quiescent_ind = [0.2, 0.75]
     #markers = ['o', '^']
-    #labels = ['T1', 'T2']
+    labels = ['T1', 'T2']
     markers = ['o', '^', 's', '+']
-    labels = ['$L_\mathrm{ref}=11$', '$L_\mathrm{ref}=12$', '$L_\mathrm{ref}=13$', '$L_\mathrm{ref}=14$']
+    #labels = ['$L_\mathrm{ref}=11$', '$L_\mathrm{ref}=12$', '$L_\mathrm{ref}=13$', '$L_\mathrm{ref}=14$']
     for file in files:
         file_open = open(file, 'rb')
         multiple_folds, phase_centers, median_eccentricity, std_eccentricity, accretion_err, n_lines, y_fits, multiple_folds_normalised = pickle.load(file_open)
@@ -1828,9 +1875,6 @@ if args.plot_beta == "True":
                 beta_total.append(beta)
                 beta_total_err.append(beta_err)
                 print("For e =", median_eccentricity[orbit], ", beta =", beta, "+/-", beta_err)
-                if beta_err[0] > 20:
-                    import pdb
-                    pdb.set_trace()
             
             elif args.beta_method == 2:
                 usable_inds_max = np.argsort(multiple_folds_normalised[orbit][max_ind_1:max_ind_2])[::-1]
@@ -1882,8 +1926,8 @@ if args.plot_beta == "True":
     plt.axhline(y=1.0, ls='--', color='k')
     #plt.axvline(x=3.5, ls='--')
     plt.xlim(left=0)
-    plt.ylim([0.0,30.0])
-    plt.ylabel('$\\beta$')
+    plt.ylim([0.0,11.0])
+    plt.ylabel('$\\beta = \dot{M}_{burst} / \dot{M}_{quiet}$')
     ymax = np.max(beta_total) + 1
     plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
     plt.savefig(file_name +'.pdf', bbox_inches='tight', pad_inches = 0.02)
