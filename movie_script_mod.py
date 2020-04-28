@@ -248,10 +248,6 @@ def main():
     
     args = parse_inputs()
     
-    if args.weight_field == 'None':
-        weight_field = None
-    else:
-        weight_field = args.weight_field
     mym.set_global_font_size(args.text_font)
     files = get_files(path, args)
     simfo = sim_info(path, files[0], args)
@@ -412,6 +408,7 @@ def main():
                 
                 x_width = (xlim[1] -xlim[0])
                 y_width = (ylim[1] -ylim[0])
+                thickness = yt.YTQuantity(args.slice_thickness, 'AU')
                 '''
                 if args.image_center != 0 and has_particles:
                     original_positions = [X, Y, X_vel, Y_vel]
@@ -502,13 +499,13 @@ def main():
                     left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[2]-(0.5*args.slice_thickness),  center_pos[1]-(0.75*y_width)], 'AU')
                     right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[2]+(0.5*args.slice_thickness), center_pos[1]+(0.75*y_width)], 'AU')
                     region = ds.box(left_corner, right_corner)
-                proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'Corrected_velx', 'Corrected_vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
                  #(usable_file)#(path + str(ds))
         
                 #proj.set_buff_size(1024)
                 if weight_field == None and args.projection_orientation == None:
-                    proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
                     if args.axis == 'xy':
+                        proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'Corrected_velx', 'Corrected_vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
+                        proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
                         image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                         print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
                         velx_full = proj.frb.data[('gas', 'Corrected_velx')].in_units('cm**2/s')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
@@ -520,15 +517,16 @@ def main():
                         magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
                         print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
                     else:
-                        image = proj.frb.data[simfo['field']].value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                        proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'velz', 'magx', 'magz'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
+                        image = proj.frb.data[simfo['field']].T/thickness.in_units('cm')
                         print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
-                        velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                        velx_full = proj.frb.data[('flash', 'velx')].T.in_units('cm**2/s')/thickness.in_units('cm')
                         print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
-                        vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                        vely_full = proj.frb.data[('flash', 'velz')].T.in_units('cm**2/s')/thickness.in_units('cm')
                         print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
-                        magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                        magx = proj.frb.data[('flash', 'magx')].T.in_units('cm*gauss')/thickness.in_units('cm')
                         print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
-                        magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
+                        magy = proj.frb.data[('flash', 'magz')].T.in_units('cm*gauss')/thickness.in_units('cm')
                         print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
                     
                     velx_full = np.array(velx_full.value)
@@ -551,11 +549,11 @@ def main():
                     
                     proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'Projected_Velocity', 'velz', 'Projected_Magnetic_Field', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
                     if weight_field == None:
-                        image = proj.frb.data[simfo['field']]
-                        velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value
-                        vely_full = proj.frb.data[('flash', 'velz')].in_units('cm**2/s').value
-                        magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss')
-                        magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss')
+                        image = proj.frb.data[simfo['field']].value/thickness.in_units('cm').value
+                        velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                        vely_full = proj.frb.data[('flash', 'velz')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                        magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                        magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss').value/thickness.in_units('cm').value
                     else:
                         image = proj.frb.data[simfo['field']].value
                         velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm/s').value
@@ -575,8 +573,6 @@ def main():
                         #part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
                     
                         print("particle_pos=", part_info['particle_position'])
-                        
-                        thickness = yt.YTQuantity(args.slice_thickness, 'AU')
                         
                         left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
                         right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
@@ -613,11 +609,11 @@ def main():
                         
                         proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
                         if weight_field == None:
-                            image = proj.frb.data[simfo['field']]
-                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value
-                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value
-                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss')
-                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss')
+                            image = proj.frb.data[simfo['field']].value/thickness.in_units('cm').value
+                            velx_full = proj.frb.data[('flash', 'velx')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                            vely_full = proj.frb.data[('flash', 'vely')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                            magx = proj.frb.data[('flash', 'magx')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                            magy = proj.frb.data[('flash', 'magy')].in_units('cm*gauss').value/thickness.in_units('cm').value
                         else:
                             image = proj.frb.data[simfo['field']].value
                             velx_full = proj.frb.data[('flash', 'velx')].in_units('cm/s').value
