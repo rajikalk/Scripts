@@ -47,7 +47,6 @@ def parse_inputs():
     parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits bu taking away the center position values or not?", type=str, default='False')
-    parser.add_argument("-sink_no", "--sink_number", help="what sink do you want to center on", type=int, default = 0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -220,8 +219,13 @@ mym.set_units(units_override)
 
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 particle_files = sorted(glob.glob(input_dir+"/*/*.snktxt"))
-particle_data = load_particle_file(particle_files[-1], units=units_override)
-sink_form_time = particle_data['particle_form_time'][args.sink_number-1].in_units('yr').value
+
+#find sink particle to center on and formation time
+ds = yt.load(files[-1], units_override=units_override)
+dd = ds.all_data()
+sink_id = np.argmin(dd['sink_particle_speed'])
+myf.set_centred_sink_id(sink_id)
+sink_form_time = dd['sink_particle_form_time'][sink_id]
 
 mym.set_global_font_size(args.text_font)
 
@@ -277,7 +281,7 @@ CW.Barrier()
 
 no_frames = len(m_times)
 m_times = m_times[args.start_frame:]
-usable_files = mym.find_files(m_times, files, sink_form_time,args.sink_number)
+usable_files = mym.find_files(m_times, files, sink_form_time,sink_id)
 frames = list(range(args.start_frame, no_frames))
 
 sys.stdout.flush()
@@ -330,7 +334,7 @@ for dataset in ts.piter():
         
         ##Define analysis volume:
         
-        part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L, sink_number=args.sink_number)
+        part_info = mym.get_particle_data(path + str(ds), args.axis, proj_or=L, sink_number=sink_id)
   
         x_width = (xlim[1] -xlim[0])
         y_width = (ylim[1] -ylim[0])
