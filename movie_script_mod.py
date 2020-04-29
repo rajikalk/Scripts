@@ -472,7 +472,12 @@ def main():
                 
                 print("initialised fields")
                 myf.set_center(args.calculation_center)
+                myf.set_use_gas(True)
                 center_vel = dd['Center_Velocity'].value
+                if args.use_gas_center_calc == 'True':
+                    myf.set_use_gas(True)
+                else:
+                    myf.set_use_gas(False)
                 myf.set_center(args.image_center)
                 print("center_vel =", center_vel, "on rank", rank, "for", ds)
                 
