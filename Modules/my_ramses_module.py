@@ -357,15 +357,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         ymin = limits[1][0]
         ymax = limits[1][1]
     len_scale = standard_vel/(0.07*(xmax - xmin))
-    import pdb
-    pdb.set_trace()
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = X_val[xp][yp]/len_scale
             yvel = Y_val[xp][yp]/len_scale
-            import pdb
-            pdb.set_trace()
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
             if width_val > 0.8:
                 width_val = 0.8
