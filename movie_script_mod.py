@@ -507,6 +507,10 @@ def main():
                  #(usable_file)#(path + str(ds))
         
                 #proj.set_buff_size(1024)
+                
+                #Set weight field
+                weight_field = args.weight_field
+                
                 if weight_field == None and args.projection_orientation == None:
                     if args.axis == 'xy':
                         proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'Corrected_velx', 'Corrected_vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
