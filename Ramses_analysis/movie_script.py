@@ -254,6 +254,7 @@ sink_form_time = dd['sink_particle_form_time'][sink_id]
 mym.set_global_font_size(args.text_font)
 
 #Get simulation information
+print("loading fields")
 simfo = sim_info(ds, args)
 x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
 y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -415,21 +416,6 @@ for sim_file in usable_files:
                 part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
         
         print("initialised fields")
-        myf.set_center(args.calculation_center)
-        center_vel = dd['Center_Velocity'].value
-        myf.set_center(args.image_center)
-        print("center_vel =", center_vel, "on rank", rank, "for", ds)
-        
-        if args.axis == 'xy':
-            center_vel=center_vel[:2]
-            if args.use_disk_angular_momentum != "False":
-                disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness/2., 'au'))
-                tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
-                tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
-                L = tot_vec/tot_mag
-                print("SET PROJECTION ORIENTATION L=", L)
-        else:
-            center_vel=center_vel[::2]
 
         if args.axis == 'xy':
             axis_ind = 2
@@ -445,20 +431,41 @@ for sim_file in usable_files:
             region = ds.box(left_corner, right_corner)
         weight_field = args.weight_field
         
+        myf.set_center(args.calculation_center)
+        center_vel = region['Center_Velocity'].in_units('cm/s').value
+        myf.set_center(args.image_center)
+        print("center_vel =", center_vel, "on rank", rank, "for", ds)
+        
+        if args.axis == 'xy':
+            center_vel=center_vel[:2]
+            if args.use_disk_angular_momentum != "False":
+                disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness/2., 'au'))
+                tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
+                tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
+                L = tot_vec/tot_mag
+                print("SET PROJECTION ORIENTATION L=", L)
+        else:
+            center_vel=center_vel[::2]
+        
         #proj.set_buff_size(1024)
         if weight_field == None and args.projection_orientation == None:
             if args.axis == 'xy':
                 proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'Corrected_velx', 'Corrected_vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
-                proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
-                image = proj.frb.data[simfo['field']].in_cgs().value/(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
+                #proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
+                image = proj.frb.data[simfo['field']].in_cgs().value/thickness.in_units('cm')
+                #(proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
                 print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
-                velx_full = proj.frb.data[('gas', 'Corrected_velx')].in_units('cm**2/s')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                velx_full = proj.frb.data[('gas', 'Corrected_velx')].in_units('cm**2/s')/thickness.in_units('cm')
+                #((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
                 print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
-                vely_full = proj.frb.data[('gas', 'Corrected_vely')].in_units('cm**2/s')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                vely_full = proj.frb.data[('gas', 'Corrected_vely')].in_units('cm**2/s')/thickness.in_units('cm')
+                #((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
                 print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
-                magx = proj.frb.data[('gas', 'magx')].in_units('cm*gauss')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                magx = proj.frb.data[('gas', 'magx')].in_units('cm*gauss')/thickness.in_units('cm')
+                #((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
                 print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
-                magy = proj.frb.data[('gas', 'magy')].in_units('cm*gauss')/((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
+                magy = proj.frb.data[('gas', 'magy')].in_units('cm*gauss')/thickness.in_units('cm')
+                #((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
                 print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
             else:
                 proj = yt.ProjectionPlot(ds, axis_ind, [simfo['field'], 'velx', 'velz', 'magx', 'magz'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
@@ -473,8 +480,6 @@ for sim_file in usable_files:
                 magy = proj.frb.data[('gas', 'magz')].T.in_units('cm*gauss')/thickness.in_units('cm')
                 print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
             
-            import pdb
-            pdb.set_trace()
             velx_full = np.array(velx_full.value)
             vely_full = np.array(vely_full.value)
             magx = np.array(magx.value)
@@ -713,8 +718,6 @@ for frame_val in range(len(frames)):
           else:
               plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
           cbar = plt.colorbar(plot, pad=0.0)
-          import pdb
-          pdb.set_trace()
           mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
           if has_particles:
