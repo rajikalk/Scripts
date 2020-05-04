@@ -706,6 +706,7 @@ def _Center_Position(field, data):
     """
     global use_gas
     global centred_sink_id
+    global center
     try:
         dd = data.ds.all_data()
         if center == 0:
@@ -742,8 +743,8 @@ def _Center_Position(field, data):
             com = [(x_top/TM), (y_top/TM), (z_top/TM)]
             center_pos = yt.YTArray(com, 'cm')
         else:
-            particle_tag = np.argsort(dd['sink_particle_tag'])
-            center_tag = particle_tag[center-1]
+            particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            center_tag = int(particle_tag[center-1])
             center_pos = yt.YTArray([dd['sink_particle_posx'][center_tag].in_units('cm').value, dd['sink_particle_posy'][center_tag].in_units('cm').value, dd['sink_particle_posz'][center_tag].in_units('cm').value], 'cm')
     except:
         center_pos = data.ds.domain_center
@@ -758,6 +759,7 @@ def _Center_Velocity(field, data):
     """
     global use_gas
     global centred_sink_id
+    global center
     try:
         dd = data.ds.all_data()
         if center == 0:
@@ -794,9 +796,9 @@ def _Center_Velocity(field, data):
             com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
             center_vel = yt.YTArray(com_vel, 'cm')
         else:
-            particle_tag = np.argsort(dd['sink_particle_tag'])
-            center_tag = particle_tag[center-1]
-            center_vel = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm').value, dd['sink_particle_vely'][center_tag].in_units('cm').value, dd['sink_particle_velz'][center_tag].in_units('cm').value], 'cm')
+            particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            center_tag = int(particle_tag[center-1])
+            center_vel = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm/s').value, dd['sink_particle_vely'][center_tag].in_units('cm/s').value, dd['sink_particle_velz'][center_tag].in_units('cm/s').value], 'cm/s')
     except:
         center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     set_center_vel(center_vel)
@@ -904,9 +906,6 @@ def _Corrected_velx(field, data):
     """
     Calculates the x-velocity corrected for the bulk velocity.
     """
-    if np.shape(data['x']) != (16,16,16):
-        import pdb
-        pdb.set_trace()
     center_vel = get_center_vel()
     dvx = data['x-velocity'].in_units('cm/s') - center_vel[0]
     return dvx
