@@ -131,7 +131,7 @@ def find_files(m_times, files, sink_form_time, sink_number):
         with open(files[it].split("info")[0]+'stars_output.snktxt', 'r') as f:
             reader = csv.reader(f, dialect='dat')
             for row in reader:
-                time = float(row[1])*time_unit.in_units('s').value - sink_form_time
+                time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                 break
         f.close()
         print("Current file time =", time, "for interator =", it)
@@ -148,7 +148,7 @@ def find_files(m_times, files, sink_form_time, sink_number):
                 with open(files[it].split("info")[0]+'stars_output.snktxt', 'r') as f:
                     reader = csv.reader(f, dialect='dat')
                     for row in reader:
-                        time = float(row[1])*time_unit.in_units('yr').value - sink_form_time
+                        time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                         break
                 diff_val = abs(time - m_times[mit])
                 diff_arr.append(diff_val)
@@ -192,7 +192,7 @@ def find_files(m_times, files, sink_form_time, sink_number):
             with open(append_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
                 reader = csv.reader(f, dialect='dat')
                 for row in reader:
-                    time = float(row[1])*time_unit.in_units('yr').value - sink_form_time
+                    time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                     break
             f.close()
             print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
@@ -211,63 +211,25 @@ def find_files(m_times, files, sink_form_time, sink_number):
             pit = it
     return usable_files
 
-def get_particle_data(file, axis='xz', proj_or=None):
+def get_particle_data(ds, axis='xy', sink_id=0):
     """
     Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
     """
-    part_mass = []
-    part_pos_x = []
+    dd = ds.all_data()
+    sink_id = np.argmin(dd['sink_particle_speed'])
+    myf.set_centred_sink_id(sink_id)
+    
+    part_mass = dd['sink_particle_mass'][sink_id:].in_units('msun').value
+    part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
     part_pos_y = []
-    accretion_rad = []
+    accretion_rad = 4.*np.min(dd['dx']).in_units('au').value
     #center_pos = myf.get_center_pos()
-    try:
-        part_file=file[:-12] + 'part' + file[-5:]
-        f = h5py.File(part_file, 'r')
-        tag_ind = np.where(f['particle names'][:] == b'tag                     ')[0][0]
-        ordered_inds = np.argsort(f['tracer particles'][:,tag_ind])
-        mass_ind = np.where(f['particle names'][:] == b'mass                    ')[0][0]
-        part_mass = f['tracer particles'][:,mass_ind][ordered_inds]/yt.units.msun.in_units('g').value
-        posx_ind = np.where(f['particle names'][:] == b'posx                    ')[0][0]
-        posy_ind = np.where(f['particle names'][:] == b'posy                    ')[0][0]
-        if axis == 'xy':
-            part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[0]/yt.units.au.in_units('cm').value
-            part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value# - center_pos[1]/yt.units.au.in_units('cm').value
-            depth_pos = list(range(len(part_mass)))
-        else:
-            if proj_or is not None:
-                L = np.array([proj_or[0],proj_or[1]])
-                L_orth = np.array([[proj_or[1]], [-1*proj_or[0]]])
-                L_len = np.sqrt(L_orth[0]**2. + L_orth[1]**2.)
-                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
-                part_pos_y = f['tracer particles'][:,posy_ind][ordered_inds]/yt.units.au.in_units('cm').value
-                r = np.array([part_pos_x, part_pos_y])
-                part_pos_x = -1*np.dot(r.T,(L_orth/L_len))
-                part_pos_x = part_pos_x.T[0]
-                depth_pos = -1*np.dot(r.T,(L/L_len))
-                depth_pos = np.argsort(depth_pos)[::-1]
-            else:
-                part_pos_x = f['tracer particles'][:,posx_ind][ordered_inds]/yt.units.au.in_units('cm').value
-                depth_pos = f['tracer particles'][:,posy_ind]/yt.units.au.in_units('cm').value
-                depth_pos = depth_pos[::-1]
-            posz_ind = np.where(f['particle names'][:] == b'posz                    ')[0][0]
-            part_pos_y = f['tracer particles'][:,posz_ind][ordered_inds]/yt.units.au.in_units('cm').value
-        radius_ind = [i for i, v in enumerate(f['real runtime parameters'][:]) if v[0] == b'sink_accretion_radius                                                           '][0]
-        accretion_rad = f['real runtime parameters'][radius_ind][1]/yt.units.au.in_units('cm').value
-    except:
-        f = h5py.File(file, 'r')
-        part_mass = np.array(f["particlemasses"])/yt.units.msun.in_units('g').value
-        ordered_inds = np.argsort(part_mass)[::-1]
-        part_mass = np.array(f["particlemasses"][:][ordered_inds])/yt.units.msun.in_units('g').value
-        if axis == 'xy':
-            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
-            part_pos_y = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
-            depth_pos = list(range(len(part_mass)))
-        else:
-            part_pos_x = f["particlepositions"][0][ordered_inds]/yt.units.au.in_units('cm').value
-            depth_pos = f["particlepositions"][1][ordered_inds]/yt.units.au.in_units('cm').value
-            depth_pos = depth_pos[::-1]
-            part_pos_y = f["particlepositions"][2][ordered_inds]/yt.units.au.in_units('cm').value
-        accretion_rad = f['r_accretion'][0]/yt.units.au.in_units('cm').value
+    if axis == 'xy':
+        part_pos_y = dd['sink_particle_posy'][sink_id:].in_units('au').value
+        depth_pos = np.argsort(dd['sink_particle_posz'][sink_id:])
+    else:
+        part_pos_y = dd['sink_particle_posz'][sink_id:].in_units('au').value
+        depth_pos = np.argsort(dd['sink_particle_posy'][sink_id:])
     positions = np.array([part_pos_x,part_pos_y])
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
@@ -374,12 +336,15 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
     return velx, vely
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None):
-    legend_text=str(int(standard_vel)) + "kms$^{-1}$"
     global fontsize_global
     if plot_velocity_legend == 'False':
         plot_velocity_legend = False
     elif plot_velocity_legend == 'True':
         plot_velocity_legend = True
+        if standard_vel > 1.0:
+            legend_text=str(int(standard_vel)) + "kms$^{-1}$"
+        else:
+            legend_text=str(int(standard_vel*10.)/10.) + "kms$^{-1}$"
     standard_vel = yt.units.km.in_units('cm').value * standard_vel
     if limits is None:
         xmin = np.min(X_pos)
@@ -392,11 +357,15 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         ymin = limits[1][0]
         ymax = limits[1][1]
     len_scale = standard_vel/(0.07*(xmax - xmin))
+    import pdb
+    pdb.set_trace()
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = X_val[xp][yp]/len_scale
             yvel = Y_val[xp][yp]/len_scale
+            import pdb
+            pdb.set_trace()
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
             if width_val > 0.8:
                 width_val = 0.8
