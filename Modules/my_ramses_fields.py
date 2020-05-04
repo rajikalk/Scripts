@@ -23,7 +23,7 @@ def set_centred_sink_id(x):
     sets centred sink
     """
     global centred_sink_id
-    centred_sink_id = particle_position_x
+    centred_sink_id = x
     return centred_sink_id
     
 def get_centred_sink_id():
@@ -199,6 +199,19 @@ def _Neg_dz(field, data):
 
 yt.add_field("Neg_dz", function=_Neg_z, units=r"cm")
 
+#===========================OVERWRITING DENSITY FIELD BECAUSE DENSITY UNIT DOESN'T GET OVERWRITTEN======================================
+
+def _Density(field,data):
+    """
+    Overwrites density field
+    """
+    density_unit = (data.ds.mass_unit/data.ds.length_unit**3).in_cgs()
+    density = data[('ramses', 'Density')].value*density_unit
+    density_arr = yt.YTArray(density, 'g/cm**3')
+    return density
+
+yt.add_field("Density", function=_Density, units=r"g/cm**3")
+    
 #===========================CALCULATING RAMSES CENTERED MAGNETIC FIELDS======================================
 
 def _magx(field,data):
@@ -240,8 +253,8 @@ def _sink_particle_tag(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_tag = np.arange(float(len(s['x'])))
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_tag = np.arange(float(len(loaded_sink_data['x'])))
         '''
         #particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         #csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -273,8 +286,8 @@ def _sink_particle_posx(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_posx = s['x']*data.ds.length_unit.in_units("pc").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_posx = loaded_sink_data['x']*data.ds.length_unit.in_units("pc").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -306,8 +319,8 @@ def _sink_particle_posy(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_posy = s['y']*data.ds.length_unit.in_units("pc").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_posy = loaded_sink_data['y']*data.ds.length_unit.in_units("pc").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -339,8 +352,8 @@ def _sink_particle_posz(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_posz = s['z']*data.ds.length_unit.in_units("pc").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_posz = loaded_sink_data['z']*data.ds.length_unit.in_units("pc").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -372,8 +385,8 @@ def _sink_particle_velx(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_velx = s['ux']*data.ds.velocity_unit.in_units("km/s").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_velx = loaded_sink_data['ux']*data.ds.velocity_unit.in_units("km/s").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -405,8 +418,8 @@ def _sink_particle_vely(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_vely = s['uy']*data.ds.velocity_unit.in_units("km/s").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_vely = loaded_sink_data['uy']*data.ds.velocity_unit.in_units("km/s").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -438,8 +451,8 @@ def _sink_particle_velz(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_velz = s['uz']*data.ds.velocity_unit.in_units("km/s").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_velz = loaded_sink_data['uz']*data.ds.velocity_unit.in_units("km/s").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -471,8 +484,8 @@ def _sink_particle_speed(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_speed = s['u']*data.ds.velocity_unit.in_units("km/s").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_speed = loaded_sink_data['u']*data.ds.velocity_unit.in_units("km/s").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -504,8 +517,8 @@ def _sink_particle_mass(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_mass = s['m']*data.ds.mass_unit.in_units("Msun").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_mass = loaded_sink_data['m']*data.ds.mass_unit.in_units("Msun").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -537,9 +550,9 @@ def _sink_particle_accretion_rate(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        numerator = s['dm']*data.ds.mass_unit.in_units("Msun").value
-        denominator = (s['snapshot_time'] - s['tflush'])*data.ds.time_unit.in_units("yr").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        numerator = loaded_sink_data['dm']*data.ds.mass_unit.in_units("Msun").value
+        denominator = (loaded_sink_data['snapshot_time'] - loaded_sink_data['tflush'])*data.ds.time_unit.in_units("yr").value
         particle_mdot = numerator/denominator
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
@@ -572,8 +585,8 @@ def _sink_particle_form_time(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_form_time = s['tcreate']*data.ds.time_unit.in_units("yr").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_form_time = loaded_sink_data['tcreate']*data.ds.time_unit.in_units("yr").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -605,8 +618,8 @@ def _sink_particle_age(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        s = rsink(file_no, datadir=datadir)
-        particle_age = (s['snapshot_time']-s['tcreate'])*data.ds.time_unit.in_units("yr").value
+        loaded_sink_data = rsink(file_no, datadir=datadir)
+        particle_age = (loaded_sink_data['snapshot_time']-loaded_sink_data['tcreate'])*data.ds.time_unit.in_units("yr").value
         '''
         particle_file = glob.glob(data.ds.directory + '/*.snktxt')
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -693,45 +706,47 @@ def _Center_Position(field, data):
     """
     global use_gas
     global centred_sink_id
-    center_pos = data.ds.domain_center
-    if ('gas', 'x') in data.ds.derived_field_list:
-        TM = yt.YTArray(0.0, 'g')
-        x_top = yt.YTArray(0.0, 'cm*g')
-        y_top = yt.YTArray(0.0, 'cm*g')
-        z_top = yt.YTArray(0.0, 'cm*g')
+    try:
         dd = data.ds.all_data()
         if center == 0:
+            TM = yt.YTArray(0.0, 'g')
+            x_top = yt.YTArray(0.0, 'cm*g')
+            y_top = yt.YTArray(0.0, 'cm*g')
+            z_top = yt.YTArray(0.0, 'cm*g')
             if use_gas == False:
                 try:
-                    usuable_tags = dd['sink_particle_tag'][centred_sink_id:]
-                    TM = TM + np.sum(data['particle_mass'][usuable_tags].in_units('g'))
-                    for tag in usuable_tags:
-                        TM = TM + np.sum(data['particle_mass'][tag].in_units('g'))
-                        x_top = x_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posx'][tag].in_units('cm')
-                        y_top = y_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posy'][tag].in_units('cm')
-                        z_top = z_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posz'][tag].in_units('cm')
+                    usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                    TM = TM + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    for tag in usable_tags:
+                        x_top = x_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posx'][tag.astype(int)].in_units('cm')
+                        y_top = y_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posy'][tag.astype(int)].in_units('cm')
+                        z_top = z_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posz'][tag.astype(int)].in_units('cm')
                 except:
                     center_pos = data.ds.domain_center
             else:
-                TM = TM + np.sum(data['cell_mass'].in_units('g'))
-                x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
-                y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
-                z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
+                TM = TM + np.sum(dd['cell_mass'].in_units('g'))
+                x_top = x_top + np.sum(dd['cell_mass'].in_units('g')*dd['x'].in_units('cm'))
+                y_top = y_top + np.sum(dd['cell_mass'].in_units('g')*dd['y'].in_units('cm'))
+                z_top = z_top + np.sum(dd['cell_mass'].in_units('g')*dd['z'].in_units('cm'))
                 try:
-                    usuable_tags = dd['sink_particle_posd'][centred_sink_id:]
-                    for tag in usuable_tags:
-                        TM = TM + np.sum(data['particle_mass'][tag].in_units('g'))
-                        x_top = x_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posx'][tag].in_units('cm')
-                        y_top = y_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posy'][tag].in_units('cm')
-                        z_top = z_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_posz'][tag].in_units('cm')
+                    usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                    TM = TM + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    for tag in usable_tags:
+                        x_top = x_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posx'][tag.astype(int)].in_units('cm')
+                        y_top = y_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posy'][tag.astype(int)].in_units('cm')
+                        z_top = z_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_posz'][tag.astype(int)].in_units('cm')
                 except:
-                    continue
+                    x_top = x_top
+                    y_top = y_top
+                    z_top = z_top
             com = [(x_top/TM), (y_top/TM), (z_top/TM)]
             center_pos = yt.YTArray(com, 'cm')
         else:
             particle_tag = np.argsort(dd['sink_particle_tag'])
             center_tag = particle_tag[center-1]
             center_pos = yt.YTArray([dd['sink_particle_posx'][center_tag].in_units('cm').value, dd['sink_particle_posy'][center_tag].in_units('cm').value, dd['sink_particle_posz'][center_tag].in_units('cm').value], 'cm')
+    except:
+        center_pos = data.ds.domain_center
     set_center_pos(center_pos)
     return center_pos
 
@@ -743,45 +758,47 @@ def _Center_Velocity(field, data):
     """
     global use_gas
     global centred_sink_id
-    center_pos = data.ds.domain_center
-    if ('gas', 'x') in data.ds.derived_field_list:
-        TM = yt.YTArray(0.0, 'g')
-        x_top = yt.YTArray(0.0, 'cm*g/s')
-        y_top = yt.YTArray(0.0, 'cm*g/s')
-        z_top = yt.YTArray(0.0, 'cm*g/s')
+    try:
         dd = data.ds.all_data()
         if center == 0:
+            TM = yt.YTArray(0.0, 'g')
+            x_top = yt.YTArray(0.0, 'cm*g/s')
+            y_top = yt.YTArray(0.0, 'cm*g/s')
+            z_top = yt.YTArray(0.0, 'cm*g/s')
             if use_gas == False:
                 try:
-                    usuable_tags = dd['sink_particle_tag'][centred_sink_id:]
-                    TM = TM + np.sum(data['particle_mass'][usuable_tags].in_units('g'))
-                    for tag in usuable_tags:
-                        TM = TM + np.sum(data['particle_mass'][tag].in_units('g'))
-                        x_top = x_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_velx'][tag].in_units('cm/s')
-                        y_top = y_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_vely'][tag].in_units('cm/s')
-                        z_top = z_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_velz'][tag].in_units('cm/s')
+                    usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                    TM = TM + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    for tag in usable_tags:
+                        x_top = x_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_velx'][tag.astype(int)].in_units('cm/s')
+                        y_top = y_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_vely'][tag.astype(int)].in_units('cm/s')
+                        z_top = z_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_velz'][tag.astype(int)].in_units('cm/s')
                 except:
                     center_pos = data.ds.domain_center
             else:
-                TM = TM + np.sum(data['cell_mass'].in_units('g'))
-                x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x-velocity'].in_units('cm/s'))
-                y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y-velocity'].in_units('cm/s'))
-                z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z-velocity'].in_units('cm/s'))
+                TM = TM + np.sum(dd['cell_mass'].in_units('g'))
+                x_top = x_top + np.sum(dd['cell_mass'].in_units('g')*dd['x-velocity'].in_units('cm/s'))
+                y_top = y_top + np.sum(dd['cell_mass'].in_units('g')*dd['y-velocity'].in_units('cm/s'))
+                z_top = z_top + np.sum(dd['cell_mass'].in_units('g')*dd['z-velocity'].in_units('cm/s'))
                 try:
-                    usuable_tags = dd['sink_particle_posd'][centred_sink_id:]
-                    for tag in usuable_tags:
-                        TM = TM + np.sum(data['particle_mass'][tag].in_units('g'))
-                        x_top = x_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_velx'][tag].in_units('cm/s')
-                        y_top = y_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_vely'][tag].in_units('cm/s')
-                        z_top = z_top + data['sink_particle_mass'][tag].in_units('g')*data['sink_particle_velz'][tag].in_units('cm/s')
+                    usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                    TM = TM + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    for tag in usable_tags:
+                        x_top = x_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_velx'][tag.astype(int)].in_units('cm/s')
+                        y_top = y_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_vely'][tag.astype(int)].in_units('cm/s')
+                        z_top = z_top + dd['sink_particle_mass'][tag.astype(int)].in_units('g')*dd['sink_particle_velz'][tag.astype(int)].in_units('cm/s')
                 except:
-                    continue
+                    x_top = x_top
+                    y_top = y_top
+                    z_top = z_top
             com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
             center_vel = yt.YTArray(com_vel, 'cm')
         else:
             particle_tag = np.argsort(dd['sink_particle_tag'])
             center_tag = particle_tag[center-1]
-            center_pos = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm').value, dd['sink_particle_vely'][center_tag].in_units('cm').value, dd['sink_particle_velz'][center_tag].in_units('cm').value], 'cm')
+            center_vel = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm').value, dd['sink_particle_vely'][center_tag].in_units('cm').value, dd['sink_particle_velz'][center_tag].in_units('cm').value], 'cm')
+    except:
+        center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     set_center_vel(center_vel)
     return center_vel
 
@@ -887,6 +904,9 @@ def _Corrected_velx(field, data):
     """
     Calculates the x-velocity corrected for the bulk velocity.
     """
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
     center_vel = get_center_vel()
     dvx = data['x-velocity'].in_units('cm/s') - center_vel[0]
     return dvx
