@@ -248,6 +248,7 @@ particle_files = sorted(glob.glob(input_dir+"/*/*.snktxt"))
 ds = yt.load(files[-1], units_override=units_override)
 dd = ds.all_data()
 sink_id = np.argmin(dd['sink_particle_speed'])
+print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 
