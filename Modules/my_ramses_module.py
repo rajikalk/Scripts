@@ -88,8 +88,9 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
     if end_time != None:
         max_time = end_time
     else:
+        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
         with open(files[-1].split("info")[0]+'stars_output.snktxt', 'r') as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f, dialect='dat')
             for row in reader:
                 time = yt.YTQuantity(float(row[1])*time_unit.in_units('yr').value, 'yr')
                 break
