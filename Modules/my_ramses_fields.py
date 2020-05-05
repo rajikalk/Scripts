@@ -726,9 +726,9 @@ def _Center_Position(field, data):
                     center_pos = data.ds.domain_center
             else:
                 TM = TM + np.sum(dd['cell_mass'].in_units('g'))
-                x_top = x_top + np.sum(dd['cell_mass'].in_units('g')*dd['x'].in_units('cm'))
-                y_top = y_top + np.sum(dd['cell_mass'].in_units('g')*dd['y'].in_units('cm'))
-                z_top = z_top + np.sum(dd['cell_mass'].in_units('g')*dd['z'].in_units('cm'))
+                x_top = x_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','x')].in_units('cm'))
+                y_top = y_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','y')].in_units('cm'))
+                z_top = z_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','z')].in_units('cm'))
                 try:
                     usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
                     TM = TM + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
