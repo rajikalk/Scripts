@@ -125,10 +125,10 @@ def find_files(m_times, files, sink_form_time, sink_number):
     min = 0
     max = len(files)-1
     pit = 0
-    prev_diff = np.nan
     while mit < len(m_times):
+        #define it as half way between the min and max indexes
         it = int(np.round(min + ((max - min)/2.)))
-        #print 'search iterator =', it
+        #Check how close it is to your value:
         with open(files[it].split("info")[0]+'stars_output.snktxt', 'r') as f:
             reader = csv.reader(f, dialect='dat')
             for row in reader:
@@ -136,79 +136,34 @@ def find_files(m_times, files, sink_form_time, sink_number):
                 break
         f.close()
         print("Current file time =", time, "for interator =", it)
+        #check if it is honed in on the closes file, or times match:
         if pit == it or time == m_times[mit]:
-            if it == (len(files)-1):
-                pot_files = files[it-1:it]
-            elif it == 0:
-                pot_files = files[it:it+1]
-            else:
-                pot_files = files[it-2:it+2]
+            #Checking which file is actually closest to the movie time
+            potential_files = files[it-1:it+2]
             diff_arr = []
-            for pfile in pot_files:
-                #NEED TO FIND TIME
-                with open(files[it].split("info")[0]+'stars_output.snktxt', 'r') as f:
+            for pot_file in potential_files:
+                with open(pot_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
                     reader = csv.reader(f, dialect='dat')
                     for row in reader:
                         time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                         break
-                diff_val = abs(time - m_times[mit])
+                f.close()
+                diff_val = time - m_times[mit]
                 diff_arr.append(diff_val)
-            append_file = pot_files[np.argmin(diff_arr)]
-            if m_times[mit] == 0.0:
-                #NEED TO FIND FIRST FILE WITH RELEVANT SINK
-                skip_first_line = True
-                found_first_particle_file = False
-                with open(append_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
-                    reader = csv.reader(f, dialect='dat')
-                    for row in reader:
-                        if skip_first_line == True:
-                            skip_first_line = False
-                            try:
-                                if int(row[0])==sink_number:
-                                    found_first_particle_file=True
-                                    print("found particles in file", append_file)
-                                    break
-                            except:
-                                continue
-                if found_first_particle_file == False:
-                    app_ind = files.index(append_file) + 1
-                    while found_first_particle_file == False:
-                        append_file = files[app_ind]
-                        skip_first_line = True
-                        with open(append_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
-                            reader = csv.reader(f, dialect='dat')
-                            for row in reader:
-                                if skip_first_line == True:
-                                    skip_first_line = False
-                                    try:
-                                        if int(row[0])==sink_number:
-                                            found_first_particle_file=True
-                                            print("found particles in file", append_file)
-                                        break
-                                    except:
-                                        continue
-                        if found_first_particle_file == False:
-                            app_ind = app_ind + 1
-            usable_files.append(append_file)
-            with open(append_file.split("info")[0]+'stars_output.snktxt', 'r') as f:
-                reader = csv.reader(f, dialect='dat')
-                for row in reader:
-                    time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
-                    break
-            f.close()
+            append_it = np.argmin(abs(np.array(diff_arr)))
+            if m_times[mit] == 0 and diff_arr[append_it] < 0:
+                append_it = append_it + 1
+            usable_files.append(potential_files[append_it])
             print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
-            #append_file = files[it]
-            #usable_files.append(append_file)
             mit = mit + 1
             min = it
             max = len(files)-1
-            pit = it
-            prev_diff = np.nan
-        elif time > m_times[mit]:
-            max = it
-            pit = it
+            pit = 0
         elif time < m_times[mit]:
             min = it
+            pit = it
+        elif time > m_times[mit]:
+            max = it
             pit = it
     return usable_files
 
