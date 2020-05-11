@@ -439,10 +439,16 @@ for sim_file in usable_files:
             weight_field = args.weight_field
             
             myf.set_center(args.calculation_center)
-            if args.use_gas:
-                center_vel = region['Center_Velocity'].in_units('cm/s').value
+
+            if args.image_center == 0 and args.use_gas_center_calc==False:
+                TM = np.sum(dd['cell_mass'].in_units('g'))
+                x_top = np.sum(dd['cell_mass'].in_units('g')*dd['x-velocity'].in_units('cm/s'))
+                y_top = np.sum(dd['cell_mass'].in_units('g')*dd['y-velocity'].in_units('cm/s'))
+                z_top = np.sum(dd['cell_mass'].in_units('g')*dd['z-velocity'].in_units('cm/s'))
+                com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
+                center_vel = yt.YTArray(com_vel, 'cm')
             else:
-                center_vel = region.quantities.center_of_mass(use_particles=False)
+                center_vel = region['Center_Velocity'].in_units('cm/s').value
             myf.set_center(args.image_center)
             print("center_vel =", center_vel, "on rank", rank, "for", ds)
             
@@ -696,8 +702,8 @@ for frame_val in range(len(frames)):
                 xlim = args_dict['xlim']
                 ylim = args_dict['ylim']
             else:
-                xlim = args_dict['xlim'] + np.mean(X)
-                ylim = args_dict['ylim'] + np.mean(Y)
+                xlim = args_dict['xlim']# + np.mean(X)
+                ylim = args_dict['ylim']# + np.mean(Y)
             has_particles = args_dict['has_particles']
             time_val = args_dict['time_val']
             xabel = args_dict['xabel']
