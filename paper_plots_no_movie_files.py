@@ -70,6 +70,7 @@ def parse_inputs():
     parser.add_argument("-read_part_file", "--read_particle_file", help="dow you want to read in the particle file adn save as a pickle?", type=str, default="False")
     parser.add_argument("-phasefolded", "--phasefolded_accretion", help="do you want to plot the phasefolded accretion", type=str, default="False")
     parser.add_argument("-phase_multi", "--phasefolded_multi", help="do you want to plot the phasefolded accretion", type=str, default="False")
+    parser.add_argument("-smooth", "--smooth_data", help="Do you want to smooth the data on time and separation", type=str, default="False")
     parser.add_argument("-window", "--smoothing_window", help="How wide in years do you want the smoothing window to be?", default=1.0, type=float)
     parser.add_argument("-rep", "--repeats", help="how many phasefoles do you want to plot on one image?", type=int, default=1)
     parser.add_argument("-plot_reps", "--plot_repetitions", help="Do you want to plot multiple phasefolds next to each other?", type=str, default="False")
@@ -87,6 +88,7 @@ def parse_inputs():
     parser.add_argument("-accr_prof", "--accretion_profile", help="Do you want to plot only the accretion profile?", type=str, default="False")
     parser.add_argument("-p_num", "--periastron_number", help="Which periastron do you want to plot?", type=int, default=1)
     parser.add_argument("-accr_prof_width", "--accretion_profile_width", help="How many yrs form periastron do you want to plot ofn either side?", type=float, default=50)
+    parser.add_argument("-first_p", "--first_periastron_guess", help="to help find apsis, please provide a guess for the first periastron", type=int, default=0)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -518,6 +520,7 @@ if args.separation == 'True':
         ax1.set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
         ax2.set_ylabel("Mass (M$_\odot$)", fontsize=args.text_font)
         ax2.legend(loc='best', fontsize=args.text_font)
+    ax1.set_xlim(left=particle_data['time'][1:][np.where(np.isnan(particle_data['separation'][1:])==False)[0][0]+20])
     """
     #ax1.set_ylim(top=5e2)
     ax1.set_xlim(left=10000.0)
@@ -751,7 +754,7 @@ if args.calculate_eccentricity == 'True':
     
     if 'eccentricity' in list(particle_data.keys()):
         e = particle_data['eccentricity']
-        if len(e) == 0:
+        if len(e) == 0 or len(e) < len(particle_data['separation']):
             calculate_e = True
         else:
             calculate_e = False
@@ -759,6 +762,7 @@ if args.calculate_eccentricity == 'True':
         calculate_e = True
     calculate_e = True
     if calculate_e == True:
+        #read data
         Mass = yt.YTArray(np.array(particle_data['mass']).T, 'msun')
         velx = yt.YTArray(np.array(particle_data['velx']).T, 'cm/s')
         vely = yt.YTArray(np.array(particle_data['vely']).T, 'cm/s')
@@ -766,9 +770,8 @@ if args.calculate_eccentricity == 'True':
         posx = yt.YTArray(np.array(particle_data['posx']).T, 'au')
         posy = yt.YTArray(np.array(particle_data['posy']).T, 'au')
         posz = yt.YTArray(np.array(particle_data['posz']).T, 'au')
-        anglx = yt.YTArray(np.array(particle_data['anglx']).T, 'cm**2*g/s')
-        angly = yt.YTArray(np.array(particle_data['angly']).T, 'cm**2*g/s')
-        anglz = yt.YTArray(np.array(particle_data['anglz']).T, 'cm**2*g/s')
+        
+        #Caluclate center of mass, and center of mass velocity
         comx = (Mass[0].in_units('g')*posx[0].in_units('cm') + Mass[1].in_units('g')*posx[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comy = (Mass[0].in_units('g')*posy[0].in_units('cm') + Mass[1].in_units('g')*posy[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
         comz = (Mass[0].in_units('g')*posz[0].in_units('cm') + Mass[1].in_units('g')*posz[1].in_units('cm'))/(Mass[0].in_units('g')+Mass[1].in_units('g'))
@@ -779,6 +782,8 @@ if args.calculate_eccentricity == 'True':
         dist_from_com = np.sqrt((posx - comx)**2. + (posy - comy)**2. + (posz - comz)**2.)
         period = np.sqrt((4*np.pi*(dist_from_com[0]**3.)*((Mass[0]+Mass[1])**2.))/(yt.units.G.in_units('au**3/(msun*yr**2)')*(Mass[1]**3)))
         mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
+        
+        #save relative positions and velocitys to each other
         dvx = velx[0] - velx[1]
         dvy = vely[0] - vely[1]
         dvz = velz[0] - velz[1]
@@ -789,10 +794,14 @@ if args.calculate_eccentricity == 'True':
         dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm/s')
         v = np.sqrt(dvx**2. + dvy**2. + dvz**2.)
         r_tot = np.sqrt(drx**2. + dry**2. + drz**2.)
+        
+        #Also save their position and velocity relative to the CoM
         r_1 = [posx[0].in_units('cm')-comx.in_units('cm'), posy[0].in_units('cm')-comy.in_units('cm'), posz[0].in_units('cm')-comz.in_units('cm')]
         r_2 = [posx[1].in_units('cm')-comx.in_units('cm'), posy[1].in_units('cm')-comy.in_units('cm'), posz[1].in_units('cm')-comz.in_units('cm')]
         v_1 = [velx[0].in_units('cm/s') - V_CoM_x.in_units('cm/s'), vely[0].in_units('cm/s') - V_CoM_y.in_units('cm/s'), velz[0].in_units('cm/s') - V_CoM_z.in_units('cm/s')]
         v_2 = [velx[1].in_units('cm/s') - V_CoM_x.in_units('cm/s'), vely[1].in_units('cm/s') - V_CoM_y.in_units('cm/s'), velz[1].in_units('cm/s') - V_CoM_z.in_units('cm/s')]
+        
+        #Calculate potential and kinetic energies for calclation of E
         E_pot = -1*(yt.units.G*Mass[0].in_units('g')*Mass[1].in_units('g'))/r_tot
         E_kin = 0.5*Mass[0].in_units('g')*(velx[0]**2.+vely[0]**2.+velz[0]**2.) + 0.5*Mass[1].in_units('g')*(velx[1]**2.+vely[1]**2.+velz[1]**2.)
         reduced_mass = (Mass[0].in_units('g')*Mass[1].in_units('g'))/(Mass[0].in_units('g') + Mass[1].in_units('g'))
@@ -811,8 +820,6 @@ if args.calculate_eccentricity == 'True':
         L_tot_mag = np.sqrt(L_tot[0]**2 + L_tot[1]**2 + L_tot[2]**2)
         particle_data.update({'L_orb':np.array([L_1_mag, L_2_mag]).T.tolist()})
         particle_data.update({'L_tot':L_tot_mag.T.tolist()})
-        Total_spin_angular_momentum = np.sqrt(anglx**2 + angly**2 + anglz**2)
-        particle_data.update({'Spin': Total_spin_angular_momentum.value.tolist()})
         try:
             particle_data['eccentricity'] = e.tolist()
         except:
@@ -958,29 +965,31 @@ if args.calculate_apsis == 'True':
         periastron_inds, apastron_inds = pickle.load(file_open)
         file_open.close()
     else:
-        window = args.smoothing_window
-        moving_index = int(window)
-        moving_average_time = []
-        moving_average_sep = []
         particle_data['time'] = np.array(particle_data['time'])
         particle_data['separation'] = np.array(particle_data['separation'])
-        '''
-        for window_int in range(window):
-            particle_data['time'] = np.array(particle_data['time'])
-            moving_average_time.append(particle_data['time'][moving_index-int(window/2):-int(window)])
-            moving_average_sep.append(particle_data['separation'][moving_index-int(window/2):-int(window)])
-        '''
-        while moving_index < len(particle_data['time']):
-            window_inds = np.where((particle_data['time'] < particle_data['time'][moving_index])&(particle_data['time'] > particle_data['time'][moving_index]-window))[0]
-            moving_average_time.append(np.mean(particle_data['time'][window_inds]))
-            moving_average_sep.append(np.mean(particle_data['separation'][window_inds]))
-            moving_index = moving_index + 1
-        particle_data['time'] = np.array(moving_average_time)
-        particle_data['separation'] = np.array(moving_average_sep)
+        if args.smooth_data != "False":
+            window = args.smoothing_window
+            moving_index = int(window)
+            moving_average_time = []
+            moving_average_sep = []
+            '''
+            for window_int in range(window):
+                particle_data['time'] = np.array(particle_data['time'])
+                moving_average_time.append(particle_data['time'][moving_index-int(window/2):-int(window)])
+                moving_average_sep.append(particle_data['separation'][moving_index-int(window/2):-int(window)])
+            '''
+            while moving_index < len(particle_data['time']):
+                window_inds = np.where((particle_data['time'] < particle_data['time'][moving_index])&(particle_data['time'] > particle_data['time'][moving_index]-window))[0]
+                moving_average_time.append(np.mean(particle_data['time'][window_inds]))
+                moving_average_sep.append(np.mean(particle_data['separation'][window_inds]))
+                moving_index = moving_index + 1
+            particle_data['time'] = np.array(moving_average_time)
+            particle_data['separation'] = np.array(moving_average_sep)
         non_nan_inds = np.where(np.isnan(particle_data['separation'])==False)[0]
-        periastron_inds = [np.argmin(np.nan_to_num(particle_data['separation'][non_nan_inds][:np.argmin(abs(particle_data['time'][non_nan_inds]-1655))]))]
+        initial_guess_ind = np.argmin(abs(particle_data['time'][non_nan_inds] - args.first_periastron_guess+100))
+        periastron_inds = [np.argmin(particle_data['separation'][non_nan_inds][:initial_guess_ind])+non_nan_inds[0]]
         apastron_inds = []
-        index_interval = 1000
+        index_interval = 10
         index = periastron_inds[0] + index_interval
         passed_apastron = False
         while index < len(particle_data['time']):
