@@ -1,4 +1,5 @@
 *~
+*.pyc
 Modules/.DS_Store
 Modules/__pycache__/
 Modules/pyramses
