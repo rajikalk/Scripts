@@ -150,10 +150,14 @@ def find_files(m_times, files, sink_form_time, sink_number):
                 f.close()
                 diff_val = time - m_times[mit]
                 diff_arr.append(diff_val)
-            append_it = np.argmin(abs(np.array(diff_arr)))
-            if m_times[mit] == 0 and diff_arr[append_it] < 0:
-                append_it = append_it + 1
-            usable_files.append(potential_files[append_it])
+            try:
+                append_it = np.argmin(abs(np.array(diff_arr)))
+            
+                if m_times[mit] == 0 and diff_arr[append_it] < 0:
+                    append_it = append_it + 1
+                usable_files.append(potential_files[append_it])
+            except:
+                usable_files.append(files[it])
             print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             mit = mit + 1
             min = it
@@ -167,25 +171,32 @@ def find_files(m_times, files, sink_form_time, sink_number):
             pit = it
     return usable_files
 
-def get_particle_data(ds, axis='xy', sink_id=0):
+def get_particle_data(ds, axis='xy', sink_id=None):
     """
     Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
     """
     dd = ds.all_data()
-    sink_id = np.argmin(dd['sink_particle_speed'])
+    if sink_id != None:
+        sink_id = sink_id
+    else:
+        sink_id = np.argmin(dd['sink_particle_speed'])
     myf.set_centred_sink_id(sink_id)
     
     part_mass = dd['sink_particle_mass'][sink_id:].in_units('msun').value
-    part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
-    part_pos_y = []
     accretion_rad = 4.*np.min(dd['dx']).in_units('au').value
     #center_pos = myf.get_center_pos()
     if axis == 'xy':
+        part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
         part_pos_y = dd['sink_particle_posy'][sink_id:].in_units('au').value
         depth_pos = np.argsort(dd['sink_particle_posz'][sink_id:])
-    else:
+    elif axis == 'xz':
+        part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
         part_pos_y = dd['sink_particle_posz'][sink_id:].in_units('au').value
         depth_pos = np.argsort(dd['sink_particle_posy'][sink_id:])
+    elif axis == 'yz':
+        part_pos_x = dd['sink_particle_posy'][sink_id:].in_units('au').value
+        part_pos_y = dd['sink_particle_posz'][sink_id:].in_units('au').value
+        depth_pos = np.argsort(dd['sink_particle_posx'][sink_id:])
     positions = np.array([part_pos_x,part_pos_y])
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
@@ -373,6 +384,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=1., c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=1, edgecolor='k')
         axis.add_patch(circle)
+    for pos_it in range(len(depth_array)):
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
@@ -386,12 +398,12 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if p_t == '':
                 p_t = field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
             else:
-                p_t = p_t+', ' +field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
-            print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
+                p_t = p_t+' , ' +field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
+            #print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
             rainbow_text_colors.append('white')
-    print('annotation_string =', p_t)
+    #print('annotation_string =', p_t)
     if annotate_field is not None:
         rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
         #part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
