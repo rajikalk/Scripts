@@ -47,6 +47,7 @@ def parse_inputs():
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
     parser.add_argument("-use_L", "--use_angular_momentum", help="use disc angular momentum to find normal", default='False', type=str)
+    parser.add_argument("-res", "--resolution", help="define image resolution", default=2048, type=int)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -58,7 +59,7 @@ def sim_info(ds,args):
     dd = ds.all_data()
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == 'Density'][0]
     field = ds.derived_field_list[field_it]
-    dim = 800
+    dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
         xmax = 1000
@@ -135,7 +136,8 @@ def has_sinks(ds):
 
 rank = CW.Get_rank()
 size = CW.Get_size()
-print("size =", size)
+if rank == 0:
+    print("size =", size)
 
 #Get input and output directories
 args = parse_inputs()
@@ -182,7 +184,8 @@ mym.set_units(units_override)
 ds = yt.load(files[-1], units_override=units_override)
 
 #Get simulation information
-print("loading fields")
+if rank == 0:
+    print("loading fields")
 simfo = sim_info(ds, args)
 x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
 y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
@@ -247,7 +250,8 @@ if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
 else:
     sink_id = args.sink_number
-print("CENTERED SINK ID:", sink_id)
+if rank == 0:
+    print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 del dd
@@ -481,7 +485,7 @@ if args.make_frames_only == 'False':
                 
                 for field in yt.parallel_objects(proj_field_list):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                    proj.set_buff_size([2048, 2048])
+                    proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
@@ -534,7 +538,7 @@ if args.make_frames_only == 'False':
                 proj_field_list =[simfo['field'], ('gas', 'Projected_Velocity_x'), ('gas', 'Projected_Velocity_y'), ('gas', 'Projected_Velocity_z'), ('gas', 'Projected_Magnetic_Field_x'), ('gas', 'Projected_Magnetic_Field_y'), ('gas', 'Projected_Magnetic_Field_z')]
                 #proj_field_list =[simfo['field'], ('ramses', 'x-velocity'), ('ramses', 'y-velocity'), ('ramses', 'z-velocity'), ('gas', 'magx'), ('gas', 'magy'), ('gas', 'magz')]
                 for field in yt.parallel_objects(proj_field_list):
-                    proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
+                    proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
                     if 'mag' in str(field):
                         if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
