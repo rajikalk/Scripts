@@ -115,7 +115,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
         postsink = postsink + dt
     return m_times
 
-def find_files(m_times, files, sink_form_time, sink_number):
+def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
     global time_unit
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     if m_times[0] > 10e5:
@@ -135,7 +135,8 @@ def find_files(m_times, files, sink_form_time, sink_number):
                 time = float(row[1])*time_unit.in_units('yr').value - sink_form_time.value
                 break
         f.close()
-        print("Current file time =", time, "for interator =", it)
+        if verbatim == True:
+            print("Current file time =", time, "for interator =", it)
         #check if it is honed in on the closes file, or times match:
         if pit == it or time == m_times[mit]:
             #Checking which file is actually closest to the movie time
@@ -158,7 +159,8 @@ def find_files(m_times, files, sink_form_time, sink_number):
                 usable_files.append(potential_files[append_it])
             except:
                 usable_files.append(files[it])
-            print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
+            if verbatim == True:
+                print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             mit = mit + 1
             min = it
             max = len(files)-1
