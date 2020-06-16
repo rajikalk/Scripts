@@ -785,8 +785,6 @@ def _Center_Position_Particle(field, data):
         z_top = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_posz'][np.array(usable_tags)].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
-        if np.shape(data) != (16,16,16):
-            print("No particles to calculate center position with")
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm')
     center_pos_part = com
     return com
@@ -817,7 +815,10 @@ def _Center_Position(field, data):
                     y_top = y_top + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_posy'][np.array(usable_tags)].in_units('cm'))
                     z_top = z_top + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_posz'][np.array(usable_tags)].in_units('cm'))
                 except:
-                    print("No particles to calculate center position with")
+                    TM = TM
+                    x_top = x_top
+                    y_top = y_top
+                    z_top = z_top
             if com_pos_use_gas == True:
                 M_gas = np.sum(dd['cell_mass'].in_units('g'))
                 TM = TM + M_gas
@@ -869,8 +870,6 @@ def _Center_Velocity_Particle(field, data):
         z_top = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_velz'][np.array(usable_tags)].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
-        if np.shape(data) != (16,16,16):
-            print("No particles to calculate center position with")
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     center_vel_part = com
     return com
@@ -901,7 +900,10 @@ def _Center_Velocity(field, data):
                     y_top = y_top + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_vely'][np.array(usable_tags)].in_units('cm/s'))
                     z_top = z_top + np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g')*dd['sink_particle_velz'][np.array(usable_tags)].in_units('cm/s'))
                 except:
-                    print("No particles to calculate center position with")
+                    TM = TM
+                    x_top = x_top
+                    y_top = y_top
+                    z_top = z_top
             if com_vel_use_gas == True:
                 M_gas = np.sum(data['cell_mass'].in_units('g'))
                 TM = TM + M_gas
@@ -1188,14 +1190,11 @@ def _Bulk_Velocity_Gas(field, data):
     """
     Calculates the mass weighted bulk velocity of the gas
     """
-    try:
-        TM = np.sum(data['cell_mass'].in_units('g'))
-        x_top = np.sum(data['cell_mass'].in_units('g')*data['x-velocity'].in_units('cm/s'))
-        y_top = np.sum(data['cell_mass'].in_units('g')*data['y-velocity'].in_units('cm/s'))
-        z_top = np.sum(data['cell_mass'].in_units('g')*data['z-velocity'].in_units('cm/s'))
-        com = [(x_top/TM), (y_top/TM), (z_top/TM)]
-    except:
-        com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+    TM = np.sum(data['cell_mass'].in_units('g'))
+    x_top = np.sum(data['cell_mass'].in_units('g')*data['x-velocity'].in_units('cm/s'))
+    y_top = np.sum(data['cell_mass'].in_units('g')*data['y-velocity'].in_units('cm/s'))
+    z_top = np.sum(data['cell_mass'].in_units('g')*data['z-velocity'].in_units('cm/s'))
+    com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     center_vel_gas = com
     return com
 
@@ -1206,7 +1205,7 @@ def _Projected_Velocity_x(field, data):
     returns the projected velocity
     """
     global normal
-    v = yt.YTArray([(data['x-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][0].in_units('cm/s').value), (data['y-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][1].in_units('cm/s').value), (data['z-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][2].in_units('cm/s').value)], 'cm/s')
+    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
     proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
     proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
     proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
@@ -1221,7 +1220,7 @@ def _Projected_Velocity_y(field, data):
     returns the projected velocity
     """
     global normal
-    v = yt.YTArray([(data['x-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][0].in_units('cm/s').value), (data['y-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][1].in_units('cm/s').value), (data['z-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][2].in_units('cm/s').value)], 'cm/s')
+    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
     proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
     proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
     proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
@@ -1236,7 +1235,7 @@ def _Projected_Velocity_z(field, data):
     returns the projected velocity
     """
     global normal
-    v = yt.YTArray([(data['x-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][0].in_units('cm/s').value), (data['y-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][1].in_units('cm/s').value), (data['z-velocity'].in_units('cm/s').value - data['Bulk_Velocity_Gas'][2].in_units('cm/s').value)], 'cm/s')
+    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
     proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
     proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
     proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
