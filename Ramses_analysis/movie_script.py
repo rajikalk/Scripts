@@ -46,6 +46,7 @@ def parse_inputs():
     parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
+    parser.add_argument("-use_L", "--use_angular_momentum", help="use disc angular momentum to find normal", default='False', type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -134,6 +135,7 @@ def has_sinks(ds):
 
 rank = CW.Get_rank()
 size = CW.Get_size()
+print("size =", size)
 
 #Get input and output directories
 args = parse_inputs()
@@ -206,7 +208,6 @@ else:
     elif args.axis == 'yz':
         L = [1.0, 0.0, 0.0]
 myf.set_normal(L)
-print("SET PROJECTION ORIENTATION L=", myf.get_normal())
 xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
 if args.ax_lim != None:
     xlim = [-1*args.ax_lim, args.ax_lim]
@@ -217,10 +218,15 @@ thickness = yt.YTQuantity(args.slice_thickness, 'AU')
 #Sets center for calculating center position and velocity
 myf.set_center(args.image_center)
 
+#Set to make sure that particles aren't used to calculate the center velocity
+myf.set_com_vel_use_part(False)
+
 if args.use_gas_center_calc == 'True':
     myf.set_com_pos_use_gas(True)
 else:
     myf.set_com_pos_use_gas(False)
+    
+#Make sure to only use gas when calculating the center velocity
 
 sys.stdout.flush()
 CW.Barrier()
@@ -259,7 +265,10 @@ sys.stdout.flush()
 CW.Barrier()
 
 if args.make_frames_only == 'False':
-    usable_files = mym.find_files(m_times, files, sink_form_time,sink_id)
+    verbatim = False
+    if rank == 0:
+        verbatim = True
+    usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
     del sink_form_time
     del files
     
@@ -305,9 +314,35 @@ if args.make_frames_only == 'False':
                 time_val = np.round(time_real.in_units('yr'))
                 del sink_creation_time
                 del time_real
+                
+            if args.use_angular_momentum != 'False':
+                if len(part_info['particle_mass']) == 1:
+                    left_corner_test = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('AU').value - 100, dd['sink_particle_posy'][sink_id].in_units('AU').value - 100, dd['sink_particle_posz'][sink_id].in_units('AU').value - 100], 'AU')
+                    right_corner_test = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('AU').value + 100, dd['sink_particle_posy'][sink_id].in_units('AU').value + 100, dd['sink_particle_posz'][sink_id].in_units('AU').value + 100], 'AU')
+                    region = ds.box(left_corner_test, right_corner_test)
+                    L_x = np.sum(region['Angular_Momentum_x'].value)
+                    L_y = np.sum(region['Angular_Momentum_y'].value)
+                    L_z = np.sum(region['Angular_Momentum_z'].value)
+                    L = np.array([L_x, L_y, L_z])/np.sum(region['Angular_Momentum'].value)
+                    myf.set_normal(L)
+                    print("L =", L)
+                    del left_corner_test
+                    del right_corner_test
+                    del region
+                    del L_x
+                    del L_y
+                    del L_z
+                else:
+                    L_x = np.sum(dd['Orbital_Angular_Momentum_x'].value)
+                    L_y = np.sum(dd['Orbital_Angular_Momentum_y'].value)
+                    L_z = np.sum(dd['Orbital_Angular_Momentum_z'].value)
+                    L = np.array([L_x, L_y, L_z])/np.sum(dd['Orbital_Angular_Momentum'].value)
+                    myf.set_normal(L)
+                    print("L =", L)
             
             #mass_array = dd['sink_particle_mass']
             center_pos = dd['Center_Position'].in_units('au').value
+            del dd
             #print('Center Pos=' + str(center_pos))
             
             #Update X and Y to be centered on center position
@@ -348,9 +383,8 @@ if args.make_frames_only == 'False':
 
             if args.axis == 'xy':
                 axis_ind = 2
-                width_multiplier = 0.5
-                left_corner = yt.YTArray([center_pos[0]-(1.5*width_multiplier*x_width), center_pos[1]-(1.5*width_multiplier*y_width), center_pos[2]-(width_multiplier*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(1.5*width_multiplier*x_width), center_pos[1]+(1.5*width_multiplier*y_width), center_pos[2]+(width_multiplier*args.slice_thickness)], 'AU')
+                left_corner = yt.YTArray([center_pos[0]-(0.5*x_width), center_pos[1]-(0.5*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.5*x_width), center_pos[1]+(0.5*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 '''
                 dummy_density = None
@@ -368,9 +402,8 @@ if args.make_frames_only == 'False':
                 del right_corner
             elif args.axis == 'xz':
                 axis_ind = 1
-                width_multiplier = 0.5
-                left_corner = yt.YTArray([center_pos[0]-(1.5*width_multiplier*x_width), center_pos[1]-(width_multiplier*args.slice_thickness), center_pos[2]-(1.5*width_multiplier*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(1.5*width_multiplier*x_width), center_pos[1]+(width_multiplier*args.slice_thickness), center_pos[2]+(1.5*width_multiplier*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0]-(0.5*x_width), center_pos[1]-(0.5*args.slice_thickness), center_pos[2]-(0.5*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.5*x_width), center_pos[1]+(0.5*args.slice_thickness), center_pos[2]+(0.5*y_width)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 '''
                 dummy_density = None
@@ -388,9 +421,8 @@ if args.make_frames_only == 'False':
                 del right_corner
             elif args.axis == 'yz':
                 axis_ind = 0
-                width_multiplier = 0.5
-                left_corner = yt.YTArray([center_pos[0]-(width_multiplier*args.slice_thickness), center_pos[1]-(1.5*width_multiplier*x_width), center_pos[2]-(1.5*width_multiplier*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(width_multiplier*args.slice_thickness), center_pos[1]+(1.5*width_multiplier*x_width), center_pos[2]+(1.5*width_multiplier*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0]-(0.5*args.slice_thickness), center_pos[1]-(0.5*x_width), center_pos[2]-(0.5*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.5*args.slice_thickness), center_pos[1]+(0.5*x_width), center_pos[2]+(0.5*y_width)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 '''
                 dummy_density = None
@@ -406,15 +438,18 @@ if args.make_frames_only == 'False':
                 '''
                 del left_corner
                 del right_corner
+            elif args.use_angular_momentum != 'False':
+                region = yt.disk(center_pos, L, (np.sqrt((0.5*x_width)**2 + (0.5*y_width)), 'AU'), (args.slice_thickness/2, 'AU'))
             weight_field = args.weight_field
             
             myf.set_center(args.calculation_center)
 
-            if args.image_center == 0 and args.use_gas_center_calc==False:
-                TM = np.sum(dd['cell_mass'].in_units('g'))
-                x_top = np.sum(dd['cell_mass'].in_units('g')*dd['x-velocity'].in_units('cm/s'))
-                y_top = np.sum(dd['cell_mass'].in_units('g')*dd['y-velocity'].in_units('cm/s'))
-                z_top = np.sum(dd['cell_mass'].in_units('g')*dd['z-velocity'].in_units('cm/s'))
+            if args.image_center == 0 and args.use_gas_center_calc=='False':
+                #If not using the gas the calculate the Center posiiton and velocity in the fields
+                TM = np.sum(region['cell_mass'].in_units('g'))
+                x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
+                y_top = np.sum(region['cell_mass'].in_units('g')*region['y-velocity'].in_units('cm/s'))
+                z_top = np.sum(region['cell_mass'].in_units('g')*region['z-velocity'].in_units('cm/s'))
                 com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
                 center_vel = yt.YTArray(com_vel, 'cm')
                 del TM
@@ -429,31 +464,24 @@ if args.make_frames_only == 'False':
             
             if args.axis == 'xy':
                 center_vel=np.array([center_vel[0], center_vel[1]])
-                if args.use_disk_angular_momentum != "False":
-                    disk = ds.disk(center_pos, L, (args.ax_lim*2, 'au'), (args.slice_thickness/2., 'au'))
-                    tot_vec = [np.sum(disk['Angular_Momentum_x']).value, np.sum(disk['Angular_Momentum_y']).value, np.sum(disk['Angular_Momentum_z']).value]
-                    tot_mag = np.sqrt(tot_vec[0]**2. + tot_vec[1]**2. + tot_vec[2]**2.)
-                    L = tot_vec/tot_mag
-                    #print("SET PROJECTION ORIENTATION L=", L)
-                    del tot_vec
-                    del tot_mag
             elif args.axis == 'xz':
                 center_vel=np.array([center_vel[0], center_vel[2]])
             elif args.axis == 'yz':
                 center_vel=np.array([center_vel[1], center_vel[2]])
             
-            if args.projection_orientation == None:
-                vel1_field = 'Corrected_vel' + args.axis[0]
-                vel2_field = 'Corrected_vel' + args.axis[1]
+            if args.use_angular_momentum == 'False':
+                vel1_field = args.axis[0] + '-velocity'
+                vel2_field = args.axis[1] + '-velocity'
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
                 proj_root_rank = int(rank/5)*5
                 proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], mag1_field:[], mag2_field:[]}
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
+                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
                 
                 for field in yt.parallel_objects(proj_field_list):
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=dd['Center_Position'].in_units('cm'))
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                    proj.set_buff_size([2048, 2048])
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
@@ -498,62 +526,70 @@ if args.make_frames_only == 'False':
                     magx = proj_dict[proj_dict_keys[3]]
                     magy = proj_dict[proj_dict_keys[4]]
                         
-            elif args.projection_orientation != None:
-                proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'Projected_Velocity', 'velz', 'Projected_Magnetic_Field', 'magz'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
-                if weight_field == None:
-                    image = proj.frb.data[simfo['field']].in_cgs().value/thickness.in_units('cm').value
-                    velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
-                    vely_full = proj.frb.data[('ramses', 'z-velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
-                    magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss').value/thickness.in_units('cm').value
-                    magy = proj.frb.data[('gas', 'magz')].in_units('cm*gauss').value/thickness.in_units('cm').value
-                else:
-                    image = proj.frb.data[simfo['field']].in_cgs().value
-                    velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm/s').value
-                    vely_full = proj.frb.data[('ramses', 'z-velocity')].in_units('cm/s').value
-                    magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('gauss').value
-                    magy = proj.frb.data[('gas', 'magz')].in_units('gauss').value
-            else:
-                if args.use_disk_angular_momentum == "False":
-                    print("particle_pos=", part_info['particle_position'])
-                    
-                    left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
-                    right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
-                    region = ds.box(left_corner, right_corner)
-                    proj = yt.ProjectionPlot(ds, 2, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate')
-                    if weight_field == None:
-                        proj_depth = yt.ProjectionPlot(ds, 2, ['z', 'Neg_z'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip')
-                        image = proj.frb.data[simfo['field']].in_cgs().value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                        print("IMAGE VALUES ARE BETWEEN:", np.min(image), np.max(image))
-                        velx_full = proj.frb.data[('ramses', 'x-velocity')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                        print("IMAGE VELX ARE BETWEEN:", np.min(velx_full), np.max(velx_full))
-                        vely_full = proj.frb.data[('ramses', 'y-velocity')].in_units('cm**2/s').value/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm')).value
-                        print("IMAGE VELY ARE BETWEEN:", np.min(vely_full), np.max(vely_full))
-                        magx = proj.frb.data[('gas', 'magx')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
-                        print("IMAGE MAGX ARE BETWEEN:", np.min(magx), np.max(magx))
-                        magy = proj.frb.data[('gas', 'magy')].in_units('cm*gauss')/(proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'z')].in_units('cm'))
-                        print("IMAGE MAGY ARE BETWEEN:", np.min(magy), np.max(magy))
+            elif args.use_angular_momentum != 'False':
+                proj_root_rank = int(rank/7)*7
+                proj_dict = {simfo['field'][1]:[], 'Projected_Velocity_x':[], 'Projected_Velocity_y':[], 'Projected_Velocity_z':[], 'Projected_Magnetic_Field_x':[], 'Projected_Magnetic_Field_y':[], 'Projected_Magnetic_Field_z':[]}
+                #proj_dict = {simfo['field'][1]:[], 'x-velocity':[], 'y-velocity':[], 'z-velocity':[], 'magx':[], 'magy':[], 'magz':[]}
+                proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                proj_field_list =[simfo['field'], ('gas', 'Projected_Velocity_x'), ('gas', 'Projected_Velocity_y'), ('gas', 'Projected_Velocity_z'), ('gas', 'Projected_Magnetic_Field_x'), ('gas', 'Projected_Magnetic_Field_y'), ('gas', 'Projected_Magnetic_Field_z')]
+                #proj_field_list =[simfo['field'], ('ramses', 'x-velocity'), ('ramses', 'y-velocity'), ('ramses', 'z-velocity'), ('gas', 'magx'), ('gas', 'magy'), ('gas', 'magz')]
+                for field in yt.parallel_objects(proj_field_list):
+                    proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
+                    if 'mag' in str(field):
+                        if weight_field == None:
+                            proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
+                        else:
+                            proj_array = np.array(proj.frb.data[field].in_units('gauss'))
                     else:
-                        image = proj.frb.data[simfo['field']].in_cgs().value
-                        velx_full = proj.frb.data[('ramses', 'x-velocity')].in_units('cm/s').value
-                        vely_full = proj.frb.data[('ramses', 'y-velocity')].in_units('cm/s').value
-                        magx = proj.frb.data[('gas', 'magx')].in_units('gauss').value
-                        magy = proj.frb.data[('gas', 'magy')].in_units('gauss').value
-                else:
-                    print("particle_pos=", part_info['particle_position'])
-                    
-                    proj = yt.OffAxisProjectionPlot(ds, L, [simfo['field'], 'velx', 'vely', 'magx', 'magy'], center=(center_pos, 'AU'), width=(x_width, 'AU'), depth=(args.slice_thickness, 'AU'), weight_field=weight_field)
-                    if weight_field == None:
-                        image = proj.frb.data[simfo['field']].in_cgs().value/thickness.in_units('cm').value
-                        velx_full = proj.frb.data[('ramses', 'x-velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
-                        vely_full = proj.frb.data[('ramses', 'y-velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
-                        magx = proj.frb.data[('gas', 'magx')].in_units('cm*gauss').value/thickness.in_units('cm').value
-                        magy = proj.frb.data[('gas', 'magy')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                       if weight_field == None:
+                            proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
+                       else:
+                           proj_array = np.array(proj.frb.data[field].in_cgs())
+                    if rank == proj_root_rank:
+                        proj_dict[field[1]] = proj_array
                     else:
-                        image = proj.frb.data[simfo['field']].in_cgs().value
-                        velx_full = proj.frb.data[('ramses', 'x-velocity')].in_units('cm/s').value
-                        vely_full = proj.frb.data[('ramses', 'y-velocity')].in_units('cm/s').value
-                        magx = proj.frb.data[('gas', 'magx')].in_units('gauss').value
-                        magy = proj.frb.data[('gas', 'magy')].in_units('gauss').value
+                        file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
+                        pickle.dump((field[1], proj_array), file)
+                        file.close()
+            
+                if rank == proj_root_rank and size > 1:
+                    for kit in range(1,len(proj_dict_keys)):
+                        file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
+                        key, proj_array = pickle.load(file)
+                        file.close()
+                        proj_dict[key] = proj_array
+                        os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+                
+                #Figure out vectors projections onto axes
+                y_axis_vector = proj.data_source.orienter.north_vector
+                projected_velocity = yt.YTArray([proj_dict['Projected_Velocity_x'], proj_dict['Projected_Velocity_y'], proj_dict['Projected_Velocity_z']], 'cm/s')
+                #projected_velocity = yt.YTArray([proj_dict['x-velocity'], proj_dict['y-velocity'], proj_dict['z-velocity']], 'cm/s')
+                proj_x_vel_1 = (np.dot(projected_velocity.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[0]
+                proj_x_vel_2 = (np.dot(projected_velocity.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[1]
+                proj_x_vel_3 = (np.dot(projected_velocity.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[2]
+                proj_x_vel = yt.YTArray([proj_x_vel_1.T, proj_x_vel_2.T, proj_x_vel_3.T], 'cm/s')
+                proj_x_vel_mag = np.sqrt(proj_x_vel_1**2 + proj_x_vel_2**2 + proj_x_vel_3**2)
+                proj_y_vel = (projected_velocity - proj_x_vel)
+                proj_y_vel_mag = np.sqrt(proj_y_vel[0]**2 + proj_y_vel[1]**2 + proj_y_vel[2]**2)
+                #center_vel = [np.mean(proj_x_vel_mag), np.mean(proj_y_vel_mag)]
+                center_vel = [0.0, 0.0]
+                
+                projected_B = yt.YTArray([proj_dict['Projected_Magnetic_Field_x'], proj_dict['Projected_Magnetic_Field_y'], proj_dict['Projected_Magnetic_Field_z']], 'G')
+                #projected_B = yt.YTArray([proj_dict['magx'], proj_dict['magy'], proj_dict['magz']], 'G')
+                proj_x_B_1 = (np.dot(projected_B.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[0]
+                proj_x_B_2 = (np.dot(projected_B.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[1]
+                proj_x_B_3 = (np.dot(projected_B.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[2]
+                proj_x_B = yt.YTArray([proj_x_B_1.T, proj_x_B_2.T, proj_x_B_3.T], 'G')
+                proj_x_B_mag = np.sqrt(proj_x_B_1**2 + proj_x_B_2**2 + proj_x_B_3**2)
+                proj_y_B = (projected_B - proj_x_B)
+                proj_y_B_mag = np.sqrt(proj_y_B[0]**2 + proj_y_B[1]**2 + proj_y_B[2]**2)
+                
+                if rank == proj_root_rank:
+                    image = proj_dict[proj_dict_keys[0]]
+                    velx_full = proj_x_vel_mag
+                    vely_full = proj_y_vel_mag
+                    magx = proj_x_B_mag.value
+                    magy = proj_y_B_mag.value
             
             if rank == proj_root_rank:
                 velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
@@ -581,7 +617,7 @@ if args.make_frames_only == 'False':
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, simfo), file)
                 file.close()
-                print("Created Pickle:", pickle_file, "for  file:", str(ds))
+                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
                 del image
                 del magx
                 del magy
