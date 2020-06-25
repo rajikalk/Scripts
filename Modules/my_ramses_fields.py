@@ -1290,4 +1290,68 @@ def _Projected_Magnetic_Field_z(field, data):
     
 yt.add_field("Projected_Magnetic_Field_z", function=_Projected_Magnetic_Field_z, units=r"gauss")
 
+def _Projected_Particle_Posx(field, data):
+    """
+    returns the projected x position of particles
+    """
+    global centred_sink_id
+    global normal
+    global center_pos
+    usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
+    try:
+        dd = data.ds.all_data()
+        pos = yt.YTArray([dd['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    except:
+        pos = yt.YTArray([data['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
+    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
+    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
+    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
+    projected_pos = (pos - proj_pos_onto_L)[0]
+    return projected_pos
+    
+yt.add_field("Projected_Particle_Posx", function=_Projected_Particle_Posx, units=r"cm")
 
+def _Projected_Particle_Posy(field, data):
+    """
+    returns the projected y position of particles
+    """
+    global centred_sink_id
+    global normal
+    global center_pos
+    usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
+    try:
+        dd = data.ds.all_data()
+        pos = yt.YTArray([dd['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    except:
+        pos = yt.YTArray([data['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
+    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
+    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
+    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
+    projected_pos = (pos - proj_pos_onto_L)[1]
+    return projected_pos
+    
+yt.add_field("Projected_Particle_Posy", function=_Projected_Particle_Posy, units=r"cm")
+
+def _Projected_Particle_Posz(field, data):
+    """
+    returns the projected z position of particles
+    """
+    global centred_sink_id
+    global normal
+    global center_pos
+    usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
+    try:
+        dd = data.ds.all_data()
+        pos = yt.YTArray([dd['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    except:
+        pos = yt.YTArray([data['sink_particle_posx'][np.array(usable_tags)].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][np.array(usable_tags)].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][np.array(usable_tags)].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
+    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
+    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
+    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
+    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
+    projected_pos = (pos - proj_pos_onto_L)[2]
+    return projected_pos
+    
+yt.add_field("Projected_Particle_Posz", function=_Projected_Particle_Posz, units=r"cm")
