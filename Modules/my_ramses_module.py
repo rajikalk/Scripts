@@ -4,7 +4,6 @@ from yt.utilities.exceptions import YTOutputNotIdentified
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
@@ -46,15 +45,18 @@ def rainbow_text(x,y,ls,lc,**kw):
     figlocal = plt.gcf()
 
     #horizontal version
-    for s,c in zip(ls,lc):
-        text = plt.text(x,y,""+s+"",color=c, transform=t, **kw)
+    for string,c in zip(ls,lc):
+        string_raw = r'{}'.format(string)
+        #string = str_text[1:-1]
+        #string = string.encode('unicode_escape')
+        text = plt.text(x,y,string_raw,color=c, transform=t, **kw)
         text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         text.draw(figlocal.canvas.get_renderer())
         ex = text.get_window_extent()
-        if "odot" in s:
-            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+        if "odot" in string:
+            t = transforms.offset_copy(text._transform, x=1*ex.width, units='dots')
         else:
-            t = transforms.offset_copy(text._transform, x=0.85*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=1*ex.width, units='dots')
         
 def set_global_font_size(x):
     global fontsize_global
@@ -118,8 +120,6 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
 def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
     global time_unit
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-    if m_times[0] > 10e5:
-        m_times[0] = m_times[0]/yt.units.yr.in_units('s').value
     usable_files = []
     mit = 0
     min = 0
@@ -173,7 +173,7 @@ def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
             pit = it
     return usable_files
 
-def get_particle_data(ds, axis='xy', sink_id=None):
+def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     """
     Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
     """
@@ -184,26 +184,31 @@ def get_particle_data(ds, axis='xy', sink_id=None):
         sink_id = np.argmin(dd['sink_particle_speed'])
     myf.set_centred_sink_id(sink_id)
     
-    part_mass = dd['sink_particle_mass'][sink_id:].in_units('msun').value
+    if region != None:
+        usable_sinks = np.argwhere((dd['sink_particle_posx'].in_units('au')>region.left_edge[0])&(dd['sink_particle_posx'].in_units('au')<region.right_edge[0])&(dd['sink_particle_posy'].in_units('au')>region.left_edge[1])&(dd['sink_particle_posy'].in_units('au')<region.right_edge[1])&(dd['sink_particle_posz'].in_units('au')>region.left_edge[2])&(dd['sink_particle_posz'].in_units('au')<region.right_edge[2])).T[0]
+    else:
+        usable_sinks = np.arange(sink_id, len(dd['sink_particle_tag']))
+    
+    part_tags = dd['sink_particle_tag'][usable_sinks]
+    part_mass = dd['sink_particle_mass'][usable_sinks].in_units('msun').value
+    #Check if older sinks are in the box
+    
     accretion_rad = 4.*np.min(dd['dx']).in_units('au').value
     #center_pos = myf.get_center_pos()
     if axis == 'xy':
-        part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
-        part_pos_y = dd['sink_particle_posy'][sink_id:].in_units('au').value
-        depth_pos = np.argsort(dd['sink_particle_posz'][sink_id:])
+        part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
+        part_pos_y = dd['sink_particle_posy'][usable_sinks].in_units('au').value
     elif axis == 'xz':
-        part_pos_x = dd['sink_particle_posx'][sink_id:].in_units('au').value
-        part_pos_y = dd['sink_particle_posz'][sink_id:].in_units('au').value
-        depth_pos = np.argsort(dd['sink_particle_posy'][sink_id:])
+        part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
+        part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
     elif axis == 'yz':
-        part_pos_x = dd['sink_particle_posy'][sink_id:].in_units('au').value
-        part_pos_y = dd['sink_particle_posz'][sink_id:].in_units('au').value
-        depth_pos = np.argsort(dd['sink_particle_posx'][sink_id:])
+        part_pos_x = dd['sink_particle_posy'][usable_sinks].in_units('au').value
+        part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
     positions = np.array([part_pos_x,part_pos_y])
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
-                 'depth_position':depth_pos}
+                 'particle_tag':part_tags}
     return part_info
 
 def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
@@ -346,15 +351,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol='M', units=None,depth_array=None):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None):
     global fontsize_global
-    if depth_array is None:
-        depth_array = np.arange(len(particle_position[0]))
-    if np.max(depth_array) > len(depth_array):
-        depth_array = np.argsort(depth_array)
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    part_color = ['cyan','magenta','r','c','y','w','k']
+    part_color = ['cyan','magenta','r','b','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
     ymin = limits[1][0]
@@ -367,7 +368,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     try:
         units = str(annotate_field.unit_quantity).split(' ')[-1]
         s1 = units.split('**')
-        unit_string = ''
+        unit_string = ""
         for s in s1:
             if s == s1[0]:
                 unit_string = unit_string + s
@@ -375,43 +376,49 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 unit_string = unit_string + "$^" + s[0] + "$" + s[1:]
 
     except:
-        unit_string = 'M$_\odot$'
-    field_symbol = '$' + field_symbol + '_'
-    p_t = ''
+        unit_string = "M$_\odot$"
+    field_symbol = "$" + field_symbol + "_"
+    p_t = ""
     rainbow_text_colors = []
-    for pos_it in depth_array:
+    string_pos = []
+    if particle_tags == None:
+        particle_tags = np.arange(len(annotate_field))
+    for pos_it in np.argsort(particle_tags):
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=2., c='k')
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=1., c=part_color[pos_it])
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=1., c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=1, edgecolor='k')
         axis.add_patch(circle)
-    for pos_it in range(len(depth_array)):
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
-            if unit_string == 'M$_\odot$':
+            if unit_string == "M$_\odot$":
                 P_msun = str(np.round(annotate_field[pos_it], 2))
+                if len(P_msun.split('.')[-1]) == 1:
+                    P_msun = P_msun +"0"
             else:
                 if annotate_field[pos_it] == 0.0:
-                    P_msun = '0.0'
+                    P_msun = "0.0"
                 else:
-                    P_msun = '{:0.1e}'.format(annotate_field[pos_it])
-            if p_t == '':
-                p_t = field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
+                    P_msun = "{:0.1f}".format(annotate_field[pos_it])
+            if p_t == "":
+                p_t = field_symbol+str(pos_it+1)+"$ = "+P_msun+unit_string
             else:
-                p_t = p_t+' , ' +field_symbol+str(pos_it+1)+'$ = '+P_msun+unit_string
-            #print("plotted particle at position =", particle_position[0][pos_it], particle_position[1][pos_it])
+                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ = "+P_msun+unit_string
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
             rainbow_text_colors.append('white')
-    #print('annotation_string =', p_t)
     if annotate_field is not None:
-        rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
-        #part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
-        #part_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        #axis.annotate(p_t, xy=(xmin + 0.01*(box_size), ymin + 0.03*(ymax-ymin)), va="center", ha="left", color='w', fontsize=fontgize_global)
-        #print("Annotated particle field")
+        if len(particle_tags) > 3:
+            string_l = p_t[:68]
+            string_2 = p_t[69:]
+            colors_1 = rainbow_text_colors[:9]
+            colors_2 = rainbow_text_colors[9:]
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3),string_l.split(' '), colors_1, size=fontsize_global)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),string_2.split(' '), colors_2, size=fontsize_global)
+        else:
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
     return axis
 
 def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False, cumulative=False):
