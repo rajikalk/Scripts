@@ -390,19 +390,23 @@ if args.force_comp  == 'True':
 
 if args.separation == 'True':
     #image_name = save_dir + "separation"
-    image_name = save_dir + "binary_system_evolution"
-    #line_style = [':', '-.', '--', '-']
-    line_style = ['-', '-']
-    labels=["Primary", "Secondary"]
-    #labels=["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13", "$L_\mathrm{ref}$ = 14"]
+    #image_name = save_dir + "binary_system_evolution"
+    image_name = save_dir + "separation_resolution_study"
+    line_style = [':', '-.', '--', '-']
+    line_colour = ['b', 'orange', 'g', 'm']
+    #line_style = ['-', '-']
+    #labels=["Primary", "Secondary"]
+    labels=["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13", "$L_\mathrm{ref}$ = 14"]
     lit = 0
     plt.clf()
     fig = plt.figure()
     fig.set_size_inches(6, 8.)
     
     if args.plot_eccentricity == 'True':
+        print('plotting binary separation with eccentricity')
         #files = ["Mach_0.1/Lref_10/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl"]
-        files = ["particle_data.pkl"]
+        files = ["Mach_0.2/Lref_09/particle_data.pkl", "Mach_0.2/Lref_10/particle_data.pkl", "Mach_0.2/Lref_11/particle_data.pkl", "Mach_0.2/Lref_12/particle_data.pkl"]
+        #files = ["particle_data.pkl"]
         gs = gridspec.GridSpec(3, 1)
         #gs = gridspec.GridSpec(4, 1)
         gs.update(hspace=0.0)
@@ -414,7 +418,7 @@ if args.separation == 'True':
             file_open = open(file, 'rb')
             particle_data, sink_form_time, init_line_counter = pickle.load(file_open)
             file_open.close()
-            ax1.semilogy(particle_data['time'][1:], particle_data['separation'][1:], line_style[lit], label=labels[lit])
+            ax1.semilogy(particle_data['time'][1:], particle_data['separation'][1:], line_style[lit], color=line_colour[lit], label=labels[lit])
             total_mass = np.array(particle_data['mass']).T[0] + np.array(particle_data['mass']).T[1]
             dt = 10
             prev_time = particle_data['time'][1]
@@ -430,8 +434,8 @@ if args.separation == 'True':
             m_dot = (total_mass_short[1:] - total_mass_short[:-1])/(time_short[1:]-time_short[:-1])
             time_m_dot = (time_short[:-1] + time_short[1:])/2.
             
-            ax2.semilogy(time_m_dot, m_dot, line_style[lit], label=labels[lit])
-            ax3.semilogy(particle_data['time'][1:], particle_data['eccentricity'][1:], line_style[lit], label=labels[lit])
+            ax2.semilogy(time_m_dot, m_dot, line_style[lit], color=line_colour[lit], label=labels[lit])
+            ax3.semilogy(particle_data['time'][1:], particle_data['eccentricity'][1:], line_style[lit], color=line_colour[lit], label=labels[lit])
             #ax4.plot(particle_data['time'][1:], np.array(particle_data['mass']).T[1][1:]/np.array(particle_data['mass']).T[0][1:], line_style[lit], label=labels[lit])
             lit = lit + 1
         ax3.yaxis.set_ticks_position('both')
@@ -452,6 +456,7 @@ if args.separation == 'True':
         plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
         #plt.setp([ax3.get_yticklabels()[-1]], visible=False)
         #plt.setp([ax3.get_yticklabels()[-1]], visible=False)
+        ax1.legend(loc='best', fontsize=args.text_font)
     else:
         gs = gridspec.GridSpec(2, 1)
         gs.update(hspace=0.0)
@@ -780,7 +785,7 @@ if args.calculate_eccentricity == 'True':
         V_CoM_z = np.sum(Mass.in_units('g')*velz.in_units('cm/s'), axis=0)/np.sum(Mass.in_units('g'), axis=0)
         V_CoM = np.array([V_CoM_x, V_CoM_y, V_CoM_z]).T
         dist_from_com = np.sqrt((posx - comx)**2. + (posy - comy)**2. + (posz - comz)**2.)
-        period = np.sqrt((4*np.pi*(dist_from_com[0]**3.)*((Mass[0]+Mass[1])**2.))/(yt.units.G.in_units('au**3/(msun*yr**2)')*(Mass[1]**3)))
+        period = np.sqrt((4*np.pi**2*(dist_from_com[0]**3.)*((Mass[0]+Mass[1])**2.))/(yt.units.G.in_units('au**3/(msun*yr**2)')*(Mass[1]**3)))
         mu = yt.units.G*(Mass[0].in_units('g') + Mass[1].in_units('g'))
         
         #save relative positions and velocitys to each other
@@ -791,7 +796,7 @@ if args.calculate_eccentricity == 'True':
         drx = (posx[0] - posx[1]).in_units('cm')
         dry = (posy[0] - posy[1]).in_units('cm')
         drz = (posz[0] - posz[1]).in_units('cm')
-        dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm/s')
+        dr = yt.YTArray(np.array([drx, dry, drz]).T, 'cm')
         v = np.sqrt(dvx**2. + dvy**2. + dvz**2.)
         r_tot = np.sqrt(drx**2. + dry**2. + drz**2.)
         
@@ -1525,8 +1530,8 @@ if args.phasefolded_multi == 'True':
     #files = ["Mach_0.1/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl", "Mach_0.2/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl"]
     #files = ["Mach_0.1/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl"]
     #files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl"]
-    files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl"]
-    #files = ["Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
+    #files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl"]
+    files = ["Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
     #plot_eccentricities = [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     gs = gridspec.GridSpec(2, 1)
     gs.update(hspace=0.0)
@@ -1546,8 +1551,8 @@ if args.phasefolded_multi == 'True':
     #if len(stuff) > 6:
     #    multiple_folds_normalised = stuff[6]
     file_open.close()
-    #e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
-    e_bins = [1.1, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
+    #e_bins = [1.1, 0.7, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
 
     x_data = phase_centers[23:-15]
     x = np.linspace(np.min(x_data),np.max(x_data),100)
@@ -1644,6 +1649,7 @@ if args.phasefolded_multi == 'True':
     pickle.dump((phase_centers, long_median_accretion, yerr),file)
     file.close()
     '''
+    print('writing file', files[0])
     file_open = open(files[0], 'wb')
     pickle.dump((multiple_folds, phase_centers, median_eccentricity, std_eccentricity, accretion_err, n_lines, y_fits, multiple_folds_normalised),file_open)
     file_open.close()
@@ -1679,8 +1685,8 @@ if args.phasefolded_multi == 'True':
             n_lines = n_lines + 1
             plotted_int = str(e)[2]
     '''
-    e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
-    #e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
+    #e_bins = [1.1, 0.7, 0.5, 0.3, 0.1, 0.0]
+    e_bins = [1.1, 0.6, 0.4, 0.2, 0.0]
     c_index = np.linspace(0.0, 0.95, n_lines)
 
     multiple_folds_normalised = []
@@ -1742,6 +1748,7 @@ if args.phasefolded_multi == 'True':
     print("TWA 3A e=" + str(median_eccentricity[np.argsort(TWA_3A_chi_T2)]))
     print("DQ Tau e=" + str(median_eccentricity[np.argsort(DQ_TAU_chi_T2)]))
     
+    print('writing file', files[1])
     file_open = open(files[1], 'wb')
     pickle.dump((multiple_folds, phase_centers, median_eccentricity, std_eccentricity, accretion_err, n_lines, y_fits, multiple_folds_normalised),file_open)
     file_open.close()
@@ -1817,8 +1824,8 @@ if args.phasefolded_multi == 'True':
 
 if args.plot_beta == "True":
     #files = ["Mach_0.1/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl", "Mach_0.2/multiple_folds_over_"+str(args.n_orbits)+"_orbits.pkl"]
-    files = ["Mach_0.1/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_10/using_5_e_bins.pkl"]
-    #files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
+    #files = ["Mach_0.1/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_10/using_5_e_bins.pkl"]
+    files = ["Mach_0.2/Lref_09/using_e_bins.pkl", "Mach_0.2/Lref_10/using_e_bins.pkl", "Mach_0.2/Lref_11/using_e_bins.pkl", "Mach_0.2/Lref_12/using_e_bins.pkl"]
     file_name = save_dir + 'paper_beta_vs_e_'+str(args.n_orbits)
     top_bins = 3
     if args.beta_method == 1:
@@ -1840,9 +1847,10 @@ if args.plot_beta == "True":
     periastron_inds = [0.8, 1.1]
     quiescent_ind = [0.2, 0.75]
     #markers = ['o', '^']
-    labels = ['T1', 'T2']
+    #labels = ['T1', 'T2']
     markers = ['o', '^', 's', '+']
-    #labels = ['$L_\mathrm{ref}=11$', '$L_\mathrm{ref}=12$', '$L_\mathrm{ref}=13$', '$L_\mathrm{ref}=14$']
+    line_colour = ['b', 'orange', 'g', 'm']
+    labels = ['$L_\mathrm{ref}=11$', '$L_\mathrm{ref}=12$', '$L_\mathrm{ref}=13$', '$L_\mathrm{ref}=14$']
     for file in files:
         file_open = open(file, 'rb')
         multiple_folds, phase_centers, median_eccentricity, std_eccentricity, accretion_err, n_lines, y_fits, multiple_folds_normalised = pickle.load(file_open)
@@ -1925,7 +1933,7 @@ if args.plot_beta == "True":
                 print("For e =", median_eccentricity[orbit], ", beta =", beta, "+/-", beta_err)
             
         
-        plt.errorbar(median_eccentricity, beta_total, xerr=np.array(std_eccentricity).T, label=labels[label_it], fmt=markers[label_it], yerr=np.array(beta_total_err).T)
+        plt.errorbar(median_eccentricity, beta_total, xerr=np.array(std_eccentricity).T, label=labels[label_it], fmt=markers[label_it], yerr=np.array(beta_total_err).T, color=line_colour[label_it])
         label_it = label_it + 1
         print("beta="+str(beta_total))
 
@@ -1935,7 +1943,7 @@ if args.plot_beta == "True":
     plt.axhline(y=1.0, ls='--', color='k')
     #plt.axvline(x=3.5, ls='--')
     plt.xlim(left=0)
-    plt.ylim([0.0,11.0])
+    plt.ylim([0.0,30.0])
     plt.ylabel('$\\beta = \dot{M}_{burst} / \dot{M}_{quiet}$')
     ymax = np.max(beta_total) + 1
     plt.savefig(file_name +'.eps', bbox_inches='tight', pad_inches = 0.02)
@@ -2141,7 +2149,7 @@ if args.resolution_study == 'True':
             
         refinement_label = ["$L_\mathrm{ref}$ = 11", "$L_\mathrm{ref}$ = 12", "$L_\mathrm{ref}$ = 13", "$L_\mathrm{ref}$ = 14"]
         linestyles = ['steps-mid:', 'steps-mid-.', 'steps-mid--', 'steps-mid']
-        #color = ['b', 'r', 'g', 'c']
+        line_colour = ['b', 'orange', 'g', 'm']
         for dir_it in range(len(dirs)):
             pickle_file = dirs[dir_it] + "accretion_median_start_orbit_from_" + str(e_bins[e_bin_it-1]) + "_" + str(e_bins[e_bin_it]) + ".pkl"
             
@@ -2149,9 +2157,9 @@ if args.resolution_study == 'True':
                 file = open(pickle_file, 'rb')
                 phase_centers, long_median_accretion, yerr_tot, popt = pickle.load(file)
                 file.close()
-                axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[2], yerr=yerr_tot[2], ls=linestyles[dir_it], label=refinement_label[dir_it])
+                axes_dict[ax_label].errorbar(phase_centers, long_median_accretion[2], yerr=yerr_tot[2], ls=linestyles[dir_it], label=refinement_label[dir_it], color=line_colour[dir_it])
             else:
-                axes_dict[ax_label].errorbar(np.ones(np.shape(phase_centers))*np.nan, np.ones(np.shape(phase_centers))*np.nan, yerr=np.ones(np.shape(phase_centers))*np.nan, ls=linestyles[dir_it], label=refinement_label[dir_it])
+                axes_dict[ax_label].errorbar(np.ones(np.shape(phase_centers))*np.nan, np.ones(np.shape(phase_centers))*np.nan, yerr=np.ones(np.shape(phase_centers))*np.nan, ls=linestyles[dir_it], label=refinement_label[dir_it], color=line_colour[dir_it])
             
         time_text = plt.text(0.1, axes_dict[ax_label].get_ylim()[1]-0.3, '$e$=['+str(e_bins[e_bin_it-1])+','+str(e_bins[e_bin_it])+']', va="center", ha="left", color='k', fontsize=args.text_font)
         if e_bin_it == 4:
