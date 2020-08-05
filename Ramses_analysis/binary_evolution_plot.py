@@ -29,6 +29,9 @@ def boolean_indexing(v, fillval=np.nan):
     """
     function for squaring off array, so that they are retangular arrays. It filled empty indexes with NaNs by default.
     """
+    import pdb
+    pdb.set_trace()
+    
     lens = np.array([len(item) for item in v])
     mask = lens[:,None] > np.arange(lens.max())
     out = np.full(mask.shape,fillval)
@@ -303,12 +306,6 @@ print("making arrays neat")
 import pdb
 pdb.set_trace()
 
-for key in list(particle_data.keys()):
-    try:
-        particle_data[key] = boolean_indexing(particle_data[key])
-    except:
-        print("1D array can't be squared off")
-
 try:
     for key in list(particle_data.keys()):
         print("key =", key)
@@ -323,6 +320,12 @@ try:
 except:
     print('arrays have already been converted to the YT Array')
 
+
+for key in list(particle_data.keys()):
+    try:
+        particle_data[key] = boolean_indexing(particle_data[key])
+    except:
+        print("1D array can't be squared off")
 
 '''
 image_name = save_dir + "separation_resolution_study"
