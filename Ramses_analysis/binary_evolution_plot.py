@@ -8,7 +8,6 @@ from pyramses import rsink
 import sys
 import os
 import yt
-from scipy.stats import mode
 import numpy.ma as ma
 
 matplotlib.rcParams['pdf.fonttype'] = 42
@@ -29,13 +28,12 @@ def boolean_indexing(v, fillval=np.nan):
     """
     function for squaring off array, so that they are retangular arrays. It filled empty indexes with NaNs by default.
     """
-    import pdb
-    pdb.set_trace()
-    
+    unit_string = v[0].units
     lens = np.array([len(item) for item in v])
     mask = lens[:,None] > np.arange(lens.max())
     out = np.full(mask.shape,fillval)
     out[mask] = np.concatenate(v)
+    out = yt.YTArray(out.T, unit_string)
     return out
     
 def find(s, ch):
@@ -105,6 +103,8 @@ if args.update_pickle == 'True':
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
         particle_data.update({'eccentricity':[]})
+        particle_data.update({'E_potential':[]})
+        particle_data.update({'E_kinetic':[]})
         particle_data.update({'L_orb':[]})
         particle_data.update({'L_orb_tot':[]})
         particle_data.update({'dist_from_CoM':[]})
@@ -204,131 +204,52 @@ if args.update_pickle == 'True':
                     particle_data['separation'].append(separation.in_units('au'))
                     particle_data['L_orb'].append(L)
                     particle_data['L_orb_tot'].append(L_tot)
+                    particle_data['E_potential'].append(E_pot)
+                    particle_data['E_kinetic'].append(E_kin)
                 except:
                     particle_data['eccentricity'].append(yt.YTArray(np.nan, ''))
                     particle_data['separation'].append(yt.YTArray(np.nan, 'au'))
                     particle_data['L_orb'].append(yt.YTArray([[np.nan, np.nan, np.nan], [np.nan, np.nan, np.nan]], 'cm**2*g/s'))
                     particle_data['L_orb_tot'].append(yt.YTArray([np.nan, np.nan, np.nan], 'cm**2*g/s'))
-                """
-                if len(non_nan_inds) == 3:
-                    #Calculate how strongly bound the other particles are to the primary
-                    #get positions
-                    position = yt.YTArray([particle_data['posx'][-1][non_nan_inds],particle_data['posy'][-1][non_nan_inds], particle_data['posz'][-1][non_nan_inds]], 'au')
-                    velocity = yt.YTArray([particle_data['velx'][-1][non_nan_inds],particle_data['vely'][-1][non_nan_inds], particle_data['velz'][-1][non_nan_inds]], 'au')
-                    
-                    temporary_potentials = []
-                    most_bound_partical_ind = []
-                    for particle_it in range(len(non_nan_inds)):
-                        current_pos = position[particle_it]
-                        current_vel = velocity[particle_it]
-                        current_mass = particle_data['mass'][-1][particle_it]
-                        separations = np.sqrt(np.sum((current_pos.T - position)**2, axis=1))
-                        relative_speed = np.sqrt(np.sum((current_vel.T - velocity)**2, axis=1))
-                        
-                        E_pot = (-1*(yt.units.G*current_mass.in_units('g')*particle_data['mass'][-1][non_nan_inds].in_units('g'))/separations.in_units('cm')).in_units('erg')
-                        #E_kin = (0.5*particle_data['mass'][-1][non_nan_inds].in_units('g')*relative_speed.in_units('cm/s')**2).in_units('erg')
-                        #boundness = E_pot + E_kin
-                        most_bound_part_ind = np.argsort(E_pot)[1]
-                        most_bound_partical_ind.append(particle_data['particle_tag'][most_bound_part_ind])
-                        temporary_potentials.append(E_pot[most_bound_part_ind])
-                        
-                    binary_potential = mode(temporary_potentials)[0][0]
-                    hierarchical_inds = np.argwhere(temporary_potentials == binary_potential).T[0].tolist()
-                    for ind in range(len(non_nan_inds)):
-                        if ind not in hierarchical_inds:
-                            hierarchical_inds.append(ind)
-                    
-                    #now iterate to calculate central binary properties, and then update to calculate trinary properties
-                    position = [[particle_data['posx'][-1][hierarchical_inds[0]]],[particle_data['posy'][-1][hierarchical_inds[0]]], [particle_data['posz'][-1][hierarchical_inds[0]]]]
-                    velocity = [[particle_data['velx'][-1][hierarchical_inds[0]]],[particle_data['vely'][-1][hierarchical_inds[0]]], [particle_data['velz'][-1][hierarchical_inds[0]]]]
-                    mass = [particle_data['mass'][-1][hierarchical_inds[0]]]
-                    for hit in range(1,2):
-                        position[0].append(particle_data['posx'][-1][hierarchical_inds[hit]])
-                        position[1].append(particle_data['posy'][-1][hierarchical_inds[hit]])
-                        position[2].append(particle_data['posz'][-1][hierarchical_inds[hit]])
-                        
-                        velocity[0].append(particle_data['velx'][-1][hierarchical_inds[hit]])
-                        velocity[1].append(particle_data['vely'][-1][hierarchical_inds[hit]])
-                        velocity[2].append(particle_data['velz'][-1][hierarchical_inds[hit]])
-                        
-                        mass.append(particle_data['mass'][-1][hierarchical_inds[hit]])
-                        import pdb
-                        pdb.set_trace()
-                        
-                        CoM_pos
-                    
-                    if len(non_nan_inds) > 2:
-                        import pdb
-                        pdb.set_trace()
-                    '''
-                    position = yt.YTArray([particle_data['posx'][-1],particle_data['posy'][-1], particle_data['posz'][-1]], 'au')
-                    velocity = yt.YTArray([particle_data['velx'][-1],particle_data['vely'][-1], particle_data['velz'][-1]], 'au')
-                   
-                    CoM_pos = np.sum((position.T[non_nan_inds].T*particle_data['mass'][-1][non_nan_inds]).T, axis=0)/np.sum(particle_data['mass'][-1][non_nan_inds])
-                    CoM_vel = np.sum((velocity.T[non_nan_inds].T*particle_data['mass'][-1][non_nan_inds]).T, axis=0)/np.sum(particle_data['mass'][-1][non_nan_inds])
-                   
-                    pos_rel_to_com = (position.T - CoM_pos).T
-                    vel_rel_to_com = (velocity.T - CoM_vel).T
-                    distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
-                    relative_speed = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
-                    particle_data['separation'].append([distance_from_com.in_units('au')])
-                   
-                    #Calculmate mu
-                    mass_total = np.sum(particle_data['mass'][-1][non_nan_inds])
-                    #mu = yt.units.G*mass_total.in_units('g')*particle_data['mass'][-1].in_units('g')
-                    mu = yt.units.G*mass_total.in_units('g')
-                    epsilon = (relative_speed.in_units('cm/s')**2)/2 - mu/distance_from_com.in_units('cm')
-                    
-                    reduced_mass = yt.YTArray(np.product(particle_data['mass'][-1][non_nan_inds])/np.sum(particle_data['mass'][-1][non_nan_inds]), 'msun')
-                    m_x_r = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                    L = particle_data['mass'][-1].in_units('g').T*m_x_r
-                    particle_data['L_orb'].append([L])
-                    L_tot = np.sum(L**2, axis=0)
-                    particle_data['L_orb_tot'].append([L_tot])
-                    h_val = np.sqrt(np.sum(L_tot[non_nan_inds]))/reduced_mass.in_units('g')
-                    
-                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/(mu**2.))
-                    particle_data['eccentricity'].append([e])
-                    '''
-                else:
-                    print("Not a binary!")
-                """
+                    particle_data['E_potential'].append(yt.YTArray(np.nan, 'erg'))
+                    particle_data['E_kinetic'].append(yt.YTArray(np.nan, 'erg'))
 
     print("Finished reading particle data")
 
-print('Reading pickle file')
-file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
-particle_data, counter, sink_ind = pickle.load(file_open)
-file_open.close()
-
-print("making arrays neat")
-
-import pdb
-pdb.set_trace()
 
 try:
-    for key in list(particle_data.keys()):
-        print("key =", key)
-        try:
-            unit_string = particle_data[key][0].units
-            print('unit_string =', unit_string)
-        except:
-            unit_string = ""
-            print('unit_string =', unit_string)
-            
-        particle_data[key] = yt.YTArray(np.array(particle_data[key]), unit_string)
+    print('Reading pickle file')
+    file_open = open(save_dir+'particle_data_neat.pkl', 'rb')
+    particle_data, counter, sink_ind = pickle.load(file_open)
+    file_open.close()
 except:
-    print('arrays have already been converted to the YT Array')
+    print('Reading pickle file')
+    file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
+    particle_data, counter, sink_ind = pickle.load(file_open)
+    file_open.close()
 
+    print("making arrays neat")
 
-for key in list(particle_data.keys()):
-    try:
-        particle_data[key] = boolean_indexing(particle_data[key])
-    except:
-        print("1D array can't be squared off")
+    for key in list(particle_data.keys()):
+        try:
+            particle_data[key] = boolean_indexing(particle_data[key])
+        except:
+            try:
+                unit_string = particle_data[key][0].units
+                print('unit_string =', unit_string)
+            except:
+                unit_string = ""
+                print('unit_string =', unit_string)
+                
+            particle_data[key] = yt.YTArray(np.array(particle_data[key]), unit_string)
+            print("1D array can't be squared off")
+        
+    file = open(save_dir+'particle_data_neat.pkl', 'wb')
+    pickle.dump((particle_data, counter, sink_ind), file)
+    file.close()
+#Save neat and particle_data_neat
 
-'''
-image_name = save_dir + "separation_resolution_study"
+image_name = save_dir + "total_system_evolution"
 #line_style = [':', '-.', '--', '-']
 #line_colour = ['b', 'orange', 'g', 'm']
 labels = []
@@ -347,7 +268,10 @@ ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
 #ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
 
 for nit in range(len(labels)):
-    ax1.semilogy(particle_data['time'].value, particle_data['dist_from_CoM'].T[nit].value, label=labels[nit], lw=0.5)#, color=line_colour[nit])
+    try:
+        ax1.semilogy(particle_data['time'].value, particle_data['dist_from_CoM'].T[nit].value, label=labels[nit], lw=0.5)#, color=line_colour[nit])
+    except:
+        ax1.semilogy(particle_data['time'].value, particle_data['dist_from_CoM'][nit].value, label=labels[nit], lw=0.5)#, color=line_colour[nit]
 ax1.set_ylabel('Distance from CoM (AU)')
 ax1.legend(loc='upper left')
 ax1.set_ylim(bottom=1.e0)
@@ -356,17 +280,31 @@ ax1.set_xlim([particle_data['time'][0].value, particle_data['time'][-1].value])
 
 #Plot accretion
 for pit in range(len(labels)):
-    ax2.semilogy(particle_data['time'].value, particle_data['mdot'].value.T[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
-total_accretion = np.sum(np.nan_to_num(particle_data['mdot'].value.T), axis=0)
-ax2.semilogy(particle_data['time'].value, total_accretion, color='k', label="Total", lw=0.5)
+    try:
+        ax2.semilogy(particle_data['time'].value, particle_data['mdot'].value.T[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+    except:
+        ax2.semilogy(particle_data['time'].value, particle_data['mdot'].value[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+try:
+    total_accretion = np.sum(np.nan_to_num(particle_data['mdot'].value.T), axis=0)
+    ax2.semilogy(particle_data['time'].value, total_accretion, color='k', label="Total", lw=0.5)
+except:
+    total_accretion = np.sum(np.nan_to_num(particle_data['mdot'].value), axis=0)
+    ax2.semilogy(particle_data['time'].value, total_accretion, color='k', label="Total", lw=0.5)
 ax2.set_ylabel(r'Accretion Rate (M$_\odot$/yr)')
 #ax2.legend(loc='best')
 plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
 
 for pit in range(len(labels)):
-    ax3.semilogy(particle_data['time'].value, particle_data['mass'].value.T[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
-total_accretion = np.sum(np.nan_to_num(particle_data['mass'].value.T), axis=0)
-ax3.semilogy(particle_data['time'].value, total_accretion, color='k', label="Total", lw=0.5)
+    try:
+        ax3.semilogy(particle_data['time'].value, particle_data['mass'].value.T[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+    except:
+        ax3.semilogy(particle_data['time'].value, particle_data['mass'].value[pit], label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+try:
+    total_mass = np.sum(np.nan_to_num(particle_data['mass'].value.T), axis=0)
+    ax3.semilogy(particle_data['time'].value, total_mass, color='k', label="Total", lw=0.5)
+except:
+    total_mass = np.sum(np.nan_to_num(particle_data['mass'].value), axis=0)
+    ax3.semilogy(particle_data['time'].value, total_mass, color='k', label="Total", lw=0.5)
 ax3.set_ylabel(r'Mass (M$_\odot$)')
 ax3.set_ylim(bottom=1.e-2)
 #ax2.legend(loc='best')
@@ -374,7 +312,7 @@ ax3.set_ylim(bottom=1.e-2)
 #Save image
 plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
 print("Created image", image_name)
-'''
+
 
 #Anaylsys particular systems
 if args.define_system != None:
@@ -382,8 +320,28 @@ if args.define_system != None:
 else:
     print("Not making plots for the multiple star system")
 
+reduced_systems_data = {}
+reduced_systems_data.update({'tag':[]})
+reduced_systems_data.update({'base_tags':[]})
+reduced_systems_data.update({'posx':[]})
+reduced_systems_data.update({'posy':[]})
+reduced_systems_data.update({'posz':[]})
+reduced_systems_data.update({'velx':[]})
+reduced_systems_data.update({'vely':[]})
+reduced_systems_data.update({'velz':[]})
+reduced_systems_data.update({'mass':[]})
+reduced_systems_data.update({'mdot':[]})
+reduced_systems_data.update({'mdot_individual':[]})
+reduced_systems_data.update({'separation':[]})
+reduced_systems_data.update({'eccentricity':[]})
+reduced_systems_data.update({'E_potential':[]})
+reduced_systems_data.update({'E_kinetic':[]})
+reduced_systems_data.update({'L_orb_tot':[]})
+reduced_systems_data.update({'time':particle_data['time']})
+
+system_tag_int = 65
 if systems_hierarchy != None:
-    while len(find(systems_hierarchy, '[')) > 1:
+    while len(find(systems_hierarchy, '[')) > 0:
         indexes = []
         for ind, char in enumerate(systems_hierarchy):
             if char == '[':
@@ -393,57 +351,279 @@ if systems_hierarchy != None:
                 end_ind = ind
                 
                 binary_tags = eval('['+systems_hierarchy[start_ind+1:end_ind]+']')
-                system_tag = int(np.mean(binary_tags))
-                
-                #Found binary, now to create  necessary plots
-                particle_inds = []
-                for tag in binary_tags:
-                    try:
-                        ind = np.argwhere(particle_data['particle_tag'] == tag)[0][0]
-                    except:
-                        ind = particle_data['particle_tag'].index(tag)
-                    particle_inds.append(ind)
-                    
-                import pdb
-                pdb.set_trace()
+                system_tag = chr(system_tag_int)
+                system_tag_int = system_tag_int + 1
                     
                 #define array like position, velocity, mass
-                binary_masses = particle_data['mass'].T[particle_inds]
-                binary_positions = np.array([particle_data['posx'].T[particle_inds],particle_data['posy'].T[particle_inds], particle_data['posz'].T[particle_inds]])
-                binary_velocities = np.array([particle_data['velx'].T[particle_inds],particle_data['vely'].T[particle_inds], particle_data['velz'].T[particle_inds]])
                 
-                CoM_pos = np.sum((binary_positions*binary_masses).T, axis=0)/np.sum(binary_masses)
-                CoM_vel = np.sum((binary_velocities*binary_masses).T, axis=0)/np.sum(binary_masses)
+                binary_data = {}
+                binary_data.update({'posx':[]})
+                binary_data.update({'posy':[]})
+                binary_data.update({'posz':[]})
+                binary_data.update({'velx':[]})
+                binary_data.update({'vely':[]})
+                binary_data.update({'velz':[]})
+                binary_data.update({'mass':[]})
+                binary_data.update({'mdot':[]})
                 
-                pos_rel_to_com = (position.T - CoM_pos).T
-                distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
+                for tag in binary_tags:
+                    if tag in reduced_systems_data['tag']:
+                        system_ind = reduced_systems_data['tag'].index(tag)
+                        binary_data['mass'].append(reduced_systems_data['mass'][system_ind])
+                        binary_data['mdot'].append(reduced_systems_data['mdot'][system_ind])
+                        binary_data['posx'].append(reduced_systems_data['posx'][system_ind])
+                        binary_data['posy'].append(reduced_systems_data['posy'][system_ind])
+                        binary_data['posz'].append(reduced_systems_data['posz'][system_ind])
+                        binary_data['velx'].append(reduced_systems_data['velx'][system_ind])
+                        binary_data['vely'].append(reduced_systems_data['vely'][system_ind])
+                        binary_data['velz'].append(reduced_systems_data['velz'][system_ind])
+                    else:
+                        system_ind = np.argwhere(particle_data['particle_tag'] == tag)[0][0]
+                        binary_data['mass'].append(particle_data['mass'][system_ind])
+                        binary_data['mdot'].append(particle_data['mdot'][system_ind])
+                        binary_data['posx'].append(particle_data['posx'][system_ind])
+                        binary_data['posy'].append(particle_data['posy'][system_ind])
+                        binary_data['posz'].append(particle_data['posz'][system_ind])
+                        binary_data['velx'].append(particle_data['velx'][system_ind])
+                        binary_data['vely'].append(particle_data['vely'][system_ind])
+                        binary_data['velz'].append(particle_data['velz'][system_ind])
+                        
+                for key in list(binary_data.keys()):
+                    try:
+                        unit_string = binary_data[key][0].units
+                        print('unit_string =', unit_string)
+                    except:
+                        unit_string = ""
+                        print('unit_string =', unit_string)
+                        
+                    binary_data[key] = yt.YTArray(np.array(binary_data[key]), unit_string)
+                    
                 
-                vel_rel_to_com = (velocity.T - CoM_vel).T
+                binary_masses = binary_data['mass']
+                binary_accretion = binary_data['mdot']
+                binary_positions = yt.YTArray([binary_data['posx'].in_units('au'), binary_data['posy'].in_units('au'), binary_data['posz'].in_units('au')], 'au')
+                binary_velocities = yt.YTArray([binary_data['velx'].in_units('km/s'), binary_data['vely'].in_units('km/s'), binary_data['velz'].in_units('km/s')], 'km/s')
+                
+                CoM_pos = np.sum(binary_masses*binary_positions, axis=1)/np.sum(binary_masses, axis=0)
+                CoM_vel = np.sum(binary_masses*binary_velocities, axis=1)/np.sum(binary_masses, axis=0)
+                
+                pos_rel_to_com_1 = binary_positions[:,0] - CoM_pos
+                pos_rel_to_com_2 = binary_positions[:,1] - CoM_pos
+                distance_from_com_1 = np.sqrt(np.sum(pos_rel_to_com_1**2, axis=0))
+                distance_from_com_2 = np.sqrt(np.sum(pos_rel_to_com_2**2, axis=0))
+                
+                vel_rel_to_com_1 = binary_velocities[:,0] - CoM_vel
+                vel_rel_to_com_2 = binary_velocities[:,1] - CoM_vel
 
-                separation = np.sum(distance_from_com)
-                relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
+                separation = distance_from_com_1 + distance_from_com_2
+                relative_speed_to_com_1 = np.sqrt(np.sum(vel_rel_to_com_1**2, axis=0))
+                relative_speed_to_com_2 = np.sqrt(np.sum(vel_rel_to_com_2**2, axis=0))
             
                 #Calculmate mu and orbital energy
-                reduced_mass = np.product(binary_masses.in_units('g'))/np.sum(binary_masses.in_units('g'))
-                E_pot = (-1*(yt.units.G*np.product(binary_masses.in_units('g')))/separation.in_units('cm')).in_units('erg')
-                E_kin = np.sum((0.5*binary_masses.in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+                reduced_mass = np.product(binary_masses, axis=0).in_units('g**2')/np.sum(binary_masses, axis=0).in_units('g')
+                E_pot = (-1*(yt.units.G*np.product(binary_masses, axis=0).in_units('g**2'))/separation.in_units('cm')).in_units('erg')
+                E_kin = (0.5*binary_masses[0].in_units('g')*relative_speed_to_com_1.in_units('cm/s')**2).in_units('erg') + (0.5*binary_masses[1].in_units('g')*relative_speed_to_com_2.in_units('cm/s')**2).in_units('erg')
                 
                 #epsilon is the specific orbital energy
                 epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
                 
                 #Calculate orbital energy
-                m_x_r = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                L = particle_data['mass'][-1].in_units('g').T*m_x_r
-                L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
+                m_x_r_1 = yt.YTArray(np.cross(pos_rel_to_com_1.T.in_units('cm'), vel_rel_to_com_1.T.in_units('cm/s')), 'cm**2/s')
+                m_x_r_2 = yt.YTArray(np.cross(pos_rel_to_com_2.T.in_units('cm'), vel_rel_to_com_2.T.in_units('cm/s')), 'cm**2/s')
+                L_1 = m_x_r_1.T*binary_masses[0].in_units('g')
+                L_2 = m_x_r_2.T*binary_masses[1].in_units('g')
+                L_tot = np.sqrt(np.sum(L_1**2, axis=0)) + np.sqrt(np.sum(L_2**2, axis=0))
                 
                 #h_val is the specific angular momentum
                 h_val = L_tot/reduced_mass.in_units('g')
                 
-                e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(binary_masses, axis=0).in_units('g'))**2.))
                 
-                systems_hierarchy = systems_hierarchy[:start_ind] + str(system_tag) + systems_hierarchy[end_ind+1:]
+                #Plot figures
+                image_name = save_dir + "binary_evolution_plot_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
+                #line_style = [':', '-.', '--', '-']
+                #line_colour = ['b', 'orange', 'g', 'm']
+                labels = []
+                for tag in binary_tags:
+                    if type(tag) == str:
+                        system_list = [tag]
+                        system_string = str(system_list)
+                        while "'" in system_string:
+                            s_ind = system_string.index("'")
+                            sys_tag = system_string[s_ind+1:s_ind+2]
+                            sys_int = reduced_systems_data['tag'].index(sys_tag)
+                            base_tags = reduced_systems_data['base_tags'][sys_int]
+                            system_string = system_string[:s_ind] + str(base_tags) + system_string[s_ind+3:]
+                        label_string = tag + ' ('+system_string[1:-1]+')'
+                        labels.append(label_string)
+                    else:
+                        labels.append(r'Sink ' + str(tag))
+
+                non_nan_inds = np.argwhere(np.isnan(separation) == False).T[0]
+
+                #Plot binary evolution
+                plt.clf()
+                fig = plt.figure()
+                fig.set_size_inches(6, 10.)
+                gs = gridspec.GridSpec(4, 1)
+                gs.update(hspace=0.0)
+                ax1 = fig.add_subplot(gs[0,0]) #Separation
+                ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
+                ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
+                ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
+
+                ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
+                ax1.set_ylabel('Separation (AU)')
+                ax1.axhline(y=25, color='k')
+                #ax1.set_ylim(bottom=1.e-1)
+                plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+                ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
+                ax1.yaxis.set_ticks_position('both')
+                ax1.tick_params(axis='y', which='major', direction="in")
+                ax1.tick_params(axis='y', which='minor', direction="in")
+                ax1.tick_params(axis='x', which='major', direction="in")
+
+                #Plot accretion
+                for pit in range(len(labels)):
+                    ax2.semilogy(particle_data['time'].value, binary_accretion[pit].value, label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+                total_accretion = np.sum(binary_accretion, axis=0)
+                ax2.legend(loc='best')
+                ax2.semilogy(particle_data['time'].value, total_accretion.value, color='k', label="Total", lw=0.5)
+                ax2.set_ylabel(r'Accretion Rate (M$_\odot$/yr)')
+                ax2.yaxis.set_ticks_position('both')
+                ax2.tick_params(axis='y', which='major', direction="in")
+                ax2.tick_params(axis='y', which='minor', direction="in")
+                ax2.tick_params(axis='x', which='major', direction="in")
+                #ax2.legend(loc='best')
+                plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+
+                for pit in range(len(labels)):
+                    ax3.semilogy(particle_data['time'].value, binary_masses[pit].value, label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+                total_mass = np.sum(binary_masses, axis=0)
+                ax3.semilogy(particle_data['time'].value, total_mass.value, color='k', label="Total", lw=0.5)
+                ax3.set_ylabel(r'Mass (M$_\odot$)')
+                ax3.set_ylim(bottom=1.e-2)
+                ax3.yaxis.set_ticks_position('both')
+                ax3.tick_params(axis='y', which='major', direction="in")
+                ax3.tick_params(axis='y', which='minor', direction="in")
+                ax3.tick_params(axis='x', which='major', direction="in")
+                plt.setp([ax3.get_xticklabels() for ax3 in fig.axes[:-1]], visible=False)
+                
+                ax4.semilogy(particle_data['time'].value, e.value, lw=0.5)
+                ax4.set_ylabel(r'Eccentricity')
+                #ax4.set_ylim([0.0, 2.0])
+                ax4.set_xlabel(r'Time (yr)')
+                ax4.yaxis.set_ticks_position('both')
+                ax4.tick_params(axis='y', which='major', direction="in")
+                ax4.tick_params(axis='y', which='minor', direction="in")
+                ax4.tick_params(axis='x', which='major', direction="in")
+                
+                #Save image
+                plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
+                print("Created image", image_name)
+                
+                image_name = save_dir + "long_binary_evolution_plot_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
+                
+                plt.clf()
+                fig = plt.figure()
+                fig.set_size_inches(6, 14.)
+                gs = gridspec.GridSpec(6, 1)
+                gs.update(hspace=0.0)
+                ax1 = fig.add_subplot(gs[0,0]) #Separation
+                ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
+                ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
+                ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
+                ax5 = fig.add_subplot(gs[4,0], sharex=ax1)
+                ax6 = fig.add_subplot(gs[5,0], sharex=ax1)
+
+                ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
+                ax1.set_ylabel('Separation (AU)')
+                ax1.axhline(y=25, color='k')
+                plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+                ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
+                ax1.yaxis.set_ticks_position('both')
+                ax1.tick_params(axis='y', which='major', direction="in")
+                ax1.tick_params(axis='y', which='minor', direction="in")
+                ax1.tick_params(axis='x', which='major', direction="in")
+
+                #Plot accretion
+                for pit in range(len(labels)):
+                    ax2.semilogy(particle_data['time'].value, binary_accretion[pit].value, label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+                total_accretion = np.sum(binary_accretion, axis=0)
+                ax2.legend(loc='best')
+                ax2.semilogy(particle_data['time'].value, total_accretion.value, color='k', label="Total", lw=0.5)
+                ax2.set_ylabel(r'Accretion Rate (M$_\odot$/yr)')
+                ax2.yaxis.set_ticks_position('both')
+                ax2.tick_params(axis='y', which='major', direction="in")
+                ax2.tick_params(axis='y', which='minor', direction="in")
+                ax2.tick_params(axis='x', which='major', direction="in")
+                plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+
+                for pit in range(len(labels)):
+                    ax3.semilogy(particle_data['time'].value, binary_masses[pit].value, label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
+                total_mass = np.sum(binary_masses, axis=0)
+                ax3.semilogy(particle_data['time'].value, total_mass.value, color='k', label="Total", lw=0.5)
+                ax3.set_ylabel(r'Mass (M$_\odot$)')
+                ax3.set_ylim(bottom=1.e-2)
+                ax3.yaxis.set_ticks_position('both')
+                ax3.tick_params(axis='y', which='major', direction="in")
+                ax3.tick_params(axis='y', which='minor', direction="in")
+                ax3.tick_params(axis='x', which='major', direction="in")
+                plt.setp([ax3.get_xticklabels() for ax3 in fig.axes[:-1]], visible=False)
+                
+                ax4.semilogy(particle_data['time'].value, e.value, lw=0.5)
+                ax4.set_ylabel(r'Eccentricity')
+                ax4.yaxis.set_ticks_position('both')
+                ax4.tick_params(axis='y', which='major', direction="in")
+                ax4.tick_params(axis='y', which='minor', direction="in")
+                ax4.tick_params(axis='x', which='major', direction="in")
+                
+                ax5.semilogy(particle_data['time'].value, (abs(E_pot)/total_mass).value, lw=0.5, label='Potential')
+                ax5.semilogy(particle_data['time'].value, (E_kin.value/total_mass), lw=0.5, label='Kinetic')
+                ax5.legend(loc='best')
+                ax5.set_ylabel(r'Spec. En. (erg/g)')
+                ax5.yaxis.set_ticks_position('both')
+                ax5.tick_params(axis='y', which='major', direction="in")
+                ax5.tick_params(axis='y', which='minor', direction="in")
+                ax5.tick_params(axis='x', which='major', direction="in")
+                
+                ax6.semilogy(particle_data['time'].value, (np.sqrt(np.sum(L_1**2, axis=0))/total_mass).value, alpha=0.5, lw=0.5, label=labels[0])
+                ax6.semilogy(particle_data['time'].value, (np.sqrt(np.sum(L_2**2, axis=0))/total_mass).value, alpha=0.5, lw=0.5, label=labels[1])
+                ax6.semilogy(particle_data['time'].value, (L_tot/total_mass).value, lw=0.5, label='Total')
+                ax6.legend(loc='best')
+                ax6.set_ylabel(r'Spec. Ang. Mom. ($cm^2/s$)')
+                ax6.yaxis.set_ticks_position('both')
+                ax6.tick_params(axis='y', which='major', direction="in")
+                ax6.tick_params(axis='y', which='minor', direction="in")
+                ax6.tick_params(axis='x', which='major', direction="in")
+                ax6.set_xlabel('Time (yr)')
+                
+                #Save image
+                plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
+                print("Created image", image_name)
+                
+                reduced_systems_data['tag'].append(system_tag)
+                reduced_systems_data['base_tags'].append(binary_tags)
+                reduced_systems_data['posx'].append(CoM_pos[0])
+                reduced_systems_data['posy'].append(CoM_pos[1])
+                reduced_systems_data['posz'].append(CoM_pos[2])
+                reduced_systems_data['velx'].append(CoM_vel[0])
+                reduced_systems_data['vely'].append(CoM_vel[1])
+                reduced_systems_data['velz'].append(CoM_vel[2])
+                reduced_systems_data['mass'].append(np.sum(binary_masses, axis=0))
+                reduced_systems_data['mdot'].append(np.sum(binary_accretion, axis=0))
+                reduced_systems_data['mdot_individual'].append(binary_accretion)
+                reduced_systems_data['separation'].append(separation)
+                reduced_systems_data['eccentricity'].append(e)
+                reduced_systems_data['E_potential'].append(E_pot)
+                reduced_systems_data['E_kinetic'].append(E_kin)
+                reduced_systems_data['L_orb_tot'].append(L_tot)
+
+                systems_hierarchy = systems_hierarchy[:start_ind] + "\'" + system_tag + "\'" + systems_hierarchy[end_ind+1:]
                 print('systems_hierarchy =', systems_hierarchy)
                 break
     
-    
-
+#Save reduced system data:
+file = open(save_dir+'reduced_system_data.pkl', 'wb')
+pickle.dump((reduced_systems_data), file)
+file.close()
