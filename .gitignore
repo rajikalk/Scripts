@@ -5,3 +5,6 @@
 Modules/.DS_Store
 Modules/__pycache__/
 Modules/pyramses
+.DS_Store
+Modules/multiplicity
+Ramses_analysis/.DS_Store
