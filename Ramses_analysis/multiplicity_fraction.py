@@ -118,7 +118,7 @@ All_unique_systems_M = {}
 
 for nout in range(file_no_range[0], file_no_range[1]+1):
     L_tots = []
-    usable_inds = []
+    current_separations = []
 
     # load sink data from snapshot nout in to S
     S = pr.Sink()
@@ -163,8 +163,9 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
     s_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit))[0] #&(L_tot<35.0)
-    usable_inds = s[s_inds].tolist()
-    
+    print("set res['n'] for invisible singles to 0")
+    invisible_stars = list(set(s).symmetric_difference(s[s_inds]))
+    res['n'][invisible_stars] = 0
     #Save single stars Luminosities
     
     #Filter out companions that are outside of the detection limits:
@@ -202,15 +203,17 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
         
             #Check whether there is undetected companions
             n_detectable = len(detectable_components)
+            res['n'][multi_ind] = n_detectable
             if n_detectable == len(sys_comps):
                 #Check whether hierarchial. If it is it should be pretty easy for code:
+                #res['n'][multi_ind] = n_detectable
                 system_structure = losi(multi_ind, res)
             else:
                 system_structure = losi(multi_ind, res)
                 if n_detectable == 0:
+                    #res['n'][multi_ind] = 0
                     print("none of the components are detected")
                 elif n_detectable == 1:
-                    usable_inds.append(detectable_components[0])
                     sys_comps = detectable_components
                 elif n_detectable == 2:
                     system_structure = detectable_components
@@ -356,6 +359,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                         p_ind = p_ind + 1
             
             if str(sys_comps) not in All_unique_systems.keys():
+                current_separations = current_separations + sep_list
                 try:
                     sep_list = sep_list.tolist()
                     All_unique_systems.update({str(sys_comps): [sep_list]})
@@ -364,6 +368,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                 All_unique_systems_M.update({str(sys_comps): [M]})
                 All_unique_systems_L.update({str(sys_comps): [L_list]})
             else:
+                current_separations = current_separations + sep_list
                 try:
                     All_unique_systems[str(sys_comps)].append(sep_list)
                 except:
@@ -371,7 +376,6 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                     All_unique_systems[str(sys_comps)].append(sep_list)
                 All_unique_systems_M[str(sys_comps)].append(M)
                 All_unique_systems_L[str(sys_comps)].append(L_list)
-            usable_inds.append(multi_ind)
             L_tots.append(mean_L)
     
     #Plot Luminosity histogram
@@ -391,45 +395,33 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     '''
     
     #Now bin data and create plots:
-    if args.projected_separation == 'False':
-        current_separations = res['separation'][usable_inds]
-        xlabel = 'Separation (Log(AU))'
-    else:
-        xlabel = 'Projected Separation (Log(AU))'
-        if args.axis == 'x':
-            axis_ind = 0
-        elif args.axis == 'y':
-            axis_ind = 1
-        else:
-            axis_ind = 2
-        current_separations = np.sqrt(res['separation']**2 - ((res['abspos'][res['index1']] - res['abspos'][res['index2']])[:,axis_ind])**2)
-        current_separations = current_separations[usable_inds]
     cf_array = []
     n_systems = []
-    s = np.where(res['n'][usable_inds]==1)[0]
+    print("Recalculate single star and multiple star numbers")
+    s = np.where(res['n']==1)[0]
     for bin_it in range(1,len(S_bins)):
         bin_inds = np.where((current_separations>=S_bins[bin_it-1])&(current_separations<S_bins[bin_it]))[0]
         CF_single_inds = np.where((current_separations<S_bins[bin_it-1])|(current_separations>=S_bins[bin_it]))[0]
         
-        b = np.where(res['n'][usable_inds][bin_inds]==2)[0]
-        b_single = np.where(res['n'][usable_inds][CF_single_inds]==2)[0]
-        nb = np.count_nonzero(res['topSystem'][usable_inds][bin_inds][b])
+        b = np.where(res['n'][bin_inds]==2)[0]
+        b_single = np.where(res['n'][CF_single_inds]==2)[0]
+        nb = np.count_nonzero(res['topSystem'][bin_inds][b])
         
-        t = np.where(res['n'][usable_inds][bin_inds]==3)[0]
-        t_single = np.where(res['n'][usable_inds][CF_single_inds]==3)[0]
-        nt = np.count_nonzero(res['topSystem'][usable_inds][bin_inds][t])
+        t = np.where(res['n'][bin_inds]==3)[0]
+        t_single = np.where(res['n'][CF_single_inds]==3)[0]
+        nt = np.count_nonzero(res['topSystem'][bin_inds][t])
         
-        q = np.where(res['n'][usable_inds][bin_inds]==4)[0]
-        q_single = np.where(res['n'][usable_inds][CF_single_inds]==4)[0]
-        nq = np.count_nonzero(res['topSystem'][usable_inds][bin_inds][q])
+        q = np.where(res['n'][bin_inds]==4)[0]
+        q_single = np.where(res['n'][CF_single_inds]==4)[0]
+        nq = np.count_nonzero(res['topSystem'][bin_inds][q])
         
-        q5 = np.where(res['n'][usable_inds][bin_inds]==5)[0]
-        q5_single = np.where(res['n'][usable_inds][CF_single_inds]==5)[0]
-        nq5 = np.count_nonzero(res['topSystem'][usable_inds][bin_inds][q5])
+        q5 = np.where(res['n'][bin_inds]==5)[0]
+        q5_single = np.where(res['n'][CF_single_inds]==5)[0]
+        nq5 = np.count_nonzero(res['topSystem'][bin_inds][q5])
         
-        s6 = np.where(res['n'][usable_inds][bin_inds]==6)[0]
-        s6_single = np.where(res['n'][usable_inds][CF_single_inds]==6)[0]
-        ns6 = np.count_nonzero(res['topSystem'][usable_inds][bin_inds][s6])
+        s6 = np.where(res['n'][bin_inds]==6)[0]
+        s6_single = np.where(res['n'][CF_single_inds]==6)[0]
+        ns6 = np.count_nonzero(res['topSystem'][bin_inds][s6])
         
         ns = np.count_nonzero(res['topSystem'][s]) + len(b_single) + len(t_single) + len(q_single) + len(q5_single) + len(s6_single)
         cf = (nb+nt*2+nq*3+nq5*4+ns6*5)/(ns+nb+nt+nq+nq5+ns6)
