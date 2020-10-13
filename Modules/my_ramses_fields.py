@@ -1288,47 +1288,71 @@ def _Bulk_Velocity_Gas(field, data):
 
 yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s")
 
-def _Projected_Velocity_x(field, data):
+def _Radial_Velocity_x(field, data):
     """
-    returns the projected velocity
+    returns the velocity along the light of sight
     """
     global normal
     v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
     proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
     proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
     proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')
-    projected_velocity = (v - proj_v_onto_L)[0]
+    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[0]
+    return proj_v_onto_L
+
+yt.add_field("Radial_Velocity_x", function=_Radial_Velocity_x, units=r"cm/s")
+
+def _Radial_Velocity_y(field, data):
+    """
+    returns the x-component of the velocity along the light of sight
+    """
+    global normal
+    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
+    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
+    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
+    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
+    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[1]
+    return proj_v_onto_L
+
+yt.add_field("Radial_Velocity_y", function=_Radial_Velocity_y, units=r"cm/s")
+
+def _Radial_Velocity_z(field, data):
+    """
+    returns the y-component of the velocity along the light of sight
+    """
+    global normal
+    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
+    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
+    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
+    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
+    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[1]
+    return proj_v_onto_L
+
+yt.add_field("Radial_Velocity_z", function=_Radial_Velocity_z, units=r"cm/s")
+
+def _Projected_Velocity_x(field, data):
+    """
+    returns the z-component of the velocity along the light of sight
+    """
+    projected_velocity = data['x-velocity'].in_units('cm/s') - data['Radial_Velocity_x'].in_units('cm/s')
     return projected_velocity
     
 yt.add_field("Projected_Velocity_x", function=_Projected_Velocity_x, units=r"cm/s")
 
 def _Projected_Velocity_y(field, data):
     """
-    returns the projected velocity
+    returns the y-component of the projected velocity onto the planet defined by the normal
     """
-    global normal
-    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')
-    projected_velocity = (v - proj_v_onto_L)[1]
+    projected_velocity = data['y-velocity'].in_units('cm/s') - data['Radial_Velocity_y'].in_units('cm/s')
     return projected_velocity
     
 yt.add_field("Projected_Velocity_y", function=_Projected_Velocity_y, units=r"cm/s")
 
 def _Projected_Velocity_z(field, data):
     """
-    returns the projected velocity
+    returns the z-component of the projected velocity onto the planet defined by the normal
     """
-    global normal
-    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')
-    projected_velocity = (v - proj_v_onto_L)[2]
+    projected_velocity = data['z-velocity'].in_units('cm/s') - data['Radial_Velocity_z'].in_units('cm/s')
     return projected_velocity
     
 yt.add_field("Projected_Velocity_z", function=_Projected_Velocity_z, units=r"cm/s")
