@@ -15,6 +15,8 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-abs", "--absolute_image", help="do you want to get the absolute value of the image field?", default="False")
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
+    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
+    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
@@ -59,7 +61,7 @@ def sim_info(ds,args):
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
     dd = ds.all_data()
-    field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == 'Density'][0]
+    field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
     field = ds.derived_field_list[field_it]
     dim = args.resolution
     if args.ax_lim == None:
@@ -454,7 +456,7 @@ if args.make_frames_only == 'False':
                 del x_top
                 del y_top
                 del z_top
-                del com_vel
+                #del com_vel
             else:
                 center_vel = region['Center_Velocity'].in_units('cm/s').value
             myf.set_center(args.image_center)
@@ -491,6 +493,23 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units('gauss'))
+                    elif args.field in str(field):
+                        if weight_field == None:
+                            if args.axis == 'xz':
+                                if args.divide_by_proj_thickness == "True":
+                                    proj_array = np.array((proj.frb.data[field].T/thickness.in_units('cm')).in_units(args.field_unit))
+                                else:
+                                    proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit+"*cm"))
+                            else:
+                                if args.divide_by_proj_thickness == "True":
+                                    proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                                else:
+                                    proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
+                        else:
+                            if args.axis == 'xz':
+                                proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
+                            else:
+                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
                         if weight_field == None:
                             if args.axis == 'xz':
@@ -502,6 +521,8 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs())
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
+                    if str(args.field) in field and 'velocity' in str(args.field):
+                        proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                     if rank == proj_root_rank:
                         proj_dict[field[1]] = proj_array
                     else:
@@ -766,8 +787,8 @@ for pickle_file in pickle_files:
             if args.debug_plotting != 'False':
                 plt.savefig("Test_776.jpg", format='jpg', bbox_inches='tight')
             
-            if 0.0 in (cbar_min, cbar_max):
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+            if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
+                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
             else:
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
             plt.gca().set_aspect('equal')
@@ -793,11 +814,14 @@ for pickle_file in pickle_files:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_804.jpg", format='jpg', bbox_inches='tight')
-                
-            if 'dens' in simfo['field']:
-                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+            
+            if 'Density' in simfo['field']:
+                if args.divide_by_proj_thickness == "True":
+                    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+                else:
+                    cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
             else:
-                label_string = simfo['field'][1] + ' ($' + simfo['unit_string'] + '$)'
+                label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
                 cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_812.jpg", format='jpg', bbox_inches='tight')
