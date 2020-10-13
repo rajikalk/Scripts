@@ -133,6 +133,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     S._scale_d = scale_d
     i = S.read_info_file(nout,datadir=datadir)
     S._time = i['time']
+    
     res = m.multipleAnalysis(S,nmax=6,cutoff=1e4)
     time = S._time * units['time_unit'].in_units('yr')
     
@@ -239,7 +240,6 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                         
                     reduced = False
                     while reduced == False:
-                        
                         if '[, ' in sys_string:
                             sys_string = ''.join(sys_string.split('[, '))[:-1*len(sys_string.split('[, '))+1]
                         if ' ],' in sys_string:
@@ -277,7 +277,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                 central_pos = res['abspos'][central_ind]
                 separations = np.sqrt(np.sum((positions - central_pos)**2, axis=1))
                 non_zero_inds = np.where(separations>0)[0]
-                sep_list = separations[non_zero_inds]
+                sep_list = separations[non_zero_inds].tolist()
                 proximity_inds = np.argsort(separations)
                 p_ind = 2
                 L_list = [L_tot[proximity_inds[0]] + L_tot[proximity_inds[1]]]
@@ -359,21 +359,23 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
                         p_ind = p_ind + 1
             
             if str(sys_comps) not in All_unique_systems.keys():
-                current_separations = current_separations + sep_list
                 try:
                     sep_list = sep_list.tolist()
                     All_unique_systems.update({str(sys_comps): [sep_list]})
+                    current_separations = current_separations + sep_list
                 except:
                     All_unique_systems.update({str(sys_comps): [sep_list]})
+                    current_separations = current_separations + sep_list
                 All_unique_systems_M.update({str(sys_comps): [M]})
                 All_unique_systems_L.update({str(sys_comps): [L_list]})
             else:
-                current_separations = current_separations + sep_list
                 try:
                     All_unique_systems[str(sys_comps)].append(sep_list)
+                    current_separations = current_separations + sep_list
                 except:
                     sep_list = sep_list.tolist()
                     All_unique_systems[str(sys_comps)].append(sep_list)
+                    current_separations = current_separations + sep_list
                 All_unique_systems_M[str(sys_comps)].append(M)
                 All_unique_systems_L[str(sys_comps)].append(L_list)
             L_tots.append(mean_L)
@@ -397,7 +399,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     #Now bin data and create plots:
     cf_array = []
     n_systems = []
-    print("Recalculate single star and multiple star numbers")
+    print("CF CALCULATION PER BIN IS WRONG, IGNORE FOR NOW.")
     s = np.where(res['n']==1)[0]
     for bin_it in range(1,len(S_bins)):
         bin_inds = np.where((current_separations>=S_bins[bin_it-1])&(current_separations<S_bins[bin_it]))[0]
@@ -472,7 +474,7 @@ CF_total = CF_top/CF_bottom
 
 plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_total, width=0.25, fill=False, edgecolor='black')
-plt.xlabel(xlabel)
+plt.xlabel('Separation')
 plt.ylabel('Companion Frequency')
 plt.xlim([1,4])
 #plt.ylim([0.0, 0.25])
@@ -484,7 +486,7 @@ CF_sum = np.sum(CF_Array_Full, axis=0)
 
 plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, fill=False, edgecolor='black')
-plt.xlabel(xlabel)
+plt.xlabel('Separation')
 plt.ylabel('Companion Frequency')
 plt.xlim([1,4])
 plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
@@ -568,8 +570,8 @@ plt.savefig(savedir + args.figure_prefix + "Hist_N_components.jpg")
 
 Mean_L = []
 for key in All_unique_systems_L.keys():
-    L_med = np.mean(All_unique_systems_L[key])
-    Mean_L.append(L_med)
+    if len(eval(key))>1:
+        Mean_L.append(np.mean(np.array(All_unique_systems_L[key])))
 L_tot_hist, bins = np.histogram(Mean_L, bins=L_bins)
 plt.clf()
 plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=0.31, edgecolor='black', alpha=0.5, label="Simulation")
@@ -583,8 +585,7 @@ plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_system
 #plot max luminosities
 Max_L = []
 for key in All_unique_systems_L.keys():
-    L_max = np.max(All_unique_systems_L[key])
-    Max_L.append(L_max)
+    Max_L.append(np.mean(np.array(All_unique_systems_L[key])))
 L_tot_hist, bins = np.histogram(Max_L, bins=L_bins)
 plt.clf()
 plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=0.31, edgecolor='black', label="Simulation")
