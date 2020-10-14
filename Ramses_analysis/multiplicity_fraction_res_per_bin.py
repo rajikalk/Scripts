@@ -621,7 +621,7 @@ plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
 print('created Sum_companion_frequency.jpg')
 
 #Iterate over systems and make histogram of masses of the high luminosity systems.
-
+"""
 plt.clf()
 n_lines = 8
 c = np.arange(1, n_lines + 1)
@@ -665,7 +665,7 @@ plt.bar((bins[:-1]+bins[1:])/2, comp_hist, width=1, fill=False, edgecolor='black
 plt.xlabel('Number of Components')
 plt.ylabel('Frequency')
 plt.savefig(savedir + args.figure_prefix + "Hist_N_components.jpg")
-
+"""
 Mean_L = []
 for key in All_unique_systems_L.keys():
     if len(eval(key))>1:
