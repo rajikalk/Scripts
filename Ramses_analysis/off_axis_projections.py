@@ -46,7 +46,7 @@ def parse_inputs():
     parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=10000.0)
+    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -306,3 +306,24 @@ if args.make_frames_only == 'False':
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
             
+            center_pos = dd['Center_Position'].in_units('au').value
+            
+            part_posx = dd['sink_particle_posx'][sink_id:].in_units('au')
+            part_posy = dd['sink_particle_posy'][sink_id:].in_units('au')
+            part_posz = dd['sink_particle_posz'][sink_id:].in_units('au')
+            
+            pos_array = yt.YTArray([part_posx, part_posy, part_posz])
+            separation = pos_array.T[1] - pos_array.T[0]
+            separation_magnitude = np.sqrt(separation[0]**2 + separation[1]**2 + separation[2]**2)
+            projectioned_separation = yt.YTQuantity(args.projectioned_separation, 'AU')
+            theta = np.arcsin(projectioned_separation/separation_magnitude)
+            projection_normal = separation*np.cos(theta)
+            projection_normal = projection_normal/np.sqrt(projection_normal[0]**2 + projection_normal[1]**2 + projection_normal[2]**2)
+            
+            primary_ind = np.argmax(dd['sink_particle_mass'][sink_id:].in_units('Msun'))
+            primary_pos = pos_array.T[primary_ind]
+            
+            import pdb
+            pdb.set_trace()
+            
+            proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
