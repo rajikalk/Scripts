@@ -145,8 +145,6 @@ if rank == 0:
 
 #Get input and output directories
 args = parse_inputs()
-if args.use_angular_momentum == 'True':
-    args.resolution = 800
 
 #Define relevant directories
 input_dir = sys.argv[1]
