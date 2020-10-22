@@ -16,6 +16,7 @@ center_vel_part = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
 center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
 coordinates = 'spherical'
 normal = [1.0, 0.0, 0.0]
+north_vector = [0.0, 1.0, 0.0]
 part_pos = yt.YTArray([], 'cm')
 part_mass = yt.YTArray([], 'g')
 part_vel = yt.YTArray([], 'cm/s')
@@ -117,6 +118,18 @@ def set_normal(x):
         x = x.tolist()
     normal = x
     return normal
+    
+def set_north_vector(x):
+    """
+    Sets the north vector used for projected fields.
+        
+    Default: [x,y,z] = [0,1,0]
+    """
+    global north_vector
+    if isinstance(x,list) == False:
+        x = x.tolist()
+    north_vector = x
+    return north_vector
 
 def set_com_pos_use_gas(x):
     """
@@ -223,6 +236,13 @@ def get_normal():
     """
     global normal
     return normal
+    
+def get_normal():
+    """
+    returns the currently set north vector
+    """
+    global north_vector
+    return north_vector
     
 def get_com_pos_use_gas():
     """
