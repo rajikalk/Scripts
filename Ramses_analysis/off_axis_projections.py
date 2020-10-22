@@ -9,6 +9,11 @@ import my_ramses_module as mym
 import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import matplotlib.pyplot as plt
+import matplotlib as cm
+from matplotlib.colors import LogNorm
+from matplotlib import transforms
+import matplotlib.patheffects as path_effects
 
 def parse_inputs():
     import argparse
@@ -44,9 +49,9 @@ def parse_inputs():
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
     parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
-    parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
+    parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
+    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=300.0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -103,18 +108,8 @@ def sim_info(ds,args):
     return sim_info
 
 def image_properties(X, Y, args, sim_info):
-    if args.axis == "xy":
-        xlabel = r"$x$ (AU)"
-        ylabel = r"$y$ (AU)"
-    elif args.axis == "xz":
-        xlabel = r"$x$ (AU)"
-        ylabel = r"$z$ (AU)"
-    elif args.axis == "yz":
-        xlabel = r"$y$ (AU)"
-        ylabel = r"$z$ (AU)"
-    else:
-        xlabel = 'Distance from center (AU)'
-        ylabel = 'Distance from center (AU)'
+    xlabel = 'Distance from center (AU)'
+    ylabel = 'Distance from center (AU)'
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     return xlabel, ylabel, xlim, ylim
@@ -130,6 +125,37 @@ def has_sinks(ds):
     else:
         del dd
         return False
+        
+def xy_rotation_matrix(theta):
+    """
+    creates rotation matrix for given angle theta along the xy plane
+    [cos(theta), -sin(theta), 0]
+    [sin(theta), cos(theta) , 0]
+    [0         , 0          , 1]
+    """
+    rot = np.array([[np.cos(theta), -1*np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0,0,1]])
+    return rot
+    
+def z_rotation_matrix(phi):
+    """
+    creates rotation matrix for given angle phi along the yz plane
+    [1, 0       , 0        ]
+    [0, cos(phi), -sin(phi)]
+    [0, sin(phi),  cos(phi)]
+    """
+    rot = np.array([[1,0,0], [0, np.cos(phi), -1*np.sin(phi)], [0, np.sin(phi), np.cos(phi)]])
+    return rot
+    
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the position of vecter projected onto vector
+    """
+    vector_units = vector.units
+    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+    proj_v = yt.YTArray(np.array([proj_v_x, proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
 
 #=======MAIN=======
 
@@ -140,8 +166,6 @@ if rank == 0:
 
 #Get input and output directories
 args = parse_inputs()
-if args.use_angular_momentum == 'True':
-    args.resolution = 800
 
 #Define relevant directories
 input_dir = sys.argv[1]
@@ -201,17 +225,6 @@ while counter < args.velocity_annotation_frequency:
     y_ind.append(int(val))
     counter = counter + 1
 X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-if args.projection_orientation != None:
-    y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-    L = [1.0, y_val, 0.0]
-else:
-    if args.axis == 'xy':
-        L = [0.0, 0.0, 1.0]
-    elif args.axis == 'xz':
-        L = [0.0, 1.0, 0.0]
-    elif args.axis == 'yz':
-        L = [1.0, 0.0, 0.0]
-myf.set_normal(L)
 xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
 if args.ax_lim != None:
     xlim = [-1*args.ax_lim, args.ax_lim]
@@ -238,10 +251,10 @@ CW.Barrier()
 if args.plot_time != None:
     if args.weight_field == 'None':
         weight_field = None
-        pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
     else:
         weight_field = args.weight_field
-        pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
        
 sys.stdout.flush()
 CW.Barrier()
@@ -306,24 +319,181 @@ if args.make_frames_only == 'False':
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
             
-            center_pos = dd['Center_Position'].in_units('au').value
+            time_val = m_times[file_int]
+            has_particles = has_sinks(ds)
+            if has_particles:
+                part_info = mym.get_particle_data(ds, sink_id=sink_id)
+            else:
+                part_info = {}
             
-            part_posx = dd['sink_particle_posx'][sink_id:].in_units('au')
-            part_posy = dd['sink_particle_posy'][sink_id:].in_units('au')
-            part_posz = dd['sink_particle_posz'][sink_id:].in_units('au')
+            center_pos = dd['Center_Position'].in_units('AU')
             
-            pos_array = yt.YTArray([part_posx, part_posy, part_posz])
-            separation = pos_array.T[1] - pos_array.T[0]
+            part_posx = dd['sink_particle_posx'][sink_id:].in_units('AU') - center_pos[0]
+            part_posy = dd['sink_particle_posy'][sink_id:].in_units('AU') - center_pos[1]
+            part_posz = dd['sink_particle_posz'][sink_id:].in_units('AU') - center_pos[2]
+            
+            pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
+            separation = pos_array[0] - pos_array[1]
             separation_magnitude = np.sqrt(separation[0]**2 + separation[1]**2 + separation[2]**2)
-            projectioned_separation = yt.YTQuantity(args.projectioned_separation, 'AU')
-            theta = np.arcsin(projectioned_separation/separation_magnitude)
-            projection_normal = separation*np.cos(theta)
-            projection_normal = projection_normal/np.sqrt(projection_normal[0]**2 + projection_normal[1]**2 + projection_normal[2]**2)
             
-            primary_ind = np.argmax(dd['sink_particle_mass'][sink_id:].in_units('Msun'))
-            primary_pos = pos_array.T[primary_ind]
+            #Angle around xy plane:
+            sep_xy_mag = np.sqrt(separation[0]**2 + separation[1]**2)
+            sep_xy_unit = yt.YTArray([separation[0]/sep_xy_mag, separation[1]/sep_xy_mag, 0], 'AU')
+            theta = np.arccos(np.dot(sep_xy_unit, np.array([0,1,0])))
+            #Angle from z axis:
+            phi = np.arccos(np.dot(separation/separation_magnitude, [0,0,1]))
             
-            import pdb
-            pdb.set_trace()
+            #Calculate angle alpha between projection and separation vector such that the projected sepation is what you selected (default 200AU)
+            projected_separation = yt.YTQuantity(args.projected_separation, 'AU')
+            #DOUBLE CHECK ALPHA CALCULATION
+            alpha = np.arcsin(projected_separation/separation_magnitude)
             
-            proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
+            vectors_along_cone = np.array([[separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
+                                           [-1*separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
+                                           [0, separation_magnitude*np.tan(alpha), separation_magnitude],\
+                                           [0, -1*separation_magnitude*np.tan(alpha), separation_magnitude],\
+                                           [(separation_magnitude*np.tan(alpha))/np.sqrt(2), (separation_magnitude*np.tan(alpha))/np.sqrt(2), separation_magnitude],\
+                                           [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), ((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
+                                           [(separation_magnitude*np.tan(alpha))/np.sqrt(2), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
+                                           [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude]])
+            
+            #Figure out how to rotate the projection vectors to be the same reference as the separation vector.
+            #Rotate around XY plane
+            z_rot = z_rotation_matrix(-1*phi)
+            xy_rot = xy_rotation_matrix(theta)
+            projection_vectors = []
+            north_vectors = []
+            for vector in vectors_along_cone:
+                z_rot_vector = np.dot(z_rot, vector)
+                proj_vector = yt.YTArray(np.dot(xy_rot, z_rot_vector), 'AU')
+                proj_mag = np.sqrt(proj_vector[0]**2 + proj_vector[1]**2 + proj_vector[2]**2)
+                proj_unit = proj_vector/proj_mag
+                projection_vectors.append(proj_vector)
+                
+                Proj_sep_proj = (np.dot(separation,proj_vector)/np.dot(proj_vector, proj_vector))* proj_vector
+                north_vector = separation - Proj_sep_proj
+                north_vectors.append(north_vector)
+                
+                sep_unit = separation/separation_magnitude
+                
+                angle_sep_proj = np.degrees(np.arccos(np.dot(proj_unit, sep_unit)))
+                print("Alpha =", np.degrees(alpha), "but angle between sep and proj is", angle_sep_proj)
+            
+            #Now that projection and north vectors have been generated, lets create the projection
+            for proj_it in range(len(projection_vectors)):
+                #Calculate projected particle positions
+                projected_particle_positions = projected_vector(pos_array, north_vectors[proj_it])
+                proj_part_mag = np.sqrt(np.sum((projected_particle_positions**2), axis=1))
+                proj_part_unit = (projected_particle_positions.T/proj_part_mag).T
+                
+                north_mag = np.sqrt(north_vectors[proj_it][0]**2 + north_vectors[proj_it][1]**2 + north_vectors[proj_it][2]**2)
+                north_unit = north_vectors[proj_it]/north_mag
+                
+                y_sign = np.dot(proj_part_unit,north_unit)
+                particle_y_plot = y_sign*proj_part_mag
+                part_info['particle_position'] = np.array([[0, 0],[particle_y_plot[0].value, particle_y_plot[1].value]])
+                
+                #Caculate pojections!
+                proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
+                proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
+                field_ist = [simfo['field'], ('ramses', 'x-velocity'), ('ramses', 'y-velocity'), ('ramses', 'z-velocity')] # ('gas', mag1_field), ('gas', mag2_field)
+                proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field_ist, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)
+                
+                image = proj.frb.data[simfo['field']]#/thickness.in_units('cm').value
+                vel_x = proj.frb.data[('ramses', 'x-velocity')].in_cgs()/thickness.in_units('cm')
+                vel_y = proj.frb.data[('ramses', 'y-velocity')].in_cgs()/thickness.in_units('cm')
+                vel_z = proj.frb.data[('ramses', 'z-velocity')].in_cgs()/thickness.in_units('cm')
+                
+                vel_array = yt.YTArray([vel_x, vel_y, vel_z]).T
+                RV = projected_vector(vel_array, projection_vectors[proj_it])
+                import pdb
+                pdb.set_trace()
+                '''
+                velx_full = proj.frb.data[('gas', 'Projected_Velocity')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                vely_full = proj.frb.data[('flash', 'velz')].in_units('cm**2/s').value/thickness.in_units('cm').value
+                magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss').value/thickness.in_units('cm').value
+                
+                velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
+                '''
+                
+                args_dict = {}
+                if args.annotate_time == "True":
+                    args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
+                args_dict.update({'field':simfo['field']})
+                args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+                args_dict.update({'time_val': time_val})
+                args_dict.update({'cbar_min': cbar_min})
+                args_dict.update({'cbar_max': cbar_max})
+                args_dict.update({'title': title})
+                args_dict.update({'xabel': xabel})
+                args_dict.update({'yabel': yabel})
+                args_dict.update({'axlim':args.ax_lim})
+                args_dict.update({'xlim':xlim})
+                args_dict.update({'ylim':ylim})
+                args_dict.update({'has_particles':has_particles})
+                
+                file = open(pickle_file, 'wb')
+                if args.absolute_image != "False":
+                    image = abs(image)
+                pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, simfo), file)
+                file.close()
+                print("Created Pickle:", pickle_file, "for  file:", str(ds))
+                del has_particles
+                del time_val
+                del x_width
+                del y_width
+                del thickness
+                del dd
+                del center_vel
+                del proj
+                del image
+                del magx
+                del magy
+                del velx
+                del vely
+                del part_info
+                
+                #Create figure section. ONCE THIS IS FINALISED MOVE TO BE OUTSIDE OF THE FOR LOOP SO THEY CAN BE CREATE FROM PICKLE
+                print("on rank,", rank, "using pickle_file", pickle_file)
+                file = open(pickle_file, 'rb')
+                X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+                #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                file.close()
+                
+                if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
+                    xlim = args_dict['xlim']
+                    ylim = args_dict['ylim']
+                else:
+                    xlim = args_dict['xlim'] + np.mean(X)
+                    ylim = args_dict['ylim'] + np.mean(Y)
+                has_particles = args_dict['has_particles']
+                time_val = args_dict['time_val']
+                xabel = args_dict['xabel']
+                yabel = args_dict['yabel']
+                plt.clf()
+                fig, ax = plt.subplots()
+                ax.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+                ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+                ax.set_xlim(xlim)
+                ax.set_ylim(ylim)
+                
+                if len(usable_files) > 1:
+                    if args.output_filename == None:
+                        file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
+                    else:
+                        file_name = args.output_filename + "_" + str(int(time_val))
+                else:
+                    if args.output_filename != None:
+                        file_name = args.output_filename
+                    else:
+                        file_name = save_dir + "time_" + str(args.plot_time)
+                
+                if 0.0 in (cbar_min, cbar_max):
+                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+                else:
+                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+                plt.gca().set_aspect('equal')
+                
+                import pdb
+                pdb.set_trace()
