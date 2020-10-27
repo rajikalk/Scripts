@@ -320,8 +320,6 @@ if args.make_frames_only == 'False':
             dd = ds.all_data()
             
             time_val = m_times[file_int]
-            has_particles = has_sinks(ds)
-            part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('km/s')
@@ -391,6 +389,8 @@ if args.make_frames_only == 'False':
                     
                     y_sign = np.dot(proj_part_unit,north_unit)
                     particle_y_plot = y_sign*proj_part_mag
+                    has_particles = has_sinks(ds)
+                    part_info = mym.get_particle_data(ds, sink_id=sink_id)
                     part_info['particle_position'] = np.array([[0, 0],[particle_y_plot[0].value, particle_y_plot[1].value]])
                     
                     #Calculate center velocity
@@ -479,7 +479,7 @@ if args.make_frames_only == 'False':
                         args_dict.update({'has_particles':has_particles})
                         
                         
-                        pickle_file = pickle_file + '_' + str(rank) + '.pkl'
+                        pickle_file = pickle_file.split('.pkl')[0] + '_' + str(proj_it) + '.pkl'
                         file = open(pickle_file, 'wb')
                         pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
                         file.close()
@@ -505,6 +505,7 @@ if args.make_frames_only == 'False':
 print("Finished generating projection pickles")
 pickle_files = sorted(glob.glob(save_dir+"*.pkl"))
 for pickle_file in pickle_files:
+    proj_number = pickle_file.split('_')[1][0]
     print("on rank,", rank, "using pickle_file", pickle_file)
     file = open(pickle_file, 'rb')
     X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
@@ -530,7 +531,7 @@ for pickle_file in pickle_files:
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     
-    if len(usable_files) > 1:
+    if len(m_times) > 1:
         if args.output_filename == None:
             file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
         else:
@@ -539,7 +540,7 @@ for pickle_file in pickle_files:
         if args.output_filename != None:
             file_name = args.output_filename
         else:
-            file_name = save_dir + "time_" + str(args.plot_time)
+            file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number
     
     if 0.0 in (cbar_min, cbar_max):
         plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
@@ -597,8 +598,5 @@ for pickle_file in pickle_files:
             print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
     else:
         plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-        print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
-
-    import pdb
-    pdb.set_trace()
+        print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
