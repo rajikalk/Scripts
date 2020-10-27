@@ -546,7 +546,59 @@ for pickle_file in pickle_files:
     else:
         plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
     plt.gca().set_aspect('equal')
+    cbar = plt.colorbar(plot, pad=0.0)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+
+    if has_particles:
+        if args.annotate_particles_mass == True:
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+        else:
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+
+    if 'Density' in simfo['field']:
+        if args.divide_by_proj_thickness == "True":
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+        else:
+            cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
+    else:
+        label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
+        cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
+
+    if len(title) > 0:
+        title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
+        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+    plt.tick_params(axis='both', which='major')# labelsize=16)
+    for line in ax.xaxis.get_ticklines():
+        line.set_color('white')
+    for line in ax.yaxis.get_ticklines():
+        line.set_color('white')
+
+    if args.annotate_time == "True":
+        try:
+            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+            try:
+                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            except:
+                print("Couldn't outline time string")
+        except:
+            print("Couldn't plot time string")
+                
     
+    if size > 1:
+        try:
+            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+            print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+        except:
+            print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
+    else:
+        plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+        print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+
     import pdb
     pdb.set_trace()
 
