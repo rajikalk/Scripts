@@ -444,15 +444,16 @@ if args.make_frames_only == 'False':
                             os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
                             
                     if rank == proj_root_rank:
-                        image = proj_dict[proj_dict_keys[0]]
-                        vel_x = proj_dict[proj_dict_keys[1]]
-                        vel_y = proj_dict[proj_dict_keys[2]]
-                        vel_z = proj_dict[proj_dict_keys[3]]
+                        image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
+                        vel_x = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
+                        vel_y = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
+                        vel_z = yt.YTArray(proj_dict[proj_dict_keys[3]], 'cm/s')
                         
                         vel_array = yt.YTArray([vel_x, vel_y, vel_z]).T
                         vel_rad = projected_vector(vel_array, projection_vectors[proj_it])
                         vel_rad_mag = np.sqrt(vel_rad.T[0]**2 + vel_rad.T[1]**2 + vel_rad.T[2]**2)
                         vel_proj_y = projected_vector(vel_array, north_vectors[proj_it])
+                        print("vel_proj_y =", vel_proj_y)
                         vely_full = np.sqrt(vel_proj_y.T[0]**2 + vel_proj_y.T[1]**2 + vel_proj_y.T[2]**2).in_units('km/s')
                         
                         vel_proj_x = projected_vector(vel_array, east_unit_vector)
@@ -460,10 +461,6 @@ if args.make_frames_only == 'False':
                         
                     
                         velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
-                        '''
-                        magx = proj.frb.data[('gas', 'Projected_Magnetic_Field')].in_units('cm*gauss').value/thickness.in_units('cm').value
-                        magy = proj.frb.data[('flash', 'magz')].in_units('cm*gauss').value/thickness.in_units('cm').value
-                        '''
                         
                         args_dict = {}
                         if args.annotate_time == "True":
@@ -510,7 +507,7 @@ pickle_files = sorted(glob.glob(save_dir+"*.pkl"))
 for pickle_file in pickle_files:
     print("on rank,", rank, "using pickle_file", pickle_file)
     file = open(pickle_file, 'rb')
-    X, Y, image, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+    X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
     
