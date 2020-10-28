@@ -296,7 +296,7 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/4)):
+    for fn in usable_files:
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -318,6 +318,9 @@ if args.make_frames_only == 'False':
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
+            
+            has_particles = has_sinks(ds)
+            part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
             time_val = m_times[file_int]
             
@@ -389,8 +392,6 @@ if args.make_frames_only == 'False':
                     
                     y_sign = np.dot(proj_part_unit,north_unit)
                     particle_y_plot = y_sign*proj_part_mag
-                    has_particles = has_sinks(ds)
-                    part_info = mym.get_particle_data(ds, sink_id=sink_id)
                     part_info['particle_position'] = np.array([[0, 0],[particle_y_plot[0].value, particle_y_plot[1].value]])
                     
                     #Calculate center velocity
@@ -497,7 +498,7 @@ if args.make_frames_only == 'False':
                         del vely
                         del part_info
                 else:
-                    rit = rit + 1
+                    rit = rit + 4
                     if rit == size:
                         rit = 0
                 
@@ -593,9 +594,9 @@ for pickle_file in pickle_files:
     if size > 1:
         try:
             plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-            print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+            print('Created frameof projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
         except:
-            print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
+            print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
     else:
         plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
         print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
