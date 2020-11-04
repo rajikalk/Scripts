@@ -375,21 +375,27 @@ if args.make_frames_only == 'False':
             #Now that projection and north vectors have been generated, lets create the projection
             #rit = 0
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(size/4)):# range(len(projection_vectors)):
-                #if rank in range(rit, rit+4):
                 #Calculate projected particle positions
                 projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
-                proj_part_y = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
-                
+                proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+                proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
                 north_mag = np.sqrt(north_vectors[proj_it][0]**2 + north_vectors[proj_it][1]**2 + north_vectors[proj_it][2]**2)
                 north_unit = north_vectors[proj_it]/north_mag
+                north_sign = np.dot(north_unit, proj_part_y_unit.T)
+                proj_part_y = proj_part_y_mag*north_sign
+                
                 proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
                 proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
                 east_unit_vector = np.cross(proj_vector_unit, north_unit)
+                #east_unit_vector = np.cross(north_unit, proj_vector_unit)
                 
                 projected_particle_posx = projected_vector(pos_array, east_unit_vector)
-                proj_part_x = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+                proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+                proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
+                east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
+                proj_part_x = proj_part_x_mag/east_sign
                 
-                part_info['particle_position'] = np.array([[proj_part_x, proj_part_x],[proj_part_y[0].value, proj_part_y[1].value]])
+                part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
                 
                 #Calculate center velocity
                 center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
@@ -400,10 +406,65 @@ if args.make_frames_only == 'False':
                 
                 center_vel_image = np.array([center_vel_x, center_vel_y])
                 
+                #Define radial velocity field:
+                '''
+                def _Radial_Velocity(field, data):
+                    try:
+                        if np.shape(data[x]) == (16,16,16):
+                            import pdb
+                            pdb.set_trace()
+                        gas_velx = data['x-velocity'].in_units('cm/s')
+                        gas_vely = data['y-velocity'].in_units('cm/s')
+                        gas_velz = data['z-velocity'].in_units('cm/s')
+                        cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+                        
+                        radial_vel = projected_vector(cell_vel,projection_vectors[proj_it])
+                        rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+                        rv_mag = yt.YTArray(rv_mag, 'cm/s')
+                    except:
+                        rv_mag = yt.YTArray([], 'cm/s')
+                    
+                    return rv_mag
+                
+                ds.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s")
+                
+                def _Proj_x_velocity(field, data):
+                    gas_velx = data['x-velocity'].in_units('cm/s')
+                    gas_vely = data['y-velocity'].in_units('cm/s')
+                    gas_velz = data['z-velocity'].in_units('cm/s')
+                    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+                    
+                    radial_vel = projected_vector(cell_vel,east_unit_vector)
+                    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+                    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+                    return rv_mag
+                
+                ds.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
+                
+                def _Proj_y_velocity(field, data):
+                    gas_velx = data['x-velocity'].in_units('cm/s')
+                    gas_vely = data['y-velocity'].in_units('cm/s')
+                    gas_velz = data['z-velocity'].in_units('cm/s')
+                    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+                    
+                    radial_vel = projected_vector(cell_vel,north_unit)
+                    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+                    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+                    return rv_mag
+                
+                ds.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s")
+                '''
+                #set vectors:
+                myf.set_normal(proj_vector_unit)
+                myf.set_east_vector(east_unit_vector)
+                myf.set_north_vector(north_unit)
+                
                 #Caculate pojections!
                 proj_root_rank = int(rank/4)*4
-                field_list = [simfo['field'], ('ramses', 'x-velocity'), ('ramses', 'y-velocity'), ('ramses', 'z-velocity')] # ('gas', mag1_field), ('gas', mag2_field)
-                proj_dict = {simfo['field'][1]:[], 'x-velocity':[], 'y-velocity':[], 'z-velocity':[]}
+                field_list = [simfo['field'], ('gas', 'Radial_Velocity'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
+                proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
+                #field_list = [simfo['field'], ('gas', 'Radial_Velocity'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_x_velocity')] # ('gas', mag1_field), ('gas', mag2_field)
+                #proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_x_velocity':[]}
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 print("About to start parallel projections")
                 for field in yt.parallel_objects(field_list):
@@ -442,10 +503,10 @@ if args.make_frames_only == 'False':
                         
                 if rank == proj_root_rank:
                     image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
-                    vel_x = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
-                    vel_y = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
-                    vel_z = yt.YTArray(proj_dict[proj_dict_keys[3]], 'cm/s')
-                    
+                    vel_rad = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
+                    velx_full = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
+                    vely_full = yt.YTArray(proj_dict[proj_dict_keys[3]], 'cm/s')
+                    '''
                     vel_array = yt.YTArray([vel_x, vel_y, vel_z]).T
                     vel_rad = projected_vector(vel_array, projection_vectors[proj_it])
                     vel_rad_mag = np.sqrt(vel_rad.T[0]**2 + vel_rad.T[1]**2 + vel_rad.T[2]**2)
@@ -456,7 +517,7 @@ if args.make_frames_only == 'False':
                     vel_proj_x = projected_vector(vel_array, east_unit_vector)
                     velx_full = np.sqrt(vel_proj_x.T[0]**2 + vel_proj_x.T[1]**2 + vel_proj_x.T[2]**2).in_units('cm/s')
                     
-                
+                    '''
                     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
                     
                     args_dict = {}
@@ -478,7 +539,7 @@ if args.make_frames_only == 'False':
                     
                     pickle_file = pickle_file.split('.pkl')[0] + '_' + str(proj_it) + '.pkl'
                     file = open(pickle_file, 'wb')
-                    pickle.dump((X, Y, image, vel_rad_mag, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
+                    pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
                     file.close()
                     print("Created Pickle:", pickle_file, "for  file:", str(ds))
                     del has_particles
@@ -561,6 +622,8 @@ for pickle_file in pickle_files:
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
             else:
                 cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
+        elif 'Number_Density' in simfo['field']:
+            cbar.set_label(r"Number Density (cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
         else:
             label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
             cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
@@ -588,18 +651,17 @@ for pickle_file in pickle_files:
                     print("Couldn't outline time string")
             except:
                 print("Couldn't plot time string")
-                    
         
         if size > 1:
             try:
                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                plt.savefig(file_name + ".eps", format='jpg', bbox_inches='tight')
-                print('Created frameof projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
             except:
                 print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
         else:
             plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-            plt.savefig(file_name + ".eps", format='jpg', bbox_inches='tight')
+            plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
             print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
             
         #Created RV Plot:
@@ -667,13 +729,13 @@ for pickle_file in pickle_files:
         if size > 1:
             try:
                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                plt.savefig(file_name + ".eps", format='jpg', bbox_inches='tight')
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame of radial velocity', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
             except:
                 print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
         else:
             plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-            plt.savefig(file_name + ".eps", format='jpg', bbox_inches='tight')
+            plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
             print('Created frame of radial velocity', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
     else:
         rit = rit + 1
