@@ -15,8 +15,9 @@ center_vel_gas = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
 center_vel_part = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
 center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
 coordinates = 'spherical'
-normal = [1.0, 0.0, 0.0]
+normal = [0.0, 0.0, 1.0]
 north_vector = [0.0, 1.0, 0.0]
+east_vector = [1.0, 0.0, 0.0]
 part_pos = yt.YTArray([], 'cm')
 part_mass = yt.YTArray([], 'g')
 part_vel = yt.YTArray([], 'cm/s')
@@ -111,7 +112,7 @@ def set_normal(x):
     """
     Sets the normal used for projected fields.
         
-    Default: [x,y,z] = [1,0,0]
+    Default: [x,y,z] = [0,0,1]
     """
     global normal
     if isinstance(x,list) == False:
@@ -130,6 +131,18 @@ def set_north_vector(x):
         x = x.tolist()
     north_vector = x
     return north_vector
+    
+def set_east_vector(x):
+    """
+    Sets the east vector used for projected fields.
+        
+    Default: [x,y,z] = [1,0,0]
+    """
+    global east_vector
+    if isinstance(x,list) == False:
+        x = x.tolist()
+    east_vector = x
+    return east_vector
 
 def set_com_pos_use_gas(x):
     """
@@ -237,12 +250,19 @@ def get_normal():
     global normal
     return normal
     
-def get_normal():
+def get_north_vector():
     """
     returns the currently set north vector
     """
     global north_vector
     return north_vector
+
+def get_east_vector():
+    """
+    returns the currently set east vector
+    """
+    global east_vector
+    return east_vector
     
 def get_com_pos_use_gas():
     """
@@ -278,6 +298,17 @@ def get_active_radius():
     """
     global active_radius
     return active_radius
+    
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the projection of vecter projected onto vector
+    """
+    vector_units = vector.units
+    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+    proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
 
 #===========================OVERWRITING DENSITY FIELD BECAUSE DENSITY UNIT DOESN'T GET OVERWRITTEN======================================
 
@@ -1526,3 +1557,69 @@ def _Number_Density(field, data):
     return Number_Density
 
 yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3")
+
+def _Radial_Velocity(field, data):
+    global normal
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("Normal vector =", normal)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
+    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
+    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,normal)
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s")
+
+def _Proj_x_velocity(field, data):
+    global east_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("East vector =", east_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
+    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
+    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,east_vector)
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
+
+def _Proj_y_velocity(field, data):
+    global north_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
+    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
+    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,north_vector)
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s")
