@@ -502,6 +502,8 @@ if args.make_frames_only == 'False':
                         os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
                         
                 if rank == proj_root_rank:
+                    print("DICTIONARY KEYS:", proj_dict_keys)
+                    print("OR:", proj_dict.keys())
                     image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
                     vel_rad = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
                     velx_full = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
