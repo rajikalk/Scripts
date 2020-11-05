@@ -251,6 +251,11 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
+if args.weight_field == 'None':
+    weight_field = None
+else:
+    weight_field = args.weight_field
+
 if args.plot_time != None:
     if args.weight_field == 'None':
         weight_field = None
@@ -271,12 +276,15 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
+sink_form_companion = dd['sink_particle_form_time'][sink_id+1]
+if args.start_frame == 0 and args.plot_time == None:
+    args.start_frame = int((sink_form_companion - sink_form_time)/(args.time_step))+1
 del dd
 
 if args.plot_time != None:
     m_times = [args.plot_time]
 else:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
     
 no_frames = len(m_times)
 m_times = m_times[args.start_frame:]
@@ -308,6 +316,8 @@ if args.make_frames_only == 'False':
             #if usable_files[file_int] == usable_files[file_int-1]:
                 #os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             '''
+        if args.plot_time is None:
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int])
         make_pickle = True
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
@@ -383,6 +393,7 @@ if args.make_frames_only == 'False':
                 north_unit = north_vectors[proj_it]/north_mag
                 north_sign = np.dot(north_unit, proj_part_y_unit.T)
                 proj_part_y = proj_part_y_mag*north_sign
+                proj_part_y = np.nan_to_num(proj_part_y)
                 
                 proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
                 proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
@@ -394,6 +405,7 @@ if args.make_frames_only == 'False':
                 proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
                 east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
                 proj_part_x = proj_part_x_mag/east_sign
+                proj_part_x = np.nan_to_num(proj_part_x)
                 
                 part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
                 
@@ -538,7 +550,6 @@ if args.make_frames_only == 'False':
                     args_dict.update({'ylim':ylim})
                     args_dict.update({'has_particles':has_particles})
                     
-                    
                     pickle_file = pickle_file.split('.pkl')[0] + '_' + str(proj_it) + '.pkl'
                     file = open(pickle_file, 'wb')
                     pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
@@ -608,7 +619,7 @@ for pickle_file in pickle_files:
         elif 0.0 in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
         else:
-            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.inferno, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
@@ -625,7 +636,10 @@ for pickle_file in pickle_files:
             else:
                 cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
         elif 'Number_Density' in simfo['field']:
-            cbar.set_label(r"Number Density (cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+            if args.div_by_thickness == 'True':
+                cbar.set_label(r"Number Density (cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+            else:
+                cbar.set_label(r"Number Density (cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
         else:
             label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
             cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
@@ -685,10 +699,10 @@ for pickle_file in pickle_files:
             else:
                 file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
 
-        if None in (cbar_min, cbar_max):
-            plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True)
-        elif 0.0 in (cbar_min, cbar_max):
-            plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+        #if None in (cbar_min, cbar_max):
+        plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True)
+        #elif 0.0 in (cbar_min, cbar_max):
+        #    plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=cbar_min, vmax=cbar_max)
 
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
