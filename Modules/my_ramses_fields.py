@@ -1339,216 +1339,6 @@ def _Bulk_Velocity_Gas(field, data):
 
 yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s")
 
-def _Radial_Velocity_x(field, data):
-    """
-    returns the velocity along the light of sight
-    """
-    global normal
-    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[0]
-    return proj_v_onto_L
-
-yt.add_field("Radial_Velocity_x", function=_Radial_Velocity_x, units=r"cm/s")
-
-def _Radial_Velocity_y(field, data):
-    """
-    returns the x-component of the velocity along the light of sight
-    """
-    global normal
-    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[1]
-    return proj_v_onto_L
-
-yt.add_field("Radial_Velocity_y", function=_Radial_Velocity_y, units=r"cm/s")
-
-def _Radial_Velocity_z(field, data):
-    """
-    returns the y-component of the velocity along the light of sight
-    """
-    global normal
-    v = yt.YTArray([data['x-velocity'].in_units('cm/s').value, data['y-velocity'].in_units('cm/s').value, data['z-velocity'].in_units('cm/s').value], 'cm/s')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'cm/s')[1]
-    return proj_v_onto_L
-
-yt.add_field("Radial_Velocity_z", function=_Radial_Velocity_z, units=r"cm/s")
-
-def _Projected_Velocity_x(field, data):
-    """
-    returns the z-component of the velocity along the light of sight
-    """
-    projected_velocity = data['x-velocity'].in_units('cm/s') - data['Radial_Velocity_x'].in_units('cm/s')
-    return projected_velocity
-    
-yt.add_field("Projected_Velocity_x", function=_Projected_Velocity_x, units=r"cm/s")
-
-def _Projected_Velocity_y(field, data):
-    """
-    returns the y-component of the projected velocity onto the planet defined by the normal
-    """
-    projected_velocity = data['y-velocity'].in_units('cm/s') - data['Radial_Velocity_y'].in_units('cm/s')
-    return projected_velocity
-    
-yt.add_field("Projected_Velocity_y", function=_Projected_Velocity_y, units=r"cm/s")
-
-def _Projected_Velocity_z(field, data):
-    """
-    returns the z-component of the projected velocity onto the planet defined by the normal
-    """
-    projected_velocity = data['z-velocity'].in_units('cm/s') - data['Radial_Velocity_z'].in_units('cm/s')
-    return projected_velocity
-    
-yt.add_field("Projected_Velocity_z", function=_Projected_Velocity_z, units=r"cm/s")
-
-def _Projected_Magnetic_Field_x(field, data):
-    """
-    returns the projected velocity
-    """
-    global normal
-    v = yt.YTArray([data['magx'].value, data['magy'].value, data['magz'].value], 'G')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'G')
-    projected_B = (v - proj_v_onto_L)[0]
-    return projected_B
-    
-yt.add_field("Projected_Magnetic_Field_x", function=_Projected_Magnetic_Field_x, units=r"gauss")
-
-def _Projected_Magnetic_Field_y(field, data):
-    """
-    returns the projected velocity
-    """
-    global normal
-    v = yt.YTArray([data['magx'].value, data['magy'].value, data['magz'].value], 'G')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'G')
-    projected_B = (v - proj_v_onto_L)[1]
-    return projected_B
-    
-yt.add_field("Projected_Magnetic_Field_y", function=_Projected_Magnetic_Field_y, units=r"gauss")
-
-def _Projected_Magnetic_Field_z(field, data):
-    """
-    returns the projected velocity
-    """
-    global normal
-    v = yt.YTArray([data['magx'].value, data['magy'].value, data['magz'].value], 'G')
-    proj_v_onto_L_x = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_v_onto_L_y = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_v_onto_L_z = (np.dot(v.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_v_onto_L = yt.YTArray([proj_v_onto_L_x.T, proj_v_onto_L_y.T, proj_v_onto_L_z.T], 'G')
-    projected_B = (v - proj_v_onto_L)[2]
-    return projected_B
-    
-yt.add_field("Projected_Magnetic_Field_z", function=_Projected_Magnetic_Field_z, units=r"gauss")
-
-def _Projected_Particle_Posx(field, data):
-    """
-    returns the projected x position of particles
-    """
-    global centred_sink_id
-    global normal
-    global center_pos
-    global active_radius
-    if np.isnan(active_radius):
-        usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
-        usable_tags = np.array(usable_tags)
-    else:
-        centered_sink_pos = yt.YTArray([data['sink_particle_posx'][sink_ind].in_units('au').value, data['sink_particle_posy'][sink_ind].in_units('au').value, data['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-        dx = data['sink_particle_posx'].in_units('au') - center_pos[0]
-        dy = data['sink_particle_posy'].in_units('au') - center_pos[1]
-        dz = data['sink_particle_posz'].in_units('au') - center_pos[2]
-        dist = np.sqrt(dx**2+dy**2+dz**2)
-        usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-    try:
-        dd = data.ds.all_data()
-        pos = yt.YTArray([dd['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    except:
-        pos = yt.YTArray([data['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
-    projected_pos = (pos - proj_pos_onto_L)[0]
-    return projected_pos
-    
-yt.add_field("Projected_Particle_Posx", function=_Projected_Particle_Posx, units=r"cm")
-
-def _Projected_Particle_Posy(field, data):
-    """
-    returns the projected y position of particles
-    """
-    global centred_sink_id
-    global normal
-    global center_pos
-    global active_radius
-    if np.isnan(active_radius):
-        usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
-        usable_tags = np.array(usable_tags)
-    else:
-        centered_sink_pos = yt.YTArray([data['sink_particle_posx'][sink_ind].in_units('au').value, data['sink_particle_posy'][sink_ind].in_units('au').value, data['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-        dx = data['sink_particle_posx'].in_units('au') - center_pos[0]
-        dy = data['sink_particle_posy'].in_units('au') - center_pos[1]
-        dz = data['sink_particle_posz'].in_units('au') - center_pos[2]
-        dist = np.sqrt(dx**2+dy**2+dz**2)
-        usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-    try:
-        dd = data.ds.all_data()
-        pos = yt.YTArray([dd['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    except:
-        pos = yt.YTArray([data['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
-    projected_pos = (pos - proj_pos_onto_L)[1]
-    return projected_pos
-    
-yt.add_field("Projected_Particle_Posy", function=_Projected_Particle_Posy, units=r"cm")
-
-def _Projected_Particle_Posz(field, data):
-    """
-    returns the projected z position of particles
-    """
-    global centred_sink_id
-    global normal
-    global center_pos
-    global active_radius
-    if np.isnan(active_radius):
-        usable_tags = data['sink_particle_tag'][centred_sink_id:].astype(int)
-        usable_tags = np.array(usable_tags)
-    else:
-        centered_sink_pos = yt.YTArray([data['sink_particle_posx'][sink_ind].in_units('au').value, data['sink_particle_posy'][sink_ind].in_units('au').value, data['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-        dx = data['sink_particle_posx'].in_units('au') - center_pos[0]
-        dy = data['sink_particle_posy'].in_units('au') - center_pos[1]
-        dz = data['sink_particle_posz'].in_units('au') - center_pos[2]
-        dist = np.sqrt(dx**2+dy**2+dz**2)
-        usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-    try:
-        dd = data.ds.all_data()
-        pos = yt.YTArray([dd['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, dd['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, dd['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    except:
-        pos = yt.YTArray([data['sink_particle_posx'][usable_tags].in_units('cm').value - center_pos[0].in_units('cm').value, data['sink_particle_posy'][usable_tags].in_units('cm').value - center_pos[1].in_units('cm').value, data['sink_particle_posz'][usable_tags].in_units('cm').value - center_pos[2].in_units('cm').value], 'cm')
-    proj_pos_onto_L_x = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[0]
-    proj_pos_onto_L_y = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[1]
-    proj_pos_onto_L_z = (np.dot(pos.T, normal)/np.dot(normal,normal))*normal[2]
-    proj_pos_onto_L = yt.YTArray([proj_pos_onto_L_x.T, proj_pos_onto_L_y.T, proj_pos_onto_L_z.T], 'cm')
-    projected_pos = (pos - proj_pos_onto_L)[2]
-    return projected_pos
-    
-yt.add_field("Projected_Particle_Posz", function=_Projected_Particle_Posz, units=r"cm")
-
 def _Number_Density(field, data):
     """
     Estimates number density
@@ -1573,7 +1363,11 @@ def _Radial_Velocity(field, data):
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,normal)
-    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(normal, radial_vel_unit.T)
+    
+    rv_mag = radial_vel_mag*sign
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
     return rv_mag
@@ -1595,6 +1389,10 @@ def _Proj_x_velocity(field, data):
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,east_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(east_vector, radial_vel_unit.T)
+    
     rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
@@ -1617,6 +1415,10 @@ def _Proj_y_velocity(field, data):
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,north_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(north_vector, radial_vel_unit.T)
+    
     rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
