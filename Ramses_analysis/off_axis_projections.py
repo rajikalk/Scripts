@@ -404,7 +404,7 @@ if args.make_frames_only == 'False':
                 proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
                 proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
                 east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
-                proj_part_x = proj_part_x_mag/east_sign
+                proj_part_x = proj_part_x_mag*east_sign
                 proj_part_x = np.nan_to_num(proj_part_x)
                 
                 part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
@@ -415,6 +415,12 @@ if args.make_frames_only == 'False':
                 
                 center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
                 center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
+                
+                center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
+                center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
+                center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
+                rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
+                center_vel_rv = center_vel_rv_mag*rv_sign
                 
                 center_vel_image = np.array([center_vel_x, center_vel_y])
                 
@@ -491,7 +497,10 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
                         else:
-                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                            if args.divide_by_proj_thickness == "True":
+                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                            else:
+                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
                     else:
                         if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
@@ -514,8 +523,8 @@ if args.make_frames_only == 'False':
                         os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
                         
                 if rank == proj_root_rank:
-                    print("DICTIONARY KEYS:", proj_dict_keys)
-                    print("OR:", proj_dict.keys())
+                    #print("DICTIONARY KEYS:", proj_dict_keys)
+                    #print("OR:", proj_dict.keys())
                     image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
                     vel_rad = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
                     velx_full = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
@@ -552,7 +561,7 @@ if args.make_frames_only == 'False':
                     
                     pickle_file = pickle_file.split('.pkl')[0] + '_' + str(proj_it) + '.pkl'
                     file = open(pickle_file, 'wb')
-                    pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo), file)
+                    pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv), file)
                     file.close()
                     print("Created Pickle:", pickle_file, "for  file:", str(ds))
                     del has_particles
@@ -581,7 +590,7 @@ for pickle_file in pickle_files:
         proj_number = pickle_file.split('.pkl')[0][-1]
         print("on rank,", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
-        X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         
         time_val = args_dict['time_val']
@@ -615,11 +624,11 @@ for pickle_file in pickle_files:
                 file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number
         
         if None in (cbar_min, cbar_max):
-            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, rasterized=True)
+            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
         elif 0.0 in (cbar_min, cbar_max):
-            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.brg, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True, vmin=cbar_min, vmax=cbar_max)
         else:
-            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.inferno, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+            plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
@@ -636,7 +645,7 @@ for pickle_file in pickle_files:
             else:
                 cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
         elif 'Number_Density' in simfo['field']:
-            if args.div_by_thickness == 'True':
+            if args.divide_by_proj_thickness == 'True':
                 cbar.set_label(r"Number Density (cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
             else:
                 cbar.set_label(r"Number Density (cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
@@ -700,7 +709,17 @@ for pickle_file in pickle_files:
                 file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
 
         #if None in (cbar_min, cbar_max):
-        plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True)
+        #center_vel_rad = vel_rad - np.mean(vel_rad)
+        print("CENTRED RV")
+        #v_cbar_min = np.median(vel_rad.in_units('km/s').value) - 1
+        #v_cbar_max = np.median(vel_rad.in_units('km/s').value) + 1
+        #v_cbar_min = center_vel_rv.in_units('km/s').value - 1
+        #v_cbar_max = center_vel_rv.in_units('km/s').value + 1
+        if size == 1:
+            import pdb
+            pdb.set_trace()
+            #print("CENTER RV")
+        plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True)#, vmin=v_cbar_min, vmax=v_cbar_max)
         #elif 0.0 in (cbar_min, cbar_max):
         #    plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=cbar_min, vmax=cbar_max)
 
