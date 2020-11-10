@@ -1350,6 +1350,7 @@ yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3")
 
 def _Radial_Velocity(field, data):
     global normal
+    global center_vel
     '''
     if np.shape(data['x']) != (16,16,16):
         import pdb
@@ -1357,9 +1358,9 @@ def _Radial_Velocity(field, data):
         print("Normal vector =", normal)
     '''
     shape = np.shape(data['x'])
-    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
-    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
-    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,normal)
@@ -1383,9 +1384,9 @@ def _Proj_x_velocity(field, data):
         print("East vector =", east_vector)
     '''
     shape = np.shape(data['x'])
-    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
-    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
-    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,east_vector)
@@ -1409,9 +1410,9 @@ def _Proj_y_velocity(field, data):
         print("North vector =", north_vector)
     '''
     shape = np.shape(data['x'])
-    gas_velx = data['x-velocity'].in_units('cm/s').flatten()
-    gas_vely = data['y-velocity'].in_units('cm/s').flatten()
-    gas_velz = data['z-velocity'].in_units('cm/s').flatten()
+    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,north_vector)
