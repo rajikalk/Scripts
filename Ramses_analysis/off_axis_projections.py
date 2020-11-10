@@ -281,10 +281,14 @@ if args.start_frame == 0 and args.plot_time == None:
     args.start_frame = int((sink_form_companion - sink_form_time)/(args.time_step))+1
 del dd
 
+if rank == 0:
+    print("Finding times")
 if args.plot_time != None:
     m_times = [args.plot_time]
 else:
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
+if rank == 0:
+    print("Found times")
     
 no_frames = len(m_times)
 m_times = m_times[args.start_frame:]
@@ -307,7 +311,9 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn in usable_files:
+    for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size/32)):
+        fn = usable_files[fn_it]
+        print("File", fn, "is going to rank", rank)
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -348,7 +354,6 @@ if args.make_frames_only == 'False':
             
             #Calculate angle alpha between projection and separation vector such that the projected sepation is what you selected (default 200AU)
             projected_separation = yt.YTQuantity(args.projected_separation, 'AU')
-            #DOUBLE CHECK ALPHA CALCULATION
             alpha = np.arcsin(projected_separation/separation_magnitude)
             
             vectors_along_cone = np.array([[separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
@@ -369,22 +374,15 @@ if args.make_frames_only == 'False':
             for vector in vectors_along_cone:
                 z_rot_vector = np.dot(z_rot, vector)
                 proj_vector = yt.YTArray(np.dot(xy_rot, z_rot_vector), 'AU')
-                #proj_mag = np.sqrt(proj_vector[0]**2 + proj_vector[1]**2 + proj_vector[2]**2)
-                #proj_unit = proj_vector/proj_mag
                 projection_vectors.append(proj_vector)
                 
                 Proj_sep_proj = projected_vector(separation,proj_vector)
                 north_vector = separation - Proj_sep_proj
                 north_vectors.append(north_vector)
                 
-                #sep_unit = separation/separation_magnitude
-                
-                #angle_sep_proj = np.degrees(np.arccos(np.dot(proj_unit, sep_unit)))
-                #print("Alpha =", np.degrees(alpha), "but angle between sep and proj is", angle_sep_proj)
             
             #Now that projection and north vectors have been generated, lets create the projection
-            #rit = 0
-            for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(size/4)):# range(len(projection_vectors)):
+            for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(32/4)):# range(len(projection_vectors)):
                 #Calculate projected particle positions
                 projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
                 proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
@@ -423,68 +421,22 @@ if args.make_frames_only == 'False':
                 center_vel_rv = center_vel_rv_mag*rv_sign
                 
                 center_vel_image = np.array([center_vel_x, center_vel_y])
-                
-                #Define radial velocity field:
-                '''
-                def _Radial_Velocity(field, data):
-                    try:
-                        if np.shape(data[x]) == (16,16,16):
-                            import pdb
-                            pdb.set_trace()
-                        gas_velx = data['x-velocity'].in_units('cm/s')
-                        gas_vely = data['y-velocity'].in_units('cm/s')
-                        gas_velz = data['z-velocity'].in_units('cm/s')
-                        cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
-                        
-                        radial_vel = projected_vector(cell_vel,projection_vectors[proj_it])
-                        rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
-                        rv_mag = yt.YTArray(rv_mag, 'cm/s')
-                    except:
-                        rv_mag = yt.YTArray([], 'cm/s')
-                    
-                    return rv_mag
-                
-                ds.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s")
-                
-                def _Proj_x_velocity(field, data):
-                    gas_velx = data['x-velocity'].in_units('cm/s')
-                    gas_vely = data['y-velocity'].in_units('cm/s')
-                    gas_velz = data['z-velocity'].in_units('cm/s')
-                    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
-                    
-                    radial_vel = projected_vector(cell_vel,east_unit_vector)
-                    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
-                    rv_mag = yt.YTArray(rv_mag, 'cm/s')
-                    return rv_mag
-                
-                ds.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
-                
-                def _Proj_y_velocity(field, data):
-                    gas_velx = data['x-velocity'].in_units('cm/s')
-                    gas_vely = data['y-velocity'].in_units('cm/s')
-                    gas_velz = data['z-velocity'].in_units('cm/s')
-                    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
-                    
-                    radial_vel = projected_vector(cell_vel,north_unit)
-                    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
-                    rv_mag = yt.YTArray(rv_mag, 'cm/s')
-                    return rv_mag
-                
-                ds.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s")
-                '''
+            
                 #set vectors:
                 myf.set_normal(proj_vector_unit)
                 myf.set_east_vector(east_unit_vector)
                 myf.set_north_vector(north_unit)
                 
                 #Caculate pojections!
-                proj_root_rank = int(rank/4)*4
+                div_32 = int(rank/32)
+                rem_32 = np.remainder(rank,32)
+                div_4 = int(rem_32/4)
+                proj_root_rank = div_32*32 + div_4*4
                 field_list = [simfo['field'], ('gas', 'Radial_Velocity'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
                 proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
-                #field_list = [simfo['field'], ('gas', 'Radial_Velocity'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_x_velocity')] # ('gas', mag1_field), ('gas', mag2_field)
-                #proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_x_velocity':[]}
+                
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                print("About to start parallel projections")
+                #print("About to start parallel projections")
                 for field in yt.parallel_objects(field_list):
                     print("Calculating projection with normal", projection_vectors[proj_it], "for field", field, "on rank", rank)
                     proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)
@@ -523,24 +475,11 @@ if args.make_frames_only == 'False':
                         os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
                         
                 if rank == proj_root_rank:
-                    #print("DICTIONARY KEYS:", proj_dict_keys)
-                    #print("OR:", proj_dict.keys())
                     image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
                     vel_rad = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
                     velx_full = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
                     vely_full = yt.YTArray(proj_dict[proj_dict_keys[3]], 'cm/s')
-                    '''
-                    vel_array = yt.YTArray([vel_x, vel_y, vel_z]).T
-                    vel_rad = projected_vector(vel_array, projection_vectors[proj_it])
-                    vel_rad_mag = np.sqrt(vel_rad.T[0]**2 + vel_rad.T[1]**2 + vel_rad.T[2]**2)
-                    vel_proj_y = projected_vector(vel_array, north_vectors[proj_it])
-                    #print("vel_proj_y =", vel_proj_y)
-                    vely_full = np.sqrt(vel_proj_y.T[0]**2 + vel_proj_y.T[1]**2 + vel_proj_y.T[2]**2).in_units('cm/s')
-                    
-                    vel_proj_x = projected_vector(vel_array, east_unit_vector)
-                    velx_full = np.sqrt(vel_proj_x.T[0]**2 + vel_proj_x.T[1]**2 + vel_proj_x.T[2]**2).in_units('cm/s')
-                    
-                    '''
+
                     velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
                     
                     args_dict = {}
@@ -566,9 +505,6 @@ if args.make_frames_only == 'False':
                     print("Created Pickle:", pickle_file, "for  file:", str(ds))
                     del has_particles
                     del time_val
-                    del x_width
-                    del y_width
-                    del thickness
                     del dd
                     del center_vel
                     del proj
@@ -576,11 +512,10 @@ if args.make_frames_only == 'False':
                     del velx
                     del vely
                     del part_info
-                #else:
-                #    rit = rit + 4
-                #    if rit == size:
-                #        rit = 0
-                
+
+sys.stdout.flush()
+CW.Barrier()
+
 #Section to plot figures:
 print("Finished generating projection pickles")
 pickle_files = sorted(glob.glob(save_dir+"*.pkl"))
@@ -591,7 +526,6 @@ for pickle_file in pickle_files:
         print("on rank,", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
         X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
-        #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         
         time_val = args_dict['time_val']
         
@@ -614,7 +548,7 @@ for pickle_file in pickle_files:
         
         if len(m_times) > 1:
             if args.output_filename == None:
-                file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
+                file_name = save_dir + pickle_file.split('.pkl')[0].split('/')[1]
             else:
                 file_name = args.output_filename + "_" + str(int(time_val))
         else:
@@ -699,7 +633,7 @@ for pickle_file in pickle_files:
         
         if len(m_times) > 1:
             if args.output_filename == None:
-                file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val]) + "_rv"
+                file_name = save_dir + pickle_file.split('.pkl')[0].split('/')[1] + "_rv"
             else:
                 file_name = args.output_filename + "_" + str(int(time_val)) + "_rv"
         else:
@@ -708,20 +642,10 @@ for pickle_file in pickle_files:
             else:
                 file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
 
-        #if None in (cbar_min, cbar_max):
-        #center_vel_rad = vel_rad - np.mean(vel_rad)
-        print("CENTRED RV")
-        #v_cbar_min = np.median(vel_rad.in_units('km/s').value) - 1
-        #v_cbar_max = np.median(vel_rad.in_units('km/s').value) + 1
-        #v_cbar_min = center_vel_rv.in_units('km/s').value - 1
-        #v_cbar_max = center_vel_rv.in_units('km/s').value + 1
-        if size == 1:
-            import pdb
-            pdb.set_trace()
-            #print("CENTER RV")
-        plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True)#, vmin=v_cbar_min, vmax=v_cbar_max)
-        #elif 0.0 in (cbar_min, cbar_max):
-        #    plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+
+        v_cbar_min = center_vel_rv.in_units('km/s').value - 1
+        v_cbar_max = center_vel_rv.in_units('km/s').value + 1
+        plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
 
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
