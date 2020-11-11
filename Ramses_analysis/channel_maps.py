@@ -315,7 +315,6 @@ if args.make_frames_only == 'False':
     #for fn in usable_files:
     for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size/(18*8))):
         fn = usable_files[fn_it]
-        #if rank < rit:
         print("File", fn, "is going to rank", rank)
         if size > 1:
             file_int = usable_files.index(fn)
@@ -442,8 +441,20 @@ if args.make_frames_only == 'False':
                     print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
                     proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
                     proj.set_buff_size([args.resolution, args.resolution])
+                    
+    
+                    if weight_field == None:
+                        if args.divide_by_proj_thickness == "True":
+                            proj_array = np.array((proj.frb.data[simfo['field']]/thickness.in_units('cm')).in_units(args.field_unit))
+                        else:
+                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit+"*cm"))
+                    else:
+                        if args.divide_by_proj_thickness == "True":
+                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit))
+                        else:
+                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit)*thickness.in_units('cm'))
                 
-                    image = yt.YTArray(proj_dict[simfo['field']], args.field_unit)
+                    image = yt.YTArray(proj_array, args.field_unit)
                     
                     args_dict = {}
                     if args.annotate_time == "True":
@@ -473,11 +484,9 @@ if args.make_frames_only == 'False':
                     del proj
                     del image
                     del part_info
-                    
-        #else:
-        #    rit = rit + 32
-        #    if rit >= size:
-        #        rit = 32
+            
+sys.stdout.flush()
+CW.Barrier()
             
 #Section to plot figures:
 print("Finished generating projection pickles")
@@ -488,7 +497,7 @@ for pickle_file in pickle_files:
         proj_number = pickle_file.split('.pkl')[0][-1]
         print("on rank,", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
-        X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
+        X, Y, image, part_info, args_dict, simfo = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         
         time_val = args_dict['time_val']
