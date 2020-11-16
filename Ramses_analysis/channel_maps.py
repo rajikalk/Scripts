@@ -325,8 +325,18 @@ if args.make_frames_only == 'False':
                 #os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             '''
         if args.plot_time is None:
-            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int])
-        make_pickle = True
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/"
+        try:
+            if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
+                os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
+                print("Created directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
+        except:
+            print("save directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "exists")
+        if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/*/*.pkl")) == (18*8):
+            make_pickle = False
+            print("All channel maps for this file have been created")
+        else:
+            make_pickle = True
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
@@ -384,120 +394,144 @@ if args.make_frames_only == 'False':
                 
             #Now that projection and north vectors have been generated, lets create the projection
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=8):# range(len(projection_vectors)):
-                #Calculate projected particle positions
-                projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
-                proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
-                proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
-                north_mag = np.sqrt(north_vectors[proj_it][0]**2 + north_vectors[proj_it][1]**2 + north_vectors[proj_it][2]**2)
-                north_unit = north_vectors[proj_it]/north_mag
-                north_sign = np.dot(north_unit, proj_part_y_unit.T)
-                proj_part_y = proj_part_y_mag*north_sign
-                proj_part_y = np.nan_to_num(proj_part_y)
+                try:
+                    if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it)) == False:
+                        os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
+                        print("Created directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
+                except:
+                    print("save directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it), "exists")
+                if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it) + "/*.pkl")) == 18:
+                    make_proj = False
+                    print("All channels for this projection have been made")
+                else:
+                    make_proj = True
+                if make_proj:
+                    #Calculate projected particle positions
+                    projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
+                    proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+                    proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
+                    north_mag = np.sqrt(north_vectors[proj_it][0]**2 + north_vectors[proj_it][1]**2 + north_vectors[proj_it][2]**2)
+                    north_unit = north_vectors[proj_it]/north_mag
+                    north_sign = np.dot(north_unit, proj_part_y_unit.T)
+                    proj_part_y = proj_part_y_mag*north_sign
+                    proj_part_y = np.nan_to_num(proj_part_y)
+                    
+                    proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
+                    proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
+                    east_unit_vector = np.cross(proj_vector_unit, north_unit)
+                    #east_unit_vector = np.cross(north_unit, proj_vector_unit)
+                    
+                    projected_particle_posx = projected_vector(pos_array, east_unit_vector)
+                    proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+                    proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
+                    east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
+                    proj_part_x = proj_part_x_mag*east_sign
+                    proj_part_x = np.nan_to_num(proj_part_x)
+                    
+                    part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
+                    
+                    #Calculate center velocity
+                    center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
+                    center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
+                    
+                    center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
+                    center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
+                    
+                    center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
+                    center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
+                    center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
+                    rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
+                    center_vel_rv = center_vel_rv_mag*rv_sign
+                    
+                    center_vel_image = np.array([center_vel_x, center_vel_y])
                 
-                proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
-                proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
-                east_unit_vector = np.cross(proj_vector_unit, north_unit)
-                #east_unit_vector = np.cross(north_unit, proj_vector_unit)
-                
-                projected_particle_posx = projected_vector(pos_array, east_unit_vector)
-                proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
-                proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
-                east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
-                proj_part_x = proj_part_x_mag*east_sign
-                proj_part_x = np.nan_to_num(proj_part_x)
-                
-                part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
-                
-                #Calculate center velocity
-                center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
-                center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
-                
-                center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
-                center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
-                
-                center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
-                center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
-                center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
-                rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
-                center_vel_rv = center_vel_rv_mag*rv_sign
-                
-                center_vel_image = np.array([center_vel_x, center_vel_y])
+                    #set vectors:
+                    myf.set_normal(proj_vector_unit)
+                    myf.set_east_vector(east_unit_vector)
+                    myf.set_north_vector(north_unit)
+                    
+                    #Caculate pojections!
+                    '''
+                    div_32 = int(rank/32)
+                    rem_32 = np.remainder(rank,32)
+                    div_4 = int(rem_32/4)
+                    proj_root_rank = div_32*32 + div_4*4
+                    '''
+                    for rv_channel_it in yt.parallel_objects(range(len(rv_channels)-1)):
+                        if os.path.exists(pickle_file +'/projection_' +str(proj_it) + '/channel_' + str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])) + '.pkl') == False:
+                            make_channel_proj = True
+                        else:
+                            make_channel_proj = False
+                            print("Channel map of", str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])), "for projeciton", proj_it, "Has been made, so skipping this")
+                        if make_channel_proj:
+                            rv_cut_region = dd.cut_region(["(obj['Radial_Velocity'].in_units('km/s') < " + str(rv_channels[rv_channel_it+1]) + ") & (obj['Radial_Velocity'].in_units('km/s') > " + str(rv_channels[rv_channel_it]) + ")"])
+                        
+                            print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
+                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
+                            proj.set_buff_size([args.resolution, args.resolution])
+                            
             
-                #set vectors:
-                myf.set_normal(proj_vector_unit)
-                myf.set_east_vector(east_unit_vector)
-                myf.set_north_vector(north_unit)
-                
-                #Caculate pojections!
-                '''
-                div_32 = int(rank/32)
-                rem_32 = np.remainder(rank,32)
-                div_4 = int(rem_32/4)
-                proj_root_rank = div_32*32 + div_4*4
-                '''
-                for rv_channel_it in yt.parallel_objects(range(len(rv_channels)-1)):
-                    rv_cut_region = dd.cut_region(["(obj['Radial_Velocity'].in_units('km/s') < " + str(rv_channels[rv_channel_it+1]) + ") & (obj['Radial_Velocity'].in_units('km/s') > " + str(rv_channels[rv_channel_it]) + ")"])
-                
-                    print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
-                    proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
-                    proj.set_buff_size([args.resolution, args.resolution])
-                    
-    
-                    if weight_field == None:
-                        if args.divide_by_proj_thickness == "True":
-                            proj_array = np.array((proj.frb.data[simfo['field']]/thickness.in_units('cm')).in_units(args.field_unit))
-                        else:
-                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit+"*cm"))
-                    else:
-                        if args.divide_by_proj_thickness == "True":
-                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit))
-                        else:
-                            proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit)*thickness.in_units('cm'))
-                
-                    image = yt.YTArray(proj_array, args.field_unit)
-                    
-                    args_dict = {}
-                    if args.annotate_time == "True":
-                        args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-                    args_dict.update({'field':simfo['field']})
-                    args_dict.update({'annotate_velocity': args.plot_velocity_legend})
-                    args_dict.update({'time_val': time_val})
-                    args_dict.update({'cbar_min': cbar_min})
-                    args_dict.update({'cbar_max': cbar_max})
-                    args_dict.update({'title': title})
-                    args_dict.update({'xabel': xabel})
-                    args_dict.update({'yabel': yabel})
-                    args_dict.update({'axlim':args.ax_lim})
-                    args_dict.update({'xlim':xlim})
-                    args_dict.update({'ylim':ylim})
-                    args_dict.update({'has_particles':has_particles})
-                    
-                    pickle_file = pickle_file.split('.pkl')[0] + '_' + str(proj_it) + '_' + str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])) + '.pkl'
-                    file = open(pickle_file, 'wb')
-                    pickle.dump((X, Y, image, part_info, args_dict, simfo), file)
-                    file.close()
-                    print("Created Pickle:", pickle_file, "for  file:", str(ds))
-                    del has_particles
-                    del time_val
-                    del dd
-                    del center_vel
-                    del proj
-                    del image
-                    del part_info
+                            if weight_field == None:
+                                if args.divide_by_proj_thickness == "True":
+                                    proj_array = np.array((proj.frb.data[simfo['field']]/thickness.in_units('cm')).in_units(args.field_unit))
+                                else:
+                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit+"*cm"))
+                            else:
+                                if args.divide_by_proj_thickness == "True":
+                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit))
+                                else:
+                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit)*thickness.in_units('cm'))
+                        
+                            image = yt.YTArray(proj_array, args.field_unit)
+                            
+                            args_dict = {}
+                            if args.annotate_time == "True":
+                                args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
+                            args_dict.update({'field':simfo['field']})
+                            args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+                            args_dict.update({'time_val': time_val})
+                            args_dict.update({'cbar_min': cbar_min})
+                            args_dict.update({'cbar_max': cbar_max})
+                            args_dict.update({'title': title})
+                            args_dict.update({'xabel': xabel})
+                            args_dict.update({'yabel': yabel})
+                            args_dict.update({'axlim':args.ax_lim})
+                            args_dict.update({'xlim':xlim})
+                            args_dict.update({'ylim':ylim})
+                            args_dict.update({'has_particles':has_particles})
+                            
+                            pickle_file = pickle_file +'projection_' +str(proj_it) + '/channel_' + str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])) + '.pkl'
+                            file = open(pickle_file, 'wb')
+                            pickle.dump((X, Y, image, part_info, args_dict, simfo), file)
+                            file.close()
+                            print("Created Pickle:", pickle_file, "for  file:", str(ds))
+                            del has_particles
+                            del time_val
+                            del dd
+                            del center_vel
+                            del proj
+                            del image
+                            del part_info
+        sys.stdout.flush()
+        CW.Barrier()
             
 sys.stdout.flush()
 CW.Barrier()
             
 #Section to plot figures:
 print("Finished generating projection pickles")
-pickle_files = sorted(glob.glob(save_dir+"*.pkl"))
-rit = 0
+pickle_files = sorted(glob.glob(save_dir+"*/*/*.pkl"))
+rit = -1
 for pickle_file in pickle_files:
+    rit = rit + 1
+    if rit == size:
+        rit = 0
     if rank == rit:
-        proj_number = pickle_file.split('.pkl')[0][-1]
+        proj_number = pickle_file.split('_')[-3]
         print("on rank,", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
         X, Y, image, part_info, args_dict, simfo = pickle.load(file)
+        image[image==0] = np.nan
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         
         time_val = args_dict['time_val']
@@ -518,17 +552,18 @@ for pickle_file in pickle_files:
         ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
+        rv_channel = [pickle_file.split('_')[-2], pickle_file.split('_')[-1].split('.')[0]]
         
         if len(m_times) > 1:
             if args.output_filename == None:
-                file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
+                file_name = save_dir + pickle_file.split('.pkl')[0].split('/')[1]
             else:
                 file_name = args.output_filename + "_" + str(int(time_val))
         else:
             if args.output_filename != None:
                 file_name = args.output_filename
             else:
-                file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number
+                file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number + '_' + rv_channel[0] + '_' + rv_channel[1]
         
         if None in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
@@ -538,7 +573,6 @@ for pickle_file in pickle_files:
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
         if has_particles:
             if args.annotate_particles_mass == True:
@@ -592,13 +626,11 @@ for pickle_file in pickle_files:
             except:
                 print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
         else:
-            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-            plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-            print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
-            
-    else:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
+            try:
+                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+            except:
+                print("Couldn't save figure " + file_name + ".jpg")
 
 print("Completed making frames on rank", rank)
