@@ -418,7 +418,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3),string_l.split(' '), colors_1, size=fontsize_global)
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),string_2.split(' '), colors_2, size=fontsize_global)
         else:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
+            try:
+                rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
+            except:
+                print("couldn't annotate particle masses")
     return axis
 
 def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False, cumulative=False):
