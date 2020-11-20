@@ -262,7 +262,7 @@ if args.plot_time != None:
         pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
     else:
         weight_field = args.weight_field
-        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "/"
        
 sys.stdout.flush()
 CW.Barrier()
@@ -324,11 +324,19 @@ if args.make_frames_only == 'False':
             #if usable_files[file_int] == usable_files[file_int-1]:
                 #os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             '''
-        if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
-            try:
-                os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
-            except:
-                print(save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "Already exists")
+        if args.plot_time != None:
+            if os.path.exists(save_dir + "time_" + (str(int(args.plot_time)))) == False:
+                try:
+                    os.makedirs(save_dir + "time_" + (str(int(args.plot_time))))
+                except:
+                    print(save_dir + "time_" + (str(int(args.plot_time))), "Already exists")
+        
+        else:
+            if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
+                try:
+                    os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
+                except:
+                    print(save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "Already exists")
         if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/*.pkl")) == 8:
             make_pickle = False
             print("All projections for this time have been made")
@@ -336,6 +344,8 @@ if args.make_frames_only == 'False':
             make_pickle = True
         if args.plot_time is None:
             pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/"
+        else:
+            pickle_file = save_dir + "time_" + (str(int(args.plot_time))) + "/"
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
@@ -390,7 +400,6 @@ if args.make_frames_only == 'False':
                 Proj_sep_proj = projected_vector(separation,proj_vector)
                 north_vector = separation - Proj_sep_proj
                 north_vectors.append(north_vector)
-                
             
             #Now that projection and north vectors have been generated, lets create the projection
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(32/4)):# range(len(projection_vectors)):
@@ -411,8 +420,8 @@ if args.make_frames_only == 'False':
                     
                     proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
                     proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
-                    east_unit_vector = np.cross(proj_vector_unit, north_unit)
-                    #east_unit_vector = np.cross(north_unit, proj_vector_unit)
+                    #east_unit_vector = np.cross(proj_vector_unit, north_unit)
+                    east_unit_vector = np.cross(north_unit, proj_vector_unit)
                     
                     projected_particle_posx = projected_vector(pos_array, east_unit_vector)
                     proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
@@ -421,7 +430,7 @@ if args.make_frames_only == 'False':
                     proj_part_x = proj_part_x_mag*east_sign
                     proj_part_x = np.nan_to_num(proj_part_x)
                     
-                    part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[0].value],[proj_part_y[0].value, proj_part_y[1].value]])
+                    part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[1].value],[proj_part_y[0].value, proj_part_y[1].value]])
                     
                     #Calculate center velocity
                     center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
@@ -437,6 +446,9 @@ if args.make_frames_only == 'False':
                     center_vel_rv = center_vel_rv_mag*rv_sign
                     
                     center_vel_image = np.array([center_vel_x, center_vel_y])
+                    if size == 1:
+                        import pdb
+                        pdb.set_trace()
                 
                     #set vectors:
                     myf.set_normal(proj_vector_unit)
@@ -454,9 +466,10 @@ if args.make_frames_only == 'False':
                     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     #print("About to start parallel projections")
                     for field in yt.parallel_objects(field_list):
-                        print("Calculating projection with normal", projection_vectors[proj_it], "for field", field, "on rank", rank)
-                        proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)
-                        proj.set_buff_size([args.resolution, args.resolution])
+                        print("Calculating projection with normal", proj_vector_unit, "for field", field, "on rank", rank)
+                        proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)
+                        if args.resolution != 800:
+                            proj.set_buff_size([args.resolution, args.resolution])
                     
                         if args.field in str(field):
                             if weight_field == None:
@@ -533,7 +546,10 @@ CW.Barrier()
 
 #Section to plot figures:
 print("Finished generating projection pickles")
-pickle_files = sorted(glob.glob(save_dir+"*/*.pkl"))
+if args.plot_time is None:
+    pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
+else:
+    pickle_files = sorted(glob.glob(pickle_file + "projection*.pkl"))
 #if rank==0:
 #    print("pickle_files =", pickle_files)
 rit = -1
@@ -575,7 +591,7 @@ for pickle_file in pickle_files:
             if args.output_filename != None:
                 file_name = args.output_filename
             else:
-                file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number
+                file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number
         
         if None in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
@@ -660,7 +676,7 @@ for pickle_file in pickle_files:
             if args.output_filename != None:
                 file_name = args.output_filename +"_rv"
             else:
-                file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
+                file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
 
 
         v_cbar_min = center_vel_rv.in_units('km/s').value - 1
