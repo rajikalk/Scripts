@@ -467,7 +467,7 @@ if args.make_frames_only == 'False':
                             rv_cut_region = dd.cut_region(["(obj['Radial_Velocity'].in_units('km/s') < " + str(rv_channels[rv_channel_it+1]) + ") & (obj['Radial_Velocity'].in_units('km/s') > " + str(rv_channels[rv_channel_it]) + ")"])
                         
                             print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
-                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
+                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
                             proj.set_buff_size([args.resolution, args.resolution])
                             
             
@@ -556,7 +556,7 @@ for pickle_file in pickle_files:
         
         if len(m_times) > 1:
             if args.output_filename == None:
-                file_name = save_dir + pickle_file.split('.pkl')[0].split('/')[1]
+                file_name = pickle_file.split('.pkl')[0]
             else:
                 file_name = args.output_filename + "_" + str(int(time_val))
         else:
