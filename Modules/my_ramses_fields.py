@@ -7,7 +7,8 @@ import csv
 import glob
 from pyramses import rsink
 
-center = 0
+center_pos_ind = 0
+center_vel_ind = 0
 center_pos_gas = yt.YTArray([0.0, 0.0, 0.0], 'cm')
 center_pos_part = yt.YTArray([0.0, 0.0, 0.0], 'cm')
 center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
@@ -876,11 +877,11 @@ def _Center_Position(field, data):
     """
     global com_pos_use_gas
     global com_pos_use_part
-    global center
+    global center_pos_ind
     global active_radius
     try:
         dd = data.ds.all_data()
-        if center == 0:
+        if center_pos_ind == 0:
             TM = yt.YTArray(0.0, 'g')
             x_top = yt.YTArray(0.0, 'cm*g')
             y_top = yt.YTArray(0.0, 'cm*g')
@@ -982,10 +983,10 @@ def _Center_Velocity(field, data):
     global com_vel_use_gas
     global com_vel_use_part
     global centred_sink_id
-    global center
+    global center_vel_ind
     global active_radius
     try:
-        if center == 0:
+        if center_vel_ind == 0:
             TM = yt.YTArray(0.0, 'g')
             x_top = yt.YTArray(0.0, 'cm*g/s')
             y_top = yt.YTArray(0.0, 'cm*g/s')
