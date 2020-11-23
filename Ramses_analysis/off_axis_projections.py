@@ -679,14 +679,16 @@ for pickle_file in pickle_files:
                 file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
 
 
-        v_cbar_min = center_vel_rv.in_units('km/s').value - 1
-        v_cbar_max = center_vel_rv.in_units('km/s').value + 1
+        v_std = np.std(vel_rad/10000)
+        v_cbar_min = center_vel_rv.in_units('km/s').value - v_std
+        v_cbar_max = center_vel_rv.in_units('km/s').value + v_std
         plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+        CS = ax.contour(X,Y,image)
+        ax.clabel(CS,inline=1)
 
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
-
+        
         if has_particles:
             if args.annotate_particles_mass == True:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
