@@ -44,6 +44,7 @@ def parse_inputs():
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
     parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
+    parser.add_argument("-use_part_for_vel", "--use_particle_for_center_vel_calc", help="Do you want to use the particles to calculate center velocity?", type=str, default='True')
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
@@ -236,10 +237,13 @@ x_width = (xlim[1] -xlim[0])
 y_width = (ylim[1] -ylim[0])
 thickness = yt.YTQuantity(args.slice_thickness, 'AU')
 #Sets center for calculating center position and velocity
-myf.set_center(args.image_center)
+myf.set_center_pos_ind(args.image_center)
+myf.set_center_vel_ind(0)
 
-#Set to make sure that particles aren't used to calculate the center velocity
-myf.set_com_vel_use_part(False)
+if args.use_particle_for_center_vel_calc == 'True':
+    myf.com_vel_use_part(True)
+else:
+    myf.com_vel_use_part(False)
 
 if args.use_gas_center_calc == 'True':
     myf.set_com_pos_use_gas(True)
@@ -680,8 +684,8 @@ for pickle_file in pickle_files:
 
 
         v_std = np.std(vel_rad/10000)
-        v_cbar_min = center_vel_rv.in_units('km/s').value - v_std
-        v_cbar_max = center_vel_rv.in_units('km/s').value + v_std
+        v_cbar_min = center_vel_rv.in_units('km/s').value - v_std.value
+        v_cbar_max = center_vel_rv.in_units('km/s').value + v_std.value
         plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
         CS = ax.contour(X,Y,image)
         ax.clabel(CS,inline=1)
