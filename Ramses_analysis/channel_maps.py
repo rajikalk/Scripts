@@ -236,10 +236,14 @@ y_width = (ylim[1] -ylim[0])
 thickness = yt.YTQuantity(args.slice_thickness, 'AU')
 rv_channels = np.arange(-18,20,2)
 #Sets center for calculating center position and velocity
-myf.set_center(args.image_center)
+myf.set_center_pos_ind(args.image_center)
+myf.set_center_vel_ind(0)
 
-#Set to make sure that particles aren't used to calculate the center velocity
-myf.set_com_vel_use_part(False)
+if args.use_particle_for_center_vel_calc == 'True':
+    myf.set_com_vel_use_part(True)
+    myf.set_com_vel_use_gas(False)
+else:
+    myf.set_com_vel_use_part(False)
 
 if args.use_gas_center_calc == 'True':
     myf.set_com_pos_use_gas(True)
@@ -564,22 +568,33 @@ for pickle_file in pickle_files:
                 file_name = args.output_filename
             else:
                 file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number + '_' + rv_channel[0] + '_' + rv_channel[1]
-        
+        '''
         if None in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
         elif 0.0 in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True, vmin=cbar_min, vmax=cbar_max)
         else:
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+        '''
+        non_nan_inds = np.where(np.isnan(image) == False)
+        if len(non_nan_inds[0]) > 0:
+            std = np.std(image[non_nan_inds])
+            max = np.max(image[non_nan_inds])
+            levels = np.arange(0,max, std)[-10:]
+            CS = ax.contour(X,Y,np.nan_to_num(image), levels=levels, linewidths=0.5)
+            #ax.clabel(CS,inline=1)
+            print("Contours plotted")
+            #import pdb
+            #pdb.set_trace()
         plt.gca().set_aspect('equal')
-        cbar = plt.colorbar(plot, pad=0.0)
+        #cbar = plt.colorbar(plot, pad=0.0)
 
         if has_particles:
             if args.annotate_particles_mass == True:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
             else:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
-
+        '''
         if 'Density' in simfo['field']:
             if args.divide_by_proj_thickness == "True":
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
@@ -593,7 +608,7 @@ for pickle_file in pickle_files:
         else:
             label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
             cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
-
+        '''
         if len(title) > 0:
             title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
