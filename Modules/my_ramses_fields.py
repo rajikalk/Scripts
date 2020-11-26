@@ -44,19 +44,33 @@ def get_centred_sink_id():
     global centred_sink_id
     return centred_sink_id
 
-def set_center(x):
+def set_center_pos_ind(x):
     """
-    Sets the center used when calculating fields.
+    Sets the center pos ind used when calculating fields.
     
     Type: int
     Default: 0
     Options:0=center of mass, 1=particle 1, 2=particle 2.
     """
-    global center
+    global center_pos_ind
     global global_enc_mass
-    center = x
+    center_pos_ind = x
     global_enc_mass = []
-    return center
+    return center_pos_ind
+    
+def set_center_vel_ind(x):
+    """
+    Sets the center vel ind used when calculating fields.
+    
+    Type: int
+    Default: 0
+    Options:0=center of mass, 1=particle 1, 2=particle 2.
+    """
+    global center_vel_ind
+    global global_enc_mass
+    center_vel_ind = x
+    global_enc_mass = []
+    return center_vel_ind
 
 def set_part_pos(x):
     """
@@ -195,12 +209,19 @@ def set_active_radius(x):
     active_radius = yt.YTArray(x, 'au')
     return active_radius
 
-def get_center():
+def get_center_pos_ind():
+    """
+    returns the currently set center pos ind
+    """
+    global center_pos_ind
+    return center_pos_ind
+    
+def get_center_vel_ind():
     """
     returns the currently set center
     """
-    global center
-    return center
+    global center_vel_ind
+    return center_vel_ind
 
 def get_part_pos():
     """
@@ -879,6 +900,7 @@ def _Center_Position(field, data):
     global com_pos_use_part
     global center_pos_ind
     global active_radius
+    global centred_sink_id
     try:
         dd = data.ds.all_data()
         if center_pos_ind == 0:
@@ -888,7 +910,6 @@ def _Center_Position(field, data):
             z_top = yt.YTArray(0.0, 'cm*g')
             if com_pos_use_part == True:
                 try:
-                    global centred_sink_id
                     if np.isnan(active_radius):
                         usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
                         usable_tags = np.array(usable_tags)
@@ -919,7 +940,7 @@ def _Center_Position(field, data):
             center_pos = yt.YTArray(com, 'cm')
         else:
             particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
-            center_tag = int(particle_tag[center-1])
+            center_tag = int(particle_tag[center_pos_ind-1])
             center_pos = yt.YTArray([dd['sink_particle_posx'][center_tag].in_units('cm').value, dd['sink_particle_posy'][center_tag].in_units('cm').value, dd['sink_particle_posz'][center_tag].in_units('cm').value], 'cm')
     except:
         center_pos = data.ds.domain_center
@@ -986,6 +1007,7 @@ def _Center_Velocity(field, data):
     global center_vel_ind
     global active_radius
     try:
+        dd = data.ds.all_data()
         if center_vel_ind == 0:
             TM = yt.YTArray(0.0, 'g')
             x_top = yt.YTArray(0.0, 'cm*g/s')
@@ -993,7 +1015,6 @@ def _Center_Velocity(field, data):
             z_top = yt.YTArray(0.0, 'cm*g/s')
             if com_vel_use_part == True:
                 try:
-                    global centred_sink_id
                     if np.isnan(active_radius):
                         usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
                         usable_tags = np.array(usable_tags)
@@ -1025,7 +1046,7 @@ def _Center_Velocity(field, data):
         else:
             dd = data.ds.all_data()
             particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
-            center_tag = int(particle_tag[center-1])
+            center_tag = int(particle_tag[center_vel_ind-1])
             center_vel = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm/s').value, dd['sink_particle_vely'][center_tag].in_units('cm/s').value, dd['sink_particle_velz'][center_tag].in_units('cm/s').value], 'cm/s')
     except:
         center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
