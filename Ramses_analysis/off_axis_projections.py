@@ -14,6 +14,7 @@ import matplotlib as cm
 from matplotlib.colors import LogNorm
 from matplotlib import transforms
 import matplotlib.patheffects as path_effects
+from matplotlib import ticker
 
 def parse_inputs():
     import argparse
@@ -53,6 +54,7 @@ def parse_inputs():
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
     parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
+    parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -241,9 +243,10 @@ myf.set_center_pos_ind(args.image_center)
 myf.set_center_vel_ind(0)
 
 if args.use_particle_for_center_vel_calc == 'True':
-    myf.com_vel_use_part(True)
+    myf.set_com_vel_use_part(True)
+    myf.set_com_vel_use_gas(False)
 else:
-    myf.com_vel_use_part(False)
+    myf.set_com_vel_use_part(False)
 
 if args.use_gas_center_calc == 'True':
     myf.set_com_pos_use_gas(True)
@@ -361,6 +364,9 @@ if args.make_frames_only == 'False':
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
+            if size == 1:
+                import pdb
+                pdb.set_trace()
             
             part_posx = dd['sink_particle_posx'][sink_id:].in_units('AU') - center_pos[0]
             part_posy = dd['sink_particle_posy'][sink_id:].in_units('AU') - center_pos[1]
@@ -471,6 +477,7 @@ if args.make_frames_only == 'False':
                     #print("About to start parallel projections")
                     for field in yt.parallel_objects(field_list):
                         print("Calculating projection with normal", proj_vector_unit, "for field", field, "on rank", rank)
+                        rv_cut_region = dd.cut_region([str(simfo['field'])+".in_units('"+str(args.field_unit)+"') > " + str(args.density_threshold)])
                         proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)
                         if args.resolution != 800:
                             proj.set_buff_size([args.resolution, args.resolution])
@@ -684,10 +691,10 @@ for pickle_file in pickle_files:
 
 
         v_std = np.std(vel_rad/10000)
-        v_cbar_min = center_vel_rv.in_units('km/s').value - v_std.value
-        v_cbar_max = center_vel_rv.in_units('km/s').value + v_std.value
+        v_cbar_min = -10 #center_vel_rv.in_units('km/s').value - 5
+        v_cbar_max = 10#center_vel_rv.in_units('km/s').value + 5
         plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
-        CS = ax.contour(X,Y,image)
+        CS = ax.contour(X,Y,image, locator=ticker.LogLocator())
         ax.clabel(CS,inline=1)
 
         plt.gca().set_aspect('equal')
