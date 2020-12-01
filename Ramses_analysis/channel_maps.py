@@ -52,6 +52,8 @@ def parse_inputs():
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
     parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
+    parser.add_argument("-use_part_for_vel", "--use_particle_for_center_vel_calc", help="Do you want to use the particles to calculate center velocity?", type=str, default='True')
+    parser.add_argument("-image_dir", "--image_directory", help="The directory where the projection pickles are stored", type=str, default="./")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -234,7 +236,7 @@ if args.ax_lim != None:
 x_width = (xlim[1] -xlim[0])
 y_width = (ylim[1] -ylim[0])
 thickness = yt.YTQuantity(args.slice_thickness, 'AU')
-rv_channels = np.arange(-18,20,2)
+rv_channels = np.arange(2,40,2)
 #Sets center for calculating center position and velocity
 myf.set_center_pos_ind(args.image_center)
 myf.set_center_vel_ind(0)
@@ -263,11 +265,10 @@ else:
 if args.plot_time != None:
     if args.weight_field == 'None':
         weight_field = None
-        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+        pickle_file = save_dir + "time_" + (str(int(args.plot_time))) + "/"
     else:
         weight_field = args.weight_field
-        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
-       
+        pickle_file = save_dir + "time_" + (str(int(args.plot_time))) + "_weight_" + args.field + "/"
 sys.stdout.flush()
 CW.Barrier()
 
@@ -328,19 +329,31 @@ if args.make_frames_only == 'False':
             #if usable_files[file_int] == usable_files[file_int-1]:
                 #os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             '''
-        if args.plot_time is None:
-            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/"
-        try:
-            if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
-                os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
-                print("Created directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
-        except:
-            print("save directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "exists")
-        if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/*/*.pkl")) == (18*8):
-            make_pickle = False
-            print("All channel maps for this file have been created")
+        if args.plot_time != None:
+            if os.path.exists(pickle_file) == False:
+                try:
+                    os.makedirs(pickle_file)
+                except:
+                    print(pickle_file, "Already exists")
+        
         else:
-            make_pickle = True
+            if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
+                try:
+                    os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
+                except:
+                    print(save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "Already exists")
+        if args.plot_time == None:
+            if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/*/*.pkl")) == (18*8):
+                make_pickle = False
+                print("All channel maps for this file have been created")
+            else:
+                make_pickle = True
+        else:
+            if len(glob.glob(pickle_file + "*/*.pkl")) == (18*8):
+                make_pickle = False
+                print("All channel maps for this file have been created")
+            else:
+                make_pickle = True
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
@@ -398,17 +411,30 @@ if args.make_frames_only == 'False':
                 
             #Now that projection and north vectors have been generated, lets create the projection
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=8):# range(len(projection_vectors)):
-                try:
-                    if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it)) == False:
-                        os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
-                        print("Created directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
-                except:
-                    print("save directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it), "exists")
-                if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it) + "/*.pkl")) == 18:
-                    make_proj = False
-                    print("All channels for this projection have been made")
+                if args.plot_time == None:
+                    try:
+                        if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it)) == False:
+                            os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
+                            print("Created directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it))
+                    except:
+                        print("save directory:", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it), "exists")
+                    if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it) + "/*.pkl")) == 18:
+                        make_proj = False
+                        print("All channels for this projection have been made")
+                    else:
+                        make_proj = True
                 else:
-                    make_proj = True
+                    try:
+                        if os.path.exists(pickle_file + "/projection_" + str(proj_it)) == False:
+                            os.makedirs(pickle_file + "/projection_" + str(proj_it))
+                            print("Created directory:", pickle_file + "/projection_" + str(proj_it))
+                    except:
+                        print("save directory:", pickle_file + "/projection_" + str(proj_it), "exists")
+                    if len(glob.glob(pickle_file + "/projection_" + str(proj_it) + "/*.pkl")) == 18:
+                        make_proj = False
+                        print("All channels for this projection have been made")
+                    else:
+                        make_proj = True
                 if make_proj:
                     #Calculate projected particle positions
                     projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
@@ -468,25 +494,37 @@ if args.make_frames_only == 'False':
                             make_channel_proj = False
                             print("Channel map of", str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])), "for projeciton", proj_it, "Has been made, so skipping this")
                         if make_channel_proj:
-                            rv_cut_region = dd.cut_region(["(obj['Radial_Velocity'].in_units('km/s') < " + str(rv_channels[rv_channel_it+1]) + ") & (obj['Radial_Velocity'].in_units('km/s') > " + str(rv_channels[rv_channel_it]) + ")"])
+                            rv_cut_region = dd.cut_region(["(abs(obj['Radial_Velocity'].in_units('km/s')) < " + str(rv_channels[rv_channel_it+1]) + ") & (abs(obj['Radial_Velocity'].in_units('km/s')) > " + str(rv_channels[rv_channel_it]) + ")"])
                         
                             print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
-                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
+                            field_list = [simfo['field'], ('gas', 'Radial_Velocity')]
+                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field_list, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
                             proj.set_buff_size([args.resolution, args.resolution])
                             
-            
-                            if weight_field == None:
-                                if args.divide_by_proj_thickness == "True":
-                                    proj_array = np.array((proj.frb.data[simfo['field']]/thickness.in_units('cm')).in_units(args.field_unit))
+                            for field in field_list:
+                                if args.field in str(field):
+                                    if weight_field == None:
+                                        if args.divide_by_proj_thickness == "True":
+                                            proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                                        else:
+                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
+                                    else:
+                                        if args.divide_by_proj_thickness == "True":
+                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                                        else:
+                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
                                 else:
-                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit+"*cm"))
-                            else:
-                                if args.divide_by_proj_thickness == "True":
-                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit))
+                                    if weight_field == None:
+                                        proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
+                                    else:
+                                        proj_array = np.array(proj.frb.data[field].in_cgs())
+                                if size == 1:
+                                    import pdb
+                                    pdb.set_trace()
+                                if field == simfo['field']:
+                                    image = yt.YTArray(proj_array, args.field_unit)
                                 else:
-                                    proj_array = np.array(proj.frb.data[simfo['field']].in_units(args.field_unit)*thickness.in_units('cm'))
-                        
-                            image = yt.YTArray(proj_array, args.field_unit)
+                                    sign_array = np.sign(proj_array)
                             
                             args_dict = {}
                             if args.annotate_time == "True":
@@ -506,7 +544,7 @@ if args.make_frames_only == 'False':
                             
                             pickle_file = pickle_file +'projection_' +str(proj_it) + '/channel_' + str(int(rv_channels[rv_channel_it])) + '_' + str(int(rv_channels[rv_channel_it+1])) + '.pkl'
                             file = open(pickle_file, 'wb')
-                            pickle.dump((X, Y, image, part_info, args_dict, simfo), file)
+                            pickle.dump((X, Y, image, sign_array, part_info, args_dict, simfo), file)
                             file.close()
                             print("Created Pickle:", pickle_file, "for  file:", str(ds))
                             del has_particles
@@ -524,7 +562,10 @@ CW.Barrier()
             
 #Section to plot figures:
 print("Finished generating projection pickles")
-pickle_files = sorted(glob.glob(save_dir+"*/*/*.pkl"))
+if args.plot_time is None:
+    pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
+else:
+    pickle_files = sorted(glob.glob(save_dir+"time_" + str(int(args.plot_time)) + "*/*/channel*.pkl"))
 rit = -1
 for pickle_file in pickle_files:
     rit = rit + 1
@@ -532,11 +573,19 @@ for pickle_file in pickle_files:
         rit = 0
     if rank == rit:
         proj_number = pickle_file.split('_')[-3]
-        print("on rank,", rank, "using pickle_file", pickle_file)
+        print("on rank", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
-        X, Y, image, part_info, args_dict, simfo = pickle.load(file)
+        X, Y, image, sign_array, part_info, args_dict, simfo = pickle.load(file)
         image[image==0] = np.nan
+        file.close()
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+        
+        try:
+            import pdb
+            pdb.set_trace()
+            image_file = args.image_directory + pickle_file.split('/')[-2]
+        except:
+            print("Couldn't get image data")
         
         time_val = args_dict['time_val']
         
@@ -567,7 +616,7 @@ for pickle_file in pickle_files:
             if args.output_filename != None:
                 file_name = args.output_filename
             else:
-                file_name = save_dir + "time_" + str(args.plot_time) + "_proj_" + proj_number + '_' + rv_channel[0] + '_' + rv_channel[1]
+                file_name = pickle_file.split('.pkl')[0]
         '''
         if None in (cbar_min, cbar_max):
             plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
@@ -578,14 +627,15 @@ for pickle_file in pickle_files:
         '''
         non_nan_inds = np.where(np.isnan(image) == False)
         if len(non_nan_inds[0]) > 0:
+            if size == 1:
+                import pdb
+                pdb.set_trace()
             std = np.std(image[non_nan_inds])
             max = np.max(image[non_nan_inds])
-            levels = np.arange(0,max, std)[-10:]
-            CS = ax.contour(X,Y,np.nan_to_num(image), levels=levels, linewidths=0.5)
+            levels = np.arange(0,max, std*3)
+            CS = ax.contour(X,Y,np.nan_to_num(image*sign_array), levels=levels, linewidths=0.5, cmap=plt.cm.seismic_r)
             #ax.clabel(CS,inline=1)
             print("Contours plotted")
-            #import pdb
-            #pdb.set_trace()
         plt.gca().set_aspect('equal')
         #cbar = plt.colorbar(plot, pad=0.0)
 
