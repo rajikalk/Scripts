@@ -364,9 +364,6 @@ if args.make_frames_only == 'False':
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
-            if size == 1:
-                import pdb
-                pdb.set_trace()
             
             part_posx = dd['sink_particle_posx'][sink_id:].in_units('AU') - center_pos[0]
             part_posy = dd['sink_particle_posy'][sink_id:].in_units('AU') - center_pos[1]
@@ -456,9 +453,6 @@ if args.make_frames_only == 'False':
                     center_vel_rv = center_vel_rv_mag*rv_sign
                     
                     center_vel_image = np.array([center_vel_x, center_vel_y])
-                    if size == 1:
-                        import pdb
-                        pdb.set_trace()
                 
                     #set vectors:
                     myf.set_normal(proj_vector_unit)
@@ -506,7 +500,9 @@ if args.make_frames_only == 'False':
                             pickle.dump((field[1], proj_array), file)
                             file.close()
                     
+                    
                     if rank == proj_root_rank and size > 1:
+                        #check to see if all proj files exist yet
                         for kit in range(1,len(proj_dict_keys)):
                             file = open(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                             key, proj_array = pickle.load(file)
@@ -560,7 +556,7 @@ print("Finished generating projection pickles")
 if args.plot_time is None:
     pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
 else:
-    pickle_files = sorted(glob.glob(pickle_file + "projection*.pkl"))
+    pickle_files = sorted(glob.glob(save_dir+"time_" + str(int(args.plot_time)) + "/projection*.pkl"))
 #if rank==0:
 #    print("pickle_files =", pickle_files)
 rit = -1
@@ -570,7 +566,7 @@ for pickle_file in pickle_files:
         rit = 0
     if rank == rit:
         proj_number = pickle_file.split('.pkl')[0][-1]
-        print("on rank,", rank, "using pickle_file", pickle_file)
+        print("on rank", rank, "using pickle_file", pickle_file)
         file = open(pickle_file, 'rb')
         X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
         
@@ -694,8 +690,24 @@ for pickle_file in pickle_files:
         v_cbar_min = -10 #center_vel_rv.in_units('km/s').value - 5
         v_cbar_max = 10#center_vel_rv.in_units('km/s').value + 5
         plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
-        CS = ax.contour(X,Y,image, locator=ticker.LogLocator())
-        ax.clabel(CS,inline=1)
+        fmt = ticker.LogFormatterSciNotation()
+        fmt.create_dummy_axis()
+        exp_min = np.log10(cbar_min)
+        exp_max = np.log10(cbar_max)
+        n_level = (exp_max-exp_min)*2 + 1
+        contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+        CS = ax.contour(X,Y,image, locator=plt.LogLocator(), linewidths=0.5, colors='k', levels=contour_levels)
+        #'{:.1e}'.format(your_num)
+        def func(x):
+            s = "%.0g" % x
+            if "e" in s:
+                tup = s.split('e')
+                significand = tup[0].rstrip('0').rstrip('.')
+                sign = tup[1][0].replace('+', '')
+                exponent = tup[1][1:].lstrip('0')
+                s = ('%se%s%s' % (significand, sign, exponent)).rstrip('e')
+            return s
+        ax.clabel(CS,CS.levels,fmt=func)
 
         plt.gca().set_aspect('equal')
         cbar = plt.colorbar(plot, pad=0.0)
