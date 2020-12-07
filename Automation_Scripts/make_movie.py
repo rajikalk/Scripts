@@ -13,11 +13,12 @@ from shutil import move, copyfile
 from os import remove, close, makedirs, symlink
 import argparse
 import subprocess
+import glob
 
 # ===== MAIN Start =====
 
 parser = argparse.ArgumentParser(description='Make movie from a list of images.')
-parser.add_argument('inputfiles', type=str, nargs='+', help='image filenames')
+parser.add_argument('inputfiles', type=str, help='image filenames', nargs='+')
 parser.add_argument('-o', dest='outputfile', default=None, type=str, help='movie output filename')
 parser.add_argument('-s', dest='step', default=1, type=int, help='step (default=1)')
 parser.add_argument('ffmpeg_args', nargs=argparse.REMAINDER)
@@ -25,7 +26,8 @@ parser.add_argument('ffmpeg_args', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
 # define inputfiles and outputfile
-inputfiles = args.inputfiles
+#inputfiles = sorted(glob.glob(args.inputfiles))
+inputfiles = sorted(args.inputfiles)
 if args.outputfile == None:
     cur_dir = subprocess.getoutput('pwd')+'/'
     outputfile = cur_dir.split('YT_Output')[0] + 'Videos' + cur_dir.split('YT_Output')[1].split('Movie/')[0] + cur_dir.split('YT_Output')[1].split('Movie/')[1][:-1] + '.avi'
@@ -35,11 +37,17 @@ else:
 # get files in jpg tmp file list
 tmpfilelist = 'jpgtmpfilelist.txt'
 fileliststr = ""
-for i in range(0,len(inputfiles),args.step):
-	fileliststr += inputfiles[i]+" "
-shellcmd = 'ls '+fileliststr+' > '+tmpfilelist
-print(shellcmd)
-subprocess.call(shellcmd, shell=True)
+try:
+    for i in range(0,len(inputfiles),args.step):
+        fileliststr += inputfiles[i]+" "
+    shellcmd = 'ls '+fileliststr+' > '+tmpfilelist
+    print(shellcmd)
+    subprocess.call(shellcmd, shell=True)
+except:
+    file = open(tmpfilelist, 'w')
+    for i in range(0,len(inputfiles),args.step):
+        file.write(inputfiles[i] + '\n')
+    file.close()
 
 # make movie with ffmpeg
 shellcmd = 'cat $(cat '+tmpfilelist+') | ffmpeg -f image2pipe -vcodec mjpeg -i - -b:v 50000k '+' '.join(args.ffmpeg_args)+' -y '+outputfile
