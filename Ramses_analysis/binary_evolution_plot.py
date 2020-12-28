@@ -20,6 +20,8 @@ def parse_inputs():
     parser.add_argument("-radius", "--proximity_radius", help="within what radius (in AU) do you want to save sink particle data?", type=float, default=10000.0)
     parser.add_argument("-def_sys", "--define_system", help="Is there a particular system that you would like to plot?", type=str, default=None)
     parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
+    parser.add_argument("-end_t", "--end_time", help="dow you want to add a y limit?", type=float, default=None)
+    parser.add_argument("-plt_matches", "--plot_matched_times", help="do you want to plot to match times that you found?", default='False', type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -473,11 +475,23 @@ if systems_hierarchy != None:
                 ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
 
                 ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
+                if args.plot_matched_times != 'False':
+                    matches_dict = {}
+                    with open('./quadrupole_rv_times.csv,''rU') as match_times:
+                        if row[0] != '#':
+                            no_thres = eval(row[1])
+                            obs_thres = eval(row[2])
+                            matches_dict.update({row[0]:[no_thres, obs_thres]})
+                    proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
+                    for proj in range(8):
                 ax1.set_ylabel('Separation (AU)')
                 ax1.axhline(y=25, color='k')
                 #ax1.set_ylim(bottom=1.e-1)
                 plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
-                ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
+                if args.end_time != None:
+                    ax1.set_xlim(right=float(args.end_time))
+                else:
+                    ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
                 ax1.yaxis.set_ticks_position('both')
                 ax1.tick_params(axis='y', which='major', direction="in")
                 ax1.tick_params(axis='y', which='minor', direction="in")
@@ -540,7 +554,10 @@ if systems_hierarchy != None:
                 ax1.set_ylabel('Separation (AU)')
                 ax1.axhline(y=25, color='k')
                 plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
-                ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
+                if args.end_time != None:
+                    ax1.set_xlim(right=float(args.end_time))
+                else:
+                    ax1.set_xlim([particle_data['time'][non_nan_inds][0].value, particle_data['time'][non_nan_inds][-1].value])
                 ax1.yaxis.set_ticks_position('both')
                 ax1.tick_params(axis='y', which='major', direction="in")
                 ax1.tick_params(axis='y', which='minor', direction="in")
@@ -597,6 +614,7 @@ if systems_hierarchy != None:
                 ax6.tick_params(axis='y', which='minor', direction="in")
                 ax6.tick_params(axis='x', which='major', direction="in")
                 ax6.set_xlabel('Time (yr)')
+                
                 
                 #Save image
                 plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
