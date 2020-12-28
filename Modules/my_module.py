@@ -481,7 +481,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
             rainbow_text_colors.append('white')
-    print('annotation_string =', p_t)
+    #print('annotation_string =', p_t)
     if annotate_field is not None:
         rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontgize_global)
         #part_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.03*(ymax-ymin)), p_t, va="center", ha="left", color='w', fontsize=fontgize_global)
