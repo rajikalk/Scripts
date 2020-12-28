@@ -404,11 +404,15 @@ if args.make_frames_only == 'False':
             for vector in vectors_along_cone:
                 z_rot_vector = np.dot(z_rot, vector)
                 proj_vector = yt.YTArray(np.dot(xy_rot, z_rot_vector), 'AU')
-                projection_vectors.append(proj_vector)
+                if separation_magnitude > projected_separation:
+                    projection_vectors.append(proj_vector)
                 
-                Proj_sep_proj = projected_vector(separation,proj_vector)
-                north_vector = separation - Proj_sep_proj
-                north_vectors.append(north_vector)
+                    Proj_sep_proj = projected_vector(separation,proj_vector)
+                    north_vector = separation - Proj_sep_proj
+                    north_vectors.append(north_vector)
+                else:
+                    projection_vectors.append(np.array([np.nan, np.nan, np.nan]))
+                    north_vectors.append(np.array([np.nan, np.nan, np.nan]))
                 
             #Now that projection and north vectors have been generated, lets create the projection
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=8):# range(len(projection_vectors)):
@@ -425,6 +429,9 @@ if args.make_frames_only == 'False':
                         print("All channels for this projection have been made")
                     else:
                         make_proj = True
+                elif True in np.isnan(projection_vectors[proj_it]):
+                    print("Skipping projection because vector is Nan")
+                    make_proj = False
                 else:
                     try:
                         if os.path.exists(pickle_file + "/projection_" + str(proj_it)) == False:
@@ -501,30 +508,37 @@ if args.make_frames_only == 'False':
                         
                             print("Calculating projection with normal", projection_vectors[proj_it], "for rv channel", [rv_channels[rv_channel_it], rv_channels[rv_channel_it+1]], "on rank", rank)
                             field_list = [simfo['field'], ('gas', 'Radial_Velocity')]
-                            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field_list, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
-                            proj.set_buff_size([args.resolution, args.resolution])
-                            
-                            for field in field_list:
-                                if args.field in str(field):
-                                    if weight_field == None:
-                                        if args.divide_by_proj_thickness == "True":
-                                            proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                            try:
+                                proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field_list, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit, data_source=rv_cut_region)
+                                proj.set_buff_size([args.resolution, args.resolution])
+                                
+                                for field in field_list:
+                                    if args.field in str(field):
+                                        if weight_field == None:
+                                            if args.divide_by_proj_thickness == "True":
+                                                proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                                            else:
+                                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
                                         else:
-                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
+                                            if args.divide_by_proj_thickness == "True":
+                                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                                            else:
+                                                proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
                                     else:
-                                        if args.divide_by_proj_thickness == "True":
-                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                                        if weight_field == None:
+                                            proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                                         else:
-                                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
-                                else:
-                                    if weight_field == None:
-                                        proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
+                                            proj_array = np.array(proj.frb.data[field].in_cgs())
+                                    if field == simfo['field']:
+                                        image = yt.YTArray(proj_array, args.field_unit)
                                     else:
-                                        proj_array = np.array(proj.frb.data[field].in_cgs())
-                                if field == simfo['field']:
-                                    image = yt.YTArray(proj_array, args.field_unit)
-                                else:
-                                    sign_array = proj_array
+                                        sign_array = proj_array
+                                
+                                del proj
+                            except:
+                                print("Couldn't make projection so returning arrays of NaN on rank", rank)
+                                image = yt.YTArray(np.ones((800,800))*np.nan,'g/cm**2')
+                                sign_array = yt.YTArray(np.ones((800,800))*np.nan,'g/cm**2')
                             
                             args_dict = {}
                             if args.annotate_time == "True":
@@ -552,7 +566,6 @@ if args.make_frames_only == 'False':
                             del time_val
                             del dd
                             del center_vel
-                            del proj
                             del image
                             del part_info
         sys.stdout.flush()
