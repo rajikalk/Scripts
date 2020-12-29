@@ -1,4 +1,5 @@
 #position,path,inputs
+Grid_inputs:, 
 1,1,/short/ek9/rlk100/Output/omega_t_ff_0.20/SingleStar/SingleStarOutFlow_lref_10/,{'title':'Single Star', 'zoom_times':1.33}
 2,1,/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.25/CircumbinaryOutFlow_0.25_lref_10/,{'yt_proj':True, 'title':'Tight Binary'}
 3,1,/short/ek9/rlk100/Output/omega_t_ff_0.20/CircumbinaryOutFlow_0.50/CircumbinaryOutFlow_0.50_lref_10/,{'yt_proj':True, 'title':'Wide Binary'}
