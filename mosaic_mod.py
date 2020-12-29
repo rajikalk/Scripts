@@ -276,9 +276,9 @@ def main():
 
     # Read in directories:
     input_file = args.input_file
-    save_dir = args.save_directory
-    if os.path.exists(save_dir) == False:
-        os.makedirs(save_dir)
+    #save_dir = args.save_directory
+    #if os.path.exists(save_dir) == False:
+    #    os.makedirs(save_dir)
 
     # Read in input file
     print("Reading in input mosaic file on rank", rank)
@@ -309,6 +309,9 @@ def main():
                 args_dict.append(args_temp)
                 del args_temp
                 args = prev_args
+                
+    import pdb
+    pdb.set_trace()
 
     positions = np.array(positions)
 
@@ -697,6 +700,8 @@ def main():
 
                 if len(usable_files[pit]) > 1:
                     if args.output_filename == None:
+                        import pdb
+                        pdb.set_trace()
                         file_name = save_dir + "movie_frame_" + ("%06d" % frames[frame_val])
                     else:
                         file_name = args.output_filename + "_" + str(int(time_val))
@@ -704,6 +709,8 @@ def main():
                     if args.output_filename != None:
                         file_name = args.output_filename
                     else:
+                        import pdb
+                        pdb.set_trace()
                         file_name = save_dir + "time_" + str(args.plot_time)
 
                 plt.savefig(file_name + ".eps", format='eps', bbox_inches='tight')
