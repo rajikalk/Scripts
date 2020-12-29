@@ -378,14 +378,29 @@ if args.make_frames_only == 'False':
             #Angle around xy plane:
             sep_xy_mag = np.sqrt(separation[0]**2 + separation[1]**2)
             sep_xy_unit = yt.YTArray([separation[0]/sep_xy_mag, separation[1]/sep_xy_mag, 0], 'AU')
-            theta = np.arccos(np.dot(sep_xy_unit, np.array([0,1,0])))
+                        theta = np.arccos(np.dot(sep_xy_unit, np.array([0,1,0])))
             #Angle from z axis:
-            phi = np.arccos(np.dot(separation/separation_magnitude, [0,0,1]))
+            phi = np.arccos(np.dot(sepration_unit, [0,0,1]))
             
             #Calculate angle alpha between projection and separation vector such that the projected sepation is what you selected (default 200AU)
             projected_separation = yt.YTQuantity(args.projected_separation, 'AU')
             alpha = np.arcsin(projected_separation/separation_magnitude)
+            proj_length = np.sqrt(separation_magnitude**2 - projected_separation**2)
+            radius = proj_length*(projected_separation/separation_magnitude)
+            sep_z = np.sqrt(proj_length**2 - radius**2)
             
+            vectors_along_cone = np.array([[radius, 0, sep_z],\
+                                           [radius/np.sqrt(2), radius/np.sqrt(2), sep_z],\
+                                           [0, radius, sep_z],\
+                                           [-1*radius/np.sqrt(2), radius/np.sqrt(2), sep_z],\
+                                           [-radius, 0, sep_z],\
+                                           [-1*radius/np.sqrt(2), -1*radius/np.sqrt(2), sep_z],\
+                                           [0, -radius, sep_z],\
+                                           [radius/np.sqrt(2), -1*radius/np.sqrt(2), sep_z]])
+                                           
+            #cone_vector_length_no_tan = np.sqrt(vectors_along_cone_no_tan[:,0]**2 + vectors_along_cone_no_tan[:,1]**2 + vectors_along_cone_no_tan[:,2]**2)
+            #vectors_along_cone_no_tan = vectors_along_cone_no_tan/cone_vector_length_no_tan[0]
+            '''
             vectors_along_cone = np.array([[separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
                                            [-1*separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
                                            [0, separation_magnitude*np.tan(alpha), separation_magnitude],\
@@ -394,20 +409,42 @@ if args.make_frames_only == 'False':
                                            [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), ((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
                                            [(separation_magnitude*np.tan(alpha))/np.sqrt(2), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
                                            [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude]])
+            '''
+            #cone_vector_length = np.sqrt(vectors_along_cone[:,0]**2 + vectors_along_cone[:,1]**2 + vectors_along_cone[:,2]**2)
+            #vectors_along_cone = vectors_along_cone/cone_vector_length[0]
+            
             
             #Figure out how to rotate the projection vectors to be the same reference as the separation vector.
             #Rotate around XY plane
             z_rot = z_rotation_matrix(-1*phi)
-            xy_rot = xy_rotation_matrix(theta)
+            #z_rot_rev = z_rotation_matrix(phi)
+            #xy_rot_rev = xy_rotation_matrix(-1*theta)
+            theta_pos = yt.YTArray(np.dot(xy_rotation_matrix(theta), np.dot(z_rot, [0,0,1])), 'AU').value - sepration_unit
+            theta_neg = yt.YTArray(np.dot(xy_rotation_matrix(-1*theta), np.dot(z_rot, [0,0,1])), 'AU').value - sepration_unit
+            theta_pos_len = np.sqrt(np.sum(theta_pos**2))
+            theta_neg_len = np.sqrt(np.sum(theta_neg**2))
+            if theta_pos_len<theta_neg_len:
+                xy_rot = xy_rotation_matrix(theta)
+            elif theta_pos_len>theta_neg_len:
+                xy_rot = xy_rotation_matrix(-1*theta)
+            else:
+                print("PROBLEM WITH FINDING CORRECT ROTATION")
+                import pdb
+                pdb.set_trace()
             projection_vectors = []
             north_vectors = []
             for vector in vectors_along_cone:
-                z_rot_vector = np.dot(z_rot, vector)
-                proj_vector = yt.YTArray(np.dot(xy_rot, z_rot_vector), 'AU')
                 if separation_magnitude > projected_separation:
-                    projection_vectors.append(proj_vector)
+                    proj_vector = yt.YTArray(np.dot(xy_rot, np.dot(z_rot, vector)), 'AU')
                 
                     Proj_sep_proj = projected_vector(separation,proj_vector)
+                    sep_on_proj_length = np.sqrt(Proj_sep_proj[0]**2 + Proj_sep_proj[1]**2 + Proj_sep_proj[2]**2)
+                    calculated_proj_separation = np.sqrt(separation_magnitude**2 - sep_on_proj_length**2)
+                    if np.round(calculated_proj_separation) != projected_separation:
+                        print("CALCULATED PROJECTED SEPARATION IS", np.round(calculated_proj_separation), "FOR FILE", fn, "AT TIME", time_val)
+                        import pdb
+                        pdb.set_trace()
+                    projection_vectors.append(proj_vector)
                     north_vector = separation - Proj_sep_proj
                     north_vectors.append(north_vector)
                 else:
