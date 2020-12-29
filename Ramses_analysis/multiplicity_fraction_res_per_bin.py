@@ -182,10 +182,11 @@ scale_v = 1.8e4         # 0.18 km/s == sound speed
 scale_t = 6.85706128e14 # 4 pc / 0.18 km/s
 scale_d = 3.171441e-21  # 2998 Msun / (4 pc)^3
 
-if os.path.isfile(args.pickled_file):
-    file = open(args.pickled_file, 'rb')
-    Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T = pickle.load(file)
-    file.close()
+if args.pickled_file != None:
+    if os.path.isfile(args.pickled_file):
+        file = open(args.pickled_file, 'rb')
+        Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T = pickle.load(file)
+        file.close()
 else:
     if args.bound_check == 'True':
         bound_check = True
@@ -622,6 +623,8 @@ else:
             ns7 = len(np.where(res['n'][top_inds]==7)[0])
             n_systems.append([ns,nb,nt,nq,nq5,ns6,ns7])
             cf = (nb+nt*2+nq*3+nq5*4+ns6*5+ns7*6)/(ns+nb+nt+nq+nq5+ns6+ns7)
+            if args.verbose_printing != 'False':
+                print("CF =", cf)
             CF_per_bin.append(cf)
             del ns
             del nb
