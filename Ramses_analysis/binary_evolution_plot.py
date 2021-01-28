@@ -4,11 +4,15 @@ import glob
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 from pyramses import rsink
 import sys
 import os
 import yt
 import numpy.ma as ma
+import csv
+import re
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
@@ -441,6 +445,41 @@ if systems_hierarchy != None:
                 
                 e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(binary_masses, axis=0).in_units('g'))**2.))
                 
+                if args.plot_matched_times != 'False':
+                    plt.clf()
+                    fig = plt.figure()
+                    matches_dict = {}
+                    with open('./quadrupole_rv_times.csv','rU') as match_times:
+                        for line in match_times:
+                            row = re.split('[[]|[]]', line)
+                            if row[0][0] != '#':
+                                no_thres = eval('['+row[1]+']')
+                                obs_thres = eval('['+row[3]+']')
+                                matches_dict.update({str(row[0][0]):[no_thres, obs_thres]})
+                    #proj_colours = plt.cm.nipy_spectral(np.linspace(0,1,8))
+                    normalize = mcolors.Normalize(vmin=0, vmax=8)
+                    colormap =cm.nipy_spectral
+                    #proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
+                    plt.semilogy(particle_data['time'].value, separation.value, lw=0.5)
+                    plt.xlim(left=particle_data['time'].value[np.where(np.isnan(separation.value) == False)[0][0]])
+                    if args.end_time != None:
+                        plt.xlim(right=float(args.end_time))
+                    for proj in range(8):
+                        alpha = [0.25, 1.0]
+                        for thres_it in range(2):
+                            for match_times in matches_dict[str(proj)][thres_it]:
+                                try:
+                                    plt.axvspan(match_times[0], match_times[1], alpha=thres_it, color=colormap(normalize(proj)))# color=proj_colours[proj])
+                                    print("plotted time range")
+                                except:
+                                    plt.axvline(match_times, alpha=thres_it, color=colormap(normalize(proj)), lw=2)
+                    scalarmappaple = cm.ScalarMappable(norm=normalize, cmap=colormap)
+                    scalarmappaple.set_array(np.arange(8))
+                    plt.colorbar(scalarmappaple, ticks=np.arange(8), pad=0.0)
+                    image_name = save_dir + "match_time_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
+                    plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
+                    print("Created image", image_name)
+                
                 #Plot figures
                 image_name = save_dir + "binary_evolution_plot_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
                 #line_style = [':', '-.', '--', '-']
@@ -462,7 +501,7 @@ if systems_hierarchy != None:
                         labels.append(r'Sink ' + str(tag))
 
                 non_nan_inds = np.argwhere(np.isnan(separation) == False).T[0]
-
+    
                 #Plot binary evolution
                 plt.clf()
                 fig = plt.figure()
@@ -475,16 +514,6 @@ if systems_hierarchy != None:
                 ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
 
                 ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
-                if args.plot_matched_times != 'False':
-                    matches_dict = {}
-                    with open('./quadrupole_rv_times.csv,''rU') as match_times:
-                        if row[0] != '#':
-                            no_thres = eval(row[1])
-                            obs_thres = eval(row[2])
-                            matches_dict.update({row[0]:[no_thres, obs_thres]})
-                    proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
-                    for proj in range(8):
-                ax1.set_ylabel('Separation (AU)')
                 ax1.axhline(y=25, color='k')
                 #ax1.set_ylim(bottom=1.e-1)
                 plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
@@ -496,6 +525,7 @@ if systems_hierarchy != None:
                 ax1.tick_params(axis='y', which='major', direction="in")
                 ax1.tick_params(axis='y', which='minor', direction="in")
                 ax1.tick_params(axis='x', which='major', direction="in")
+                ax1.set_ylabel('Separation (AU)')
 
                 #Plot accretion
                 for pit in range(len(labels)):
@@ -551,6 +581,26 @@ if systems_hierarchy != None:
                 ax6 = fig.add_subplot(gs[5,0], sharex=ax1)
 
                 ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
+                if args.plot_matched_times != 'False':
+                    matches_dict = {}
+                    with open('./quadrupole_rv_times.csv','rU') as match_times:
+                        for line in match_times:
+                            row = re.split('[[]|[]]', line)
+                            if row[0][0] != '#':
+                                no_thres = eval('['+row[1]+']')
+                                obs_thres = eval('['+row[3]+']')
+                                matches_dict.update({str(row[0][0]):[no_thres, obs_thres]})
+                    proj_colours = plt.cm.nipy_spectral(np.linspace(0,1,8))
+                    #proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
+                    for proj in range(8):
+                        alpha = [0.5, 1.0]
+                        for thres_it in range(2):
+                            for match_times in matches_dict[str(proj)][thres_it]:
+                                try:
+                                    ax1.axvspan(match_times[0], match_times[1], alpha=thres_it, color=proj_colours[proj])
+                                except:
+                                    ax1.axvline(match_times, alpha=thres_it, color=proj_colours[proj], lw=2)
+                    
                 ax1.set_ylabel('Separation (AU)')
                 ax1.axhline(y=25, color='k')
                 plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
