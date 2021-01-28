@@ -315,6 +315,9 @@ if args.make_frames_only == 'False':
     del sink_form_time
     del files
     
+import pdb
+pdb.set_trace()
+    
 sys.stdout.flush()
 CW.Barrier()
 
@@ -589,7 +592,6 @@ if args.make_frames_only == 'False':
                         del image
                         del velx
                         del vely
-                        del part_info
 sys.stdout.flush()
 CW.Barrier()
 
@@ -620,9 +622,12 @@ for pickle_file in pickle_files:
                 file_name = args.output_filename
             else:
                 file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number
-        if os.path.exists(file_name + ".jpg") and args.skip_made == 'True':
-            make_frame = False
-            print(file_name + ".jpg already exists, so skipping")
+        if os.path.exists(file_name + ".jpg") and os.path.exists(file_name + "_rv.jpg") and args.skip_made == 'True':
+            if os.stat(file_name + ".jpg").st_size == 0 or os.stat(file_name + "_rv.jpg").st_size == 0:
+                make_frame = True
+            else:
+                make_frame = False
+                print(file_name + ".jpg already exists, so skipping")
         else:
             make_frame = True
         if make_frame:
@@ -630,6 +635,12 @@ for pickle_file in pickle_files:
             print("on rank", rank, "using pickle_file", pickle_file)
             file = open(pickle_file, 'rb')
             X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
+            if args.image_center == 2:
+                image = np.flip(np.flip(image, axis=0), axis=1)
+                vel_rad = np.flip(np.flip(vel_rad, axis=0), axis=1)
+                velx = np.flip(np.flip(velx, axis=0), axis=1)
+                vely = np.flip(np.flip(vely, axis=0), axis=1)
+                part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
             file.close()
             
             time_val = args_dict['time_val']
@@ -737,12 +748,14 @@ for pickle_file in pickle_files:
                     file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
             
             bool_den_array = image>args.density_threshold
-            vel_rad = vel_rad*bool_den_array
+            vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
+            vel_rad[vel_rad == 0] = np.nan
             
             v_std = np.std(vel_rad/10000)
             v_cbar_min = -10 #center_vel_rv.in_units('km/s').value - 5
             v_cbar_max = 10#center_vel_rv.in_units('km/s').value + 5
-            plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+            #plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+            plot = ax.pcolormesh(X, Y, vel_rad/10000, cmap='idl06_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
             fmt = ticker.LogFormatterSciNotation()
             fmt.create_dummy_axis()
             if args.density_threshold != 0.0:
