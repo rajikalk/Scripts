@@ -864,7 +864,7 @@ yt.add_field("Center_Position_Gas", function=_Center_Position_Gas, units=r"cm")
 
 def _Center_Position_Particle(field, data):
     """
-    Calculates the CoM of gas
+    Calculates the CoM of particle
     """
     global centred_sink_id
     global active_radius
