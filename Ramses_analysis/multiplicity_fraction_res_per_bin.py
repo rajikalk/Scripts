@@ -10,6 +10,7 @@ import collections
 import matplotlib as mpl
 import pickle
 import os
+from mpi4py.MPI import COMM_WORLD as CW
 
 #Define globals
 f_acc = 0.5
@@ -20,7 +21,7 @@ def parse_inputs():
     parser.add_argument("-proj", "--projected_separation", help="do you want to use projected separation instead of true separation?", default="False", type=str)
     parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='x', type=str)
     parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
-    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/dev/shm/stars_red_512.pkl', type=str)
+    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/Tobin_CF/stars_red_512.pkl', type=str)
     parser.add_argument("-time_window", "--time_intergration_window", help="Over what time do you want to intergrate to calculate accretion rate?", default=1000.0, type=float)
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
@@ -82,6 +83,9 @@ def luminosity(global_data, sink_inds, max_time_ind, min_time_ind):
 
 #=====================================================================================================
 
+rank = CW.Get_rank()
+size = CW.Get_size()
+
 datadir = sys.argv[1]
 savedir = sys.argv[2]
 
@@ -127,6 +131,9 @@ Tobin_n_singles = 60
 N_components = np.ones(Tobin_n_singles).tolist()
 CF_per_bin_Tobin = []
 
+sys.stdout.flush()
+CW.Barrier()
+
 for bin_it in range(1,len(S_bins)):
     N_components = []#np.ones(Tobin_n_singles).tolist()
     for key in Tobin_objects.keys():
@@ -161,7 +168,10 @@ for bin_it in range(1,len(S_bins)):
     q_no = len(np.where(np.array(N_components) == 4)[0])
     cf = (b_no+t_no*2+q_no*3)/(s_no+b_no+t_no+q_no)
     CF_per_bin_Tobin.append(cf)
-    
+
+sys.stdout.flush()
+CW.Barrier()
+
 #Create histogram of Tobin's CF Distribution
 plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
@@ -170,6 +180,9 @@ plt.xlabel("Log (AU)")
 plt.xlim([1,4])
 plt.ylim(bottom=0)
 plt.savefig(savedir + "CF_Tobin_data.png")
+
+sys.stdout.flush()
+CW.Barrier()
         
 #=====================================================================================================
 
@@ -182,54 +195,26 @@ scale_v = 1.8e4         # 0.18 km/s == sound speed
 scale_t = 6.85706128e14 # 4 pc / 0.18 km/s
 scale_d = 3.171441e-21  # 2998 Msun / (4 pc)^3
 
+sys.stdout.flush()
+CW.Barrier()
+
 if args.pickled_file != None:
     if os.path.isfile(args.pickled_file):
         file = open(args.pickled_file, 'rb')
-        Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T = pickle.load(file)
+        Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
         file.close()
-else:
-    if args.bound_check == 'True':
-        bound_check = True
     else:
-        bound_check = False
-
-    #Calculate variables
-    window = yt.YTQuantity(args.time_intergration_window, 'yr')
-    luminosity_lower_limit = 0.01
-    luminosity_upper_limit = args.upper_L_limit
-    accretion_limit = args.accretion_limit
-
-    '''
-    #low resolution data
-    datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data_256'
-    nout = 133
-    '''
-
-    #high resolution data
-    #datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data'
-    file_no_range = [298,407]
-
-    #Load global pickle data
-    pickle_file = args.global_data_pickle_file
-    file_open = open(pickle_file, 'rb')
-    global_data = pickle.load(file_open,encoding="latin1")
-    file_open.close()
-    print('Loaded global pickle data')
-
-    #Get total number of sinks:
-    S = pr.Sink()
-    S.nout = file_no_range[-1]
-    S.datadir = datadir
-    S.rsink()
-    S._jet_factor = 1.
-    S._scale_l = scale_l
-    S._scale_v = scale_v
-    S._scale_t = scale_t
-    S._scale_d = scale_d
-    i = S.read_info_file(file_no_range[-1],datadir=datadir)
-    S._time = i['time']
-    nmax=len(S.mass)
-
+        #Define quantities to keep track off
+        Separations = []
+        Times = []
+        Luminosities = []
+        N_sys_total = []
+        CF_Array_Full = []
+        All_unique_systems = {}
+        All_unique_systems_L = {}
+        All_unique_systems_M = {}
+        All_unique_systems_T = {}
+else:
     #Define quantities to keep track off
     Separations = []
     Times = []
@@ -240,7 +225,65 @@ else:
     All_unique_systems_L = {}
     All_unique_systems_M = {}
     All_unique_systems_T = {}
+    
+sys.stdout.flush()
+CW.Barrier()
 
+if args.bound_check == 'True':
+    bound_check = True
+else:
+    bound_check = False
+
+#Calculate variables
+window = yt.YTQuantity(args.time_intergration_window, 'yr')
+luminosity_lower_limit = 0.01
+luminosity_upper_limit = args.upper_L_limit
+accretion_limit = args.accretion_limit
+
+'''
+#low resolution data
+datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data_256'
+nout = 133
+'''
+
+#high resolution data
+#datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data'
+file_no_range = [298,407]
+
+#Load global pickle data
+pickle_file = args.global_data_pickle_file
+file_open = open(pickle_file, 'rb')
+global_data = pickle.load(file_open,encoding="latin1")
+file_open.close()
+print('Loaded global pickle data')
+
+#Get total number of sinks:
+S = pr.Sink()
+S.nout = file_no_range[-1]
+S.datadir = datadir
+S.rsink()
+S._jet_factor = 1.
+S._scale_l = scale_l
+S._scale_v = scale_v
+S._scale_t = scale_t
+S._scale_d = scale_d
+i = S.read_info_file(file_no_range[-1],datadir=datadir)
+S._time = i['time']
+nmax=len(S.mass)
+
+radius = yt.YTQuantity(2.0, 'rsun')
+temperature = yt.YTQuantity(3000, 'K')
+
+if len(Times) == len(range(file_no_range[0], file_no_range[1]+1)):
+    update = False
+else:
+    update = True
+    file_no_range[0] = file_no_range[0] + len(Times)
+    
+sys.stdout.flush()
+CW.Barrier()
+
+if update == True:
     for nout in range(file_no_range[0], file_no_range[1]+1):
         L_tots = []
         current_separations = []
@@ -258,10 +301,9 @@ else:
         i = S.read_info_file(nout,datadir=datadir)
         S._time = i['time']
         time = S._time * units['time_unit'].in_units('yr')
+        Times.append(time)
         
         #CALCULATE Photospheric Luminosity
-        radius = yt.YTQuantity(2.0, 'rsun')
-        temperature = yt.YTQuantity(3000, 'K')
         L_phot = yt.units.stefan_boltzmann_constant * 4*np.pi*radius.in_units('cm')**2 * temperature**4
         
         #Find indexes of time window
@@ -273,518 +315,563 @@ else:
         CF_per_bin = []
         n_systems = []
         
-        #Iterate over each bin:
-        for bin_it in range(1,len(S_bins)):
-            #Calculate res for each bin upper bound
-            if args.projected_separation == "False":
-                res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
-            else:
-                res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis)
-            top_inds = np.where(res['topSystem'])[0]
-
-            sink_inds = np.where((res['n']==1))[0]
-            L_tot = luminosity(global_data, sink_inds, max_time_ind, min_time_ind)
-            M_dot = accretion(global_data, sink_inds, max_time_ind, min_time_ind)
-            s_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]
-            visible_stars = sink_inds[s_inds]
-            
-            if args.verbose_printing != 'False':
-                print("=========================================================")
-                print("TRUE NUMBER OF VISIBLE STARS IS", str(len(visible_stars)))
-
-            #Find all singles and top systems with separations below the bin lower bound
-            s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-            s_fake = np.where((res['separation']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0]
-            
-            #Filter out invisible systems
-            #Find Single stars that are within the limonsity limits
-            L_tot = luminosity(global_data, s_true, max_time_ind, min_time_ind)
-            M_dot = accretion(global_data, s_true, max_time_ind, min_time_ind)
-            s_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]#&(M_dot>accretion_limit))[0] #&(L_tot<35.0)
-            visible_stars = s_true[s_inds]
-            if args.verbose_printing != 'False':
-                print("AND", len(visible_stars), "ARE SINGLE STARS")
-            invisible_stars = list(set(s_true).symmetric_difference(visible_stars))
-            if args.verbose_printing != 'False':
-                print("UP TO " + str(int(S_bins[bin_it])) +"AU:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
-            res['n'][invisible_stars] = 0
-            if args.verbose_printing != 'False':
-                print("AFTER REMOVING " + str(len(invisible_stars)) + " INVISIBLE SINGLE STARS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
-            
-            removed_sys = 0
-            redefined_n = 0
-            stars_in_collapsed_systems = 0
-            for fake in s_fake:
-                sys_comps = losi(fake, res)
-                sys_comps = sorted(flatten(sys_comps))
-                
-                #Find luminosities of individual components
-                L_tot = luminosity(global_data, sys_comps, max_time_ind, min_time_ind)
-                M_dot = accretion(global_data, sys_comps, max_time_ind, min_time_ind)
-                visible_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0] #&((dM/dt)>accretion_limit))[0]
-                visible_components = np.array(sys_comps)[visible_inds]
-                invisible_stars = list(set(sys_comps).symmetric_difference(visible_components))
-                
-                res['n'][visible_components] = 1
-                res['n'][invisible_stars] = 0
-                
-                if len(visible_components) > 0: #&(M_dot>accretion_limit):
-                    stars_in_collapsed_systems = stars_in_collapsed_systems + len(visible_components)
-                    res['n'][fake] = 1
-                    redefined_n = redefined_n + 1
-                else:
-                    res['n'][fake] = 0
-                    removed_sys = removed_sys + 1
-            
-            missing_stars = stars_in_collapsed_systems - redefined_n
-            if args.verbose_printing != 'False':
-                print("AFTER REMOVING " + str(removed_sys) + " SYSTEMS, REFINING " + str(redefined_n) + " SYSTEMS (WITH " + str(stars_in_collapsed_systems) + " STARS):" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
-            del removed_sys
-            del redefined_n
-            del stars_in_collapsed_systems
-            del s_fake
-            del s_true
-            
-            #Determine which systems could still be multiples
-            b = np.where((res['n']==2) & (res['topSystem']==True))[0]
-            t = np.where((res['n']==3) & (res['topSystem']==True))[0]
-            q = np.where((res['n']==4) & (res['topSystem']==True))[0]
-            q5 = np.where((res['n']==5) & (res['topSystem']==True))[0]
-            s6 = np.where((res['n']==6) & (res['topSystem']==True))[0]
-            s7 = np.where((res['n']==7) & (res['topSystem']==True))[0]
-            multi_inds = np.array(b.tolist() + t.tolist() + q.tolist() + q5.tolist() + s6.tolist() + s7.tolist())
-            del b
-            del t
-            del q
-            del q5
-            del s6
-            del s7
+        sys.stdout.flush()
+        CW.Barrier()
         
-            #Now go over multiple systems
-            for multi_ind in multi_inds:
-                sys_comps = losi(multi_ind, res)
-                sys_comps = sorted(flatten(sys_comps))
+        #Iterate over each bin:
+        rit = 0
+        for bin_it in range(1,len(S_bins)):
+            if size != 1:
+                rit = rit + 1
+            if rank == rit:
+                #Calculate res for each bin upper bound
+                if args.projected_separation == "False":
+                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
+                else:
+                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis)
+                top_inds = np.where(res['topSystem'])[0]
+
+                sink_inds = np.where((res['n']==1))[0]
+                L_tot = luminosity(global_data, sink_inds, max_time_ind, min_time_ind)
+                M_dot = accretion(global_data, sink_inds, max_time_ind, min_time_ind)
+                s_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]
+                visible_stars = sink_inds[s_inds]
                 
-                L_tot = luminosity(global_data, sys_comps, max_time_ind, min_time_ind)
-                M_dot = accretion(global_data, sys_comps, max_time_ind, min_time_ind)
+                if args.verbose_printing != 'False':
+                    print("=========================================================")
+                    print("TRUE NUMBER OF VISIBLE STARS IS", str(len(visible_stars)))
+
+                #Find all singles and top systems with separations below the bin lower bound
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                s_fake = np.where((res['separation']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0]
                 
-                detectable_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]
-                detectable_components = np.array(sys_comps)[detectable_inds]
-                            
-                #Recalculate luminsoity and accretion for detectable inds
-                M_dot = accretion(global_data, detectable_components, max_time_ind, min_time_ind)
-                L_tot = luminosity(global_data, detectable_components, max_time_ind, min_time_ind)
-                mean_M_dot = np.sum(M_dot)
-                mean_L = np.sum(L_tot)
+                #Filter out invisible systems
+                #Find Single stars that are within the limonsity limits
+                L_tot = luminosity(global_data, s_true, max_time_ind, min_time_ind)
+                M_dot = accretion(global_data, s_true, max_time_ind, min_time_ind)
+                s_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]#&(M_dot>accretion_limit))[0] #&(L_tot<35.0)
+                visible_stars = s_true[s_inds]
+                if args.verbose_printing != 'False':
+                    print("AND", len(visible_stars), "ARE SINGLE STARS")
+                invisible_stars = list(set(s_true).symmetric_difference(visible_stars))
+                if args.verbose_printing != 'False':
+                    print("UP TO " + str(int(S_bins[bin_it])) +"AU:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
+                res['n'][invisible_stars] = 0
+                if args.verbose_printing != 'False':
+                    print("AFTER REMOVING " + str(len(invisible_stars)) + " INVISIBLE SINGLE STARS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
                 
-                #if (mean_L+std_L) >0.04 and (mean_L-std_L) < 32.0 and mean_M_dot+std_M_dot>1.e-7:
-                if mean_L >luminosity_lower_limit and mean_M_dot>accretion_limit and mean_L<luminosity_upper_limit:
-                    #Check whether there is undetected companions
-                    n_detectable = len(detectable_components)
-                    res['n'][multi_ind] = n_detectable
-                    if n_detectable == len(sys_comps):
-                        #Check whether hierarchial. If it is it should be pretty easy for code:
-                        system_structure = losi(multi_ind, res)
+                removed_sys = 0
+                redefined_n = 0
+                stars_in_collapsed_systems = 0
+                for fake in s_fake:
+                    sys_comps = losi(fake, res)
+                    sys_comps = sorted(flatten(sys_comps))
+                    
+                    #Find luminosities of individual components
+                    L_tot = luminosity(global_data, sys_comps, max_time_ind, min_time_ind)
+                    M_dot = accretion(global_data, sys_comps, max_time_ind, min_time_ind)
+                    visible_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0] #&((dM/dt)>accretion_limit))[0]
+                    visible_components = np.array(sys_comps)[visible_inds]
+                    invisible_stars = list(set(sys_comps).symmetric_difference(visible_components))
+                    
+                    res['n'][visible_components] = 1
+                    res['n'][invisible_stars] = 0
+                    
+                    if len(visible_components) > 0: #&(M_dot>accretion_limit):
+                        stars_in_collapsed_systems = stars_in_collapsed_systems + len(visible_components)
+                        res['n'][fake] = 1
+                        redefined_n = redefined_n + 1
                     else:
-                        system_structure = losi(multi_ind, res)
-                        invisible_components = list(set(sys_comps).symmetric_difference(detectable_components))
-                        res['n'][invisible_components] = 0
-                        if n_detectable == 0:
-                            print("none of the components are detected")
-                        elif n_detectable == 1:
-                            sys_comps = detectable_components
-                        elif n_detectable == 2:
-                            system_structure = detectable_components
-                            sys_comps = sorted(flatten(system_structure))
+                        res['n'][fake] = 0
+                        removed_sys = removed_sys + 1
+                
+                missing_stars = stars_in_collapsed_systems - redefined_n
+                if args.verbose_printing != 'False':
+                    print("AFTER REMOVING " + str(removed_sys) + " SYSTEMS, REFINING " + str(redefined_n) + " SYSTEMS (WITH " + str(stars_in_collapsed_systems) + " STARS):" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
+                del removed_sys
+                del redefined_n
+                del stars_in_collapsed_systems
+                del s_fake
+                del s_true
+                
+                #Determine which systems could still be multiples
+                b = np.where((res['n']==2) & (res['topSystem']==True))[0]
+                t = np.where((res['n']==3) & (res['topSystem']==True))[0]
+                q = np.where((res['n']==4) & (res['topSystem']==True))[0]
+                q5 = np.where((res['n']==5) & (res['topSystem']==True))[0]
+                s6 = np.where((res['n']==6) & (res['topSystem']==True))[0]
+                s7 = np.where((res['n']==7) & (res['topSystem']==True))[0]
+                multi_inds = np.array(b.tolist() + t.tolist() + q.tolist() + q5.tolist() + s6.tolist() + s7.tolist())
+                del b
+                del t
+                del q
+                del q5
+                del s6
+                del s7
+            
+                #Now go over multiple systems
+                for multi_ind in multi_inds:
+                    sys_comps = losi(multi_ind, res)
+                    sys_comps = sorted(flatten(sys_comps))
+                    
+                    L_tot = luminosity(global_data, sys_comps, max_time_ind, min_time_ind)
+                    M_dot = accretion(global_data, sys_comps, max_time_ind, min_time_ind)
+                    
+                    detectable_inds = np.where((L_tot>luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<luminosity_upper_limit))[0]
+                    detectable_components = np.array(sys_comps)[detectable_inds]
+                                
+                    #Recalculate luminsoity and accretion for detectable inds
+                    M_dot = accretion(global_data, detectable_components, max_time_ind, min_time_ind)
+                    L_tot = luminosity(global_data, detectable_components, max_time_ind, min_time_ind)
+                    mean_M_dot = np.sum(M_dot)
+                    mean_L = np.sum(L_tot)
+                    
+                    #if (mean_L+std_L) >0.04 and (mean_L-std_L) < 32.0 and mean_M_dot+std_M_dot>1.e-7:
+                    if mean_L >luminosity_lower_limit and mean_M_dot>accretion_limit and mean_L<luminosity_upper_limit:
+                        #Check whether there is undetected companions
+                        n_detectable = len(detectable_components)
+                        res['n'][multi_ind] = n_detectable
+                        if n_detectable == len(sys_comps):
+                            #Check whether hierarchial. If it is it should be pretty easy for code:
+                            system_structure = losi(multi_ind, res)
                         else:
-                            sys_string = str(system_structure)
-                            for inv_comp in invisible_components:
-                                inv_string = '['+str(inv_comp)+','
-                                if len(sys_string.split('['+str(inv_comp)+',')) > 1:
-                                    split_string = sys_string.split(inv_string)
-                                    sys_string = '[,'.join(split_string)
-                                else:
-                                    inv_string = ' '+str(inv_comp)+']'
-                                    split_string = sys_string.split(inv_string)
-                                    sys_string = ' ]'.join(split_string)
-                            
-                            reduced = False
-                            while reduced == False:
-                                if ', []' in sys_string:
-                                    sys_string = ''.join(sys_string.split(', []'))
-                                if '[], ' in sys_string:
-                                    sys_string = ''.join(sys_string.split('[], '))
-                                reduced_brackets = False
-                                while reduced_brackets == False:
-                                    open_braket_inds = []
-                                    delete_bool = []
-                                    for char_it in range(len(sys_string)):
-                                        if sys_string[char_it] == '[':
-                                            open_braket_inds.append(char_it)
-                                            if sys_string[char_it:char_it+3] == '[, ':
-                                                delete_bool.append(True)
-                                            else:
-                                                delete_bool.append(False)
-                                        elif sys_string[char_it] == ']':
-                                            open_ind = open_braket_inds.pop()
-                                            del_bool = delete_bool.pop()
-                                            if sys_string[char_it-2:char_it+1] == ', ]':
-                                                str_1 = sys_string[:open_ind]
-                                                str_2 = sys_string[open_ind+1:char_it-2]
-                                                str_3 = sys_string[char_it+1:]
-                                                sys_string = str_1 + str_2 + str_3
-                                                break
-                                            elif del_bool == True:
-                                                str_1 = sys_string[:open_ind]
-                                                str_2 = sys_string[open_ind+3:char_it]
-                                                str_3 = sys_string[char_it+1:]
-                                                sys_string = str_1 + str_2 + str_3
-                                                break
-                                    if False not in delete_bool:
-                                        reduced_brackets = True
-                                try:
-                                    system_structure = eval(sys_string)
-                                    reduced = True
-                                except:
-                                    print("sys_string", sys_string, "is still not reduced")
-                            
-                            sys_comps = sorted(flatten(system_structure))
-                                    
-                    #Now calculate separations accoridng to Tobin
-                    if n_detectable == 1 or n_detectable == 0:
-                        sep_list = []
-                        L_list = []
-                    elif is_hierarchical(system_structure):
-                        central_ind = sys_comps[np.argmax(L_tot)]
-                        positions = res['abspos'][sys_comps]
-                        central_pos = res['abspos'][central_ind]
-                        separations = np.sqrt(np.sum((positions - central_pos)**2, axis=1))
-                        non_zero_inds = np.where(separations>0)[0]
-                        sep_list = sorted(separations[non_zero_inds].tolist())
-                        proximity_inds = np.argsort(separations)
-                        p_ind = 2
-                        L_list = [L_tot[proximity_inds[0]] + L_tot[proximity_inds[1]]]
-                        while p_ind < len(proximity_inds):
-                            L_list.append(L_list[-1] + L_tot[proximity_inds[p_ind]])
-                            p_ind = p_ind + 1
-                        invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
-                        if len(invisible_sub_systems) > 0:
-                            #print("Systems is hierarchical and there is a separation that is below the bin lower limit")
-                            
-                            separations_to_remove = np.array(sep_list)[invisible_sub_systems]
-                            for sep_rm in separations_to_remove:
-                                sep_list.remove(sep_rm)
+                            system_structure = losi(multi_ind, res)
+                            invisible_components = list(set(sys_comps).symmetric_difference(detectable_components))
+                            res['n'][invisible_components] = 0
+                            if n_detectable == 0:
+                                print("none of the components are detected")
+                            elif n_detectable == 1:
+                                sys_comps = detectable_components
+                            elif n_detectable == 2:
+                                system_structure = detectable_components
+                                sys_comps = sorted(flatten(system_structure))
+                            else:
+                                sys_string = str(system_structure)
+                                for inv_comp in invisible_components:
+                                    inv_string = '['+str(inv_comp)+','
+                                    if len(sys_string.split('['+str(inv_comp)+',')) > 1:
+                                        split_string = sys_string.split(inv_string)
+                                        sys_string = '[,'.join(split_string)
+                                    else:
+                                        inv_string = ' '+str(inv_comp)+']'
+                                        split_string = sys_string.split(inv_string)
+                                        sys_string = ' ]'.join(split_string)
                                 
-                            L_list = L_list[-1*len(sep_list):]
-                    else:
-                        sep_list = []
-                        L_list = []
-                        if len(flatten(system_structure)) == 4 and np.shape(system_structure) == (2,2):
-                            primary_positions = []
-                            for sys in system_structure:
-                                binary_positions = res['abspos'][sys]
-                                binary_sep = np.sqrt(np.sum((binary_positions[0] -  binary_positions[1])**2))
-                                sep_list.append(binary_sep)
-                                sys_comps_ind = []
-                                for comp in sys:
-                                    sys_comps_ind.append(sys_comps.index(comp))
-                                primary_ind = sys[np.argmax(np.array(L_tot)[sys_comps_ind])]
-                                primary_positions.append(res['abspos'][primary_ind])
-                                L_list.append(np.sum(L_tot[sys_comps_ind]))
-                            quad_sep = np.sqrt(np.sum((primary_positions[0] -  primary_positions[1])**2))
-                            sep_list.append(quad_sep)
-                            L_list.append(np.sum(L_tot))
-                            
-                            invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
-                            if len(invisible_sub_systems) > 0:
-                                separations_to_remove = np.array(sep_list)[invisible_sub_systems]
-                                for sep_rm in separations_to_remove:
-                                    sep_list.remove(sep_rm)
+                                reduced = False
+                                while reduced == False:
+                                    if ', []' in sys_string:
+                                        sys_string = ''.join(sys_string.split(', []'))
+                                    if '[], ' in sys_string:
+                                        sys_string = ''.join(sys_string.split('[], '))
+                                    reduced_brackets = False
+                                    while reduced_brackets == False:
+                                        open_braket_inds = []
+                                        delete_bool = []
+                                        for char_it in range(len(sys_string)):
+                                            if sys_string[char_it] == '[':
+                                                open_braket_inds.append(char_it)
+                                                if sys_string[char_it:char_it+3] == '[, ':
+                                                    delete_bool.append(True)
+                                                else:
+                                                    delete_bool.append(False)
+                                            elif sys_string[char_it] == ']':
+                                                open_ind = open_braket_inds.pop()
+                                                del_bool = delete_bool.pop()
+                                                if sys_string[char_it-2:char_it+1] == ', ]':
+                                                    str_1 = sys_string[:open_ind]
+                                                    str_2 = sys_string[open_ind+1:char_it-2]
+                                                    str_3 = sys_string[char_it+1:]
+                                                    sys_string = str_1 + str_2 + str_3
+                                                    break
+                                                elif del_bool == True:
+                                                    str_1 = sys_string[:open_ind]
+                                                    str_2 = sys_string[open_ind+3:char_it]
+                                                    str_3 = sys_string[char_it+1:]
+                                                    sys_string = str_1 + str_2 + str_3
+                                                    break
+                                        if False not in delete_bool:
+                                            reduced_brackets = True
+                                    try:
+                                        system_structure = eval(sys_string)
+                                        reduced = True
+                                    except:
+                                        print("sys_string", sys_string, "is still not reduced")
                                 
-                                luminosity_to_remove = np.array(L_list)[invisible_sub_systems]
-                                for L_rm in luminosity_to_remove:
-                                    L_list.remove(L_rm)
-                                
-                        else:
+                                sys_comps = sorted(flatten(system_structure))
+                                        
+                        #Now calculate separations accoridng to Tobin
+                        if n_detectable == 1 or n_detectable == 0:
                             sep_list = []
                             L_list = []
-                            raw_sys_string = str(system_structure)
-                            sys_string = str(system_structure)
-                            open_braket_inds = []
-                            reduced = False
-                            while reduced == False:
-                                for char_it in range(len(raw_sys_string)):
-                                    if raw_sys_string[char_it] == '[':
-                                        open_braket_inds.append(char_it)
-                                    elif raw_sys_string[char_it] == ']':
-                                        open_ind = open_braket_inds.pop()
-                                        #found a sub-system, now reduce
-                                        try:
-                                            sub_system = eval(raw_sys_string[open_ind:char_it+1])
-                                        except:
-                                            sub_system = eval(raw_sys_string[open_ind:char_it])
-                                        if len(sub_system) == 2:
-                                            binary_positions = res['abspos'][sub_system]
-                                            binary_sep = np.sqrt(np.sum((binary_positions[0] - binary_positions[1])**2))
-                                            sep_list.append(binary_sep)
-                                            sys_comps_ind = []
-                                            for comp in sub_system:
-                                                sys_comps_ind.append(sys_comps.index(comp))
-                                            primary_ind = sub_system[np.argmax(np.array(L_tot)[sys_comps_ind])]
-                                            L_list.append(np.sum(L_tot[sys_comps_ind]))
-                                            sys_string = str(primary_ind).join(sys_string.split(str(sub_system)))
-                                            try:
-                                                reduced_system = eval(sys_string)
-                                                if is_hierarchical(reduced_system):
-                                                    reduced = True
-                                                    break
-                                                else:
-                                                    print("sys_string", sys_string, "is still non-hierachical")
-                                                    raw_sys_string = sys_string
-                                                    break
-                                            except:
-                                                continue
-                                        else:
-                                            sys_string = str(sub_system[0]).join(sys_string.split(str(sub_system)))
-            
-                            reduced_comps = sorted(flatten(eval(sys_string)))
+                        elif is_hierarchical(system_structure):
                             central_ind = sys_comps[np.argmax(L_tot)]
-                            positions = res['abspos'][reduced_comps]
+                            positions = res['abspos'][sys_comps]
                             central_pos = res['abspos'][central_ind]
                             separations = np.sqrt(np.sum((positions - central_pos)**2, axis=1))
                             non_zero_inds = np.where(separations>0)[0]
-                            sep_list = sep_list + separations[non_zero_inds].tolist()
+                            sep_list = sorted(separations[non_zero_inds].tolist())
                             proximity_inds = np.argsort(separations)
                             p_ind = 2
-                            L_list = L_list + [L_tot[proximity_inds[0]] + L_tot[proximity_inds[1]]]
+                            L_list = [L_tot[proximity_inds[0]] + L_tot[proximity_inds[1]]]
                             while p_ind < len(proximity_inds):
                                 L_list.append(L_list[-1] + L_tot[proximity_inds[p_ind]])
                                 p_ind = p_ind + 1
-                                
                             invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
                             if len(invisible_sub_systems) > 0:
+                                #print("Systems is hierarchical and there is a separation that is below the bin lower limit")
+                                
                                 separations_to_remove = np.array(sep_list)[invisible_sub_systems]
                                 for sep_rm in separations_to_remove:
                                     sep_list.remove(sep_rm)
+                                    
+                                L_list = L_list[-1*len(sep_list):]
+                        else:
+                            sep_list = []
+                            L_list = []
+                            if len(flatten(system_structure)) == 4 and np.shape(system_structure) == (2,2):
+                                primary_positions = []
+                                for sys_s in system_structure:
+                                    binary_positions = res['abspos'][sys_s]
+                                    binary_sep = np.sqrt(np.sum((binary_positions[0] -  binary_positions[1])**2))
+                                    sep_list.append(binary_sep)
+                                    sys_comps_ind = []
+                                    for comp in sys_s:
+                                        sys_comps_ind.append(sys_comps.index(comp))
+                                    primary_ind = sys_s[np.argmax(np.array(L_tot)[sys_comps_ind])]
+                                    primary_positions.append(res['abspos'][primary_ind])
+                                    L_list.append(np.sum(L_tot[sys_comps_ind]))
+                                quad_sep = np.sqrt(np.sum((primary_positions[0] -  primary_positions[1])**2))
+                                sep_list.append(quad_sep)
+                                L_list.append(np.sum(L_tot))
                                 
-                                luminosity_to_remove = np.array(L_list)[invisible_sub_systems]
-                                for L_rm in luminosity_to_remove:
-                                    L_list.remove(L_rm)
-                    
-                    if str(sys_comps) not in All_unique_systems.keys():
-                        try:
-                            sep_list = sep_list.tolist()
-                            All_unique_systems.update({str(sys_comps): [sep_list]})
-                            current_separations = current_separations + sep_list
-                        except:
-                            All_unique_systems.update({str(sys_comps): [sep_list]})
-                            current_separations = current_separations + sep_list
-                        #All_unique_systems_M.update({str(sys_comps): [M]})
-                        if len(L_list)>0:
-                            All_unique_systems_L.update({str(sys_comps): [np.max(L_list)]})
-                            All_unique_systems_T.update({str(sys_comps): [time]})
+                                invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
+                                if len(invisible_sub_systems) > 0:
+                                    separations_to_remove = np.array(sep_list)[invisible_sub_systems]
+                                    for sep_rm in separations_to_remove:
+                                        sep_list.remove(sep_rm)
+                                    
+                                    luminosity_to_remove = np.array(L_list)[invisible_sub_systems]
+                                    for L_rm in luminosity_to_remove:
+                                        L_list.remove(L_rm)
+                                    
+                            else:
+                                sep_list = []
+                                L_list = []
+                                raw_sys_string = str(system_structure)
+                                sys_string = str(system_structure)
+                                open_braket_inds = []
+                                reduced = False
+                                while reduced == False:
+                                    for char_it in range(len(raw_sys_string)):
+                                        if raw_sys_string[char_it] == '[':
+                                            open_braket_inds.append(char_it)
+                                        elif raw_sys_string[char_it] == ']':
+                                            open_ind = open_braket_inds.pop()
+                                            #found a sub-system, now reduce
+                                            try:
+                                                sub_system = eval(raw_sys_string[open_ind:char_it+1])
+                                            except:
+                                                sub_system = eval(raw_sys_string[open_ind:char_it])
+                                            if len(sub_system) == 2:
+                                                binary_positions = res['abspos'][sub_system]
+                                                binary_sep = np.sqrt(np.sum((binary_positions[0] - binary_positions[1])**2))
+                                                sep_list.append(binary_sep)
+                                                sys_comps_ind = []
+                                                for comp in sub_system:
+                                                    sys_comps_ind.append(sys_comps.index(comp))
+                                                primary_ind = sub_system[np.argmax(np.array(L_tot)[sys_comps_ind])]
+                                                L_list.append(np.sum(L_tot[sys_comps_ind]))
+                                                sys_string = str(primary_ind).join(sys_string.split(str(sub_system)))
+                                                try:
+                                                    reduced_system = eval(sys_string)
+                                                    if is_hierarchical(reduced_system):
+                                                        reduced = True
+                                                        break
+                                                    else:
+                                                        print("sys_string", sys_string, "is still non-hierachical")
+                                                        raw_sys_string = sys_string
+                                                        break
+                                                except:
+                                                    continue
+                                            else:
+                                                sys_string = str(sub_system[0]).join(sys_string.split(str(sub_system)))
+                
+                                reduced_comps = sorted(flatten(eval(sys_string)))
+                                central_ind = sys_comps[np.argmax(L_tot)]
+                                positions = res['abspos'][reduced_comps]
+                                central_pos = res['abspos'][central_ind]
+                                separations = np.sqrt(np.sum((positions - central_pos)**2, axis=1))
+                                non_zero_inds = np.where(separations>0)[0]
+                                sep_list = sep_list + separations[non_zero_inds].tolist()
+                                proximity_inds = np.argsort(separations)
+                                p_ind = 2
+                                L_list = L_list + [L_tot[proximity_inds[0]] + L_tot[proximity_inds[1]]]
+                                while p_ind < len(proximity_inds):
+                                    L_list.append(L_list[-1] + L_tot[proximity_inds[p_ind]])
+                                    p_ind = p_ind + 1
+                                    
+                                invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
+                                if len(invisible_sub_systems) > 0:
+                                    separations_to_remove = np.array(sep_list)[invisible_sub_systems]
+                                    for sep_rm in separations_to_remove:
+                                        sep_list.remove(sep_rm)
+                                    
+                                    luminosity_to_remove = np.array(L_list)[invisible_sub_systems]
+                                    for L_rm in luminosity_to_remove:
+                                        L_list.remove(L_rm)
+                        
+                        if str(sys_comps) not in All_unique_systems.keys():
+                            try:
+                                sep_list = sep_list.tolist()
+                                All_unique_systems.update({str(sys_comps): [sep_list]})
+                                current_separations = current_separations + sep_list
+                            except:
+                                All_unique_systems.update({str(sys_comps): [sep_list]})
+                                current_separations = current_separations + sep_list
+                            #All_unique_systems_M.update({str(sys_comps): [M]})
+                            if len(L_list)>0:
+                                All_unique_systems_L.update({str(sys_comps): [np.max(L_list)]})
+                                All_unique_systems_T.update({str(sys_comps): [time]})
+                            else:
+                                All_unique_systems_L.update({str(sys_comps): [np.nan]})
+                                All_unique_systems_T.update({str(sys_comps): [np.nan]})
                         else:
-                            All_unique_systems_L.update({str(sys_comps): [np.nan]})
-                            All_unique_systems_T.update({str(sys_comps): [np.nan]})
+                            try:
+                                All_unique_systems[str(sys_comps)].append(sep_list)
+                                current_separations = current_separations + sep_list
+                            except:
+                                sep_list = sep_list.tolist()
+                                All_unique_systems[str(sys_comps)].append(sep_list)
+                                current_separations = current_separations + sep_list
+                            #All_unique_systems_M[str(sys_comps)].append(M)
+                            if len(L_list)>0:
+                                All_unique_systems_L[str(sys_comps)].append(np.max(L_list))
+                                All_unique_systems_T[str(sys_comps)].append(time)
+                            else:
+                                All_unique_systems_L[str(sys_comps)].append(np.nan)
+                                All_unique_systems_T[str(sys_comps)].append(np.nan)
+                        if len(sys_comps)>1:
+                            L_tots.append(mean_L)
                     else:
-                        try:
-                            All_unique_systems[str(sys_comps)].append(sep_list)
-                            current_separations = current_separations + sep_list
-                        except:
-                            sep_list = sep_list.tolist()
-                            All_unique_systems[str(sys_comps)].append(sep_list)
-                            current_separations = current_separations + sep_list
-                        #All_unique_systems_M[str(sys_comps)].append(M)
-                        if len(L_list)>0:
-                            All_unique_systems_L[str(sys_comps)].append(np.max(L_list))
-                            All_unique_systems_T[str(sys_comps)].append(time)
-                        else:
-                            All_unique_systems_L[str(sys_comps)].append(np.nan)
-                            All_unique_systems_T[str(sys_comps)].append(np.nan)
-                    if len(sys_comps)>1:
-                        L_tots.append(mean_L)
-                else:
-                    res['n'][sys_comps] = 0
-                    res['n'][multi_ind] = 0
-            #Plot Luminosity histogram
-            L_tot_hist, bins = np.histogram(L_tots, bins=L_bins)
-            Luminosities.append(np.array(L_tot_hist))
-            
-            if args.verbose_printing != 'False':
-                print("AFTER REDEFINING SYSTEMS WITH INVISIBLE COMPONENTS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
-                print("TOTAL NUMBER OF STARS =", str(missing_stars + np.sum(res['n'][top_inds])))
+                        res['n'][sys_comps] = 0
+                        res['n'][multi_ind] = 0
+        
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        #Think carefully about this data management. I need to send everything to root
+        #Plot Luminosity histogram
+        if rank >0:
+            try:
+                L_tot_hist, bins = np.histogram(L_tots, bins=L_bins)
+                #Luminosities.append(np.array(L_tot_hist))
+                
+                if args.verbose_printing != 'False':
+                    print("AFTER REDEFINING SYSTEMS WITH INVISIBLE COMPONENTS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
+                    print("TOTAL NUMBER OF STARS =", str(missing_stars + np.sum(res['n'][top_inds])))
 
-            ns = len(np.where(res['n'][top_inds]==1)[0])
-            nb = len(np.where(res['n'][top_inds]==2)[0])
-            nt = len(np.where(res['n'][top_inds]==3)[0])
-            nq = len(np.where(res['n'][top_inds]==4)[0])
-            nq5 = len(np.where(res['n'][top_inds]==5)[0])
-            ns6 = len(np.where(res['n'][top_inds]==6)[0])
-            ns7 = len(np.where(res['n'][top_inds]==7)[0])
-            n_systems.append([ns,nb,nt,nq,nq5,ns6,ns7])
-            cf = (nb+nt*2+nq*3+nq5*4+ns6*5+ns7*6)/(ns+nb+nt+nq+nq5+ns6+ns7)
-            if args.verbose_printing != 'False':
-                print("CF =", cf)
-            CF_per_bin.append(cf)
-            del ns
-            del nb
-            del nt
-            del nq
-            del nq5
-            del ns6
-            del ns7
+                ns = len(np.where(res['n'][top_inds]==1)[0])
+                nb = len(np.where(res['n'][top_inds]==2)[0])
+                nt = len(np.where(res['n'][top_inds]==3)[0])
+                nq = len(np.where(res['n'][top_inds]==4)[0])
+                nq5 = len(np.where(res['n'][top_inds]==5)[0])
+                ns6 = len(np.where(res['n'][top_inds]==6)[0])
+                ns7 = len(np.where(res['n'][top_inds]==7)[0])
+                n_systems.append([ns,nb,nt,nq,nq5,ns6,ns7])
+                cf = (nb+nt*2+nq*3+nq5*4+ns6*5+ns7*6)/(ns+nb+nt+nq+nq5+ns6+ns7)
+                if args.verbose_printing != 'False':
+                    print("CF =", cf)
+                CF_per_bin.append(cf)
+                del ns
+                del nb
+                del nt
+                del nq
+                del nq5
+                del ns6
+                del ns7
+            except:
+                print("Rank", rank, "doesn't have any data to send")
         
-        Separations.append(current_separations)
-        Times.append(time)
+            #Separations.append(current_separations)
         
-        CF_Array_Full.append(CF_per_bin)
-        N_sys_total.append(n_systems)
-        print("Calculated CFs of:", CF_per_bin)
-    
-    #Write pickle
-    file = open(args.pickled_file, 'wb')
-    pickle.dump((Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T),file)
-    file.close()
+            #CF_Array_Full.append(CF_per_bin)
+            #N_sys_total.append(n_systems)
+            data = {'current_separations': current_separations, 'CF_per_bin': CF_per_bin, 'n_systems': n_systems, 'L_tot_hist': L_tot_hist}
+            comm.send(data, dest=0, tag=rank)
+            
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        if rank == 0:
+            for rit in range(1,size):
+                try:
+                    data = comm.recv(source=rit, tag=rit)
+                    Separations.append(data['current_separations'])
+                    CF_Array_Full.append(data['CF_per_bin'])
+                    N_sys_total.append(data['n_systems'])
+                    Luminosities.append(np.array(data['L_tot_hist']))
+                except:
+                    print("Rank", rank, "has not sent any data")
+            
+            print("Calculated CFs of:", CF_per_bin)
+            
+                    #Write pickle
+            file = open(args.pickled_file, 'wb')
+            pickle.dump((Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities),file)
+            print('updated pickle', args.pickled_file)
+            file.close()
+        
+        sys.stdout.flush()
+        CW.Barrier()
     
 #=====================================================
 #Create plots below
 
-#CF calculated from all systems
-Summed_systems = np.sum(np.array(N_sys_total), axis=0)
-CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
-CF_bot = np.sum(Summed_systems, axis=1)
-CF_Total = CF_top/CF_bot
+if size == 1:
+    import pdb
+    pdb.set_trace()
 
-plt.clf()
-plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
-plt.legend(loc='best')
-plt.xlabel('Separation')
-plt.ylabel('Companion Frequency')
-plt.xlim([1,4])
-#plt.ylim([0.0, 0.25])
-plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg')
-print('created Total_companion_frequency.jpg')
+if rank == 0:
+    file = open(args.pickled_file, 'rb')
+    Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
+    file.close()
 
-#CF calculated by SUMMING all CF historgrams
-CF_Array_Full = np.array(CF_Array_Full)
-CF_sum = np.sum(CF_Array_Full, axis=0)
+    #CF calculated from all systems
+    Summed_systems = np.sum(np.array(N_sys_total), axis=0)
+    CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
+    CF_bot = np.sum(Summed_systems, axis=1)
+    CF_Total = CF_top/CF_bot
 
-plt.clf()
-plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
-plt.legend(loc='best')
-plt.xlabel('Separation')
-plt.ylabel('Companion Frequency')
-plt.xlim([1,4])
-plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
-print('created Sum_companion_frequency.jpg')
-
-#Iterate over systems and make histogram of masses of the high luminosity systems.
-"""
-plt.clf()
-n_lines = 8
-c = np.arange(1, n_lines + 1)
-cmap = mpl.cm.get_cmap('jet', n_lines)
-dummie_cax = plt.scatter(c-100, c, c=c, cmap=cmap)
-for key in All_unique_systems.keys():
-    if len(eval(key))>1:
-        c_it = len(eval(key))
-        if c_it > 8:
-            c_it = 8
-        x = np.arange(len(All_unique_systems[key]))
-        plt.semilogy(x,All_unique_systems[key],c=cmap(c_it-1),alpha=0.5, lw=0.5)
-plt.colorbar(dummie_cax, ticks=c).set_label("Number of components")
-plt.xlabel("No. timesteps")
-plt.ylabel("Separation (AU)")
-plt.xlim(left=0.0)
-plt.savefig(savedir + args.figure_prefix + "Separation_unique_systems.jpg")
-
-n_cut_range = range(5,8+1)
-for n_cut in n_cut_range:
-    Median_separation = []
-    for key in All_unique_systems.keys():
-        if len(eval(key))<n_cut:
-            med_sep = np.median(All_unique_systems[key])
-            Median_separation.append(med_sep)
     plt.clf()
-    Median_hist, bins = np.histogram(Median_separation, bins=S_bins)
-    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), Median_hist, width=0.25, fill=False, edgecolor='black')
-    plt.xlabel('Median Separation (AU)')
-    plt.savefig(savedir + args.figure_prefix + "Median_Separation_N_less_than_"+str(n_cut)+"_Unique_Systems_hist.jpg")
+    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.legend(loc='best')
+    plt.xlabel('Separation')
+    plt.ylabel('Companion Frequency')
+    plt.xlim([1,4])
+    #plt.ylim([0.0, 0.25])
+    plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg')
+    print('created Total_companion_frequency.jpg')
 
-N_components = []
-for key in All_unique_systems_L.keys():
-    components = eval(key)
-    N_system = len(components)
-    N_components.append(N_system)
-bins = np.arange(2,25)-0.5
-comp_hist, bins = np.histogram(N_components, bins=bins)
-plt.clf()
-plt.bar((bins[:-1]+bins[1:])/2, comp_hist, width=1, fill=False, edgecolor='black')
-plt.xlabel('Number of Components')
-plt.ylabel('Frequency')
-plt.savefig(savedir + args.figure_prefix + "Hist_N_components.jpg")
-"""
-Mean_L = []
-for key in All_unique_systems_L.keys():
-    Total_Luminosities = []
-    non_nan_inds = np.where(np.isnan(All_unique_systems_T[key])==False)[0]
-    if len(non_nan_inds) == 0 or len(eval(key))<2:
-        life_time = 0
-    else:
-        life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
-    if life_time > args.lifetime_threshold:
-        for L in All_unique_systems_L[key]:
-            Total_Luminosities.append(np.max(L))
-        if len(Total_Luminosities) > 0:
-            Mean_L.append(np.mean(Total_Luminosities))
-    else:
-        print("System", key, "is too short lived")
-L_tot_hist, bins = np.histogram(Mean_L, bins=L_bins)
-plt.clf()
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Tobin et al (2016)")
-plt.legend(loc='best')
-plt.xlabel('Mean Luminosty (log(L))')
-plt.ylabel('Number')
-plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+    #CF calculated by SUMMING all CF historgrams
+    CF_Array_Full = np.array(CF_Array_Full)
+    CF_sum = np.sum(CF_Array_Full, axis=0)
 
-#plot max luminosities
-Max_L = []
-for key in All_unique_systems_L.keys():
-    Total_Luminosities = []
-    non_nan_inds = np.where(np.isnan(All_unique_systems_T[key])==False)[0]
-    if len(non_nan_inds) == 0 or len(eval(key))<2:
-        life_time = 0
-    else:
-        life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
-    if life_time > args.lifetime_threshold:
-        for L in All_unique_systems_L[key]:
-            Total_Luminosities.append(np.max(L))
-        if len(Total_Luminosities) > 0:
-            Max_L.append(np.max(Total_Luminosities))
-    else:
-        print("System", key, "is too short lived")
-L_tot_hist, bins = np.histogram(Max_L, bins=L_bins)
-plt.clf()
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Tobin et al (2016)")
-plt.legend(loc='best')
-plt.xlabel('Max Luminosty (log(L))')
-plt.ylabel('Number')
-plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+    plt.clf()
+    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.legend(loc='best')
+    plt.xlabel('Separation')
+    plt.ylabel('Companion Frequency')
+    plt.xlim([1,4])
+    plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
+    print('created Sum_companion_frequency.jpg')
 
-'''
-plt.clf()
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), np.sum(Luminosities, axis=0), width=0.31, edgecolor='black', label="Sum of luminosity hisotgrams")
-plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=0.31, edgecolor='black', fill=False, label="Tobin et al (2016)")
-plt.legend(loc='best')
-plt.xlabel('Luminosty (log(L))')
-plt.ylabel('Number of instances')
-plt.yscale('log')
-plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-plt.savefig(savedir+"Sum_of_Luminosity_histograms.jpg")
-'''
+    #Iterate over systems and make histogram of masses of the high luminosity systems.
+    """
+    plt.clf()
+    n_lines = 8
+    c = np.arange(1, n_lines + 1)
+    cmap = mpl.cm.get_cmap('jet', n_lines)
+    dummie_cax = plt.scatter(c-100, c, c=c, cmap=cmap)
+    for key in All_unique_systems.keys():
+        if len(eval(key))>1:
+            c_it = len(eval(key))
+            if c_it > 8:
+                c_it = 8
+            x = np.arange(len(All_unique_systems[key]))
+            plt.semilogy(x,All_unique_systems[key],c=cmap(c_it-1),alpha=0.5, lw=0.5)
+    plt.colorbar(dummie_cax, ticks=c).set_label("Number of components")
+    plt.xlabel("No. timesteps")
+    plt.ylabel("Separation (AU)")
+    plt.xlim(left=0.0)
+    plt.savefig(savedir + args.figure_prefix + "Separation_unique_systems.jpg")
+
+    n_cut_range = range(5,8+1)
+    for n_cut in n_cut_range:
+        Median_separation = []
+        for key in All_unique_systems.keys():
+            if len(eval(key))<n_cut:
+                med_sep = np.median(All_unique_systems[key])
+                Median_separation.append(med_sep)
+        plt.clf()
+        Median_hist, bins = np.histogram(Median_separation, bins=S_bins)
+        plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), Median_hist, width=0.25, fill=False, edgecolor='black')
+        plt.xlabel('Median Separation (AU)')
+        plt.savefig(savedir + args.figure_prefix + "Median_Separation_N_less_than_"+str(n_cut)+"_Unique_Systems_hist.jpg")
+
+    N_components = []
+    for key in All_unique_systems_L.keys():
+        components = eval(key)
+        N_system = len(components)
+        N_components.append(N_system)
+    bins = np.arange(2,25)-0.5
+    comp_hist, bins = np.histogram(N_components, bins=bins)
+    plt.clf()
+    plt.bar((bins[:-1]+bins[1:])/2, comp_hist, width=1, fill=False, edgecolor='black')
+    plt.xlabel('Number of Components')
+    plt.ylabel('Frequency')
+    plt.savefig(savedir + args.figure_prefix + "Hist_N_components.jpg")
+    """
+    Mean_L = []
+    for key in All_unique_systems_L.keys():
+        Total_Luminosities = []
+        non_nan_inds = np.where(np.isnan(All_unique_systems_T[key])==False)[0]
+        if len(non_nan_inds) == 0 or len(eval(key))<2:
+            life_time = 0
+        else:
+            life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
+        if life_time > args.lifetime_threshold:
+            for L in All_unique_systems_L[key]:
+                Total_Luminosities.append(np.max(L))
+            if len(Total_Luminosities) > 0:
+                Mean_L.append(np.mean(Total_Luminosities))
+        else:
+            print("System", key, "is too short lived")
+    L_tot_hist, bins = np.histogram(Mean_L, bins=L_bins)
+    plt.clf()
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Tobin et al (2016)")
+    plt.legend(loc='best')
+    plt.xlabel('Mean Luminosty (log(L))')
+    plt.ylabel('Number')
+    plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
+    plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+
+    #plot max luminosities
+    Max_L = []
+    for key in All_unique_systems_L.keys():
+        Total_Luminosities = []
+        non_nan_inds = np.where(np.isnan(All_unique_systems_T[key])==False)[0]
+        if len(non_nan_inds) == 0 or len(eval(key))<2:
+            life_time = 0
+        else:
+            life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
+        if life_time > args.lifetime_threshold:
+            for L in All_unique_systems_L[key]:
+                Total_Luminosities.append(np.max(L))
+            if len(Total_Luminosities) > 0:
+                Max_L.append(np.max(Total_Luminosities))
+        else:
+            print("System", key, "is too short lived")
+    L_tot_hist, bins = np.histogram(Max_L, bins=L_bins)
+    plt.clf()
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Tobin et al (2016)")
+    plt.legend(loc='best')
+    plt.xlabel('Max Luminosty (log(L))')
+    plt.ylabel('Number')
+    plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
+    plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+
+    '''
+    plt.clf()
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), np.sum(Luminosities, axis=0), width=0.31, edgecolor='black', label="Sum of luminosity hisotgrams")
+    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=0.31, edgecolor='black', fill=False, label="Tobin et al (2016)")
+    plt.legend(loc='best')
+    plt.xlabel('Luminosty (log(L))')
+    plt.ylabel('Number of instances')
+    plt.yscale('log')
+    plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
+    plt.savefig(savedir+"Sum_of_Luminosity_histograms.jpg")
+    '''
