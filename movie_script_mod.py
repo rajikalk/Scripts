@@ -243,7 +243,7 @@ def main():
     # Read in directories:
     path = sys.argv[1]
     save_dir = sys.argv[2]
-    if os.path.exists(save_dir) == False:
+    if rank == 0 and os.path.exists(save_dir) == False:
         os.makedirs(save_dir)
     
     args = parse_inputs()
