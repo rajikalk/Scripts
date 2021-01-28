@@ -374,11 +374,12 @@ if args.make_frames_only == 'False':
             pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
             separation = pos_array[0] - pos_array[1]
             separation_magnitude = np.sqrt(separation[0]**2 + separation[1]**2 + separation[2]**2)
+            sepration_unit = separation/separation_magnitude
             
             #Angle around xy plane:
             sep_xy_mag = np.sqrt(separation[0]**2 + separation[1]**2)
             sep_xy_unit = yt.YTArray([separation[0]/sep_xy_mag, separation[1]/sep_xy_mag, 0], 'AU')
-                        theta = np.arccos(np.dot(sep_xy_unit, np.array([0,1,0])))
+            theta = np.arccos(np.dot(sep_xy_unit, np.array([0,1,0])))
             #Angle from z axis:
             phi = np.arccos(np.dot(sepration_unit, [0,0,1]))
             
