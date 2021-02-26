@@ -11,6 +11,7 @@ import matplotlib as mpl
 import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
+import matplotlib.gridspec as gridspec
 
 #Define globals
 f_acc = 0.5
@@ -21,7 +22,7 @@ def parse_inputs():
     parser.add_argument("-proj", "--projected_separation", help="do you want to use projected separation instead of true separation?", default="False", type=str)
     parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='x', type=str)
     parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
-    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/Tobin_CF/stars_red_512.pkl', type=str)
+    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/stars_red_512.pkl', type=str)
     parser.add_argument("-time_window", "--time_intergration_window", help="Over what time do you want to intergrate to calculate accretion rate?", default=1000.0, type=float)
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
@@ -29,6 +30,7 @@ def parse_inputs():
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=35.6)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
+    parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -82,6 +84,8 @@ def luminosity(global_data, sink_inds, max_time_ind, min_time_ind):
     
 
 #=====================================================================================================
+
+args = parse_inputs()
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -184,9 +188,19 @@ plt.savefig(savedir + "CF_Tobin_data.png")
 sys.stdout.flush()
 CW.Barrier()
         
+#file = open("Tobin_CF.pkl", 'wb')
+#pickle.dump((S_bins, CF_per_bin_Tobin),file)
+#print('updated pickle', "Tobin_CF.pkl")
+#file.close()
+
 #=====================================================================================================
 
-args = parse_inputs()
+if len(args.projection_vector) > 0:
+    proj_vector = np.array(eval(args.projection_vector))
+    proj_length = np.sqrt(np.sum(proj_vector**2))
+    proj_unit = proj_vector/proj_length
+else:
+    proj_unit = []
 
 units = {"length_unit":yt.YTQuantity(4.0,"pc"), "mass_unit":yt.YTQuantity(2998,"Msun"), "velocity_unit":yt.YTQuantity(0.18, "km/s"), "time_unit":yt.YTQuantity(685706129102738.9, "s"), "density_unit":yt.YTQuantity(46.84375, "Msun/pc**3")}
 
@@ -199,8 +213,9 @@ sys.stdout.flush()
 CW.Barrier()
 
 if args.pickled_file != None:
-    if os.path.isfile(args.pickled_file):
-        file = open(args.pickled_file, 'rb')
+    pickle_file = savedir + args.pickled_file
+    if os.path.isfile(pickle_file):
+        file = open(pickle_file, 'rb')
         Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
         file.close()
     else:
@@ -249,6 +264,7 @@ nout = 133
 #high resolution data
 #datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data'
 file_no_range = [298,407]
+time_bounds = [1.09,1.12]
 
 #Load global pickle data
 pickle_file = args.global_data_pickle_file
@@ -257,59 +273,54 @@ global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 print('Loaded global pickle data')
 
-#Get total number of sinks:
-S = pr.Sink()
-S.nout = file_no_range[-1]
-S.datadir = datadir
-S.rsink()
-S._jet_factor = 1.
-S._scale_l = scale_l
-S._scale_v = scale_v
-S._scale_t = scale_t
-S._scale_d = scale_d
-i = S.read_info_file(file_no_range[-1],datadir=datadir)
-S._time = i['time']
-nmax=len(S.mass)
+start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
+end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
 
 radius = yt.YTQuantity(2.0, 'rsun')
 temperature = yt.YTQuantity(3000, 'K')
 
-if len(Times) == len(range(file_no_range[0], file_no_range[1]+1)):
+if len(Times) == (end_time_ind-start_time_ind):
     update = False
 else:
     update = True
-    file_no_range[0] = file_no_range[0] + len(Times)
+    start_time_ind = start_time_ind + len(Times)
     
 sys.stdout.flush()
 CW.Barrier()
 
 if update == True:
-    for nout in range(file_no_range[0], file_no_range[1]+1):
+    for time_it in range(start_time_ind, end_time_ind+1):
         L_tots = []
         current_separations = []
 
-        # load sink data from snapshot nout in to S
+        # Make S with the data at time time_it
+        non_zero_inds = np.where(global_data['m'][time_it]>0)[0]
+        abspos = np.array([global_data['x'][time_it][non_zero_inds], global_data['y'][time_it][non_zero_inds], global_data['z'][time_it][non_zero_inds]]).T#*scale_l
+        absvel = np.array([global_data['ux'][time_it][non_zero_inds], global_data['uy'][time_it][non_zero_inds], global_data['uz'][time_it][non_zero_inds]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][non_zero_inds])
+        time = global_data['time'][time_it][non_zero_inds][0]
+
         S = pr.Sink()
-        S.nout = nout
-        S.datadir = datadir
-        S.rsink()
         S._jet_factor = 1.
         S._scale_l = scale_l
         S._scale_v = scale_v
         S._scale_t = scale_t
         S._scale_d = scale_d
-        i = S.read_info_file(nout,datadir=datadir)
-        S._time = i['time']
-        time = S._time * units['time_unit'].in_units('yr')
-        Times.append(time)
+        S._time = yt.YTArray(time, '')
+        S._abspos = yt.YTArray(abspos, '')
+        S._absvel = yt.YTArray(absvel, '')
+        S._mass = yt.YTArray(mass, '')
+
+        time_yt = yt.YTArray(time*scale_t, 's')
+        Times.append(time_yt.in_units('yr').value)
         
         #CALCULATE Photospheric Luminosity
         L_phot = yt.units.stefan_boltzmann_constant * 4*np.pi*radius.in_units('cm')**2 * temperature**4
         
         #Find indexes of time window
-        min_time_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time+window))
-        max_time_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time-window))
-        global_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time))
+        min_time_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time_yt.in_units('yr')+window))
+        max_time_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time_yt.in_units('yr')-window))
+        global_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time_yt.in_units('yr')))
         
         #Save cf and system breakdown (S:B:T:Q:..) for each bin
         CF_per_bin = []
@@ -324,11 +335,14 @@ if update == True:
             if size != 1:
                 rit = rit + 1
             if rank == rit:
+                sep_update = {}
+                L_update = {}
+                T_update = {}
                 #Calculate res for each bin upper bound
                 if args.projected_separation == "False":
-                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
+                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection_vector = proj_unit)
                 else:
-                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis)
+                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit)
                 top_inds = np.where(res['topSystem'])[0]
 
                 sink_inds = np.where((res['n']==1))[0]
@@ -499,9 +513,13 @@ if update == True:
                                 
                                 sys_comps = sorted(flatten(system_structure))
                                         
-                        #Now calculate separations accoridng to Tobin
+                        #Now calculate separations according to Tobin
                         if n_detectable == 1 or n_detectable == 0:
                             sep_list = []
+                        
+                        if n_detectable == 1:
+                            L_list = [L_tot[0]]
+                        elif n_detectable == 0:
                             L_list = []
                         elif is_hierarchical(system_structure):
                             central_ind = sys_comps[np.argmax(L_tot)]
@@ -620,52 +638,79 @@ if update == True:
                                     for L_rm in luminosity_to_remove:
                                         L_list.remove(L_rm)
                         
-                        if str(sys_comps) not in All_unique_systems.keys():
-                            try:
-                                sep_list = sep_list.tolist()
-                                All_unique_systems.update({str(sys_comps): [sep_list]})
-                                current_separations = current_separations + sep_list
-                            except:
-                                All_unique_systems.update({str(sys_comps): [sep_list]})
-                                current_separations = current_separations + sep_list
-                            #All_unique_systems_M.update({str(sys_comps): [M]})
-                            if len(L_list)>0:
-                                All_unique_systems_L.update({str(sys_comps): [np.max(L_list)]})
-                                All_unique_systems_T.update({str(sys_comps): [time]})
+                        if size == 1:
+                            if str(sys_comps) not in All_unique_systems.keys():
+                                try:
+                                    sep_list = sep_list.tolist()
+                                    All_unique_systems.update({str(sys_comps): sep_list})
+                                    current_separations = current_separations + sep_list
+                                except:
+                                    All_unique_systems.update({str(sys_comps): sep_list})
+                                    current_separations = current_separations + sep_list
+                                #All_unique_systems_M.update({str(sys_comps): [M]})
+                                if len(L_list)>0:
+                                    All_unique_systems_L.update({str(sys_comps): [np.max(L_list)]})
+                                    All_unique_systems_T.update({str(sys_comps): [time]})
+                                else:
+                                    All_unique_systems_L.update({str(sys_comps): [np.nan]})
+                                    All_unique_systems_T.update({str(sys_comps): [np.nan]})
                             else:
-                                All_unique_systems_L.update({str(sys_comps): [np.nan]})
-                                All_unique_systems_T.update({str(sys_comps): [np.nan]})
+                                try:
+                                    All_unique_systems[str(sys_comps)].append(sep_list)
+                                    current_separations = current_separations + sep_list
+                                except:
+                                    sep_list = sep_list.tolist()
+                                    All_unique_systems[str(sys_comps)].append(sep_list)
+                                    current_separations = current_separations + sep_list
+                                #All_unique_systems_M[str(sys_comps)].append(M)
+                                if len(L_list)>0:
+                                    All_unique_systems_L[str(sys_comps)].append(np.max(L_list))
+                                    All_unique_systems_T[str(sys_comps)].append(time)
+                                else:
+                                    All_unique_systems_L[str(sys_comps)].append(np.nan)
+                                    All_unique_systems_T[str(sys_comps)].append(np.nan)
                         else:
-                            try:
-                                All_unique_systems[str(sys_comps)].append(sep_list)
-                                current_separations = current_separations + sep_list
-                            except:
-                                sep_list = sep_list.tolist()
-                                All_unique_systems[str(sys_comps)].append(sep_list)
-                                current_separations = current_separations + sep_list
-                            #All_unique_systems_M[str(sys_comps)].append(M)
+                            if len(sep_list)>0:
+                                sep_update.update({str(sys_comps): sep_list})
                             if len(L_list)>0:
-                                All_unique_systems_L[str(sys_comps)].append(np.max(L_list))
-                                All_unique_systems_T[str(sys_comps)].append(time)
+                                L_update.update({str(sys_comps): [np.max(L_list)]})
+                                T_update.update({str(sys_comps): [time]})
                             else:
-                                All_unique_systems_L[str(sys_comps)].append(np.nan)
-                                All_unique_systems_T[str(sys_comps)].append(np.nan)
+                                L_update.update({str(sys_comps): [np.nan]})
+                                T_update.update({str(sys_comps): [np.nan]})
+                                
                         if len(sys_comps)>1:
                             L_tots.append(mean_L)
                     else:
                         res['n'][sys_comps] = 0
                         res['n'][multi_ind] = 0
         
-        sys.stdout.flush()
-        CW.Barrier()
-        
-        #Think carefully about this data management. I need to send everything to root
-        #Plot Luminosity histogram
-        if rank >0:
-            try:
+                if size == 1:
+                    L_tot_hist, bins = np.histogram(L_tots, bins=L_bins)
+                    Luminosities.append(np.array(L_tot_hist))
+                    if args.verbose_printing != 'False':
+                        print("AFTER REDEFINING SYSTEMS WITH INVISIBLE COMPONENTS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
+                        print("TOTAL NUMBER OF STARS =", str(missing_stars + np.sum(res['n'][top_inds])))
+                    
+                    ns = len(np.where(res['n'][top_inds]==1)[0])
+                    nb = len(np.where(res['n'][top_inds]==2)[0])
+                    nt = len(np.where(res['n'][top_inds]==3)[0])
+                    nq = len(np.where(res['n'][top_inds]==4)[0])
+                    nq5 = len(np.where(res['n'][top_inds]==5)[0])
+                    ns6 = len(np.where(res['n'][top_inds]==6)[0])
+                    ns7 = len(np.where(res['n'][top_inds]==7)[0])
+                    n_systems.append([ns,nb,nt,nq,nq5,ns6,ns7])
+                    cf = (nb+nt*2+nq*3+nq5*4+ns6*5+ns7*6)/(ns+nb+nt+nq+nq5+ns6+ns7)
+                    if args.verbose_printing != 'False':
+                        print("CF =", cf)
+                    CF_per_bin.append(cf)
+                    
+            if size == 1:
+                Separations.append(current_separations)
+                N_sys_total.append(n_systems[0])
+        try:
+            if size != 1:
                 L_tot_hist, bins = np.histogram(L_tots, bins=L_bins)
-                #Luminosities.append(np.array(L_tot_hist))
-                
                 if args.verbose_printing != 'False':
                     print("AFTER REDEFINING SYSTEMS WITH INVISIBLE COMPONENTS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
                     print("TOTAL NUMBER OF STARS =", str(missing_stars + np.sum(res['n'][top_inds])))
@@ -689,50 +734,62 @@ if update == True:
                 del nq5
                 del ns6
                 del ns7
-            except:
-                print("Rank", rank, "doesn't have any data to send")
-        
-            #Separations.append(current_separations)
-        
-            #CF_Array_Full.append(CF_per_bin)
-            #N_sys_total.append(n_systems)
-            data = {'current_separations': current_separations, 'CF_per_bin': CF_per_bin, 'n_systems': n_systems, 'L_tot_hist': L_tot_hist}
-            comm.send(data, dest=0, tag=rank)
+
+                #print("Rank", rank, "All_unique_systems_L:", All_unique_systems_L)
+                data = {'current_separations': current_separations, 'CF_per_bin': CF_per_bin, 'n_systems': n_systems, 'L_tot_hist': L_tot_hist, 'All_unique_systems': sep_update, 'All_unique_systems_L': L_update, 'All_unique_systems_T': T_update}
+                CW.send(data, dest=0, tag=rank)
+        except:
+            pass
             
         sys.stdout.flush()
         CW.Barrier()
         
         if rank == 0:
+            CF_per_bin = []
+            n_systems = []
             for rit in range(1,size):
-                try:
-                    data = comm.recv(source=rit, tag=rit)
+                if rit < 12:
+                    data = CW.recv(source=rit, tag=rit)
                     Separations.append(data['current_separations'])
-                    CF_Array_Full.append(data['CF_per_bin'])
-                    N_sys_total.append(data['n_systems'])
+                    CF_per_bin.append(data['CF_per_bin'][0])
+                    n_systems.append(data['n_systems'][0])
                     Luminosities.append(np.array(data['L_tot_hist']))
-                except:
-                    print("Rank", rank, "has not sent any data")
+                    print("From rank:", rank, "received:", [data['All_unique_systems'], data['All_unique_systems_L'], data['All_unique_systems_T']])
+                    for key in data['All_unique_systems'].keys():
+                        if key not in All_unique_systems.keys():
+                            All_unique_systems.update({key: [data['All_unique_systems'][key]]})
+                        else:
+                            All_unique_systems[key].append(data['All_unique_systems'][key])
+                    for key in data['All_unique_systems_L'].keys():
+                        if key not in All_unique_systems_L.keys():
+                            All_unique_systems_L.update({key: [data['All_unique_systems_L'][key]]})
+                            All_unique_systems_T.update({key: [data['All_unique_systems_T'][key]]})
+                        else:
+                            All_unique_systems_L[key].append(data['All_unique_systems_L'][key])
+                            All_unique_systems_T[key].append(data['All_unique_systems_T'][key])
+                else:
+                    pass
             
-            print("Calculated CFs of:", CF_per_bin)
+            CF_Array_Full.append(CF_per_bin)
+            N_sys_total.append(n_systems)
+            #print("All_unique_systems:", All_unique_systems)
             
-                    #Write pickle
-            file = open(args.pickled_file, 'wb')
+            #Write pickle
+            pickle_file = savedir + args.pickled_file
+            file = open(pickle_file, 'wb')
             pickle.dump((Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities),file)
-            print('updated pickle', args.pickled_file)
+            print('updated pickle', pickle_file, "for time_it", time_it, "of", end_time_ind+1)
             file.close()
-        
+            
         sys.stdout.flush()
         CW.Barrier()
     
 #=====================================================
 #Create plots below
 
-if size == 1:
-    import pdb
-    pdb.set_trace()
-
 if rank == 0:
-    file = open(args.pickled_file, 'rb')
+    pickle_file = savedir + args.pickled_file
+    file = open(pickle_file, 'rb')
     Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
     file.close()
 
@@ -746,12 +803,124 @@ if rank == 0:
     plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
     plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
-    plt.xlabel('Separation')
+    plt.xlabel('Separation (AU)')
     plt.ylabel('Companion Frequency')
     plt.xlim([1,4])
-    #plt.ylim([0.0, 0.25])
-    plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg')
+    plt.ylim(bottom=0.0)
+    plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
     print('created Total_companion_frequency.jpg')
+    
+    #Create mean CF
+    bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
+    CF_median = []
+    CF_err = []
+    N = np.shape(N_sys_total)[0]
+
+    #plt.clf()
+    #fig, axs = plt.subplots(3, 4, constrained_layout=True, sharex=True, sharey=True) #figsize=(4, 3*len(pickle_files))
+    #axs = axs.flatten()
+    #plt.subplots_adjust(wspace=0.0, hspace=0.0)
+    
+    plt.clf()
+    fig = plt.figure()
+    total_number_of_figures = len(bin_centers)
+    columns = 4
+    rows = int(np.ceil(total_number_of_figures/columns))
+    fig.set_size_inches(3.25*columns, 3.25*rows)
+    gs = gridspec.GridSpec(rows, columns)\
+    
+    gs.update(wspace=0.0, hspace=0.0)
+    axes_dict = {}
+
+    for bit in range(11):
+        ax_label = 'ax' + str(bit)
+        if bit == 0:
+            axes_dict.update({ax_label:fig.add_subplot(gs[0,bit])})
+            xticklabels = axes_dict[ax_label].get_xticklabels()
+            plt.setp(xticklabels, visible=False)
+            axes_dict[ax_label].tick_params(axis="x",direction="in")
+            axes_dict[ax_label].set_xlim([0, 0.4])
+            axes_dict[ax_label].set_ylim([0, 1600])
+            #axes_dict[ax_label].set_ylim(bottom=0.0)
+            #axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
+            axes_dict[ax_label].set_ylabel("Count")
+            axes_dict[ax_label].set_xlabel("CF")
+            axes_dict[ax_label].tick_params(axis="y",direction="in")
+        else:
+            axes_dict.update({ax_label:fig.add_subplot(gs[int(bit/columns),np.remainder(bit,columns)], sharex=axes_dict['ax0'], sharey=axes_dict['ax0'])})
+            if bit > 6:
+                xticklabels = axes_dict[ax_label].get_xticklabels()
+                plt.setp(xticklabels[0], visible=False)
+                if bit == 8:
+                    plt.setp(xticklabels[0], visible=True)
+            else:
+                xticklabels = axes_dict[ax_label].get_xticklabels()
+                plt.setp(xticklabels, visible=False)
+            if np.remainder(bit,columns) != 0:
+                yticklabels = axes_dict[ax_label].get_yticklabels()
+                plt.setp(yticklabels, visible=False)
+                yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
+                plt.setp(yticklabels, visible=False)
+            else:
+                #axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
+                axes_dict[ax_label].set_ylabel("Count")
+            axes_dict[ax_label].set_xlabel("CF")
+            axes_dict[ax_label].tick_params(axis="x",direction="in")
+            axes_dict[ax_label].tick_params(axis="y",direction="in")
+        time_text = plt.text(0.08, 1500, 'Log Separtion (AU) = ['+str(np.log10(S_bins)[bit])+','+str(np.log10(S_bins)[bit+1])+']', va="center", ha="left", color='k')
+        
+        #err_bins = np.linspace(0, 0.4, 41)
+        err_bins = np.linspace(0, 0.4, 21)
+        #err_bins = np.linspace(np.min(np.array(CF_Array_Full)[:,bit]), np.max(np.array(CF_Array_Full)[:,bit]), 15)
+        err_centers = (err_bins[:-1]+err_bins[1:])/2
+        err_hist, err_bins = np.histogram(np.array(CF_Array_Full)[:,bit], bins=err_bins)
+        width = err_bins[1] - err_bins[0]
+        axes_dict[ax_label].bar(err_centers, err_hist, width=width)
+        #plt.bar(err_centers, err_hist, width=width)
+        
+        xs = np.ones(np.shape(np.array(CF_Array_Full)[:,bit]))*bin_centers[bit]
+        #plt.scatter(xs, np.array(CF_Array_Full)[:,bit], alpha=0.5, color='b')
+        median = np.median(np.array(CF_Array_Full)[:,bit])
+        axes_dict[ax_label].axvline(x=median, label='median', color='r', alpha=0.25)
+        #plt.axvline(x=median, label='median', color='r')
+        #plt.scatter(bin_centers[bit], median, color='r')
+        mean = np.mean(np.array(CF_Array_Full)[:,bit])
+        axes_dict[ax_label].axvline(x=mean, label='mean', color='orange', alpha=0.25)
+        #plt.axvline(x=mean, label='mean', color='orange')
+        #plt.scatter(bin_centers[bit], median, color='orange')
+        std = np.std(np.array(CF_Array_Full)[:,bit], ddof=1)
+        standard_error = std/np.sqrt(N)
+        #rough_and_ready_err = (np.max(np.array(CF_Array_Full)[:,bit]) - np.min(np.array(CF_Array_Full)[:,bit]))*(2./3.)
+        axes_dict[ax_label].axvline(x=mean-std, label='std', color='b', alpha=0.25)
+        axes_dict[ax_label].axvline(x=mean+std, label='std', color='b', alpha=0.25)
+        #plt.axvline(x=mean-std, label='std', color='b')
+        #plt.axvline(x=mean+std, label='std', color='b')
+        #plt.axvline(x=mean-standard_error, label='standard error', color='b', linestyle=":")
+        #plt.axvline(x=mean+standard_error, label='standard error', color='b', linestyle=":")
+        if bit == 10:
+            axes_dict[ax_label].legend(loc='center left',bbox_to_anchor=(0.985, 0.5))
+        #plt.ylim([0, 1600])
+        #plt.savefig(savedir+"error_dist_bin_"+str(bit)+".png", format='png', bbox_inches='tight')
+        standard_deviation = [median-(mean-std), (mean+std)-median]
+        #plt.plot([bin_centers[bit], bin_centers[bit]], [mean-std, mean+std], color='black')
+        CF_median.append(median)
+        CF_err.append(standard_deviation)
+
+    plt.savefig(savedir+"error_dist.pdf", format='pdf', bbox_inches='tight')
+    #plt.ylim(bottom=0.0)
+    #plt.savefig(savedir+"error_dist.png")
+    CF_err = np.array(CF_err)
+
+    plt.clf()
+    plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.legend(loc='best')
+    plt.xlabel('Separation (AU)')
+    plt.ylabel('Companion Frequency')
+    plt.xlim([1,4])
+    plt.ylim(bottom=0.0)
+    plt.savefig('Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
+    print('created Median_companion_frequency.pdf')
 
     #CF calculated by SUMMING all CF historgrams
     CF_Array_Full = np.array(CF_Array_Full)
@@ -761,10 +930,11 @@ if rank == 0:
     plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
     plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
-    plt.xlabel('Separation')
+    plt.xlabel('Separation (AU)')
     plt.ylabel('Companion Frequency')
     plt.xlim([1,4])
-    plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
+    plt.ylim(bottom=0.0)
+    plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
     print('created Sum_companion_frequency.jpg')
 
     #Iterate over systems and make histogram of masses of the high luminosity systems.
@@ -820,14 +990,16 @@ if rank == 0:
         if len(non_nan_inds) == 0 or len(eval(key))<2:
             life_time = 0
         else:
-            life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
+            life_time = (np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0])*units['time_unit'].in_units('yr')
         if life_time > args.lifetime_threshold:
             for L in All_unique_systems_L[key]:
                 Total_Luminosities.append(np.max(L))
             if len(Total_Luminosities) > 0:
                 Mean_L.append(np.mean(Total_Luminosities))
-        else:
-            print("System", key, "is too short lived")
+        #else:
+        #    print("System", key, "is too short lived")
+        
+    
     L_tot_hist, bins = np.histogram(Mean_L, bins=L_bins)
     plt.clf()
     plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
@@ -836,7 +1008,8 @@ if rank == 0:
     plt.xlabel('Mean Luminosty (log(L))')
     plt.ylabel('Number')
     plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-    plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+    plt.ylim(bottom=0.0)
+    plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
 
     #plot max luminosities
     Max_L = []
@@ -846,14 +1019,14 @@ if rank == 0:
         if len(non_nan_inds) == 0 or len(eval(key))<2:
             life_time = 0
         else:
-            life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
+            life_time = (np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0])*units['time_unit'].in_units('yr')
         if life_time > args.lifetime_threshold:
             for L in All_unique_systems_L[key]:
                 Total_Luminosities.append(np.max(L))
             if len(Total_Luminosities) > 0:
                 Max_L.append(np.max(Total_Luminosities))
-        else:
-            print("System", key, "is too short lived")
+        #else:
+        #    print("System", key, "is too short lived")
     L_tot_hist, bins = np.histogram(Max_L, bins=L_bins)
     plt.clf()
     plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_tot_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
@@ -862,16 +1035,20 @@ if rank == 0:
     plt.xlabel('Max Luminosty (log(L))')
     plt.ylabel('Number')
     plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-    plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+    plt.ylim(bottom=0.0)
+    plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
 
     '''
     plt.clf()
     plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), np.sum(Luminosities, axis=0), width=0.31, edgecolor='black', label="Sum of luminosity hisotgrams")
     plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=0.31, edgecolor='black', fill=False, label="Tobin et al (2016)")
-    plt.legend(loc='best')
+    plt.legend(loc='best')s
     plt.xlabel('Luminosty (log(L))')
     plt.ylabel('Number of instances')
     plt.yscale('log')
     plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
     plt.savefig(savedir+"Sum_of_Luminosity_histograms.jpg")
     '''
+  
+sys.stdout.flush()
+CW.Barrier()
