@@ -223,7 +223,7 @@ x_width = (xlim[1] -xlim[0])
 y_width = (ylim[1] -ylim[0])
 thickness = yt.YTQuantity(args.slice_thickness, 'AU')
 #Sets center for calculating center position and velocity
-myf.set_center(args.image_center)
+myf.set_center_pos_ind(args.image_center)
 
 #Set to make sure that particles aren't used to calculate the center velocity
 myf.set_com_vel_use_part(False)
@@ -440,7 +440,7 @@ if args.make_frames_only == 'False':
                 region = yt.disk(center_pos, L, (np.sqrt((0.5*x_width)**2 + (0.5*y_width)), 'AU'), (args.slice_thickness/2, 'AU'))
             weight_field = args.weight_field
             
-            myf.set_center(args.calculation_center)
+            myf.set_center_pos_ind(args.calculation_center)
 
             if args.image_center == 0 and args.use_gas_center_calc=='False':
                 #If not using the gas the calculate the Center posiiton and velocity in the fields
@@ -457,7 +457,7 @@ if args.make_frames_only == 'False':
                 #del com_vel
             else:
                 center_vel = region['Center_Velocity'].in_units('cm/s').value
-            myf.set_center(args.image_center)
+            myf.set_center_pos_ind(args.image_center)
             #print("center_vel =", center_vel, "on rank", rank, "for", ds)
             
             if args.axis == 'xy':
