@@ -184,9 +184,14 @@ scale_d = 3.171441e-21  # 2998 Msun / (4 pc)^3
 
 if args.pickled_file != None:
     if os.path.isfile(args.pickled_file):
-        file = open(args.pickled_file, 'rb')
-        Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
-        file.close()
+        try:
+            file = open(args.pickled_file, 'rb')
+            Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
+            file.close()
+        except:
+            file = open(args.pickled_file, 'rb')
+            Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T = pickle.load(file)
+            file.close()
     else:
         #Define quantities to keep track off
         Separations = []
@@ -671,6 +676,40 @@ if update == True:
 import pdb
 pdb.set_trace()
 
+Uns = 0
+Unb = 0
+Unt = 0
+Unq = 0
+Unq5 = 0
+Uns6 = 0
+Uns7 = 0
+
+for key in All_unique_systems_T.keys():
+    if len(eval(key)) == 1:
+        pdb.set_trace()
+    non_nan_inds = np.where(np.isnan(All_unique_systems_T[key])==False)[0]
+    if len(non_nan_inds) == 0: #not visible
+        life_time = 0
+    else:
+        life_time = np.array(All_unique_systems_T[key])[non_nan_inds][-1] - np.array(All_unique_systems_T[key])[non_nan_inds][0]
+    if life_time > args.lifetime_threshold:
+        if len(eval(key)) == 1:
+            Uns = Uns + 1
+        elif len(eval(key)) == 2:
+            Unb = Unb + 1
+        elif len(eval(key)) == 3:
+            Unt = Unt + 1
+        elif len(eval(key)) == 4:
+            Unq = Unq + 1
+        elif len(eval(key)) == 5:
+            Unq5 = Unq5 + 1
+        elif len(eval(key)) == 6:
+            Uns6 = Uns6 + 1
+        else:
+            Uns7 = Uns7 + 1
+
+pdb.set_trace()
+
 #CF calculated from all systems
 Summed_systems = np.sum(np.array(N_sys_total), axis=0)
 CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
@@ -681,11 +720,12 @@ plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
 plt.legend(loc='best')
-plt.xlabel('Separation')
+plt.xlabel('Separation (AU)')
 plt.ylabel('Companion Frequency')
 plt.xlim([1,4])
 #plt.ylim([0.0, 0.25])
-plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg')
+plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
 print('created Total_companion_frequency.jpg')
 
 #CF calculated by SUMMING all CF historgrams
@@ -696,10 +736,11 @@ plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
 plt.legend(loc='best')
-plt.xlabel('Separation')
+plt.xlabel('Separation (AU)')
 plt.ylabel('Companion Frequency')
 plt.xlim([1,4])
-plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg')
+plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
 print('created Sum_companion_frequency.jpg')
 
 #Iterate over systems and make histogram of masses of the high luminosity systems.
@@ -771,7 +812,8 @@ plt.legend(loc='best')
 plt.xlabel('Mean Luminosty (log(L))')
 plt.ylabel('Number')
 plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.jpg', format='jpg', bbox_inches='tight')
 
 #plot max luminosities
 Max_L = []
@@ -797,7 +839,8 @@ plt.legend(loc='best')
 plt.xlabel('Max Luminosty (log(L))')
 plt.ylabel('Number')
 plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
-plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.jpg')
+plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.jpg', format='jpg', bbox_inches='tight')
 
 '''
 plt.clf()
