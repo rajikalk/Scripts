@@ -182,7 +182,7 @@ if systems_hierarchy != None:
                                 #axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
                                 axes_dict[ax_label].set_ylabel("Accretion Rate (M$_\odot$/yr)", fontsize=args.text_font)
                                 axes_dict[ax_label].set_xlabel("Orbital Phase ($\phi$)", fontsize=args.text_font)
-                                axes_dict[ax_label].tick_params(axis="x",direction="in")
+                                axes_dict[ax_label].tick_params(axis="y",direction="in")
                             else:
                                 axes_dict.update({ax_label:fig.add_subplot(gs[int(plot_it/columns),np.remainder(plot_it,columns)], sharex=axes_dict['ax0'], sharey=axes_dict['ax0'])})
                                 if plot_it < 1:
