@@ -22,7 +22,7 @@ def parse_inputs():
     parser.add_argument("-proj", "--projected_separation", help="do you want to use projected separation instead of true separation?", default="False", type=str)
     parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='x', type=str)
     parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
-    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/stars_red_512.pkl', type=str)
+    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/stars_red_512.pkl', type=str)
     parser.add_argument("-time_window", "--time_intergration_window", help="Over what time do you want to intergrate to calculate accretion rate?", default=1000.0, type=float)
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
@@ -31,6 +31,8 @@ def parse_inputs():
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
     parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
+    parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
+    parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=0.01)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -96,7 +98,11 @@ savedir = sys.argv[2]
 #=====================================================================================================
 #Tobin data
 L_bins = np.logspace(-1.25,3.5,20)
-S_bins = np.logspace(1.25,4,12)
+S_bins = np.logspace(0.75,4,14)
+bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
+cpus_per_time = len(S_bins) - 1
+#S_bins = np.logspace(1,4,13)
+#S_bins = np.logspace(1.25,4,12)
 Tobin_luminosities_All_objects = np.array([0.04,0.05,0.09,0.1,0.1,0.16,0.16,0.16,0.17,0.23,0.24,0.25,0.3,0.3,0.3,0.32,0.36,0.38,0.39,0.4,0.4,0.43,0.5,0.5,0.54,0.54,0.54,0.54,0.6,0.6,0.63,0.68,0.69,0.7,0.7,0.7,0.8,0.87,0.9,1,1.1,1.2,1.2,1.3,1.3,1.4,1.4,1.4,1.5,1.5,1.5,1.6,1.7,1.8,1.8,1.8,1.8,1.9,16.8,19,2.5,2.6,2.8,23.2,3.2,3.2,3.6,3.7,32.5,4,4.2,4.7,5.3,6.9,7,8.3,8.4,9.1,9.2,0.04,0.04,0.04,0.05,0.05,0.05,0.05,0.07,0.07,0.14,0.15,0.22,0.28,0.47,1.1,1.3])
 Tobin_Luminosities_multiples = np.array([0.9, 1.3, 4.2, 0.87, 1.5, 1.3, 3.6, 3.2, 9.1, 0.04, 9.08, 1.5, 4.4, 1.1, 1.19, 18.9, 10.8, 0.79, 11.1, 24.3, 0.9, 2.44, 35.54, 2.1])
 
@@ -181,7 +187,7 @@ plt.clf()
 plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
 plt.ylabel("Companion Frequency")
 plt.xlabel("Log (AU)")
-plt.xlim([1,4])
+plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
 plt.ylim(bottom=0)
 plt.savefig(savedir + "CF_Tobin_data.png")
 
@@ -202,7 +208,17 @@ if len(args.projection_vector) > 0:
 else:
     proj_unit = []
 
-units = {"length_unit":yt.YTQuantity(4.0,"pc"), "mass_unit":yt.YTQuantity(2998,"Msun"), "velocity_unit":yt.YTQuantity(0.18, "km/s"), "time_unit":yt.YTQuantity(685706129102738.9, "s"), "density_unit":yt.YTQuantity(46.84375, "Msun/pc**3")}
+units = {"length_unit":yt.YTQuantity(4.0,"pc"), "velocity_unit":yt.YTQuantity(0.18, "km/s"), "time_unit":yt.YTQuantity(685706129102738.9, "s"), "density_unit":yt.YTQuantity(46.84375, "Msun/pc**3")}
+
+pickle_file = args.global_data_pickle_file
+if 'G50' in pickle_file:
+    units.update({"mass_unit":yt.YTQuantity(1500,"Msun")})
+elif 'G200' in pickle_file:
+    units.update({"mass_unit":yt.YTQuantity(6000,"Msun")})
+elif 'G400' in pickle_file:
+    units.update({"mass_unit":yt.YTQuantity(12000,"Msun")})
+else:
+    units.update({"mass_unit":yt.YTQuantity(2998,"Msun")})
 
 scale_l = 1.23427103e19 # 4 pc
 scale_v = 1.8e4         # 0.18 km/s == sound speed
@@ -263,15 +279,23 @@ nout = 133
 
 #high resolution data
 #datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data'
-file_no_range = [298,407]
-time_bounds = [1.09,1.12]
 
 #Load global pickle data
-pickle_file = args.global_data_pickle_file
-file_open = open(pickle_file, 'rb')
-global_data = pickle.load(file_open,encoding="latin1")
+file_open = open(args.global_data_pickle_file, 'rb')
+try:
+    global_data = pickle.load(file_open,encoding="latin1")
+except:
+    file_open.close()
+    import pickle5 as pickle
+    file_open = open(args.global_data_pickle_file, 'rb')
+    global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 print('Loaded global pickle data')
+
+SFE_ind = np.argmin(np.abs(0.049-(np.sum(global_data['m'], axis=1)*units['mass_unit'].value)/units['mass_unit'].value))
+SFE_t_ff = global_data['time'].T[0][SFE_ind]
+dt = args.time_spread
+time_bounds = [SFE_t_ff-dt,SFE_t_ff+dt]
 
 start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
 end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
@@ -288,7 +312,7 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
-if update == True:
+if update == True and args.make_plots_only == 'False':
     for time_it in range(start_time_ind, end_time_ind+1):
         L_tots = []
         current_separations = []
@@ -330,7 +354,10 @@ if update == True:
         CW.Barrier()
         
         #Iterate over each bin:
-        rit = 0
+        if size == 1:
+            rit = 0
+        else:
+            rit = -1
         for bin_it in range(1,len(S_bins)):
             if size != 1:
                 rit = rit + 1
@@ -340,9 +367,12 @@ if update == True:
                 T_update = {}
                 #Calculate res for each bin upper bound
                 if args.projected_separation == "False":
-                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection_vector = proj_unit)
+                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
                 else:
                     res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit)
+                if size == 1:
+                    import pdb
+                    pdb.set_trace()
                 top_inds = np.where(res['topSystem'])[0]
 
                 sink_inds = np.where((res['n']==1))[0]
@@ -416,6 +446,9 @@ if update == True:
                 s6 = np.where((res['n']==6) & (res['topSystem']==True))[0]
                 s7 = np.where((res['n']==7) & (res['topSystem']==True))[0]
                 multi_inds = np.array(b.tolist() + t.tolist() + q.tolist() + q5.tolist() + s6.tolist() + s7.tolist())
+                if size == 1:
+                    import pdb
+                    pdb.set_trace()
                 del b
                 del t
                 del q
@@ -735,9 +768,10 @@ if update == True:
                 del ns6
                 del ns7
 
-                #print("Rank", rank, "All_unique_systems_L:", All_unique_systems_L)
-                data = {'current_separations': current_separations, 'CF_per_bin': CF_per_bin, 'n_systems': n_systems, 'L_tot_hist': L_tot_hist, 'All_unique_systems': sep_update, 'All_unique_systems_L': L_update, 'All_unique_systems_T': T_update}
-                CW.send(data, dest=0, tag=rank)
+                if rank > 0:
+                    #print("Rank", rank, "All_unique_systems_L:", All_unique_systems_L)
+                    data = {'current_separations': current_separations, 'CF_per_bin': CF_per_bin, 'n_systems': n_systems, 'L_tot_hist': L_tot_hist, 'All_unique_systems': sep_update, 'All_unique_systems_L': L_update, 'All_unique_systems_T': T_update}
+                    CW.send(data, dest=0, tag=rank)
         except:
             pass
             
@@ -745,28 +779,28 @@ if update == True:
         CW.Barrier()
         
         if rank == 0:
-            CF_per_bin = []
-            n_systems = []
-            for rit in range(1,size):
-                if rit < 12:
-                    data = CW.recv(source=rit, tag=rit)
-                    Separations.append(data['current_separations'])
-                    CF_per_bin.append(data['CF_per_bin'][0])
-                    n_systems.append(data['n_systems'][0])
-                    Luminosities.append(np.array(data['L_tot_hist']))
-                    print("From rank:", rank, "received:", [data['All_unique_systems'], data['All_unique_systems_L'], data['All_unique_systems_T']])
-                    for key in data['All_unique_systems'].keys():
-                        if key not in All_unique_systems.keys():
-                            All_unique_systems.update({key: [data['All_unique_systems'][key]]})
-                        else:
-                            All_unique_systems[key].append(data['All_unique_systems'][key])
-                    for key in data['All_unique_systems_L'].keys():
-                        if key not in All_unique_systems_L.keys():
-                            All_unique_systems_L.update({key: [data['All_unique_systems_L'][key]]})
-                            All_unique_systems_T.update({key: [data['All_unique_systems_T'][key]]})
-                        else:
-                            All_unique_systems_L[key].append(data['All_unique_systems_L'][key])
-                            All_unique_systems_T[key].append(data['All_unique_systems_T'][key])
+            print("CF_per_bin before receiving data form other ranks:", CF_per_bin)
+            print("N_sys_total before receiving data form other ranks:", N_sys_total)
+            
+            for rit_recv in range(1,size):
+                data = CW.recv(source=rit_recv, tag=rit_recv)
+                Separations.append(data['current_separations'])
+                CF_per_bin.append(data['CF_per_bin'][0])
+                n_systems.append(data['n_systems'][0])
+                Luminosities.append(np.array(data['L_tot_hist']))
+                print("From rank:", rank, "received:", [data['All_unique_systems'], data['All_unique_systems_L'], data['All_unique_systems_T']])
+                for key in data['All_unique_systems'].keys():
+                    if key not in All_unique_systems.keys():
+                        All_unique_systems.update({key: [data['All_unique_systems'][key]]})
+                    else:
+                        All_unique_systems[key].append(data['All_unique_systems'][key])
+                for key in data['All_unique_systems_L'].keys():
+                    if key not in All_unique_systems_L.keys():
+                        All_unique_systems_L.update({key: [data['All_unique_systems_L'][key]]})
+                        All_unique_systems_T.update({key: [data['All_unique_systems_T'][key]]})
+                    else:
+                        All_unique_systems_L[key].append(data['All_unique_systems_L'][key])
+                        All_unique_systems_T[key].append(data['All_unique_systems_T'][key])
                 else:
                     pass
             
@@ -788,8 +822,12 @@ if update == True:
 #Create plots below
 
 if rank == 0:
-    pickle_file = savedir + args.pickled_file
-    file = open(pickle_file, 'rb')
+    try:
+        pickle_file = savedir + args.pickled_file
+        file = open(pickle_file, 'rb')
+    except:
+        pickle_file = args.pickled_file
+        file = open(pickle_file, 'rb')
     Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
     file.close()
 
@@ -800,18 +838,17 @@ if rank == 0:
     CF_Total = CF_top/CF_bot
 
     plt.clf()
-    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
-    plt.xlabel('Separation (AU)')
+    plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
-    plt.xlim([1,4])
+    plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     plt.ylim(bottom=0.0)
     plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
     print('created Total_companion_frequency.jpg')
     
     #Create mean CF
-    bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
     CF_median = []
     CF_err = []
     N = np.shape(N_sys_total)[0]
@@ -832,7 +869,7 @@ if rank == 0:
     gs.update(wspace=0.0, hspace=0.0)
     axes_dict = {}
 
-    for bit in range(11):
+    for bit in range(len(S_bins)-1):
         ax_label = 'ax' + str(bit)
         if bit == 0:
             axes_dict.update({ax_label:fig.add_subplot(gs[0,bit])})
@@ -898,7 +935,7 @@ if rank == 0:
         #plt.axvline(x=mean-standard_error, label='standard error', color='b', linestyle=":")
         #plt.axvline(x=mean+standard_error, label='standard error', color='b', linestyle=":")
         if bit == 10:
-            axes_dict[ax_label].legend(loc='center left',bbox_to_anchor=(0.985, 0.5))
+            axes_dict[ax_label].legend(loc='best')#,bbox_to_anchor=(0.985, 0.5))
         #plt.ylim([0, 1600])
         #plt.savefig(savedir+"error_dist_bin_"+str(bit)+".png", format='png', bbox_inches='tight')
         standard_deviation = [median-(mean-std), (mean+std)-median]
@@ -915,11 +952,11 @@ if rank == 0:
     plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
     plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
-    plt.xlabel('Separation (AU)')
+    plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
-    plt.xlim([1,4])
+    plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     plt.ylim(bottom=0.0)
-    plt.savefig('Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
+    plt.savefig(savedir+'Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
     print('created Median_companion_frequency.pdf')
 
     #CF calculated by SUMMING all CF historgrams
@@ -927,12 +964,12 @@ if rank == 0:
     CF_sum = np.sum(CF_Array_Full, axis=0)
 
     plt.clf()
-    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-    plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.bar(bin_centers, CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
-    plt.xlabel('Separation (AU)')
+    plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
-    plt.xlim([1,4])
+    plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     plt.ylim(bottom=0.0)
     plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
     print('created Sum_companion_frequency.jpg')
@@ -953,7 +990,7 @@ if rank == 0:
             plt.semilogy(x,All_unique_systems[key],c=cmap(c_it-1),alpha=0.5, lw=0.5)
     plt.colorbar(dummie_cax, ticks=c).set_label("Number of components")
     plt.xlabel("No. timesteps")
-    plt.ylabel("Separation (AU)")
+    plt.ylabel("Log Separation (AU)")
     plt.xlim(left=0.0)
     plt.savefig(savedir + args.figure_prefix + "Separation_unique_systems.jpg")
 
@@ -967,7 +1004,7 @@ if rank == 0:
         plt.clf()
         Median_hist, bins = np.histogram(Median_separation, bins=S_bins)
         plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), Median_hist, width=0.25, fill=False, edgecolor='black')
-        plt.xlabel('Median Separation (AU)')
+        plt.xlabel('Median Log Separation (AU)')
         plt.savefig(savedir + args.figure_prefix + "Median_Separation_N_less_than_"+str(n_cut)+"_Unique_Systems_hist.jpg")
 
     N_components = []
@@ -1007,7 +1044,7 @@ if rank == 0:
     plt.legend(loc='best')
     plt.xlabel('Mean Luminosty (log(L))')
     plt.ylabel('Number')
-    plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
+    #plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
     plt.ylim(bottom=0.0)
     plt.savefig(savedir + args.figure_prefix + 'Mean_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
 
@@ -1034,7 +1071,7 @@ if rank == 0:
     plt.legend(loc='best')
     plt.xlabel('Max Luminosty (log(L))')
     plt.ylabel('Number')
-    plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
+    #plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
     plt.ylim(bottom=0.0)
     plt.savefig(savedir + args.figure_prefix + 'Max_luminosty_dist_of_unique_systems_with_L_phot.pdf', format='pdf', bbox_inches='tight')
 
@@ -1048,6 +1085,74 @@ if rank == 0:
     plt.yscale('log')
     plt.xlim([np.log10(L_bins[0]),np.log10(L_bins[-1])])
     plt.savefig(savedir+"Sum_of_Luminosity_histograms.jpg")
+    '''
+    '''
+    plt.clf()
+    used_sink_inds = []
+    cmap = plt.get_cmap("tab10")
+    window = 50
+    for key in All_unique_systems.keys():
+        append_bools = []
+        for ind in eval(key):
+            if ind not in flatten(used_sink_inds):
+                append_bools.append(True)
+            else:
+                append_bools.append(False)
+        if False not in append_bools:
+            color = None
+            used_sink_inds.append(eval(key))
+        elif True not in append_bools:
+            existing_ind = eval(key)[append_bools.index(False)]
+            for sys_ind in used_sink_inds:
+                if existing_ind in sys_ind:
+                    color_ind = used_sink_inds.index(sys_ind)
+                    break
+            color = cmap(color_ind)
+            print(key, "already in list")
+        else:
+            existing_ind = eval(key)[append_bools.index(False)]
+            for sys_ind in used_sink_inds:
+                if existing_ind in sys_ind:
+                    true_inds = np.where(np.array(append_bools) == True)[0]
+                    sys_ind.append(eval(key)[true_inds[0]])
+                    color_ind = used_sink_inds.index(sys_ind)
+                    break
+            color = cmap(color_ind)
+    
+        system_times = np.array(All_unique_systems_T[key]).T[0]
+        system_seps = np.array(All_unique_systems[key]).T[0]
+        if np.max(system_seps) > 10000:
+            remove_inds = np.argwhere(np.array(system_seps)>10000).T[0]
+            system_seps[remove_inds[0]] = np.nan
+            system_times[remove_inds[0]] = np.nan
+        if len(system_times) == len(system_seps):
+            lifetime = (np.array(All_unique_systems_T[key])[-1] - np.array(All_unique_systems_T[key])[0])*units['time_unit'].in_units('yr')
+            print("lifetime for is", lifetime[0], "for", key)
+            if lifetime > 0.0:
+                moving_time = []
+                moving_sep = []
+                moving_upper_sep = []
+                moving_lower_sep = []
+                for smooth_ind in range(window, len(system_times)-window):
+                    ave_time = np.mean(system_times[smooth_ind-window:smooth_ind+window])
+                    ave_sep = np.mean(system_seps[smooth_ind-window:smooth_ind+window])
+                    upper_sep = np.max(system_seps[smooth_ind-window:smooth_ind+window])
+                    lower_sep = np.min(system_seps[smooth_ind-window:smooth_ind+window])
+                    moving_time.append(ave_time)
+                    moving_sep.append(ave_sep)
+                    moving_upper_sep.append(upper_sep)
+                    moving_lower_sep.append(lower_sep)
+            if color == None:
+                plt.semilogy(moving_time, moving_sep)
+                plt.fill_between(moving_time, moving_lower_sep, moving_upper_sep, alpha=0.2)
+            else:
+                plt.semilogy(moving_time, moving_sep, color=color)
+                plt.fill_between(moving_time, moving_lower_sep, moving_upper_sep, alpha=0.2, color=color)
+    for bin_bound in S_bins:
+        plt.axhline(y=bin_bound, color='k')
+    plt.xlabel("Time ($t_{ff}$)")
+    plt.ylabel("Log Separation (AU)")
+    plt.savefig("Separation_evolution.jpg")
     '''
   
 sys.stdout.flush()
