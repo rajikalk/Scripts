@@ -55,7 +55,9 @@ def parse_inputs():
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
     parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
     parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
+    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-sm", "--skip_made", help="do you want to skip frames already made?", type=str, default='True')
+    parser.add_argument("-spec_file", "--specific_file", help="Do you want to use a specific file", type=str, default=None)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -209,7 +211,23 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Define units to override:
-units_override = {"length_unit":(4.0,"pc"), "mass_unit":(2998,"Msun"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "density_unit":(46.84375, "Msun/pc**3")}
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+
+if args.simulation_density_id == 'G50':
+    units_override.update({"mass_unit":(1500,"Msun")})
+elif args.simulation_density_id == 'G200':
+    units_override.update({"mass_unit":(6000,"Msun")})
+elif args.simulation_density_id == 'G400':
+    units_override.update({"mass_unit":(12000,"Msun")})
+else:
+    units_override.update({"mass_unit":(2998,"Msun")})
+
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 mym.set_units(units_override)
 
 #find sink particle to center on and formation time
@@ -309,14 +327,14 @@ if args.make_frames_only == 'False':
     verbatim = False
     if rank == 0:
         verbatim = True
-    usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+    if args.specific_file == None:
+        usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+    else:
+        usable_files = [args.specific_file]
     if rank == 0:
         print("Usable_files=", usable_files)
     del sink_form_time
     del files
-    
-import pdb
-pdb.set_trace()
     
 sys.stdout.flush()
 CW.Barrier()
@@ -391,6 +409,8 @@ if args.make_frames_only == 'False':
             proj_length = np.sqrt(separation_magnitude**2 - projected_separation**2)
             radius = proj_length*(projected_separation/separation_magnitude)
             sep_z = np.sqrt(proj_length**2 - radius**2)
+            import pdb
+            pdb.set_trace()
             
             vectors_along_cone = np.array([[radius, 0, sep_z],\
                                            [radius/np.sqrt(2), radius/np.sqrt(2), sep_z],\
@@ -642,8 +662,6 @@ for pickle_file in pickle_files:
                 vely = np.flip(np.flip(vely, axis=0), axis=1)
                 part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
             file.close()
-            
-            time_val = args_dict['time_val']
             
             if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
                 xlim = args_dict['xlim']

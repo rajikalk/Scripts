@@ -12,6 +12,8 @@ import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import matplotlib.gridspec as gridspec
+from scipy.stats import norm
+from scipy.optimize import curve_fit
 
 #Define globals
 f_acc = 0.5
@@ -140,6 +142,7 @@ Tobin_intersection = list(set(Tobin_luminosities_All_objects).intersection(Tobin
 Tobin_n_singles = 60
 N_components = np.ones(Tobin_n_singles).tolist()
 CF_per_bin_Tobin = []
+CF_errs = []
 
 sys.stdout.flush()
 CW.Barrier()
@@ -178,17 +181,86 @@ for bin_it in range(1,len(S_bins)):
     q_no = len(np.where(np.array(N_components) == 4)[0])
     cf = (b_no+t_no*2+q_no*3)/(s_no+b_no+t_no+q_no)
     CF_per_bin_Tobin.append(cf)
+    
+    N_comp = np.sum(np.array(N_components) - np.ones(np.shape(N_components)))
+    N_sys = len(N_components)
+    CF_err = (1/N_sys)*(N_comp*(1-(N_comp/N_sys)))**0.5
+    CF_errs.append(CF_err)
 
 sys.stdout.flush()
 CW.Barrier()
 
+CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
+CF_errs = np.array(CF_errs)
+
 #Create histogram of Tobin's CF Distribution
 plt.clf()
-plt.bar(((np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2), CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
+plt.bar(bin_centers, CF_per_bin_Tobin, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
 plt.ylabel("Companion Frequency")
 plt.xlabel("Log (AU)")
+#plt.xlim([1,4])
+#plt.ylim([0, 0.2])
 plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
 plt.ylim(bottom=0)
+
+#raghaven dist
+sep_mean_rag = 1.7
+sep_std_rag = 1.52
+x = np.linspace(0.75, 4, 1000)
+CF_rag = norm.pdf(x,sep_mean_rag,sep_std_rag)*0.15240300488036065
+#plt.plot(x, CF_rag)
+CF_rag_des = []
+for bin_it in range(1,len(S_bins)):
+    bin_inds = np.where(((10**x)<S_bins[bin_it])&((10**x)>S_bins[bin_it-1]))[0]
+    CF_bin_rag = np.mean(CF_rag[bin_inds])
+    CF_rag_des.append(CF_bin_rag)
+
+def Gaussian(x,scale,mean,sigma):
+    return scale * norm.pdf(x, mean, sigma)
+
+diff_hist = np.array(CF_per_bin_Tobin) - np.array(CF_rag_des)
+diff_hist = np.clip(diff_hist, 0, np.max(diff_hist))
+#plt.bar(bin_centers, diff_hist, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5)
+popt, pcov = curve_fit(Gaussian, bin_centers[-5:], diff_hist[-5:], [0.3, 4.0, 0.3], sigma=CF_errs[-5:])
+
+fit = Gaussian(x, *popt)
+
+#Tobin Gaussian fits
+first_peak = np.log10(90)
+popt1, pcov1 = curve_fit(Gaussian, bin_centers[:9], CF_per_bin_Tobin[:9], [np.max(CF_per_bin_Tobin[:9]), bin_centers[:9][np.argmax(CF_per_bin_Tobin[:9])], 0.5], sigma=CF_errs[:9])
+fit1 = Gaussian(x, *popt1)
+plt.plot(x, fit1, ls='--')
+
+start_ind = 8
+popt2, pcov2 = curve_fit(Gaussian, bin_centers[start_ind:], CF_per_bin_Tobin[start_ind:], [np.max(CF_per_bin_Tobin[start_ind:]), bin_centers[start_ind:][np.argmax(CF_per_bin_Tobin[start_ind:])], 0.5], sigma=CF_errs[start_ind:])
+fit2 = Gaussian(x, *popt2)
+plt.plot(x, fit2, ls='--')
+
+sum_fit = fit1 + fit2
+plt.plot(x, sum_fit)
+
+def line(x, m, b):
+    return m*x + b
+
+
+non_zero_inds = np.where(CF_per_bin_Tobin>0)[0]
+popt3, pcov3 = curve_fit(line, bin_centers[non_zero_inds][:7], CF_per_bin_Tobin[non_zero_inds][:7], [0, np.mean(CF_per_bin_Tobin[non_zero_inds][:7])], sigma=CF_errs[non_zero_inds][:7])
+popt3[0] = 0
+popt3[1] = np.mean(CF_per_bin_Tobin[non_zero_inds][:7])
+fit3 = line(x, *popt3)
+plt.plot(x, fit3, ls='--')
+popt4, pcov4 = curve_fit(line, bin_centers[9:], CF_per_bin_Tobin[9:]-popt3[1], [ 0.39, -1.15], sigma=CF_errs[9:])
+#power_lw = power_law(x, 0.00004, 10, 0.025)
+fit4 = line(x, *popt4)
+plt.plot(x, fit4, ls='--')
+
+fit4 = np.clip(fit4, 0, np.max(fit4))
+sum_line = fit3 + fit4
+plt.plot(x, sum_line)
+#sep_mean = 4.0
+#sep_std = 0.3
+#plt.plot(x, norm.pdf(x,sep_mean,sep_std)*0.3)
+
 plt.savefig(savedir + "CF_Tobin_data.png")
 
 sys.stdout.flush()
@@ -208,22 +280,27 @@ if len(args.projection_vector) > 0:
 else:
     proj_unit = []
 
-units = {"length_unit":yt.YTQuantity(4.0,"pc"), "velocity_unit":yt.YTQuantity(0.18, "km/s"), "time_unit":yt.YTQuantity(685706129102738.9, "s"), "density_unit":yt.YTQuantity(46.84375, "Msun/pc**3")}
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-pickle_file = args.global_data_pickle_file
-if 'G50' in pickle_file:
-    units.update({"mass_unit":yt.YTQuantity(1500,"Msun")})
-elif 'G200' in pickle_file:
-    units.update({"mass_unit":yt.YTQuantity(6000,"Msun")})
-elif 'G400' in pickle_file:
-    units.update({"mass_unit":yt.YTQuantity(12000,"Msun")})
+if args.simulation_density_id == 'G50':
+    units_override.update({"mass_unit":(1500,"Msun")})
+elif args.simulation_density_id == 'G200':
+    units_override.update({"mass_unit":(6000,"Msun")})
+elif args.simulation_density_id == 'G400':
+    units_override.update({"mass_unit":(12000,"Msun")})
 else:
-    units.update({"mass_unit":yt.YTQuantity(2998,"Msun")})
+    units_override.update({"mass_unit":(2998,"Msun")})
 
-scale_l = 1.23427103e19 # 4 pc
-scale_v = 1.8e4         # 0.18 km/s == sound speed
-scale_t = 6.85706128e14 # 4 pc / 0.18 km/s
-scale_d = 3.171441e-21  # 2998 Msun / (4 pc)^3
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+
+units={}
+for key in units_override.key():
+    units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 sys.stdout.flush()
 CW.Barrier()
@@ -300,6 +377,12 @@ time_bounds = [SFE_t_ff-dt,SFE_t_ff+dt]
 start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
 end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
 
+print("tstart, tend", time_bounds[0]*units['time_unit'].in_units('kyr'), time_bounds[1]*units['time_unit'].in_units('kyr'))
+print("SFE_start, SFE_end", (np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value)/units['mass_unit'].value, (np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)/units['mass_unit'].value)
+print("nstars_start, nstars_end", len(np.where(global_data['m'][start_time_ind]>0)[0]), len(np.where(global_data['m'][end_time_ind]>0)[0]))
+print("mstars_start, mstars_end", np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value, np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)
+print("number of records", end_time_ind-start_time_ind)
+
 radius = yt.YTQuantity(2.0, 'rsun')
 temperature = yt.YTQuantity(3000, 'K')
 
@@ -318,11 +401,11 @@ if update == True and args.make_plots_only == 'False':
         current_separations = []
 
         # Make S with the data at time time_it
-        non_zero_inds = np.where(global_data['m'][time_it]>0)[0]
-        abspos = np.array([global_data['x'][time_it][non_zero_inds], global_data['y'][time_it][non_zero_inds], global_data['z'][time_it][non_zero_inds]]).T#*scale_l
-        absvel = np.array([global_data['ux'][time_it][non_zero_inds], global_data['uy'][time_it][non_zero_inds], global_data['uz'][time_it][non_zero_inds]]).T#*scale_v
-        mass = np.array(global_data['m'][time_it][non_zero_inds])
-        time = global_data['time'][time_it][non_zero_inds][0]
+        n_stars = np.where(global_data['m'][time_it]>0)[0]
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][n_stars])
+        time = global_data['time'][time_it][n_stars][0]
 
         S = pr.Sink()
         S._jet_factor = 1.
@@ -367,12 +450,15 @@ if update == True and args.make_plots_only == 'False':
                 T_update = {}
                 #Calculate res for each bin upper bound
                 if args.projected_separation == "False":
-                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
+                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False)
                 else:
-                    res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit)
+                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit)
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False, projection=True, axis=args.axis, projection_vector=proj_unit)
                 if size == 1:
-                    import pdb
-                    pdb.set_trace()
+                    if np.max(res['n']) > 6:
+                        import pdb
+                        pdb.set_trace()
                 top_inds = np.where(res['topSystem'])[0]
 
                 sink_inds = np.where((res['n']==1))[0]
@@ -446,9 +532,7 @@ if update == True and args.make_plots_only == 'False':
                 s6 = np.where((res['n']==6) & (res['topSystem']==True))[0]
                 s7 = np.where((res['n']==7) & (res['topSystem']==True))[0]
                 multi_inds = np.array(b.tolist() + t.tolist() + q.tolist() + q5.tolist() + s6.tolist() + s7.tolist())
-                if size == 1:
-                    import pdb
-                    pdb.set_trace()
+
                 del b
                 del t
                 del q
@@ -567,6 +651,7 @@ if update == True and args.make_plots_only == 'False':
                             while p_ind < len(proximity_inds):
                                 L_list.append(L_list[-1] + L_tot[proximity_inds[p_ind]])
                                 p_ind = p_ind + 1
+
                             invisible_sub_systems = np.where(sep_list < S_bins[bin_it-1])[0]
                             if len(invisible_sub_systems) > 0:
                                 #print("Systems is hierarchical and there is a separation that is below the bin lower limit")
@@ -748,6 +833,10 @@ if update == True and args.make_plots_only == 'False':
                     print("AFTER REDEFINING SYSTEMS WITH INVISIBLE COMPONENTS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds])))
                     print("TOTAL NUMBER OF STARS =", str(missing_stars + np.sum(res['n'][top_inds])))
 
+                if np.max(res['n']) > 6:
+                    import pdb
+                    pdb.set_trace()
+
                 ns = len(np.where(res['n'][top_inds]==1)[0])
                 nb = len(np.where(res['n'][top_inds]==2)[0])
                 nt = len(np.where(res['n'][top_inds]==3)[0])
@@ -780,7 +869,7 @@ if update == True and args.make_plots_only == 'False':
         
         if rank == 0:
             print("CF_per_bin before receiving data form other ranks:", CF_per_bin)
-            print("N_sys_total before receiving data form other ranks:", N_sys_total)
+            #print("N_sys_total before receiving data form other ranks:", N_sys_total)
             
             for rit_recv in range(1,size):
                 data = CW.recv(source=rit_recv, tag=rit_recv)
@@ -838,8 +927,13 @@ if rank == 0:
     CF_Total = CF_top/CF_bot
 
     plt.clf()
-    plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    try:
+        plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+        plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    except:
+        plt.bar(bin_centers[1:], CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
+        plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+        S_bins = S_bins[1:]
     plt.legend(loc='best')
     plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
@@ -949,7 +1043,10 @@ if rank == 0:
     CF_err = np.array(CF_err)
 
     plt.clf()
-    plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+    try:
+        plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+    except:
+        plt.bar(bin_centers[1:], CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
     plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     plt.legend(loc='best')
     plt.xlabel('Log Separation (AU)')

@@ -9,13 +9,29 @@ import shutil
 import os
 
 #============================================================================================
-units = {"length_unit":(4.0,"pc"), "mass_unit":(2998,"Msun"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "density_unit":(46.84375, "Msun/pc**3")}
-length_unit = yt.YTQuantity(units["length_unit"][0],units["length_unit"][1])
-velocity_unit = yt.YTQuantity(units["velocity_unit"][0],units["velocity_unit"][1])
-mass_unit = yt.YTQuantity(units["mass_unit"][0],units["mass_unit"][1])
-time_unit = yt.YTQuantity(units["time_unit"][0],units["time_unit"][1])
-density_unit = yt.YTQuantity(units["density_unit"][0],units["density_unit"][1])
-momentum_unit = mass_unit.in_units('g')*velocity_unit.in_units('cm/s')
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+
+if args.simulation_density_id == 'G50':
+    units_override.update({"mass_unit":(1500,"Msun")})
+elif args.simulation_density_id == 'G200':
+    units_override.update({"mass_unit":(6000,"Msun")})
+elif args.simulation_density_id == 'G400':
+    units_override.update({"mass_unit":(12000,"Msun")})
+else:
+    units_override.update({"mass_unit":(2998,"Msun")})
+
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+momentum_unit = units_override['mass_unit'].in_units('g')*units_override['velocity_unit'].in_units('cm/s')
+
+units={}
+for key in units_override.key():
+    units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+
 
 directory = sys.argv[1]
 save_dir = sys.argv[2]

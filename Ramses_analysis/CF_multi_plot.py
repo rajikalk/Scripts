@@ -25,6 +25,8 @@ S_bins, CF_per_bin_Tobin = pickle.load(file)
 file.close()
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
+S_bins_lower_sep = np.logspace(0.75,4,14)
+bin_centers_lower_sep = (np.log10(S_bins_lower_sep[:-1])+np.log10(S_bins_lower_sep[1:]))/2
 
 pickle_files = eval(args.pickle_files)
 fig, axs = plt.subplots(len(pickle_files), 1, figsize=(4, 3*len(pickle_files)), constrained_layout=True, sharex=True, sharey=True)
@@ -37,36 +39,29 @@ if args.subplot_titles != None:
 
 fig_counter = 0
 for pickle_f in pickle_files:
+    print("opening file", pickle_f)
     file = open(pickle_f, 'rb')
     Separations, Times, CF_Array_Full, N_sys_total, All_unique_systems, All_unique_systems_L, All_unique_systems_T, Luminosities = pickle.load(file)
     file.close()
     
-    sink_inds = []
-    system_number = ['[28, 35, 42]', '[84, 109]', '[147, 159]', '[129, 150]', '[119, 120]', '[67, 69, 72]', '[8, 89]', '[12, 97]', '[104, 142, 155]', '[25, 66, 77, 78]', '[124, 156]', '[127, 140, 141, 152]', '[118, 121]', '[146, 151]', '[153, 154]', '[110, 114, 118, 121, 123]', '[64, 116]', '[164, 166]', '[144, 160, 161, 168]', '[139, 143, 157]', '[160, 161, 168]', '[117, 173]', '[173, 174, 178]', '[175, 176, 181]', '[167, 177]', '[48, 92, 111]', '[143, 157]', '[182, 183]', ]
-    for key in All_unique_systems_L.keys():
-        key_list = eval(key)
-        for kit in key_list:
-            if kit not in sink_inds:
-                sink_inds.append(kit)
+    #CF calculated from all systems
+    Summed_systems = np.sum(np.array(N_sys_total), axis=0)
+    CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
+    CF_bot = np.sum(Summed_systems, axis=1)
+    CF_Total = CF_top/CF_bot
     
-    #import pdb
-    #pdb.set_trace()
+    print("CF_Total =", CF_Total)
     
-    CF_median = []
-    CF_err = []
+    #Create mean CF
+    CF_median = np.median(np.array(CF_Array_Full), axis=0)
+    mean = np.mean(np.array(CF_Array_Full), axis=0)
+    std = np.std(np.array(CF_Array_Full), axis=0)
+    CF_err = np.array([CF_median-(mean-std), (mean+std)-CF_median])
     
-    for bit in range(11):
-        non_zero_inds = np.where(np.array(CF_Array_Full)[:,bit]>0)[0]
-        median = np.median(np.array(CF_Array_Full)[:,bit][non_zero_inds])
-        mean = np.mean(np.array(CF_Array_Full)[:,bit][non_zero_inds])
-        std = np.std(np.array(CF_Array_Full)[:,bit][non_zero_inds])
-        standard_deviation = [median-(mean-std), (mean+std)-median]
-        CF_median.append(median)
-        CF_err.append(standard_deviation)
-
     CF_err = np.array(CF_err)
+    print("CF_median =", CF_median)
 
-    axs[fig_counter].bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+    axs[fig_counter].bar(bin_centers_lower_sep, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
     axs[fig_counter].bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
     if fig_counter == 0:
         axs[fig_counter].legend(loc='best')

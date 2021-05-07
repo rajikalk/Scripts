@@ -240,43 +240,7 @@ for it in range(len(positions)):
             else:
                 #spoofing this line. Not sure what to use.
                 axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
-    '''
-    yit = np.where(positions[:,1] == positions[it][1])[0][0]
-    if positions[it][0] == 1 and positions[it][1] == 1:
-        if columns > 1:
-            axes_dict.update({ax_label:f.add_subplot(gs_left[0,0])})
-        else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[0,0])})
-    elif positions[it][0] != columns:
-        if args.share_x and args.share_y:
-            if yit >= len(axes_dict):
-                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax1'])})
-            else:
-                axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
-        elif args.share_x:
-            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharex=axes_dict['ax1'])})
-        elif args.share_y and positions[it][0]!=1:
-            yit = np.where(positions[:,1] == positions[it][1])[0][0]
-            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
-        elif args.share_y:
-            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
-        elif args.share_y == 'row':
-            yit = np.where(positions[:,1] == positions[it][1])[0][0]
-            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1], sharey=axes_dict[axes_dict.keys()[yit]])})
-        else:
-            axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
-    else:
-        if args.share_x and args.share_y:
-            yit = np.where(positions[:,1] == positions[it][1])[0][0]
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax1'], sharey=axes_dict[axes_dict.keys()[yit]])})
-        elif args.share_x:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharex=axes_dict['ax1'])})
-        elif args.share_y:
-            yit = np.where(positions[:,1] == positions[it][1])[0][0]
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0], sharey=axes_dict[axes_dict.keys()[yit-1]])})
-        else:
-            axes_dict.update({ax_label:f.add_subplot(gs_right[positions[it][1]-1,0])})
-    '''
+
     if 'amb' in plot_type[it]:
         file = file_dir[it]
         times = []

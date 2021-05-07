@@ -62,13 +62,27 @@ Tobin_hist, bins = np.histogram(Tobin_Luminosities_multiples, bins=L_bins)
 
 args = parse_inputs()
 
-units = {"length_unit":yt.YTQuantity(4.0,"pc"), "mass_unit":yt.YTQuantity(2998,"Msun"), "velocity_unit":yt.YTQuantity(0.18, "km/s"), "time_unit":yt.YTQuantity(685706129102738.9, "s"), "density_unit":yt.YTQuantity(46.84375, "Msun/pc**3")}
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-scale_l = 1.23427103e19 # 4 pc
-scale_v = 1.8e4         # 0.18 km/s == sound speed
-scale_t = 6.85706128e14 # 4 pc / 0.18 km/s
-scale_d = 3.171441e-21  # 2998 Msun / (4 pc)^3
+if args.simulation_density_id == 'G50':
+    units_override.update({"mass_unit":(1500,"Msun")})
+elif args.simulation_density_id == 'G200':
+    units_override.update({"mass_unit":(6000,"Msun")})
+elif args.simulation_density_id == 'G400':
+    units_override.update({"mass_unit":(12000,"Msun")})
+else:
+    units_override.update({"mass_unit":(2998,"Msun")})
 
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+
+units={}
+for key in units_override.key():
+    units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 window = yt.YTQuantity(args.time_intergration_window, 'yr')
 luminosity_lower_limit = 0.01
@@ -134,7 +148,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     i = S.read_info_file(nout,datadir=datadir)
     S._time = i['time']
     
-    res = m.multipleAnalysis(S,nmax=6,cutoff=1e4)
+    res = m.multipleAnalysis(S,nmax=6,cutoff=1e4, nmax=6, cyclic=False)
     time = S._time * units['time_unit'].in_units('yr')
     
     s = np.where((res['n']==1) & (res['topSystem']==True))[0]
