@@ -339,7 +339,16 @@ def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
     #print "created meshs"
     return X, Y, X_vel, Y_vel, cl
 
-def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None):
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None, velz_full = None, axis = 'xy'):
+    if axis == 'xy':
+        center_vel_plane = np.array([center_vel[0], center_vel[1]])
+        center_vel_perp = center_vel[2]
+    elif axis == 'xz':
+        center_vel_plane = np.array([center_vel[0], center_vel[2]])
+        center_vel_perp = center_vel[1]
+    elif axis == 'yz':
+        center_vel_plane = np.array([center_vel[1], center_vel[2]])
+        center_vel_perp = center_vel[0]
     annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
     if smooth_cells is None:
         smoothing_val = int(annotate_freq/2)
@@ -354,37 +363,51 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         x_ind.append(int(valx))
         y_ind.append(int(valy))
         counter = counter + 1
+    
+    if velz_full == None:
+        velz_full = np.zeroes(np.shape(velx_full))
+    
     velx = []
     vely = []
+    velz = []
     for x in x_ind:
         x = int(x)
         xarr = []
         yarr = []
+        zarr = []
         for y in y_ind:
             y = int(y)
-            x_vel =[]
+            x_vel = []
             y_vel = []
+            z_vel = []
             for curx in range(x-smoothing_val, x+smoothing_val):
                 for cury in range(y-smoothing_val, y+smoothing_val):
                     x_vel.append(velx_full[curx][cury])
                     y_vel.append(vely_full[curx][cury])
+                    z_vel.append(velz_full[curx][cury])
             x_vel = np.mean(x_vel)
             y_vel = np.mean(y_vel)
+            z_vel = np.mean(z_vel)
             xarr.append(x_vel)
             yarr.append(y_vel)
+            zarr.append(z_vel)
         velx.append(xarr)
         vely.append(yarr)
+        velz.append(zarr)
     velx = np.array(velx)
     vely = np.array(vely)
+    velz = np.array(velz)
     try:
-        velx = velx - center_vel[0]
-        vely = vely - center_vel[1]
+        velx = velx - center_vel_plane[0]
+        vely = vely - center_vel_plane[1]
+        velz = velz - center_vel_perp
     except:
         velx = velx
         vely = vely
-    return velx, vely
+        velz = velz
+    return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None):
     legend_text=str(int(standard_vel)) + "kms$^{-1}$"
     global fontgize_global
     if plot_velocity_legend == 'False':
@@ -411,7 +434,13 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
             if width_val > 0.8:
                 width_val = 0.8
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
+            if Z_val == None:
+                color = 'w'
+            else:
+                #cmap = 'idl06_r'
+                import pdb
+                pdb.set_trace()
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
         #print("plotting quiver legend")
         pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.07*(ymax-ymin)]
