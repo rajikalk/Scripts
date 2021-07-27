@@ -50,7 +50,7 @@ except:
     file.close()
 
 # make movie with ffmpeg
-shellcmd = 'cat $(cat '+tmpfilelist+') | ffmpeg -f image2pipe -vcodec mjpeg -i - -b:v 50000k '+' '.join(args.ffmpeg_args)+' -y '+outputfile
+shellcmd = 'cat $(cat '+tmpfilelist+') | ffmpeg -f image2pipe -vcodec mjpeg -i - -b:v 50000k -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2"'+' '.join(args.ffmpeg_args)+' -y '+outputfile
 print(shellcmd+' -pass 1')
 subprocess.call(shellcmd+' -pass 1', shell=True)
 print(shellcmd+' -pass 2')
