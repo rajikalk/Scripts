@@ -148,7 +148,7 @@ for nout in range(file_no_range[0], file_no_range[1]+1):
     i = S.read_info_file(nout,datadir=datadir)
     S._time = i['time']
     
-    res = m.multipleAnalysis(S,nmax=6,cutoff=1e4, nmax=6, cyclic=False)
+    res = m.multipleAnalysis(S,nmax=6,cutoff=1e4, nmax=6, cyclic=False, Grho=Grho)
     time = S._time * units['time_unit'].in_units('yr')
     
     s = np.where((res['n']==1) & (res['topSystem']==True))[0]

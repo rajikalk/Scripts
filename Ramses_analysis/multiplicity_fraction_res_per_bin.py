@@ -450,11 +450,11 @@ if update == True and args.make_plots_only == 'False':
                 T_update = {}
                 #Calculate res for each bin upper bound
                 if args.projected_separation == "False":
-                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check)
-                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False)
+                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, Grho=Grho)
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False, Grho=Grho)
                 else:
-                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit)
-                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False, projection=True, axis=args.axis, projection_vector=proj_unit)
+                    #res = m.multipleAnalysis(S,nmax=6,cutoff=S_bins[bin_it], bound_check=bound_check, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, cyclic=False, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)
                 if size == 1:
                     if np.max(res['n']) > 6:
                         import pdb

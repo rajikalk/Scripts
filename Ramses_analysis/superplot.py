@@ -190,7 +190,7 @@ if args.update_pickles == 'True':
                 SFE.append(SFE_val)
                 SFE_n.append(SFE_val/time)
                 
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=False)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=False, Grho=Grho)
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                 n_multi = np.sum(res['n'][multi_inds])
                 M_multi = np.sum(res['mass'][multi_inds])

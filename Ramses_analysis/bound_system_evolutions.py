@@ -195,7 +195,7 @@ if args.make_plots_only == 'False':
             max_time_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time_yt.in_units('yr')-window))
             global_ind = np.argmin(abs(global_data['time'][:,0]*units['time_unit'].in_units('yr') - time_yt.in_units('yr')))
             
-            res = m.multipleAnalysis(S,cutoff=10000,nmax=6, cyclic=False)
+            res = m.multipleAnalysis(S,cutoff=10000,nmax=6, cyclic=False, Grho=Grho)
             multi_systems = np.where((res['topSystem']==True) & (res['n']>1))[0]
             
             sink_inds = np.where((res['n']==1))[0]
@@ -223,6 +223,7 @@ if args.make_plots_only == 'False':
                     central_ind = sys_inds[np.argmax(L_tot[sys_inds])]
                     central_pos = res['abspos'][central_ind]
                     positions = res['abspos'][sys_inds]
+                    print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
                     separations = np.sqrt(np.sum((positions - central_pos)**2, axis=1))
                     for sep in separations:
                         if sep > 0:
@@ -241,7 +242,12 @@ if args.make_plots_only == 'False':
                                 binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                 ind_1 = res['index1'][binary_ind]
                                 ind_2 = res['index2'][binary_ind]
-                                sep_value = np.sqrt(np.sum((res['abspos'][ind_1] - res['abspos'][ind_2])**2))
+                                pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
+                                sep_value = np.sqrt(np.sum(pos_diff**2))
+                                if sep_value > 10000.:
+                                    update_inds = np.where(pos_diff>scale_l.in_units('AU')/2)[0]
+                                    pos_diff[update_inds] = pos_diff[update_inds] - scale_l.in_units('AU').value
+                                    sep_value = np.sqrt(np.sum(pos_diff**2))
                                 sep_array.append(sep_value)
                                 str_1 = sys_string[:open_ind]
                                 str_2 = sys_string[char_it+1:]

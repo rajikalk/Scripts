@@ -9,6 +9,22 @@ import shutil
 import os
 
 #============================================================================================
+def parse_inputs():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
+    parser.add_argument("-radius", "--proximity_radius", help="within what radius (in AU) do you want to save sink particle data?", type=float, default=10000.0)
+    parser.add_argument("-def_sys", "--define_system", help="Is there a particular system that you would like to plot?", type=str, default=None)
+    parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
+    parser.add_argument("-end_t", "--end_time", help="dow you want to add a y limit?", type=float, default=None)
+    parser.add_argument("-plt_matches", "--plot_matched_times", help="do you want to plot to match times that you found?", default='False', type=str)
+    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
+args = parse_inputs()
+
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 if args.simulation_density_id == 'G50':
@@ -26,10 +42,10 @@ scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
-momentum_unit = units_override['mass_unit'].in_units('g')*units_override['velocity_unit'].in_units('cm/s')
+momentum_unit = yt.YTQuantity(units_override['mass_unit'][0], units_override['mass_unit'][1]).in_units('g')*yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')
 
 units={}
-for key in units_override.key():
+for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 

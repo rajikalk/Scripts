@@ -9,6 +9,8 @@ from mpi4py.MPI import COMM_WORLD as CW
 import sys
 import collections
 import os
+import matplotlib.collections as mcoll
+import matplotlib.path as mpath
 
 f_acc= 0.5
 
@@ -71,7 +73,9 @@ def parse_inputs():
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-start_time_it", "--start_time_index", help="What time index do you want to start at? mostly for diagnostic reasons.", type=int, default=0)
     parser.add_argument("-lifetime_thres", "--sys_lifetime_threshold", help="What lifeimteimte threshold do you want to define a stable system", type=float, default=100000.)
-    parser.add_argument("-replace_ind_type", "--replace_index_type", help="Replacing subsystems with a primary, do you want to use the tru mass, or the  observe brightness?", type=str, default="L")
+    parser.add_argument("-replace_ind_type", "--replace_index_type", help="Replacing subsystems with a primary, do you want to use the true mass, or the  observe brightness?", type=str, default="L")
+    parser.add_argument("-plot_super", "--plot_superplot", help="do you want to plot the superplot?", type=str, default='True')
+    parser.add_argument("-use_com_sep", "--use_separation_of_the_coms", help="Do you want to same the separation as the separation of the center of masses instead of relative to a particular sink?", type=str, default='True')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -81,18 +85,35 @@ args = parse_inputs()
 rank = CW.Get_rank()
 size = CW.Get_size()
 
+
+#Set units
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
 
-if simulation_density_id == 'G50':
+if simulation_density_id == '50':
+    Grho=50
     units_override.update({"mass_unit":(1500,"Msun")})
-elif simulation_density_id == 'G200':
+elif simulation_density_id == '100':
+    Grho=100
+    units_override.update({"mass_unit":(3000,"Msun")})
+elif simulation_density_id == '125':
+    Grho=125
+    units_override.update({"mass_unit":(3750,"Msun")})
+elif simulation_density_id == '150':
+    Grho=150
+    units_override.update({"mass_unit":(4500,"Msun")})
+elif simulation_density_id == '200':
+    Grho=200
     units_override.update({"mass_unit":(6000,"Msun")})
-elif simulation_density_id == 'G400':
+elif simulation_density_id == '400':
+    Grho=400
     units_override.update({"mass_unit":(12000,"Msun")})
 else:
-    units_override.update({"mass_unit":(2998,"Msun")})
+    print("MASS UNIT NOT SET")
+    import pdb
+    pdb.set_trace()
+    
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
     
@@ -108,10 +129,12 @@ for key in units_override.keys():
 sys.stdout.flush()
 CW.Barrier()
 
+#Define arrays of quantities to be saved.
 Times = []
 SFE = []
 SFE_n = []
 M_tot = []
+M_tot_vis = []
 M_tot_multi = []
 N_stars = []
 N_vis_stars = []
@@ -119,7 +142,9 @@ N_multi_stars = []
 System_seps = {}
 System_semimajor = {}
 System_times = {}
+System_ecc = {}
 
+#loading global data
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open,encoding="latin1")
@@ -134,75 +159,27 @@ dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('
 Accretion_array = dm/dt
 print('loaded global data')
 
+#Find sink formation times
+Sink_formation_times = []
+time_it = 0
+sink_it = 0
+while time_it < np.shape(global_data['m'])[0]:
+     while sink_it < np.shape(global_data['m'])[1]:
+         if global_data['m'][time_it][sink_it]>0:
+             Sink_formation_times.append(global_data['time'][time_it][sink_it])
+             sink_it = sink_it + 1
+         elif global_data['m'][time_it][sink_it] == 0:
+             time_it = time_it + 1
+             break
+     if sink_it == np.shape(global_data['m'])[1]:
+         break
+Sink_formation_times = (Sink_formation_times*scale_t).in_units('yr')
+
 sys.stdout.flush()
 CW.Barrier()
 
+#Define pickle name
 pickle_file = args.pickled_file
-
-if rank == 0 and args.update_pickles == 'False':
-    try:
-        file = open(pickle_file+'.pkl', 'rb')
-        Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times = pickle.load(file)
-        file.close()
-        print('read in completed pickle')
-    except:
-        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
-        if len(pickle_files) > 0:
-            print('reading pickles from ranks')
-            Times_full = []
-            SFE_full = []
-            SFE_n_full = []
-            M_tot_full = []
-            M_tot_multi_full = []
-            N_stars_full = []
-            N_vis_stars_full = []
-            N_multi_stars_full = []
-            System_seps_full = {}
-            System_times_full = {}
-            for pick_file in pickle_files:
-                file = open(pick_file, 'rb')
-                Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times = pickle.load(file)
-                file.close()
-                for time_key in System_times.keys():
-                    if time_key not in System_times_full.keys():
-                        System_times_full.update({time_key:System_times[time_key]})
-                        System_seps_full.update({time_key:System_seps[time_key]})
-                    else:
-                        System_times_full[time_key] = System_times_full[time_key] + System_times[time_key]
-                        System_seps_full[time_key] = System_seps_full[time_key] + System_seps[time_key]
-                Times_full = Times_full + Times
-                SFE_full = SFE_full + SFE
-                SFE_n_full = SFE_n_full + SFE_n
-                M_tot_full = M_tot_full + M_tot
-                M_tot_multi_full = M_tot_multi_full + M_tot_multi
-                N_stars_full = N_stars_full + N_stars
-                N_vis_stars_full = N_vis_stars_full + N_vis_stars
-                N_multi_stars_full = N_multi_stars_full + N_multi_stars
-                os.remove(pick_file)
-            
-            #Let's sort the data
-            for time_key in System_times_full.keys():
-                sorted_array = np.array(System_times_full[time_key])
-                dict_sort = np.argsort(sorted_array)
-                sorted_array = np.array(System_times_full[time_key])[dict_sort]
-                System_times[time_key] = sorted_array.tolist()
-                sorted_array = np.array(System_seps_full[time_key])[dict_sort]
-                System_seps[time_key] = sorted_array.tolist()
-            sorted_inds = np.argsort(Times_full)
-            Times = np.array(Times_full)[sorted_inds].tolist()
-            SFE = np.array(SFE_full)[sorted_inds].tolist()
-            SFE_n = np.array(SFE_n_full)[sorted_inds].tolist()
-            M_tot = np.array(M_tot_full)[sorted_inds].tolist()
-            M_tot_multi = np.array(M_tot_multi_full)[sorted_inds].tolist()
-            N_stars = np.array(N_stars_full)[sorted_inds].tolist()
-            N_vis_stars = np.array(N_vis_stars_full)[sorted_inds].tolist()
-            N_multi_stars = np.array(N_multi_stars_full)[sorted_inds].tolist()
-            
-            file = open(pickle_file+'.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times),file)
-            file.close()
-        else:
-            print('not pickles exist')
             
 sys.stdout.flush()
 CW.Barrier()
@@ -219,6 +196,7 @@ else:
     bound_check = False
 if args.update_pickles == 'True':
     rit = -1
+    prev_n_stars = 1
     for time_it in range(start_time_it, len(global_data['time'].T[0])):
         rit = rit + 1
         if rit == size:
@@ -234,6 +212,33 @@ if args.update_pickles == 'True':
                 time_yr = yt.YTQuantity(scale_t*time, 's').in_units('yr').value
                 Times.append(time_yr)
                 
+                if len(n_stars) != prev_n_stars:
+                    n_new_sinks = len(n_stars) - prev_n_stars
+                    prev_n_stars = len(n_stars)
+                    if n_new_sinks > 1:
+                        import pdb
+                        pdb.set_trace()
+                    elif n_new_sinks == 1:
+                        new_sink = n_stars[-1]
+                        new_sink_pos = abspos[-1]
+                        new_sink_vel = absvel[-1]
+                        new_sink_mass = mass[-1]
+                        
+                        rel_pos = abspos - new_sink_pos
+                        rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
+                        rel_vel = absvel - new_sink_vel
+                        rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
+                        mtm = new_sink_mass * mass
+                        mpm = new_sink_mass + mass
+                        reducedMass = mtm/mpm
+                        newtonianPotential = -1./rel_sep
+                        
+                        Ekin = 0.5 * mtm/mpm * rel_speed**2
+                        Grho = 100.
+                        Epot = self.Grho * self._mtm * self.newtonianPotential
+                        import pdb
+                        pdb.set_trace()
+                
                 S = pr.Sink()
                 S._jet_factor = 1.
                 S._scale_l = scale_l.value
@@ -248,22 +253,24 @@ if args.update_pickles == 'True':
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
                 vis_inds = np.where((L_tot>=args.lower_L_limit)&(M_dot>=args.accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-                N_vis_stars.append(len(vis_inds))
+                real_vis = np.where((L_tot>=0.04)&(M_dot>=1.e-7)&(L_tot<=35.6))[0]#Remember to update if you adjust criteria
+                N_vis_stars.append(len(real_vis))
                 
                 N_stars.append(len(n_stars))
                 M_tot_msun = np.sum(mass*units['mass_unit'].in_units('Msun'))
                 M_tot.append(M_tot_msun)
                 SFE_val = M_tot_msun/units['mass_unit'].in_units('Msun')
                 SFE.append(SFE_val)
-                SFE_n.append(SFE_val/time)
+                SFE_n.append(SFE_val/time_yr)
                 
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=cyclic_arg)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=cyclic_arg, Grho=Grho)
                 if True in (res['separation']>10000):
                     import pdb
                     pdb.set_trace()
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                 n_multi = np.sum(res['n'][multi_inds])
                 M_multi = np.sum(res['mass'][multi_inds])
+                M_vis = np.sum(res['mass'][real_vis])
                 updated_systems = []
                 for multi_ind in multi_inds:
                     sys_comps = losi(multi_ind, res)
@@ -325,9 +332,9 @@ if args.update_pickles == 'True':
                                     if len(sub_sys) == 2:
                                         ind_1 = sub_sys[0]
                                         ind_2 = sub_sys[1]
-                                        pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
+                                        pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
-                                        position = yt.YTArray(res['abspos'][np.array([ind_1,ind_2])].T, 'au')
+                                        position = yt.YTArray(res['midpoint'][np.array([ind_1,ind_2])].T, 'au')
                                         if sep_value > (scale_l.in_units('AU')/2):
                                             update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                             for ind in update_inds:
@@ -340,6 +347,8 @@ if args.update_pickles == 'True':
                                                 pos_update_ind = np.where(position[ind]<scale_l.in_units('AU')/2)[0]
                                                 position[ind][pos_update_ind] = position[ind][pos_update_ind] + scale_l.in_units('AU')
                                                 velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
+                                            pos_diff = position[ind][0] - position[ind][0]
+                                            sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > 20000:
                                                 import pdb
                                                 pdb.set_trace()
@@ -369,11 +378,15 @@ if args.update_pickles == 'True':
                                         semimajor_arr.append(semimajor_a.value.tolist())
                                         
                                         sep_arr.append(sep_value)
-                                        if args.replace_index_type == "M":
+                                        if args.use_separation_of_the_coms == 'True':
+                                            replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
+                                            replace_string = str(replace_ind)
+                                        elif args.replace_index_type == "M":
                                             replace_ind = np.argmax(mass[sub_sys])
+                                            replace_string = str(sub_sys[replace_ind])
                                         elif args.replace_index_type == "L":
                                             replace_ind = np.argmax(L_tot[sub_sys])
-                                        replace_string = str(sub_sys[replace_ind])
+                                            replace_string = str(sub_sys[replace_ind])
                                         sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                                         if '[' not in sys_comps:
                                             reduced = True
@@ -433,10 +446,26 @@ if args.update_pickles == 'True':
                         System_semimajor[sys_key].append(np.ones(np.shape(System_semimajor[sys_key][-1]))*np.nan)
                 N_multi_stars.append(n_multi)
                 M_tot_multi.append(M_multi)
+                M_tot_vis.append(M_vis)
+                
+                #Another analysis to save all eccentricities
+                updated_systems = []
+                multi_inds_non_top = np.where(res['n']>1)[0]
+                if len(multi_inds_non_top)>0:
+                    for ind in multi_inds_non_top:
+                        sys_string = str(losi(ind, res))
+                        if sys_string not in System_ecc.keys():
+                            System_ecc.update({sys_string:[[float(time_yr), res['eccentricity'][ind]]]})
+                        else:
+                            System_ecc[sys_string].append([float(time_yr), res['eccentricity'][ind]])
+                        updated_systems.append(sys_string)
+                for sys_key in System_ecc.keys():
+                    if sys_key not in updated_systems:
+                        System_ecc[sys_key].append([float(time_yr), np.nan])
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%02d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times),file)
+                pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times),file)
                 file.close()
                 
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
@@ -444,28 +473,18 @@ if args.update_pickles == 'True':
                 print("not enough stars for multi analysis")
     print("finished going through times on rank", rank)
             
-sys.stdout.flush()
-CW.Barrier()
+    sys.stdout.flush()
+    CW.Barrier()
 
-
-#compile all the pickles
-if rank == 0:
-    try:
-        try:
-            file = open(pickle_file+'_with_means.pkl', 'rb')
-            Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_mean_times, System_mean_seps, System_lifetimes, Initial_Seps, Final_seps, Sep_maxs, Sep_mins = pickle.load(file)
-            file.close()
-        except:
-            file = open(pickle_file+'.pkl', 'rb')
-            Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times = pickle.load(file)
-            file.close()
-    except:
+    #compile all the pickles:
+    if rank == 0:
         pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
         if len(pickle_files) > 0:
             Times_full = []
             SFE_full = []
             SFE_n_full = []
             M_tot_full = []
+            M_tot_vis_full = []
             M_tot_multi_full = []
             N_stars_full = []
             N_vis_stars_full = []
@@ -473,23 +492,32 @@ if rank == 0:
             System_seps_full = {}
             System_semimajor_full = {}
             System_times_full = {}
+            System_ecc_full = {}
             for pick_file in pickle_files:
-                file = open(pick_file, 'rb')
-                Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times = pickle.load(file)
-                file.close()
+                try:
+                    file = open(pick_file, 'rb')
+                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
+                    file.close()
+                except:
+                    file = open(pick_file, 'rb')
+                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
+                    file.close()
                 for time_key in System_times.keys():
                     if time_key not in System_times_full.keys():
                         System_times_full.update({time_key:System_times[time_key]})
                         System_seps_full.update({time_key:System_seps[time_key]})
                         System_semimajor_full.update({time_key:System_semimajor[time_key]})
+                        System_ecc_full.update({time_key:System_ecc[time_key]})
                     else:
                         System_times_full[time_key] = System_times_full[time_key] + System_times[time_key]
                         System_seps_full[time_key] = System_seps_full[time_key] + System_seps[time_key]
                         System_semimajor_full[time_key] = System_semimajor_full[time_key] + System_semimajor[time_key]
+                        System_ecc_full[time_key] = System_ecc_full[time_key] + System_ecc[time_key]
                 Times_full = Times_full + Times
                 SFE_full = SFE_full + SFE
                 SFE_n_full = SFE_n_full + SFE_n
                 M_tot_full = M_tot_full + M_tot
+                M_tot_vis_full = M_tot_vis_full + M_tot_vis
                 M_tot_multi_full = M_tot_multi_full + M_tot_multi
                 N_stars_full = N_stars_full + N_stars
                 N_vis_stars_full = N_vis_stars_full + N_vis_stars
@@ -506,77 +534,58 @@ if rank == 0:
                 System_seps[time_key] = sorted_array.tolist()
                 sorted_array = np.array(System_semimajor_full[time_key])[dict_sort]
                 System_semimajor[time_key] = sorted_array.tolist()
+                dict_sort_ecc = np.argsort(np.array(System_ecc_full[time_key]).T[0])
+                sorted_array = np.array(System_ecc_full[time_key])[dict_sort_ecc]
+                System_ecc[time_key] = sorted_array.tolist()
             sorted_inds = np.argsort(Times_full)
             Times = np.array(Times_full)[sorted_inds].tolist()
             SFE = np.array(SFE_full)[sorted_inds].tolist()
             SFE_n = np.array(SFE_n_full)[sorted_inds].tolist()
             M_tot = np.array(M_tot_full)[sorted_inds].tolist()
+            M_tot_vis = np.array(M_tot_vis_full)[sorted_inds].tolist()
             M_tot_multi = np.array(M_tot_multi_full)[sorted_inds].tolist()
             N_stars = np.array(N_stars_full)[sorted_inds].tolist()
             N_vis_stars = np.array(N_vis_stars_full)[sorted_inds].tolist()
             N_multi_stars = np.array(N_multi_stars_full)[sorted_inds].tolist()
             
             file = open(pickle_file+'.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times),file)
+            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times),file)
             file.close()
-    
-    #Create plot
-    plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=6, figsize=(8, 8))
-    plt.subplots_adjust(hspace=0.0)
-    gs = axs[3].get_gridspec()
-    for ax in axs[3:]:
-        ax.remove()
-    axbig = fig.add_subplot(gs[3:])
-    
-    axs[0].plot(Times, SFE, label='SFE')
-    axs[0].plot(Times, SFE_n, label='SFE$_n$')
-    axs[0].legend(loc='best')
-    axs[0].set_ylabel('SFE')
-    axs[0].set_ylim(bottom=0)
-    axs[0].set_xlim([Times[0], Times[-1]])
-    xticklabels = axs[0].get_xticklabels()
-    plt.setp(xticklabels, visible=False)
-    
-    axs[1].plot(Times, M_tot, label='Total Mass')
-    axs[1].plot(Times, M_tot_multi, label='Mass in Multiple systems')
-    axs[1].set_ylabel('M$_{tot}$ (M$_\odot$)')
-    axs[1].set_ylim(bottom=0)
-    axs[1].legend(loc='best')
-    axs[1].set_xlim([Times[0], Times[-1]])
-    xticklabels = axs[1].get_xticklabels()
-    plt.setp(xticklabels, visible=False)
-    
-    axs[2].plot(Times, N_stars, label='Total stars')
-    axs[2].plot(Times, N_multi_stars, label='Stars in Multiple systems')
-    axs[2].plot(Times, N_vis_stars, label='Visible stars')
-    axs[2].set_ylabel('\# stars')
-    axs[2].set_ylim(bottom=0)
-    axs[2].legend(loc='best')
-    axs[2].set_xlim([Times[0], Times[-1]])
-    xticklabels = axs[2].get_xticklabels()
-    plt.setp(xticklabels, visible=False)
-    
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    #calculate means:
+    print("calculating means")
+    rit = -1
+    while rit < size:
+        rit = rit + 1
+        if rank == rit:
+            file = open(pickle_file+'.pkl', 'rb')
+            Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
+            file.close()
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    System_mean_times = {}
+    System_mean_seps = {}
+    System_mean_ecc = {}
+    System_lifetimes = {}
+    Sep_maxs = []
+    Sep_mins = []
+    Initial_Seps = []
+    Final_seps = []
     window = 50000#year
-    S_bins = np.logspace(1,4,13)
-    if ("System_mean_times" in locals()) == False:
-        System_mean_times = {}
-        System_mean_seps = {}
-        System_lifetimes = []
-        Sep_maxs = []
-        Sep_mins = []
-        Initial_Seps = []
-        Final_seps = []
-    lifetime_it = -1
+    rit = -1
     for time_key in System_times.keys():
-        axbig.semilogy(System_times[time_key], System_seps[time_key], alpha=0.1, color='k')
-        try:
-            lifetime_it = lifetime_it + 1
-            if System_lifetimes[lifetime_it] > args.sys_lifetime_threshold:
-                axbig.semilogy(System_mean_times[time_key], System_mean_seps[time_key], color='k', linewidth=0.5)
-        except:
+        rit = rit + 1
+        if rit == size:
+            rit = 0
+        if rank == rit:
             mean_time = []
             mean_sep = []
+            mean_ecc = []
             for time in System_times[time_key]:
                 start_time = time - window/2.
                 end_time = time + window/2.
@@ -584,62 +593,212 @@ if rank == 0:
                 end_ind = np.argmin(abs(np.array(System_times[time_key]) - end_time))
                 if end_ind != start_ind:
                     non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key][start_ind:end_ind])[:,0])==False)
-                    mean_t = np.mean(np.array(System_times[time_key][start_ind:end_ind])[non_nan_inds])
+                    mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
                     mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                    #mean_t = np.mean(np.array(System_times[time_key][start_ind:end_ind]))
-                    #mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind]), axis=0)
+                    mean_e = np.mean(np.array(System_ecc[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
                     mean_time.append(mean_t)
                     #mean_sep.append(mean_s)
                     mean_sep.append(mean_s[0])
+                    mean_ecc.append(mean_e[0])
             non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key]).T[0])==False).T[0]
             sys_life_time = np.array(System_times[time_key])[non_nan_inds][-1] - np.array(System_times[time_key])[non_nan_inds][0]
-            System_lifetimes.append(sys_life_time)
+            System_lifetimes.update({time_key:sys_life_time})
             if sys_life_time > args.sys_lifetime_threshold:
-                end_sep_time = np.array(System_times[time_key])[non_nan_inds][0] + sys_life_time - 1000
+                end_sep_time = np.array(System_times[time_key]- np.array(Times[0]))[non_nan_inds][0] + sys_life_time - 1000
                 #start_sep_time = np.array(System_times[time_key])[non_nan_inds][0] + 1000
-                end_time_it = np.argmin(abs(np.array(System_times[time_key])[non_nan_inds] - end_sep_time))
+                end_time_it = np.argmin(abs(np.array(System_times[time_key]- np.array(Times[0]))[non_nan_inds] - end_sep_time))
                 #start_sep_it = np.argmin(abs(np.array(System_times[time_key])[non_nan_inds] - start_sep_time))
-                for sys in range(np.shape(np.array(mean_sep).T)[0]):
-                    sep_max = np.nanmax(np.array(System_seps[time_key]).T[sys])
-                    sep_min = np.nanmin(np.array(System_seps[time_key]).T[sys])
+                for sys_it in range(np.shape(np.array(mean_sep).T)[0]):
+                    sep_max = np.nanmax(np.array(System_seps[time_key]).T[sys_it])
+                    sep_min = np.nanmin(np.array(System_seps[time_key]).T[sys_it])
                     #sep_init = np.mean(np.array(System_seps[time_key]).T[sys][:start_sep_it])
-                    sep_init = np.array(System_seps[time_key]).T[sys][0]
-                    sep_final = np.mean(np.array(System_seps[time_key]).T[sys][non_nan_inds][end_time_it:])
+                    sep_init = np.array(System_seps[time_key]).T[sys_it][0]
+                    sep_final = np.mean(np.array(System_seps[time_key]).T[sys_it][non_nan_inds][end_time_it:])
                     Sep_maxs.append(sep_max)
                     Sep_mins.append(sep_min)
                     Initial_Seps.append(sep_init)
                     Final_seps.append(sep_final)
             System_mean_times.update({time_key:mean_time})
             System_mean_seps.update({time_key:np.array(mean_sep)})
-            if sys_life_time > args.sys_lifetime_threshold:
-                axbig.semilogy(System_mean_times[time_key], System_mean_seps[time_key], color='k', linewidth=0.5)
-        
-        print("plotted system:", time_key)
-    for bin_bound in S_bins:
-        axbig.axhline(y=bin_bound, linewidth=0.5)
-    axbig.set_ylabel('Separation (AU)')
-    axbig.set_xlabel('Time ($yr$)')
-    axbig.set_ylim([10, 10000])
-    axbig.set_xlim([Times[0], Times[-1]])
-    
-    file = open(pickle_file+'_with_means.pkl', 'wb')
-    pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_mean_times, System_mean_seps, System_lifetimes, Initial_Seps, Final_seps, Sep_maxs, Sep_mins),file)
+            System_mean_ecc.update({time_key:np.array(mean_ecc)})
+            print("calculated means for", time_key)
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    #save pickles and compile means
+    pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%02d" % rank) + ".pkl"
+    file = open(pickle_file_rank, 'wb')
+    pickle.dump((System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps), file)
+    file.close()
+    print("saved_means")
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    if rank == 0:
+        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
+        if len(pickle_files) > 0:
+            System_mean_times_full = {}
+            System_mean_seps_full ={}
+            System_mean_ecc_full = {}
+            System_lifetimes_full = {}
+            Sep_maxs_full = []
+            Sep_mins_full = []
+            Initial_Seps_full = []
+            Final_seps_full = []
+            for pick_file in pickle_files:
+                file = open(pick_file, 'rb')
+                System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+                file.close()
+                for time_key in System_mean_times.keys():
+                    System_times_full.update({time_key:System_times[time_key]})
+                    System_seps_full.update({time_key:System_seps[time_key]})
+                    System_ecc_full.update({time_key:System_ecc[time_key]})
+                    System_lifetimes_full.update({time_key:System_lifetimes[time_key]})
+                Sep_maxs_full = Sep_maxs_full + Sep_maxs
+                Sep_mins_full = Sep_mins_full + Sep_mins
+                Initial_Seps_full = Initial_Seps_full + Initial_Seps
+                Final_seps_full = Final_seps_full + Final_seps
+                os.remove(pick_file)
+            
+            System_mean_times = System_times_full
+            System_mean_seps = System_seps_full
+            System_mean_ecc = System_ecc_full
+            System_lifetimes = System_lifetimes_full
+            Sep_maxs = Sep_maxs_full
+            Sep_mins = Sep_mins_full
+            Initial_Seps = Initial_Seps_full
+            Final_seps = Final_seps_full
+            
+            file = open(pickle_file+'_with_means.pkl', 'wb')
+            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps),file)
+            file.close()
+
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+#compile all the pickles
+if rank == 0:
+    file = open(pickle_file+'_with_means.pkl', 'rb')
+    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
-    plt.savefig('superplot.jpg', format='jpg', bbox_inches='tight')
-    plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
-    print('Created superplot.jpg')
-    
+    #Create plot
+    if args.plot_superplot == 'True':
+        print("making superplot")
+        plt.clf()
+        fig, axs = plt.subplots(ncols=1, nrows=6, figsize=(8, 8))
+        plt.subplots_adjust(hspace=0.0)
+        gs = axs[3].get_gridspec()
+        for ax in axs[3:]:
+            ax.remove()
+        axbig = fig.add_subplot(gs[3:])
+        
+        Times_adjusted = Times - np.array(Times[0])
+        
+        axs[0].plot(Times_adjusted, SFE, label='SFE')
+        axs[0].plot(Times_adjusted, SFE_n, label='SFE$_n$')
+        axs[0].legend(loc='best')
+        axs[0].set_ylabel('SFE')
+        axs[0].set_ylim(bottom=0)
+        axs[0].set_xlim([Times_adjusted[0], Times_adjusted[-1]])
+        xticklabels = axs[0].get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+        print("plotted SFE")
+        
+        axs[1].plot(Times_adjusted, M_tot, label='Total Mass')
+        axs[1].plot(Times_adjusted, M_tot_multi, label='Mass in Multiple systems')
+        axs[1].plot(Times_adjusted, M_tot_vis, label='Visible stars (based on Tobin)')
+        axs[1].set_ylabel('M$_{tot}$ (M$_\odot$)')
+        axs[1].set_ylim(bottom=0)
+        axs[1].legend(loc='best')
+        axs[1].set_xlim([Times_adjusted[0], Times_adjusted[-1]])
+        xticklabels = axs[1].get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+        print("plotted M_tot")
+        
+        axs[2].plot(Times_adjusted, N_stars, label='Total stars')
+        axs[2].plot(Times_adjusted, N_multi_stars, label='Stars in Multiple systems')
+        axs[2].plot(Times_adjusted, N_vis_stars, label='Visible stars (based on Tobin)')
+        axs[2].set_ylabel('\# stars')
+        axs[2].set_ylim(bottom=0)
+        axs[2].legend(loc='best')
+        axs[2].set_xlim([Times_adjusted[0], Times_adjusted[-1]])
+        xticklabels = axs[2].get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+        yticklabels = axs[2].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+        plt.savefig('superplot.jpg', format='jpg', bbox_inches='tight')
+        plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
+        print("plotted N_star")
+        
+        window = 50000#year
+        S_bins = np.logspace(1,4,13)
+        for time_key in System_times.keys():
+            print("plotting", time_key)
+            axbig.semilogy((System_times[time_key]- np.array(Times[0])), System_seps[time_key], alpha=0.1, color='k')
+            #if System_lifetimes[time_key] > args.sys_lifetime_threshold:
+            #    axbig.semilogy((System_mean_times[time_key]-np.array(Times[0])), System_mean_seps[time_key], color='k', linewidth=0.5)
+            
+            print("plotted system:", time_key)
+        for bin_bound in S_bins:
+            axbig.axhline(y=bin_bound, linewidth=0.5)
+        axbig.set_ylabel('Separation (AU)')
+        axbig.set_xlabel('Time ($yr$)')
+        axbig.set_ylim([10, 10000])
+        axbig.set_xlim([Times_adjusted[0], Times_adjusted[-1]])
+        
+        print("saving superplot")
+        plt.savefig('superplot.jpg', format='jpg', bbox_inches='tight')
+        print('Created superplot.jpg')
+        plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
+        
     d_sep = np.array(Initial_Seps) - np.array(Final_seps)
     shrinkage = 100*(d_sep/np.array(Initial_Seps))
     bins = [-10000, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
     shrink_hist, bins = np.histogram(shrinkage, bins=bins)
+    shrink_hist = shrink_hist/np.sum(shrink_hist)
     bin_centers = np.linspace(-5, 95, 11)
     plt.clf()
     plt.bar(bin_centers, shrink_hist, width=10, edgecolor='black', alpha=0.5, label="Simulation")
     plt.xlabel('Orbital Shrinkage (\% of inital separation)')
-    plt.ylabel('Number')
+    plt.ylabel('Fraction')
     plt.ylim(bottom=0.0)
     plt.savefig('shrinkage.jpg', format='jpg', bbox_inches='tight')
     print('created shrinkage.jpg')
     
+    
+    plt.clf()
+    #key = '[4, 5]'
+    lifetime_it = -1
+    for key in System_mean_seps.keys():
+        lifetime_it = lifetime_it + 1
+        sep = np.array(System_mean_seps[key]).T[0]
+        time = np.array(System_mean_ecc[key]).T[0]
+        ecc = np.array(System_mean_ecc[key]).T[1]
+        time_adjusted = time - time[0]
+        z = time_adjusted/np.nanmax(time_adjusted)
+        #if System_lifetimes[lifetime_it] > args.sys_lifetime_threshold:
+        try:
+            plt.scatter(sep, ecc, c=z, vmin=0, vmax=1, s=1, cmap=plt.cm.get_cmap('viridis'))
+            print("plotted", key)
+        except:
+            print("couldn't plot", key)
+        #plt.loglog(x[sys_it], y[sys_it], color='k', linewidth=0.25, alpha=0.25)
+        
+    plt.colorbar(pad=-0.02)
+    plt.xscale('log')
+    plt.yscale('log')
+    #plt.ylim([0.1,1.5])
+    plt.xlabel('Separation (AU)')
+    plt.ylabel('Eccentricity')
+    print("saving ecc_vs_sep.png")
+    plt.savefig('ecc_vs_sep.png')
+    print("created ecc_vs_sep.png")
+
+sys.stdout.flush()
+CW.Barrier()
+
+print("Finished on rank", rank)

@@ -35,6 +35,8 @@ ub = 1724
 is1 = args.sink_number
 is2 = is1 + 1
 
+print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
+
 ss = []
 dist = []
 for io in range(lb,ub):

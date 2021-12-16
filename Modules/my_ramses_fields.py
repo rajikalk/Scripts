@@ -7,7 +7,8 @@ import csv
 import glob
 from pyramses import rsink
 
-center_pos_ind = 0
+#Global variables
+center_pos_ind = 0 # 
 center_vel_ind = 0
 center_pos_gas = yt.YTArray([0.0, 0.0, 0.0], 'cm')
 center_pos_part = yt.YTArray([0.0, 0.0, 0.0], 'cm')
@@ -1365,7 +1366,7 @@ def _Number_Density(field, data):
     """
     Estimates number density
     """
-    Number_Density = data['Density']/yt.units.mp.in_units('g')
+    Number_Density = data['Density']/(2.34*yt.units.mp.in_units('g'))
     return Number_Density
 
 yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3")

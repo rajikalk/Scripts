@@ -26,6 +26,7 @@ def parse_inputs():
     parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
     parser.add_argument("-end_t", "--end_time", help="dow you want to add a y limit?", type=float, default=None)
     parser.add_argument("-plt_matches", "--plot_matched_times", help="do you want to plot to match times that you found?", default='False', type=str)
+    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -74,7 +75,7 @@ scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 
 units={}
-for key in units_override.key():
+for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 if args.update_pickle != 'True':
@@ -91,6 +92,7 @@ if args.update_pickle == 'True':
             file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
+            counter = int(counter)
             loaded_sink_data = loaded_sink_data[counter:]
             if counter < len(loaded_sink_data):
                 updating = True
@@ -100,6 +102,7 @@ if args.update_pickle == 'True':
             file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
+            counter = int(counter)
             loaded_sink_data = loaded_sink_data[counter:]
             if counter < len(loaded_sink_data):
                 updating = True
@@ -127,6 +130,7 @@ if args.update_pickle == 'True':
         particle_data.update({'momz':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
+        print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
         particle_data.update({'separation':[]})
         particle_data.update({'eccentricity':[]})
         particle_data.update({'E_potential':[]})
@@ -134,10 +138,20 @@ if args.update_pickle == 'True':
         particle_data.update({'L_orb':[]})
         particle_data.update({'L_orb_tot':[]})
         particle_data.update({'dist_from_CoM':[]})
+        particle_data.update({'period':[]})
+        particle_data.update({'semimajor_axis':[]})
+        particle_data.update({'semiminor_axis':[]})
+        particle_data.update({'last_periastron':[]})
+        particle_data.update({'time_since_periastron':[]})
+        particle_data.update({'orbital_phase':[]})
         counter = 0
-        
+    
     sink_form_time = 0
-
+    last_periastron = np.nan
+    found_apastron = True
+    prev_separation = 100000
+    prev_time = np.nan
+    
     if updating == True:
         for sink_data in loaded_sink_data:
             counter = counter + 1
@@ -191,7 +205,7 @@ if args.update_pickle == 'True':
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
                 
                 position = yt.YTArray([particle_data['posx'][-1],particle_data['posy'][-1], particle_data['posz'][-1]], 'au')
-                velocity = yt.YTArray([particle_data['velx'][-1],particle_data['vely'][-1], particle_data['velz'][-1]], 'au')
+                velocity = yt.YTArray([particle_data['velx'][-1],particle_data['vely'][-1], particle_data['velz'][-1]], 'km/s')
             
                 #Calculate center of mass position and velcoity (based on particles only, excluding gas)
                 CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
@@ -205,14 +219,26 @@ if args.update_pickle == 'True':
                 try:
                     #Calculate relative positions and velocities and speeds
                     vel_rel_to_com = (velocity.T - CoM_vel).T
-
+                        
+                    print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
                     separation = np.sum(distance_from_com)
+                    if found_apastron == True and separation>prev_separation:
+                        last_periastron = prev_time
+                        found_apastron = False
+                    elif separation<prev_separation and found_apastron == False:
+                        found_apastron = True
+                    prev_time = time_val
+                    prev_separation = separation
+                    time_since_p = time_val - last_periastron
                     relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
                 
                     #Calculmate mu and orbital energy
                     reduced_mass = np.product(particle_data['mass'][-1].in_units('g'))/np.sum(particle_data['mass'][-1].in_units('g'))
                     E_pot = (-1*(yt.units.G*np.product(particle_data['mass'][-1].in_units('g')))/separation.in_units('cm')).in_units('erg')
                     E_kin = np.sum((0.5*particle_data['mass'][-1].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+                    
+                    primary_ind = np.argmax(particle_data['mass'][-1].in_units('g'))
+                    secondary_ind = np.remainder((primary_ind+1),2)
                     
                     #epsilon is the specific orbital energy
                     epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
@@ -226,12 +252,24 @@ if args.update_pickle == 'True':
                     h_val = L_tot/reduced_mass.in_units('g')
                     
                     e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                    semimajor_a = ((h_val**2)/(yt.units.G*np.sum(particle_data['mass'][-1].in_units('g'))*(1-e**2))).in_units('AU')
+                    period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.G*np.sum(particle_data['mass'][-1].in_units('g'))))).in_units('yr')
+                    phase = time_since_p/period
+                    semiminor_a = semimajor_a * np.sqrt((1-e**2))
+                    
                     particle_data['eccentricity'].append(e)
                     particle_data['separation'].append(separation.in_units('au'))
                     particle_data['L_orb'].append(L)
                     particle_data['L_orb_tot'].append(L_tot)
                     particle_data['E_potential'].append(E_pot)
                     particle_data['E_kinetic'].append(E_kin)
+                    particle_data['period'].append(period)
+                    particle_data['semimajor_axis'].append(semimajor_a)
+                    particle_data['semiminor_axis'].append(semiminor_a)
+                    particle_data['last_periastron'].append(last_periastron)
+                    particle_data['time_since_periastron'].append(time_since_p)
+                    particle_data['orbital_phase'].append(phase)
+                    
                 except:
                     particle_data['eccentricity'].append(yt.YTArray(np.nan, ''))
                     particle_data['separation'].append(yt.YTArray(np.nan, 'au'))
@@ -239,21 +277,27 @@ if args.update_pickle == 'True':
                     particle_data['L_orb_tot'].append(yt.YTArray([np.nan, np.nan, np.nan], 'cm**2*g/s'))
                     particle_data['E_potential'].append(yt.YTArray(np.nan, 'erg'))
                     particle_data['E_kinetic'].append(yt.YTArray(np.nan, 'erg'))
+                    particle_data['period'].append(yt.YTArray(np.nan, 'yr'))
+                    particle_data['semimajor_axis'].append(yt.YTArray(np.nan, 'au'))
+                    particle_data['semiminor_axis'].append(yt.YTArray(np.nan, 'au'))
+                    particle_data['last_periastron'].append(yt.YTArray(np.nan, 'yr'))
+                    particle_data['time_since_periastron'].append(yt.YTArray(np.nan, 'yr'))
+                    particle_data['orbital_phase'].append(yt.YTArray(np.nan, ''))
 
     print("Finished reading particle data")
 
 
 try:
-    print('Reading pickle file')
+    print('Reading neat pickle file')
     file_open = open(save_dir+'particle_data_neat.pkl', 'rb')
     particle_data, counter, sink_ind = pickle.load(file_open)
     file_open.close()
 except:
-    print('Reading pickle file')
+    print('Reading raw pickle file')
     file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
     particle_data, counter, sink_ind = pickle.load(file_open)
     file_open.close()
-
+    
     print("making arrays neat")
 
     for key in list(particle_data.keys()):
@@ -274,7 +318,37 @@ except:
     pickle.dump((particle_data, counter, sink_ind), file)
     file.close()
 #Save neat and particle_data_neat
+'''
+plt.clf()
+fig = plt.figure()
+fig.set_size_inches(6, 10.)
+gs = gridspec.GridSpec(4, 1)
+gs.update(hspace=0.0)
+ax1 = fig.add_subplot(gs[0,0]) #Separation
+ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
+ax3 = fig.add_subplot(gs[2,0], sharex=ax1)
+ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
 
+
+ax1.plot(particle_data['time'], particle_data['orbital_phase'])
+ax1.set_ylabel('Orbital Phase')
+plt.setp([ax1.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+ax1.set_xlim([particle_data['time'][0].value, particle_data['time'][-1].value])
+
+ax2.semilogy(particle_data['time'], particle_data['eccentricity'])
+ax2.set_ylabel('Eccentricity')
+plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
+
+ax3.semilogy(particle_data['time'], particle_data['period'])
+ax3.set_ylabel('Period (yr)')
+
+ax4.semilogy(particle_data['time'], particle_data['separation'])
+ax4.set_ylabel('Separation (AU)')
+ax4.set_xlabel('Time (yr)')
+
+plt.savefig("paper_data.pdf", bbox_inches='tight', pad_inches=0.02)
+print("Created image paper_data.pdf")
+'''
 image_name = save_dir + "total_system_evolution"
 #line_style = [':', '-.', '--', '-']
 #line_colour = ['b', 'orange', 'g', 'm']
@@ -358,11 +432,19 @@ reduced_systems_data.update({'velz':[]})
 reduced_systems_data.update({'mass':[]})
 reduced_systems_data.update({'mdot':[]})
 reduced_systems_data.update({'mdot_individual':[]})
+print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
 reduced_systems_data.update({'separation':[]})
 reduced_systems_data.update({'eccentricity':[]})
 reduced_systems_data.update({'E_potential':[]})
 reduced_systems_data.update({'E_kinetic':[]})
 reduced_systems_data.update({'L_orb_tot':[]})
+reduced_systems_data.update({'dist_from_CoM':[]})
+reduced_systems_data.update({'period':[]})
+reduced_systems_data.update({'semimajor_axis':[]})
+reduced_systems_data.update({'semiminor_axis':[]})
+reduced_systems_data.update({'last_periastron':[]})
+reduced_systems_data.update({'time_since_periastron':[]})
+reduced_systems_data.update({'orbital_phase':[]})
 reduced_systems_data.update({'time':particle_data['time']})
 
 system_tag_int = 65
@@ -441,6 +523,7 @@ if systems_hierarchy != None:
                 vel_rel_to_com_1 = binary_velocities[:,0] - CoM_vel
                 vel_rel_to_com_2 = binary_velocities[:,1] - CoM_vel
 
+                print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
                 separation = distance_from_com_1 + distance_from_com_2
                 relative_speed_to_com_1 = np.sqrt(np.sum(vel_rel_to_com_1**2, axis=0))
                 relative_speed_to_com_2 = np.sqrt(np.sum(vel_rel_to_com_2**2, axis=0))
@@ -465,6 +548,85 @@ if systems_hierarchy != None:
                 
                 e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(binary_masses, axis=0).in_units('g'))**2.))
                 
+                semimajor_a = ((h_val**2)/(yt.units.G*np.sum(binary_data['mass'].in_units('g'),axis=0)*(1-e**2))).in_units('AU')
+                period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.G*np.sum(binary_data['mass'].in_units('g'),axis=0)))).in_units('yr')
+                
+                if 'last_periastron' not in particle_data.keys():
+                    particle_data.update({'last_periastron':[]})
+                    last_periastron = np.nan
+                    found_apastron = True
+                    prev_separation = 100000
+                    prev_time = particle_data['time'][0]
+                    
+                    for sep_it in range(len(separation)):
+                        if found_apastron == True and separation[sep_it]>prev_separation:
+                            last_periastron = prev_time
+                            print('Found  Periastron at', prev_time)
+                            found_apastron = False
+                        elif separation[sep_it]<prev_separation and found_apastron == False:
+                            found_apastron = True
+                        prev_time = particle_data['time'][sep_it]
+                        prev_separation = separation[sep_it]
+
+                        particle_data['last_periastron'].append(last_periastron)
+                    
+                    '''
+                    for sep_it in range(len(particle_data['separation'])):
+                        if found_apastron == True and particle_data['separation'][sep_it]>prev_separation:
+                            last_periastron = prev_time
+                            print('Found  Periastron at', prev_time)
+                            found_apastron = False
+                        elif particle_data['separation'][sep_it]<prev_separation and found_apastron == False:
+                            found_apastron = True
+                        prev_time = particle_data['time'][sep_it]
+                        prev_separation = particle_data['separation'][sep_it]
+
+                        particle_data['last_periastron'].append(last_periastron)
+                    '''
+                
+                try:
+                    time_since_p = particle_data['time'].value - particle_data['last_periastron'].value
+                except:
+                    time_since_p = particle_data['time'].value - particle_data['last_periastron']
+                phase = time_since_p/period.value
+                semiminor_a = semimajor_a * np.sqrt((1-e**2))
+                
+                
+                reduced_systems_data['tag'].append(system_tag)
+                reduced_systems_data['base_tags'].append(binary_tags)
+                reduced_systems_data['posx'].append(CoM_pos[0])
+                reduced_systems_data['posy'].append(CoM_pos[1])
+                reduced_systems_data['posz'].append(CoM_pos[2])
+                reduced_systems_data['velx'].append(CoM_vel[0])
+                reduced_systems_data['vely'].append(CoM_vel[1])
+                reduced_systems_data['velz'].append(CoM_vel[2])
+                reduced_systems_data['mass'].append(np.sum(binary_masses, axis=0))
+                reduced_systems_data['mdot'].append(np.sum(binary_accretion, axis=0))
+                reduced_systems_data['mdot_individual'].append(binary_accretion)
+                print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
+                reduced_systems_data['separation'].append(separation)
+                reduced_systems_data['eccentricity'].append(e)
+                reduced_systems_data['E_potential'].append(E_pot)
+                reduced_systems_data['E_kinetic'].append(E_kin)
+                reduced_systems_data['L_orb_tot'].append(L_tot)
+                reduced_systems_data['dist_from_CoM'].append([distance_from_com_1, distance_from_com_2])
+                reduced_systems_data['period'].append(period)
+                reduced_systems_data['semimajor_axis'].append(semimajor_a)
+                reduced_systems_data['semiminor_axis'].append(semiminor_a)
+                reduced_systems_data['time_since_periastron'].append(time_since_p)
+                reduced_systems_data['orbital_phase'].append(phase)
+
+                systems_hierarchy = systems_hierarchy[:start_ind] + "\'" + system_tag + "\'" + systems_hierarchy[end_ind+1:]
+                print('systems_hierarchy =', systems_hierarchy)
+                
+                file = open(save_dir+'reduced_system_data.pkl', 'wb')
+                pickle.dump((reduced_systems_data), file)
+                file.close()
+                print("wrote file", save_dir+'reduced_system_data.pkl')
+                
+                break
+                
+                '''
                 if args.plot_matched_times != 'False':
                     plt.clf()
                     fig = plt.figure()
@@ -499,6 +661,8 @@ if systems_hierarchy != None:
                     image_name = save_dir + "match_time_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
                     plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
                     print("Created image", image_name)
+                    
+                '''
                 
                 #Plot figures
                 image_name = save_dir + "binary_evolution_plot_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
@@ -526,12 +690,13 @@ if systems_hierarchy != None:
                 plt.clf()
                 fig = plt.figure()
                 fig.set_size_inches(6, 10.)
-                gs = gridspec.GridSpec(4, 1)
+                #gs = gridspec.GridSpec(4, 1)
+                gs = gridspec.GridSpec(3, 1)
                 gs.update(hspace=0.0)
                 ax1 = fig.add_subplot(gs[0,0]) #Separation
                 ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
                 ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
-                ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
+                #ax4 = fig.add_subplot(gs[3,0], sharex=ax1)
 
                 ax1.semilogy(particle_data['time'].value, separation.value, lw=0.5)#, color=line_colour[nit])
                 ax1.axhline(y=25, color='k')
@@ -560,7 +725,7 @@ if systems_hierarchy != None:
                 ax2.tick_params(axis='x', which='major', direction="in")
                 #ax2.legend(loc='best')
                 plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
-
+                '''
                 for pit in range(len(labels)):
                     ax3.semilogy(particle_data['time'].value, binary_masses[pit].value, label=labels[pit], alpha=0.5, lw=0.5)#, color=line_colour[pit])
                 total_mass = np.sum(binary_masses, axis=0)
@@ -581,10 +746,23 @@ if systems_hierarchy != None:
                 ax4.tick_params(axis='y', which='major', direction="in")
                 ax4.tick_params(axis='y', which='minor', direction="in")
                 ax4.tick_params(axis='x', which='major', direction="in")
-                
+                '''
                 #Save image
+                
+                ax3.semilogy(particle_data['time'].value, e.value, lw=0.5)
+                ax3.set_ylabel(r'Eccentricity')
+                #ax4.set_ylim([0.0, 2.0])
+                ax3.set_xlabel(r'Time (yr)')
+                ax3.yaxis.set_ticks_position('both')
+                ax3.tick_params(axis='y', which='major', direction="in")
+                ax3.tick_params(axis='y', which='minor', direction="in")
+                ax3.tick_params(axis='x', which='major', direction="in")
+                
                 plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
                 print("Created image", image_name)
+                
+                import pdb
+                pdb.set_trace()
                 
                 image_name = save_dir + "long_binary_evolution_plot_" + str(binary_tags[0]) + "_" + str(binary_tags[1])
                 
@@ -690,26 +868,6 @@ if systems_hierarchy != None:
                 plt.savefig(image_name + ".pdf", bbox_inches='tight', pad_inches=0.02)
                 print("Created image", image_name)
                 
-                reduced_systems_data['tag'].append(system_tag)
-                reduced_systems_data['base_tags'].append(binary_tags)
-                reduced_systems_data['posx'].append(CoM_pos[0])
-                reduced_systems_data['posy'].append(CoM_pos[1])
-                reduced_systems_data['posz'].append(CoM_pos[2])
-                reduced_systems_data['velx'].append(CoM_vel[0])
-                reduced_systems_data['vely'].append(CoM_vel[1])
-                reduced_systems_data['velz'].append(CoM_vel[2])
-                reduced_systems_data['mass'].append(np.sum(binary_masses, axis=0))
-                reduced_systems_data['mdot'].append(np.sum(binary_accretion, axis=0))
-                reduced_systems_data['mdot_individual'].append(binary_accretion)
-                reduced_systems_data['separation'].append(separation)
-                reduced_systems_data['eccentricity'].append(e)
-                reduced_systems_data['E_potential'].append(E_pot)
-                reduced_systems_data['E_kinetic'].append(E_kin)
-                reduced_systems_data['L_orb_tot'].append(L_tot)
-
-                systems_hierarchy = systems_hierarchy[:start_ind] + "\'" + system_tag + "\'" + systems_hierarchy[end_ind+1:]
-                print('systems_hierarchy =', systems_hierarchy)
-                break
     
 #Save reduced system data:
 file = open(save_dir+'reduced_system_data.pkl', 'wb')

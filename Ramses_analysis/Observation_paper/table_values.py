@@ -25,7 +25,7 @@ for pit in range(len(pickle_files)):
     time_ind = np.argmin(abs(reduced_systems_data['time'].value-times[pit]))
     print("found time", reduced_systems_data['time'][time_ind], "for time", times[pit])
     separation = reduced_systems_data['separation'][0][time_ind]
-    inclination = np.rad2deg(np.arctan(200/separation.value))
+    inclination = np.rad2deg(np.arcsin(200/separation.value))
     phase = reduced_systems_data['orbital_phase'][0][time_ind]*360
     eccentricity = reduced_systems_data['eccentricity'][0][time_ind]
     period = reduced_systems_data['period'][0][time_ind]

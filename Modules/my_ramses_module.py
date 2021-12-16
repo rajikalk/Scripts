@@ -54,9 +54,11 @@ def rainbow_text(x,y,ls,lc,**kw):
         text.draw(figlocal.canvas.get_renderer())
         ex = text.get_window_extent()
         if "odot" in string:
-            t = transforms.offset_copy(text._transform, x=1*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
+            #t = transforms.offset_copy(text._transform, x=0.7*ex.width, units='dots')
         else:
-            t = transforms.offset_copy(text._transform, x=1*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
+            #t = transforms.offset_copy(text._transform, x=0.7*ex.width, units='dots')
         
 def set_global_font_size(x):
     global fontsize_global
@@ -184,6 +186,7 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
         sink_id = np.argmin(dd['sink_particle_speed'])
     myf.set_centred_sink_id(sink_id)
     
+    #TODO: Possibly update to set the usuable sink particle IDs to custom values (f.x. [80, 90])
     if region != None:
         usable_sinks = np.argwhere((dd['sink_particle_posx'].in_units('au')>region.left_edge[0])&(dd['sink_particle_posx'].in_units('au')<region.right_edge[0])&(dd['sink_particle_posy'].in_units('au')>region.left_edge[1])&(dd['sink_particle_posy'].in_units('au')<region.right_edge[1])&(dd['sink_particle_posz'].in_units('au')>region.left_edge[2])&(dd['sink_particle_posz'].in_units('au')<region.right_edge[2])).T[0]
     else:
@@ -191,7 +194,6 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     
     part_tags = dd['sink_particle_tag'][usable_sinks]
     part_mass = dd['sink_particle_mass'][usable_sinks].in_units('msun').value
-    #Check if older sinks are in the box
     
     accretion_rad = 4.*np.min(dd['dx']).in_units('au').value
     #center_pos = myf.get_center_pos()
@@ -264,7 +266,19 @@ def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
     #print "created meshs"
     return X, Y, X_vel, Y_vel, cl
 
-def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None):
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None, velz_full=None, axis = None):
+    if axis == 'xy':
+        center_vel_plane = np.array([center_vel[0], center_vel[1]])
+        center_vel_perp = center_vel[2]
+    elif axis == 'xz':
+        center_vel_plane = np.array([center_vel[0], center_vel[2]])
+        center_vel_perp = center_vel[1]
+    elif axis == 'yz':
+        center_vel_plane = np.array([center_vel[1], center_vel[2]])
+        center_vel_perp = center_vel[0]
+    else:
+        center_vel_plane = center_vel
+        center_vel_perp = 0
     annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
     if smooth_cells is None:
         smoothing_val = int(annotate_freq/2)
@@ -279,41 +293,58 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         x_ind.append(int(valx))
         y_ind.append(int(valy))
         counter = counter + 1
+    
+    try:
+        if velz_full is None:
+            velz_full = np.zeros(np.shape(velx_full))
+    except:
+        velz_full = velz_full
+    
     velx = []
     vely = []
+    velz = []
     for x in x_ind:
         x = int(x)
         xarr = []
         yarr = []
+        zarr = []
         for y in y_ind:
             y = int(y)
-            x_vel =[]
+            x_vel = []
             y_vel = []
+            z_vel = []
             for curx in range(x-smoothing_val, x+smoothing_val):
                 for cury in range(y-smoothing_val, y+smoothing_val):
                     x_vel.append(velx_full[curx][cury])
                     y_vel.append(vely_full[curx][cury])
+                    z_vel.append(velz_full[curx][cury])
             x_vel = np.mean(x_vel)
             y_vel = np.mean(y_vel)
+            z_vel = np.mean(z_vel)
             xarr.append(x_vel)
             yarr.append(y_vel)
+            zarr.append(z_vel)
         velx.append(xarr)
         vely.append(yarr)
+        velz.append(zarr)
     velx = np.array(velx)
     vely = np.array(vely)
+    velz = np.array(velz)
     try:
-        velx = velx - center_vel[0]
-        vely = vely - center_vel[1]
+        velx = velx - center_vel_plane[0]
+        vely = vely - center_vel_plane[1]
+        velz = velz - center_vel_perp
     except:
         velx = velx
         vely = vely
-    return velx, vely
+        velz = velz
+    return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None):
     global fontsize_global
-    if plot_velocity_legend == 'False':
+    if plot_velocity_legend == 'False' or plot_velocity_legend == False:
         plot_velocity_legend = False
-    elif plot_velocity_legend == 'True':
+    elif plot_velocity_legend == 'True' or plot_velocity_legend == True:
         plot_velocity_legend = True
         if standard_vel > 1.0:
             legend_text=str(int(standard_vel)) + "kms$^{-1}$"
@@ -330,6 +361,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         xmax = limits[0][1]
         ymin = limits[1][0]
         ymax = limits[1][1]
+    rv_colors = np.linspace(-1, 1, 256)
+    rv_cmap = plt.cm.get_cmap('bwr')
+    
     len_scale = standard_vel/(0.07*(xmax - xmin))
     vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
@@ -339,7 +373,15 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
             if width_val > 0.8:
                 width_val = 0.8
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color='w', linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
+            try:
+                if Z_val == None:
+                    color = 'w'
+            except:
+                #cmap = 'idl06_r'
+                zvel = Z_val[xp][yp]/len_scale
+                cit = np.argmin(abs(rv_colors - zvel))
+                color = rv_cmap(cit)
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
         #print("plotting quiver legend")
         pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.07*(ymax-ymin)]
@@ -403,11 +445,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = "{:0.1f}".format(annotate_field[pos_it])
             if p_t == "":
-                p_t = field_symbol+str(pos_it+1)+"$ = "+P_msun+unit_string
+                p_t = field_symbol+str(pos_it+1)+"$ ="+P_msun+unit_string
             else:
-                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ = "+P_msun+unit_string
+                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ ="+P_msun+unit_string
             rainbow_text_colors.append(part_color[pos_it])
-            rainbow_text_colors.append('white')
             rainbow_text_colors.append('white')
     if annotate_field is not None:
         if len(particle_tags) > 3:
@@ -415,13 +456,13 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             string_2 = p_t[69:]
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3),string_l.split(' '), colors_1, size=fontsize_global)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),string_2.split(' '), colors_2, size=fontsize_global)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3),string_l.split(' '), colors_1, size=fontsize_global, zorder=4)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),string_2.split(' '), colors_2, size=fontsize_global, zorder=4)
         else:
-            try:
-                rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global)
-            except:
-                print("couldn't annotate particle masses")
+            #try:
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=4)
+            #except:
+            #    print("couldn't annotate particle masses")
     return axis
 
 def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False, cumulative=False):

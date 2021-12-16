@@ -52,6 +52,7 @@ def parse_inputs():
     parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
+    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -302,7 +303,7 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/5)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -477,21 +478,25 @@ if args.make_frames_only == 'False':
             #print("center_vel =", center_vel, "on rank", rank, "for", ds)
             
             if args.axis == 'xy':
-                center_vel=np.array([center_vel[0], center_vel[1]])
+                center_vel_plane = np.array([center_vel[0], center_vel[1]])
+                perp_vel = 'z'
             elif args.axis == 'xz':
-                center_vel=np.array([center_vel[0], center_vel[2]])
+                center_vel_plane = np.array([center_vel[0], center_vel[2]])
+                perp_vel = 'y'
             elif args.axis == 'yz':
-                center_vel=np.array([center_vel[1], center_vel[2]])
+                center_vel_plane = np.array([center_vel[1], center_vel[2]])
+                perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
                 vel1_field = args.axis[0] + '-velocity'
                 vel2_field = args.axis[1] + '-velocity'
+                vel3_field = perp_vel + '-velocity'
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
-                proj_root_rank = int(rank/5)*5
-                proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], mag1_field:[], mag2_field:[]}
+                proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
+                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 for field in yt.parallel_objects(proj_field_list):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
@@ -556,8 +561,9 @@ if args.make_frames_only == 'False':
                     image = proj_dict[proj_dict_keys[0]]
                     velx_full = proj_dict[proj_dict_keys[1]]
                     vely_full = proj_dict[proj_dict_keys[2]]
-                    magx = proj_dict[proj_dict_keys[3]]
-                    magy = proj_dict[proj_dict_keys[4]]
+                    velz_full = proj_dict[proj_dict_keys[3]]
+                    magx = proj_dict[proj_dict_keys[4]]
+                    magy = proj_dict[proj_dict_keys[5]]
                         
             elif args.use_angular_momentum != 'False':
                 proj_root_rank = int(rank/7)*7
@@ -649,9 +655,10 @@ if args.make_frames_only == 'False':
                     part_info['particle_position'] = positions
             
             if rank == proj_root_rank:
-                velx, vely = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel)
+                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
                 del velx_full
                 del vely_full
+                del velz_full
 
                 args_dict = {}
                 if args.annotate_time == "True":
@@ -672,7 +679,7 @@ if args.make_frames_only == 'False':
                 if args.absolute_image != "False":
                     image = abs(image)
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, simfo), file)
+                pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
                 del image
@@ -680,6 +687,7 @@ if args.make_frames_only == 'False':
                 del magy
                 del velx
                 del vely
+                del velz
                 del args_dict
             del has_particles
             del time_val
@@ -723,10 +731,10 @@ if rank == 0 and args.plot_time == None:
         file_counter = file_counter + 1
 
 import matplotlib as mpl
-mpl.rcParams['pdf.fonttype'] = 42
-mpl.rcParams['ps.fonttype'] = 42
+#mpl.rcParams['pdf.fonttype'] = 42
+#mpl.rcParams['ps.fonttype'] = 42
 import matplotlib.pyplot as plt
-plt.rcParams['figure.dpi'] = 300
+#plt.rcParams['figure.dpi'] = 300
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 
@@ -752,7 +760,7 @@ for pickle_file in pickle_files:
         print('making frame from', pickle_file, 'on rank', rank)
         frame_no = int(pickle_file.split('_')[-1].split('.')[0])
         file = open(pickle_file, 'rb')
-        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo = pickle.load(file)
+        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         file.close()
         
@@ -817,7 +825,7 @@ for pickle_file in pickle_files:
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
@@ -872,11 +880,13 @@ for pickle_file in pickle_files:
             if size > 1:
                 try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
                 except:
                     print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
             else:
                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
         
 sys.stdout.flush()

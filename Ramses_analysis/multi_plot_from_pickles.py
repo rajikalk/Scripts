@@ -14,9 +14,16 @@ import matplotlib.colors as colors
 import yt
 from scipy.ndimage import zoom
 from matplotlib import ticker
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
+from scipy.ndimage import gaussian_filter
+import matplotlib.patches as patches
 
+#matplotlib.rcParams['pdf.fonttype'] = 42
+#matplotlib.rcParams['ps.fonttype'] = 42
+#matplotlib.rcParams['mathtext.fontset'] = 'custom'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
 
 def parse_inputs():
     import argparse
@@ -32,6 +39,9 @@ def parse_inputs():
     parser.add_argument("-sn", "--savename", help="what do you want to save the plot as?", type=str, default='multiplot')
     parser.add_argument("-ylp", "--y_label_pad", help="y lable pad", default=-20, type=float)
     parser.add_argument("-title", "--multiplot_title", help="Do you want to title the multiplot", type=str, default="")
+    parser.add_argument("-conv", "--convolve", help="Do you want to convolve the image with a gaussian beam?", type=str, default='True')
+    parser.add_argument("-fig_w", "--figure_width", help="Do you want to set the image width", type=float, default=None)
+    parser.add_argument("-fig_h", "--figure_height", help="Do you want to set the image height", type=float, default=None)
     args = parser.parse_args()
     return args
 
@@ -58,6 +68,10 @@ if args.save_dir == None:
 else:
     save_dir = args.save_dir
 savename = save_dir + args.savename
+
+#fontdict = {'family': 'sans-serif',
+#        'size': args.text_font,
+#        }
 
 mym.set_global_font_size(args.text_font)
 
@@ -86,7 +100,7 @@ with open(args.in_file, 'r') as f:
             file_dir.append(row[3])
             input_args.append([])
             for input_arg in row[4].split(' '):
-                if len(input_arg) > 1:
+                if len(input_arg) > 0:
                     input_args[-1].append(input_arg)
 positions = np.array(positions)
 
@@ -98,12 +112,19 @@ else:
 columns = np.max(positions[:,0])
 rows = np.max(positions[:,1])
 
-width = float(columns)*(14.5/3.)
+if args.figure_width == None:
+    width = float(columns)*(14.5/3.)
+else:
+    width = args.figure_width
+
+if args.figure_height != None:
+    height = args.figure_height
 if args.plot_colourbar == True:
     height = float(rows)*(17./4.)
 else:
-    height = float(rows)*(13./4.)
-
+    height = float(rows)*(17./4.)
+    
+plt.clf()
 f = plt.figure(figsize=(width, height))
 
 if make_right_gs:
@@ -182,92 +203,218 @@ for it in range(len(positions)):
                 axes_dict.update({ax_label:f.add_subplot(gs_left[positions[it][1]-1,positions[it][0]-1])})
 
     if plot_type[it] == 'RV_proj':
-        file = open(file_dir[it], 'rb')
-        X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
-        file.close()
-        
-        if int(np.max(part_info['particle_position'][1])) == 200:
-            image = np.rot90(np.rot90(image))
-            vel_rad = np.rot90(np.rot90(vel_rad))
-            velx = np.rot90(np.rot90(velx))
-            vely = np.rot90(np.rot90(vely))
-            part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
-        
-        if '-cmin' in input_args[it]:
-            cmin_ind = input_args[it].index('-cmin')
-            cbar_min = eval(input_args[it][cmin_ind+1])
-        else:
-            cbar_min = None
-        if '-cmax' in input_args[it]:
-            cmax_ind = input_args[it].index('-cmax')
-            cbar_max = eval(input_args[it][cmax_ind+1])
-        else:
-            cbar_max = None
-        
-        if '-threshold' in input_args[it]:
-            thres_ind = input_args[it].index('-threshold')
-            density_threshold = eval(input_args[it][thres_ind+1])
-        else:
-            density_threshold = 0.0
-            
-        if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
-            xlim = args_dict['xlim']
-            ylim = args_dict['ylim']
-        else:
-            xlim = args_dict['xlim'] + np.mean(X)
-            ylim = args_dict['ylim'] + np.mean(Y)
-        has_particles = args_dict['has_particles']
-        time_val = args_dict['time_val']
-        xabel = args_dict['xabel']
-        yabel = args_dict['yabel']
-        axes_dict[ax_label].set_xlim(xlim)
-        axes_dict[ax_label].set_ylim(ylim)
+        if file_dir[it].split('.')[-1] == 'pkl':
     
-        bool_den_array = image>density_threshold
-        vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
-        vel_rad[vel_rad == 0] = np.nan
-        
-        v_std = np.std(vel_rad/10000)
-        v_cbar_min = -10 #center_vel_rv.in_units('km/s').value - 5
-        v_cbar_max = 10
-        
-        plot = axes_dict[ax_label].pcolormesh(X, Y, vel_rad/10000, cmap='idl06_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
-        fmt = ticker.LogFormatterSciNotation()
-        fmt.create_dummy_axis()
+            file = open(file_dir[it], 'rb')
+            X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
+            file.close()
             
-        if density_threshold != 0.0:
-            exp_min = np.log10(density_threshold)
-        else:
-            exp_min = np.log10(cbar_min)
-        exp_max = np.log10(cbar_max)
-        n_level = (exp_max-exp_min)*2 + 1
-        contour_levels = np.logspace(exp_min, exp_max, int(n_level))
-        CS = axes_dict[ax_label].contour(X,Y,image, locator=plt.LogLocator(), linewidths=0.5, colors='k', levels=contour_levels)
-        def func(x):
-            s = "%.0g" % x
-            if "e" in s:
-                tup = s.split('e')
-                significand = tup[0].rstrip('0').rstrip('.')
-                sign = tup[1][0].replace('+', '')
-                exponent = tup[1][1:].lstrip('0')
-                s = ('%se%s%s' % (significand, sign, exponent)).rstrip('e')
-            return s
-        axes_dict[ax_label].clabel(CS,CS.levels,fmt=func)
+            if int(np.round(np.max(part_info['particle_position'][1]))) == 200:
+                image = np.flip(np.flip(image, axis=0), axis=1)
+                vel_rad = np.flip(np.flip(vel_rad, axis=0), axis=1)
+                velx = np.flip(np.flip(velx, axis=0), axis=1)
+                vely = np.flip(np.flip(vely, axis=0), axis=1)
+                part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
+                #image = np.rot90(np.rot90(image))
+                #vel_rad = np.rot90(np.rot90(vel_rad))
+                #velx = np.rot90(np.rot90(velx))
+                #vely = np.rot90(np.rot90(vely))
+                #part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
+                
+            if args.convolve == 'True':
+                res = (args_dict['xlim'][1] - args_dict['xlim'][0])/np.shape(vel_rad)[0]
+                beam_rad = np.sqrt(12*27)/2.355
+                beam_rad_pixel = beam_rad/res
+                image = gaussian_filter(image,sigma=beam_rad_pixel)
+                vel_rad = gaussian_filter(vel_rad,sigma=beam_rad_pixel)
+            
+            if '-cmin' in input_args[it]:
+                cmin_ind = input_args[it].index('-cmin')
+                cbar_min = eval(input_args[it][cmin_ind+1])
+            else:
+                cbar_min = None
+            if '-cmax' in input_args[it]:
+                cmax_ind = input_args[it].index('-cmax')
+                cbar_max = eval(input_args[it][cmax_ind+1])
+            else:
+                cbar_max = None
+            
+            if '-threshold' in input_args[it]:
+                thres_ind = input_args[it].index('-threshold')
+                density_threshold = eval(input_args[it][thres_ind+1])
+            else:
+                density_threshold = 0.0
+            
+            if '-title' in input_args[it]:
+                title_ind = input_args[it].index('-title')
+                title_str = input_args[it][title_ind+1]
+                #title_comps = title_str.split("_")
+                #title_str = ' '.join(title_comps)
+            else:
+                title_str = ""
+                
+            if '-at' in input_args[it]:
+                at_ind = input_args[it].index('-at')
+                annotate_time = input_args[it][at_ind+1]
+            else:
+                annotate_time = "True"
+            
+            if '-axlim' in input_args[it]:
+                ax_ind = input_args[it].index('-axlim')
+                axlim = int(input_args[it][ax_ind+1])
+                print("updating axis limits")
+            else:
+                axlim = np.nan
+                
+            if np.isnan(axlim):
+                if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
+                    xlim = args_dict['xlim']
+                    ylim = args_dict['ylim']
+                else:
+                    xlim = args_dict['xlim'] + np.mean(X)
+                    ylim = args_dict['ylim'] + np.mean(Y)
+            else:
+                xlim = [-1*axlim, axlim]
+                ylim = [-1*axlim, axlim]
+            has_particles = args_dict['has_particles']
+            time_val = args_dict['time_val']
+            xabel = args_dict['xabel']
+            yabel = args_dict['yabel']
         
-        if has_particles:
-            mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+            bool_den_array = image>density_threshold
+            vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
+            vel_rad[vel_rad == 0] = np.nan
+            
+            v_std = np.std(vel_rad/100000)
+            v_cbar_min = -1 #center_vel_rv.in_units('km/s').value - 5
+            v_cbar_max = 1
+            
+            #plot = axes_dict[ax_label].pcolormesh(X, Y, vel_rad/100000, cmap='idl06_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+            plot = axes_dict[ax_label].pcolormesh(X, Y, vel_rad/100000, cmap='RdYlBu_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+            fmt = ticker.LogFormatterSciNotation()
+            fmt.create_dummy_axis()
+            print('plotted image')
+                
+            if density_threshold != 0.0:
+                exp_min = np.log10(density_threshold)
+            else:
+                exp_min = np.log10(cbar_min)
+            exp_max = np.log10(cbar_max)
+            n_level = (exp_max-exp_min)*2 + 1
+            contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+            CS = axes_dict[ax_label].contour(X,Y,image, locator=plt.LogLocator(), linewidths=0.5, colors='k', levels=contour_levels)
+            print('plotted contours')
+            def func(x):
+                s = "%.0g" % x
+                if "e" in s:
+                    tup = s.split('e')
+                    significand = tup[0].rstrip('0').rstrip('.')
+                    sign = tup[1][0].replace('+', '')
+                    exponent = tup[1][1:].lstrip('0')
+                    s = ('%se%s%s' % (significand, sign, exponent)).rstrip('e')
+                return s
+            axes_dict[ax_label].clabel(CS,CS.levels,fmt=func)
+            
+            if has_particles:
+                mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])#, fontdict=fontdict)
+                print('plotted particles')
+                
+            if annotate_time == "True":
+                print("ANNONTATING TIME:", str(int(time_val))+'yr')
+                time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font, zorder=4)#, fontdict=fontdict)
+                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                print('plotted time')
+                
+            if title_str != "":
+                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.04*(ylim[1]-ylim[0])), title_str, va="center", ha="center", color='w', fontsize=(args.text_font+2), zorder=4)#, fontdict=fontdict)
+                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                print('plotted title')
+            
+            if positions[it][0] == 1 and positions[it][1] == 1 and args.convolve == 'True':
+                #plot convolution beam
+                theta = np.linspace(0, 2*np.pi, 100)
+                x1 = beam_rad*np.cos(theta) + 0.9*xlim[1]
+                x2 = beam_rad*np.sin(theta) + 0.9*ylim[1]
+                axes_dict[ax_label].plot(x1, x2, c='m')
+                
+                
+        else:
+            import scipy.io
+            from matplotlib.patches import Ellipse
+            if '-axlim' in input_args[it]:
+                ax_ind = input_args[it].index('-axlim')
+                axlim = int(input_args[it][ax_ind+1])
+                print("updating axis limits")
+            else:
+                axlim = np.nan
+            obs_rv = scipy.io.readsav(file_dir[it])
+            image = obs_rv['mom1']
+            contour_arr = obs_rv['mom0']
+            con_max_it = int(np.max(obs_rv['mom0'])/obs_rv['rms'])+5 + 5
+            contour_levels = np.arange(10, con_max_it, 5) * obs_rv['rms']
+            x = obs_rv['xaxis']
+            y = obs_rv['yaxis']
+            X, Y = np.meshgrid(x, y)
+            if np.isnan(axlim):
+                xlim = [x[0], x[-1]]
+                ylim = [y[0], y[-1]]
+            else:
+                xlim = [axlim, -1*axlim]
+                ylim = [-1*axlim, axlim]
+            vla_pos = [obs_rv['vla1xpos'], obs_rv['vla1ypos']]
+            angle = 113.9
+            line_length = 100
+            line_pos_x = [-1*line_length*np.sin(np.radians(angle))+vla_pos[0], line_length*np.sin(np.radians(angle))+vla_pos[0]]
+            line_pos_y = [-1*line_length*np.cos(np.radians(angle))+vla_pos[1], line_length*np.cos(np.radians(angle))+vla_pos[1]]
+            title = str(obs_rv['molname'])[2:-1]
+            
+            axes_dict[ax_label].set_xlim(xlim)
+            axes_dict[ax_label].set_ylim(ylim)
+            
+            v_cbar_min = 6 #center_vel_rv.in_units('km/s').value - 5
+            v_cbar_max = 8
+            
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap='RdYlBu_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
+            axes_dict[ax_label].contour(X,Y,contour_arr, locator=plt.LogLocator(), linewidths=0.5, colors='k', levels=contour_levels)
+
+            plt.gca().set_aspect('equal')
+
+            plt.plot(line_pos_x, line_pos_y, 'm--', lw=2)
+            
+            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.07*(ylim[1]-ylim[0])), title, va="center", ha="center", color='k', fontsize=(args.text_font+2))
+            
+            if positions[it][0] == 1 and positions[it][1] == 1 and args.convolve == 'True':
+                ellipse = Ellipse((0.85*xlim[1], 0.85*ylim[1]), width=13, height=28,angle=-15, edgecolor='m', facecolor='w')
+                axes_dict[ax_label].add_patch(ellipse)
+            
             
         if positions[it][0] == columns and positions[it][1] == rows:
-            cax = f.add_axes([0.8, 0.11, 0.02, 0.77])
-            cbar =f.colorbar(plot, pad=0.0, cax=cax)#, label='Radial Velocity (km/s)')
-            cbar.set_label('Radial Velocity (km/s)', rotation=270, labelpad=7, size=args.text_font)
+            top_ax_label = ax_label[:-1]+'1'
+            cax_x = np.array(axes_dict[top_ax_label].get_position())[1][0]
+            cax_y = np.array(axes_dict[ax_label].get_position())[0][1]
+            bar_height = np.array(axes_dict[top_ax_label].get_position())[1][1] - np.array(axes_dict[ax_label].get_position())[0][1]
+            cax = f.add_axes([cax_x, cax_y, 0.02, bar_height])
+            cbar =f.colorbar(plot, pad=0.0, cax=cax)
+            #cax = f.add_axes([0.645, 0.11, 0.02, 0.77])
+            #cbar =f.colorbar(plot, pad=0.0, cax=cax)#, label='Radial Velocity (km/s)')
+            if file_dir[it].split('.')[-1] == 'pkl':
+                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=12, size=args.text_font)#fontdict=fontdict)#
+            else:
+                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=15, size=args.text_font)
             cbar.ax.tick_params(labelsize=args.text_font)
+            print('plotted colourbar')
             #cax.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
         axes_dict[ax_label].set_aspect('equal')
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font, labelpad=-2)
+            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font, labelpad=-2)#, fontdict=fontdict)
+            print('plotted xlabel')
         if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel('$y$ (AU)', fontsize=args.text_font, labelpad=-7)
+            axes_dict[ax_label].set_ylabel('$y$ (AU)', fontsize=args.text_font, labelpad=-15)#, fontdict=fontdict)
+            print('plotted ylabel')
+            
+        axes_dict[ax_label].set_xlim(xlim)
+        axes_dict[ax_label].set_ylim(ylim)
+        
     elif plot_type[it] == 'CF_hist':
         file = open("Tobin_CF.pkl", 'rb')
         S_bins, CF_per_bin_Tobin = pickle.load(file)
@@ -305,6 +452,7 @@ for it in range(len(positions)):
         axes_dict[ax_label].ylabel('Companion Frequency')
         axes_dict[ax_label].xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
         axes_dict[ax_label].ylim(bottom=0.0)
+        
     elif plot_type[it] == 'Comp_hist':
         file = open("Tobin_CF.pkl", 'rb')
         S_bins, CF_per_bin_Tobin = pickle.load(file)
@@ -403,6 +551,188 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_ylabel('CF')
         #axes_dict[ax_label].set_ylim(bottom=0.0)
         #axes_dict[ax_label].set_xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+
+    elif plot_type[it] == 'movie_frame':
+        if positions[it][1] > 1:
+            prev_ax_label = ax_label[:-1]+str(int(ax_label[-1])-1)
+            hsep = np.array(axes_dict[prev_ax_label].get_position())[0][1] - np.array(axes_dict[ax_label].get_position())[1][1]
+            if hsep != ghspace:
+                d_sep = hsep - ghspace
+                new_pos = np.array(axes_dict[ax_label].get_position())
+                new_pos[:,1] = new_pos[:,1] + d_sep
+                left = new_pos[0][0]
+                bottom = new_pos[0][1]
+                width = new_pos[1][0] - left
+                height = new_pos[1][1] - bottom
+                axes_dict[ax_label].set_position([left, bottom, width, height])
+    
+        file = open(file_dir[it], 'rb')
+        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+        file.close()
+        
+        if '-pvl' in input_args[it]:
+            pvl_ind = input_args[it].index('-pvl')
+            plot_vel_legend = eval(input_args[it][pvl_ind+1])
+        else:
+            plot_vel_legend = False
+        
+        if '-stdv' in input_args[it]:
+            stdv_ind = input_args[it].index('-stdv')
+            standard_vel = eval(input_args[it][stdv_ind+1])
+        else:
+            standard_vel = 2
+            
+        if '-cmin' in input_args[it]:
+            cmin_ind = input_args[it].index('-cmin')
+            cbar_min = eval(input_args[it][cmin_ind+1])
+        else:
+            cbar_min = None
+        if '-cmax' in input_args[it]:
+            cmax_ind = input_args[it].index('-cmax')
+            cbar_max = eval(input_args[it][cmax_ind+1])
+        else:
+            cbar_max = None
+        
+        if '-threshold' in input_args[it]:
+            thres_ind = input_args[it].index('-threshold')
+            density_threshold = eval(input_args[it][thres_ind+1])
+        else:
+            density_threshold = 0.0
+        
+        if '-title' in input_args[it]:
+            title_ind = input_args[it].index('-title')
+            title = input_args[it][title_ind+1]
+            #title_comps = title_str.split("_")
+            #title_str = ' '.join(title_comps)
+        else:
+            title = ""
+            
+        if '-at' in input_args[it]:
+            at_ind = input_args[it].index('-at')
+            annotate_time = eval(input_args[it][at_ind+1])
+        else:
+            annotate_time = False
+        
+        if '-axlim' in input_args[it]:
+            ax_ind = input_args[it].index('-axlim')
+            axlim = int(input_args[it][ax_ind+1])
+            print("updating axis limits")
+        else:
+            axlim = np.nan
+        
+        if '-apm' in input_args[it]:
+            apm_ind = input_args[it].index('-apm')
+            plot_particle_mass = eval(input_args[it][apm_ind+1])
+        else:
+            plot_particle_mass = False
+        
+        if '-col_title' in input_args[it]:
+            col_it = input_args[it].index('-col_title')
+            col_title = input_args[it][col_it+1]
+        else:
+            col_title = ""
+        
+        xlim = args_dict['xlim']
+        ylim = args_dict['ylim']
+        if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
+            shift_x = np.mean(X)
+            shift_y = np.mean(Y)
+            X = X - shift_x
+            Y = Y - shift_y
+            X_vel = X_vel - shift_x
+            Y_vel = Y_vel - shift_y
+            part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
+            part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+              
+        has_particles = args_dict['has_particles']
+        xabel = args_dict['xabel']
+        yabel = args_dict['yabel']
+
+        if positions[it][1] == rows:
+            axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+        #if positions[it][0] == 1:
+        #    axes_dict[ax_label].set_ylabel(yabel, fontsize=args.text_font, labelpad=-10)
+        axes_dict[ax_label].set_xlim(xlim)
+        axes_dict[ax_label].set_ylim(ylim)
+        
+        cbar_min = args_dict['cbar_min']
+        cbar_max = args_dict['cbar_max']
+        
+        if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+        else:
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+        plt.gca().set_aspect('equal')
+        
+        del image
+        
+        del X
+        del Y
+        del magx
+        del magy
+        
+        if positions[it][0] == columns:
+            cax_x = np.array(axes_dict[ax_label].get_position())[1][0]
+            cax_y = np.array(axes_dict[ax_label].get_position())[0][1]
+            bar_height = np.array(axes_dict[ax_label].get_position())[1][1] - np.array(axes_dict[ax_label].get_position())[0][1]
+            cax = f.add_axes([cax_x, cax_y, 0.01, bar_height])
+            cbar =f.colorbar(plot, pad=0.0, cax=cax)#, label='Radial Velocity (km/s)')
+            #cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=20, size=args.text_font)#fontdict=fontdict)#
+            #print('plotted colourbar')
+            #cbar = plt.colorbar(plot, pad=0.0, ax=axes_dict[ax_label])
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+            cbar.ax.tick_params(labelsize=args.text_font)
+        
+        mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_vel_legend, standard_vel=standard_vel, limits=[xlim, ylim])
+        
+        del X_vel
+        del Y_vel
+        del velx
+        del vely
+        
+        title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.05*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+2))
+        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        
+        if col_title != "":
+            axes_dict[ax_label].set_title(col_title, fontsize=(args.text_font+2))
+            
+        if annotate_time:
+            time_string = "$t$="+str(int(args_dict['time_val']))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        
+        if plot_particle_mass:
+            annotate_field = part_info['particle_mass']
+        else:
+            annotate_field = None
+
+        mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=annotate_field, particle_tags=part_info['particle_tag'])
+        
+        if it == 0:
+            rect = patches.Rectangle((750, 750), 150, 150, linewidth=2, edgecolor='w', facecolor='none')
+            axes_dict[ax_label].add_patch(rect)
+            
+        del part_info
+        
+        
+        if positions[it][0] == 1:
+            axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
+        
+        if positions[it][0] != 1:
+            yticklabels = axes_dict[ax_label].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if positions[it][1] == rows:
+            axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
+            #if positions[it][0] != 1:
+            #    xticklabels = axes_dict[ax_label].get_xticklabels()
+            #    plt.setp(xticklabels[0], visible=False)
+        plt.tick_params(axis='both', which='major', labelsize=args.text_font)
+        axes_dict[ax_label].tick_params(direction='inout', color='white')
+        for line in axes_dict[ax_label].xaxis.get_ticklines():
+            line.set_color('white')
+        for line in axes_dict[ax_label].yaxis.get_ticklines():
+            line.set_color('white')
     
     ax_r = axes_dict[ax_label].secondary_yaxis('right')
     ax_t = axes_dict[ax_label].secondary_xaxis('top')
@@ -420,7 +750,7 @@ for it in range(len(positions)):
         plt.setp(yticklabels, visible=False)
     if positions[it][0] == 1:
         axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font)
-        if positions[it][1] > 1:
+        if positions[it][1] > 1 and plot_type != 'movie_frame':
             yticklabels = axes_dict[ax_label].get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
     if positions[it][1] != rows:
@@ -430,7 +760,10 @@ for it in range(len(positions)):
         axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
         if positions[it][0] != 1:
             xticklabels = axes_dict[ax_label].get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
+            if file_dir[it].split('.')[-1] == 'idl':
+                plt.setp(xticklabels[-1], visible=False)
+            else:
+                plt.setp(xticklabels[0], visible=False)
     
     axes_dict[ax_label].tick_params(direction='inout')
 
@@ -439,5 +772,9 @@ for it in range(len(positions)):
 
     #f.savefig(savename + '.pdf', format='pdf')
     #f.savefig(savename + '.eps', format='eps')
-    f.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    print("saving", savename + '.pdf')
+    #plt.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
+    plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02)
+    print("saved", savename + '.pdf')
     #f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)

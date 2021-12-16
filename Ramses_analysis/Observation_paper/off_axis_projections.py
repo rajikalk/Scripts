@@ -17,49 +17,50 @@ import matplotlib.patheffects as path_effects
 from matplotlib import ticker
 from scipy.ndimage import gaussian_filter
 
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    #Projection properties
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Number_Density")
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="cm**-3")
-    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 500AU", type=float, default=500.)
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
+    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that? (in AU)", type=float, default=200.0)
+    parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
+    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
+    parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0) #0 = center of mass, 1=primary companion, 2=secondary companion
+    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position and veloity?", type=str, default='True')
+    parser.add_argument("-use_part_for_vel", "--use_particle_for_center_vel_calc", help="Do you want to use the particles to calculate center velocity?", type=str, default='True')
+    
+    #projection processing
+    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
+    parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
+    
+    #Time inputs
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
-    parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
+    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
+    parser.add_argument("-spec_file", "--specific_file", help="Do you want to use a specific file", type=str, default=None)
+    
+    #plotting parameters
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
-    parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=list, default=[])
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default=None)#'1.e-16')
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)#1.e-14)
-    parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
-    parser.add_argument("-cc", "--calculation_center", help="where would you like to calculate center positionn and velocity?", type=int, default=0)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
     parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=250)
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default=True)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
-    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
-    parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
-    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
-    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
-    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
-    parser.add_argument("-use_part_for_vel", "--use_particle_for_center_vel_calc", help="Do you want to use the particles to calculate center velocity?", type=str, default='True')
-    parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
-    parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
-    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
-    parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
-    parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
-    parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
-    parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
-    parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
-    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
-    parser.add_argument("-sm", "--skip_made", help="do you want to skip frames already made?", type=str, default='True')
-    parser.add_argument("-spec_file", "--specific_file", help="Do you want to use a specific file", type=str, default=None)
     parser.add_argument("-conv", "--convolve", help="Do you want to convolve the image with a gaussian beam?", type=str, default='True')
+    
+    #Concerning image output
+    parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
+    parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
+    parser.add_argument("-sm", "--skip_made", help="do you want to skip frames already made?", type=str, default='True')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -213,23 +214,41 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Define units to override:
+#BEWARE THIS IS HARD CODED
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-if args.simulation_density_id == 'G50':
+simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+
+if simulation_density_id == '50':
+    Grho=50
     units_override.update({"mass_unit":(1500,"Msun")})
-elif args.simulation_density_id == 'G200':
+elif simulation_density_id == '100':
+    Grho=100
+    units_override.update({"mass_unit":(3000,"Msun")})
+elif simulation_density_id == '125':
+    Grho=125
+    units_override.update({"mass_unit":(3750,"Msun")})
+elif simulation_density_id == '150':
+    Grho=150
+    units_override.update({"mass_unit":(4500,"Msun")})
+elif simulation_density_id == '200':
+    Grho=200
     units_override.update({"mass_unit":(6000,"Msun")})
-elif args.simulation_density_id == 'G400':
+elif simulation_density_id == '400':
+    Grho=400
     units_override.update({"mass_unit":(12000,"Msun")})
 else:
-    units_override.update({"mass_unit":(2998,"Msun")})
+    print("MASS UNIT NOT SET")
+    import pdb
+    pdb.set_trace()
+    
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
     
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
 mym.set_units(units_override)
 
 #find sink particle to center on and formation time
@@ -259,6 +278,7 @@ if args.ax_lim != None:
 x_width = (xlim[1] -xlim[0])
 y_width = (ylim[1] -ylim[0])
 thickness = yt.YTQuantity(args.slice_thickness, 'AU')
+
 #Sets center for calculating center position and velocity
 myf.set_center_pos_ind(args.image_center)
 myf.set_center_vel_ind(0)
@@ -304,7 +324,7 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
-sink_form_companion = dd['sink_particle_form_time'][sink_id+1]
+sink_form_companion = dd['sink_particle_form_time'][sink_id+1]#Assumes the companion has the sink id of the primary+1
 if args.start_frame == 0 and args.plot_time == None:
     args.start_frame = int((sink_form_companion - sink_form_time)/(args.time_step))+1
 del dd
@@ -344,7 +364,7 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size/(8*4))):
+    for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size/(8*4))): #8 projection and 4 fields.
         fn = usable_files[fn_it]
         print("File", fn, "is going to rank", rank)
         if size > 1:
@@ -420,24 +440,9 @@ if args.make_frames_only == 'False':
                                            [-1*radius/np.sqrt(2), -1*radius/np.sqrt(2), sep_z],\
                                            [0, -radius, sep_z],\
                                            [radius/np.sqrt(2), -1*radius/np.sqrt(2), sep_z]])
-                                           
-            #cone_vector_length_no_tan = np.sqrt(vectors_along_cone_no_tan[:,0]**2 + vectors_along_cone_no_tan[:,1]**2 + vectors_along_cone_no_tan[:,2]**2)
-            #vectors_along_cone_no_tan = vectors_along_cone_no_tan/cone_vector_length_no_tan[0]
-            '''
-            vectors_along_cone = np.array([[separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
-                                           [-1*separation_magnitude*np.tan(alpha), 0, separation_magnitude],\
-                                           [0, separation_magnitude*np.tan(alpha), separation_magnitude],\
-                                           [0, -1*separation_magnitude*np.tan(alpha), separation_magnitude],\
-                                           [(separation_magnitude*np.tan(alpha))/np.sqrt(2), (separation_magnitude*np.tan(alpha))/np.sqrt(2), separation_magnitude],\
-                                           [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), ((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
-                                           [(separation_magnitude*np.tan(alpha))/np.sqrt(2), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude],\
-                                           [-1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), -1*((separation_magnitude*np.tan(alpha))/np.sqrt(2)), separation_magnitude]])
-            '''
-            #cone_vector_length = np.sqrt(vectors_along_cone[:,0]**2 + vectors_along_cone[:,1]**2 + vectors_along_cone[:,2]**2)
-            #vectors_along_cone = vectors_along_cone/cone_vector_length[0]
             
             
-            #Figure out how to rotate the projection vectors to be the same reference as the separation vector.
+            #Figure out how to rotate the projection vectors to be the same orientation as the separation vector.
             #Rotate around XY plane
             z_rot = z_rotation_matrix(-1*phi)
             #z_rot_rev = z_rotation_matrix(phi)

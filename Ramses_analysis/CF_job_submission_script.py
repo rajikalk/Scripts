@@ -3,7 +3,7 @@ import os
 import subprocess
 
 dirs = ["/groups/astro/rlk/Analysis_plots/Ramses/Global/G400", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G200", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/256", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G50"]
-Match_Methods = ["Number_Stars", "SFE", "SFE_t_ff", "M_tot_150"]#, "Number_Stars"]
+Match_Methods = ["Ratio_vis_to_all", "Number_Stars_50", "Number_Stars", "SFE", "SFE_t_ff", "M_tot_150", "Ratio_vis_to_all"]#, "Number_Stars_50"]
 Boundness = ["Unbound", "Bound"]
 L_Limits = ["L_Limits", "No_Limits"]
 global_pickles = ["/groups/astro/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G200/stars_imf_G200.pkl", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/256/stars_imf_G100.pkl", "/groups/astro/rlk/Analysis_plots/Ramses/Global/G50/stars_imf_G50.pkl"]
@@ -13,6 +13,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-rm_pkl", "--remove_pickle", help="do ou want to remove existing pickles and star afresh?", type=str, default='True')
+    parser.add_argument("-use_t_s", "--use_t_spread", help="do you want to use t_spread?", type=str, default='True')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -45,9 +46,17 @@ for dir in dirs:
                 elif method == 'M_tot_150':
                     job_string = 'MTo'
                     method_ind = 4
+                elif method == 'Ratio_vis_to_all':
+                    job_string = 'Rat'
+                    method_ind = 5
                 else:
-                    job_string = 'NoS'
                     method_ind = 3
+                    if '_50' in method:
+                        n_vis_thres = 50
+                        job_string = 'NS50'
+                    else:
+                        n_vis_thres = 115
+                        job_string = 'NoS'
                 if 'G100' in dir:
                     job_tag = limits[0] + bound_state[0] + job_string + dir.split('Global/')[1][:2] + dir.split('G100/')[1]
                 else:
@@ -84,11 +93,14 @@ for dir in dirs:
                 
                 run_string = "srun python /groups/astro/rlk/Scripts/Ramses_analysis/multiplicity_fraction_res_per_bin_13.py /lustre/astro/troels/IMF_512/binary_analysis/data/ ./ -pickle cf_hist -verbose True -global_data "+global_pickles[nit]+" -bound "+str(Bound_bool) + " -match_meth " + str(method_ind)
                 
+                if args.use_t_spread != 'True':
+                    run_string = run_string + "-use_t_s False"
+                
                 if limits == 'No_Limits':
                     run_string = run_string + " -upper_L 100000"
                 
-                if method == "Number_Stars":
-                    run_string = run_string + " -use_t_s False"# -acc_lim 1.e-12 -lower_L 0"
+                if method_ind == 3:
+                    run_string = run_string + " -use_t_s False -n_vis_thres "+str(n_vis_thres)# -acc_lim 1.e-12 -lower_L 0"
                 
                 run_string = run_string + " 1>cf.out00 2>&1\n"
         

@@ -79,6 +79,7 @@ if systems_hierarchy != None:
                 systems_hierarchy = systems_hierarchy[:start_ind] + "\'" + system_tag + "\'" + systems_hierarchy[end_ind+1:]
                 
                 system_ind = reduced_systems_data['base_tags'].index(binary_tags)
+                print("CHECK SEPARATION CALCULATION TAKES INTO ACCOUNT CYCLIC BOUNDARIES")
                 separation = reduced_systems_data['separation'][system_ind]
                 eccentricity = reduced_systems_data['eccentricity'][system_ind]
                 accretion = reduced_systems_data['mdot_individual'][system_ind]
@@ -120,7 +121,7 @@ if systems_hierarchy != None:
                     while e_bin_it < len(e_bins):
                         file_name = save_dir + str(binary_tags[0]) + "_" + str(binary_tags[1]) + '_accretion_median_start_orbit_from_' + str(e_bins[e_bin_it-1]) + '_' + str(e_bins[e_bin_it])
                         usable_periastrons = np.argwhere((eccentricity[periastron_inds]<e_bins[e_bin_it-1])&(eccentricity[periastron_inds]>e_bins[e_bin_it])).T[0]
-                        if len(usable_periastrons) == 0:
+                        if len(usable_periastrons) <2:
                             e_bin_it = e_bin_it + 1
                         else:
                             median_e = np.median(eccentricity[periastron_inds[usable_periastrons[0]]:periastron_inds[usable_periastrons[-1]]])
