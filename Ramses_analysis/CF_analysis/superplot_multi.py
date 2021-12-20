@@ -16,6 +16,7 @@ def parse_inputs():
     parser.add_argument("-fig_suffix", "--figure_suffix", help="Do you want add a suffix to the figures?", type=str, default="")
     parser.add_argument("-add_hist", "--add_histograms", help="Do you want to add the histograms at the end of the super plots?", type=str, default="True")
     parser.add_argument("-all_sep_evol", "--plot_all_separation_evolution", help="do you want to plot all separation evolution?", type=str, default="True")
+    parser.add_argument("-x_field", "--x_field", help="Default for x-axis in the multiplot is time", type=str, default="Time")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -33,7 +34,9 @@ plot_booleans = [[True, True], [True, False], [False, True], [False, False]]
 
 args = parse_inputs()
 
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G50/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G100/256/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G125/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G150/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G200/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G400/superplot_with_means.pkl"]
+#pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G50/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G100/256/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G125/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G150/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G200/superplot_with_means.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Superplots/G400/superplot_with_means.pkl"]
+
+pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G50.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G100.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G125.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G150.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G200.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G400.pkl"]
 
 plt.clf()
 if plot_booleans[rank][0] == True:
@@ -70,7 +73,7 @@ G50_t_max = 0
 if args.plot_all_separation_evolution == "True":
     for pick_it in iter_range:
         file = open(pickle_files[int(pick_it/2)], 'rb')
-        Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+        Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth = pickle.load(file)
         file.close()
         
         #Add SFE to the big array to plot later
@@ -179,15 +182,30 @@ plt.subplots_adjust(wspace=0.0)
 SFE_5_inds = []
 Total_Mass_5 = []
 N_Stars_5 = []
+Bound_fractions = []
+Bound_fraction_Multi = []
 for pick_it in range(len(pickle_files)):
     file = open(pickle_files[pick_it], 'rb')
-    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth = pickle.load(file)
     file.close()
     
     SFE_5_ind = np.argmin(abs(np.array(SFE)-0.05))
     SFE_5_inds.append(SFE_5_ind)
     Total_Mass_5.append(M_tot[SFE_5_ind])
     N_Stars_5.append(N_stars[SFE_5_ind])
+    valid_sink_inds = np.argwhere(Sink_formation_times < Times[SFE_5_ind]).T[0]
+    Bound_birth_fraction = np.sum(np.array(Sink_bound_birth)[valid_sink_inds])/len(Sink_bound_birth)
+    Bound_fractions.append(Bound_birth_fraction)
+    counted_sink = []
+    Multi_bound = []
+    for sys_key in System_times.keys():
+        sys_comps = flatten(eval(sys_key))
+        for comp in sys_comps:
+            if comp not in counted_sink:
+                Multi_bound.append(Sink_bound_birth[comp])
+                counted_sink.append(comp)
+    Bound_birth_fraction_multi = np.sum(Multi_bound)/len(Multi_bound)
+    Bound_fraction_Multi.append(Bound_birth_fraction_multi)
     
     axs.flatten()[0].plot(Times, M_tot, label=subplot_titles[pick_it], color=colors[pick_it])
     axs.flatten()[0].scatter(Times[SFE_5_ind], M_tot[SFE_5_ind], color=colors[pick_it])
@@ -218,10 +236,24 @@ print('Saved SFE_evolution')
 #plot quantities VS cloud mass at SFE=0.05
 plt.clf()
 fig, axs = plt.subplots(1, 1, figsize=(4, 3), sharex=True)
+plt.plot(GMC_mass_arr, Bound_fractions, label='All stars')
+plt.scatter(GMC_mass_arr, Bound_fractions)
+plt.plot(GMC_mass_arr, Bound_fraction_Multi, label='Stars in multiples')
+plt.scatter(GMC_mass_arr, Bound_fraction_Multi)
+plt.xlabel('GMC Mass (M$_\odot$)')
+plt.ylabel('Fraction of bound sinks at birth')
+plt.xlim([GMC_mass_arr[0], GMC_mass_arr[-1]])
+plt.legend(loc='best')
+plt.savefig('bound_fraction_vs_GMC_mass.jpg', format='jpg', bbox_inches='tight')
+plt.savefig('bound_fraction_vs_GMC_mass.pdf', format='pdf', bbox_inches='tight')
+print('Saved bound_fraction_vs_GMC_mass.jpg')
+
+plt.clf()
+fig, axs = plt.subplots(1, 1, figsize=(4, 3), sharex=True)
 plt.plot(GMC_mass_arr, N_Stars_5)
 plt.scatter(GMC_mass_arr, N_Stars_5)
 plt.xlabel('GMC Mass (M$_\odot$)')
-plt.ylabel('# stars')
+plt.ylabel('\# stars')
 plt.xlim([GMC_mass_arr[0], GMC_mass_arr[-1]])
 plt.savefig('N_stars_vs_GMC_mass.jpg', format='jpg', bbox_inches='tight')
 plt.savefig('N_stars_vs_GMC_mass.pdf', format='pdf', bbox_inches='tight')
@@ -240,47 +272,121 @@ if plot_truncated_super_mult == True:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.07)
 
-    t_max = np.nan
-    G50_t_max = 0
     CF_hist = np.zeros((len(pickle_files),12)).tolist()
     
     for pick_it in iter_range:
         file = open(pickle_files[int(pick_it/2)], 'rb')
-        Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+        Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth = pickle.load(file)
         file.close()
 
         SFE_5_ind = SFE_5_inds[int(pick_it/2)]
+        SFE_5_time = Times[SFE_5_ind]
+        if pick_it == 0:
+            if args.x_field == 'Time':
+                G50_t_max = Times[SFE_5_ind] - System_times[list(System_times.keys())[0]][0]
+            elif args.x_field == 'SFE':
+                G50_t_max = 0.05
+        new_sys_id =  N_stars[-1]
 
         sim_start_time = np.nan
+        plotted_sinks = []
         for time_key in System_times.keys():
             for sit in range(len(S_bins[1:])):
                 bin_inst = np.argwhere((System_seps[time_key]>S_bins[sit])&(System_seps[time_key]<S_bins[sit+1]))
                 CF_hist[int(pick_it/2)][sit] = CF_hist[int(pick_it/2)][sit] + np.shape(bin_inst)[0]
             key_inds = flatten(eval(time_key))
-            if args.timescale == "first_sink":
-                first_sink = np.argmin(Sink_formation_times[key_inds])
-                Time_adjusted_formation = System_times[time_key] - Sink_formation_times[key_inds[first_sink]].value
-            else:
-                if np.isnan(sim_start_time):
-                    sim_start_time = System_times[time_key][0]
-                Time_adjusted_formation = System_times[time_key] - np.array(sim_start_time)
-            if np.isnan(t_max):
-                if Time_adjusted_formation[-1] > G50_t_max:
-                    G50_t_max = Time_adjusted_formation[-1]
-            axs.flatten()[pick_it].semilogy(Time_adjusted_formation[:SFE_5_ind], System_seps[time_key][:SFE_5_ind], alpha=0.05, color='k')
+            if args.x_field == 'Time':
+                if args.timescale == "first_sink":
+                    first_sink = np.argmin(Sink_formation_times[key_inds])
+                    Time_adjusted_formation = System_times[time_key] - Sink_formation_times[key_inds[first_sink]].value
+                    SFE_5_time = Times[SFE_5_ind] - Sink_formation_times[key_inds[first_sink]].value
+                else:
+                    if np.isnan(sim_start_time):
+                        sim_start_time = System_times[time_key][0]
+                    Time_adjusted_formation = System_times[time_key] - np.array(sim_start_time)
+                    SFE_5_time = Times[SFE_5_ind] - np.array(sim_start_time)
+                t_max_ind = np.argmin(abs(Time_adjusted_formation - SFE_5_time))
+                if t_max_ind > 0:
+                    axs.flatten()[pick_it].semilogy(Time_adjusted_formation[:t_max_ind], System_seps[time_key][:t_max_ind], alpha=0.05, color='k', rasterized=True)
+            elif args.x_field == 'SFE':
+                #Convert sys time to Time array
+                t_sys_start_ind = np.argmin(abs(Times - np.array(System_times[time_key][0])))
+                if System_times[time_key][-1] > SFE_5_time:
+                    sys_t_end_ind = np.argmin(abs(np.array(System_times[time_key]) - SFE_5_time))
+                    if System_times[time_key][sys_t_end_ind] != SFE_5_time:
+                        t_sys_end_ind = np.argmin(abs(Times - np.array(System_times[time_key][sys_t_end_ind])))
+                    else:
+                        t_sys_end_ind = SFE_5_ind
+                else:
+                    t_sys_end_ind = np.argmin(abs(Times - np.array(System_times[time_key][-1])))
+                    sys_t_end_ind = len(System_times[time_key])-1
+                if t_sys_end_ind > 0:
+                    Sys_times = System_times[time_key][:sys_t_end_ind+1]
+                    Times_arr = Times[t_sys_start_ind:t_sys_end_ind+1]
+                    if len(Times_arr) != len(Sys_times):
+                        Times_arr = sorted(set(Times_arr).intersection(Sys_times))
+                        print('Need to manually find SFE values')
+                        SFE_arr = []
+                        for time_val in Times_arr:
+                            SFE_arr.append(SFE[Times.index(time_val)])
+                    else:
+                        SFE_arr = SFE[t_sys_start_ind:t_sys_end_ind+1]
+                    axs.flatten()[pick_it].semilogy(SFE_arr, System_seps[time_key][:sys_t_end_ind+1], alpha=0.05, color='k', rasterized=True)
+            if t_sys_end_ind > 0:
+                sys_comps = time_key
+                reduced = False
+                sep_ind = 0
+                while reduced == False:
+                    open_braket_ind = []
+                    for char_it in range(len(sys_comps)):
+                        if sys_comps[char_it] == '[':
+                            open_braket_ind.append(char_it)
+                        if sys_comps[char_it] == ']':
+                            open_ind = open_braket_ind.pop()
+                            sub_sys = eval(sys_comps[open_ind:char_it+1])
+                            if np.array(Sink_bound_birth)[np.max(sub_sys)] == True:
+                                marker_color = 'r'
+                                Sink_bound_birth.append(True)
+                            else:
+                                marker_color = 'b'
+                                Sink_bound_birth.append(False)
+                            if np.mean(np.array(sub_sys)<N_stars[-1]) == 1:
+                                if set(sub_sys).issubset(set(plotted_sinks)) == False:
+                                    plotted_sinks = plotted_sinks + sub_sys
+                                    print('plotted sinks', sub_sys)
+                                    if args.x_field == 'Time':
+                                        axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], System_seps[time_key][:t_max][0][sep_ind], color=marker_color, marker='o')
+                                    elif args.x_field == 'SFE':
+                                        axs.flatten()[pick_it].scatter(SFE_arr[0], System_seps[time_key][:sys_t_end_ind+1][0][sep_ind], color=marker_color, marker='o')
+                            elif np.mean(np.array(sub_sys)<N_stars[-1]) > 0:
+                                real_sink_inds = np.argwhere(np.array(sub_sys)<N_stars[-1])[0]
+                                real_sinks = np.array(sub_sys)[real_sink_inds]
+                                if set(real_sinks).issubset(set(plotted_sinks)) == False:
+                                    plotted_sinks = plotted_sinks + real_sinks.tolist()
+                                    print('plotted sinks', real_sinks.tolist())
+                                    if args.x_field == 'Time':
+                                        axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], System_seps[time_key][:t_max][0][sep_ind], color=marker_color, marker='o')
+                                    elif args.x_field == 'SFE':
+                                        axs.flatten()[pick_it].scatter(SFE_arr[0], System_seps[time_key][:sys_t_end_ind+1][0][sep_ind], color=marker_color, marker='o')
+                            sep_ind = sep_ind + 1
+                            replace_string = str(new_sys_id)
+                            new_sys_id = new_sys_id + 1
+                            sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
+                            if '[' not in sys_comps:
+                                reduced = True
+                            break
+        print('Finished plotting separation evolution')
             
         for bin_bound in S_bins:
             axs.flatten()[pick_it].axhline(y=bin_bound, linewidth=0.5)
 
         axs.flatten()[pick_it].set_ylabel('Separation (AU)')
         axs.flatten()[pick_it].set_ylim([10, 10000])
-        if np.isnan(t_max):
-            t_max = G50_t_max
-        axs.flatten()[pick_it].set_xlim([0, t_max])
+        axs.flatten()[pick_it].set_xlim([0, 0.05])
         
-        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.85*t_max, 3500), 400000, 5600, facecolor="white", edgecolor="black", zorder=10))
-        axs.flatten()[pick_it].text((0.86*t_max), 6500, subplot_titles[int(pick_it/2)], zorder=11)
-        axs.flatten()[pick_it].text((0.86*t_max), 4000, "N$_{sys}$="+str(np.sum(np.array(list(System_lifetimes.values())[:SFE_5_ind])>args.sys_lifetime_threshold)), zorder=12)
+        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.85*G50_t_max, 3500), 400000, 5600, facecolor="white", edgecolor="black", zorder=10))
+        axs.flatten()[pick_it].text((0.86*G50_t_max), 6500, subplot_titles[int(pick_it/2)], zorder=11)
+        axs.flatten()[pick_it].text((0.86*G50_t_max), 4000, "N$_{sys}$="+str(np.sum(np.array(list(System_lifetimes.values())[:SFE_5_ind])>args.sys_lifetime_threshold)), zorder=12)
         
         if args.add_histograms == "True":
             CF_norm = np.array(CF_hist[int(pick_it/2)])/np.sum(CF_hist[int(pick_it/2)])
