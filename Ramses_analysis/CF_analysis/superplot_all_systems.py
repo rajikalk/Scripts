@@ -139,6 +139,8 @@ M_tot_multi = []
 N_stars = []
 N_vis_stars = []
 N_multi_stars = []
+Sink_E_tot = []
+Single_star_inds = []
 Sink_bound_birth = []
 System_seps = {}
 System_semimajor = {}
@@ -281,6 +283,13 @@ if args.update_pickles == 'True':
                 if True in (res['separation']>10000):
                     import pdb
                     pdb.set_trace()
+                #See if you can access the particle energies
+                import pdb
+                pdb.set_trace()
+                E_tots = res['ekin'][n_stars] + res['epot'][n_stars]
+                Sink_E_tot.append(E_tots)
+                single_inds = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                Single_star_inds.append(single_inds)
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                 n_multi = np.sum(res['n'][multi_inds])
                 M_multi = np.sum(res['mass'][multi_inds])
@@ -479,7 +488,7 @@ if args.update_pickles == 'True':
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%02d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times),file)
+                pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot),file)
                 file.close()
                 
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
@@ -503,6 +512,8 @@ if args.update_pickles == 'True':
             N_stars_full = []
             N_vis_stars_full = []
             N_multi_stars_full = []
+            Single_star_inds = []
+            Sink_E_tot_full = []
             System_seps_full = {}
             System_semimajor_full = {}
             System_times_full = {}
@@ -510,7 +521,7 @@ if args.update_pickles == 'True':
             for pick_file in pickle_files:
                 try:
                     file = open(pick_file, 'rb')
-                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
+                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot = pickle.load(file)
                     file.close()
                 except:
                     file = open(pick_file, 'rb')
@@ -536,6 +547,8 @@ if args.update_pickles == 'True':
                 N_stars_full = N_stars_full + N_stars
                 N_vis_stars_full = N_vis_stars_full + N_vis_stars
                 N_multi_stars_full = N_multi_stars_full + N_multi_stars
+                Single_star_inds_full = Single_star_inds_full + Single_star_inds
+                Sink_E_tot_full = Sink_E_tot_full + Sink_E_tot
                 os.remove(pick_file)
             
             #Let's sort the data
@@ -561,9 +574,11 @@ if args.update_pickles == 'True':
             N_stars = np.array(N_stars_full)[sorted_inds].tolist()
             N_vis_stars = np.array(N_vis_stars_full)[sorted_inds].tolist()
             N_multi_stars = np.array(N_multi_stars_full)[sorted_inds].tolist()
+            Single_star_inds = np.array(Single_star_inds_full)[sorted_inds].tolist()
+            Sink_E_tot = np.array(Sink_E_tot_full)[sorted_inds].tolist()
             
             file = open(pickle_file+'.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times),file)
+            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot),file)
             file.close()
 
     sys.stdout.flush()
@@ -576,7 +591,7 @@ if args.update_pickles == 'True':
         rit = rit + 1
         if rank == rit:
             file = open(pickle_file+'.pkl', 'rb')
-            Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
+            Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot = pickle.load(file)
             file.close()
 
     sys.stdout.flush()
@@ -686,7 +701,7 @@ if args.update_pickles == 'True':
             Final_seps = Final_seps_full
             
             file = open(pickle_file+'_with_means.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth),file)
+            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth, Single_star_inds, Sink_E_tot),file)
             file.close()
 
 
@@ -696,7 +711,7 @@ if args.update_pickles == 'True':
 #compile all the pickles
 if rank == 0:
     file = open(pickle_file+'_with_means.pkl', 'rb')
-    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth = pickle.load(file)
+    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth, Single_star_inds, Sink_E_tot = pickle.load(file)
     file.close()
     
     #Create plot
