@@ -207,23 +207,23 @@ for pick_it in range(len(pickle_files)):
     Bound_birth_fraction_multi = np.sum(Multi_bound)/len(Multi_bound)
     Bound_fraction_Multi.append(Bound_birth_fraction_multi)
     
-    axs.flatten()[0].plot(Times, M_tot, label=subplot_titles[pick_it], color=colors[pick_it])
-    axs.flatten()[0].scatter(Times[SFE_5_ind], M_tot[SFE_5_ind], color=colors[pick_it])
-    axs.flatten()[0].plot(Times, M_tot_multi, color=colors[pick_it], linestyle="--", alpha=0.5)
-    axs.flatten()[0].scatter(Times[SFE_5_ind], M_tot_multi[SFE_5_ind], color=colors[pick_it], alpha=0.5)
+    axs.flatten()[0].plot(np.array(Times)/1.e6, M_tot, label=subplot_titles[pick_it], color=colors[pick_it])
+    axs.flatten()[0].scatter(Times[SFE_5_ind]/1.e6, M_tot[SFE_5_ind], color=colors[pick_it])
+    #axs.flatten()[0].plot(Times, M_tot_multi, color=colors[pick_it], linestyle="--", alpha=0.5)
+    #axs.flatten()[0].scatter(Times[SFE_5_ind], M_tot_multi[SFE_5_ind], color=colors[pick_it], alpha=0.5)
     
-    axs.flatten()[1].plot(Times, N_stars, color=colors[pick_it])
-    axs.flatten()[1].scatter(Times[SFE_5_ind], N_stars[SFE_5_ind], color=colors[pick_it])
-    axs.flatten()[1].plot(Times, N_multi_stars, color=colors[pick_it], linestyle="--", alpha=0.5)
-    axs.flatten()[1].scatter(Times[SFE_5_ind], N_multi_stars[SFE_5_ind], color=colors[pick_it], alpha=0.5)
+    axs.flatten()[1].plot(np.array(Times)/1.e6, N_stars, color=colors[pick_it])
+    axs.flatten()[1].scatter(Times[SFE_5_ind]/1.e6, N_stars[SFE_5_ind], color=colors[pick_it])
+    #axs.flatten()[1].plot(Times, N_multi_stars, color=colors[pick_it], linestyle="--", alpha=0.5)
+    #axs.flatten()[1].scatter(Times[SFE_5_ind], N_multi_stars[SFE_5_ind], color=colors[pick_it], alpha=0.5)
     
-    axs.flatten()[2].plot(Times, SFE, color=colors[pick_it])
-    axs.flatten()[2].scatter(Times[SFE_5_ind], SFE[SFE_5_ind], color=colors[pick_it])
+    axs.flatten()[2].plot(np.array(Times)/1.e6, SFE, color=colors[pick_it])
+    axs.flatten()[2].scatter(Times[SFE_5_ind]/1.e6, SFE[SFE_5_ind], color=colors[pick_it])
 axs.flatten()[0].legend(loc='best')
-plt.xlabel("Time in Simulation")
+plt.xlabel("Time in Simulation (Myr)")
 #plt.xlabel("Time since the first star formed")
 axs.flatten()[0].set_ylabel("Total acccreted mass ($M_\\odot$)")
-axs.flatten()[1].set_ylabel("Total number of stars ($M_\\odot$)")
+axs.flatten()[1].set_ylabel("Total number of stars")
 axs.flatten()[2].set_ylabel("Star formation efficiency (SFE)")
 axs.flatten()[0].set_ylim(bottom=0)
 axs.flatten()[1].set_ylim(bottom=0)
@@ -345,10 +345,10 @@ if plot_truncated_super_mult == True:
                             open_ind = open_braket_ind.pop()
                             sub_sys = eval(sys_comps[open_ind:char_it+1])
                             if np.array(Sink_bound_birth)[np.max(sub_sys)] == True:
-                                marker_color = 'r'
+                                marker_color = 'b'
                                 Sink_bound_birth.append(True)
                             else:
-                                marker_color = 'b'
+                                marker_color = 'r'
                                 Sink_bound_birth.append(False)
                             if np.mean(np.array(sub_sys)<N_stars[-1]) == 1:
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
