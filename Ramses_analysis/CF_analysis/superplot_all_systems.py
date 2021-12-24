@@ -284,8 +284,6 @@ if args.update_pickles == 'True':
                     import pdb
                     pdb.set_trace()
                 #See if you can access the particle energies
-                import pdb
-                pdb.set_trace()
                 E_tots = res['ekin'][n_stars] + res['epot'][n_stars]
                 Sink_E_tot.append(E_tots)
                 single_inds = np.where((res['n']==1) & (res['topSystem']==True))[0]
