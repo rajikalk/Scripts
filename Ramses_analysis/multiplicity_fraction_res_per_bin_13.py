@@ -29,7 +29,7 @@ def parse_inputs():
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
-    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=32.6)
+    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=35.6)
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.04)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
@@ -39,14 +39,10 @@ def parse_inputs():
     parser.add_argument("-use_t_s", "--use_t_spread", help="Do you want to define the time spread using t_spread instead of a spread defined by the method?", type=str, default='True')
     parser.add_argument("-match_meth", "--match_method", help="How do you want to select times? 1. SFE, 2.SPE/t_ff, 3. No. visible stars, 4. Total Accreted Mass", type=int, default=1)
     parser.add_argument("-start_ind", "--starting_ind", help="Do you want to start the analysis at a particular starting ind?", type=int, default=None)
-    parser.add_argument("-n_vis_thres", "--n_visible_threshold", help="what threshold do you want to use for number fo stars?", type=int, default=106)
+    parser.add_argument("-n_vis_thres", "--n_visible_threshold", help="what threshold do you want to use for number fo stars?", type=int, default=115)
     parser.add_argument("-SFE_thres", "--SFE_threshold", help="What threshold do you want to use for the SFE?", type=float, default=0.045)
     parser.add_argument("-SFE_n_thres", "--SFE_n_threshold", help="What threshod do you want to use for the SFE_n (defined by ARce et al, 2010)", type=float, default=0.022)
     parser.add_argument("-thres_spread", "--threshold_spread", help="Over what spread (as a fraction of the threshold) do you want to intergrate?", type=float, default=0.1)
-    parser.add_argument("-entire_sim", "--integrate_over_entire_sim", help="Do you want to integrate over the entire sim?", type=str, default="False")
-    parser.add_argument("-use_2016", "--use_2016_tobin_data", type=str, default='False')
-    parser.add_argument("-plus_tsingles", "--plus_tobin_singles", type=str, default='True')
-    parser.add_argument("-class_0_only", "--class_0_protostars_only", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -114,183 +110,101 @@ savedir = sys.argv[2]
 L_bins = np.logspace(-1.25,3.5,20)
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
-Tobin_luminosities_0_1 = [1.8, 0.50, 0.6, 0.7, 0.4, 0.36, 1.40, 0.80, 0.43, 1.20, 3.70, 1.70, 0.16, 0.05, 1.6, 0.54, 0.3, 1.20, 23.2, 0.16, 4.7, 16.80, 0.54, 0.09, 0.24, 1.80, 1.90, 3.20, 0.69, 1.50, 0.90, 1.30, 4.20, 3.60, 8.40, 0.68, 2.6, 1.80, 0.40, 0.70, 0.30, 0.60, 19.00, 5.30, 1.50, 0.30, 0.50, 0.54, 0.17, 0.32, 0.70, 2.80, 6.9, 1.10, 4.00, 7.00, 0.10, 32.50, 1.00, 8.3, 9.2, 1.4, 0.87, 1.50, 3.20, 9.1, 0.63, 0.16]
-
+Tobin_luminosities_All_objects = np.array([0.04,0.05,0.09,0.1,0.1,0.16,0.16,0.16,0.17,0.23,0.24,0.25,0.3,0.3,0.3,0.32,0.36,0.38,0.39,0.4,0.4,0.43,0.5,0.5,0.54,0.54,0.54,0.54,0.6,0.6,0.63,0.68,0.69,0.7,0.7,0.7,0.8,0.87,0.9,1,1.1,1.2,1.2,1.3,1.3,1.4,1.4,1.4,1.5,1.5,1.5,1.6,1.7,1.8,1.8,1.8,1.8,1.9,16.8,19,2.5,2.6,2.8,23.2,3.2,3.2,3.6,3.7,32.5,4,4.2,4.7,5.3,6.9,7,8.3,8.4,9.1,9.2,0.04,0.04,0.04,0.05,0.05,0.05,0.05,0.07,0.07,0.14,0.15,0.22,0.28,0.47,1.1,1.3])
 Tobin_Luminosities_multiples = np.array([0.9, 1.3, 4.2, 0.87, 1.5, 1.3, 3.6, 3.2, 9.1, 0.04, 9.08, 1.5, 4.4, 1.1, 1.19, 18.9, 10.8, 0.79, 11.1, 24.3, 0.9, 2.44, 35.54, 2.1])
 
-#2018 Class 0+I
 Tobin_objects = {
-"Per-emb-1 (0)": [],
-"Per-emb-3 (0)": [],
-"Per-emb-9 (0)": [],
-"Per-emb-14 (0)": [],
-"Per-emb-15 (0)": [],
-"Per-emb-19 (0/I)": [],
-"Per-emb-20 (0/I)": [],
-"Per-emb-23 (0)": [],
-"Per-emb-24 (0/I)": [],
-"Per-emb-25 (0/I)": [],
-"Per-emb-29 (0)": [],
-"Per-emb-30 (0/I)": [],
-"Per-emb-31 (0/I)": [],
-"L1451-MMS (0)": [],
-"Per-emb-34 (I)": [],
-"Per-emb-38 (I)": [],
-"Per-emb-46 (I)": [],
-"Per-emb-47 (I)": [],
-"Per-emb-50 (I)": [],
-"Per-emb-52 (I)": [],
-"Per-emb-53 (I)": [],
-"Per-emb-54 (I)": [],
-"Per-emb-56 (I)": [],
-"Per-emb-57 (I)": [],
-"Per-emb-61 (I)": [],
-"Per-emb-62 (I)": [],
-"Per-emb-63 (I)": [],
-"Per-emb-64 (I)": [],
-"Per-emb-66 (I)": [],
-"IRAS 03363+3207 (I?)": [],
-"SVS13C (0)": [],
-"Per-emb-2": [24.0],
+"Per-emb-2": [24],
+"Per-emb-21+Per-emb-18+Per-emb-49": [25.6, 93.8, 3975.7, 8242.3],
 "Per-emb-5": [29.1],
+"L1448NW+Per-emb-33+L1448IRS3A": [75.3, 79.2, 238.4, 2195.2, 6450.8],
 "Per-emb-17": [83.3],
-"Per-emb-22": [225.4],
-"Per-emb-26+Per-emb-42": [2431.3],
-"Per-emb-8+Per-emb-55": [185.3, 2867.2],
-"Per-emb-16+Per-emb-28": [4818.9],
-"Per-emb-6+Per-emb-10": [9584.2],
-"Per-emb-27+Per-emb-36": [93.4, 186.0, 9426.0],
-"Per-emb-11": [885.4, 2840.6],
-"Per-emb-32": [1820.0],
-"Per-emb-37+EDJ2009+235": [],#"Per-emb-37+EDJ2009+235": [3166.7],
-"B1-bS+Per-emb-41+B1-bN": [4187.1, 5218.4],
-"Per-emb-18+Per-emb-21+Per-emb-49": [25.6, 93.8, 3975.7, 8242.3],
-"Per-emb-13+IRAS4B’+Per-emb-12": [548.9, 3196.2, 8921.7],
-"Per-emb-44+SVS13A2+SVS13B": [90.0, 1594.2, 4479.7],
-"Per-emb-33+L1448IRS3A+L1448NW": [75.3, 79.2, 238.4, 2195.2, 6450.8],
+"Per-emb-44+SVS13A2+SVS13B+SVS13C": [90, 1594.2, 4479.7, 10358.5],
 "Per-emb-48": [103.7],
 "Per-emb-40": [117.4],
+"EDJ2009-269": [157.3],
+"Per-emb-8+Per-emb-55": [185.3, 2867.2],
+"Per-emb-22": [225.4],
 "EDJ2009-183": [307.6],
-"L1448IRS1": [427.0],
+"L1448IRS1": [427],
 "Per-emb-35": [572.3],
-"Per-emb-58+Per-emb-65": [8663.3]
-}
+"Per-emb-11": [885.4, 2840.6],
+"EDJ2009-156": [932.1],
+"Per-emb-26+Per-emb-42": [2431.3],
+"Per-emb-37+EDJ2009+235+EDJ2009+233": [3166.7, 10111.3],
+"Per-emb-13+IRAS4B’+Per-emb-12": [548.9, 3196.2,8921.7],
+"B1-bS+Per-emb-41+B1-bN": [4187.1, 5218.4],
+"Per-emb-16+Per-emb-28": [4818.9],
+"Per-emb-58+Peremb-65": [8663.3],
+"Per-emb-36+Per-emb-27": [93.4, 186, 9426],
+"Per-emb-6+Per-emb-10": [9584.2],
+"Per-emb-32+EDJ2009+366": [1820, 10981.6]}
 
+Tobin_hist, bins = np.histogram(Tobin_Luminosities_multiples, bins=L_bins)
+
+MF_Tobin = []
+Tobin_intersection = list(set(Tobin_luminosities_All_objects).intersection(Tobin_Luminosities_multiples))
+Tobin_n_singles = 60
+N_components = np.ones(Tobin_n_singles).tolist()
 CF_per_bin_Tobin = []
 CF_errs = []
-#S_true = 17#14
 
-for bin_it in range(1, len(S_bins)):
-    N_comps_in_sys = []
+sys.stdout.flush()
+CW.Barrier()
+
+for bin_it in range(1,len(S_bins)):
+    N_components = []#np.ones(Tobin_n_singles).tolist()
     for key in Tobin_objects.keys():
-        N_comps = len(Tobin_objects[key]) + 1
-        smaller_seps = len(np.argwhere(np.array(Tobin_objects[key]) < S_bins[bin_it-1]))
-        larger_seps = len(np.argwhere(np.array(Tobin_objects[key]) > S_bins[bin_it]))
-        binaries = len(np.argwhere((np.array(Tobin_objects[key]) < S_bins[bin_it])&(np.array(Tobin_objects[key]) > S_bins[bin_it-1])))
-        if N_comps == 1:
-            N_comps_in_sys = N_comps_in_sys + [1]
-        elif N_comps == 2:
-            if larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1, 1]
-            elif binaries == 1:
-                N_comps_in_sys = N_comps_in_sys + [2]
-            elif smaller_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1]
-        elif N_comps == 3:
-            if larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
-            elif binaries == 1 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [2, 1]
-            elif smaller_seps == 1 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1, 1]
-            elif smaller_seps == 1 and binaries == 1:
-                N_comps_in_sys = N_comps_in_sys + [2]
-            elif smaller_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [1]
-            elif binaries == 2:
-                N_comps_in_sys = N_comps_in_sys + [3]
-            else:
-                import pdb
-                pdb.set_trace()
-        elif N_comps == 4:
-            if larger_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
-            elif binaries == 1 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
-            elif smaller_seps == 1 and binaries == 1 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [2, 1]
-            elif smaller_seps == 2 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1, 1]
-            elif smaller_seps == 1 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
-            elif smaller_seps == 2 and binaries == 1:
-                N_comps_in_sys = N_comps_in_sys + [2]
-            elif smaller_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [1]
-            else:
-                import pdb
-                pdb.set_trace()
-        elif N_comps == 5:
-            if larger_seps == 4:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1, 1]
-            elif binaries == 1 and larger_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [2, 1, 1, 1]
-            elif smaller_seps == 1 and larger_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
-            elif smaller_seps == 1 and binaries == 1 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
-            elif smaller_seps == 2 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
-            elif smaller_seps == 2 and binaries == 1 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [2, 1]
-            elif smaller_seps == 3 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1, 1]
-            elif smaller_seps == 3 and binaries == 1:
-                N_comps_in_sys = N_comps_in_sys + [2]
-            elif binaries == 2 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [2, 2, 1]
-            elif smaller_seps == 4:
-                N_comps_in_sys = N_comps_in_sys + [1]
-            else:
-                import pdb
-                pdb.set_trace()
-        elif N_comps == 6:
-            if larger_seps == 5:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1, 1, 1]
-            elif binaries == 2 and larger_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [2, 2, 1, 1]
-            elif smaller_seps == 2 and larger_seps == 3:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
-            elif smaller_seps == 2 and binaries == 1 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
-            elif smaller_seps == 3 and larger_seps == 2:
-                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
-            elif smaller_seps == 3 and binaries == 1 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [2, 1]
-            elif smaller_seps == 4 and larger_seps == 1:
-                N_comps_in_sys = N_comps_in_sys + [1, 1]
-            elif smaller_seps == 4 and binaries == 1:
-                N_comps_in_sys = N_comps_in_sys + [2]
-            elif smaller_seps == 5:
-                N_comps_in_sys = N_comps_in_sys + [1]
-            else:
-                import pdb
-                pdb.set_trace()
-    N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
-    N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
-    N_s = len(np.argwhere(np.array(N_comps_in_sys) == 1))
-    N_sys = N_s + N_b + N_t
-    cf = (N_b+2*N_t)/N_sys
-    N_comp = np.sum(np.array(N_comps_in_sys) - 1)
-    CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
-    #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
-    
+        bin_inds = np.where((np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]))[0]
+        if len(np.where(Tobin_objects[key]<S_bins[bin_it])[0]) == 0:
+            #If all separations are greater than bin upper bound, every component is taken to be a single star
+            N_components = N_components + np.ones(len(Tobin_objects[key])+1).tolist()
+        elif len(np.where((np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]))[0]) == len(Tobin_objects[key]):
+            #If all components are in the separation bin, then N = number of components
+            N_components.append(len(Tobin_objects[key])+1)
+        elif len(np.where(Tobin_objects[key]<S_bins[bin_it-1])[0]) == 0:
+            #If all separations are smaller than the bin upper bound then the whole system is taken to be a single star.
+            N_components.append(1)
+        elif True not in (np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]):
+            #If some separations are either above or below the bin bounds, then separations above the upper bin bound are single stars, plus one for the separations below the lower bound.
+            n_single_comps = len(np.where(Tobin_objects[key]>S_bins[bin_it])[0]) + 1
+            N_components = N_components + np.ones(n_single_comps).tolist()
+        elif bin_inds[0] != 0 and bin_inds[-1] != len(Tobin_objects[key])-1:
+            #if some of the middle separations are in the bin, we calculate what would be seen as singles and what is the oerder of the observed multiple would be
+            bin_inds = np.where((np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]))[0]
+            n_single_comps = len(Tobin_objects[key][bin_inds[-1]+1:])
+            N_components = N_components + np.ones(n_single_comps).tolist()
+            N_components.append(len(bin_inds)+1)
+        elif ((np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]))[0] == False and ((np.array(Tobin_objects[key])<S_bins[bin_it])&(np.array(Tobin_objects[key])>S_bins[bin_it-1]))[-1] == True:
+            N_components.append(len(bin_inds)+1)
+        else:
+            import pdb
+            pdb.set_trace()
+    s_no = len(np.where(np.array(N_components) == 1)[0])
+    b_no = len(np.where(np.array(N_components) == 2)[0])
+    t_no = len(np.where(np.array(N_components) == 3)[0])
+    q_no = len(np.where(np.array(N_components) == 4)[0])
+    cf = (b_no+t_no*2+q_no*3)/(s_no+b_no+t_no+q_no)
     CF_per_bin_Tobin.append(cf)
-    CF_errs.append(CF_err)
     
+    N_comp = np.sum(np.array(N_components) - np.ones(np.shape(N_components)))
+    N_sys = len(N_components)
+    CF_err = (1/N_sys)*(N_comp*(1-(N_comp/N_sys)))**0.5
+    CF_errs.append(CF_err)
+
+sys.stdout.flush()
+CW.Barrier()
 
 CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
 CF_errs = np.array(CF_errs)
+
+#Create histogram of Tobin's CF Distribution
+plt.clf()
+plt.bar(bin_centers, CF_per_bin_Tobin, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
+plt.ylabel("Companion Frequency")
+plt.xlabel("Log (AU)")
+plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+plt.ylim(bottom=0)
 
 #raghaven dist
 sep_mean_rag = 1.7
@@ -316,12 +230,15 @@ fit = Gaussian(x, *popt)
 first_peak = np.log10(90)
 popt1, pcov1 = curve_fit(Gaussian, bin_centers[:9], CF_per_bin_Tobin[:9], [np.max(CF_per_bin_Tobin[:9]), bin_centers[:9][np.argmax(CF_per_bin_Tobin[:9])], 0.5], sigma=CF_errs[:9])
 fit1 = Gaussian(x, *popt1)
+plt.plot(x, fit1, ls='--')
 
 start_ind = 8
-popt2, pcov2 = curve_fit(Gaussian, bin_centers[start_ind:], CF_per_bin_Tobin[start_ind:], [np.max(CF_per_bin_Tobin[start_ind:]), bin_centers[start_ind:][np.argmax(CF_per_bin_Tobin[start_ind:])], 1.0], sigma=CF_errs[start_ind:])
+popt2, pcov2 = curve_fit(Gaussian, bin_centers[start_ind:], CF_per_bin_Tobin[start_ind:], [np.max(CF_per_bin_Tobin[start_ind:]), bin_centers[start_ind:][np.argmax(CF_per_bin_Tobin[start_ind:])], 0.5], sigma=CF_errs[start_ind:])
 fit2 = Gaussian(x, *popt2)
+plt.plot(x, fit2, ls='--')
 
 sum_fit = fit1 + fit2
+plt.plot(x, sum_fit)
 
 def line(x, m, b):
     return m*x + b
@@ -334,37 +251,23 @@ fit3 = line(x, *popt3)
 plt.plot(x, fit3, ls='--')
 popt4, pcov4 = curve_fit(line, bin_centers[9:], CF_per_bin_Tobin[9:]-popt3[1], [ 0.39, -1.15], sigma=CF_errs[9:])
 fit4 = line(x, *popt4)
+plt.plot(x, fit4, ls='--')
 
 fit4 = np.clip(fit4, 0, np.max(fit4))
 sum_line = fit3 + fit4
-if rank == 0:
-    plt.clf()
-    plt.bar(bin_centers, CF_per_bin_Tobin, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
-    #plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
-    plt.ylabel("Companion Frequency")
-    plt.xlabel("Log (AU)")
-    plt.xlim([1,4])
-    plt.ylim([0, 0.2])
-    plt.plot(x, fit1, ls='--')
-    plt.plot(x, fit2, ls='--')
-    plt.plot(x, sum_fit)
-    plt.plot(x, fit4, ls='--')
-    plt.plot(x, sum_line)
-    #plt.savefig("Tobin_2018_class_0_I.png")
+plt.plot(x, sum_line)
 
-
-    plt.savefig(savedir + "CF_Tobin_data.png")
+plt.savefig(savedir + "CF_Tobin_data.png")
 
 sys.stdout.flush()
 CW.Barrier()
         
-file = open("Tobin_CF.pkl", 'wb')
-pickle.dump((S_bins, CF_per_bin_Tobin),file)
-print('updated pickle', "Tobin_CF.pkl")
-file.close()
+#file = open("Tobin_CF.pkl", 'wb')
+#pickle.dump((S_bins, CF_per_bin_Tobin),file)
+#print('updated pickle', "Tobin_CF.pkl")
+#file.close()
 
 #=====================================================================================================
-#Create units override
 
 if len(args.projection_vector) > 0:
     proj_vector = np.array(eval(args.projection_vector))
@@ -380,15 +283,6 @@ simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[
 if simulation_density_id == '50':
     Grho=50
     units_override.update({"mass_unit":(1500,"Msun")})
-elif simulation_density_id == '100':
-    Grho=100
-    units_override.update({"mass_unit":(3000,"Msun")})
-elif simulation_density_id == '125':
-    Grho=125
-    units_override.update({"mass_unit":(3750,"Msun")})
-elif simulation_density_id == '150':
-    Grho=150
-    units_override.update({"mass_unit":(4500,"Msun")})
 elif simulation_density_id == '200':
     Grho=200
     units_override.update({"mass_unit":(6000,"Msun")})
@@ -396,10 +290,8 @@ elif simulation_density_id == '400':
     Grho=400
     units_override.update({"mass_unit":(12000,"Msun")})
 else:
-    print("MASS UNIT NOT SET")
-    import pdb
-    pdb.set_trace()
-    
+    Grho=100
+    units_override.update({"mass_unit":(2998,"Msun")})
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
     
@@ -412,8 +304,6 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
-#====================================================================================================================================================
-
 sys.stdout.flush()
 CW.Barrier()
 
@@ -424,7 +314,6 @@ CF_arrays = []
 Sink_Luminosities = {}
 Sink_Accretion = {}
 
-#Overwrite saved variables is need be
 pickle_file = savedir + args.pickled_file
 if rank == 0:
     pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
@@ -474,8 +363,6 @@ if rank == 0:
 sys.stdout.flush()
 CW.Barrier()
 
-#==========================================================================================
-#Analysis parameters: Do you want to check for boundedness, or have luminosity limits?
 if args.bound_check == 'True':
     bound_check = True
 else:
@@ -486,8 +373,16 @@ luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
 #luminosity_upper_limit = args.upper_L_limit
 accretion_limit = args.accretion_limit
 
-#==============================================================================================================================
+'''
+#low resolution data
+datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data_256'
+nout = 133
+'''
 
+#high resolution data
+#datadir = '/lustre/astro/troels/IMF_512/binary_analysis/data'
+
+#Load global pickle data
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open,encoding="latin1")
@@ -500,28 +395,25 @@ file_open.close()
 dm = global_data['dm']*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
 Accretion_array = dm/dt
-print('Loaded global pickle data')
 
-#dt == integration window, if you don't want to integrate over the entire simulation
+print('Loaded global pickle data')
 dt = yt.YTQuantity(args.time_spread, 'yr')
 
-if args.integrate_over_entire_sim == "True":
-    time_bounds = [global_data['time'].T[0][0]*units['time_unit'].in_units('yr'), global_data['time'].T[0][-1]*units['time_unit'].in_units('yr')]
-elif args.match_method == 1:
+if args.match_method == 1:
     #Match at SFE of 4.9%
     SFE_value = args.SFE_threshold
     SFE = (np.sum(global_data['m'], axis=1)*units['mass_unit'].value)/units['mass_unit'].value
     if args.use_t_spread == 'True':
         SFE_ind = np.argmin(np.abs(SFE_value-SFE))
         SFE_t_ff = global_data['time'].T[0][SFE_ind]*units['time_unit'].in_units('yr')
-        time_bounds = [(SFE_t_ff-dt),(SFE_t_ff+dt)]
+        time_bounds = [SFE_t_ff-dt,SFE_t_ff+dt]
     else:
         SFE_spread = SFE_value*args.threshold_spread
         SFE_min_ind = np.argmin(np.abs((SFE_value-SFE_spread)-SFE))
         SFE_t_ff_min = global_data['time'].T[0][SFE_min_ind]*units['time_unit'].in_units('yr')
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
         SFE_t_ff_max = global_data['time'].T[0][SFE_max_ind]*units['time_unit'].in_units('yr')
-        time_bounds = [SFE_t_ff_min*units['time_unit'].in_units('yr'),SFE_t_ff_max*units['time_unit'].in_units('yr')]
+        time_bounds = [SFE_t_ff_min,SFE_t_ff_max]
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE)
@@ -539,14 +431,14 @@ elif args.match_method == 2:
     if args.use_t_spread == 'True':
         SFE_n_ind = np.argmin(np.abs(SFE_n_value - SFE_n))
         SFE_t_ff = global_data['time'].T[0][SFE_n_ind]*units['time_unit'].in_units('yr')
-        time_bounds = [(SFE_t_ff-dt),(SFE_t_ff+dt)]
+        time_bounds = [SFE_t_ff-dt,SFE_t_ff+dt]
     else:
         SFE_n_spread = SFE_n_value*args.threshold_spread
         SFE_n_min = np.argmin(np.abs((SFE_n_value-SFE_n_spread) - SFE_n))
         SFE_n_t_ff_min = global_data['time'].T[0][SFE_n_min]*units['time_unit'].in_units('yr')
         SFE_n_max = np.argmin(np.abs((SFE_n_value+SFE_n_spread) - SFE_n))
         SFE_n_t_ff_max = global_data['time'].T[0][SFE_n_max]*units['time_unit'].in_units('yr')
-        time_bounds = [SFE_n_t_ff_min*units['time_unit'].in_units('yr'),SFE_n_t_ff_max*units['time_unit'].in_units('yr')]
+        time_bounds = [SFE_n_t_ff_min,SFE_n_t_ff_max]
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE_n)
@@ -561,12 +453,11 @@ elif args.match_method == 3:
     N_prev = 0
     time_yrs = (global_data['time'].T[0] - global_data['time'].T[0][0])*units['time_unit'].in_units('yr')
     total_stars = np.sum(global_data['m']>0, axis=1)
-    if rank == 0:
-        plt.clf()
-        plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), total_stars)
-        plt.xlabel("Time (t$_{ff}$)")
-        plt.ylabel("N$_{stars}$")
-        plt.savefig("total_stars.png")
+    plt.clf()
+    plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), total_stars)
+    plt.xlabel("Time (t$_{ff}$)")
+    plt.ylabel("N$_{stars}$")
+    plt.savefig("total_stars.png")
     if args.use_t_spread == 'True':
         potential_inds = []
         N_vis_array = []
@@ -594,8 +485,8 @@ elif args.match_method == 3:
             plt.savefig("visible_stars.png")
         N_ind = int(len(potential_inds)/2)
         
-        N_t_ff = global_data['time'].T[0][potential_inds[N_ind]]
-        time_bounds = [(N_t_ff-dt)*units['time_unit'].in_units('yr'),(N_t_ff+dt)*units['time_unit'].in_units('yr')]
+        N_t_ff = global_data['time'].T[0][potential_inds[N_ind]]*units['time_unit'].in_units('yr')
+        time_bounds = [N_t_ff-dt,N_t_ff+dt]
     else:
         N_vis_spread = N_vis_val*args.threshold_spread
         potential_min_inds = []
@@ -634,7 +525,7 @@ elif args.match_method == 3:
             N_t_ff_max = global_data['time'].T[0][potential_max_inds[N_max]]
         except:
             N_t_ff_max = global_data['time'].T[0][-1]
-        time_bounds = [N_t_ff_min*units['time_unit'].in_units('yr'), N_t_ff_max*units['time_unit'].in_units('yr')]
+        time_bounds = [N_t_ff_min, N_t_ff_max]
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), total_stars)
@@ -651,14 +542,14 @@ elif args.match_method == 4:
     if args.use_t_spread == 'True':
         M_tot_ind = np.argmin(np.abs(M_tot_value-M_tot))
         M_tot_t_ff = global_data['time'].T[0][M_tot_ind]
-        time_bounds = [(M_tot_t_ff-dt)*units['time_unit'].in_units('yr'),(M_tot_t_ff+dt)*units['time_unit'].in_units('yr')]
+        time_bounds = [M_tot_t_ff-dt,M_tot_t_ff+dt]
     else:
         M_tot_spread = M_tot_value*args.threshold_spread
         M_tot_min = np.argmin(np.abs((M_tot_value - M_tot_spread)-M_tot))
         M_t_ff_min = global_data['time'].T[0][M_tot_min]
         M_tot_max = np.argmin(np.abs((M_tot_value + M_tot_spread)-M_tot))
         M_t_ff_max = global_data['time'].T[0][M_tot_max]
-        time_bounds = [M_t_ff_min*units['time_unit'].in_units('yr'), M_t_ff_max*units['time_unit'].in_units('yr')]
+        time_bounds = [M_t_ff_min, M_t_ff_max]
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), M_tot)
@@ -699,7 +590,7 @@ elif args.match_method == 5:
             plt.savefig("ratio.png")
         R_ind = int(len(potential_inds)/2)
         R_t_ff = global_data['time'].T[0][potential_inds[R_ind]]
-        time_bounds = [(R_t_ff-dt)*units['time_unit'].in_units('yr'),(R_t_ff+dt)*units['time_unit'].in_units('yr')]
+        time_bounds = [R_t_ff-dt,R_t_ff+dt]
     else:
         ratio_spread = ratio_val*args.threshold_spread
         potential_min_inds = []
@@ -739,18 +630,14 @@ elif args.match_method == 5:
             N_t_ff_max = global_data['time'].T[0][potential_max_inds[N_max]]
         except:
             N_t_ff_max = global_data['time'].T[0][-1]
-        time_bounds = [N_t_ff_min*units['time_unit'].in_units('yr'), N_t_ff_max*units['time_unit'].in_units('yr')]
+        time_bounds = [N_t_ff_min, N_t_ff_max]
     
 
-try:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[1]))
-except:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
+start_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[0]))
+end_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[1]))
 
 if rank == 0:
-    print("tstart, tend", time_bounds[0].in_units('kyr'), time_bounds[1].in_units('kyr'))
+    print("tstart, tend", time_bounds[0]*units['time_unit'].in_units('kyr'), time_bounds[1]*units['time_unit'].in_units('kyr'))
     print("SFE_start, SFE_end", (np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value)/units['mass_unit'].value, (np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)/units['mass_unit'].value)
     print("nstars_start, nstars_end", len(np.where(global_data['m'][start_time_ind]>0)[0]), len(np.where(global_data['m'][end_time_ind]>0)[0]))
     print("mstars_start, mstars_end", np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value, np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)
@@ -759,19 +646,33 @@ if rank == 0:
 radius = yt.YTQuantity(2.0, 'rsun')
 temperature = yt.YTQuantity(3000, 'K')
 
-if args.starting_ind != None:
-    update = True
-    start_time_ind = args.starting_ind
-elif args.make_plots_only != 'False':
-    update = False
-elif len(Times) == (end_time_ind-start_time_ind+1):
-    update = False
-else:
-    update = True
-    start_time_ind = start_time_ind + len(Times)
-    
-#============================================================================================
-#Now we enter the actual multiplicity analysis
+if rank == 0:
+    if args.starting_ind != None:
+        update = True
+        start_time_ind = args.starting_ind
+    elif args.make_plots_only != 'False':
+        update = False
+    elif len(Times) == (end_time_ind-start_time_ind+1):
+        update = False
+    else:
+        update = True
+        start_time_ind = start_time_ind + len(Times)
+    for rit in range(1,size):
+        data_dict = {'update':update, 'start_time_ind':start_time_ind}
+        CW.send(data_dict, dest=rit, tag=0)
+        #CW.send(start_time_ind, dest=rit, tag=1)
+
+sys.stdout.flush()
+CW.Barrier()
+
+for rit in range(1,size):
+    if rank == rit:
+        data_dict = CW.recv(source=0, tag=0)
+        update = data_dict['update']
+        start_time_ind = data_dict['start_time_ind']
+        #start_time_ind = CW.send(start_time_ind, dest=rit, tag=1)
+        print("Received update status as", update, "starting from index=", start_time_ind)
+
 sys.stdout.flush()
 CW.Barrier()
 
@@ -833,8 +734,6 @@ if update == True and args.make_plots_only == 'False':
                             'epot'        : np.ones(mass.shape,dtype=np.float),
                             'reducedMass' : np.ones(mass.shape,dtype=np.float),
                             'separation'  : np.zeros(mass.shape,dtype=np.float),
-                            'midpoint'    : abspos *units['length_unit'].in_units('AU'),
-                            'midpointSep' : np.zeros(mass.shape,dtype=np.float),
                             'relativeSpeed' : np.zeros(mass.shape,dtype=np.float),
                             'semiMajorAxis' : np.zeros(mass.shape,dtype=np.float),
                             'eccentricity'  : np.ones(mass.shape,dtype=np.float),
@@ -879,8 +778,8 @@ if update == True and args.make_plots_only == 'False':
                         print("Doing time_it", time_it, "of", end_time_ind+1)
 
                 #Find all singles and top systems with separations below the bin lower bound
-                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0] #These are true singles
-                s_fake = np.where((res['midpointSep']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin. But these separations are calculated using the center of mass.
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                s_fake = np.where((res['separation']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0]
 
                 if args.verbose_printing != 'False':
                     print_line = "AND", len(set(s_true).intersection(set(visible_stars))), "ARE VISIBLE SINGLE STARS"
@@ -991,7 +890,7 @@ if update == True and args.make_plots_only == 'False':
                                             binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                             ind_1 = res['index1'][binary_ind]
                                             ind_2 = res['index2'][binary_ind]
-                                            pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                            pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > 10000.:
                                                 update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
@@ -1007,7 +906,8 @@ if update == True and args.make_plots_only == 'False':
                                                 if len(vis_subs) > 0:
                                                     L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                                     M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
+                                                    central_ind = list(vis_subs)[np.argmax(L_tot[list(vis_subs)])]
+                                                    res['abspos'][binary_ind] = res['abspos'][central_ind]
                                                     replace_string = str(binary_ind)
                                                     res['n'][multi_ind] = res['n'][multi_ind] - 1
                                                     removed_stars = removed_stars + 1
@@ -1022,7 +922,8 @@ if update == True and args.make_plots_only == 'False':
                                                 if len(vis_subs) > 0:
                                                     L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                                     M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
+                                                    central_ind = list(vis_subs)[np.argmax(L_tot[list(vis_subs)])]
+                                                    res['abspos'][binary_ind] = res['abspos'][central_ind]
                                                     replace_string = str(binary_ind)
                                                     if len(vis_subs) == 1:
                                                         res['n'][multi_ind] = res['n'][multi_ind] - 1
@@ -1045,7 +946,8 @@ if update == True and args.make_plots_only == 'False':
                                             L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                             M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
                                             if len(vis_subs)>0:
-                                                res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                                central_ind = list(vis_subs)[np.argmax(L_tot[list(vis_subs)])]
+                                                res['abspos'][binary_ind] = res['abspos'][central_ind]
                                                 replace_string = str(binary_ind)
                                             else:
                                                 replace_string = ""
@@ -1339,8 +1241,9 @@ if rank == 0:
     L_bins = np.logspace(-2,4,25)
     L_hist, L_bins = np.histogram(Sink_L_means, bins=L_bins)
     
-    Tobin_luminosities_0_1 = np.array([1.8, 0.50, 0.6, 0.7, 0.4, 0.36, 1.40, 0.80, 0.43, 1.20, 3.70, 1.70, 0.16, 0.05, 1.6, 0.54, 0.3, 1.20, 23.2, 0.16, 4.7, 16.80, 0.54, 0.09, 0.24, 1.80, 1.90, 3.20, 0.69, 1.50, 0.90, 1.30, 4.20, 3.60, 8.40, 0.68, 2.6, 1.80, 0.40, 0.70, 0.30, 0.60, 19.00, 5.30, 1.50, 0.30, 0.50, 0.54, 0.17, 0.32, 0.70, 2.80, 6.9, 1.10, 4.00, 7.00, 0.10, 32.50, 1.00, 8.3, 9.2, 1.4, 0.87, 1.50, 3.20, 9.1, 0.63, 0.16])
-    Tobin_hist, L_bins = np.histogram(Tobin_luminosities_0_1, bins=L_bins)
+    Tobin_luminosities_All_objects = np.array([0.04,0.05,0.09,0.1,0.1,0.16,0.16,0.16,0.17,0.23,0.24,0.25,0.3,0.3,0.3,0.32,0.36,0.38,0.39,0.4,0.4,0.43,0.5,0.5,0.54,0.54,0.54,0.54,0.6,0.6,0.63,0.68,0.69,0.7,0.7,0.7,0.8,0.87,0.9,1,1.1,1.2,1.2,1.3,1.3,1.4,1.4,1.4,1.5,1.5,1.5,1.6,1.7,1.8,1.8,1.8,1.8,1.9,16.8,19,2.5,2.6,2.8,23.2,3.2,3.2,3.6,3.7,32.5,4,4.2,4.7,5.3,6.9,7,8.3,8.4,9.1,9.2,0.04,0.04,0.04,0.05,0.05,0.05,0.05,0.07,0.07,0.14,0.15,0.22,0.28,0.47,1.1,1.3])
+    Tobin_hist, L_bins = np.histogram(Tobin_luminosities_All_objects, bins=L_bins)
+    
     
     plt.clf()
     plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
@@ -1352,6 +1255,7 @@ if rank == 0:
     plt.savefig(savedir + args.figure_prefix + 'L_mean_hist.jpg', format='jpg', bbox_inches='tight')
     print('created L_mean_hist.jpg')
     
+  
 sys.stdout.flush()
 CW.Barrier()
 

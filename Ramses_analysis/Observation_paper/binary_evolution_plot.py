@@ -18,7 +18,7 @@ def parse_inputs():
 end_peri = 13
 args = parse_inputs()
 read_file = sys.argv[1]
-labels = ['B1 (0.8AU)', 'B1', 'B2', 'B3']
+labels = ['B1*', 'B1', 'B2', 'B3']
 panel_tag = ['a)', 'b)', 'c)', 'd)']
 linestyles = [':', '-', '-', '-']
 colors = ['b', 'b', 'orange', 'g']
@@ -124,8 +124,8 @@ if read_file.split('.')[-1] == 'csv':
         else:
             extrema_inds = np.argwhere((left_grad*right_grad)<0) + start_peri_ind
         periastron_inds = extrema_inds[::2][:end_peri]
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         apastron_inds = extrema_inds[1::2][:end_peri]
         periastron_times = reduced_systems_data['time'][periastron_inds]
         apastron_times = reduced_systems_data['time'][apastron_inds]
@@ -341,14 +341,18 @@ elif read_file.split('.')[-1] == 'pkl':
     file_open.close()
     
     plt.clf()
-    fig = plt.figure()
-    fig.set_size_inches(8, 10.)
-    gs = gridspec.GridSpec(4, 1)
-    gs.update(hspace=0.0)
-    ax1 = fig.add_subplot(gs[0,0]) #Separation
-    ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
-    ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
-    ax4 = fig.add_subplot(gs[3,0], sharex=ax1) #Disc sizes
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, gridspec_kw={'height_ratios': [1, 1.4, 0.8, 0.8]}, sharex=True)
+    plt.subplots_adjust(hspace=0.0)
+    #fig = plt.figure()
+    width = 3.50394 #4.72441
+    height = 8.1
+    fig.set_size_inches(width, height)
+    #gs = gridspec.GridSpec(4, 1)
+    #gs.update(hspace=0.0)
+    #ax1 = fig.add_subplot(gs[0,0]) #Separation
+    #ax2 = fig.add_subplot(gs[1,0], sharex=ax1) #Accretion Rate
+    #ax3 = fig.add_subplot(gs[2,0], sharex=ax1) #Eccentricity
+    #ax4 = fig.add_subplot(gs[3,0], sharex=ax1) #Disc sizes
     
     for it in range(len(Orb_Times_All)):
         ax1.semilogy(Orb_Times_All[it], Separation_All[it], label=labels[it], ls=linestyles[it], linewidth=0.75, alpha=0.75, color=colors[it])
@@ -379,19 +383,19 @@ elif read_file.split('.')[-1] == 'pkl':
         #Match_Disc_Size_All[it][small_sizes] = np.nan
         ax4.scatter(Match_Time_Disc_All[it], Match_Disc_Size_All[it], marker='o', color=colors[it], facecolors='none')
 
-ax1.set_ylabel('Separation (AU)')
+ax1.set_ylabel('Separation (au)')
 plt.setp([ax1.get_xticklabels() for ax1 in fig.axes[:-1]], visible=False)
 #ax1.set_ylim([50, 3e3])
-ax2.set_ylabel('Accretion ($10^{-5}$M$_\odot$/yr)')
+ax2.set_ylabel('Accretion ($10^{-5}\,$M$_\odot$/yr)')
 plt.setp([ax2.get_xticklabels() for ax2 in fig.axes[:-1]], visible=False)
 #ax2.set_ylim([2.5e-6, 6e-5])
 ax3.set_ylabel('Eccentricity')
 plt.setp([ax3.get_xticklabels() for ax3 in fig.axes[:-1]], visible=False)
-ax4.set_ylabel('Disk size (AU)')
-ax4.set_xlabel('Orbit #')
+ax4.set_ylabel('Disk size (au)')
+ax4.set_xlabel('Orbit #', labelpad=-1)
 ax4.set_ylim(bottom=0)
 ax4.set_xticks(np.arange(12))
-ax1.legend(loc='best')
+ax1.legend(loc='lower left')
 ax1.set_xlim([1, 10])
 
 ax1.text(1.4,9e2,panel_tag[0])
@@ -436,6 +440,6 @@ ax4.tick_params(axis='y', which='minor', direction="in")
 ax4.tick_params(axis='x', which='major', direction="in")
 ax4.tick_params(axis='x', which='minor', direction="in")
 
-plt.savefig(args.save_image_name+'.pdf', format='pdf', bbox_inches='tight')
+plt.savefig(args.save_image_name+'.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
     
     

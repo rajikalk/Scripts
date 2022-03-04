@@ -13,7 +13,6 @@ import pickle
 import matplotlib.patheffects as path_effects
 from matplotlib import transforms
 import csv
-import math
 
 fontsize_global=12
 
@@ -44,27 +43,22 @@ def set_units(input_units):
 def rainbow_text(x,y,ls,lc,**kw):
     t = plt.gca().transData
     figlocal = plt.gcf()
-    space_size = 1.45*kw['size']
-            
+
     #horizontal version
     for string,c in zip(ls,lc):
         string_raw = r'{}'.format(string)
         #string = str_text[1:-1]
         #string = string.encode('unicode_escape')
         text = plt.text(x,y,string_raw,color=c, transform=t, **kw)
-        text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal()])
+        text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         text.draw(figlocal.canvas.get_renderer())
-        ex = text.get_window_extent(renderer=figlocal.canvas.get_renderer())
+        ex = text.get_window_extent()
         if "odot" in string:
-            #import pdb
-            #pdb.set_trace()
-            #t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
-            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
+            #t = transforms.offset_copy(text._transform, x=0.7*ex.width, units='dots')
         else:
-            #import pdb
-            #pdb.set_trace()
-            #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
-            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
+            #t = transforms.offset_copy(text._transform, x=0.7*ex.width, units='dots')
         
 def set_global_font_size(x):
     global fontsize_global
@@ -95,7 +89,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
     else:
         sink_form_time = find_sink_formation_time(files)
         
-    if end_time != None:
+    if end_time != None or len(files) == 1:
         max_time = end_time
     else:
         csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
@@ -108,21 +102,24 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
             max_time = time.in_units('yr') - form_time
         else:
             max_time = time.in_units('yr')
-
-    if presink_frames != 0:
-        m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
+    
+    if len(files) == 1:
+        m_times = [time]
     else:
-        m_times = np.array([])
-    m_times = m_times.tolist()
-
-    postsink = 0.0
-    while postsink <= max_time:
-        if start_time is not None:
-            if postsink >= start_time:
-                m_times.append(postsink)
+        if presink_frames != 0:
+            m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
         else:
-            m_times.append(postsink)
-        postsink = postsink + dt
+            m_times = np.array([])
+        m_times = m_times.tolist()
+
+        postsink = 0.0
+        while postsink <= max_time:
+            if start_time is not None:
+                if postsink >= start_time:
+                    m_times.append(postsink)
+            else:
+                m_times.append(postsink)
+            postsink = postsink + dt
     return m_times
 
 def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
@@ -346,16 +343,16 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         velz = velz
     return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None):
     global fontsize_global
     if plot_velocity_legend == 'False' or plot_velocity_legend == False:
         plot_velocity_legend = False
     elif plot_velocity_legend == 'True' or plot_velocity_legend == True:
         plot_velocity_legend = True
         if standard_vel > 1.0:
-            legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
+            legend_text=str(int(standard_vel)) + "kms$^{-1}$"
         else:
-            legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
+            legend_text=str(int(standard_vel*10.)/10.) + "kms$^{-1}$"
     standard_vel = yt.units.km.in_units('cm').value * standard_vel
     if limits is None:
         xmin = np.min(X_pos)
@@ -370,19 +367,15 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     rv_colors = np.linspace(-1, 1, 256)
     rv_cmap = plt.cm.get_cmap('bwr')
     
-    len_scale = (0.07*(xmax - xmin))
-    #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))
-    #vels = np.hypot(X_val, Y_val)
+    len_scale = standard_vel/(0.07*(xmax - xmin))
+    vels = np.hypot(X_val, Y_val)
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
-            xvel = len_scale*(X_val[xp][yp]/standard_vel)
-            yvel = len_scale*(Y_val[xp][yp]/standard_vel)
-            #xvel = length_scale*X_val[xp][yp]/len_scale
-            #yvel = length_scale*Y_val[xp][yp]/len_scale
-            #width_val = (np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel)**2.
+            xvel = X_val[xp][yp]/len_scale
+            yvel = Y_val[xp][yp]/len_scale
             width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
-            if width_val > width_ceil:
-                width_val = width_ceil
+            if width_val > 0.8:
+                width_val = 0.8
             try:
                 if Z_val == None:
                     color = 'w'
@@ -391,20 +384,19 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 zvel = Z_val[xp][yp]/len_scale
                 cit = np.argmin(abs(rv_colors - zvel))
                 color = rv_cmap(cit)
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=1.*width_val, arrowstyle='->', mutation_scale=15.*width_val, shrinkA=0.0, shrinkB=0.0))
     if plot_velocity_legend:
         #print("plotting quiver legend")
-        #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        pos_start = [xmax - 0.2*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        xvel = len_scale*(standard_vel/standard_vel)
+        pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.07*(ymax-ymin)]
+        xvel = standard_vel/len_scale
         yvel = 0.0
-        width_val = width_ceil
+        width_val = 1.0
+        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=1.*width_val, mutation_scale=15.*width_val))
         annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.03*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None):
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
@@ -429,7 +421,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 unit_string = unit_string + "$^" + s[0] + "$" + s[1:]
 
     except:
-        unit_string = "$\,$M$_\odot$"
+        unit_string = "M$_\odot$"
     field_symbol = "$" + field_symbol + "_"
     p_t = ""
     rainbow_text_colors = []
@@ -437,16 +429,16 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     if particle_tags == None:
         particle_tags = np.arange(len(annotate_field))
     for pos_it in np.argsort(particle_tags):
-        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw, c='k')
-        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
-        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw/2, c=part_color[pos_it])
-        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
-        circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
+        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=2., c='k')
+        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=2., c='k')
+        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=1., c=part_color[pos_it])
+        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=1., c=part_color[pos_it])
+        circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=1, edgecolor='k')
         axis.add_patch(circle)
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
-            if unit_string == "$\,$M$_\odot$":
+            if unit_string == "M$_\odot$":
                 P_msun = str(np.round(annotate_field[pos_it], 2))
                 if len(P_msun.split('.')[-1]) == 1:
                     P_msun = P_msun +"0"
@@ -456,9 +448,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = "{:0.1f}".format(annotate_field[pos_it])
             if p_t == "":
-                p_t = field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
+                p_t = field_symbol+str(pos_it+1)+"$ ="+P_msun+unit_string
             else:
-                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
+                p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ ="+P_msun+unit_string
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
@@ -467,11 +459,11 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             string_2 = p_t[69:]
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3),string_l.split(' '), colors_1, size=fontsize_global, zorder=4)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),string_2.split(' '), colors_2, size=fontsize_global, zorder=4)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)),p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=4)
             #except:
             #    print("couldn't annotate particle masses")
     return axis

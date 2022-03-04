@@ -73,7 +73,6 @@ def parse_inputs():
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-start_time_it", "--start_time_index", help="What time index do you want to start at? mostly for diagnostic reasons.", type=int, default=0)
     parser.add_argument("-lifetime_thres", "--sys_lifetime_threshold", help="What lifeimteimte threshold do you want to define a stable system", type=float, default=100000.)
-    parser.add_argument("-replace_ind_type", "--replace_index_type", help="Replacing subsystems with a primary, do you want to use the true mass, or the  observe brightness?", type=str, default="L")
     parser.add_argument("-plot_super", "--plot_superplot", help="do you want to plot the superplot?", type=str, default='True')
     parser.add_argument("-use_com_sep", "--use_separation_of_the_coms", help="Do you want to same the separation as the separation of the center of masses instead of relative to a particular sink?", type=str, default='True')
     parser.add_argument("files", nargs='*')
@@ -90,6 +89,8 @@ size = CW.Get_size()
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+if simulation_density_id == '':
+    simulation_density_id = args.global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
 
 if simulation_density_id == '50':
     Grho=50
@@ -139,13 +140,17 @@ M_tot_multi = []
 N_stars = []
 N_vis_stars = []
 N_multi_stars = []
-Sink_E_tot = []
 Single_star_inds = []
 Sink_bound_birth = []
 System_seps = {}
+System_midpoint_seps = {}
 System_semimajor = {}
 System_times = {}
 System_ecc = {}
+System_energies = {}
+
+sys.stdout.flush()
+CW.Barrier()
 
 #loading global data
 file_open = open(args.global_data_pickle_file, 'rb')
@@ -161,6 +166,9 @@ dm = global_data['dm']*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
 Accretion_array = dm/dt
 print('loaded global data')
+
+sys.stdout.flush()
+CW.Barrier()
 
 #Calculate boundness at birth
 Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
@@ -193,14 +201,33 @@ for sink_id in formation_inds[1]:
     newtonianPotential = -1./rel_sep
     
     Ekin = 0.5 * mtm/mpm * rel_speed**2
-    Grho = 100.
     Epot = Grho * mtm * newtonianPotential
     Etot = Ekin + Epot
-    if True in (Etot[:-1]<0):
+    if True in (Etot<0):
         born_bound = True
+        most_bound_sink_id = np.argmin(Etot)
     else:
         born_bound = False
-    Sink_bound_birth.append(born_bound)
+        if len(Etot) > 0:
+            most_bound_sink_id = np.argmin(Etot)
+        else:
+            most_bound_sink_id = np.nan
+    Sink_bound_birth.append([born_bound, most_bound_sink_id])
+
+sys.stdout.flush()
+CW.Barrier()
+
+if args.cyclic_bool == 'False':
+    cyclic_arg = False
+else:
+    cyclic_arg = True
+if args.bound_check == 'True':
+    bound_check = True
+else:
+    bound_check = False
+
+sys.stdout.flush()
+CW.Barrier()
 
 #Find sink formation times
 Sink_formation_times = []
@@ -229,14 +256,6 @@ CW.Barrier()
 
 start_time_it = args.start_time_index
 
-if args.cyclic_bool == 'False':
-    cyclic_arg = False
-else:
-    cyclic_arg = True
-if args.bound_check == 'True':
-    bound_check = True
-else:
-    bound_check = False
 if args.update_pickles == 'True':
     rit = -1
     prev_n_stars = 1
@@ -284,12 +303,11 @@ if args.update_pickles == 'True':
                     import pdb
                     pdb.set_trace()
                 #See if you can access the particle energies
-                E_tots = res['ekin'][n_stars] + res['epot'][n_stars]
-                Sink_E_tot.append(E_tots)
+
                 single_inds = np.where((res['n']==1) & (res['topSystem']==True))[0]
                 Single_star_inds.append(single_inds)
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                n_multi = np.sum(res['n'][multi_inds])
+                n_multi = len(res['n'][multi_inds])
                 M_multi = np.sum(res['mass'][multi_inds])
                 M_vis = np.sum(res['mass'][real_vis])
                 updated_systems = []
@@ -340,8 +358,11 @@ if args.update_pickles == 'True':
                     if len(visible_stars) > 1:
                         updated_systems.append(sys_comps_str)
                         sep_arr = []
+                        midpoint_sep_arr = []
                         semimajor_arr = []
                         reduced = False
+                        eccentricities_arr = []
+                        system_etot_arr = []
                         while reduced == False:
                             open_braket_ind = []
                             for char_it in range(len(sys_comps)):
@@ -353,9 +374,9 @@ if args.update_pickles == 'True':
                                     if len(sub_sys) == 2:
                                         ind_1 = sub_sys[0]
                                         ind_2 = sub_sys[1]
-                                        pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                        pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
-                                        position = yt.YTArray(res['midpoint'][np.array([ind_1,ind_2])].T, 'au')
+                                        position = yt.YTArray(res['abspos'][np.array([ind_1,ind_2])].T, 'au')
                                         if sep_value > (scale_l.in_units('AU')/2):
                                             update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                             for ind in update_inds:
@@ -367,7 +388,7 @@ if args.update_pickles == 'True':
                                             for ind in update_inds:
                                                 pos_update_ind = np.where(position[ind]<scale_l.in_units('AU')/2)[0]
                                                 position[ind][pos_update_ind] = position[ind][pos_update_ind] + scale_l.in_units('AU')
-                                                velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
+                                                #velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
                                             pos_diff = position[ind][0] - position[ind][0]
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > 20000:
@@ -375,39 +396,36 @@ if args.update_pickles == 'True':
                                                 pdb.set_trace()
                                         
                                         
-                                        #Calculation of semimajor axis:
-                                        mass_sys = yt.YTArray(res['mass'][np.array([ind_1,ind_2])], 'msun')
-                                        velocity = yt.YTArray(res['absvel'][np.array([ind_1,ind_2])].T, 'km/s')
-                                        CoM_pos = np.sum(position*mass_sys, axis=1)/np.sum(mass_sys)
-                                        CoM_vel = np.sum(velocity*mass_sys, axis=1)/np.sum(mass_sys)
-                                        pos_rel_to_com = (position.T - CoM_pos).T
-                                        distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
-                                        vel_rel_to_com = (velocity.T - CoM_vel).T
-                                        separation = np.sum(distance_from_com)
+                                        midpoint_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                        midpoint_sep_value = np.sqrt(np.sum(midpoint_diff**2))
+                                        midpoint_position = yt.YTArray(res['midpoint'][np.array([ind_1,ind_2])].T, 'au')
+                                        if sep_value > (scale_l.in_units('AU')/2):
+                                            update_inds = np.where(abs(midpoint_diff)>scale_l.in_units('AU')/2)[0]
+                                            for ind in update_inds:
+                                                if midpoint_diff[ind] < 0:
+                                                    midpoint_diff[ind] = midpoint_diff[ind] + scale_l.in_units('AU').value
+                                                else:
+                                                    midpoint_diff[ind] = midpoint_diff[ind] - scale_l.in_units('AU').value
+                                            midpoint_sep_value = np.sqrt(np.sum(midpoint_diff**2))
+                                            for ind in update_inds:
+                                                pos_update_ind = np.where(midpoint_position[ind]<scale_l.in_units('AU')/2)[0]
+                                                midpoint_position[ind][pos_update_ind] = midpoint_position[ind][pos_update_ind] + scale_l.in_units('AU')
+                                                #velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
+                                            midpoint_diff = midpoint_position[ind][0] - midpoint_position[ind][0]
+                                            midpoint_sep_value = np.sqrt(np.sum(midpoint_diff**2))
+                                            if midpoint_sep_value > 20000:
+                                                import pdb
+                                                pdb.set_trace()
                                         
-                                        relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
-                                        reduced_mass = (np.product(mass_sys)/np.sum(mass_sys)).in_units('g')
-                                        E_pot = (-1*(yt.units.G*np.product(mass_sys.in_units('g')))/separation.in_units('cm')).in_units('erg')
-                                        E_kin = np.sum((0.5*mass_sys.in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
-                                        epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
-                                        m_x_r = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                                        Ang_mom = mass_sys.in_units('g').T*m_x_r
-                                        Ang_mom_tot = np.sqrt(np.sum(np.sum(Ang_mom, axis=1)**2, axis=0))
-                                        h_val = Ang_mom_tot/reduced_mass.in_units('g')
-                                        ecc = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(mass_sys.in_units('g')))**2.))
-                                        semimajor_a = ((h_val**2)/(yt.units.G*np.sum(mass_sys.in_units('g'))*(1-ecc**2))).in_units('AU')
-                                        semimajor_arr.append(semimajor_a.value.tolist())
+                                        replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
+                                        etot = res['epot'][replace_ind] + res['ekin'][replace_ind]
+                                        system_etot_arr.append(etot)
+                                        semimajor_arr.append(res['semiMajorAxis'][replace_ind])
+                                        eccentricities_arr.append(res['eccentricity'][replace_ind])
                                         
                                         sep_arr.append(sep_value)
-                                        if args.use_separation_of_the_coms == 'True':
-                                            replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
-                                            replace_string = str(replace_ind)
-                                        elif args.replace_index_type == "M":
-                                            replace_ind = np.argmax(mass[sub_sys])
-                                            replace_string = str(sub_sys[replace_ind])
-                                        elif args.replace_index_type == "L":
-                                            replace_ind = np.argmax(L_tot[sub_sys])
-                                            replace_string = str(sub_sys[replace_ind])
+                                        midpoint_sep_arr.append(midpoint_sep_value)
+                                        replace_string = str(replace_ind)
                                         sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                                         if '[' not in sys_comps:
                                             reduced = True
@@ -419,56 +437,32 @@ if args.update_pickles == 'True':
                                         import pdb
                                         pdb.set_trace()
 
-                        '''
-                        reduced = False
-                        sep_arr = []
-                        while reduced == False:
-                            bracket_pos = []
-                            for char_it in range(len(sys_comps)):
-                                if sys_comps[char_it] == '[':
-                                    bracket_pos.append(char_it)
-                                elif sys_comps[char_it] == ']':
-                                    open_ind = bracket_pos.pop()
-                                    try:
-                                        sub_sys_comps = eval(sys_comps[open_ind:char_it+1])
-                                    except:
-                                        comma_split = sys_comps[open_ind:char_it+1].split(',')
-                                        sub_sys_comps = eval(comma_split[0]+comma_split[1])
-                                    binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
-                                    ind_1 = res['index1'][binary_ind]
-                                    ind_2 = res['index2'][binary_ind]
-                                    pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
-                                    sep_value = np.sqrt(np.sum(pos_diff**2))
-                                    if sep_value > 10000.:
-                                        update_inds = np.where(pos_diff>scale_l.in_units('AU')/2)[0]
-                                        pos_diff[update_inds] = pos_diff[update_inds] - scale_l.in_units('AU').value
-                                        sep_value = np.sqrt(np.sum(pos_diff**2))
-                                    sep_arr.append(sep_value)
-                                    replace_string = str(binary_ind)
-                                    str_1 = sys_comps[:open_ind]
-                                    str_2 = sys_comps[char_it+1:]
-                                    sys_comps = str_1 + replace_string + str_2
-                                    if '[' not in sys_comps:
-                                        reduced = True
-                                    break
-                            '''
                         if sys_comps_str not in System_times.keys():
                             System_times.update({sys_comps_str:[time_yr]})
                             System_seps.update({sys_comps_str:[sep_arr]})
+                            System_midpoint_seps.update({sys_comps_str:[midpoint_sep_arr]})
                             System_semimajor.update({sys_comps_str:[semimajor_arr]})
+                            System_ecc.update({sys_comps_str:[eccentricities_arr]})
+                            System_energies.update({sys_comps_str:[system_etot_arr]})
                         else:
                             System_times[sys_comps_str].append(time_yr)
                             System_seps[sys_comps_str].append(sep_arr)
+                            System_midpoint_seps[sys_comps_str].append(midpoint_sep_arr)
                             System_semimajor[sys_comps_str].append(semimajor_arr)
+                            System_ecc[sys_comps_str].append(eccentricities_arr)
+                            System_energies[sys_comps_str].append(system_etot_arr)
                 for sys_key in System_times.keys():
                     if sys_key not in updated_systems:
                         System_times[sys_key].append(time_yr)
                         System_seps[sys_key].append(np.ones(np.shape(System_seps[sys_key][-1]))*np.nan)
+                        System_midpoint_seps[sys_key].append(np.ones(np.shape(System_midpoint_seps[sys_key][-1]))*np.nan)
                         System_semimajor[sys_key].append(np.ones(np.shape(System_semimajor[sys_key][-1]))*np.nan)
+                        System_ecc[sys_key].append(np.ones(np.shape(System_ecc[sys_key][-1]))*np.nan)
+                        System_energies[sys_key].append(np.ones(np.shape(System_energies[sys_key][-1]))*np.nan)
                 N_multi_stars.append(n_multi)
                 M_tot_multi.append(M_multi)
                 M_tot_vis.append(M_vis)
-                
+                '''
                 #Another analysis to save all eccentricities
                 updated_systems = []
                 multi_inds_non_top = np.where(res['n']>1)[0]
@@ -483,10 +477,28 @@ if args.update_pickles == 'True':
                 for sys_key in System_ecc.keys():
                     if sys_key not in updated_systems:
                         System_ecc[sys_key].append([float(time_yr), np.nan])
+                '''
+                pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 
-                pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%02d" % rank) + ".pkl"
+                superplot_dict = {'Times':Times,
+                    'SFE':SFE,
+                    'SFE_n': SFE_n,
+                    'M_tot': M_tot,
+                    'M_tot_vis': M_tot_vis,
+                    'M_tot_multi': M_tot_multi,
+                    'N_stars': N_stars,
+                    'N_vis_stars': N_vis_stars,
+                    'N_multi_stars': N_multi_stars,
+                    'System_seps': System_seps,
+                    'System_midpoint_seps': System_midpoint_seps,
+                    'System_semimajor': System_semimajor,
+                    'System_times': System_times,
+                    'System_ecc': System_ecc,
+                    'System_energies': System_energies,
+                    'Single_star_inds': Single_star_inds}
+                
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot),file)
+                pickle.dump((superplot_dict),file)
                 file.close()
                 
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
@@ -496,222 +508,273 @@ if args.update_pickles == 'True':
             
     sys.stdout.flush()
     CW.Barrier()
+    
 
-    #compile all the pickles:
-    if rank == 0:
-        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
-        if len(pickle_files) > 0:
-            Times_full = []
-            SFE_full = []
-            SFE_n_full = []
-            M_tot_full = []
-            M_tot_vis_full = []
-            M_tot_multi_full = []
-            N_stars_full = []
-            N_vis_stars_full = []
-            N_multi_stars_full = []
-            Single_star_inds = []
-            Sink_E_tot_full = []
-            System_seps_full = {}
-            System_semimajor_full = {}
-            System_times_full = {}
-            System_ecc_full = {}
-            for pick_file in pickle_files:
+import pdb
+pdb.set_trace()
+
+#compile all the pickles:
+if rank == 0:
+    pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
+    if len(pickle_files) > 0:
+        file = open(pickle_files[0], 'rb')
+        superplot_dict = pickle.load(file)
+        file.close()
+        
+        full_dict = {}
+        for key in superplot_dict.keys():
+            if 'System' in key:
+                full_dict.update({key+'_full':{}})
+            else:
+                full_dict.update({key+'_full':[]})
+
+        for pick_file in pickle_files:
+            file = open(pick_file, 'rb')
+            superplot_dict = pickle.load(file)
+            file.close()
+            
+            for time_key in superplot_dict['System_times'].keys():
+                if time_key not in full_dict['System_times_full'].keys():
+                    for full_key in full_dict.keys():
+                        if 'System' in full_key:
+                            full_dict[full_key].update({time_key:superplot_dict[full_key.split('_full')[0]][time_key]})
+                else:
+                    for full_key in full_dict.keys():
+                        if 'System' in full_key:
+                            full_dict[full_key][time_key] = full_dict[full_key][time_key] + superplot_dict[full_key.split('_full')[0]][time_key]
+            for full_key in full_dict.keys():
+                if 'System' not in full_key:
+                    full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
+            #os.remove(pick_file)
+        
+        #Let's sort the data
+        for time_key in full_dict['System_times_full'].keys():
+            for full_key in full_dict.keys():
+                if 'System' in full_key:
+                    dict_sort = np.argsort(np.array(full_dict['System_times_full'][time_key]).T)
+                    sorted_array = np.array(full_dict[full_key][time_key])[dict_sort]
+                    superplot_dict[full_key.split('_full')[0]][time_key] = sorted_array.tolist()
+            
+        sorted_inds = np.argsort(full_dict['Times_full'])
+        for super_key in superplot_dict.keys():
+            if 'System' not in super_key:
                 try:
-                    file = open(pick_file, 'rb')
-                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot = pickle.load(file)
-                    file.close()
+                    superplot_dict[super_key] = np.array(full_dict[super_key+'_full'])[sorted_inds].tolist()
                 except:
-                    file = open(pick_file, 'rb')
-                    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times = pickle.load(file)
-                    file.close()
-                for time_key in System_times.keys():
-                    if time_key not in System_times_full.keys():
-                        System_times_full.update({time_key:System_times[time_key]})
-                        System_seps_full.update({time_key:System_seps[time_key]})
-                        System_semimajor_full.update({time_key:System_semimajor[time_key]})
-                        System_ecc_full.update({time_key:System_ecc[time_key]})
-                    else:
-                        System_times_full[time_key] = System_times_full[time_key] + System_times[time_key]
-                        System_seps_full[time_key] = System_seps_full[time_key] + System_seps[time_key]
-                        System_semimajor_full[time_key] = System_semimajor_full[time_key] + System_semimajor[time_key]
-                        System_ecc_full[time_key] = System_ecc_full[time_key] + System_ecc[time_key]
-                Times_full = Times_full + Times
-                SFE_full = SFE_full + SFE
-                SFE_n_full = SFE_n_full + SFE_n
-                M_tot_full = M_tot_full + M_tot
-                M_tot_vis_full = M_tot_vis_full + M_tot_vis
-                M_tot_multi_full = M_tot_multi_full + M_tot_multi
-                N_stars_full = N_stars_full + N_stars
-                N_vis_stars_full = N_vis_stars_full + N_vis_stars
-                N_multi_stars_full = N_multi_stars_full + N_multi_stars
-                Single_star_inds_full = Single_star_inds_full + Single_star_inds
-                Sink_E_tot_full = Sink_E_tot_full + Sink_E_tot
-                os.remove(pick_file)
-            
-            #Let's sort the data
-            for time_key in System_times_full:
-                sorted_array = np.array(System_times_full[time_key])
-                dict_sort = np.argsort(sorted_array)
-                sorted_array = np.array(System_times_full[time_key])[dict_sort]
-                System_times[time_key] = sorted_array.tolist()
-                sorted_array = np.array(System_seps_full[time_key])[dict_sort]
-                System_seps[time_key] = sorted_array.tolist()
-                sorted_array = np.array(System_semimajor_full[time_key])[dict_sort]
-                System_semimajor[time_key] = sorted_array.tolist()
-                dict_sort_ecc = np.argsort(np.array(System_ecc_full[time_key]).T[0])
-                sorted_array = np.array(System_ecc_full[time_key])[dict_sort_ecc]
-                System_ecc[time_key] = sorted_array.tolist()
-            sorted_inds = np.argsort(Times_full)
-            Times = np.array(Times_full)[sorted_inds].tolist()
-            SFE = np.array(SFE_full)[sorted_inds].tolist()
-            SFE_n = np.array(SFE_n_full)[sorted_inds].tolist()
-            M_tot = np.array(M_tot_full)[sorted_inds].tolist()
-            M_tot_vis = np.array(M_tot_vis_full)[sorted_inds].tolist()
-            M_tot_multi = np.array(M_tot_multi_full)[sorted_inds].tolist()
-            N_stars = np.array(N_stars_full)[sorted_inds].tolist()
-            N_vis_stars = np.array(N_vis_stars_full)[sorted_inds].tolist()
-            N_multi_stars = np.array(N_multi_stars_full)[sorted_inds].tolist()
-            Single_star_inds = np.array(Single_star_inds_full)[sorted_inds].tolist()
-            Sink_E_tot = np.array(Sink_E_tot_full)[sorted_inds].tolist()
-            
-            file = open(pickle_file+'.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot),file)
+                    print(super_key, 'does not exist')
+        
+        #sort keys into chronological order of system formation
+        Start_times = []
+        Sort_keys = []
+        for time_key in superplot_dict['System_times'].keys():
+            Start_times.append(superplot_dict['System_times'][time_key][0])
+            Sort_keys.append(time_key)
+        Sorted_keys = np.array(Sort_keys)[np.argsort(Start_times)]
+        #del Start_times
+        
+        System_seps = {}
+        System_midpoint_seps = {}
+        System_semimajor = {}
+        System_times = {}
+        System_ecc = {}
+        System_energies = {}
+        for sorted_key in Sorted_keys:
+            System_seps.update({sorted_key:superplot_dict['System_seps'][sorted_key]})
+            System_midpoint_seps.update({sorted_key:superplot_dict['System_midpoint_seps'][sorted_key]})
+            System_semimajor.update({sorted_key:superplot_dict['System_semimajor'][sorted_key]})
+            System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
+            System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
+            System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
+        #del Sorted_keys
+        superplot_dict['System_seps'] = System_seps
+        superplot_dict['System_midpoint_seps'] = System_midpoint_seps
+        superplot_dict['System_semimajor'] = System_semimajor
+        superplot_dict['System_times'] = System_times
+        superplot_dict['System_ecc'] = System_ecc
+        superplot_dict['System_energies'] = System_energies
+        del System_seps
+        del System_midpoint_seps
+        del System_semimajor
+        del System_ecc
+        del System_energies
+        
+        file = open(pickle_file+'.pkl', 'wb')
+        pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times),file)
+        file.close()
+
+sys.stdout.flush()
+CW.Barrier()
+
+print("gathered pickles and saved to", pickle_file+'.pkl')
+
+#calculate means:
+print("calculating means")
+rit = -1
+while rit < size:
+    rit = rit + 1
+    if rank == rit:
+        file = open(pickle_file+'.pkl', 'rb')
+        superplot_dict, Sink_bound_birth, Sink_formation_times = pickle.load(file)
+        file.close()
+
+sys.stdout.flush()
+CW.Barrier()
+
+#if args.update_pickles == 'True':
+means_dict = {}
+for super_key in superplot_dict.keys():
+    if 'System' in super_key:
+        means_dict.update({'System_mean_'+super_key.split('System_')[-1]:{}})
+#System_mean_times = {}
+#System_mean_seps = {}
+#System_mean_ecc = {}
+Lifetimes_sys = {}
+Sep_maxs = []
+Sep_mins = []
+Initial_Seps = []
+Final_seps = []
+window = 50000#year
+rit = -1
+for time_key in superplot_dict['System_times'].keys():
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        mean_sys_dict = {}
+        for super_key in superplot_dict.keys():
+            if 'System' in super_key:
+                mean_sys_dict.update({'mean_'+super_key:[]})
+        #mean_time = []
+        #mean_sep = []
+        #mean_ecc = []
+        for time in superplot_dict['System_times'][time_key]:
+            start_time = time - window/2.
+            end_time = time + window/2.
+            start_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) - start_time))
+            end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) - end_time))
+            if end_ind != start_ind:
+                non_nan_inds = np.argwhere(np.isnan(np.array(superplot_dict['System_seps'][time_key][start_ind:end_ind])[:,0])==False)
+                for super_key in superplot_dict.keys():
+                    if 'System' in super_key:
+                        if 'times' in super_key:
+                            mean_t = np.mean(np.array((superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0]))[start_ind:end_ind])[non_nan_inds])
+                            mean_sys_dict['mean_'+super_key].append(mean_t)
+                            #mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
+                            #mean_time.append(mean_t)
+                        else:
+                            mean_val = np.mean(np.array(superplot_dict[super_key][time_key][start_ind:end_ind])[non_nan_inds], axis=0)
+                            mean_sys_dict['mean_'+super_key].append(mean_val[0])
+                #mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
+                #mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
+                #mean_e = np.mean(np.array(System_ecc[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
+                #mean_time.append(mean_t)
+                #mean_sep.append(mean_s)
+                #mean_sep.append(mean_s[0])
+                #mean_ecc.append(mean_e[0])
+        non_nan_inds = np.argwhere(np.isnan(np.array(superplot_dict['System_seps'][time_key]).T[0])==False).T[0]
+        sys_life_time = np.array(superplot_dict['System_times'][time_key])[non_nan_inds][-1] - np.array(superplot_dict['System_times'][time_key])[non_nan_inds][0]
+        Lifetimes_sys.update({time_key:sys_life_time})
+        #non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key]).T[0])==False).T[0]
+        #sys_life_time = np.array(System_times[time_key])[non_nan_inds][-1] - np.array(System_times[time_key])[non_nan_inds][0]
+        #System_lifetimes.update({time_key:sys_life_time})
+        if sys_life_time > args.sys_lifetime_threshold:
+            end_sep_time = np.array(superplot_dict['System_times'][time_key] - np.array(superplot_dict['Times'][0]))[non_nan_inds][0] + sys_life_time - 1000
+            #start_sep_time = np.array(System_times[time_key])[non_nan_inds][0] + 1000
+            end_time_it = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0]))[non_nan_inds] - end_sep_time))
+            #start_sep_it = np.argmin(abs(np.array(System_times[time_key])[non_nan_inds] - start_sep_time))
+            for sys_it in range(np.shape(np.array(mean_sys_dict['mean_System_seps']).T)[0]):
+                sep_max = np.nanmax(np.array(superplot_dict['System_seps'][time_key]).T[sys_it])
+                sep_min = np.nanmin(np.array(superplot_dict['System_seps'][time_key]).T[sys_it])
+                #sep_init = np.mean(np.array(System_seps[time_key]).T[sys][:start_sep_it])
+                sep_init = np.array(superplot_dict['System_seps'][time_key]).T[sys_it][0]
+                sep_final = np.mean(np.array(superplot_dict['System_seps'][time_key]).T[sys_it][non_nan_inds][end_time_it:])
+                Sep_maxs.append(sep_max)
+                Sep_mins.append(sep_min)
+                Initial_Seps.append(sep_init)
+                Final_seps.append(sep_final)
+        for mean_key in means_dict.keys():
+            means_dict[mean_key].update({time_key:mean_sys_dict['mean_'+'_'.join(mean_key.split('_mean_'))]})
+        #System_mean_times.update({time_key:mean_time})
+        #System_mean_seps.update({time_key:np.array(mean_sep)})
+        #System_mean_ecc.update({time_key:np.array(mean_ecc)})
+        print("calculated means for", time_key)
+
+sys.stdout.flush()
+CW.Barrier()
+
+#save pickles and compile means
+pickle_file_rank = "means_" + pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
+file = open(pickle_file_rank, 'wb')
+pickle.dump((means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps), file)
+file.close()
+print("saved_means")
+
+sys.stdout.flush()
+CW.Barrier()
+
+if rank == 0:
+    pickle_files = sorted(glob.glob("means_" + pickle_file.split('.pkl')[0] + "_*.pkl"))
+    if len(pickle_files) > 0:
+        file = open(pickle_files[0], 'rb')
+        means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+        file.close()
+        means_full = {}
+        for mean_key in means_dict.keys():
+            means_full.update({mean_key+'_full':{}})
+        Lifetimes_sys_full = {}
+        Sep_maxs_full = []
+        Sep_mins_full = []
+        Initial_Seps_full = []
+        Final_seps_full = []
+        for pick_file in pickle_files:
+            file = open(pick_file, 'rb')
+            means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
             file.close()
+            for time_key in means_dict['System_mean_times'].keys():
+                for means_key in means_full.keys():
+                    means_full[means_key].update({time_key:means_dict[means_key.split('_full')[0]][time_key]})
+            for life_key in Lifetimes_sys.keys():
+                Lifetimes_sys_full.update({life_key:Lifetimes_sys[life_key]})
+            '''
+            for time_key in System_mean_times.keys():
+                System_times_full.update({time_key:System_times[time_key]})
+                System_seps_full.update({time_key:System_seps[time_key]})
+                System_ecc_full.update({time_key:System_ecc[time_key]})
+                System_lifetimes_full.update({time_key:System_lifetimes[time_key]})
+            '''
+            Sep_maxs_full = Sep_maxs_full + Sep_maxs
+            Sep_mins_full = Sep_mins_full + Sep_mins
+            Initial_Seps_full = Initial_Seps_full + Initial_Seps
+            Final_seps_full = Final_seps_full + Final_seps
+            os.remove(pick_file)
+        
+        #System_mean_times = System_times_full
+        #System_mean_seps = System_seps_full
+        #System_mean_ecc = System_ecc_full
+        #System_lifetimes = System_lifetimes_full
+        Sep_maxs = Sep_maxs_full
+        Sep_mins = Sep_mins_full
+        Initial_Seps = Initial_Seps_full
+        Final_seps = Final_seps_full
+        Lifetimes_sys = Lifetimes_sys_full
+        means_dict = {}
+        for means_key in means_full.keys():
+            means_dict.update({means_key.split('_full')[0]:means_full[means_key]})
+        
+        file = open('means_' + pickle_file + '.pkl', 'wb')
+        pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps),file)
+        file.close()
 
-    sys.stdout.flush()
-    CW.Barrier()
-
-    #calculate means:
-    print("calculating means")
-    rit = -1
-    while rit < size:
-        rit = rit + 1
-        if rank == rit:
-            file = open(pickle_file+'.pkl', 'rb')
-            Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, Single_star_inds, Sink_E_tot = pickle.load(file)
-            file.close()
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    System_mean_times = {}
-    System_mean_seps = {}
-    System_mean_ecc = {}
-    System_lifetimes = {}
-    Sep_maxs = []
-    Sep_mins = []
-    Initial_Seps = []
-    Final_seps = []
-    window = 50000#year
-    rit = -1
-    for time_key in System_times.keys():
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == rit:
-            mean_time = []
-            mean_sep = []
-            mean_ecc = []
-            for time in System_times[time_key]:
-                start_time = time - window/2.
-                end_time = time + window/2.
-                start_ind = np.argmin(abs(np.array(System_times[time_key]) - start_time))
-                end_ind = np.argmin(abs(np.array(System_times[time_key]) - end_time))
-                if end_ind != start_ind:
-                    non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key][start_ind:end_ind])[:,0])==False)
-                    mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
-                    mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                    mean_e = np.mean(np.array(System_ecc[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                    mean_time.append(mean_t)
-                    #mean_sep.append(mean_s)
-                    mean_sep.append(mean_s[0])
-                    mean_ecc.append(mean_e[0])
-            non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key]).T[0])==False).T[0]
-            sys_life_time = np.array(System_times[time_key])[non_nan_inds][-1] - np.array(System_times[time_key])[non_nan_inds][0]
-            System_lifetimes.update({time_key:sys_life_time})
-            if sys_life_time > args.sys_lifetime_threshold:
-                end_sep_time = np.array(System_times[time_key]- np.array(Times[0]))[non_nan_inds][0] + sys_life_time - 1000
-                #start_sep_time = np.array(System_times[time_key])[non_nan_inds][0] + 1000
-                end_time_it = np.argmin(abs(np.array(System_times[time_key]- np.array(Times[0]))[non_nan_inds] - end_sep_time))
-                #start_sep_it = np.argmin(abs(np.array(System_times[time_key])[non_nan_inds] - start_sep_time))
-                for sys_it in range(np.shape(np.array(mean_sep).T)[0]):
-                    sep_max = np.nanmax(np.array(System_seps[time_key]).T[sys_it])
-                    sep_min = np.nanmin(np.array(System_seps[time_key]).T[sys_it])
-                    #sep_init = np.mean(np.array(System_seps[time_key]).T[sys][:start_sep_it])
-                    sep_init = np.array(System_seps[time_key]).T[sys_it][0]
-                    sep_final = np.mean(np.array(System_seps[time_key]).T[sys_it][non_nan_inds][end_time_it:])
-                    Sep_maxs.append(sep_max)
-                    Sep_mins.append(sep_min)
-                    Initial_Seps.append(sep_init)
-                    Final_seps.append(sep_final)
-            System_mean_times.update({time_key:mean_time})
-            System_mean_seps.update({time_key:np.array(mean_sep)})
-            System_mean_ecc.update({time_key:np.array(mean_ecc)})
-            print("calculated means for", time_key)
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    #save pickles and compile means
-    pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%02d" % rank) + ".pkl"
-    file = open(pickle_file_rank, 'wb')
-    pickle.dump((System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps), file)
-    file.close()
-    print("saved_means")
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    if rank == 0:
-        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
-        if len(pickle_files) > 0:
-            System_mean_times_full = {}
-            System_mean_seps_full ={}
-            System_mean_ecc_full = {}
-            System_lifetimes_full = {}
-            Sep_maxs_full = []
-            Sep_mins_full = []
-            Initial_Seps_full = []
-            Final_seps_full = []
-            for pick_file in pickle_files:
-                file = open(pick_file, 'rb')
-                System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
-                file.close()
-                for time_key in System_mean_times.keys():
-                    System_times_full.update({time_key:System_times[time_key]})
-                    System_seps_full.update({time_key:System_seps[time_key]})
-                    System_ecc_full.update({time_key:System_ecc[time_key]})
-                    System_lifetimes_full.update({time_key:System_lifetimes[time_key]})
-                Sep_maxs_full = Sep_maxs_full + Sep_maxs
-                Sep_mins_full = Sep_mins_full + Sep_mins
-                Initial_Seps_full = Initial_Seps_full + Initial_Seps
-                Final_seps_full = Final_seps_full + Final_seps
-                os.remove(pick_file)
-            
-            System_mean_times = System_times_full
-            System_mean_seps = System_seps_full
-            System_mean_ecc = System_ecc_full
-            System_lifetimes = System_lifetimes_full
-            Sep_maxs = Sep_maxs_full
-            Sep_mins = Sep_mins_full
-            Initial_Seps = Initial_Seps_full
-            Final_seps = Final_seps_full
-            
-            file = open(pickle_file+'_with_means.pkl', 'wb')
-            pickle.dump((Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth, Single_star_inds, Sink_E_tot),file)
-            file.close()
-
-
-    sys.stdout.flush()
-    CW.Barrier()
+print("gathered means")
+sys.stdout.flush()
+CW.Barrier()
 
 #compile all the pickles
 if rank == 0:
-    file = open(pickle_file+'_with_means.pkl', 'rb')
-    Times, SFE, SFE_n, M_tot, M_tot_vis, M_tot_multi, N_stars, N_vis_stars, N_multi_stars, System_seps, System_semimajor, System_times, System_ecc, Sink_formation_times, System_mean_times, System_mean_seps, System_mean_ecc, System_lifetimes, Sep_maxs, Sep_mins, Initial_Seps, Final_seps, Sink_bound_birth, Single_star_inds, Sink_E_tot = pickle.load(file)
+    file = open('means_' + pickle_file + '.pkl', 'rb')
+    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
-    
+
     #Create plot
     if args.plot_superplot == 'True':
         print("making superplot")
@@ -723,10 +786,10 @@ if rank == 0:
             ax.remove()
         axbig = fig.add_subplot(gs[3:])
         
-        Times_adjusted = Times - np.array(Times[0])
+        Times_adjusted = superplot_dict['Times'] - np.array(superplot_dict['Times'][0])
         
-        axs[0].plot(Times_adjusted, SFE, label='SFE')
-        axs[0].plot(Times_adjusted, SFE_n, label='SFE$_n$')
+        axs[0].plot(Times_adjusted, superplot_dict['SFE'], label='SFE')
+        axs[0].plot(Times_adjusted, superplot_dict['SFE_n'], label='SFE$_n$')
         axs[0].legend(loc='best')
         axs[0].set_ylabel('SFE')
         axs[0].set_ylim(bottom=0)
@@ -735,9 +798,9 @@ if rank == 0:
         plt.setp(xticklabels, visible=False)
         print("plotted SFE")
         
-        axs[1].plot(Times_adjusted, M_tot, label='Total Mass')
-        axs[1].plot(Times_adjusted, M_tot_multi, label='Mass in Multiple systems')
-        axs[1].plot(Times_adjusted, M_tot_vis, label='Visible stars (based on Tobin)')
+        axs[1].plot(Times_adjusted, superplot_dict['M_tot'], label='Total Mass')
+        axs[1].plot(Times_adjusted, superplot_dict['M_tot_multi'], label='Mass in Multiple systems')
+        axs[1].plot(Times_adjusted, superplot_dict['M_tot_vis'], label='Visible stars (based on Tobin)')
         axs[1].set_ylabel('M$_{tot}$ (M$_\odot$)')
         axs[1].set_ylim(bottom=0)
         axs[1].legend(loc='best')
@@ -746,9 +809,9 @@ if rank == 0:
         plt.setp(xticklabels, visible=False)
         print("plotted M_tot")
         
-        axs[2].plot(Times_adjusted, N_stars, label='Total stars')
-        axs[2].plot(Times_adjusted, N_multi_stars, label='Stars in Multiple systems')
-        axs[2].plot(Times_adjusted, N_vis_stars, label='Visible stars (based on Tobin)')
+        axs[2].plot(Times_adjusted, superplot_dict['N_stars'], label='Total stars')
+        axs[2].plot(Times_adjusted, superplot_dict['N_multi_stars'], label='Stars in Multiple systems')
+        axs[2].plot(Times_adjusted, superplot_dict['N_vis_stars'], label='Visible stars (based on Tobin)')
         axs[2].set_ylabel('\# stars')
         axs[2].set_ylim(bottom=0)
         axs[2].legend(loc='best')
@@ -765,7 +828,7 @@ if rank == 0:
         S_bins = np.logspace(1,4,13)
         for time_key in System_times.keys():
             print("plotting", time_key)
-            axbig.semilogy((System_times[time_key]- np.array(Times[0])), System_seps[time_key], alpha=0.1, color='k')
+            axbig.semilogy((superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0])), superplot_dict['System_seps'][time_key], alpha=0.1, color='k')
             #if System_lifetimes[time_key] > args.sys_lifetime_threshold:
             #    axbig.semilogy((System_mean_times[time_key]-np.array(Times[0])), System_mean_seps[time_key], color='k', linewidth=0.5)
             
@@ -795,25 +858,24 @@ if rank == 0:
     plt.ylim(bottom=0.0)
     plt.savefig('shrinkage.jpg', format='jpg', bbox_inches='tight')
     print('created shrinkage.jpg')
-    
-    
+
+    '''
     plt.clf()
     #key = '[4, 5]'
     lifetime_it = -1
-    for key in System_mean_seps.keys():
-        lifetime_it = lifetime_it + 1
-        sep = np.array(System_mean_seps[key]).T[0]
-        time = np.array(System_mean_ecc[key]).T[0]
-        ecc = np.array(System_mean_ecc[key]).T[1]
-        time_adjusted = time - time[0]
-        z = time_adjusted/np.nanmax(time_adjusted)
-        #if System_lifetimes[lifetime_it] > args.sys_lifetime_threshold:
-        try:
-            plt.scatter(sep, ecc, c=z, vmin=0, vmax=1, s=1, cmap=plt.cm.get_cmap('viridis'))
-            print("plotted", key)
-        except:
-            print("couldn't plot", key)
-        #plt.loglog(x[sys_it], y[sys_it], color='k', linewidth=0.25, alpha=0.25)
+    for key in means_dict['System_mean_seps'].keys():
+        if Lifetimes_sys[key] > args.sys_lifetime_threshold:
+            sep = np.array(means_dict['System_mean_seps'][key]).T[0]
+            time = np.array(means_dict['System_mean_times'][key])
+            ecc = np.array(means_dict['System_mean_ecc'][key]).T[1]
+            time_adjusted = time - time[0]
+            z = time_adjusted/np.nanmax(time_adjusted)
+            try:
+                plt.scatter(sep, ecc, c=z, vmin=0, vmax=1, s=1, cmap=plt.cm.get_cmap('viridis'))
+                print("plotted", key)
+            except:
+                print("couldn't plot", key)
+            #plt.loglog(x[sys_it], y[sys_it], color='k', linewidth=0.25, alpha=0.25)
         
     plt.colorbar(pad=-0.02)
     plt.xscale('log')
@@ -824,6 +886,7 @@ if rank == 0:
     print("saving ecc_vs_sep.png")
     plt.savefig('ecc_vs_sep.png')
     print("created ecc_vs_sep.png")
+    '''
 
 sys.stdout.flush()
 CW.Barrier()

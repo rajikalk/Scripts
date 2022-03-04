@@ -4,7 +4,6 @@ import csv
 import numpy as np
 import os
 from matplotlib.colors import LogNorm
-import h5py
 import my_ramses_module as mym
 import matplotlib.gridspec as gridspec
 import glob
@@ -20,10 +19,24 @@ import matplotlib.patches as patches
 #matplotlib.rcParams['pdf.fonttype'] = 42
 #matplotlib.rcParams['ps.fonttype'] = 42
 #matplotlib.rcParams['mathtext.fontset'] = 'custom'
+#matplotlib.rcParams['mathtext.fontset'] = 'sans-serif'
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 def parse_inputs():
     import argparse
@@ -42,6 +55,8 @@ def parse_inputs():
     parser.add_argument("-conv", "--convolve", help="Do you want to convolve the image with a gaussian beam?", type=str, default='True')
     parser.add_argument("-fig_w", "--figure_width", help="Do you want to set the image width", type=float, default=None)
     parser.add_argument("-fig_h", "--figure_height", help="Do you want to set the image height", type=float, default=None)
+    parser.add_argument("-arrow_width", "--arrow_width_scale", help="How do you want to scale the width of the quiver arrows?", type=float, default=1)
+    parser.add_argument("-len_scale", "--length_scale", help="How do you want to scale the length of the quiver arrows?", type=float, default=1)
     args = parser.parse_args()
     return args
 
@@ -119,10 +134,10 @@ else:
 
 if args.figure_height != None:
     height = args.figure_height
-if args.plot_colourbar == True:
-    height = float(rows)*(17./4.)
 else:
     height = float(rows)*(17./4.)
+#if args.plot_colourbar == True:
+#    height = float(rows)*(17./4.)
     
 plt.clf()
 f = plt.figure(figsize=(width, height))
@@ -277,9 +292,12 @@ for it in range(len(positions)):
                 xlim = [-1*axlim, axlim]
                 ylim = [-1*axlim, axlim]
             has_particles = args_dict['has_particles']
-            time_val = args_dict['time_val']
-            xabel = args_dict['xabel']
-            yabel = args_dict['yabel']
+            time_val = int(args_dict['time_val'])
+            time_string = f'{time_val:,}'
+            xabel = 'x (au)'
+            yabel = 'y (au)'
+            #xabel = args_dict['xabel']
+            #yabel = args_dict['yabel']
         
             bool_den_array = image>density_threshold
             vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
@@ -320,14 +338,14 @@ for it in range(len(positions)):
                 print('plotted particles')
                 
             if annotate_time == "True":
-                print("ANNONTATING TIME:", str(int(time_val))+'yr')
-                time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), '$t$='+str(int(time_val))+'yr', va="center", ha="left", color='w', fontsize=args.text_font, zorder=4)#, fontdict=fontdict)
-                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                print("ANNONTATING TIME:", str(int(time_val))+'$\,$yr')
+                time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), 't$\,=\,$'+time_string+'$\,$yr', va="center", ha="left", color='w', fontsize=args.text_font-0.5, zorder=10)#, fontdict=fontdict)
+                time_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal()])
                 print('plotted time')
                 
             if title_str != "":
-                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.04*(ylim[1]-ylim[0])), title_str, va="center", ha="center", color='w', fontsize=(args.text_font+2), zorder=4)#, fontdict=fontdict)
-                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.06*(ylim[1]-ylim[0])), title_str, va="center", ha="center", color='w', fontsize=(args.text_font+2), zorder=11)#, fontdict=fontdict)
+                title_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal()])
                 print('plotted title')
             
             if positions[it][0] == 1 and positions[it][1] == 1 and args.convolve == 'True':
@@ -336,8 +354,18 @@ for it in range(len(positions)):
                 x1 = beam_rad*np.cos(theta) + 0.9*xlim[1]
                 x2 = beam_rad*np.sin(theta) + 0.9*ylim[1]
                 axes_dict[ax_label].plot(x1, x2, c='m')
-                
-                
+            
+            
+            from matplotlib.ticker import AutoMinorLocator
+            minor_locator = AutoMinorLocator(2)
+            axes_dict[ax_label].xaxis.set_minor_locator(minor_locator)
+            axes_dict[ax_label].tick_params(which='minor', color='k', direction='in', axis='x', length=3, top=True)
+            axes_dict[ax_label].tick_params(which='major', color='k', direction='in', axis='x', length=3, top=True)
+            axes_dict[ax_label].tick_params(which='major', color='k', direction='in', axis='y', length=3, right=True)
+            '''
+            axes_dict[ax_label].yaxis.set_minor_locator(minor_locator)
+            axes_dict[ax_label].tick_params(which='minor', color='k', direction='in', axis='y', length=3, top=True)
+            '''
         else:
             import scipy.io
             from matplotlib.patches import Ellipse
@@ -367,6 +395,9 @@ for it in range(len(positions)):
             line_pos_x = [-1*line_length*np.sin(np.radians(angle))+vla_pos[0], line_length*np.sin(np.radians(angle))+vla_pos[0]]
             line_pos_y = [-1*line_length*np.cos(np.radians(angle))+vla_pos[1], line_length*np.cos(np.radians(angle))+vla_pos[1]]
             title = str(obs_rv['molname'])[2:-1]
+            if it == 3:
+                title = 'HDO'
+            title = r'{}'.format(title)
             
             axes_dict[ax_label].set_xlim(xlim)
             axes_dict[ax_label].set_ylim(ylim)
@@ -380,13 +411,42 @@ for it in range(len(positions)):
             plt.gca().set_aspect('equal')
 
             plt.plot(line_pos_x, line_pos_y, 'm--', lw=2)
+            '''
+            if '_' in title:
+                title_list = title.split('$')
+                title_list[1] = '_\mathregular{'.join(title_list[1].split('_')) + '}'
+                title = '$'.join(title_list)
+            elif '^' in title:
+                title_list = title.split('$')
+                if '{' in title_list[1]:
+                    title_list[1] = title_list[1].split('{')[-1].split('}')[0]
+                    #title_list[1] = '^\mathregular'.join(title_list[1].split('^'))
+                else:
+                    title_list[1] = '^\mathregular{'.join(title_list[1].split('^')) + '}'
+                    title = '$'.join(title_list)
+            #params = {'mathtext.default': 'regular' }
+            #plt.rcParams.update(params)
+            '''
+            title = r'{}'.format(title)
             
-            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.07*(ylim[1]-ylim[0])), title, va="center", ha="center", color='k', fontsize=(args.text_font+2))
+            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.1*(ylim[1]-ylim[0])), title, va="center", ha="center", color='k', fontsize=(args.text_font+2))
             
+            from matplotlib.ticker import AutoMinorLocator
+            minor_locator = AutoMinorLocator(2)
+            axes_dict[ax_label].xaxis.set_minor_locator(minor_locator)
+            axes_dict[ax_label].tick_params(which='minor', color='k', direction='in', axis='x', length=3, top=True)
+            axes_dict[ax_label].tick_params(which='major', color='k', direction='in', axis='x', length=3, top=True)
+            axes_dict[ax_label].tick_params(which='major', color='k', direction='in', axis='y', length=3, right=True)
+            '''
+            axes_dict[ax_label].yaxis.set_minor_locator(minor_locator)
+            axes_dict[ax_label].tick_params(which='minor', color='k', direction='in', axis='y', length=3, top=True)
+            '''
             if positions[it][0] == 1 and positions[it][1] == 1 and args.convolve == 'True':
                 ellipse = Ellipse((0.85*xlim[1], 0.85*ylim[1]), width=13, height=28,angle=-15, edgecolor='m', facecolor='w')
                 axes_dict[ax_label].add_patch(ellipse)
             
+            axes_dict[ax_label].set_xticklabels(axes_dict[ax_label].get_xticks(), fontname = "Arial")
+            axes_dict[ax_label].set_yticklabels(axes_dict[ax_label].get_yticks(), fontname = "Arial")
             
         if positions[it][0] == columns and positions[it][1] == rows:
             top_ax_label = ax_label[:-1]+'1'
@@ -394,22 +454,26 @@ for it in range(len(positions)):
             cax_y = np.array(axes_dict[ax_label].get_position())[0][1]
             bar_height = np.array(axes_dict[top_ax_label].get_position())[1][1] - np.array(axes_dict[ax_label].get_position())[0][1]
             cax = f.add_axes([cax_x, cax_y, 0.02, bar_height])
-            cbar =f.colorbar(plot, pad=0.0, cax=cax)
+            cbar = f.colorbar(plot, pad=0.0, cax=cax)
             #cax = f.add_axes([0.645, 0.11, 0.02, 0.77])
             #cbar =f.colorbar(plot, pad=0.0, cax=cax)#, label='Radial Velocity (km/s)')
             if file_dir[it].split('.')[-1] == 'pkl':
-                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=12, size=args.text_font)#fontdict=fontdict)#
+                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=12, size=args.text_font+1)#fontdict=fontdict)#
             else:
-                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=15, size=args.text_font)
+                cbar.set_label('Radial Velocity (km$\,$s$^{-1}$)', rotation=270, labelpad=12, size=args.text_font+1)
             cbar.ax.tick_params(labelsize=args.text_font)
+            #import pdb
+            #pdb.set_trace()
+            cbar.ax.set_yticklabels(cbar.get_ticks(), fontname = "Arial")
+            #cbar.ax.set_yticklabels(cbar.ax.yaxis.get_ticklabels(), fontname = "Arial")
             print('plotted colourbar')
             #cax.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
         axes_dict[ax_label].set_aspect('equal')
         if positions[it][1] == rows:
-            axes_dict[ax_label].set_xlabel('$x$ (AU)', fontsize=args.text_font, labelpad=-2)#, fontdict=fontdict)
+            axes_dict[ax_label].set_xlabel('x (au)', fontsize=args.text_font, labelpad=-1)#, fontdict=fontdict)
             print('plotted xlabel')
         if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel('$y$ (AU)', fontsize=args.text_font, labelpad=-15)#, fontdict=fontdict)
+            axes_dict[ax_label].set_ylabel('y (au)', fontsize=args.text_font, labelpad=-10)#, fontdict=fontdict)
             print('plotted ylabel')
             
         axes_dict[ax_label].set_xlim(xlim)
@@ -551,6 +615,75 @@ for it in range(len(positions)):
             axes_dict[ax_label].set_ylabel('CF')
         #axes_dict[ax_label].set_ylim(bottom=0.0)
         #axes_dict[ax_label].set_xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+    elif plot_type[it] == 'global_frame':
+        try:
+            file = open(file_dir[it], 'rb')
+            X, Y, image, particle_x_pos, particle_y_pos = pickle.load(file)
+            file.close()
+            
+            if '-cmin' in input_args[it]:
+                cmin_ind = input_args[it].index('-cmin')
+                cbar_min = eval(input_args[it][cmin_ind+1])
+            else:
+                cbar_min = None
+            if '-cmax' in input_args[it]:
+                cmax_ind = input_args[it].index('-cmax')
+                cbar_max = eval(input_args[it][cmax_ind+1])
+            else:
+                cbar_max = None
+            
+            if '-title' in input_args[it]:
+                title_ind = input_args[it].index('-title')
+                title = input_args[it][title_ind+1]
+                #title_comps = title_str.split("_")
+                #title_str = ' '.join(title_comps)
+            else:
+                title = ""
+                
+            if '-sfe' in input_args[it]:
+                sfe_ind = input_args[it].index('-sfe')
+                sfe = input_args[it][sfe_ind+1]
+            else:
+                sfe = 2.5*(positions[it][0]-1)
+                
+            if '-cbar_range' in input_args[it]:
+                cbar_range_ind = input_args[it].index('-cbar_range')
+                cbar_range = float(input_args[it][cbar_range_ind+1])
+            else:
+                cbar_range = 1.5
+                
+            xlim = [np.min(X), np.max(X)]
+            ylim = [np.min(Y), np.max(Y)]
+                
+            M_gas = [1500, 3000, 3750, 4500, 6000, 12000]
+            volume = yt.YTQuantity(4**3, 'pc**3')
+            mass = yt.YTQuantity(M_gas[positions[it][1]-1], 'Msun')
+            mean_dens = mass/volume
+            mean_log = np.log10(mean_dens.in_units('g/cm**3'))
+            cbar_min = 10**(mean_log-cbar_range)
+            cbar_max = 10**(mean_log+cbar_range)
+            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+            plt.gca().set_aspect('equal')
+            if positions[it][0] == columns:
+                cbar = plt.colorbar(plot, pad=0.0)
+                cbar.ax.tick_params(labelsize=args.text_font)
+                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=20, size=args.text_font)
+            
+            title_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[0]+0.05*(ylim[1]-ylim[0])), '$SFE$='+str(sfe)+'\%', va="center", ha="left", color='w', fontsize=(args.text_font))
+            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1] - 0.05*(ylim[1]-ylim[0])), title, va="center", ha="left", color='w', fontsize=args.text_font+2, zorder=4)#, fontdict=fontdict)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            axes_dict[ax_label].scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
+            
+            if positions[it][1] == rows:
+                axes_dict[ax_label].set_xlabel("X (pc)", labelpad=-1, fontsize=args.text_font)
+            if positions[it][0] == 1:
+                axes_dict[ax_label].set_ylabel("Y (pc)", fontsize=args.text_font, labelpad=-9)
+        except:
+            plt.gca().set_aspect('equal')
+            print("pickle doesn't exist")
 
     elif plot_type[it] == 'movie_frame':
         if positions[it][1] > 1:
@@ -645,7 +778,8 @@ for it in range(len(positions)):
             part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
               
         has_particles = args_dict['has_particles']
-        xabel = args_dict['xabel']
+        #xabel = args_dict['xabel']
+        xabel = 'x (au)'
         yabel = args_dict['yabel']
 
         if positions[it][1] == rows:
@@ -694,11 +828,16 @@ for it in range(len(positions)):
         title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
         if col_title != "":
+            col_title = " ".join(col_title.split("_"))
             axes_dict[ax_label].set_title(col_title, fontsize=(args.text_font+2))
             
         if annotate_time:
-            time_string = "$t$="+str(int(args_dict['time_val']))+"yr"
+            time_val = int(args_dict['time_val'])
+            time_string = f'{time_val:,}'
+            time_string = "t$\,$=$\,$"+time_string+"$\,$yr"
             time_string_raw = r"{}".format(time_string)
+            #import pdb
+            #pdb.set_trace()
             time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
@@ -717,7 +856,7 @@ for it in range(len(positions)):
         
         
         if positions[it][0] == 1:
-            axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
+            axes_dict[ax_label].set_ylabel('y (au)', labelpad=-20, fontsize=args.text_font)
         
         if positions[it][0] != 1:
             yticklabels = axes_dict[ax_label].get_yticklabels()
@@ -728,20 +867,14 @@ for it in range(len(positions)):
             #    xticklabels = axes_dict[ax_label].get_xticklabels()
             #    plt.setp(xticklabels[0], visible=False)
         plt.tick_params(axis='both', which='major', labelsize=args.text_font)
-        axes_dict[ax_label].tick_params(direction='inout', color='white')
+        axes_dict[ax_label].tick_params(which='both', direction='in', color='white')
         for line in axes_dict[ax_label].xaxis.get_ticklines():
             line.set_color('white')
         for line in axes_dict[ax_label].yaxis.get_ticklines():
             line.set_color('white')
-    
-    ax_r = axes_dict[ax_label].secondary_yaxis('right')
-    ax_t = axes_dict[ax_label].secondary_xaxis('top')
-    xticklabels = ax_t.get_xticklabels()
-    plt.setp(xticklabels, visible=False)
-    yticklabels = ax_r.get_yticklabels()
-    plt.setp(yticklabels, visible=False)
-    ax_r.tick_params(axis='y', direction='inout')
-    ax_t.tick_params(axis='x', direction='inout')
+            
+        axes_dict[ax_label].tick_params(which='major', color='w', direction='in', axis='x', length=3, top=True)
+        axes_dict[ax_label].tick_params(which='major', color='w', direction='in', axis='y', length=3, right=True)
     
     if positions[it][0] != 1:
         yticklabels = axes_dict[ax_label].get_yticklabels()
@@ -750,7 +883,7 @@ for it in range(len(positions)):
         plt.setp(yticklabels, visible=False)
     if positions[it][0] == 1:
         axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font)
-        if positions[it][1] > 1 and plot_type != 'movie_frame':
+        if positions[it][1] > 1 and plot_type[it] != 'movie_frame':
             yticklabels = axes_dict[ax_label].get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
     if positions[it][1] != rows:
@@ -764,8 +897,18 @@ for it in range(len(positions)):
                 plt.setp(xticklabels[-1], visible=False)
             else:
                 plt.setp(xticklabels[0], visible=False)
+                
+    ax_r = axes_dict[ax_label].secondary_yaxis('right')
+    ax_t = axes_dict[ax_label].secondary_xaxis('top')
+    xticklabels = ax_t.get_xticklabels()
+    plt.setp(xticklabels, visible=False)
+    yticklabels = ax_r.get_yticklabels()
+    plt.setp(yticklabels, visible=False)
+    ax_r.tick_params(axis='y', direction='in')
+    ax_t.tick_params(axis='x', direction='in')
     
-    axes_dict[ax_label].tick_params(direction='inout')
+    axes_dict[ax_label].tick_params(axis='x', direction='in')
+    axes_dict[ax_label].tick_params(axis='y', direction='in')
 
     if args.multiplot_title != "":
         plt.suptitle(args.multiplot_title, x=0.45, y=0.9, fontsize=18)
@@ -774,7 +917,8 @@ for it in range(len(positions)):
     #f.savefig(savename + '.eps', format='eps')
     print("saving", savename + '.pdf')
     #plt.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
+    #if it == (len(positions) - 1):
     plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
-    plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02)
+    plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02, dpi=500)
     print("saved", savename + '.pdf')
     #f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)

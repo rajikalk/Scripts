@@ -220,7 +220,7 @@ if args.update_pickle == 'True':
                     #Calculate relative positions and velocities and speeds
                     vel_rel_to_com = (velocity.T - CoM_vel).T
                         
-                    print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
+                    #print("CHECK THAT SEPARATION CALCULATIONS TAKE INTO ACCOUNT CYCLIC BOUNDARIES")
                     separation = np.sum(distance_from_com)
                     if found_apastron == True and separation>prev_separation:
                         last_periastron = prev_time
