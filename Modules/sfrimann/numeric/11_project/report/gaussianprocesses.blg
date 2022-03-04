@@ -1,0 +1,45 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: gaussianprocesses.aux
+The style file: plain.bst
+Database file #1: cit.bib.bib
+You've used 6 entries,
+            2118 wiz_defined-function locations,
+            522 strings with 4830 characters,
+and the built_in function-call counts, 1417 in all, are:
+= -- 124
+> -- 64
+< -- 0
++ -- 26
+- -- 20
+* -- 61
+:= -- 249
+add.period$ -- 18
+call.type$ -- 6
+change.case$ -- 25
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 57
+empty$ -- 133
+format.name$ -- 20
+if$ -- 298
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 6
+newline$ -- 33
+num.names$ -- 12
+pop$ -- 55
+preamble$ -- 1
+purify$ -- 22
+quote$ -- 0
+skip$ -- 40
+stack$ -- 0
+substring$ -- 30
+swap$ -- 6
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 18
+warning$ -- 0
+while$ -- 12
+width$ -- 7
+write$ -- 62
