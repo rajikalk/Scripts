@@ -304,8 +304,11 @@ if args.update_pickles == 'True':
                     pdb.set_trace()
                 #See if you can access the particle energies
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
+=======
+>>>>>>> parent of 04eeff8... removed pdb
                 import pdb
                 pdb.set_trace()
                 E_tots = res['ekin'][n_stars] + res['epot'][n_stars]
