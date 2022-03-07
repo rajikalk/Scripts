@@ -542,7 +542,7 @@ if rank == 0:
             for full_key in full_dict.keys():
                 if 'System' not in full_key:
                     full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
-            #os.remove(pick_file)
+            os.remove(pick_file)
         
         #Let's sort the data
         for time_key in full_dict['System_times_full'].keys():
@@ -602,6 +602,9 @@ del System_energies
 
 sys.stdout.flush()
 CW.Barrier()
+
+import pdb
+pdb.set_trace()
 
 print("gathered and sorted pickles and saved to", pickle_file+'.pkl')
 
