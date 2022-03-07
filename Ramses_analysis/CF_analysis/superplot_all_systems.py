@@ -568,8 +568,8 @@ if rank == 0:
             Sort_keys.append(time_key)
         sorted_inds = np.argsort(Start_times)
         Sorted_keys = np.array(Sort_keys)[sorted_inds]
-        #del Sort_keys
-        #del Start_times
+        del Sort_keys
+        del Start_times
         
         System_seps = {}
         System_midpoint_seps = {}
@@ -584,7 +584,7 @@ if rank == 0:
             System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
             System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
             System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
-        #del Sorted_keys
+        del Sorted_keys
         superplot_dict['System_seps'] = System_seps
         superplot_dict['System_midpoint_seps'] = System_midpoint_seps
         superplot_dict['System_semimajor'] = System_semimajor
