@@ -11,6 +11,7 @@ import collections
 import os
 import matplotlib.collections as mcoll
 import matplotlib.path as mpath
+import pickle
 
 f_acc= 0.5
 
@@ -508,9 +509,6 @@ if args.update_pickles == 'True':
             
     sys.stdout.flush()
     CW.Barrier()
-    
-import pdb
-pdb.set_trace()
 
 #compile all the pickles:
 if rank == 0:
@@ -544,7 +542,7 @@ if rank == 0:
             for full_key in full_dict.keys():
                 if 'System' not in full_key:
                     full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
-            os.remove(pick_file)
+            #os.remove(pick_file)
         
         #Let's sort the data
         for time_key in full_dict['System_times_full'].keys():
@@ -591,20 +589,21 @@ if rank == 0:
         superplot_dict['System_times'] = System_times
         superplot_dict['System_ecc'] = System_ecc
         superplot_dict['System_energies'] = System_energies
-        del System_seps
-        del System_midpoint_seps
-        del System_semimajor
-        del System_ecc
-        del System_energies
         
         file = open(pickle_file+'.pkl', 'wb')
         pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times),file)
         file.close()
 
+del System_seps
+del System_midpoint_seps
+del System_semimajor
+del System_ecc
+del System_energies
+
 sys.stdout.flush()
 CW.Barrier()
 
-print("gathered pickles and saved to", pickle_file+'.pkl')
+print("gathered and sorted pickles and saved to", pickle_file+'.pkl')
 
 #calculate means:
 print("calculating means")
@@ -624,9 +623,6 @@ means_dict = {}
 for super_key in superplot_dict.keys():
     if 'System' in super_key:
         means_dict.update({'System_mean_'+super_key.split('System_')[-1]:{}})
-#System_mean_times = {}
-#System_mean_seps = {}
-#System_mean_ecc = {}
 Lifetimes_sys = {}
 Sep_maxs = []
 Sep_mins = []
@@ -643,9 +639,6 @@ for time_key in superplot_dict['System_times'].keys():
         for super_key in superplot_dict.keys():
             if 'System' in super_key:
                 mean_sys_dict.update({'mean_'+super_key:[]})
-        #mean_time = []
-        #mean_sep = []
-        #mean_ecc = []
         for time in superplot_dict['System_times'][time_key]:
             start_time = time - window/2.
             end_time = time + window/2.
@@ -658,33 +651,18 @@ for time_key in superplot_dict['System_times'].keys():
                         if 'times' in super_key:
                             mean_t = np.mean(np.array((superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0]))[start_ind:end_ind])[non_nan_inds])
                             mean_sys_dict['mean_'+super_key].append(mean_t)
-                            #mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
-                            #mean_time.append(mean_t)
                         else:
                             mean_val = np.mean(np.array(superplot_dict[super_key][time_key][start_ind:end_ind])[non_nan_inds], axis=0)
                             mean_sys_dict['mean_'+super_key].append(mean_val[0])
-                #mean_t = np.mean(np.array((System_times[time_key]- np.array(Times[0]))[start_ind:end_ind])[non_nan_inds])
-                #mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                #mean_e = np.mean(np.array(System_ecc[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                #mean_time.append(mean_t)
-                #mean_sep.append(mean_s)
-                #mean_sep.append(mean_s[0])
-                #mean_ecc.append(mean_e[0])
         non_nan_inds = np.argwhere(np.isnan(np.array(superplot_dict['System_seps'][time_key]).T[0])==False).T[0]
         sys_life_time = np.array(superplot_dict['System_times'][time_key])[non_nan_inds][-1] - np.array(superplot_dict['System_times'][time_key])[non_nan_inds][0]
         Lifetimes_sys.update({time_key:sys_life_time})
-        #non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key]).T[0])==False).T[0]
-        #sys_life_time = np.array(System_times[time_key])[non_nan_inds][-1] - np.array(System_times[time_key])[non_nan_inds][0]
-        #System_lifetimes.update({time_key:sys_life_time})
         if sys_life_time > args.sys_lifetime_threshold:
             end_sep_time = np.array(superplot_dict['System_times'][time_key] - np.array(superplot_dict['Times'][0]))[non_nan_inds][0] + sys_life_time - 1000
-            #start_sep_time = np.array(System_times[time_key])[non_nan_inds][0] + 1000
             end_time_it = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0]))[non_nan_inds] - end_sep_time))
-            #start_sep_it = np.argmin(abs(np.array(System_times[time_key])[non_nan_inds] - start_sep_time))
             for sys_it in range(np.shape(np.array(mean_sys_dict['mean_System_seps']).T)[0]):
                 sep_max = np.nanmax(np.array(superplot_dict['System_seps'][time_key]).T[sys_it])
                 sep_min = np.nanmin(np.array(superplot_dict['System_seps'][time_key]).T[sys_it])
-                #sep_init = np.mean(np.array(System_seps[time_key]).T[sys][:start_sep_it])
                 sep_init = np.array(superplot_dict['System_seps'][time_key]).T[sys_it][0]
                 sep_final = np.mean(np.array(superplot_dict['System_seps'][time_key]).T[sys_it][non_nan_inds][end_time_it:])
                 Sep_maxs.append(sep_max)
@@ -693,9 +671,6 @@ for time_key in superplot_dict['System_times'].keys():
                 Final_seps.append(sep_final)
         for mean_key in means_dict.keys():
             means_dict[mean_key].update({time_key:mean_sys_dict['mean_'+'_'.join(mean_key.split('_mean_'))]})
-        #System_mean_times.update({time_key:mean_time})
-        #System_mean_seps.update({time_key:np.array(mean_sep)})
-        #System_mean_ecc.update({time_key:np.array(mean_ecc)})
         print("calculated means for", time_key)
 
 sys.stdout.flush()
@@ -734,23 +709,12 @@ if rank == 0:
                     means_full[means_key].update({time_key:means_dict[means_key.split('_full')[0]][time_key]})
             for life_key in Lifetimes_sys.keys():
                 Lifetimes_sys_full.update({life_key:Lifetimes_sys[life_key]})
-            '''
-            for time_key in System_mean_times.keys():
-                System_times_full.update({time_key:System_times[time_key]})
-                System_seps_full.update({time_key:System_seps[time_key]})
-                System_ecc_full.update({time_key:System_ecc[time_key]})
-                System_lifetimes_full.update({time_key:System_lifetimes[time_key]})
-            '''
             Sep_maxs_full = Sep_maxs_full + Sep_maxs
             Sep_mins_full = Sep_mins_full + Sep_mins
             Initial_Seps_full = Initial_Seps_full + Initial_Seps
             Final_seps_full = Final_seps_full + Final_seps
             os.remove(pick_file)
         
-        #System_mean_times = System_times_full
-        #System_mean_seps = System_seps_full
-        #System_mean_ecc = System_ecc_full
-        #System_lifetimes = System_lifetimes_full
         Sep_maxs = Sep_maxs_full
         Sep_mins = Sep_mins_full
         Initial_Seps = Initial_Seps_full
@@ -825,11 +789,9 @@ if rank == 0:
         
         window = 50000#year
         S_bins = np.logspace(1,4,13)
-        for time_key in System_times.keys():
+        for time_key in superplot_dict['System_times'].keys():
             print("plotting", time_key)
             axbig.semilogy((superplot_dict['System_times'][time_key]- np.array(superplot_dict['Times'][0])), superplot_dict['System_seps'][time_key], alpha=0.1, color='k')
-            #if System_lifetimes[time_key] > args.sys_lifetime_threshold:
-            #    axbig.semilogy((System_mean_times[time_key]-np.array(Times[0])), System_mean_seps[time_key], color='k', linewidth=0.5)
             
             print("plotted system:", time_key)
         for bin_bound in S_bins:
@@ -857,35 +819,6 @@ if rank == 0:
     plt.ylim(bottom=0.0)
     plt.savefig('shrinkage.jpg', format='jpg', bbox_inches='tight')
     print('created shrinkage.jpg')
-
-    '''
-    plt.clf()
-    #key = '[4, 5]'
-    lifetime_it = -1
-    for key in means_dict['System_mean_seps'].keys():
-        if Lifetimes_sys[key] > args.sys_lifetime_threshold:
-            sep = np.array(means_dict['System_mean_seps'][key]).T[0]
-            time = np.array(means_dict['System_mean_times'][key])
-            ecc = np.array(means_dict['System_mean_ecc'][key]).T[1]
-            time_adjusted = time - time[0]
-            z = time_adjusted/np.nanmax(time_adjusted)
-            try:
-                plt.scatter(sep, ecc, c=z, vmin=0, vmax=1, s=1, cmap=plt.cm.get_cmap('viridis'))
-                print("plotted", key)
-            except:
-                print("couldn't plot", key)
-            #plt.loglog(x[sys_it], y[sys_it], color='k', linewidth=0.25, alpha=0.25)
-        
-    plt.colorbar(pad=-0.02)
-    plt.xscale('log')
-    plt.yscale('log')
-    #plt.ylim([0.1,1.5])
-    plt.xlabel('Separation (AU)')
-    plt.ylabel('Eccentricity')
-    print("saving ecc_vs_sep.png")
-    plt.savefig('ecc_vs_sep.png')
-    print("created ecc_vs_sep.png")
-    '''
 
 sys.stdout.flush()
 CW.Barrier()
