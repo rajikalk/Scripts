@@ -542,7 +542,7 @@ if rank == 0:
             for full_key in full_dict.keys():
                 if 'System' not in full_key:
                     full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
-            os.remove(pick_file)
+            #os.remove(pick_file)
         
         #Let's sort the data
         for time_key in full_dict['System_times_full'].keys():
@@ -566,8 +566,10 @@ if rank == 0:
         for time_key in superplot_dict['System_times'].keys():
             Start_times.append(superplot_dict['System_times'][time_key][0])
             Sort_keys.append(time_key)
-        Sorted_keys = np.array(Sort_keys)[np.argsort(Start_times)]
-        del Start_times
+        sorted_inds = np.argsort(Start_times)
+        Sorted_keys = np.array(Sort_keys)[sorted_inds]
+        #del Sort_keys
+        #del Start_times
         
         System_seps = {}
         System_midpoint_seps = {}
@@ -582,7 +584,7 @@ if rank == 0:
             System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
             System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
             System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
-        del Sorted_keys
+        #del Sorted_keys
         superplot_dict['System_seps'] = System_seps
         superplot_dict['System_midpoint_seps'] = System_midpoint_seps
         superplot_dict['System_semimajor'] = System_semimajor
