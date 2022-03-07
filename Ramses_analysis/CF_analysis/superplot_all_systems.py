@@ -605,9 +605,6 @@ del System_energies
 sys.stdout.flush()
 CW.Barrier()
 
-import pdb
-pdb.set_trace()
-
 print("gathered and sorted pickles and saved to", pickle_file+'.pkl')
 
 #calculate means:
