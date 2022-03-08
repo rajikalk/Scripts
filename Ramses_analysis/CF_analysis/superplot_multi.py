@@ -467,9 +467,6 @@ if plot_truncated_super_mult == True:
                 pdb.set_trace()
             '''
         
-        import pdb
-        pdb.set_trace()
-        
         axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s')
         axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
         axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
