@@ -415,10 +415,6 @@ if plot_truncated_super_mult == True:
                                             #dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
                                             Dynamical_capture_counter = Dynamical_capture_counter + 1
-                                else:
-                                    import pdb
-                                    pdb.set_trace()
-                                    Other_counter = Other_counter + 1
                             elif np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) < 1:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
@@ -452,15 +448,14 @@ if plot_truncated_super_mult == True:
                                             elif marker_color == 'r':
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                                 Dynamical_capture_counter = Dynamical_capture_counter + 1
-                                    else:
-                                        import pdb
-                                        pdb.set_trace()
-                                        Other_counter = Other_counter + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
                             new_sys_id = new_sys_id + 1
                             sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                             if '[' not in sys_comps:
+                                if set(real_sinks).issubset(set(plotted_sinks)):
+                                    import pdb
+                                    pdb.set_trace()
                                 reduced = True
                             break
             '''
