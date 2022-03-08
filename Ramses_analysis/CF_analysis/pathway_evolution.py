@@ -37,9 +37,6 @@ for plot_key in plot_keys:
     file = open(pickle_file, 'rb')
     superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
-    
-    import pdb
-    pdb.set_trace()
 
     SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
     SFE_5_time = superplot_dict['Times'][SFE_5_ind]
