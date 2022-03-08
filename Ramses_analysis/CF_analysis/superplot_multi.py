@@ -293,6 +293,7 @@ if plot_truncated_super_mult == True:
         Core_fragmentation_counter = 0
         Delayed_core_fragmentation_counter = 0
         Dynamical_capture_counter = 0
+        Other_counter = 0
         core_frag_marker_pos = []
         delayed_core_frag_marker_pos = []
         dynamical_capture_marker_pos = []
@@ -414,6 +415,8 @@ if plot_truncated_super_mult == True:
                                             #dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
                                             Dynamical_capture_counter = Dynamical_capture_counter + 1
+                                else:
+                                    Other_counter = Other_counter + 1
                             elif np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) < 1:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
@@ -447,6 +450,8 @@ if plot_truncated_super_mult == True:
                                             elif marker_color == 'r':
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                                 Dynamical_capture_counter = Dynamical_capture_counter + 1
+                                    else:
+                                        Other_counter = Other_counter + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
                             new_sys_id = new_sys_id + 1
@@ -471,7 +476,7 @@ if plot_truncated_super_mult == True:
         axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
         axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
         print('Finished plotting separation evolution')
-        Formation_pathway.append([Core_fragmentation_counter, Delayed_core_fragmentation_counter, Dynamical_capture_counter])
+        Formation_pathway.append([Core_fragmentation_counter, Delayed_core_fragmentation_counter, Dynamical_capture_counter, Other_counter])
         
         if args.plot_key == 'System_seps':
             for bin_bound in S_bins:
