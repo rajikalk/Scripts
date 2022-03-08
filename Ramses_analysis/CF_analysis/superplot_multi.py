@@ -387,16 +387,10 @@ if plot_truncated_super_mult == True:
                                 if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                     marker_color = 'b'
                                     marker_shape = 's'
-                                    if set(sub_sys).issubset(set(plotted_sinks)):
-                                        import pdb
-                                        pdb.set_trace()
                                     Sink_bound_birth.append([True, np.nan])
                                 elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                     marker_color = 'm'
                                     marker_shape = '^'
-                                    if set(sub_sys).issubset(set(plotted_sinks)):
-                                        import pdb
-                                        pdb.set_trace()
                                     Sink_bound_birth.append([True, np.nan])
                                 else:
                                     marker_color = 'r'
@@ -422,6 +416,8 @@ if plot_truncated_super_mult == True:
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
                                             Dynamical_capture_counter = Dynamical_capture_counter + 1
                                 else:
+                                    import pdb
+                                    pdb.set_trace()
                                     Other_counter = Other_counter + 1
                             elif np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) < 1:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
@@ -431,16 +427,10 @@ if plot_truncated_super_mult == True:
                                     if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                         marker_color = 'b'
                                         marker_shape = 's'
-                                        if set(sub_sys).issubset(set(plotted_sinks)):
-                                            import pdb
-                                            pdb.set_trace()
                                         Sink_bound_birth.append([True, np.nan])
                                     elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                         marker_color = 'm'
                                         marker_shape = '^'
-                                        if set(sub_sys).issubset(set(plotted_sinks)):
-                                            import pdb
-                                            pdb.set_trace()
                                         Sink_bound_birth.append([True, np.nan])
                                     else:
                                         marker_color = 'r'
@@ -463,6 +453,8 @@ if plot_truncated_super_mult == True:
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                                 Dynamical_capture_counter = Dynamical_capture_counter + 1
                                     else:
+                                        import pdb
+                                        pdb.set_trace()
                                         Other_counter = Other_counter + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
