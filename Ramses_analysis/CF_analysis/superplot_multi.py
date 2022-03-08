@@ -301,6 +301,15 @@ if plot_truncated_super_mult == True:
         file = open(pickle_files[file_it], 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
+        
+        Start_times = []
+        Sort_keys = []
+        for time_key in superplot_dict['System_times'].keys():
+            Start_times.append(superplot_dict['System_times'][time_key][0])
+            Sort_keys.append(time_key)
+        if np.min(np.array(Start_times)[1:] - np.array(Start_times)[:-1]) < 0:
+            import pdb
+            pdb.set_trace()
 
         SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
         SFE_5_time = superplot_dict['Times'][SFE_5_ind]
@@ -457,7 +466,10 @@ if plot_truncated_super_mult == True:
                 import pdb
                 pdb.set_trace()
             '''
-                
+        
+        import pdb
+        pdb.set_trace()
+        
         axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s')
         axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
         axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
