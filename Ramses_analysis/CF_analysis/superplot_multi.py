@@ -372,8 +372,7 @@ if plot_truncated_super_mult == True:
                     axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
             if superplot_dict['System_times'][time_key][0] < SFE_5_time:
                 if set(key_inds).issubset(set(plotted_sinks)):
-                    import pdb
-                    pdb.set_trace()
+                    Other_counter = Other_counter + 1
                 sys_comps = time_key
                 reduced = False
                 sep_ind = 0
