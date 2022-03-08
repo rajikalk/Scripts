@@ -371,6 +371,9 @@ if plot_truncated_super_mult == True:
                         Sep_arr = smooth_Sep
                     axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
             if superplot_dict['System_times'][time_key][0] < SFE_5_time:
+                if set(key_inds).issubset(set(plotted_sinks)):
+                    import pdb
+                    pdb.set_trace()
                 sys_comps = time_key
                 reduced = False
                 sep_ind = 0
@@ -453,9 +456,6 @@ if plot_truncated_super_mult == True:
                             new_sys_id = new_sys_id + 1
                             sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                             if '[' not in sys_comps:
-                                if set(real_sinks).issubset(set(plotted_sinks)):
-                                    import pdb
-                                    pdb.set_trace()
                                 reduced = True
                             break
             '''
