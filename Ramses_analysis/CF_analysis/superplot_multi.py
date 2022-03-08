@@ -387,10 +387,16 @@ if plot_truncated_super_mult == True:
                                 if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                     marker_color = 'b'
                                     marker_shape = 's'
+                                    if set(sub_sys).issubset(set(plotted_sinks)):
+                                        import pdb
+                                        pdb.set_trace()
                                     Sink_bound_birth.append([True, np.nan])
                                 elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                     marker_color = 'm'
                                     marker_shape = '^'
+                                    if set(sub_sys).issubset(set(plotted_sinks)):
+                                        import pdb
+                                        pdb.set_trace()
                                     Sink_bound_birth.append([True, np.nan])
                                 else:
                                     marker_color = 'r'
@@ -425,10 +431,16 @@ if plot_truncated_super_mult == True:
                                     if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                         marker_color = 'b'
                                         marker_shape = 's'
+                                        if set(sub_sys).issubset(set(plotted_sinks)):
+                                            import pdb
+                                            pdb.set_trace()
                                         Sink_bound_birth.append([True, np.nan])
                                     elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                         marker_color = 'm'
                                         marker_shape = '^'
+                                        if set(sub_sys).issubset(set(plotted_sinks)):
+                                            import pdb
+                                            pdb.set_trace()
                                         Sink_bound_birth.append([True, np.nan])
                                     else:
                                         marker_color = 'r'
