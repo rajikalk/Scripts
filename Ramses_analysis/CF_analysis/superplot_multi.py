@@ -422,17 +422,14 @@ if plot_truncated_super_mult == True:
                                     if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                         marker_color = 'b'
                                         marker_shape = 's'
-                                        Core_fragmentation_counter = Core_fragmentation_counter + 1
                                         Sink_bound_birth.append([True, np.nan])
                                     elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                         marker_color = 'm'
                                         marker_shape = '^'
-                                        Delayed_core_fragmentation_counter = Delayed_core_fragmentation_counter + 1
                                         Sink_bound_birth.append([True, np.nan])
                                     else:
                                         marker_color = 'r'
                                         marker_shape = 'o'
-                                        Dynamical_capture_counter = Dynamical_capture_counter + 1
                                         Sink_bound_birth.append([False, np.nan])
                                     if set(real_sinks).issubset(set(plotted_sinks)) == False:
                                         plotted_sinks = plotted_sinks + real_sinks.tolist()
@@ -443,10 +440,13 @@ if plot_truncated_super_mult == True:
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
+                                                Core_fragmentation_counter = Core_fragmentation_counter + 1
                                             elif marker_color == 'm':
                                                 delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
+                                                Delayed_core_fragmentation_counter = Delayed_core_fragmentation_counter + 1
                                             elif marker_color == 'r':
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
+                                                Dynamical_capture_counter = Dynamical_capture_counter + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
                             new_sys_id = new_sys_id + 1
