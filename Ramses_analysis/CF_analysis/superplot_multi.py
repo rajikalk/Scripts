@@ -290,13 +290,12 @@ if plot_truncated_super_mult == True:
     else:
         alpha = 0.1
     for pick_it in iter_range:
-        Core_fragmentation_counter = 0
-        Delayed_core_fragmentation_counter = 0
-        Dynamical_capture_counter = 0
-        Other_counter = 0
+        pathway_counters = [0,0,0,0]
         core_frag_marker_pos = []
         delayed_core_frag_marker_pos = []
         dynamical_capture_marker_pos = []
+        Initial_Seps = [[],[],[],[]]
+        Initial_Seps_100000 = [[],[],[],[]]
     
         file_it = pick_it
         file = open(pickle_files[file_it], 'rb')
@@ -371,11 +370,14 @@ if plot_truncated_super_mult == True:
                         Sep_arr = smooth_Sep
                     axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
             if superplot_dict['System_times'][time_key][0] < SFE_5_time:
+                sep_ind = 0
                 if set(key_inds).issubset(set(plotted_sinks)):
-                    Other_counter = Other_counter + 1
+                    pathway_counters[3] = pathway_counters[3] + 1
+                    Initial_Seps[3].append(Sep_arr[0][sep_ind])
+                    if Lifetimes_sys[time_key]>100000:
+                        Initial_Seps_100000[3].append(Sep_arr[0][sep_ind])
                 sys_comps = time_key
                 reduced = False
-                sep_ind = 0
                 while reduced == False:
                     open_braket_ind = []
                     for char_it in range(len(sys_comps)):
@@ -407,16 +409,25 @@ if plot_truncated_super_mult == True:
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
                                             core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
-                                            Core_fragmentation_counter = Core_fragmentation_counter + 1
+                                            Initial_Seps[0].append(Sep_arr[0][sep_ind])
+                                            if Lifetimes_sys[time_key]>100000:
+                                                Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
+                                            pathway_counters[0] = pathway_counters[0] + 1
                                             #core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                         elif marker_color == 'm':
                                             #delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
-                                            Delayed_core_fragmentation_counter = Delayed_core_fragmentation_counter + 1
+                                            Initial_Seps[1].append(Sep_arr[0][sep_ind])
+                                            if Lifetimes_sys[time_key]>100000:
+                                                Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
+                                            pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
                                             #dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
-                                            Dynamical_capture_counter = Dynamical_capture_counter + 1
+                                            Initial_Seps[2].append(Sep_arr[0][sep_ind]
+                                            if Lifetimes_sys[time_key]>100000:
+                                                Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
+                                            pathway_counters[2] = pathway_counters[2] + 1
                             elif np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) < 1:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
@@ -443,13 +454,22 @@ if plot_truncated_super_mult == True:
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Core_fragmentation_counter = Core_fragmentation_counter + 1
+                                                Initial_Seps[0].append(Sep_arr[0][sep_ind]
+                                                if Lifetimes_sys[time_key]>100000:
+                                                    Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
+                                                pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
                                                 delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Delayed_core_fragmentation_counter = Delayed_core_fragmentation_counter + 1
+                                                Initial_Seps[1].append(Sep_arr[0][sep_ind]
+                                                if Lifetimes_sys[time_key]>100000:
+                                                    Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
+                                                pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Dynamical_capture_counter = Dynamical_capture_counter + 1
+                                                Initial_Seps[2].append(Sep_arr[0][sep_ind]
+                                                if Lifetimes_sys[time_key]>100000:
+                                                    Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
+                                                pathway_counters[2] = pathway_counters[2] + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
                             new_sys_id = new_sys_id + 1
@@ -474,7 +494,7 @@ if plot_truncated_super_mult == True:
         axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
         axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
         print('Finished plotting separation evolution')
-        Formation_pathway.append([Core_fragmentation_counter, Delayed_core_fragmentation_counter, Dynamical_capture_counter, Other_counter])
+        Formation_pathway.append(pathway_counters)
         
         if args.plot_key == 'System_seps':
             for bin_bound in S_bins:
@@ -507,6 +527,11 @@ if plot_truncated_super_mult == True:
         plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
         print('plotted separations for pickle', pickle_files[file_it])
         #plt.savefig('superplot_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
+    
+    #save pathways stats
+    file = open('formation_pathway_pickle.pkl', 'wb')
+    pickle.dump((Formation_pathway, Initial_Seps, Initial_Seps_100000), file)
+    file.close()
     
     if args.timescale == "first_sink":
         axs.flatten()[pick_it].set_xlabel('Star formation efficiency ($M_\star/M_{gas}$)', size=args.text_font)
