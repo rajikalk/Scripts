@@ -17,148 +17,161 @@ def flatten(x):
 
 pickle_file = sys.argv[1]
 plot_gradient = True
+read_pickle = True
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 
-for plot_key in plot_keys:
-    savename = 'pathway_evolution_'+plot_key
-    if plot_gradient:
-        savename = savename + '_grad'
-    plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(12, 9), sharey=True, sharex=True)
-    if 'energies' in plot_key:
-        axs.flatten()[0].set_yscale('symlog')
-        axs.flatten()[1].set_yscale('symlog')
-        axs.flatten()[2].set_yscale('symlog')
-        axs.flatten()[3].set_yscale('symlog')
-    plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.07)
+if read_pickle == False:
+    for plot_key in plot_keys:
+        savename = 'pathway_evolution_'+plot_key
+        if plot_gradient:
+            savename = savename + '_grad'
+        plt.clf()
+        fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(12, 9), sharey=True, sharex=True)
+        if 'energies' in plot_key:
+            axs.flatten()[0].set_yscale('symlog')
+            axs.flatten()[1].set_yscale('symlog')
+            axs.flatten()[2].set_yscale('symlog')
+            axs.flatten()[3].set_yscale('symlog')
+        plt.subplots_adjust(wspace=0.0)
+        plt.subplots_adjust(hspace=0.07)
 
-    file = open(pickle_file, 'rb')
-    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
-    file.close()
+        file = open(pickle_file, 'rb')
+        superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+        file.close()
 
-    SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
-    SFE_5_time = superplot_dict['Times'][SFE_5_ind]
-     
-    new_sys_id = superplot_dict['N_stars'][-1]
+        SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
+        SFE_5_time = superplot_dict['Times'][SFE_5_ind]
+         
+        new_sys_id = superplot_dict['N_stars'][-1]
 
-    sim_start_time = np.nan
-    plotted_sinks = []
-    set_start_time = True
-    Initial_gradients_1000 = [[],[],[],[]]
-    Initial_gradients = [[],[],[],[]]
-    for time_key in superplot_dict['System_times'].keys():
-        key_inds = flatten(eval(time_key))
-        if set_start_time == True:
-            start_time = superplot_dict['System_times'][time_key][0]
-            set_start_time = False
-        if superplot_dict['System_times'][time_key][0] < SFE_5_time:
-            sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) -SFE_5_time))
-            Time_arr = superplot_dict['System_times'][time_key][:sep_end_ind+1]
-            Time_arr = np.array(Time_arr) - Time_arr[0]
+        sim_start_time = np.nan
+        plotted_sinks = []
+        set_start_time = True
+        Initial_gradients_1000 = [[],[],[],[]]
+        Initial_gradients = [[],[],[],[]]
+        for time_key in superplot_dict['System_times'].keys():
+            print("processing system:", time_key)
+            key_inds = flatten(eval(time_key))
+            if set_start_time == True:
+                start_time = superplot_dict['System_times'][time_key][0]
+                set_start_time = False
+            if superplot_dict['System_times'][time_key][0] < SFE_5_time:
+                sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) -SFE_5_time))
+                Time_arr = superplot_dict['System_times'][time_key][:sep_end_ind+1]
+                Time_arr = np.array(Time_arr) - Time_arr[0]
 
-            sys_comps = time_key
-            reduced = False
-            sep_ind = 0
-            while reduced == False:
-                open_braket_ind = []
-                for char_it in range(len(sys_comps)):
-                    if sys_comps[char_it] == '[':
-                        open_braket_ind.append(char_it)
-                    if sys_comps[char_it] == ']':
-                        open_ind = open_braket_ind.pop()
-                        sub_sys = eval(sys_comps[open_ind:char_it+1])
-                        real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
-                        real_sinks = np.array(sub_sys)[real_sink_inds]
-                        not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
-                        if len(not_plotted_sinks) > 0:
-                            birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
-                            if birth_conditions[0] == True and birth_conditions[1] in key_inds:
-                                axis_ind = 0
-                                line_style = '-'
-                                color = 'b'
-                            elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
-                                axis_ind = 1
-                                line_style = ':'
-                                color='r'
+                sys_comps = time_key
+                reduced = False
+                sep_ind = 0
+                while reduced == False:
+                    open_braket_ind = []
+                    for char_it in range(len(sys_comps)):
+                        if sys_comps[char_it] == '[':
+                            open_braket_ind.append(char_it)
+                        if sys_comps[char_it] == ']':
+                            open_ind = open_braket_ind.pop()
+                            sub_sys = eval(sys_comps[open_ind:char_it+1])
+                            real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
+                            real_sinks = np.array(sub_sys)[real_sink_inds]
+                            not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
+                            if len(not_plotted_sinks) > 0:
+                                birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
+                                if birth_conditions[0] == True and birth_conditions[1] in key_inds:
+                                    axis_ind = 0
+                                    line_style = '-'
+                                    color = 'b'
+                                elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
+                                    axis_ind = 1
+                                    line_style = ':'
+                                    color='r'
+                                else:
+                                    axis_ind = 2
+                                    line_style = '-'
+                                    color='k'
                             else:
-                                axis_ind = 2
+                                axis_ind = 3
                                 line_style = '-'
                                 color='k'
-                        else:
-                            axis_ind = 3
-                            line_style = '-'
-                            color='k'
-                        Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
-                        dsep = Sep_arr[1:] - Sep_arr[:-1]
-                        dtime = Time_arr[1:] - Time_arr[:-1]
-                        grad = dsep/dtime
-                        mean_x = (Time_arr[1:] + Time_arr[:-1])/2
-                        try:
-                            time_1000_ind = np.where(mean_x<1000)[0][-1] + 1
-                            Initial_gradients_1000[axis_ind].append(grad[:time_1000_ind])
-                        except:
-                            print('system has not mean times < 1000yr')
-                        if len(grad) > 0:
-                            Initial_gradients[axis_ind].append(grad[0])
-                        #lets trying smoothing over a 1000year window, but not centred
+                            Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
+                            dsep = Sep_arr[1:] - Sep_arr[:-1]
+                            dtime = Time_arr[1:] - Time_arr[:-1]
+                            grad = dsep/dtime
+                            mean_x = (Time_arr[1:] + Time_arr[:-1])/2
+                            try:
+                                sub_1000_inds = np.where(Time_arr<1000)[0]
+                                dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
+                                ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
+                                mean_grad = ds/dt
+                                Initial_gradients_1000[axis_ind].append([mean_grad])
+                                #time_1000_ind = np.where(mean_x<1000)[0][-1] + 1
+                                #Initial_gradients_1000[axis_ind].append(grad[:time_1000_ind])
+                            except:
+                                print('system has not mean times < 1000yr')
+                            if len(grad) > 0:
+                                Initial_gradients[axis_ind].append(grad[0])
+                            #lets trying smoothing over a 1000year window, but not centred
 
-                        if plot_gradient == False:
-                            if 'ecc' in plot_key:
-                                axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                            if plot_gradient == False:
+                                if 'ecc' in plot_key:
+                                    axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                else:
+                                    axs.flatten()[axis_ind].semilogy(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                if 'energies' in plot_key:
+                                    axs.flatten()[0].set_yscale('symlog')
+                                    axs.flatten()[1].set_yscale('symlog')
+                                    axs.flatten()[2].set_yscale('symlog')
                             else:
-                                axs.flatten()[axis_ind].semilogy(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
-                            if 'energies' in plot_key:
+                                axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
                                 axs.flatten()[0].set_yscale('symlog')
                                 axs.flatten()[1].set_yscale('symlog')
                                 axs.flatten()[2].set_yscale('symlog')
-                        else:
-                            axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
-                            axs.flatten()[0].set_yscale('symlog')
-                            axs.flatten()[1].set_yscale('symlog')
-                            axs.flatten()[2].set_yscale('symlog')
-                        plotted_sinks = plotted_sinks + not_plotted_sinks
-                        #print('plotted sinks', not_plotted_sinks)
-                        replace_string = str(new_sys_id)
-                        new_sys_id = new_sys_id + 1
-                        sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
-                        if '[' not in sys_comps:
-                            reduced = True
-                        break
+                            plotted_sinks = plotted_sinks + not_plotted_sinks
+                            #print('plotted sinks', not_plotted_sinks)
+                            replace_string = str(new_sys_id)
+                            new_sys_id = new_sys_id + 1
+                            sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
+                            if '[' not in sys_comps:
+                                reduced = True
+                            break
+                
+            if plot_gradient == False:
+                if 'semimajor' in plot_key or 'seps' in plot_key:
+                    axs.flatten()[0].set_ylabel('Separation (AU)')
+                    axs.flatten()[0].set_ylim([10, 10000])
+                    axs.flatten()[1].set_ylabel('Separation (AU)')
+                    axs.flatten()[1].set_ylim([10, 10000])
+                    axs.flatten()[2].set_ylabel('Separation (AU)')
+                    axs.flatten()[2].set_ylim([10, 10000])
+                    axs.flatten()[0].set_xlim(left=200)
+            else:
+                #axs.flatten()[0].set_ylim([-10, 10])
+                axs.flatten()[0].set_ylabel('Gradient')
+                #axs.flatten()[1].set_ylim([-10, 10])
+                axs.flatten()[1].set_ylabel('Gradient')
+                #axs.flatten()[2].set_ylim([-10, 10])
+                axs.flatten()[2].set_ylabel('Gradient')
+            axs.flatten()[1].set_xlabel('Time in simulation (yr)')
+            plt.savefig(savename+'.png', format='png', bbox_inches='tight')
             
-        if plot_gradient == False:
-            if 'semimajor' in plot_key or 'seps' in plot_key:
-                axs.flatten()[0].set_ylabel('Separation (AU)')
-                axs.flatten()[0].set_ylim([10, 10000])
-                axs.flatten()[1].set_ylabel('Separation (AU)')
-                axs.flatten()[1].set_ylim([10, 10000])
-                axs.flatten()[2].set_ylabel('Separation (AU)')
-                axs.flatten()[2].set_ylim([10, 10000])
-                axs.flatten()[0].set_xlim(left=200)
-        else:
-            #axs.flatten()[0].set_ylim([-10, 10])
-            axs.flatten()[0].set_ylabel('Gradient')
-            #axs.flatten()[1].set_ylim([-10, 10])
-            axs.flatten()[1].set_ylabel('Gradient')
-            #axs.flatten()[2].set_ylim([-10, 10])
-            axs.flatten()[2].set_ylabel('Gradient')
-        axs.flatten()[1].set_xlabel('Time in simulation (yr)')
-        plt.savefig(savename+'.png', format='png', bbox_inches='tight')
-        
-        #import pdb
-        #pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
 
-    plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
-    print('Created '+ savename+'.png')
+        plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
+        print('Created '+ savename+'.png')
+
+    grad_pickle = 'grad_pickle.pkl'
+    file = open(grad_pickle, 'wb')
+    pickle.dump((Initial_gradients, Initial_gradients_1000), file)
+    file.close()
+    print('saved_gradients')
 
 grad_pickle = 'grad_pickle.pkl'
-file = open(grad_pickle, 'wb')
-pickle.dump((Initial_gradients, Initial_gradients_1000), file)
+file = open(grad_pickle, 'rb')
+Initial_gradients, Initial_gradients_1000 = pickle.load(file)
 file.close()
-print('saved_gradients')
 
-grad_bins = np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
+grad_bins = np.concatenate((-1*np.logspace(5,-6,12), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 #grad_bins = np.concatenate((-1*np.logspace(4,-3,15), np.array([0, 1.e10])))
 grad_hist_core, grad_bins = np.histogram(Initial_gradients[0], bins=grad_bins)
 grad_hist_core_delayed, grad_bins = np.histogram(Initial_gradients[1], bins=grad_bins)
@@ -170,21 +183,39 @@ core_mean = []
 for grit in range(len(Initial_gradients_1000[0])):
     core_mean.append(np.mean(Initial_gradients_1000[0][grit]))
 grad_hist_core_mean, grad_bins = np.histogram(core_mean, bins=grad_bins)
+grad_hist_core_mean_std = np.sqrt(grad_hist_core_mean)
+grad_hist_core_mean_rel_err = grad_hist_core_mean_std/grad_hist_core_mean
+grad_hist_core_mean_rel_err = np.nan_to_num(grad_hist_core_mean_rel_err)
+#grad_hist_core_mean_err = 1/np.sqrt(len(core_mean))
+#grad_hist_core_mean_rel_err = grad_hist_core_mean_err/grad_hist_core_mean
+#grad_hist_core_mean_rel_err[np.isinf(grad_hist_core_mean_rel_err)] = 0
 
 core_delayed_mean = []
 for grit in range(len(Initial_gradients_1000[1])):
     core_delayed_mean.append(np.mean(Initial_gradients_1000[1][grit]))
 grad_hist_core_delayed_mean, grad_bins = np.histogram(core_delayed_mean, bins=grad_bins)
+grad_hist_core_delayed_mean_std = np.sqrt(grad_hist_core_delayed_mean)
+grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_std/grad_hist_core_delayed_mean
+grad_hist_core_delayed_mean_rel_err = np.nan_to_num(grad_hist_core_delayed_mean_rel_err)
+#grad_hist_core_delayed_mean_err = 1/np.sqrt(len(core_delayed_mean))
+#grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_err/grad_hist_core_delayed_mean
+#grad_hist_core_delayed_mean_rel_err[np.isinf(grad_hist_core_delayed_mean_rel_err)] = 0
 
 capt_mean = []
 for grit in range(len(Initial_gradients_1000[2])):
     capt_mean.append(np.mean(Initial_gradients_1000[2][grit]))
 grad_hist_capt_mean, grad_bins = np.histogram(capt_mean, bins=grad_bins)
+grad_hist_capt_mean_std = np.sqrt(grad_hist_capt_mean)
+grad_hist_capt_mean_rel_err = grad_hist_capt_mean_std/grad_hist_capt_mean
+grad_hist_capt_mean_rel_err = np.nan_to_num(grad_hist_capt_mean_rel_err)
 
 misc_mean = []
 for grit in range(len(Initial_gradients_1000[3])):
     misc_mean.append(np.mean(Initial_gradients_1000[3][grit]))
 grad_hist_misc_mean, grad_bins = np.histogram(misc_mean, bins=grad_bins)
+grad_hist_misc_mean_std = np.sqrt(grad_hist_misc_mean)
+grad_hist_misc_mean_rel_err = grad_hist_misc_mean_std/grad_hist_misc_mean
+grad_hist_misc_mean_rel_err = np.nan_to_num(grad_hist_misc_mean_rel_err)
 
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
@@ -211,7 +242,7 @@ grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_c
 grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
 x_range = np.arange(len(grad_hist_core)+1)
-
+'''
 #Let's calculate a fit!
 x_bins = np.log10(abs(grad_bin_centers[:-1]))[::-1]
 y_core = grad_hist_core_norm[:-2][::-1]
@@ -221,9 +252,9 @@ plt.xlabel('abs grad')
 plt.ylabel('fraction')
 plt.savefig('fit_test.png')
 #samples_fit_log = scipy.stats.lognorm.pdf(x_vals, shape, loc=loc, scale=scale )
-
+'''
 plt.clf()
-fig, ax = plt.subplots(figsize=(6,6))
+fig, ax = plt.subplots()
 ax.step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
 ax.step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
 ax.step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
@@ -235,10 +266,10 @@ ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_capt/np.sum(grad_hist_capt)
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_misc/np.sum(grad_hist_misc), label="Other", width=1, color='None', linewidth=2, edgecolor='orange')
 '''
 ax.set_xlim([x_range[0], x_range[-1]])
-ax.set_xticklabels(ticklabels)
+ax.set_xticklabels(ticklabels[::2])
 ax.set_xlabel('Inspiral rate (au/yr)')
 ax.set_ylabel('#')
-ax.set_ylim(bottom=0)
+ax.set_ylim([0,0.4])
 ax.legend(loc='best')
 plt.savefig('Initial_grad_hist.png')
 
@@ -252,12 +283,21 @@ grad_hist_core_delayed_mean_norm = np.concatenate((grad_hist_core_delayed_mean_n
 grad_hist_capt_mean_norm = np.concatenate((grad_hist_capt_mean_norm, np.array([grad_hist_capt_mean_norm[-1]])))
 grad_hist_misc_mean_norm = np.concatenate((grad_hist_misc_mean_norm, np.array([grad_hist_misc_mean_norm[-1]])))
 
+grad_hist_core_mean_rel_err = np.concatenate((grad_hist_core_mean_rel_err, np.array([grad_hist_core_mean_rel_err[-1]])))
+grad_hist_core_delayed_mean_rel_err = np.concatenate((grad_hist_core_delayed_mean_rel_err, np.array([grad_hist_core_delayed_mean_rel_err[-1]])))
+grad_hist_capt_mean_rel_err = np.concatenate((grad_hist_capt_mean_rel_err, np.array([grad_hist_capt_mean_rel_err[-1]])))
+grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
+
 plt.clf()
 fig, ax = plt.subplots()
 ax.step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+ax.errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
 ax.step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
+ax.errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
 ax.step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+ax.errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
 ax.step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+ax.errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
 '''
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_mean/np.sum(grad_hist_core_mean), label="Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='b')
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean), label="Delayed Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='purple')
@@ -265,9 +305,88 @@ ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_capt_mean/np.sum(grad_hist_
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_misc_mean/np.sum(grad_hist_misc_mean), label="Other", width=1, color='None', linewidth=2, edgecolor='orange')
 '''
 ax.set_xlim([x_range[0], x_range[-1]])
-ax.set_xticklabels(ticklabels)
+ax.set_xticklabels(ticklabels[::2])
 ax.set_xlabel('Inspiral rate (au/yr)')
 ax.set_ylabel('#')
-ax.set_ylim(bottom=0)
+ax.set_ylim([0,0.4])
 ax.legend(loc='best')
 plt.savefig('Mean_grad_hist.png')
+
+def Gaussian(x,scale,mean,sigma):
+    return scale*stats.norm.pdf(x, mean, sigma)
+    
+def Skewed_Gaussian(x, scale, mean, sigma, skew, kurt):
+    return scale*stats.skewnorm.pdf(x,mean, sigma, skew, kurt)
+    
+#Fitting
+import scipy.stats as stats
+from scipy.optimize import curve_fit
+x_log = np.log10(-1*grad_bins[:-2])-0.5
+x_log_fit = np.linspace(x_log[0], x_log[-1], 100)
+
+y_log_core = grad_hist_core_mean_norm[:-2]#[::-1]
+y_log_core_err = (grad_hist_core_mean_rel_err*grad_hist_core_mean_norm)[:-2]#[::-1]
+y_log_core_delayed = grad_hist_core_delayed_mean_norm[:-2]#[::-1]
+y_log_core_delayed_err = (grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm)[:-2]#[::-1]
+y_log_capt = grad_hist_capt_mean_norm[:-2]#[::-1]
+y_log_capt_err = (grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm)[:-2]#[::-1]
+y_log_misc = grad_hist_misc_mean_norm[:-2]#[::-1]
+y_log_misc_err = (grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm)[:-2]#[::-1]
+
+mean_guess = x_log[np.argmax(y_log_core)]#-0.5
+sig_guess = np.std(np.log10(-1*np.array(core_mean)[np.array(core_mean)<0]))
+scale_guess = np.sum(grad_hist_core_mean[:-2])/np.sum(grad_hist_core_mean)
+popt_core, pcov_core = curve_fit(Gaussian, x_log, y_log_core, [scale_guess, mean_guess, sig_guess], sigma=y_log_core_err)
+fit_core = Gaussian(x_log_fit, *popt_core)
+print('Core frag mean inspiral:', popt_core[1], '\pm', popt_core[2])
+
+mean_guess = x_log[np.argmax(y_log_core_delayed)]#-0.5
+sig_guess = np.std(np.log10(-1*np.array(core_delayed_mean)[np.array(core_delayed_mean)<0]))
+scale_guess = np.sum(grad_hist_core_delayed_mean[:-2])/np.sum(grad_hist_core_delayed_mean)
+popt_core_delayed, pcov_core_delayed = curve_fit(Gaussian, x_log, y_log_core_delayed, [scale_guess, mean_guess, sig_guess], sigma=y_log_core_delayed_err)
+fit_core_delayed = Gaussian(x_log_fit, *popt_core_delayed)
+print('Delayed core frag mean inspiral:', popt_core_delayed[1], '\pm', popt_core_delayed[2])
+
+plt.clf()
+plt.errorbar(x_log, y_log_core_delayed, yerr=y_log_core_delayed_err, marker='o', color='purple', linestyle="")
+mode = x_log[np.argmax(y_log_core_delayed)]
+
+skew_dist = stats.skewnorm(-5, loc=1)
+y_skew = scale_guess*skew_dist.pdf(x_log_fit)
+plt.plot(x_log_fit, y_skew)
+plt.xlim([x_log[0], x_log[-1]])
+plt.ylim(bottom=0)
+plt.savefig('skew_test.png')
+
+mean_guess = x_log[np.argmax(y_log_capt)]#-0.5
+sig_guess = np.std(np.log10(-1*np.array(capt_mean)[np.array(capt_mean)<0]))
+scale_guess = np.sum(grad_hist_capt_mean[:-2])/np.sum(grad_hist_capt_mean)
+popt_capt, pcov_core = curve_fit(Gaussian, x_log, y_log_capt, [scale_guess, mean_guess, sig_guess], sigma=y_log_capt_err)
+fit_capt = Gaussian(x_log_fit, *popt_capt)
+print('Core frag mean inspiral:', popt_capt[1], '\pm', popt_capt[2])
+
+mean_guess = x_log[np.argmax(y_log_misc)]#-0.5
+sig_guess = np.std(np.log10(-1*np.array(misc_mean)[np.array(misc_mean)<0]))
+scale_guess = np.sum(grad_hist_misc_mean[:-2])/np.sum(grad_hist_misc_mean)
+popt_misc, pcov_misc = curve_fit(Gaussian, x_log, y_log_misc, [scale_guess, mean_guess, sig_guess], sigma=y_log_misc_err)
+fit_misc = Gaussian(x_log_fit, *popt_misc)
+print('Core frag mean inspiral:', popt_misc[1], '\pm', popt_misc[2])
+
+
+plt.clf()
+plt.errorbar(x_log, y_log_core, yerr=y_log_core_err, marker='o', color='b', linestyle="")
+plt.plot(x_log_fit, fit_core, color='b')
+
+plt.errorbar(x_log, y_log_core_delayed, yerr=y_log_core_delayed_err, marker='o', color='purple', linestyle="")
+plt.plot(x_log_fit, fit_core_delayed, color='purple')
+
+plt.errorbar(x_log, y_log_capt, yerr=y_log_capt_err, marker='o', color='red', linestyle="")
+plt.plot(x_log_fit, fit_capt, color='red')
+
+plt.errorbar(x_log, y_log_misc, yerr=y_log_misc_err, marker='o', color='orange', linestyle="")
+plt.plot(x_log_fit, fit_misc, color='orange')
+#plt.xscale("log", nonpositive='clip')
+#plt.semilogx(x_log, y_log)
+plt.xlim([x_log[0], x_log[-1]])
+plt.ylim(bottom=0)
+plt.savefig('log_normal_fit.png')
