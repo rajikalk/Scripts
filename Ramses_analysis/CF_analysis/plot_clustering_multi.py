@@ -2,6 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 import pickle
+import matplotlib
+
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 def power_law(x, a, k):
     return a * np.power(x, k)
@@ -9,13 +28,18 @@ def power_law(x, a, k):
 def line(x, m, b):
     return m*x + b
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+
 dirs = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 labels=['1500', '3000', '3750', '4500', '6000', '12000']
 colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
 plt.clf()
-plt.figure(figsize=(6,4))
+plt.figure(figsize=(single_col_width,0.6*single_col_width))
 smooth_window = 0.05
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/TPCF.pkl', 'rb')
@@ -47,16 +71,18 @@ for pit in range(len(dirs)):
     plt.plot(SFE, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
     plt.fill_between(SFE, grad_err_low, grad_err_upp, alpha=0.2)
 
-plt.xlabel('SFE (%)', labelpad=-0.4)
-plt.ylabel('TPCF gradient', labelpad=-0.2)
+plt.tick_params(axis='both', which='major', labelsize=font_size)
+plt.tick_params(axis='both', which='minor', labelsize=font_size)
+plt.xlabel('SFE (%)', labelpad=-0.4, fontsize=font_size)
+plt.ylabel('TPCF gradient', labelpad=-0.2, fontsize=font_size)
 plt.xlim([0,5])
 plt.ylim([-3.75,-1.25])
-plt.legend(loc='best', ncol=2)
+plt.legend(loc='best', ncol=2, fontsize=font_size)
 plt.savefig('gradient_comparison.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
 print('plotted gradient comparison')
 
 plt.clf()
-plt.figure(figsize=(5.5,3.8))
+plt.figure(figsize=(single_col_width,0.6*single_col_width))
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/SFE_5_TPCF.pkl', 'rb')
     sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1, popt2 = pickle.load(file)
@@ -71,9 +97,9 @@ for pit in range(len(dirs)):
     
 plt.xscale("log")
 plt.yscale("log")
-plt.ylabel("$1+\\omega_(r)$", labelpad=-0.2)
-plt.xlabel('Separation (log AU)', labelpad=-0.2)
+plt.ylabel("$1+\\omega_(r)$", labelpad=-0.2, fontsize=font_size)
+plt.xlabel('Separation (log AU)', labelpad=-0.2, fontsize=font_size)
 plt.ylim(ylim)
 plt.xlim([10**sep_centers[0], 10**sep_centers[-1]])
-plt.legend(loc='best')
+plt.legend(loc='best', fontsize=font_size)
 plt.savefig('TPCF.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)

@@ -5,7 +5,27 @@ import os
 import pickle
 import matplotlib.patches
 import collections
+import matplotlib
+import matplotlib.ticker
 #from mpi4py.MPI import COMM_WORLD as CW
+
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 def parse_inputs():
     import argparse
@@ -16,7 +36,7 @@ def parse_inputs():
     parser.add_argument("-add_hist", "--add_histograms", help="Do you want to add the histograms at the end of the super plots?", type=str, default="False")
     parser.add_argument("-all_sep_evol", "--plot_all_separation_evolution", help="do you want to plot all separation evolution?", type=str, default="True")
     parser.add_argument("-x_field", "--x_field", help="Default for x-axis in the multiplot is time", type=str, default="Time")
-    parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=12)
+    parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=10)
     parser.add_argument("-plt_key", "--plot_key", help="What dictionary key from superplot_dict do you want to plot?", type=str, default='System_seps')
     parser.add_argument("-smooth", "--smooth_bool", help="Do you want to smooth what you are plotting?", type=str, default='False')
     parser.add_argument("-smooth_window", "--smooth_window_val", help="What big (in yrs) do you want the smoothing window to be?", type=float, default=1000)
@@ -33,13 +53,17 @@ def flatten(x):
 #rank = CW.Get_rank()
 #size = CW.Get_size()
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
 plot_booleans = [[False, True], [False, False], [True, True], [True, False]]
 
 args = parse_inputs()
 
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/means_superplot.pkl"]
+#pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/means_superplot.pkl"]
 
-#pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G50.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G100.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G125.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G150.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G200.pkl", "/Users/reggie/Documents/Simulation_analysis/Superplots/Pickles/G400.pkl"]
+pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G50/G50_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G100/G100_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G125/G125_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G150/G150_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G200/G200_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G400/G400_pathway.pkl"]
 
 plt.clf()
 '''
@@ -49,7 +73,7 @@ if plot_booleans[rank][0] == True:
     args.figure_suffix = args.figure_suffix + '_hist'
 else:
 '''
-fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(10, len(pickle_files)*2))
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width,page_height))
 iter_range = range(0, len(pickle_files)*2)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.07)
@@ -277,7 +301,7 @@ if plot_frag_capt_frac:
 plot_truncated_super_mult = True
 if plot_truncated_super_mult == True:
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(12, len(pickle_files)*3), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width, page_height), sharex=True, sharey=True)
     iter_range = range(0, len(pickle_files))
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.07)
@@ -294,13 +318,14 @@ if plot_truncated_super_mult == True:
         core_frag_marker_pos = []
         delayed_core_frag_marker_pos = []
         dynamical_capture_marker_pos = []
-        Initial_Seps = [[],[],[],[]]
-        Initial_Seps_100000 = [[],[],[],[]]
     
         file_it = pick_it
         file = open(pickle_files[file_it], 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
+        
+        Initial_Seps = [[],[],[],[]]
+        Initial_Seps_100000 = [[],[],[],[]]
         
         Start_times = []
         Sort_keys = []
@@ -424,7 +449,7 @@ if plot_truncated_super_mult == True:
                                         elif marker_color == 'r':
                                             #dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
-                                            Initial_Seps[2].append(Sep_arr[0][sep_ind]
+                                            Initial_Seps[2].append(Sep_arr[0][sep_ind])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                             pathway_counters[2] = pathway_counters[2] + 1
@@ -454,19 +479,19 @@ if plot_truncated_super_mult == True:
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Initial_Seps[0].append(Sep_arr[0][sep_ind]
+                                                Initial_Seps[0].append(Sep_arr[0][sep_ind])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
                                                 delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Initial_Seps[1].append(Sep_arr[0][sep_ind]
+                                                Initial_Seps[1].append(Sep_arr[0][sep_ind])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
-                                                Initial_Seps[2].append(Sep_arr[0][sep_ind]
+                                                Initial_Seps[2].append(Sep_arr[0][sep_ind])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[2] = pathway_counters[2] + 1
@@ -490,9 +515,9 @@ if plot_truncated_super_mult == True:
                 pdb.set_trace()
             '''
         
-        axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s')
-        axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
-        axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
+        axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s', s=7)
+        axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^', s=7)
+        axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o', s=7)
         print('Finished plotting separation evolution')
         Formation_pathway.append(pathway_counters)
         
@@ -500,16 +525,23 @@ if plot_truncated_super_mult == True:
             for bin_bound in S_bins:
                 axs.flatten()[pick_it].axhline(y=bin_bound, linewidth=0.5)
 
-            axs.flatten()[pick_it].set_ylabel('Separation (AU)', size=args.text_font)
+            axs.flatten()[pick_it].set_ylabel('Separation (AU)', size=args.text_font, labelpad=-1)
             axs.flatten()[pick_it].set_ylim([10, 10000])
+            plt.minorticks_on()
+            axs.flatten()[pick_it].set_yticks([10, 100, 1000, 10000])
+            y_minor = matplotlib.ticker.LogLocator(base = 10.0, subs = np.arange(1.0, 10.0) * 0.1, numticks = 10)
+            axs.flatten()[pick_it].yaxis.set_minor_locator(y_minor)
+            axs.flatten()[pick_it].yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
         else:
             axs.flatten()[pick_it].set_ylabel('Semi-major axis (AU)', size=args.text_font)
             axs.flatten()[pick_it].set_ylim([1.e1, 1.e9])
         axs.flatten()[pick_it].set_xlim([0, 0.05])
         axs.flatten()[pick_it].tick_params(which='both', direction='in')
+        axs.flatten()[pick_it].tick_params(axis='both', which='major', labelsize=font_size)
+        axs.flatten()[pick_it].tick_params(axis='both', which='minor', labelsize=font_size)
         
         #axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 12), 0.004, 14, facecolor="white", edgecolor="black", zorder=10))
-        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 12), 0.0044, 13.25, facecolor="white", edgecolor="black", zorder=10))
+        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 11), 0.005, 17, facecolor="white", edgecolor="black", zorder=10))
         axs.flatten()[pick_it].text((0.0134*G50_t_max), 14, subplot_titles[pick_it], zorder=11, size=args.text_font)
         #axs.flatten()[pick_it].text((0.015*G50_t_max), 23, "N$_{sys}$="+str(np.sum(np.array(list(Lifetimes_sys.values())[:SFE_5_ind])>args.sys_lifetime_threshold)), zorder=12, size=args.text_font)
         
@@ -524,14 +556,14 @@ if plot_truncated_super_mult == True:
             xticklabels =axs.flatten()[pick_it].get_xticklabels()
             plt.setp(xticklabels, visible=False)
         
-        plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
+        plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
         print('plotted separations for pickle', pickle_files[file_it])
+        
+        file = open('formation_pathway_'+str(GMC_mass_arr[pick_it])+'.pkl', 'wb')
+        pickle.dump((pathway_counters, Initial_Seps, Initial_Seps_100000), file)
+        file.close()
+        
         #plt.savefig('superplot_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-    
-    #save pathways stats
-    file = open('formation_pathway_pickle.pkl', 'wb')
-    pickle.dump((Formation_pathway, Initial_Seps, Initial_Seps_100000), file)
-    file.close()
     
     if args.timescale == "first_sink":
         axs.flatten()[pick_it].set_xlabel('Star formation efficiency ($M_\star/M_{gas}$)', size=args.text_font)
@@ -539,8 +571,8 @@ if plot_truncated_super_mult == True:
         axs.flatten()[pick_it].set_xlabel('Star formation efficiency ($M_\star/M_{gas}$)', size=args.text_font)
     if args.add_histograms == "True":
         axs.flatten()[pick_it+1].set_xlabel('% of systems', size=args.text_font)
-    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
+    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
+    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight', pad_inches=0.02)
     print('Created superplot_multi_truncated'+args.figure_suffix+'.jpg')
 
 #plot quantities VS cloud mass at SFE=0.05

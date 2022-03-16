@@ -334,14 +334,21 @@ y_log_misc = grad_hist_misc_mean_norm[:-2]#[::-1]
 y_log_misc_err = (grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm)[:-2]#[::-1]
 
 mean_guess = x_log[np.argmax(y_log_core)]#-0.5
+mode_guess = x_log[np.argmax(y_log_core)]
+
 sig_guess = np.std(np.log10(-1*np.array(core_mean)[np.array(core_mean)<0]))
 scale_guess = np.sum(grad_hist_core_mean[:-2])/np.sum(grad_hist_core_mean)
-popt_core, pcov_core = curve_fit(Gaussian, x_log, y_log_core, [scale_guess, mean_guess, sig_guess], sigma=y_log_core_err)
+popt_core, pcov_core = curve_fit(Gaussian, x_log, y_log_core, [scale_guess, mean_guess, sig_guess], sigma=y_log_core_err)#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
 fit_core = Gaussian(x_log_fit, *popt_core)
 print('Core frag mean inspiral:', popt_core[1], '\pm', popt_core[2])
 
-mean_guess = x_log[np.argmax(y_log_core_delayed)]#-0.5
-sig_guess = np.std(np.log10(-1*np.array(core_delayed_mean)[np.array(core_delayed_mean)<0]))
+usable_inds = np.where((np.isnan(core_delayed_mean)==False)&(np.array(core_delayed_mean)<0))[0]
+core_delayed_power = np.log10(-1*np.array(core_delayed_mean)[usable_inds])
+mean_guess = np.mean(core_delayed_power)#-0.5
+median_guess = np.median(core_delayed_power)
+mode_guess = x_log[np.argmax(y_log_core_delayed)]
+sig_guess = np.std(core_delayed_power)
+skew_guess = (3*(mean_guess - median_guess))/sig_guess
 scale_guess = np.sum(grad_hist_core_delayed_mean[:-2])/np.sum(grad_hist_core_delayed_mean)
 popt_core_delayed, pcov_core_delayed = curve_fit(Gaussian, x_log, y_log_core_delayed, [scale_guess, mean_guess, sig_guess], sigma=y_log_core_delayed_err)
 fit_core_delayed = Gaussian(x_log_fit, *popt_core_delayed)
@@ -349,10 +356,8 @@ print('Delayed core frag mean inspiral:', popt_core_delayed[1], '\pm', popt_core
 
 plt.clf()
 plt.errorbar(x_log, y_log_core_delayed, yerr=y_log_core_delayed_err, marker='o', color='purple', linestyle="")
-mode = x_log[np.argmax(y_log_core_delayed)]
-
-skew_dist = stats.skewnorm(-5, loc=1)
-y_skew = scale_guess*skew_dist.pdf(x_log_fit)
+#y_skew = scale_guess*skewnorm.pdf(x_log_fit, skew_guess, loc=mode, scale=sig_guess)
+y_skew = skewnorm.pdf(x_log_fit, -4, loc=2, scale=2)
 plt.plot(x_log_fit, y_skew)
 plt.xlim([x_log[0], x_log[-1]])
 plt.ylim(bottom=0)
