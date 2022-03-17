@@ -24,6 +24,7 @@ def parse_inputs():
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
+    parser.add_argument("-pzl", "--plot_z_velocities", help="do you want to plot the z velocity?", type=str, default='False')
     parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
     parser.add_argument("-wr", "--working_rank", default=0, type=int)
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
@@ -826,7 +827,10 @@ for pickle_file in pickle_files:
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+            if args.plot_z_velocities == 'False':
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+            else:
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
