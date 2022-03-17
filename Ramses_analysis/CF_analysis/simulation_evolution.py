@@ -70,7 +70,7 @@ for pick_it in iter_range:
 
 axs.flatten()[2].set_xlabel('Time in Simulation (Myr)', fontsize=font_size)
 axs.flatten()[0].set_ylabel('$M_{stars}$ (M$_\odot$)', labelpad=1, fontsize=font_size)
-axs.flatten()[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+axs.flatten()[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.3)
 axs.flatten()[1].set_ylabel('$N_{stars}$', labelpad=1, fontsize=font_size)
 axs.flatten()[2].set_ylabel('$SFE$ (%)', labelpad=1, fontsize=font_size)
 
@@ -78,18 +78,24 @@ axs.flatten()[0].tick_params(axis='both', which='major', labelsize=font_size)
 axs.flatten()[0].tick_params(axis='both', which='minor', labelsize=font_size)
 axs.flatten()[0].tick_params(axis='x', direction='in')
 axs.flatten()[0].tick_params(axis='y', direction='in')
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in')
 axs.flatten()[0].set_ylim(bottom=0)
 
 axs.flatten()[1].tick_params(axis='both', which='major', labelsize=font_size)
 axs.flatten()[1].tick_params(axis='both', which='minor', labelsize=font_size)
 axs.flatten()[1].tick_params(axis='x', direction='in')
 axs.flatten()[1].tick_params(axis='y', direction='in')
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in')
 axs.flatten()[1].set_ylim(bottom=0)
 
 axs.flatten()[2].tick_params(axis='both', which='major', labelsize=font_size)
 axs.flatten()[2].tick_params(axis='both', which='minor', labelsize=font_size)
 axs.flatten()[2].tick_params(axis='x', direction='in')
 axs.flatten()[2].tick_params(axis='y', direction='in')
+axs.flatten()[2].minorticks_on()
+axs.flatten()[2].tick_params(which='both', direction='in')
 axs.flatten()[2].set_ylim(bottom=0)
 
 plt.savefig('simulation_evolution.pdf', bbox_inches='tight', pad_inches=0.02)

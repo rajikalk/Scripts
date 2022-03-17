@@ -39,7 +39,7 @@ colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:b
 line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
 plt.clf()
-plt.figure(figsize=(single_col_width,0.6*single_col_width))
+plt.figure(figsize=(single_col_width,0.7*single_col_width))
 smooth_window = 0.05
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/TPCF.pkl', 'rb')
@@ -73,16 +73,17 @@ for pit in range(len(dirs)):
 
 plt.tick_params(axis='both', which='major', labelsize=font_size)
 plt.tick_params(axis='both', which='minor', labelsize=font_size)
+plt.tick_params(which='both', direction='in')
 plt.xlabel('SFE (%)', labelpad=-0.4, fontsize=font_size)
-plt.ylabel('TPCF gradient', labelpad=-0.2, fontsize=font_size)
+plt.ylabel('TPCF gradient', labelpad=0.0, fontsize=font_size)
 plt.xlim([0,5])
 plt.ylim([-3.75,-1.25])
-plt.legend(loc='best', ncol=2, fontsize=font_size)
+plt.legend(loc='best', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.savefig('gradient_comparison.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
 print('plotted gradient comparison')
 
 plt.clf()
-plt.figure(figsize=(single_col_width,0.6*single_col_width))
+plt.figure(figsize=(single_col_width,0.7*single_col_width))
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/SFE_5_TPCF.pkl', 'rb')
     sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1, popt2 = pickle.load(file)
@@ -92,14 +93,17 @@ for pit in range(len(dirs)):
         ylim = [np.min(TPCF_frac), np.max(TPCF_frac)]
     
 
-    plt.errorbar(10**sep_centers, TPCF_frac, yerr=TPCF_err, fmt = 'o', color=colors[pit])
+    plt.errorbar(10**sep_centers, TPCF_frac, yerr=TPCF_err, fmt = 'o', color=colors[pit], markersize=2)
     plt.loglog(10**sep_centers[:7], 10**line(sep_centers[:7], popt1[0], popt1[1]), linestyle=line_styles[pit], color=colors[pit], label=labels[pit]+'M$_\odot$')
     
+plt.tick_params(axis='both', which='major', labelsize=font_size)
+plt.tick_params(axis='both', which='minor', labelsize=font_size)
+plt.tick_params(which='both', direction='in')
 plt.xscale("log")
 plt.yscale("log")
-plt.ylabel("$1+\\omega_(r)$", labelpad=-0.2, fontsize=font_size)
-plt.xlabel('Separation (log AU)', labelpad=-0.2, fontsize=font_size)
+plt.ylabel("$1+\\omega(r)$", labelpad=-0.2, fontsize=font_size)
+plt.xlabel('Separation (log AU)', labelpad=-0.3, fontsize=font_size)
 plt.ylim(ylim)
 plt.xlim([10**sep_centers[0], 10**sep_centers[-1]])
-plt.legend(loc='best', fontsize=font_size)
+plt.legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.5, borderaxespad=0.2, borderpad=0.2)
 plt.savefig('TPCF.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)

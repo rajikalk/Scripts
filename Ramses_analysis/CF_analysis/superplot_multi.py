@@ -301,10 +301,10 @@ if plot_frag_capt_frac:
 plot_truncated_super_mult = True
 if plot_truncated_super_mult == True:
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width, page_height), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width, page_height), sharex=True)#, sharey=True)
     iter_range = range(0, len(pickle_files))
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.07)
+    plt.subplots_adjust(hspace=0.02)
 
     CF_hist = np.zeros((len(pickle_files),12)).tolist()
     
@@ -528,7 +528,10 @@ if plot_truncated_super_mult == True:
             axs.flatten()[pick_it].set_ylabel('Separation (AU)', size=args.text_font, labelpad=-1)
             axs.flatten()[pick_it].set_ylim([10, 10000])
             plt.minorticks_on()
-            axs.flatten()[pick_it].set_yticks([10, 100, 1000, 10000])
+            if pick_it == 0:
+                axs.flatten()[pick_it].set_yticks([10, 100, 1000, 10000])
+            else:
+                axs.flatten()[pick_it].set_yticks([10, 100, 1000])
             y_minor = matplotlib.ticker.LogLocator(base = 10.0, subs = np.arange(1.0, 10.0) * 0.1, numticks = 10)
             axs.flatten()[pick_it].yaxis.set_minor_locator(y_minor)
             axs.flatten()[pick_it].yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
@@ -541,7 +544,7 @@ if plot_truncated_super_mult == True:
         axs.flatten()[pick_it].tick_params(axis='both', which='minor', labelsize=font_size)
         
         #axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 12), 0.004, 14, facecolor="white", edgecolor="black", zorder=10))
-        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 11), 0.005, 17, facecolor="white", edgecolor="black", zorder=10))
+        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.01*G50_t_max, 11), 0.006, 18, facecolor="white", edgecolor="black", zorder=10))
         axs.flatten()[pick_it].text((0.0134*G50_t_max), 14, subplot_titles[pick_it], zorder=11, size=args.text_font)
         #axs.flatten()[pick_it].text((0.015*G50_t_max), 23, "N$_{sys}$="+str(np.sum(np.array(list(Lifetimes_sys.values())[:SFE_5_ind])>args.sys_lifetime_threshold)), zorder=12, size=args.text_font)
         
@@ -551,7 +554,12 @@ if plot_truncated_super_mult == True:
             axs.flatten()[pick_it+1].set_ylim([1,4])
             yticklabels =axs.flatten()[pick_it+1].get_yticklabels()
             plt.setp(yticklabels, visible=False)
-        
+        '''
+        if pick_it > 0:
+            yticklabels = axs.flatten()[pick_it].get_yticklabels()
+            if str(yticklabels[-1]) == "Text(0, 10000, '$\\\\mathdefault{10^{4}}$')"
+                plt.setp(yticklabels[-1], visible=False)
+        '''
         if file_it != len(pickle_files)-1:
             xticklabels =axs.flatten()[pick_it].get_xticklabels()
             plt.setp(xticklabels, visible=False)
