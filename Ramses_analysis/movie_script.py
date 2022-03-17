@@ -817,6 +817,7 @@ for pickle_file in pickle_files:
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
             if frame_no > 0 or time_val > -1.0:
+                # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
             else:
                 plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
@@ -825,7 +826,7 @@ for pickle_file in pickle_files:
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
