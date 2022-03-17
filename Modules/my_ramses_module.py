@@ -385,7 +385,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 width_val = width_ceil
             try:
                 if Z_val == None:
-                    color = 'w'
+                    #color = 'w'
+                    color = 'k'
             except:
                 #cmap = 'idl06_r'
                 zvel = Z_val[xp][yp]/len_scale
