@@ -373,7 +373,6 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     len_scale = (0.07*(xmax - xmin))
     #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))
     #vels = np.hypot(X_val, Y_val)
-    quiver=[]
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = len_scale*(X_val[xp][yp]/standard_vel)
@@ -393,10 +392,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 zvel = Z_val[xp][yp]/len_scale
                 cit = np.argmin(abs(rv_colors - zvel))
                 color = rv_cmap(cit)
-            quiver.append(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
-            #axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0), zorder=zorder)#, alpha=width_val/width_ceil))
-        coll=PatchCollection(quiver, zorder=zorder, match_original=True, arrowstyle='->')
-        axis.add_collection(coll)
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0), zorder=zorder)#, alpha=width_val/width_ceil))
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
