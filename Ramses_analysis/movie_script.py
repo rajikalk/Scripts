@@ -176,15 +176,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #File files
-#files = sorted(glob.glob(input_dir+"*/info*.txt"))
-files = sorted(glob.glob("/lustre/astro/troels/IMF_512_cores/sink_92/data/*/info*.txt"))
-if rank==0:
-    print('input_dir:', input_dir)
-    print(glob.glob(input_dir))
-    print(glob.glob(input_dir+"*"))
-    print(glob.glob(input_dir+"*/*.txt"))
-    print(glob.glob(input_dir+"*/info*.txt"))
-    print('Files:', files)
+files = sorted(glob.glob(input_dir+"*/info*.txt"))
 
 sys.stdout.flush()
 CW.Barrier()
