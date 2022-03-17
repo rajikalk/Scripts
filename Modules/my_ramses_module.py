@@ -435,7 +435,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     rainbow_text_colors = []
     string_pos = []
     if particle_tags == None:
-        particle_tags = np.arange(len(annotate_field))
+        particle_tags = np.arange(len(particle_position))
     for pos_it in np.argsort(particle_tags):
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw, c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
