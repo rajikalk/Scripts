@@ -9,6 +9,7 @@ import my_ramses_module as mym
 import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import nmmn.plots
 
 def parse_inputs():
     import argparse
@@ -813,7 +814,9 @@ for pickle_file in pickle_files:
             if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
             else:
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+                cmap = nmmn.plots.parulacmap()
+                #cmap=plt.cm.gist_heat
+                plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
             plt.gca().set_aspect('equal')
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
