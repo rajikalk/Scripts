@@ -177,6 +177,8 @@ CW.Barrier()
 
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
+if rank==0:
+    print('Files:', files)
 
 sys.stdout.flush()
 CW.Barrier()
