@@ -305,7 +305,7 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/7)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/8)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -499,9 +499,10 @@ if args.make_frames_only == 'False':
                 proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[], mag3_field:[]}
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field), ('gas', mag3_field)]
-                proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
+                proj_root_rank = 0#int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 for field in yt.parallel_objects(proj_field_list):
+                    print('making field', field, 'on rank', rank, 'with rook rank', proj_root_rank)
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
@@ -558,7 +559,7 @@ if args.make_frames_only == 'False':
                         key, proj_array = pickle.load(file)
                         file.close()
                         proj_dict[key] = proj_array
-                        os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+                        #os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
                         
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
@@ -578,6 +579,8 @@ if args.make_frames_only == 'False':
                 proj_field_list =[simfo['field'], ('gas', 'Projected_Velocity_x'), ('gas', 'Projected_Velocity_y'), ('gas', 'Projected_Velocity_z'), ('gas', 'Projected_Magnetic_Field_x'), ('gas', 'Projected_Magnetic_Field_y'), ('gas', 'Projected_Magnetic_Field_z')]
                 
                 for field in yt.parallel_objects(proj_field_list):
+                    print('making field', field, 'on rank', rank, 'with rook rank', proj_root_rank)
+                    print('making field', field, 'on rank', rank, 'with rook rank', proj_root_rank)
                     proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
                     if 'mag' in str(field):
                         if weight_field == None:
