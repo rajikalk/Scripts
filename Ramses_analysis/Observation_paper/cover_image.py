@@ -9,6 +9,7 @@ import my_ramses_module as mym
 import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import nmmn.plots
 
 def parse_inputs():
     import argparse
@@ -494,9 +495,10 @@ if args.make_frames_only == 'False':
                 vel3_field = perp_vel + '-velocity'
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
-                proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
+                mag3_field = 'mag' + perp_vel
+                proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[], mag3_field:[]}
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field), ('gas', mag3_field)]
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 for field in yt.parallel_objects(proj_field_list):
@@ -565,6 +567,7 @@ if args.make_frames_only == 'False':
                     velz_full = proj_dict[proj_dict_keys[3]]
                     magx = proj_dict[proj_dict_keys[4]]
                     magy = proj_dict[proj_dict_keys[5]]
+                    magz = proj_dict[proj_dict_keys[6]]
                         
             elif args.use_angular_momentum != 'False':
                 proj_root_rank = int(rank/7)*7
@@ -680,12 +683,13 @@ if args.make_frames_only == 'False':
                 if args.absolute_image != "False":
                     image = abs(image)
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
+                pickle.dump((X_image, Y_image, image, magx, magy, magz, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
                 del image
                 del magx
                 del magy
+                del magz
                 del velx
                 del vely
                 del velz
@@ -761,7 +765,7 @@ for pickle_file in pickle_files:
         print('making frame from', pickle_file, 'on rank', rank)
         frame_no = int(pickle_file.split('_')[-1].split('.')[0])
         file = open(pickle_file, 'rb')
-        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+        X, Y, image, magx, magy, magz, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         file.close()
         
@@ -813,14 +817,16 @@ for pickle_file in pickle_files:
             if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max, zorder=1)
             else:
-                cmap=plt.cm.gist_heat
+                #cmap = nmmn.plots.parulacmap()
+                cmap = plt.cm.cividis
+                #cmap=plt.cm.gist_heat
                 plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             plt.gca().set_aspect('equal')
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
             if frame_no > 0 or time_val > -1.0:
                 # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2, linewidth=magz/np.max(magz))
             else:
                 plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             if args.debug_plotting != 'False':
@@ -829,8 +835,10 @@ for pickle_file in pickle_files:
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
             if args.plot_z_velocities == 'False':
+                #plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, headlength=7, color='w')
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
             else:
+                #plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, headlength=7, color='w')
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
@@ -885,14 +893,14 @@ for pickle_file in pickle_files:
             
             if size > 1:
                 try:
-                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
-                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, bbox_inches='tight', pad_inches = 0.07)
+                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', bbox_inches='tight', pad_inches = 0.07)
                     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
                 except:
                     print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
             else:
-                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
-                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, bbox_inches='tight', pad_inches = 0.07)
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', bbox_inches='tight', pad_inches = 0.07)
                 print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
         
 sys.stdout.flush()
