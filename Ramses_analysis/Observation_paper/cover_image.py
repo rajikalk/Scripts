@@ -826,7 +826,7 @@ for pickle_file in pickle_files:
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
             if frame_no > 0 or time_val > -1.0:
                 # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2, linewidth=magz/np.max(magz))
+                plt.streamplot(X, Y, magx, magy, density=4, arrowstyle='-', minlength=0.5, color='grey', zorder=2, linewidth=magz/np.max(magz))
             else:
                 plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             if args.debug_plotting != 'False':
