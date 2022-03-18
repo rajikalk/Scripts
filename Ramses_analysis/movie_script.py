@@ -822,20 +822,20 @@ for pickle_file in pickle_files:
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
             if frame_no > 0 or time_val > -1.0:
                 # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='w', zorder=3)
+                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='w', zorder=2)
             else:
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=3)
+                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_790.jpg", format='jpg', bbox_inches='tight')
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
             if args.plot_z_velocities == 'False':
-                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5)
-                #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, zorder=5)#velz)
+                #plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5)
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
             else:
-                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5)
-                #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz, zorder=5)
+                #plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5)
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
