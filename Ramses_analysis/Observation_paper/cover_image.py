@@ -893,14 +893,14 @@ for pickle_file in pickle_files:
             
             if size > 1:
                 try:
-                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, bbox_inches='tight', pad_inches = 0.07)
-                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', bbox_inches='tight', pad_inches = 0.07)
+                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, pad_inches = 0.07)
+                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.07)
                     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
                 except:
                     print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
             else:
-                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, bbox_inches='tight', pad_inches = 0.07)
-                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', bbox_inches='tight', pad_inches = 0.07)
+                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, pad_inches = 0.07)
+                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.07)
                 print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
         
 sys.stdout.flush()
