@@ -812,11 +812,11 @@ for pickle_file in pickle_files:
                 plt.savefig("Test_776.jpg", format='jpg', bbox_inches='tight')
             
             if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max, zorder=1)
+                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=False, vmin=cbar_min, vmax=cbar_max, zorder=1)
             else:
                 cmap = nmmn.plots.parulacmap()
                 #cmap=plt.cm.gist_heat
-                plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=False, zorder=1)
             plt.gca().set_aspect('equal')
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
