@@ -831,10 +831,10 @@ for pickle_file in pickle_files:
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
             if args.plot_z_velocities == 'False':
-                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, width=0.002, headlength=7)
+                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, headlength=7)
                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
             else:
-                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, width=0.002, headlength=7)
+                plt.quiver(X_vel, Y_vel, velx/args.standard_vel, vely/args.standard_vel, zorder=5, headlength=7)
                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
