@@ -7,13 +7,16 @@ import matplotlib.patches
 import collections
 import sys
 from scipy import stats
-#from mpi4py.MPI import COMM_WORLD as CW
+from mpi4py.MPI import COMM_WORLD as CW
 
 def flatten(x):
     if isinstance(x, collections.Iterable):
         return [a for i in x for a in flatten(i)]
     else:
         return [x]
+
+rank = CW.Get_rank()
+size = CW.Get_size()
 
 pickle_file = sys.argv[1]
 plot_gradient = True
@@ -52,138 +55,147 @@ if read_pickle == True:
         Initial_gradients_1000 = [[],[],[],[]]
         Initial_gradients_10000 = [[],[],[],[]]
         Initial_gradients_100000 = [[],[],[],[]]
+        rit = -1
         for time_key in superplot_dict['System_times'].keys():
-            print("processing system:", time_key)
-            key_inds = flatten(eval(time_key))
-            if set_start_time == True:
-                start_time = superplot_dict['System_times'][time_key][0]
-                set_start_time = False
-            if superplot_dict['System_times'][time_key][0] < SFE_5_time:
-                sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) -SFE_5_time))
-                Time_arr = superplot_dict['System_times'][time_key][:sep_end_ind+1]
-                Time_arr = np.array(Time_arr) - Time_arr[0]
+            rit = rit + 1
+            if rit == size:
+                rit = 0
+            if rank == rit:
+                print("processing system:", time_key, "on rank", rank)
+                key_inds = flatten(eval(time_key))
+                if set_start_time == True:
+                    start_time = superplot_dict['System_times'][time_key][0]
+                    set_start_time = False
+                if superplot_dict['System_times'][time_key][0] < SFE_5_time:
+                    sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) -SFE_5_time))
+                    Time_arr = superplot_dict['System_times'][time_key][:sep_end_ind+1]
+                    Time_arr = np.array(Time_arr) - Time_arr[0]
 
-                sys_comps = time_key
-                reduced = False
-                sep_ind = 0
-                while reduced == False:
-                    open_braket_ind = []
-                    for char_it in range(len(sys_comps)):
-                        if sys_comps[char_it] == '[':
-                            open_braket_ind.append(char_it)
-                        if sys_comps[char_it] == ']':
-                            open_ind = open_braket_ind.pop()
-                            sub_sys = eval(sys_comps[open_ind:char_it+1])
-                            real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
-                            real_sinks = np.array(sub_sys)[real_sink_inds]
-                            not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
-                            if len(not_plotted_sinks) > 0:
-                                birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
-                                if birth_conditions[0] == True and birth_conditions[1] in key_inds:
-                                    axis_ind = 0
-                                    line_style = '-'
-                                    color = 'b'
-                                elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
-                                    axis_ind = 1
-                                    line_style = ':'
-                                    color='r'
+                    sys_comps = time_key
+                    reduced = False
+                    sep_ind = 0
+                    while reduced == False:
+                        open_braket_ind = []
+                        for char_it in range(len(sys_comps)):
+                            if sys_comps[char_it] == '[':
+                                open_braket_ind.append(char_it)
+                            if sys_comps[char_it] == ']':
+                                open_ind = open_braket_ind.pop()
+                                sub_sys = eval(sys_comps[open_ind:char_it+1])
+                                real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
+                                real_sinks = np.array(sub_sys)[real_sink_inds]
+                                not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
+                                if len(not_plotted_sinks) > 0:
+                                    birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
+                                    if birth_conditions[0] == True and birth_conditions[1] in key_inds:
+                                        axis_ind = 0
+                                        line_style = '-'
+                                        color = 'b'
+                                    elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
+                                        axis_ind = 1
+                                        line_style = ':'
+                                        color='r'
+                                    else:
+                                        axis_ind = 2
+                                        line_style = '-'
+                                        color='k'
                                 else:
-                                    axis_ind = 2
+                                    axis_ind = 3
                                     line_style = '-'
                                     color='k'
-                            else:
-                                axis_ind = 3
-                                line_style = '-'
-                                color='k'
-                            Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
-                            dsep = Sep_arr[1:] - Sep_arr[:-1]
-                            dtime = Time_arr[1:] - Time_arr[:-1]
-                            grad = dsep/dtime
-                            mean_x = (Time_arr[1:] + Time_arr[:-1])/2
-                            try:
-                                sub_1000_inds = np.where(Time_arr<1000)[0]
-                                dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
-                                ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
-                                mean_grad = ds/dt
-                                Initial_gradients_1000[axis_ind].append([mean_grad])
-                            except:
-                                print('system has not mean times < 1000yr')
+                                Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
+                                dsep = Sep_arr[1:] - Sep_arr[:-1]
+                                dtime = Time_arr[1:] - Time_arr[:-1]
+                                grad = dsep/dtime
+                                mean_x = (Time_arr[1:] + Time_arr[:-1])/2
+                                try:
+                                    sub_1000_inds = np.where(Time_arr<1000)[0]
+                                    dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
+                                    ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
+                                    mean_grad = ds/dt
+                                    Initial_gradients_1000[axis_ind].append([mean_grad])
+                                except:
+                                    print('system has not mean times < 1000yr')
+                                    
+                                try:
+                                    sub_10000_inds = np.where(Time_arr<10000)[0]
+                                    dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
+                                    ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
+                                    mean_grad = ds/dt
+                                    Initial_gradients_10000[axis_ind].append([mean_grad])
+                                except:
+                                    print('system has not mean times < 10000yr')
+                                    
+                                try:
+                                    sub_100000_inds = np.where(Time_arr<100000)[0]
+                                    dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
+                                    ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
+                                    mean_grad = ds/dt
+                                    Initial_gradients_100000[axis_ind].append([mean_grad])
+                                except:
+                                    print('system has not mean times < 100000yr')
                                 
-                            try:
-                                sub_10000_inds = np.where(Time_arr<10000)[0]
-                                dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
-                                ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
-                                mean_grad = ds/dt
-                                Initial_gradients_10000[axis_ind].append([mean_grad])
-                            except:
-                                print('system has not mean times < 10000yr')
-                                
-                            try:
-                                sub_100000_inds = np.where(Time_arr<100000)[0]
-                                dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
-                                ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
-                                mean_grad = ds/dt
-                                Initial_gradients_100000[axis_ind].append([mean_grad])
-                            except:
-                                print('system has not mean times < 100000yr')
-                            
-                            if len(grad) > 0:
-                                Initial_gradients[axis_ind].append(grad[0])
-                            #lets trying smoothing over a 1000year window, but not centred
+                                if len(grad) > 0:
+                                    Initial_gradients[axis_ind].append(grad[0])
+                                #lets trying smoothing over a 1000year window, but not centred
 
-                            if plot_gradient == False:
-                                if 'ecc' in plot_key:
-                                    axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                if plot_gradient == False:
+                                    if 'ecc' in plot_key:
+                                        axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                    else:
+                                        axs.flatten()[axis_ind].semilogy(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                    if 'energies' in plot_key:
+                                        axs.flatten()[0].set_yscale('symlog')
+                                        axs.flatten()[1].set_yscale('symlog')
+                                        axs.flatten()[2].set_yscale('symlog')
                                 else:
-                                    axs.flatten()[axis_ind].semilogy(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
-                                if 'energies' in plot_key:
+                                    axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
                                     axs.flatten()[0].set_yscale('symlog')
                                     axs.flatten()[1].set_yscale('symlog')
                                     axs.flatten()[2].set_yscale('symlog')
-                            else:
-                                axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
-                                axs.flatten()[0].set_yscale('symlog')
-                                axs.flatten()[1].set_yscale('symlog')
-                                axs.flatten()[2].set_yscale('symlog')
-                            plotted_sinks = plotted_sinks + not_plotted_sinks
-                            #print('plotted sinks', not_plotted_sinks)
-                            replace_string = str(new_sys_id)
-                            new_sys_id = new_sys_id + 1
-                            sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
-                            if '[' not in sys_comps:
-                                reduced = True
-                            break
-                
-            if plot_gradient == False:
-                if 'semimajor' in plot_key or 'seps' in plot_key:
-                    axs.flatten()[0].set_ylabel('Separation (AU)')
-                    axs.flatten()[0].set_ylim([10, 10000])
-                    axs.flatten()[1].set_ylabel('Separation (AU)')
-                    axs.flatten()[1].set_ylim([10, 10000])
-                    axs.flatten()[2].set_ylabel('Separation (AU)')
-                    axs.flatten()[2].set_ylim([10, 10000])
-                    axs.flatten()[0].set_xlim(left=200)
-            else:
-                #axs.flatten()[0].set_ylim([-10, 10])
-                axs.flatten()[0].set_ylabel('Gradient')
-                #axs.flatten()[1].set_ylim([-10, 10])
-                axs.flatten()[1].set_ylabel('Gradient')
-                #axs.flatten()[2].set_ylim([-10, 10])
-                axs.flatten()[2].set_ylabel('Gradient')
-            axs.flatten()[1].set_xlabel('Time in simulation (yr)')
-            plt.savefig(savename+'.png', format='png', bbox_inches='tight')
+                                plotted_sinks = plotted_sinks + not_plotted_sinks
+                                #print('plotted sinks', not_plotted_sinks)
+                                replace_string = str(new_sys_id)
+                                new_sys_id = new_sys_id + 1
+                                sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
+                                if '[' not in sys_comps:
+                                    reduced = True
+                                break
+                    
+                if plot_gradient == False:
+                    if 'semimajor' in plot_key or 'seps' in plot_key:
+                        axs.flatten()[0].set_ylabel('Separation (AU)')
+                        axs.flatten()[0].set_ylim([10, 10000])
+                        axs.flatten()[1].set_ylabel('Separation (AU)')
+                        axs.flatten()[1].set_ylim([10, 10000])
+                        axs.flatten()[2].set_ylabel('Separation (AU)')
+                        axs.flatten()[2].set_ylim([10, 10000])
+                        axs.flatten()[0].set_xlim(left=200)
+                else:
+                    #axs.flatten()[0].set_ylim([-10, 10])
+                    axs.flatten()[0].set_ylabel('Gradient')
+                    #axs.flatten()[1].set_ylim([-10, 10])
+                    axs.flatten()[1].set_ylabel('Gradient')
+                    #axs.flatten()[2].set_ylim([-10, 10])
+                    axs.flatten()[2].set_ylabel('Gradient')
+                axs.flatten()[1].set_xlabel('Time in simulation (yr)')
+                plt.savefig(savename+'.png', format='png', bbox_inches='tight')
             
             #import pdb
             #pdb.set_trace()
 
-        plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
-        print('Created '+ savename+'.png')
+            plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
+            print('Created '+ savename+'.png')
 
-    grad_pickle = 'grad_pickle.pkl'
-    file = open(grad_pickle, 'wb')
-    pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000), file)
-    file.close()
-    print('saved_gradients')
+        grad_pickle = 'grad_pickle_'+str(rank)+'.pkl'
+        file = open(grad_pickle, 'wb')
+        pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000), file)
+        file.close()
+        print('saved_gradients')
+        
+        #Compile together pickles
+        import pdb
+        pdb.set_trace()
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
