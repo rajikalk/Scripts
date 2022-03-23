@@ -187,55 +187,11 @@ if read_pickle == True:
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
-Initial_gradients, Initial_gradients_1000 = pickle.load(file)
+Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000 = pickle.load(file)
 file.close()
 
+#Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(5,-6,12), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
-#grad_bins = np.concatenate((-1*np.logspace(4,-3,15), np.array([0, 1.e10])))
-grad_hist_core, grad_bins = np.histogram(Initial_gradients[0], bins=grad_bins)
-grad_hist_core_delayed, grad_bins = np.histogram(Initial_gradients[1], bins=grad_bins)
-grad_hist_capt, grad_bins = np.histogram(Initial_gradients[2], bins=grad_bins)
-grad_hist_misc, grad_bins = np.histogram(Initial_gradients[3], bins=grad_bins)
-
-#calculate means
-core_mean = []
-for grit in range(len(Initial_gradients_1000[0])):
-    core_mean.append(np.mean(Initial_gradients_1000[0][grit]))
-grad_hist_core_mean, grad_bins = np.histogram(core_mean, bins=grad_bins)
-grad_hist_core_mean_std = np.sqrt(grad_hist_core_mean)
-grad_hist_core_mean_rel_err = grad_hist_core_mean_std/grad_hist_core_mean
-grad_hist_core_mean_rel_err = np.nan_to_num(grad_hist_core_mean_rel_err)
-#grad_hist_core_mean_err = 1/np.sqrt(len(core_mean))
-#grad_hist_core_mean_rel_err = grad_hist_core_mean_err/grad_hist_core_mean
-#grad_hist_core_mean_rel_err[np.isinf(grad_hist_core_mean_rel_err)] = 0
-
-core_delayed_mean = []
-for grit in range(len(Initial_gradients_1000[1])):
-    core_delayed_mean.append(np.mean(Initial_gradients_1000[1][grit]))
-grad_hist_core_delayed_mean, grad_bins = np.histogram(core_delayed_mean, bins=grad_bins)
-grad_hist_core_delayed_mean_std = np.sqrt(grad_hist_core_delayed_mean)
-grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_std/grad_hist_core_delayed_mean
-grad_hist_core_delayed_mean_rel_err = np.nan_to_num(grad_hist_core_delayed_mean_rel_err)
-#grad_hist_core_delayed_mean_err = 1/np.sqrt(len(core_delayed_mean))
-#grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_err/grad_hist_core_delayed_mean
-#grad_hist_core_delayed_mean_rel_err[np.isinf(grad_hist_core_delayed_mean_rel_err)] = 0
-
-capt_mean = []
-for grit in range(len(Initial_gradients_1000[2])):
-    capt_mean.append(np.mean(Initial_gradients_1000[2][grit]))
-grad_hist_capt_mean, grad_bins = np.histogram(capt_mean, bins=grad_bins)
-grad_hist_capt_mean_std = np.sqrt(grad_hist_capt_mean)
-grad_hist_capt_mean_rel_err = grad_hist_capt_mean_std/grad_hist_capt_mean
-grad_hist_capt_mean_rel_err = np.nan_to_num(grad_hist_capt_mean_rel_err)
-
-misc_mean = []
-for grit in range(len(Initial_gradients_1000[3])):
-    misc_mean.append(np.mean(Initial_gradients_1000[3][grit]))
-grad_hist_misc_mean, grad_bins = np.histogram(misc_mean, bins=grad_bins)
-grad_hist_misc_mean_std = np.sqrt(grad_hist_misc_mean)
-grad_hist_misc_mean_rel_err = grad_hist_misc_mean_std/grad_hist_misc_mean
-grad_hist_misc_mean_rel_err = np.nan_to_num(grad_hist_misc_mean_rel_err)
-
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
 bin_widths = grad_bins[1:] - grad_bins[:-1]
@@ -250,6 +206,15 @@ for bin_val in grad_bins:
     ticklabels.append(r'{}'.format(tick_str))
 ticklabels.append("")
 
+#Plotting initial gradients
+#grad_bins = np.concatenate((-1*np.logspace(4,-3,15), np.array([0, 1.e10])))
+grad_hist_core, grad_bins = np.histogram(Initial_gradients[0], bins=grad_bins)
+grad_hist_core_delayed, grad_bins = np.histogram(Initial_gradients[1], bins=grad_bins)
+grad_hist_capt, grad_bins = np.histogram(Initial_gradients[2], bins=grad_bins)
+grad_hist_misc, grad_bins = np.histogram(Initial_gradients[3], bins=grad_bins)
+
+x_range = np.arange(len(grad_hist_core)+1)
+
 grad_hist_core_norm = grad_hist_core/np.sum(grad_hist_core)
 grad_hist_core_delayed_norm = grad_hist_core_delayed/np.sum(grad_hist_core_delayed)
 grad_hist_capt_norm = grad_hist_capt/np.sum(grad_hist_capt)
@@ -260,18 +225,6 @@ grad_hist_core_delayed_norm = np.concatenate((grad_hist_core_delayed_norm, np.ar
 grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_capt_norm[-1]])))
 grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
-x_range = np.arange(len(grad_hist_core)+1)
-'''
-#Let's calculate a fit!
-x_bins = np.log10(abs(grad_bin_centers[:-1]))[::-1]
-y_core = grad_hist_core_norm[:-2][::-1]
-plt.clf()
-plt.semilogy(10**x_bins, y_core)
-plt.xlabel('abs grad')
-plt.ylabel('fraction')
-plt.savefig('fit_test.png')
-#samples_fit_log = scipy.stats.lognorm.pdf(x_vals, shape, loc=loc, scale=scale )
-'''
 plt.clf()
 fig, ax = plt.subplots()
 ax.step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
@@ -292,44 +245,89 @@ ax.set_ylim([0,0.4])
 ax.legend(loc='best')
 plt.savefig('Initial_grad_hist.png')
 
-grad_hist_core_mean_norm = grad_hist_core_mean/np.sum(grad_hist_core_mean)
-grad_hist_core_delayed_mean_norm = grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean)
-grad_hist_capt_mean_norm = grad_hist_capt_mean/np.sum(grad_hist_capt_mean)
-grad_hist_misc_mean_norm = grad_hist_misc_mean/np.sum(grad_hist_misc_mean)
+mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000]
 
-grad_hist_core_mean_norm = np.concatenate((grad_hist_core_mean_norm, np.array([grad_hist_core_mean_norm[-1]])))
-grad_hist_core_delayed_mean_norm = np.concatenate((grad_hist_core_delayed_mean_norm, np.array([grad_hist_core_delayed_mean_norm[-1]])))
-grad_hist_capt_mean_norm = np.concatenate((grad_hist_capt_mean_norm, np.array([grad_hist_capt_mean_norm[-1]])))
-grad_hist_misc_mean_norm = np.concatenate((grad_hist_misc_mean_norm, np.array([grad_hist_misc_mean_norm[-1]])))
+#Plotting mean gradients
+#calculate means
+for Initial_mean_grad in mean_grads:
+    core_mean = []
+    for grit in range(len(Initial_mean_grad[0])):
+        core_mean.append(np.mean(Initial_mean_grad[0][grit]))
+    grad_hist_core_mean, grad_bins = np.histogram(core_mean, bins=grad_bins)
+    grad_hist_core_mean_std = np.sqrt(grad_hist_core_mean)
+    grad_hist_core_mean_rel_err = grad_hist_core_mean_std/grad_hist_core_mean
+    grad_hist_core_mean_rel_err = np.nan_to_num(grad_hist_core_mean_rel_err)
+    #grad_hist_core_mean_err = 1/np.sqrt(len(core_mean))
+    #grad_hist_core_mean_rel_err = grad_hist_core_mean_err/grad_hist_core_mean
+    #grad_hist_core_mean_rel_err[np.isinf(grad_hist_core_mean_rel_err)] = 0
 
-grad_hist_core_mean_rel_err = np.concatenate((grad_hist_core_mean_rel_err, np.array([grad_hist_core_mean_rel_err[-1]])))
-grad_hist_core_delayed_mean_rel_err = np.concatenate((grad_hist_core_delayed_mean_rel_err, np.array([grad_hist_core_delayed_mean_rel_err[-1]])))
-grad_hist_capt_mean_rel_err = np.concatenate((grad_hist_capt_mean_rel_err, np.array([grad_hist_capt_mean_rel_err[-1]])))
-grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
+    core_delayed_mean = []
+    for grit in range(len(Initial_mean_grad[1])):
+        core_delayed_mean.append(np.mean(Initial_mean_grad[1][grit]))
+    grad_hist_core_delayed_mean, grad_bins = np.histogram(core_delayed_mean, bins=grad_bins)
+    grad_hist_core_delayed_mean_std = np.sqrt(grad_hist_core_delayed_mean)
+    grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_std/grad_hist_core_delayed_mean
+    grad_hist_core_delayed_mean_rel_err = np.nan_to_num(grad_hist_core_delayed_mean_rel_err)
+    #grad_hist_core_delayed_mean_err = 1/np.sqrt(len(core_delayed_mean))
+    #grad_hist_core_delayed_mean_rel_err = grad_hist_core_delayed_mean_err/grad_hist_core_delayed_mean
+    #grad_hist_core_delayed_mean_rel_err[np.isinf(grad_hist_core_delayed_mean_rel_err)] = 0
 
-plt.clf()
-fig, ax = plt.subplots()
-ax.step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-ax.errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
-ax.step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-ax.errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
-ax.step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
-ax.errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
-ax.step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
-ax.errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
-'''
-ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_mean/np.sum(grad_hist_core_mean), label="Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='b')
-ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean), label="Delayed Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='purple')
-ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_capt_mean/np.sum(grad_hist_capt_mean), label="Dynamical Capture", width=1, color='None', linewidth=2, edgecolor='red')
-ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_misc_mean/np.sum(grad_hist_misc_mean), label="Other", width=1, color='None', linewidth=2, edgecolor='orange')
-'''
-ax.set_xlim([x_range[0], x_range[-1]])
-ax.set_xticklabels(ticklabels[::2])
-ax.set_xlabel('Inspiral rate (au/yr)')
-ax.set_ylabel('#')
-ax.set_ylim([0,0.4])
-ax.legend(loc='best')
-plt.savefig('Mean_grad_hist.png')
+    capt_mean = []
+    for grit in range(len(Initial_mean_grad[2])):
+        capt_mean.append(np.mean(Initial_mean_grad[2][grit]))
+    grad_hist_capt_mean, grad_bins = np.histogram(capt_mean, bins=grad_bins)
+    grad_hist_capt_mean_std = np.sqrt(grad_hist_capt_mean)
+    grad_hist_capt_mean_rel_err = grad_hist_capt_mean_std/grad_hist_capt_mean
+    grad_hist_capt_mean_rel_err = np.nan_to_num(grad_hist_capt_mean_rel_err)
+
+    misc_mean = []
+    for grit in range(len(Initial_mean_grad[3])):
+        misc_mean.append(np.mean(Initial_mean_grad[3][grit]))
+    grad_hist_misc_mean, grad_bins = np.histogram(misc_mean, bins=grad_bins)
+    grad_hist_misc_mean_std = np.sqrt(grad_hist_misc_mean)
+    grad_hist_misc_mean_rel_err = grad_hist_misc_mean_std/grad_hist_misc_mean
+    grad_hist_misc_mean_rel_err = np.nan_to_num(grad_hist_misc_mean_rel_err)
+
+    grad_hist_core_mean_norm = grad_hist_core_mean/np.sum(grad_hist_core_mean)
+    grad_hist_core_delayed_mean_norm = grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean)
+    grad_hist_capt_mean_norm = grad_hist_capt_mean/np.sum(grad_hist_capt_mean)
+    grad_hist_misc_mean_norm = grad_hist_misc_mean/np.sum(grad_hist_misc_mean)
+
+    grad_hist_core_mean_norm = np.concatenate((grad_hist_core_mean_norm, np.array([grad_hist_core_mean_norm[-1]])))
+    grad_hist_core_delayed_mean_norm = np.concatenate((grad_hist_core_delayed_mean_norm, np.array([grad_hist_core_delayed_mean_norm[-1]])))
+    grad_hist_capt_mean_norm = np.concatenate((grad_hist_capt_mean_norm, np.array([grad_hist_capt_mean_norm[-1]])))
+    grad_hist_misc_mean_norm = np.concatenate((grad_hist_misc_mean_norm, np.array([grad_hist_misc_mean_norm[-1]])))
+
+    grad_hist_core_mean_rel_err = np.concatenate((grad_hist_core_mean_rel_err, np.array([grad_hist_core_mean_rel_err[-1]])))
+    grad_hist_core_delayed_mean_rel_err = np.concatenate((grad_hist_core_delayed_mean_rel_err, np.array([grad_hist_core_delayed_mean_rel_err[-1]])))
+    grad_hist_capt_mean_rel_err = np.concatenate((grad_hist_capt_mean_rel_err, np.array([grad_hist_capt_mean_rel_err[-1]])))
+    grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
+
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+    ax.errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
+    ax.step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
+    ax.errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
+    ax.step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+    ax.errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
+    ax.step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+    ax.errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
+    '''
+    ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_mean/np.sum(grad_hist_core_mean), label="Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='b')
+    ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean), label="Delayed Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='purple')
+    ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_capt_mean/np.sum(grad_hist_capt_mean), label="Dynamical Capture", width=1, color='None', linewidth=2, edgecolor='red')
+    ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_misc_mean/np.sum(grad_hist_misc_mean), label="Other", width=1, color='None', linewidth=2, edgecolor='orange')
+    '''
+    ax.set_xlim([x_range[0], x_range[-1]])
+    ax.set_xticklabels(ticklabels[::2])
+    ax.set_xlabel('Inspiral rate (au/yr)')
+    ax.set_ylabel('#')
+    ax.set_ylim([0,0.4])
+    ax.legend(loc='best')
+    plt.savefig(str(Initial_mean_grad)+'.png')
+
+"""
 
 def Gaussian(x,scale,mean,sigma):
     return scale*stats.norm.pdf(x, mean, sigma)
@@ -414,3 +412,4 @@ plt.plot(x_log_fit, fit_misc, color='orange')
 plt.xlim([x_log[0], x_log[-1]])
 plt.ylim(bottom=0)
 plt.savefig('log_normal_fit.png')
+"""
