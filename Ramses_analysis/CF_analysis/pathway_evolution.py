@@ -249,6 +249,8 @@ mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients
 
 #Plotting mean gradients
 #calculate means
+time_means = [1000, 10000, 100000]
+time_means_counter = 0
 for Initial_mean_grad in mean_grads:
     core_mean = []
     for grit in range(len(Initial_mean_grad[0])):
@@ -325,7 +327,8 @@ for Initial_mean_grad in mean_grads:
     ax.set_ylabel('#')
     ax.set_ylim([0,0.4])
     ax.legend(loc='best')
-    plt.savefig(str(Initial_mean_grad)+'.png')
+    plt.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
+    time_means_counter = time_means_counter + 1
 
 """
 
