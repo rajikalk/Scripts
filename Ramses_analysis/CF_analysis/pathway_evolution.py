@@ -17,7 +17,7 @@ def flatten(x):
 
 pickle_file = sys.argv[1]
 plot_gradient = True
-read_pickle = sys.argv[2]
+read_pickle = bool(sys.argv[2])
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 
