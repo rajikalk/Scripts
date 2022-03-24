@@ -59,20 +59,20 @@ for grad_it in range(len(grad_pickles)):
     grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_capt_norm[-1]])))
     grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
-    axs1[0].step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-    axs1[0].step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-    axs1[0].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
-    axs1[0].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+    axs1[grad_it].step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+    axs1[grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
+    axs1[grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+    axs1[grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
-    axs1[0].set_ylabel('#')
+    axs1[grad_it].set_ylabel('#')
 
     if grad_it == 0:
-        axs1[0].legend(loc='best')
+        axs1[grad_it].legend(loc='best')
     if grad_it == (len(grad_pickles) - 1):
-        axs1[0].set_xlim([x_range[0], x_range[-1]])
-        axs1[0].set_xticklabels(ticklabels[::2])
-        axs1[0].set_xlabel('Inspiral rate (au/yr)')
-        axs1[0].set_ylim(bottom=0)
+        axs1[grad_it].set_xlim([x_range[0], x_range[-1]])
+        axs1[grad_it].set_xticklabels(ticklabels[::2])
+        axs1[grad_it].set_xlabel('Inspiral rate (au/yr)')
+        axs1[grad_it].set_ylim(bottom=0)
     fig1.savefig('Initial_grad_hist.png')
 
     mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000]
