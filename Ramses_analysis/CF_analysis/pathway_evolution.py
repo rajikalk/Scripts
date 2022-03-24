@@ -50,6 +50,13 @@ if read_pickle == True:
         file = open(pickle_file, 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
+        del Sink_formation_times
+        del means_dict
+        del Lifetimes_sys
+        del Sep_maxs
+        del Sep_mins
+        del Initial_Seps
+        del Final_seps
         print('Read means pickle on rank', rank)
 
         sys.stdout.flush()
