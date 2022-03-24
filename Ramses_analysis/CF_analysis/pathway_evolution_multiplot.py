@@ -65,9 +65,10 @@ for grad_it in range(len(grad_pickles)):
     axs1[grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
     axs1[grad_it].set_ylabel('#')
-
+    '''
     if grad_it == 0:
         axs1[grad_it].legend(loc='best')
+    '''
     if grad_it == (len(grad_pickles) - 1):
         axs1[grad_it].set_xlim([x_range[0], x_range[-1]])
         axs1[grad_it].set_xticklabels(ticklabels[::2])
@@ -150,8 +151,10 @@ for grad_it in range(len(grad_pickles)):
         ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_misc_mean/np.sum(grad_hist_misc_mean), label="Other", width=1, color='None', linewidth=2, edgecolor='orange')
         '''
         axs1[time_means_counter+1].set_ylabel('#')
+        '''
         if grad_it == 0:
             axs1[time_means_counter+1].legend(loc='best')
+        '''
         if grad_it == (len(grad_pickles) - 1):
             axs1[time_means_counter+1].set_xlim([x_range[0], x_range[-1]])
             axs1[time_means_counter+1].set_xticklabels(ticklabels[::2])
