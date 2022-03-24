@@ -19,7 +19,7 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 
 pickle_file = sys.argv[1]
-plot_gradient = True
+plot_gradient = False
 read_pickle = bool(sys.argv[2])
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
@@ -29,6 +29,7 @@ if read_pickle == True:
         savename = 'pathway_evolution_'+plot_key
         if plot_gradient:
             savename = savename + '_grad'
+        '''
         plt.clf()
         fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(12, 9), sharey=True, sharex=True)
         if 'energies' in plot_key:
@@ -38,6 +39,7 @@ if read_pickle == True:
             axs.flatten()[3].set_yscale('symlog')
         plt.subplots_adjust(wspace=0.0)
         plt.subplots_adjust(hspace=0.07)
+        '''
 
         file = open(pickle_file, 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
@@ -171,21 +173,21 @@ if read_pickle == True:
                         axs.flatten()[2].set_ylabel('Separation (AU)')
                         axs.flatten()[2].set_ylim([10, 10000])
                         axs.flatten()[0].set_xlim(left=200)
-                else:
-                    #axs.flatten()[0].set_ylim([-10, 10])
-                    axs.flatten()[0].set_ylabel('Gradient')
-                    #axs.flatten()[1].set_ylim([-10, 10])
-                    axs.flatten()[1].set_ylabel('Gradient')
-                    #axs.flatten()[2].set_ylim([-10, 10])
-                    axs.flatten()[2].set_ylabel('Gradient')
-                axs.flatten()[1].set_xlabel('Time in simulation (yr)')
-                plt.savefig(savename+'.png', format='png', bbox_inches='tight')
+                    else:
+                        #axs.flatten()[0].set_ylim([-10, 10])
+                        axs.flatten()[0].set_ylabel('Gradient')
+                        #axs.flatten()[1].set_ylim([-10, 10])
+                        axs.flatten()[1].set_ylabel('Gradient')
+                        #axs.flatten()[2].set_ylim([-10, 10])
+                        axs.flatten()[2].set_ylabel('Gradient')
+                    axs.flatten()[1].set_xlabel('Time in simulation (yr)')
+                    plt.savefig(savename+'.png', format='png', bbox_inches='tight')
             
             #import pdb
             #pdb.set_trace()
 
-            plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
-            print('Created '+ savename+'.png')
+            #plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
+            #print('Created '+ savename+'.png')
 
         grad_pickle = 'grad_pickle_'+str(rank)+'.pkl'
         file = open(grad_pickle, 'wb')

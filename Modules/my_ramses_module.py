@@ -367,8 +367,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         xmax = limits[0][1]
         ymin = limits[1][0]
         ymax = limits[1][1]
-    rv_colors = np.linspace(-1, 1, 256)
-    rv_cmap = plt.cm.get_cmap('bwr')
+    #rv_colors = np.linspace(-1, 1, 256)
+    rv_colors = np.linspace(0, 1, 256)
+    rv_cmap = plt.cm.get_cmap('RdGy_r')#plt.cm.get_cmap('bwr')
     
     len_scale = (0.07*(xmax - xmin))
     #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))

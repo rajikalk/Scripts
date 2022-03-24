@@ -26,17 +26,21 @@ matplotlib.rcParams['text.latex.preamble'] = [
 
 def Gaussian(x,scale,mean,sigma):
     return scale*stats.norm.pdf(x, mean, sigma)
+    
+def Gaussian_cdf(x,scale,mean,sigma):
+    return scale*stats.norm.cdf(x, mean, sigma)
 
 def Skewed_Gaussian(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.pdf(x, skew, loc=mean, scale=sigma)
     
-def Skewed_Gaussia_cdf(x, scale, mean, sigma, skew):
+def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
 
-pickles = ['/Users/reggie/Documents/Simulation_analysis/Superplots/formation_pathway_1500.pkl', '/Users/reggie/Documents/Simulation_analysis/Superplots/formation_pathway_3000.pkl', '/Users/reggie/Documents/Simulation_analysis/Superplots/formation_pathway_3750.pkl', '/Users/reggie/Documents/Simulation_analysis/Superplots/formation_pathway_4500.pkl', '/Users/reggie/Documents/Simulation_analysis/Superplots/formation_pathway_6000.pkl']
+pickles = ['/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_1500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3000.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3750.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_4500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_6000.pkl',
+    '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_12000.pkl']
 
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
-label_height = [3.5, 17, 32, 40, 70]
+label_height = [2.5, 16, 32, 40, 65, 135]
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -105,22 +109,24 @@ for pick_it in range(len(pickles)):
     skew_guess = (3*(mean_guess - median_guess))/std_guess
     scale_guess = np.max(core_sep_hist+core_delayed_sep_hist)
     guess_params.append([mean_guess, median_guess, std_guess])
-    popt, pcov = curve_fit(Skewed_Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess, skew_guess], sigma=poisson_err*np.ones(np.shape(bin_centers)), absolute_sigma=True)#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
-    #popt, pcov = curve_fit(Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess])#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
-    #fit_core = Gaussian(x_fit, *popt)
-    fit_core = Skewed_Gaussian(x_fit, *popt)
+    #popt, pcov = curve_fit(Skewed_Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess, skew_guess], sigma=poisson_err*np.ones(np.shape(bin_centers)), absolute_sigma=True)#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
+    popt, pcov = curve_fit(Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess])#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
+    fit_core = Gaussian(x_fit, *popt)
+    #fit_core = Skewed_Gaussian(x_fit, *popt)
     axs.flatten()[pick_it].plot(x_fit, fit_core, 'k-')
-    cdf_fit = Skewed_Gaussia_cdf(x_fit, *popt)
+    #cdf_fit = Skewed_Gaussian_cdf(x_fit, *popt)
+    cdf_fit = Gaussian_cdf(x_fit, *popt)
     cdf_norm = cdf_fit/cdf_fit[-1]
     mode = x_fit[np.argmax(fit_core)]
     median = x_fit[np.argmin(abs(cdf_norm-0.5))]
     err_lower = x_fit[np.argmin(abs(cdf_norm-0.16))]
     err_higher = x_fit[np.argmin(abs(cdf_norm-0.84))]
     print('mean, std, mode, median, +/-:', popt[1], popt[2], mode, median, err_higher, err_lower)
-    fit_params.append([popt[1], median, err_lower, err_higher])
+    #fit_params.append([popt[1], median, err_lower, err_higher])
+    fit_params.append(popt)
     if pick_it == len(pickles) - 1:
         axs.flatten()[pick_it].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
-    axs.flatten()[pick_it].set_ylabel('# Systems', fontsize=font_size, labelpad=-0.5)
+    axs.flatten()[pick_it].set_ylabel('# Systems', fontsize=font_size)
     axs.flatten()[pick_it].tick_params(axis='both', which='major', labelsize=font_size)
     axs.flatten()[pick_it].tick_params(axis='both', which='minor', labelsize=font_size)
     axs.flatten()[pick_it].tick_params(axis='x', direction='in')
@@ -130,21 +136,21 @@ for pick_it in range(len(pickles)):
     plt.savefig('initial_sep_dist_'+save_num+'.pdf', bbox_inches='tight', pad_inches=0.02)
     
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000]# 12000]
-y_mean = np.array(fit_params).T[0]
-y_median = np.array(fit_params).T[1]
-import pdb
-pdb.set_trace()
-y_err_mean = np.array(fit_params).T[2:]
-y_err_low = y_median - np.array(fit_params).T[2]
-y_err_high = np.array(fit_params).T[3] - y_median
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
+x_val = [1500, 3000, 3750, 4500, 6000, 12000]
+y_mean = np.array(fit_params).T[1]#0]
+y_std = np.array(fit_params).T[2]
 
+plt.errorbar(x_val, y_mean, y_std)
+plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size)
+plt.ylabel('Core fragmentation scale (log au)', fontsize=font_size)
 
-plt.errorbar(x_val, y_median, np.array([y_err_low, y_err_high]))
-plt.xlabel('GMC mass')
-plt.ylabel('Core fragmentation scales (log(au))')
-plt.savefig('core_fragmentation_scales_fit.pdf')
+axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+axs.tick_params(axis='both', which='minor', labelsize=font_size)
+axs.tick_params(axis='x', direction='in')
+axs.tick_params(axis='y', direction='in')
+
+plt.savefig('core_fragmentation_scales_fit.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)

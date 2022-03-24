@@ -5,6 +5,8 @@ import sys
 import os
 import my_ramses_module as mym
 import pickle
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 def parse_inputs():
     import argparse
@@ -35,9 +37,6 @@ save_dir = sys.argv[2]
 if os.path.exists(save_dir) == False:
     os.makedirs(save_dir)
 
-sys.stdout.flush()
-CW.Barrier()
-
 #Set some plot variables independant on data files
 cbar_max = args.colourbar_max
 try:
@@ -54,14 +53,8 @@ for part in title_parts:
         title = title + part
 mym.set_global_font_size(args.text_font)
 
-sys.stdout.flush()
-CW.Barrier()
-
 #File files
-pickle_files = sorted(glob.glob(input_dir+"*/time*.pkl"))
-
-sys.stdout.flush()
-CW.Barrier()
+pickle_files = sorted(glob.glob(input_dir+"time*.pkl"))
 
 for pickle_file in pickle_files:
     frame_no = int(pickle_file.split('_')[-1].split('.')[0])
@@ -75,7 +68,7 @@ for pickle_file in pickle_files:
     if args.output_filename != None:
         file_name = args.output_filename
     else:
-        file_name = save_dir + "time_" + str(args.plot_time)
+        file_name = pickle_file.split('.pkl')[0]
     
     print(file_name + ".jpg" + " doesn't exist, so plotting image")
     #import pdb
@@ -103,21 +96,24 @@ for pickle_file in pickle_files:
     ax.set_ylim(ylim)
 
     cmap = plt.cm.cividis
+    #cmap = plt.cm.gist_heat
     plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
     plt.gca().set_aspect('equal')
-    plt.streamplot(X, Y, magx, magy, density=4, arrowstyle='-', minlength=0.5, color='grey', zorder=2, linewidth=5*(magz/np.max(magz)))
-
+    #lw = ((np.log10(abs(magz)) - np.min(np.log10(abs(magz)))))/np.max(((np.log10(abs(magz)) - np.min(np.log10(abs(magz))))))
+    lw = (abs(magz))/np.max(abs(magz))
+    plt.streamplot(X, Y, magx, magy, density=4, arrowstyle='-', minlength=0.5, color='grey', zorder=2, linewidth=1*lw)
+    
+    
+    xy_mag = np.sqrt(velx**2 + velx**2)
+    xy_mag = xy_mag/(np.max(xy_mag))
     cbar = plt.colorbar(plot, pad=0.0)
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend="False", limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=xy_mag)
         
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, zorder=7)
     
-    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300, pad_inches=-0.1)
-    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight', pad_inches=-0.1)
-    print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)#, pad_inches=-0.02)
+    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')#, pad_inches=-0.02)
+    print('Created:', file_name + '.jpg')
         
-sys.stdout.flush()
-CW.Barrier()
-
-print("completed making movie frames on rank", rank)
+print("completed making movie frames on rank")
 
