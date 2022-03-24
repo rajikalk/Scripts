@@ -345,6 +345,9 @@ frames = list(range(args.start_frame, no_frames))
 sys.stdout.flush()
 CW.Barrier()
 
+import pdb
+pdb.set_trace()
+
 if args.make_frames_only == 'False':
     verbatim = False
     if rank == 0:
