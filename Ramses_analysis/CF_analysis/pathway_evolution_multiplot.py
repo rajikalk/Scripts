@@ -27,10 +27,10 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
-fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
-fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
-fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
 fig_list = [fig1, fig2, fig3, fig4]
 axs_list = [axs1, axs2, axs3, axs4]
 iter_range = range(0, len(grad_pickles))
@@ -67,6 +67,11 @@ for grad_it in range(len(grad_pickles)):
     axs_list[0][grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
     axs_list[0][grad_it].set_ylabel('#')
+    
+    axs_list[0][grad_it].tick_params(axis='both', which='major', labelsize=font_size)
+    axs_list[0][grad_it].tick_params(axis='both', which='minor', labelsize=font_size)
+    axs_list[0][grad_it].tick_params(axis='x', direction='in')
+    axs_list[0][grad_it].tick_params(axis='y', direction='in')
     '''
     if grad_it == 0:
         axs1[grad_it].legend(loc='best')
@@ -146,6 +151,11 @@ for grad_it in range(len(grad_pickles)):
         axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
         axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
+        
+        axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='major', labelsize=font_size)
+        axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='minor', labelsize=font_size)
+        axs_list[time_means_counter+1][grad_it].tick_params(axis='x', direction='in')
+        axs_list[time_means_counter+1][grad_it].tick_params(axis='y', direction='in')
         '''
         ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_mean/np.sum(grad_hist_core_mean), label="Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='b')
         ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_delayed_mean/np.sum(grad_hist_core_delayed_mean), label="Delayed Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='purple')
