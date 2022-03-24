@@ -157,7 +157,12 @@ for grad_it in range(len(grad_pickles)):
             axs1[time_means_counter+1].set_xticklabels(ticklabels[::2])
             axs1[time_means_counter+1].set_xlabel('Inspiral rate (au/yr)')
             axs1[time_means_counter+1].set_ylim(bottom=0)
-        fig.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
+        if time_means_counter == 0:
+            fig1.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
+        if time_means_counter == 1:
+            fig2.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
+        if time_means_counter == 2:
+            fig3.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
         time_means_counter = time_means_counter + 1
 
 """
