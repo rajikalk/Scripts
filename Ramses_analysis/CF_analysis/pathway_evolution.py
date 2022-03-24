@@ -209,16 +209,19 @@ if read_pickle == True:
 
             #plt.savefig(savename+'.pdf', format='pdf', bbox_inches='tight')
             #print('Created '+ savename+'.png')
-
-        grad_pickle = 'grad_pickle_'+str(rank)+'.pkl'
+        if size > 1:
+            grad_pickle = 'grad_pickle_'+str(rank)+'.pkl'
+        else:
+            grad_pickle = 'grad_pickle.pkl'
         file = open(grad_pickle, 'wb')
         pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000), file)
         file.close()
         print('saved_gradients')
         
         #Compile together pickles
-        import pdb
-        pdb.set_trace()
+        if size > 1:
+            import pdb
+            pdb.set_trace()
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
