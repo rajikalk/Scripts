@@ -18,11 +18,17 @@ def flatten(x):
 rank = CW.Get_rank()
 size = CW.Get_size()
 
+sys.stdout.flush()
+CW.Barrier()
+
 pickle_file = sys.argv[1]
 plot_gradient = False
 read_pickle = bool(sys.argv[2])
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
+
+sys.stdout.flush()
+CW.Barrier()
 
 if read_pickle == True:
     for plot_key in plot_keys:
@@ -44,6 +50,10 @@ if read_pickle == True:
         file = open(pickle_file, 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
+        print('Read means pickle on rank', rank)
+
+        sys.stdout.flush()
+        CW.Barrier()
 
         SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
         SFE_5_time = superplot_dict['Times'][SFE_5_ind]
@@ -57,6 +67,10 @@ if read_pickle == True:
         Initial_gradients_1000 = [[],[],[],[]]
         Initial_gradients_10000 = [[],[],[],[]]
         Initial_gradients_100000 = [[],[],[],[]]
+        
+        print('initialised gradient arrays')
+        sys.stdout.flush()
+        CW.Barrier()
         rit = -1
         for time_key in superplot_dict['System_times'].keys():
             rit = rit + 1
