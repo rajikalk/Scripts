@@ -141,7 +141,7 @@ if read_pickle == True:
                                     Initial_gradients[axis_ind].append(grad[0])
                                 #lets trying smoothing over a 1000year window, but not centred
 
-                                if plot_gradient == False:
+                                if plot_gradient == True:
                                     if 'ecc' in plot_key:
                                         axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
                                     else:
@@ -164,7 +164,7 @@ if read_pickle == True:
                                     reduced = True
                                 break
                     
-                if plot_gradient == False:
+                if plot_gradient == True:
                     if 'semimajor' in plot_key or 'seps' in plot_key:
                         axs.flatten()[0].set_ylabel('Separation (AU)')
                         axs.flatten()[0].set_ylim([10, 10000])
