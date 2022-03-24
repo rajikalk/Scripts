@@ -171,11 +171,11 @@ if read_pickle == True:
                                         axs.flatten()[0].set_yscale('symlog')
                                         axs.flatten()[1].set_yscale('symlog')
                                         axs.flatten()[2].set_yscale('symlog')
-                                else:
-                                    axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
-                                    axs.flatten()[0].set_yscale('symlog')
-                                    axs.flatten()[1].set_yscale('symlog')
-                                    axs.flatten()[2].set_yscale('symlog')
+                                    else:
+                                        axs.flatten()[axis_ind].loglog(mean_x, grad, alpha=0.2, color=color, rasterized=True, ls=line_style)
+                                        axs.flatten()[0].set_yscale('symlog')
+                                        axs.flatten()[1].set_yscale('symlog')
+                                        axs.flatten()[2].set_yscale('symlog')
                                 plotted_sinks = plotted_sinks + not_plotted_sinks
                                 #print('plotted sinks', not_plotted_sinks)
                                 replace_string = str(new_sys_id)
