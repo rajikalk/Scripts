@@ -607,6 +607,7 @@ if args.make_frames_only == 'False':
                         args_dict.update({'field':simfo['field']})
                         args_dict.update({'annotate_velocity': args.plot_velocity_legend})
                         args_dict.update({'time_val': time_val})
+                        args_dict.update({'sim_file': fn})
                         args_dict.update({'cbar_min': cbar_min})
                         args_dict.update({'cbar_max': cbar_max})
                         args_dict.update({'title': title})
