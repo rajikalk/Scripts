@@ -31,7 +31,7 @@ fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_
 fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
 fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
 fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
-iter_range = range(0, len(pickles))
+iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.01)
 
