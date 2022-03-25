@@ -919,7 +919,7 @@ for it in range(len(positions)):
     print("saving", savename + '.pdf')
     #plt.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
     #if it == (len(positions) - 1):
-    plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    #plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
     plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02, dpi=500)
     print("saved", savename + '.pdf')
     #f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
