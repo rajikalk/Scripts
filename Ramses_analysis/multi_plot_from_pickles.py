@@ -16,10 +16,6 @@ from matplotlib import ticker
 from scipy.ndimage import gaussian_filter
 import matplotlib.patches as patches
 
-#matplotlib.rcParams['pdf.fonttype'] = 42
-#matplotlib.rcParams['ps.fonttype'] = 42
-#matplotlib.rcParams['mathtext.fontset'] = 'custom'
-#matplotlib.rcParams['mathtext.fontset'] = 'sans-serif'
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
