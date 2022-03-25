@@ -126,6 +126,13 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
     return m_times
 
 def find_files(m_times, files, sink_form_time, sink_number, verbatim=True):
+    """
+    Uses a binary search, and assumes times are in chronological order to find files closest to the time you want.
+    m_time: list, for single value input [time]. Assumes m_times are in chronological order. Units: yr
+    files: list of all files that it is search for the time in
+    sink_form_time: formation time of the sink that times are relative to. Units: yr
+    sink_number: sink that you are interested in. Type: int
+    """
     global time_unit
     csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
     usable_files = []
