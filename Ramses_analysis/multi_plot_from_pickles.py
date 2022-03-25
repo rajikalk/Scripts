@@ -669,10 +669,10 @@ for it in range(len(positions)):
                 cbar.ax.tick_params(labelsize=args.text_font)
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=20, size=args.text_font)
             
-            title_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[0]+0.05*(ylim[1]-ylim[0])), '$SFE$='+str(sfe)+'\%', va="center", ha="left", color='w', fontsize=(args.text_font))
+            #title_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[0]+0.05*(ylim[1]-ylim[0])), '$SFE$='+str(sfe)+'\%', va="center", ha="left", color='w', fontsize=(args.text_font))
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
-            time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1] - 0.05*(ylim[1]-ylim[0])), title, va="center", ha="left", color='w', fontsize=args.text_font+2, zorder=4)#, fontdict=fontdict)
+            #time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1] - 0.05*(ylim[1]-ylim[0])), title, va="center", ha="left", color='w', fontsize=args.text_font+2, zorder=4)#, fontdict=fontdict)
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             axes_dict[ax_label].scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
