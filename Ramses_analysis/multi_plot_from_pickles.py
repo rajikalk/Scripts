@@ -44,7 +44,7 @@ def parse_inputs():
     parser.add_argument("-sd", "--save_dir", help="Where do you want to save the plot? defaults to same as input file directory", default='./')
     parser.add_argument("-sc", "--share_colourbar", help="Do you want to share colour bars over rows?", default=False)
     parser.add_argument("-plot_cbar", "--plot_colourbar", help="Do you need to plot a colorbar?", default=True)
-    parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=12)
+    parser.add_argument("-tf", "--text_font", help="what font do you want the text to have?", type=int, default=10)
     parser.add_argument("-sn", "--savename", help="what do you want to save the plot as?", type=str, default='multiplot')
     parser.add_argument("-ylp", "--y_label_pad", help="y lable pad", default=-20, type=float)
     parser.add_argument("-title", "--multiplot_title", help="Do you want to title the multiplot", type=str, default="")
@@ -612,75 +612,72 @@ for it in range(len(positions)):
         #axes_dict[ax_label].set_ylim(bottom=0.0)
         #axes_dict[ax_label].set_xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     elif plot_type[it] == 'global_frame':
-        try:
-            matplotlib.use(pgf)
-            file = open(file_dir[it], 'rb')
-            X, Y, image, particle_x_pos, particle_y_pos = pickle.load(file)
-            file.close()
+        file = open(file_dir[it], 'rb')
+        X, Y, image, particle_x_pos, particle_y_pos = pickle.load(file)
+        file.close()
+        
+        if '-cmin' in input_args[it]:
+            cmin_ind = input_args[it].index('-cmin')
+            cbar_min = eval(input_args[it][cmin_ind+1])
+        else:
+            cbar_min = None
+        if '-cmax' in input_args[it]:
+            cmax_ind = input_args[it].index('-cmax')
+            cbar_max = eval(input_args[it][cmax_ind+1])
+        else:
+            cbar_max = None
+        
+        if '-title' in input_args[it]:
+            title_ind = input_args[it].index('-title')
+            title = input_args[it][title_ind+1]
+            #title_comps = title_str.split("_")
+            #title_str = ' '.join(title_comps)
+        else:
+            title = ""
             
-            if '-cmin' in input_args[it]:
-                cmin_ind = input_args[it].index('-cmin')
-                cbar_min = eval(input_args[it][cmin_ind+1])
-            else:
-                cbar_min = None
-            if '-cmax' in input_args[it]:
-                cmax_ind = input_args[it].index('-cmax')
-                cbar_max = eval(input_args[it][cmax_ind+1])
-            else:
-                cbar_max = None
+        if '-sfe' in input_args[it]:
+            sfe_ind = input_args[it].index('-sfe')
+            sfe = input_args[it][sfe_ind+1]
+        else:
+            sfe = 2.5*(positions[it][0]-1)
             
-            if '-title' in input_args[it]:
-                title_ind = input_args[it].index('-title')
-                title = input_args[it][title_ind+1]
-                #title_comps = title_str.split("_")
-                #title_str = ' '.join(title_comps)
-            else:
-                title = ""
-                
-            if '-sfe' in input_args[it]:
-                sfe_ind = input_args[it].index('-sfe')
-                sfe = input_args[it][sfe_ind+1]
-            else:
-                sfe = 2.5*(positions[it][0]-1)
-                
-            if '-cbar_range' in input_args[it]:
-                cbar_range_ind = input_args[it].index('-cbar_range')
-                cbar_range = float(input_args[it][cbar_range_ind+1])
-            else:
-                cbar_range = 1.5
-                
-            xlim = [np.min(X), np.max(X)]
-            ylim = [np.min(Y), np.max(Y)]
-                
-            M_gas = [1500, 3000, 3750, 4500, 6000, 12000]
-            volume = yt.YTQuantity(4**3, 'pc**3')
-            mass = yt.YTQuantity(M_gas[positions[it][1]-1], 'Msun')
-            mean_dens = mass/volume
-            mean_log = np.log10(mean_dens.in_units('g/cm**3'))
-            cbar_min = 10**(mean_log-cbar_range)
-            cbar_max = 10**(mean_log+cbar_range)
-            plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
-            plt.gca().set_aspect('equal')
-            if positions[it][0] == columns:
-                cbar = plt.colorbar(plot, pad=0.0)
-                cbar.ax.tick_params(labelsize=args.text_font)
-                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=20, size=args.text_font)
+        if '-cbar_range' in input_args[it]:
+            cbar_range_ind = input_args[it].index('-cbar_range')
+            cbar_range = float(input_args[it][cbar_range_ind+1])
+        else:
+            cbar_range = 1.5
             
-            title_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[0]+0.05*(ylim[1]-ylim[0])), '$SFE$='+str(sfe)+'\%', va="center", ha="left", color='w', fontsize=(args.text_font))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        xlim = [np.min(X), np.max(X)]
+        ylim = [np.min(Y), np.max(Y)]
             
-            time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1] - 0.05*(ylim[1]-ylim[0])), title, va="center", ha="left", color='w', fontsize=args.text_font+2, zorder=4)#, fontdict=fontdict)
-            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        M_gas = [1500, 3000, 3750, 4500, 6000, 12000]
+        volume = yt.YTQuantity(4**3, 'pc**3')
+        mass = yt.YTQuantity(M_gas[positions[it][1]-1], 'Msun')
+        mean_dens = mass/volume
+        mean_log = np.log10(mean_dens.in_units('g/cm**3'))
+        cbar_min = 10**(mean_log-cbar_range)
+        cbar_max = 10**(mean_log+cbar_range)
+        plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+        plt.gca().set_aspect('equal')
+        if positions[it][0] == columns:
+            cbar = plt.colorbar(plot, pad=0.0)
+            cbar.ax.tick_params(labelsize=args.text_font)
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=13, size=args.text_font)
+        
+        title_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[0]+0.05*(ylim[1]-ylim[0])), '$SFE$='+str(sfe)+'\%', va="center", ha="left", color='w', fontsize=(args.text_font))
+        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        
+        time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1] - 0.08*(ylim[1]-ylim[0])), title, va="center", ha="left", color='w', fontsize=args.text_font+2, zorder=4)#, fontdict=fontdict)
+        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        
+        axes_dict[ax_label].scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.1)
+        
+        if positions[it][1] == rows:
+            axes_dict[ax_label].set_xlabel("X (pc)", labelpad=-1, fontsize=args.text_font)
+        if positions[it][0] == 1:
+            axes_dict[ax_label].set_ylabel("Y (pc)", fontsize=args.text_font, labelpad=-6)
             
-            axes_dict[ax_label].scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
-            
-            if positions[it][1] == rows:
-                axes_dict[ax_label].set_xlabel("X (pc)", labelpad=-1, fontsize=args.text_font)
-            if positions[it][0] == 1:
-                axes_dict[ax_label].set_ylabel("Y (pc)", fontsize=args.text_font, labelpad=-9)
-        except:
-            plt.gca().set_aspect('equal')
-            print("pickle doesn't exist")
+        axes_dict[ax_label].set_xticks([-2, -1, 0, 1, 2])
 
     elif plot_type[it] == 'movie_frame':
         if positions[it][1] > 1:
@@ -904,8 +901,9 @@ for it in range(len(positions)):
     ax_r.tick_params(axis='y', direction='in')
     ax_t.tick_params(axis='x', direction='in')
     
-    axes_dict[ax_label].tick_params(axis='x', direction='in')
-    axes_dict[ax_label].tick_params(axis='y', direction='in')
+    axes_dict[ax_label].tick_params(axis='x', direction='in', which='minor', labelsize=args.text_font, top=True, bottom=True)
+    axes_dict[ax_label].tick_params(axis='x', direction='in', which='major', labelsize=args.text_font, top=True, bottom=True)
+    axes_dict[ax_label].tick_params(axis='y', direction='in', labelsize=args.text_font, left=True, right=True)
 
     if args.multiplot_title != "":
         plt.suptitle(args.multiplot_title, x=0.45, y=0.9, fontsize=18)
@@ -915,7 +913,7 @@ for it in range(len(positions)):
     print("saving", savename + '.pdf')
     #plt.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)
     #if it == (len(positions) - 1):
-    #plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
-    plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02, dpi=500)
+    plt.savefig(savename + '.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+    #plt.savefig(savename + '.png', format='png', bbox_inches='tight', pad_inches = 0.02, dpi=500)
     print("saved", savename + '.pdf')
     #f.savefig(savename + '.eps', format='eps', bbox_inches='tight', pad_inches = 0.02)

@@ -99,6 +99,7 @@ axs.flatten()[2].tick_params(axis='y', direction='in')
 axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in')
 axs.flatten()[2].set_ylim(bottom=0)
+axs.flatten()[2].set_xlim(left=0)
 
 plt.savefig('simulation_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
     
