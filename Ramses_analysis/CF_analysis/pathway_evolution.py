@@ -174,7 +174,7 @@ if read_pickle == True:
                                     except:
                                         print('system has not mean times < 100000yr')
                                     if len(grad) > 0:
-                                        if grad[0] in np.array(Initial_gradients_1000[axis_ind]):
+                                        if grad[0] in np.array(Initial_gradients[axis_ind]):
                                             import pdb
                                             pdb.set_trace()
                                         Initial_gradients[axis_ind].append(grad[0])
