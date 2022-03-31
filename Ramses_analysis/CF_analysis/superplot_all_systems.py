@@ -117,7 +117,7 @@ else:
     pdb.set_trace()
     
 
-units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+units_override.update({"density_unit":(units_override['mass_unit'][0]/(units_override['length_unit'][0]**3), "Msun/pc**3")})
     
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
@@ -267,7 +267,7 @@ if args.update_pickles == 'True':
         if rank == rit:
             #preamble
             n_stars = np.where(global_data['m'][time_it]>0)[0]
-            if len(n_stars) > 1:
+            if len(n_stars) > 25:#1:
                 abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
                 absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
                 mass = np.array(global_data['m'][time_it][n_stars])
