@@ -102,7 +102,7 @@ if read_pickle == True:
 
                     sys_comps = time_key
                     reduced = False
-                    sep_ind = 0
+                    sep_ind = -1
                     while reduced == False:
                         open_braket_ind = []
                         for char_it in range(len(sys_comps)):
@@ -133,6 +133,7 @@ if read_pickle == True:
                                         axis_ind = 3
                                         line_style = '-'
                                         color='k'
+                                    sep_ind = sep_ind + 1
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
                                     dsep = Sep_arr[1:] - Sep_arr[:-1]
                                     dtime = Time_arr[1:] - Time_arr[:-1]
