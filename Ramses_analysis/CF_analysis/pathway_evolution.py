@@ -206,8 +206,7 @@ if read_pickle == True:
                                     replace_string = str(new_sys_id)
                                     new_sys_id = new_sys_id + 1
                                 else:
-                                    import pdb
-                                    pdb.set_trace()
+                                    replace_string = str(Sub_sys_indices.index(str(sub_sys)) + first_new_sys_id)
                                 sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                                 if '[' not in sys_comps:
                                     reduced = True
