@@ -77,6 +77,7 @@ if read_pickle == True:
         #Initial_gradients_1000 = [[],[],[],[]]
         Initial_gradients_10000 = [[],[],[],[]]
         #Initial_gradients_100000 = [[],[],[],[]]
+        Used_sub_sys = []
         
         print('initialised gradient arrays')
         sys.stdout.flush()
@@ -108,67 +109,71 @@ if read_pickle == True:
                             if sys_comps[char_it] == ']':
                                 open_ind = open_braket_ind.pop()
                                 sub_sys = eval(sys_comps[open_ind:char_it+1])
-                                real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
-                                real_sinks = np.array(sub_sys)[real_sink_inds]
-                                not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
-                                if len(not_plotted_sinks) > 0:
-                                    birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
-                                    if birth_conditions[0] == True and birth_conditions[1] in key_inds:
-                                        axis_ind = 0
-                                        line_style = '-'
-                                        color = 'b'
-                                    elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
-                                        axis_ind = 1
-                                        line_style = ':'
-                                        color='r'
+                                if str(sub_sys) not in Used_sub_sys:
+                                    real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
+                                    real_sinks = np.array(sub_sys)[real_sink_inds]
+                                    not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
+                                    if len(not_plotted_sinks) > 0:
+                                        birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
+                                        if birth_conditions[0] == True and birth_conditions[1] in key_inds:
+                                            axis_ind = 0
+                                            line_style = '-'
+                                            color = 'b'
+                                        elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
+                                            axis_ind = 1
+                                            line_style = ':'
+                                            color='r'
+                                        else:
+                                            axis_ind = 2
+                                            line_style = '-'
+                                            color='k'
                                     else:
-                                        axis_ind = 2
+                                        axis_ind = 3
                                         line_style = '-'
                                         color='k'
-                                else:
-                                    axis_ind = 3
-                                    line_style = '-'
-                                    color='k'
-                                Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
-                                dsep = Sep_arr[1:] - Sep_arr[:-1]
-                                dtime = Time_arr[1:] - Time_arr[:-1]
-                                grad = dsep/dtime
-                                mean_x = (Time_arr[1:] + Time_arr[:-1])/2
-                                '''
-                                try:
-                                    sub_1000_inds = np.where(Time_arr<1000)[0]
-                                    dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
-                                    ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
-                                    mean_grad = ds/dt
-                                    Initial_gradients_1000[axis_ind].append([mean_grad])
-                                except:
-                                    print('system has not mean times < 1000yr')
-                                '''
-                                try:
-                                    sub_10000_inds = np.where(Time_arr<10000)[0]
-                                    dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
-                                    ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
-                                    mean_grad = ds/dt
-                                    Initial_gradients_10000[axis_ind].append([mean_grad])
-                                    if mean_grad < -1e4:
-                                        Grad_1e4.append(time_key)
-                                    elif mean_grad < -1e3:
-                                        Grad_1e3.append(time_key)
-                                except:
-                                    print('system has not mean times < 10000yr')
-                                '''
-                                try:
-                                    sub_100000_inds = np.where(Time_arr<100000)[0]
-                                    dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
-                                    ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
-                                    mean_grad = ds/dt
-                                    Initial_gradients_100000[axis_ind].append([mean_grad])
-                                except:
-                                    print('system has not mean times < 100000yr')
-                                '''
-                                if len(grad) > 0:
-                                    Initial_gradients[axis_ind].append(grad[0])
-                                #lets trying smoothing over a 1000year window, but not centred
+                                    Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
+                                    dsep = Sep_arr[1:] - Sep_arr[:-1]
+                                    dtime = Time_arr[1:] - Time_arr[:-1]
+                                    grad = dsep/dtime
+                                    mean_x = (Time_arr[1:] + Time_arr[:-1])/2
+                                    '''
+                                    try:
+                                        sub_1000_inds = np.where(Time_arr<1000)[0]
+                                        dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
+                                        ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
+                                        mean_grad = ds/dt
+                                        Initial_gradients_1000[axis_ind].append([mean_grad])
+                                    except:
+                                        print('system has not mean times < 1000yr')
+                                    '''
+                                    try:
+                                        sub_10000_inds = np.where(Time_arr<10000)[0]
+                                        dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
+                                        ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
+                                        mean_grad = ds/dt
+                                        Initial_gradients_10000[axis_ind].append([mean_grad])
+                                        if mean_grad < -1e4:
+                                            Grad_1e4.append(time_key)
+                                        elif mean_grad < -1e3:
+                                            Grad_1e3.append(time_key)
+                                    except:
+                                        print('system has not mean times < 10000yr')
+                                    '''
+                                    try:
+                                        sub_100000_inds = np.where(Time_arr<100000)[0]
+                                        dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
+                                        ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
+                                        mean_grad = ds/dt
+                                        Initial_gradients_100000[axis_ind].append([mean_grad])
+                                    except:
+                                        print('system has not mean times < 100000yr')
+                                    '''
+                                    if len(grad) > 0:
+                                        Initial_gradients[axis_ind].append(grad[0])
+                                    #lets trying smoothing over a 1000year window, but not centred
+                                    
+                                    Used_sub_sys.append(str(sub_sys))
+                                    
 
                                 if plot_gradient == True:
                                     if 'ecc' in plot_key:
