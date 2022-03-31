@@ -267,7 +267,7 @@ if args.update_pickles == 'True':
         if rank == rit:
             #preamble
             n_stars = np.where(global_data['m'][time_it]>0)[0]
-            if len(n_stars) > 25:#1:
+            if len(n_stars) > 1:
                 abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
                 absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
                 mass = np.array(global_data['m'][time_it][n_stars])
@@ -438,9 +438,6 @@ if args.update_pickles == 'True':
                                         import pdb
                                         pdb.set_trace()
 
-                        if sys_comps_str == '[[23, 24], [17, 25]]':
-                            import pdb
-                            pdb.set_trace()
                         if sys_comps_str not in System_times.keys():
                             System_times.update({sys_comps_str:[time_yr]})
                             System_seps.update({sys_comps_str:[sep_arr]})
