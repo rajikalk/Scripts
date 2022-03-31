@@ -78,7 +78,7 @@ for grad_it in range(len(grad_pickles)):
     '''
     if grad_it == (len(grad_pickles) - 1):
         axs_list[0][grad_it].set_xlim([x_range[0], x_range[-1]])
-        axs_list[0][grad_it].set_xticks(x_range[::2])
+        axs_list[0][grad_it].set_xticks(ticklabels[::2][:-1])
         axs_list[0][grad_it].set_xticklabels(ticklabels[::2])
         axs_list[0][grad_it].set_xlabel('Inspiral rate (au/yr)')
         axs_list[0][grad_it].set_ylim(bottom=0)
