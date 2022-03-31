@@ -141,6 +141,9 @@ if read_pickle == True:
                                         dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
                                         ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
                                         mean_grad = ds/dt
+                                        if mean_grad in np.array(Initial_gradients_1000[axis_ind]):
+                                            import pdb
+                                            pdb.set_trace()
                                         Initial_gradients_1000[axis_ind].append([mean_grad])
                                     except:
                                         print('system has not mean times < 1000yr')
@@ -149,6 +152,9 @@ if read_pickle == True:
                                         dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
                                         ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
                                         mean_grad = ds/dt
+                                        if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
+                                            import pdb
+                                            pdb.set_trace()
                                         Initial_gradients_10000[axis_ind].append([mean_grad])
                                         if mean_grad < -1e4:
                                             Grad_1e4.append(time_key)
@@ -161,10 +167,16 @@ if read_pickle == True:
                                         dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
                                         ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
                                         mean_grad = ds/dt
+                                        if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
+                                            import pdb
+                                            pdb.set_trace()
                                         Initial_gradients_100000[axis_ind].append([mean_grad])
                                     except:
                                         print('system has not mean times < 100000yr')
                                     if len(grad) > 0:
+                                        if grad[0] in np.array(Initial_gradients_1000[axis_ind]):
+                                            import pdb
+                                            pdb.set_trace()
                                         Initial_gradients[axis_ind].append(grad[0])
                                     #lets trying smoothing over a 1000year window, but not centred
                                     
