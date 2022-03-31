@@ -66,6 +66,8 @@ if read_pickle == True:
         SFE_5_time = superplot_dict['Times'][SFE_5_ind]
          
         new_sys_id = superplot_dict['N_stars'][-1]
+        first_new_sys_id = new_sys_id
+        Sub_sys_indices = []
 
         sim_start_time = np.nan
         plotted_sinks = []
@@ -199,8 +201,13 @@ if read_pickle == True:
                                         axs.flatten()[2].set_yscale('symlog')
                                 plotted_sinks = plotted_sinks + not_plotted_sinks
                                 #print('plotted sinks', not_plotted_sinks)
-                                replace_string = str(new_sys_id)
-                                new_sys_id = new_sys_id + 1
+                                if str(sub_sys) not in Sub_sys_indices:
+                                    Sub_sys_indices.append(str(sub_sys))
+                                    replace_string = str(new_sys_id)
+                                    new_sys_id = new_sys_id + 1
+                                else:
+                                    import pdb
+                                    pdb.set_trace()
                                 sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                                 if '[' not in sys_comps:
                                     reduced = True
