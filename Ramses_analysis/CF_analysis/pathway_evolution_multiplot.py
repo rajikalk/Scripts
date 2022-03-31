@@ -83,11 +83,11 @@ for grad_it in range(len(grad_pickles)):
         axs_list[0][grad_it].set_ylim(bottom=0)
     fig_list[0].savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
 
-    mean_grads = [Initial_gradients_10000]
+    mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000]
 
     #Plotting mean gradients
     #calculate means
-    time_means = [10000]
+    time_means = [1000, 10000, 100000]
     time_means_counter = 0
     for Initial_mean_grad in mean_grads:
         core_mean = []
