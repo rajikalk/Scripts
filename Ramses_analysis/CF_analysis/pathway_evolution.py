@@ -74,9 +74,9 @@ if read_pickle == True:
         Grad_1e3 = []
         Grad_1e4 = []
         Initial_gradients = [[],[],[],[]]
-        #Initial_gradients_1000 = [[],[],[],[]]
+        Initial_gradients_1000 = [[],[],[],[]]
         Initial_gradients_10000 = [[],[],[],[]]
-        #Initial_gradients_100000 = [[],[],[],[]]
+        Initial_gradients_100000 = [[],[],[],[]]
         Used_sub_sys = []
         
         print('initialised gradient arrays')
@@ -136,7 +136,6 @@ if read_pickle == True:
                                     dtime = Time_arr[1:] - Time_arr[:-1]
                                     grad = dsep/dtime
                                     mean_x = (Time_arr[1:] + Time_arr[:-1])/2
-                                    '''
                                     try:
                                         sub_1000_inds = np.where(Time_arr<1000)[0]
                                         dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
@@ -145,7 +144,6 @@ if read_pickle == True:
                                         Initial_gradients_1000[axis_ind].append([mean_grad])
                                     except:
                                         print('system has not mean times < 1000yr')
-                                    '''
                                     try:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
@@ -158,7 +156,6 @@ if read_pickle == True:
                                             Grad_1e3.append(time_key)
                                     except:
                                         print('system has not mean times < 10000yr')
-                                    '''
                                     try:
                                         sub_100000_inds = np.where(Time_arr<100000)[0]
                                         dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
@@ -167,7 +164,6 @@ if read_pickle == True:
                                         Initial_gradients_100000[axis_ind].append([mean_grad])
                                     except:
                                         print('system has not mean times < 100000yr')
-                                    '''
                                     if len(grad) > 0:
                                         Initial_gradients[axis_ind].append(grad[0])
                                     #lets trying smoothing over a 1000year window, but not centred
@@ -227,8 +223,8 @@ if read_pickle == True:
         else:
             grad_pickle = 'grad_pickle.pkl'
         file = open(grad_pickle, 'wb')
-        pickle.dump((Initial_gradients, Initial_gradients_10000, Grad_1e4, Grad_1e3), file)
-        #pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000), file)
+        #pickle.dump((Initial_gradients, Initial_gradients_10000, Grad_1e4, Grad_1e3), file)
+        pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3), file)
         file.close()
         print('saved_gradients')
         
@@ -239,7 +235,7 @@ if read_pickle == True:
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
-Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000 = pickle.load(file)
+Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
 file.close()
 
 #Defining gradient bins and getting tick labels

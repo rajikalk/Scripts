@@ -39,7 +39,7 @@ plt.subplots_adjust(hspace=0.0)
 
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
-    Initial_gradients, Initial_gradients_10000, Grad_1e4, Grad_1e3 = pickle.load(file)
+    Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
     file.close()
 
     #Plotting initial gradients
