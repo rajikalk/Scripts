@@ -61,10 +61,10 @@ for grad_it in range(len(grad_pickles)):
     grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_capt_norm[-1]])))
     grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
-    axs_list[0][grad_it].step(x_range, grad_hist_core_norm, where='pre', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-    axs_list[0][grad_it].step(x_range, grad_hist_core_delayed_norm, where='pre', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-    axs_list[0][grad_it].step(x_range, grad_hist_capt_norm, where='pre', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
-    axs_list[0][grad_it].step(x_range, grad_hist_misc_norm, where='pre', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+    axs_list[0][grad_it].step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+    axs_list[0][grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
+    axs_list[0][grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+    axs_list[0][grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
     axs_list[0][grad_it].set_ylabel('#')
     
@@ -78,6 +78,7 @@ for grad_it in range(len(grad_pickles)):
     '''
     if grad_it == (len(grad_pickles) - 1):
         axs_list[0][grad_it].set_xlim([x_range[0], x_range[-1]])
+        axs_list[0][grad_it].set_xticks(x_range[::2])
         axs_list[0][grad_it].set_xticklabels(ticklabels[::2])
         axs_list[0][grad_it].set_xlabel('Inspiral rate (au/yr)')
         axs_list[0][grad_it].set_ylim(bottom=0)
