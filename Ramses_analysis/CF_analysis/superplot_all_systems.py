@@ -438,6 +438,9 @@ if args.update_pickles == 'True':
                                         import pdb
                                         pdb.set_trace()
 
+                        if sys_comps_str == '[[23, 24], [17, 25]]':
+                            import pdb
+                            pdb.set_trace()
                         if sys_comps_str not in System_times.keys():
                             System_times.update({sys_comps_str:[time_yr]})
                             System_seps.update({sys_comps_str:[sep_arr]})
