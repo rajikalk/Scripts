@@ -213,7 +213,7 @@ for sink_id in formation_inds[1]:
             most_bound_sink_id = np.argmin(Etot)
         else:
             most_bound_sink_id = np.nan
-    Sink_bound_birth.append([born_bound, most_bound_sink_id])
+    Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
 
 sys.stdout.flush()
 CW.Barrier()
