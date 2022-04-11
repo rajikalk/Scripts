@@ -91,7 +91,8 @@ units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "tim
 
 simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
 if simulation_density_id == '':
-    simulation_density_id = args.global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
+    #simulation_density_id = args.global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
+    simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
 
 if simulation_density_id == '50':
     Grho=50
