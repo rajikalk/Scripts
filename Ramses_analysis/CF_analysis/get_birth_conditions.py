@@ -40,7 +40,7 @@ savedir = sys.argv[2]
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
 
 if simulation_density_id == '50':
     Grho=50
