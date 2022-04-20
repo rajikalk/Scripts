@@ -47,6 +47,7 @@ def parse_inputs():
     parser.add_argument("-use_2016", "--use_2016_tobin_data", type=str, default='False')
     parser.add_argument("-plus_tsingles", "--plus_tobin_singles", type=str, default='True')
     parser.add_argument("-class_0_only", "--class_0_protostars_only", type=str, default='False')
+    parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -375,7 +376,10 @@ else:
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+if args.simulation_G == '':
+    simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+else:
+    simulation_density_id = args.simulation_G
 
 if simulation_density_id == '50':
     Grho=50
