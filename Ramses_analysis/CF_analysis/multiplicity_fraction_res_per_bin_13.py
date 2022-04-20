@@ -350,10 +350,10 @@ if rank == 0:
     plt.plot(x, sum_fit)
     plt.plot(x, fit4, ls='--')
     plt.plot(x, sum_line)
-    #plt.savefig("Tobin_2018_class_0_I.png")
+    #plt.savefig("Tobin_2018_class_0_I.jpg")
 
 
-    plt.savefig(savedir + "CF_Tobin_data.png")
+    plt.savefig(savedir + "CF_Tobin_data.jpg")
 
 sys.stdout.flush()
 CW.Barrier()
@@ -530,7 +530,7 @@ elif args.match_method == 1:
         plt.axhline(y=SFE_value)
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
-        plt.savefig("SFE.png")
+        plt.savefig("SFE.jpg")
 elif args.match_method == 2:
     #Match at SFE of 3.4%
     SFE_n_value = args.SFE_n_threshold
@@ -555,7 +555,7 @@ elif args.match_method == 2:
         plt.axhline(y=SFE_n_value)
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
-        plt.savefig("SFE_n.png")
+        plt.savefig("SFE_n.jpg")
 elif args.match_method == 3:
     N_vis_val = args.n_visible_threshold#115#70#115
     N_prev = 0
@@ -566,7 +566,7 @@ elif args.match_method == 3:
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), total_stars)
         plt.xlabel("Time (t$_{ff}$)")
         plt.ylabel("N$_{stars}$")
-        plt.savefig("total_stars.png")
+        plt.savefig("total_stars.jpg")
     if args.use_t_spread == 'True':
         potential_inds = []
         N_vis_array = []
@@ -591,7 +591,7 @@ elif args.match_method == 3:
             plt.xlabel("Time (t$_{ff}$)")
             plt.ylabel("N$_{stars}$")
             plt.axhline(y=N_vis_val)
-            plt.savefig("visible_stars.png")
+            plt.savefig("visible_stars.jpg")
         N_ind = int(len(potential_inds)/2)
         
         N_t_ff = global_data['time'].T[0][potential_inds[N_ind]]
@@ -626,7 +626,7 @@ elif args.match_method == 3:
             plt.xlabel("Time (t$_{ff}$)")
             plt.ylabel("N$_{stars}$")
             plt.axhline(y=N_vis_val)
-            plt.savefig("visible_stars.png")
+            plt.savefig("visible_stars.jpg")
         N_min = int(len(potential_min_inds)/2)
         N_max = int(len(potential_max_inds)/2)
         N_t_ff_min = global_data['time'].T[0][potential_min_inds[N_min]]
@@ -644,7 +644,7 @@ elif args.match_method == 3:
         plt.axhline(y=N_vis_val)
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
-        plt.savefig("visible_stars.png")
+        plt.savefig("visible_stars.jpg")
 elif args.match_method == 4:
     M_tot_value = 150
     M_tot = np.sum(global_data['m'], axis=1)*units['mass_unit'].value
@@ -667,7 +667,7 @@ elif args.match_method == 4:
         plt.axhline(y=M_tot_value)
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
-        plt.savefig("M_total.png")
+        plt.savefig("M_total.jpg")
 elif args.match_method == 5:
     ratio_val = 1./3.
     R_prev = 0
@@ -696,7 +696,7 @@ elif args.match_method == 5:
             plt.xlabel("Time (t$_{ff}$)")
             plt.ylabel("Ratio $N_{vis}/N_{sinks}$")
             plt.axhline(y=ratio_val)
-            plt.savefig("ratio.png")
+            plt.savefig("ratio.jpg")
         R_ind = int(len(potential_inds)/2)
         R_t_ff = global_data['time'].T[0][potential_inds[R_ind]]
         time_bounds = [(R_t_ff-dt)*units['time_unit'].in_units('yr'),(R_t_ff+dt)*units['time_unit'].in_units('yr')]
@@ -731,7 +731,7 @@ elif args.match_method == 5:
             plt.xlabel("Time (t$_{ff}$)")
             plt.ylabel("Ratio $N_{vis}/N_{sinks}$")
             plt.axhline(y=N_vis_val)
-            plt.savefig("ratio.png")
+            plt.savefig("ratio.jpg")
         N_min = int(len(potential_min_inds)/2)
         N_max = int(len(potential_max_inds)/2)
         N_t_ff_min = global_data['time'].T[0][potential_min_inds[N_min]]
@@ -1292,7 +1292,7 @@ if rank == 0:
         if bit == 10:
             axes_dict[ax_label].legend(loc='best')#,bbox_to_anchor=(0.985, 0.5))
         #plt.ylim([0, 1600])
-        #plt.savefig(savedir+"error_dist_bin_"+str(bit)+".png", format='png', bbox_inches='tight')
+        #plt.savefig(savedir+"error_dist_bin_"+str(bit)+".jpg", format='jpg', bbox_inches='tight')
         standard_deviation = [median-(mean-std), (mean+std)-median]
         #plt.plot([bin_centers[bit], bin_centers[bit]], [mean-std, mean+std], color='black')
         CF_median.append(median)
@@ -1300,7 +1300,7 @@ if rank == 0:
 
     plt.savefig(savedir+"error_dist.pdf", format='pdf', bbox_inches='tight')
     #plt.ylim(bottom=0.0)
-    #plt.savefig(savedir+"error_dist.png")
+    #plt.savefig(savedir+"error_dist.jpg")
     CF_err = np.array(CF_err)
 
     plt.clf()
