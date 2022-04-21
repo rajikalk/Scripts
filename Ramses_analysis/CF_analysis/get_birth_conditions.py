@@ -5,11 +5,9 @@ from pyramses import rsink
 import multiplicity as m
 import yt
 import glob
-import sys
 import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
-import matplotlib.gridspec as gridspec
 
 #Define globals
 f_acc= 0.5
@@ -32,9 +30,6 @@ args = parse_inputs()
 
 rank = CW.Get_rank()
 size = CW.Get_size()
-
-datadir = sys.argv[1]
-savedir = sys.argv[2]
 
 #==========================================================================================
 
