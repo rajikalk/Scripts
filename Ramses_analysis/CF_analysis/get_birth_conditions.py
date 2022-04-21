@@ -1,10 +1,6 @@
 import numpy as np
-import pyramses as pr
-import multiplicity as m
 import yt
-import glob
 import pickle
-import os
 
 #Define globals
 f_acc= 0.5
