@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=10000)
     parser.add_argument("-start_ind", "--starting_ind", help="What frame do you want to start at?", type=int, default=0)
+    parser.add_argument("-y_lim", "--y_limit", help="do you want to set a ylim for the frames?", type=float, default=0.2)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -258,6 +259,7 @@ for time_it in range(start_time_it, end_time_it):
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')
             plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+            plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
             plt.title("Time:"+str(time_val - Times[0])+"yr, Median over " + str(end_integration_it-start_integration_it) + " histograms")
             if size > 1:
