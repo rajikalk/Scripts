@@ -16,7 +16,6 @@ Accretion_array = []
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='True')
     parser.add_argument("files", nargs='*')
@@ -120,11 +119,13 @@ for sink_id in formation_inds[1]:
     if True in (Etot<0):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
+        most_bound_sep = rel_sep[most_bound_sink_id]*scale_l.in_units('au')
     else:
         born_bound = False
         if len(Etot) > 0:
             most_bound_sink_id = np.argmin(Etot)
         else:
             most_bound_sink_id = np.nan
-    Sink_bound_birth.append([born_bound, most_bound_sink_id])
+        most_bound_sep = np.nan
+    Sink_bound_birth.append([born_bound, most_bound_sink_id, most_bound_sep])
     print("Found birth conditions of sink", sink_id)
