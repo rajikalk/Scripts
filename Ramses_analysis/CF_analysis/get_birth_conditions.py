@@ -1,13 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pyramses as pr
-from pyramses import rsink
 import multiplicity as m
 import yt
 import glob
 import pickle
 import os
-from mpi4py.MPI import COMM_WORLD as CW
 
 #Define globals
 f_acc= 0.5
@@ -65,11 +62,11 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/units_over
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
 
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+del units_override
     
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -94,8 +91,8 @@ for sink_id in formation_inds[1]:
     new_sink_vel = np.array([global_data['ux'][formation_inds[0][sink_id]][sink_id], global_data['uy'][formation_inds[0][sink_id]][sink_id], global_data['uz'][formation_inds[0][sink_id]][sink_id]]).T
     new_sink_mass = np.array(global_data['m'][formation_inds[0][sink_id]][sink_id])
 
-    abspos = np.array([global_data['x'][formation_inds[0][sink_id]][:sink_id], global_data['y'][formation_inds[0][sink_id]][:sink_id], global_data['z'][formation_inds[0][sink_id]][:sink_id]]).T#*scale_l
-    absvel = np.array([global_data['ux'][formation_inds[0][sink_id]][:sink_id], global_data['uy'][formation_inds[0][sink_id]][:sink_id], global_data['uz'][formation_inds[0][sink_id]][:sink_id]]).T#*scale_v
+    abspos = np.array([global_data['x'][formation_inds[0][sink_id]][:sink_id], global_data['y'][formation_inds[0][sink_id]][:sink_id], global_data['z'][formation_inds[0][sink_id]][:sink_id]]).T
+    absvel = np.array([global_data['ux'][formation_inds[0][sink_id]][:sink_id], global_data['uy'][formation_inds[0][sink_id]][:sink_id], global_data['uz'][formation_inds[0][sink_id]][:sink_id]]).T
     mass = np.array(global_data['m'][formation_inds[0][sink_id]][:sink_id])
     
     rel_pos = abspos - new_sink_pos
