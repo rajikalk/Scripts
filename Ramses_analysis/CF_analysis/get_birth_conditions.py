@@ -187,8 +187,7 @@ for sink_id in formation_inds[1]:
                                     if sink_id in sub_sys:
                                         reduced = True
                                         most_bound_sep = sep_value
-                                        import pdb
-                                        pdb.set_trace()
+                                        first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
                                         break
                                     replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                     replace_string = str(replace_ind)
@@ -296,8 +295,7 @@ for sink_id in formation_inds[1]:
                                         if sink_id in sub_sys:
                                             reduced = True
                                             most_bound_sep = sep_value
-                                            import pdb
-                                            pdb.set_trace()
+                                            first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
                                             break
                                         replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                         replace_string = str(replace_ind)
@@ -313,7 +311,7 @@ for sink_id in formation_inds[1]:
                                         pdb.set_trace()
             else:
                 most_bound_sep = np.nan
-    Sink_bound_birth.append([born_bound, most_bound_sink_id, most_bound_sep])
+    Sink_bound_birth.append([born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep])
     print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
 file = open("sink_birth_conditions.pkl", 'wb')
