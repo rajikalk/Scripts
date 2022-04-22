@@ -209,31 +209,31 @@ for sink_id in formation_inds[1]:
         if sink_id > 0:
             import pdb
             pdb.set_trace()
-        most_bound_sep = np.nan
-        time_it = formation_inds[0][sink_id]
-        new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
-        new_sink_vel = np.array([global_data['ux'][time_it:,sink_id], global_data['uy'][time_it:,sink_id], global_data['uz'][time_it:,sink_id]]).T
-        new_sink_mass = np.array(global_data['m'][time_it:,sink_id])
-        abspos = np.array([global_data['x'][time_it:], global_data['y'][time_it:], global_data['z'][time_it:]]).T
-        absvel = np.array([global_data['ux'][time_it:], global_data['uy'][time_it:], global_data['uz'][time_it:]]).T
-        mass = np.array(global_data['m'][time_it:])
-        
-        rel_pos = abspos - new_sink_pos
-        update_seps = np.argwhere(abs(rel_pos)>0.5)
-        for update_sep in update_seps:
-            if rel_pos[update_sep[0]][update_sep[1]] < 0:
-                rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] + 0.5
-            else:
-                rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] - 0.5
-        rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
-        rel_vel = absvel - new_sink_vel
-        rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
-        mtm = new_sink_mass * mass
-        mpm = new_sink_mass + mass
-        newtonianPotential = -1./rel_sep
-        Ekin = 0.5 * mtm/mpm * rel_speed**2
-        Epot = Grho * mtm * newtonianPotential
-        Etot = Ekin + Epot
+            most_bound_sep = np.nan
+            time_it = formation_inds[0][sink_id]
+            new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
+            new_sink_vel = np.array([global_data['ux'][time_it:,sink_id], global_data['uy'][time_it:,sink_id], global_data['uz'][time_it:,sink_id]]).T
+            new_sink_mass = np.array(global_data['m'][time_it:,sink_id])
+            abspos = np.array([global_data['x'][time_it:], global_data['y'][time_it:], global_data['z'][time_it:]]).T
+            absvel = np.array([global_data['ux'][time_it:], global_data['uy'][time_it:], global_data['uz'][time_it:]]).T
+            mass = np.array(global_data['m'][time_it:])
+            
+            rel_pos = abspos - new_sink_pos
+            update_seps = np.array(np.where(abs(rel_pos)>0.5)).T
+            for update_sep in update_seps:
+                if rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] < 0:
+                    rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] = rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] + 0.5
+                else:
+                    rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] = rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] - 0.5
+            rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
+            rel_vel = absvel - new_sink_vel
+            rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
+            mtm = new_sink_mass * mass
+            mpm = new_sink_mass + mass
+            newtonianPotential = -1./rel_sep
+            Ekin = 0.5 * mtm/mpm * rel_speed**2
+            Epot = Grho * mtm * newtonianPotential
+            Etot = Ekin + Epot
     Sink_bound_birth.append([born_bound, most_bound_sink_id, most_bound_sep])
     print("Found birth conditions of sink", sink_id)
 
