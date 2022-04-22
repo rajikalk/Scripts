@@ -226,14 +226,18 @@ for sink_id in formation_inds[1]:
             rel_sep = np.sqrt(np.sum(np.square(rel_pos), axis=2))
             rel_vel = absvel - new_sink_vel
             rel_speed = np.sqrt(np.sum(np.square(rel_vel), axis=2))
-            mtm = new_sink_mass * mass
-            mpm = new_sink_mass + mass
+            mtm = new_sink_mass * mass.T
+            mpm = new_sink_mass + mass.T
             newtonianPotential = -1./rel_sep
             Ekin = 0.5 * mtm/mpm * rel_speed**2
             Epot = Grho * mtm * newtonianPotential
             Etot = Ekin + Epot
-            import pdb
-            pdb.set_trace()
+            Etot[Etot == -1*np.inf] = np.nan
+            if True in (Etot<0):
+                import pdb
+                pdb.set_trace()
+            else:
+                most_bound_sep = np.nan
     Sink_bound_birth.append([born_bound, most_bound_sink_id, most_bound_sep])
     print("Found birth conditions of sink", sink_id)
 
