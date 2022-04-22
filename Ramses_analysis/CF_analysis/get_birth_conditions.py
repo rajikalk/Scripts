@@ -310,7 +310,7 @@ for sink_id in formation_inds[1]:
             else:
                 most_bound_sep = np.nan
     Sink_bound_birth.append([born_bound, most_bound_sink_id, most_bound_sep])
-    print("Found birth conditions of sink", sink_id)
+    print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
 file = open("sink_birth_conditions.pkl", 'wb')
 pickle.dump((Sink_bound_birth),file)
