@@ -213,6 +213,7 @@ for sink_id in formation_inds[1]:
             most_bound_sink_id = np.nan
         most_bound_sep = np.nan
         first_bound_sink = np.nan
+        lowest_Etot = np.nan
         if sink_id > 0:
             time_it = formation_inds[0][sink_id]
             new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
