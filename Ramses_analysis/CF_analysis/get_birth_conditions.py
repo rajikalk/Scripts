@@ -9,6 +9,20 @@ import multiplicity as m
 f_acc= 0.5
 Accretion_array = []
 
+def losi(i, res):
+    if (res['n'][i]==1) or (res['n'][i]==0):
+        return i
+    else:
+        i1 = losi(res['index1'][i],res)
+        i2 = losi(res['index2'][i],res)
+        return [i1,i2]
+
+def flatten(x):
+    if isinstance(x, collections.Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
