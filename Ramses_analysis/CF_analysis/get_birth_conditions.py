@@ -113,13 +113,13 @@ for sink_id in formation_inds[1]:
     Etot = Ekin + Epot
     
     #Do multiplicity analysis
-    n_stars = n_stars + 1
-    if n_stars > 1:
-        time_it = formation_inds[0][sink_id]
-        time = global_data['time'][time_it][n_stars]
-        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T
+    time_it = formation_inds[0][sink_id]
+    n_stars = np.where(global_data['m'][time_it]>0)[0]
+    if len(n_stars) > 1:
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
         absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
         mass = np.array(global_data['m'][time_it][n_stars])
+        time = global_data['time'][time_it][n_stars][0]
         S = pr.Sink()
         S._jet_factor = 1.
         S._scale_l = scale_l.value
