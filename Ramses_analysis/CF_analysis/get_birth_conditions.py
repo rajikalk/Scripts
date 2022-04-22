@@ -150,6 +150,7 @@ for sink_id in formation_inds[1]:
         for multi_ind in multi_inds:
             sys_comps = losi(multi_ind, res)
             sys_string = sorted(flatten(sys_comps))
+            sys_comps = str(sys_comps)
             if sink_id in sys_string:
                 reduced = False
                 while reduced == False:
@@ -195,6 +196,9 @@ for sink_id in formation_inds[1]:
                                     if len(eval(sys_comps)) == 1:
                                         reduced = True
                                 break
+                            else:
+                                import pdb
+                                pdb.set_trace()
     
     if True in (Etot<0):
         born_bound = True
