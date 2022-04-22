@@ -311,6 +311,7 @@ for sink_id in formation_inds[1]:
                                         pdb.set_trace()
             else:
                 most_bound_sep = np.nan
+                first_bound_sink = np.nan
     Sink_bound_birth.append([born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep])
     print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
