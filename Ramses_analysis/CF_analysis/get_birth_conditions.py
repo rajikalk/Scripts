@@ -161,9 +161,6 @@ for sink_id in formation_inds[1]:
                         if sys_comps[char_it] == ']':
                             open_ind = open_braket_ind.pop()
                             sub_sys = eval(sys_comps[open_ind:char_it+1])
-                            if sink_id in sub_sys:
-                                import pdb
-                                pdb.set_trace()
                             if len(sub_sys) == 2:
                                 ind_1 = sub_sys[0]
                                 ind_2 = sub_sys[1]
@@ -187,6 +184,10 @@ for sink_id in formation_inds[1]:
                                     if sep_value > 20000:
                                         import pdb
                                         pdb.set_trace()
+                                if sink_id in sub_sys:
+                                    reduced = True
+                                    most_bound_sep = sep_value
+                                    break
                                 replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                 replace_string = str(replace_ind)
                                 sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
@@ -203,7 +204,6 @@ for sink_id in formation_inds[1]:
     if True in (Etot<0):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
-        most_bound_sep = rel_sep[most_bound_sink_id]*scale_l.in_units('au')
     else:
         born_bound = False
         if len(Etot) > 0:
