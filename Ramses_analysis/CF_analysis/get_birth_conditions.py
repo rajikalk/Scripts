@@ -195,8 +195,6 @@ for sink_id in formation_inds[1]:
                                     if len(eval(sys_comps)) == 1:
                                         reduced = True
                                 break
-        import pdb
-                pdb.set_trace()
     
     if True in (Etot<0):
         born_bound = True
