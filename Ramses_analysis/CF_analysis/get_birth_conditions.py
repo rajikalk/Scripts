@@ -148,9 +148,9 @@ for sink_id in formation_inds[1]:
             S._mass = yt.YTArray(mass, '')
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
             multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-            most_bound_sep = None
+            most_bound_sep = np.nan
             for multi_ind in multi_inds:
-                if most_bound_sep == None:
+                if np.isnan(most_bound_sep):
                     sys_comps = losi(multi_ind, res)
                     sys_string = sorted(flatten(sys_comps))
                     if sink_id in sys_string:
@@ -262,9 +262,9 @@ for sink_id in formation_inds[1]:
                 S._mass = yt.YTArray(mass, '')
                 res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                most_bound_sep = None
+                most_bound_sep = np.nan
                 for multi_ind in multi_inds:
-                    if most_bound_sep == None:
+                    if np.isnan(most_bound_sep):
                         sys_comps = losi(multi_ind, res)
                         sys_string = sorted(flatten(sys_comps))
                         if sink_id in sys_string:
