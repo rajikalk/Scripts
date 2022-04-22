@@ -233,7 +233,8 @@ for sink_id in formation_inds[1]:
             Epot = Grho * mtm * newtonianPotential
             Etot = Ekin + Epot
             Etot[Etot == -1*np.inf] = np.nan
-            if True in (Etot<0):
+            Etot_min = np.nanmin(Etot, axis=0)
+            if True in (Etot_min<0):
                 import pdb
                 pdb.set_trace()
             else:
