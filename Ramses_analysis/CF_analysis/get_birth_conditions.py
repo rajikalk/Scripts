@@ -206,10 +206,10 @@ for sink_id in formation_inds[1]:
             most_bound_sink_id = np.argmin(Etot)
         else:
             most_bound_sink_id = np.nan
+        most_bound_sep = np.nan
         if sink_id > 0:
             import pdb
             pdb.set_trace()
-            most_bound_sep = np.nan
             time_it = formation_inds[0][sink_id]
             new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
             new_sink_vel = np.array([global_data['ux'][time_it:,sink_id], global_data['uy'][time_it:,sink_id], global_data['uz'][time_it:,sink_id]]).T
