@@ -1,6 +1,9 @@
 import numpy as np
 import yt
 import pickle
+import pyramses as pr
+from pyramses import rsink
+import multiplicity as m
 
 #Define globals
 f_acc= 0.5
@@ -106,6 +109,22 @@ for sink_id in formation_inds[1]:
     Ekin = 0.5 * mtm/mpm * rel_speed**2
     Epot = Grho * mtm * newtonianPotential
     Etot = Ekin + Epot
+    
+    #Do multiplicity analysis
+    S = pr.Sink()
+    S._jet_factor = 1.
+    S._scale_l = scale_l.value
+    S._scale_v = scale_v.value
+    S._scale_t = scale_t.value
+    S._scale_d = scale_d.value
+    S._time = yt.YTArray(time, '')
+    S._abspos = yt.YTArray(abspos, '')
+    S._absvel = yt.YTArray(absvel, '')
+    S._mass = yt.YTArray(mass, '')
+    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+    import pdb
+    pdb.set_trace()
+    
     if True in (Etot<0):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)

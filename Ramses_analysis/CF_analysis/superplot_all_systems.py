@@ -171,49 +171,9 @@ print('loaded global data')
 sys.stdout.flush()
 CW.Barrier()
 
-#Calculate boundness at birth
-Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
-diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
-zero_inds = np.where(diff_arr == 0)
-diff_arr[zero_inds] = 1
-formation_inds = np.where(diff_arr == global_data['m'])
-for sink_id in formation_inds[1]:
-    new_sink_pos = np.array([global_data['x'][formation_inds[0][sink_id]][sink_id], global_data['y'][formation_inds[0][sink_id]][sink_id], global_data['z'][formation_inds[0][sink_id]][sink_id]]).T
-    new_sink_vel = np.array([global_data['ux'][formation_inds[0][sink_id]][sink_id], global_data['uy'][formation_inds[0][sink_id]][sink_id], global_data['uz'][formation_inds[0][sink_id]][sink_id]]).T
-    new_sink_mass = np.array(global_data['m'][formation_inds[0][sink_id]][sink_id])
-
-    abspos = np.array([global_data['x'][formation_inds[0][sink_id]][:sink_id], global_data['y'][formation_inds[0][sink_id]][:sink_id], global_data['z'][formation_inds[0][sink_id]][:sink_id]]).T#*scale_l
-    absvel = np.array([global_data['ux'][formation_inds[0][sink_id]][:sink_id], global_data['uy'][formation_inds[0][sink_id]][:sink_id], global_data['uz'][formation_inds[0][sink_id]][:sink_id]]).T#*scale_v
-    mass = np.array(global_data['m'][formation_inds[0][sink_id]][:sink_id])
-    
-    rel_pos = abspos - new_sink_pos
-    update_seps = np.argwhere(abs(rel_pos)>0.5)
-    for update_sep in update_seps:
-        if rel_pos[update_sep[0]][update_sep[1]] < 0:
-            rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] + 0.5
-        else:
-            rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] - 0.5
-    rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
-    rel_vel = absvel - new_sink_vel
-    rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
-    mtm = new_sink_mass * mass
-    mpm = new_sink_mass + mass
-    reducedMass = mtm/mpm
-    newtonianPotential = -1./rel_sep
-    
-    Ekin = 0.5 * mtm/mpm * rel_speed**2
-    Epot = Grho * mtm * newtonianPotential
-    Etot = Ekin + Epot
-    if True in (Etot<0):
-        born_bound = True
-        most_bound_sink_id = np.argmin(Etot)
-    else:
-        born_bound = False
-        if len(Etot) > 0:
-            most_bound_sink_id = np.argmin(Etot)
-        else:
-            most_bound_sink_id = np.nan
-    Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
+#Get birth conditions
+file_open = open(args.global_data_pickle_file, 'rb')
+Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
 
 sys.stdout.flush()
 CW.Barrier()
