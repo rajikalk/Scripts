@@ -187,6 +187,8 @@ for sink_id in formation_inds[1]:
                                     if sink_id in sub_sys:
                                         reduced = True
                                         most_bound_sep = sep_value
+                                        import pdb
+                                        pdb.set_trace()
                                         break
                                     replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                     replace_string = str(replace_ind)
@@ -294,6 +296,8 @@ for sink_id in formation_inds[1]:
                                         if sink_id in sub_sys:
                                             reduced = True
                                             most_bound_sep = sep_value
+                                            import pdb
+                                            pdb.set_trace()
                                             break
                                         replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                         replace_string = str(replace_ind)
