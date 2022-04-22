@@ -212,9 +212,9 @@ for sink_id in formation_inds[1]:
             new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
             new_sink_vel = np.array([global_data['ux'][time_it:,sink_id], global_data['uy'][time_it:,sink_id], global_data['uz'][time_it:,sink_id]]).T
             new_sink_mass = np.array(global_data['m'][time_it:,sink_id])
-            abspos = np.array([global_data['x'][time_it:], global_data['y'][time_it:], global_data['z'][time_it:]]).T
-            absvel = np.array([global_data['ux'][time_it:], global_data['uy'][time_it:], global_data['uz'][time_it:]]).T
-            mass = np.array(global_data['m'][time_it:])
+            abspos = np.array([global_data['x'][time_it:,:sink_id], global_data['y'][time_it:,:sink_id], global_data['z'][time_it:,:sink_id]]).T
+            absvel = np.array([global_data['ux'][time_it:,:sink_id], global_data['uy'][time_it:,:sink_id], global_data['uz'][time_it:,:sink_id]]).T
+            mass = np.array(global_data['m'][time_it:,:sink_id])
             
             rel_pos = abspos - new_sink_pos
             update_seps = np.array(np.where(abs(rel_pos)>0.5)).T
@@ -235,7 +235,7 @@ for sink_id in formation_inds[1]:
             Etot[Etot == -1*np.inf] = np.nan
             Etot_min = np.nanmin(Etot, axis=0)
             if True in (Etot_min<0):
-                time_it = np.where(Etot_min<0)[0][0]
+                time_it = time_it + np.where(Etot_min<0)[0][0]
                 n_stars = np.where(global_data['m'][time_it]>0)[0]
                 
                 abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
