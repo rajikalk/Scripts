@@ -58,6 +58,7 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/units_over
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
 
 units={}
 for key in units_override.keys():
@@ -111,19 +112,26 @@ for sink_id in formation_inds[1]:
     Etot = Ekin + Epot
     
     #Do multiplicity analysis
-    S = pr.Sink()
-    S._jet_factor = 1.
-    S._scale_l = scale_l.value
-    S._scale_v = scale_v.value
-    S._scale_t = scale_t.value
-    S._scale_d = scale_d.value
-    S._time = yt.YTArray(time, '')
-    S._abspos = yt.YTArray(abspos, '')
-    S._absvel = yt.YTArray(absvel, '')
-    S._mass = yt.YTArray(mass, '')
-    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-    import pdb
-    pdb.set_trace()
+    time_it = formation_inds[0][sink_id]
+    if time_it > 0:
+        n_stars = list(formation_inds[1]).index(sink_id)
+        time = global_data['time'][time_it][n_stars]
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T
+        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][n_stars])
+        S = pr.Sink()
+        S._jet_factor = 1.
+        S._scale_l = scale_l.value
+        S._scale_v = scale_v.value
+        S._scale_t = scale_t.value
+        S._scale_d = scale_d.value
+        S._time = yt.YTArray(time, '')
+        S._abspos = yt.YTArray(abspos, '')
+        S._absvel = yt.YTArray(absvel, '')
+        S._mass = yt.YTArray(mass, '')
+        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+        import pdb
+        pdb.set_trace()
     
     if True in (Etot<0):
         born_bound = True
