@@ -131,8 +131,12 @@ for sink_id in formation_inds[1]:
         S._absvel = yt.YTArray(absvel, '')
         S._mass = yt.YTArray(mass, '')
         res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-        import pdb
-        pdb.set_trace()
+        multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+        for multi_ind in multi_inds:
+            sys_comps = losi(multi_ind, res)
+            sys_string = sorted(flatten(sys_comps))
+            import pdb
+            pdb.set_trace()
     
     if True in (Etot<0):
         born_bound = True
