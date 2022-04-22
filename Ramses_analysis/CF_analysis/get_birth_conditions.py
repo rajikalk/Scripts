@@ -4,6 +4,7 @@ import pickle
 import pyramses as pr
 from pyramses import rsink
 import multiplicity as m
+import collections
 
 #Define globals
 f_acc= 0.5
