@@ -83,6 +83,7 @@ diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
 zero_inds = np.where(diff_arr == 0)
 diff_arr[zero_inds] = 1
 formation_inds = np.where(diff_arr == global_data['m'])
+n_stars = 0
 for sink_id in formation_inds[1]:
     new_sink_pos = np.array([global_data['x'][formation_inds[0][sink_id]][sink_id], global_data['y'][formation_inds[0][sink_id]][sink_id], global_data['z'][formation_inds[0][sink_id]][sink_id]]).T
     new_sink_vel = np.array([global_data['ux'][formation_inds[0][sink_id]][sink_id], global_data['uy'][formation_inds[0][sink_id]][sink_id], global_data['uz'][formation_inds[0][sink_id]][sink_id]]).T
@@ -112,9 +113,9 @@ for sink_id in formation_inds[1]:
     Etot = Ekin + Epot
     
     #Do multiplicity analysis
-    time_it = formation_inds[0][sink_id]
-    if time_it > 0:
-        n_stars = list(formation_inds[1]).index(sink_id)
+    n_stars = n_stars + 1
+    if time_it > 1:
+        time_it = formation_inds[0][sink_id]
         time = global_data['time'][time_it][n_stars]
         abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T
         absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
