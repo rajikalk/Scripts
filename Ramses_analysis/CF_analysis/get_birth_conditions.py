@@ -192,6 +192,9 @@ for sink_id in formation_inds[1]:
                                                 reduced = True
                                                 most_bound_sep = sep_value
                                                 first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
+                                                if first_bound_sink > n_stars:
+                                                    import pdb
+                                                    pdb.set_trace()
                                                 break
                                             replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                             replace_string = str(replace_ind)
@@ -306,6 +309,9 @@ for sink_id in formation_inds[1]:
                                                     reduced = True
                                                     most_bound_sep = sep_value
                                                     first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
+                                                    if first_bound_sink > n_stars:
+                                                        import pdb
+                                                        pdb.set_trace()
                                                     break
                                                 replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                                 replace_string = str(replace_ind)
