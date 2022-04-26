@@ -120,11 +120,8 @@ for sink_id in formation_inds[1]:
     update_seps_pos = np.argwhere(abs(rel_pos)>0.5)
     import pdb
     pdb.set_trace()
-    for update_sep in update_seps:
-        if rel_pos[update_sep[0]][update_sep[1]] < 0:
-            rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] + 0.5
-        else:
-            rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] - 0.5
+    rel_pos[update_seps_neg] = rel_pos[update_seps_neg] + 0.5
+    rel_pos[update_seps_pos] = rel_pos[update_seps_pos] - 0.5
     rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
     rel_vel = absvel - new_sink_vel
     rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
