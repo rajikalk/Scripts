@@ -91,7 +91,7 @@ except:
 file_open.close()
 
 try:
-    file = open("sink_birth_conditions.pkl", 'wb')
+    file = open("sink_birth_conditions.pkl", 'rb')
     Sink_bound_birth = pickle.load(file)
     file.close()
 except:
