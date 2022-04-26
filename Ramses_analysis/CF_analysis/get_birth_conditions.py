@@ -158,68 +158,19 @@ for sink_id in formation_inds[1]:
         S._absvel = yt.YTArray(absvel, '')
         S._mass = yt.YTArray(mass, '')
         res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-        multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-        most_bound_sep = np.nan
-        for multi_ind in multi_inds:
-            if np.isnan(most_bound_sep):
-                sys_comps = losi(multi_ind, res)
-                sys_string = sorted(flatten(sys_comps))
-                if sink_id in sys_string:
-                    sys_comps = str(sys_comps)
-                    if sink_id in sys_string:
-                        reduced = False
-                        while reduced == False:
-                            open_braket_ind = []
-                            for char_it in range(len(sys_comps)):
-                                if sys_comps[char_it] == '[':
-                                    open_braket_ind.append(char_it)
-                                if sys_comps[char_it] == ']':
-                                    open_ind = open_braket_ind.pop()
-                                    sub_sys = eval(sys_comps[open_ind:char_it+1])
-                                    if len(sub_sys) == 2:
-                                        ind_1 = sub_sys[0]
-                                        ind_2 = sub_sys[1]
-                                        pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
-                                        sep_value = np.sqrt(np.sum(pos_diff**2))
-                                        position = yt.YTArray(res['abspos'][np.array([ind_1,ind_2])].T, 'au')
-                                        if sep_value > (scale_l.in_units('AU')/2):
-                                            update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
-                                            for ind in update_inds:
-                                                if pos_diff[ind] < 0:
-                                                    pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
-                                                else:
-                                                    pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
-                                            sep_value = np.sqrt(np.sum(pos_diff**2))
-                                            for ind in update_inds:
-                                                pos_update_ind = np.where(position[ind]<scale_l.in_units('AU')/2)[0]
-                                                position[ind][pos_update_ind] = position[ind][pos_update_ind] + scale_l.in_units('AU')
-                                                #velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
-                                            pos_diff = position[ind][0] - position[ind][0]
-                                            sep_value = np.sqrt(np.sum(pos_diff**2))
-                                            if sep_value > 20000:
-                                                import pdb
-                                                pdb.set_trace()
-                                        if sink_id in sub_sys:
-                                            reduced = True
-                                            most_bound_sep = sep_value
-                                            first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
-                                            first_bound_sink = losi(first_bound_sink, res)
-                                            if most_bound_sink_id != first_bound_sink:
-                                                import pdb
-                                                pdb.set_trace()
-                                            break
-                                        replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
-                                        replace_string = str(replace_ind)
-                                        sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
-                                        if '[' not in sys_comps:
-                                            reduced = True
-                                        elif '[' in sys_comps:
-                                            if len(eval(sys_comps)) == 1:
-                                                reduced = True
-                                        break
-                                    else:
-                                        import pdb
-                                        pdb.set_trace()
+        if sink_id in res['index1']:
+            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+            first_bound_sink = res['index2'][sys_id]
+        elif sink_id in res['index2']:
+            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+            first_bound_sink = res['index1'][sys_id]
+        else:
+            sys_id = np.nan
+        if np.isnan(sys_id) == False:
+            first_bound_sink = losi(first_bound_sink, res)
+            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+            most_bound_sep = res['separation'][sys_id]
+            break
     else:
         born_bound = False
         if len(Etot) > 0:
@@ -278,7 +229,6 @@ for sink_id in formation_inds[1]:
         rel_vel_z = absvel_z.T - new_sink_vel_z
         rel_speed = np.sqrt(rel_vel_x**2 + rel_vel_y**2 + rel_vel_z**2)
         
-        
         mtm = new_sink_mass * mass.T
         mpm = new_sink_mass + mass.T
         newtonianPotential = -1./rel_sep
@@ -295,110 +245,44 @@ for sink_id in formation_inds[1]:
         closest_separations = np.min(rel_sep, axis=0)
         closest_sink_id = np.argmin(rel_sep, axis=0)
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
-        import pdb
-        pdb.set_trace()
         
-        closest_bound_sink_time_it = np.where((Etot_min_sink_id[Etot_bound_inds] == closest_sink_id[Etot_bound_inds])==True)[0]
-        closest_bound_sink_ids = Etot_min_sink_id[Etot_bound_inds][closest_bound_sink_time_it]
-        closest_bound_time_its = Etot_bound_inds[closest_bound_sink_time_it]
-        if len(closest_bound_time_its) > 0:
-            for closest_bound_time_it in closest_bound_time_its:
-                if np.isnan(first_bound_sink):
-                    time_it = formation_inds[0][sink_id] + closest_bound_time_it
-                    print("testing time_it", time_it)
-                    n_stars = np.where(global_data['m'][time_it]>0)[0]
-                    
-                    abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-                    absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-                    mass = np.array(global_data['m'][time_it][n_stars])
-                    time = global_data['time'][time_it][n_stars][0]
-                    S = pr.Sink()
-                    S._jet_factor = 1.
-                    S._scale_l = scale_l.value
-                    S._scale_v = scale_v.value
-                    S._scale_t = scale_t.value
-                    S._scale_d = scale_d.value
-                    S._time = yt.YTArray(time, '')
-                    S._abspos = yt.YTArray(abspos, '')
-                    S._absvel = yt.YTArray(absvel, '')
-                    S._mass = yt.YTArray(mass, '')
-                    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                    if sink_id in res['index1']:
-                        sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                        first_bound_sink = res['index2'][sys_id]
-                    elif sink_id in res['index2']:
-                        sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                        first_bound_sink = res['index1'][sys_id]
-                    else:
-                        sys_id = np.nan
-                    if np.isnan(sys_id) == False:
-                        first_bound_sink = losi(first_bound_sink, res)
-                        lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-                        most_bound_sep = res['separation'][sys_id]
-                        break
-                    '''
-                    multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                    most_bound_sep = np.nan
-                    for multi_ind in multi_inds:
-                        if np.isnan(most_bound_sep):
-                            sys_comps = losi(multi_ind, res)
-                            sys_string = sorted(flatten(sys_comps))
-                            if sink_id in sys_string:
-                                sys_comps = str(sys_comps)
-                                if sink_id in sys_string:
-                                    reduced = False
-                                    while reduced == False:
-                                        open_braket_ind = []
-                                        for char_it in range(len(sys_comps)):
-                                            if sys_comps[char_it] == '[':
-                                                open_braket_ind.append(char_it)
-                                            if sys_comps[char_it] == ']':
-                                                open_ind = open_braket_ind.pop()
-                                                sub_sys = eval(sys_comps[open_ind:char_it+1])
-                                                if len(sub_sys) == 2:
-                                                    ind_1 = sub_sys[0]
-                                                    ind_2 = sub_sys[1]
-                                                    pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
-                                                    sep_value = np.sqrt(np.sum(pos_diff**2))
-                                                    position = yt.YTArray(res['abspos'][np.array([ind_1,ind_2])].T, 'au')
-                                                    if sep_value > (scale_l.in_units('AU')/2):
-                                                        update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
-                                                        for ind in update_inds:
-                                                            if pos_diff[ind] < 0:
-                                                                pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
-                                                            else:
-                                                                pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
-                                                        sep_value = np.sqrt(np.sum(pos_diff**2))
-                                                        for ind in update_inds:
-                                                            pos_update_ind = np.where(position[ind]<scale_l.in_units('AU')/2)[0]
-                                                            position[ind][pos_update_ind] = position[ind][pos_update_ind] + scale_l.in_units('AU')
-                                                            #velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
-                                                        pos_diff = position[ind][0] - position[ind][0]
-                                                        sep_value = np.sqrt(np.sum(pos_diff**2))
-                                                        if sep_value > 20000:
-                                                            import pdb
-                                                            pdb.set_trace()
-                                                    if sink_id in sub_sys:
-                                                        reduced = True
-                                                        most_bound_sep = sep_value
-                                                        first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
-                                                        first_bound_sink = losi(first_bound_sink, res)
-                                                        replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
-                                                        lowest_Etot = res['epot'][replace_ind] + res['ekin'][replace_ind]
-                                                        break
-                                                    replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
-                                                    replace_string = str(replace_ind)
-                                                    sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
-                                                    if '[' not in sys_comps:
-                                                        reduced = True
-                                                    elif '[' in sys_comps:
-                                                        if len(eval(sys_comps)) == 1:
-                                                            reduced = True
-                                                    break
-                                                else:
-                                                    import pdb
-                                                    pdb.set_trace()
-                    '''
+        test_time_inds = list(set(Etot_bound_inds).intersection(set(sep_below_10000)))
+        
+        for test_time_ind in test_time_inds:
+            if np.isnan(first_bound_sink):
+                time_it = formation_inds[0][sink_id] + test_time_ind
+                print("testing time_it", time_it)
+                n_stars = np.where(global_data['m'][time_it]>0)[0]
+                
+                abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+                absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+                mass = np.array(global_data['m'][time_it][n_stars])
+                time = global_data['time'][time_it][n_stars][0]
+                S = pr.Sink()
+                S._jet_factor = 1.
+                S._scale_l = scale_l.value
+                S._scale_v = scale_v.value
+                S._scale_t = scale_t.value
+                S._scale_d = scale_d.value
+                S._time = yt.YTArray(time, '')
+                S._abspos = yt.YTArray(abspos, '')
+                S._absvel = yt.YTArray(absvel, '')
+                S._mass = yt.YTArray(mass, '')
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                if sink_id in res['index1']:
+                    sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                    first_bound_sink = res['index2'][sys_id]
+                elif sink_id in res['index2']:
+                    sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                    first_bound_sink = res['index1'][sys_id]
+                else:
+                    sys_id = np.nan
+                if np.isnan(sys_id) == False:
+                    first_bound_sink = losi(first_bound_sink, res)
+                    lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                    most_bound_sep = res['separation'][sys_id]
+                    break
+
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
         import pdb
         pdb.set_trace()
