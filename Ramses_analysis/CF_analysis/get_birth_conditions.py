@@ -299,6 +299,7 @@ for sink_id in formation_inds[1]:
             for closest_bound_time_it in closest_bound_time_its:
                 if np.isnan(first_bound_sink):
                     time_it = formation_inds[0][sink_id] + closest_bound_time_it
+                    print("testing time_it", time_it)
                     n_stars = np.where(global_data['m'][time_it]>0)[0]
                     
                     abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
