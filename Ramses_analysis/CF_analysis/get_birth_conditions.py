@@ -102,10 +102,11 @@ zero_inds = np.where(diff_arr == 0)
 diff_arr[zero_inds] = 1
 formation_inds = np.where(diff_arr == global_data['m'])
 if len(Sink_bound_birth) > 0:
-    import pdb
-    pdb.set_trace()
+    sink_id = len(Sink_bound_birth)
+else:
+    sink_id = 0
 n_stars = 0
-for sink_id in formation_inds[1]:
+while sink_id < len(formation_inds[1]):
     form_time_it = formation_inds[0][sink_id]
     new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
     new_sink_vel = np.array([global_data['ux'][form_time_it][sink_id], global_data['uy'][form_time_it][sink_id], global_data['uz'][form_time_it][sink_id]]).T
