@@ -282,12 +282,23 @@ for sink_id in formation_inds[1]:
         Ekin = 0.5 * mtm/mpm * rel_speed**2
         Epot = Grho * mtm * newtonianPotential
         Etot = Ekin + Epot
-        Etot[Etot == -1*np.inf] = np.nan
-        Etot_min = np.nanmin(Etot, axis=0)
-        if True in (Etot_min<0):
-            for Etot_neg_ind in np.where(Etot_min<0)[0]:
+        Etot[Etot == -1*np.inf] = 0
+        
+        Etot_min = np.min(Etot, axis=0)
+        Etot_min_sink_id = np.argmin(Etot, axis=0)
+        Etot_bound_inds = np.where(Etot_min<0)[0]
+        
+        rel_sep[np.where(rel_sep == 0)] = np.inf
+        closest_separations = np.min(rel_sep, axis=0)
+        closest_sink_id = np.argmin(rel_sep, axis=0)
+        
+        closest_bound_sink_time_it = np.where((Etot_min_sink_id[Etot_bound_inds] == closest_sink_id[Etot_bound_inds])==True)[0]
+        closest_bound_sink_ids = Etot_min_sink_id[Etot_bound_inds][closest_bound_sink_time_it]
+        closest_bound_time_its = Etot_bound_inds[closest_bound_sink_time_it]
+        if len(closest_bound_time_its) > 0:
+            for closest_bound_time_it in closest_bound_time_its:
                 if np.isnan(first_bound_sink):
-                    time_it = formation_inds[0][sink_id] + Etot_neg_ind
+                    time_it = formation_inds[0][sink_id] + closest_bound_time_it
                     n_stars = np.where(global_data['m'][time_it]>0)[0]
                     
                     abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
