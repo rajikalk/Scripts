@@ -133,10 +133,9 @@ for sink_id in formation_inds[1]:
     Epot = Grho * mtm * newtonianPotential
     Etot = Ekin + Epot
     
-    import pdb
-    pdb.set_trace()
+    sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
     
-    if True in (Etot<0):
+    if True in (Etot[sep_below_10000]<0):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
         lowest_Etot = np.nanmin(Etot)
