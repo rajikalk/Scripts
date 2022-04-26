@@ -330,6 +330,7 @@ for sink_id in formation_inds[1]:
                         first_bound_sink = losi(first_bound_sink, res)
                         lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                         most_bound_sep = res['separation'][sys_id]
+                        break
                     '''
                     multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                     most_bound_sep = np.nan
