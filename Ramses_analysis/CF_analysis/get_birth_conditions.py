@@ -285,9 +285,6 @@ while sink_id < len(formation_inds[1]):
                     first_bound_sink = losi(first_bound_sink, res)
                     lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                     most_bound_sep = res['separation'][sys_id]
-                    if test_time_ind > test_time_inds[0]:
-                        import pdb
-                        pdb.set_trace()
                     break
 
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
