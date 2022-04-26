@@ -116,7 +116,10 @@ for sink_id in formation_inds[1]:
     mass = np.array(global_data['m'][form_time_it][:sink_id])
     
     rel_pos = abspos - new_sink_pos
-    update_seps = np.argwhere(abs(rel_pos)>0.5)
+    update_seps_neg = np.argwhere(abs(rel_pos)<-0.5)
+    update_seps_pos = np.argwhere(abs(rel_pos)>0.5)
+    import
+    pdb.set_trace()
     for update_sep in update_seps:
         if rel_pos[update_sep[0]][update_sep[1]] < 0:
             rel_pos[update_sep[0]][update_sep[1]] = rel_pos[update_sep[0]][update_sep[1]] + 0.5
@@ -254,6 +257,8 @@ for sink_id in formation_inds[1]:
         rel_pos_z = abspos_z.T - new_sink_pos_z
         import pdb
         pdb.set_trace()
+        update_seps_x_neg = np.argwhere(abs(rel_pos_x)>-0.5)
+        update_seps_x_pos = np.argwhere(abs(rel_pos_x)<0.5)
         update_seps = np.array(np.where(abs(rel_pos)>0.5)).T
         for update_sep in update_seps:
             if rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] < 0:
