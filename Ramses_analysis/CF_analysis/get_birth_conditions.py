@@ -292,6 +292,8 @@ for sink_id in formation_inds[1]:
         rel_sep[np.where(rel_sep == 0)] = np.inf
         closest_separations = np.min(rel_sep, axis=0)
         closest_sink_id = np.argmin(rel_sep, axis=0)
+        import pdb
+        pdb.set_trace()
         
         closest_bound_sink_time_it = np.where((Etot_min_sink_id[Etot_bound_inds] == closest_sink_id[Etot_bound_inds])==True)[0]
         closest_bound_sink_ids = Etot_min_sink_id[Etot_bound_inds][closest_bound_sink_time_it]
