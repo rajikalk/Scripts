@@ -118,8 +118,7 @@ for sink_id in formation_inds[1]:
     rel_pos = abspos - new_sink_pos
     update_seps_neg = np.argwhere(rel_pos<-0.5)
     update_seps_pos = np.argwhere(rel_pos>0.5)
-    import pdb
-    pdb.set_trace()
+    
     rel_pos[update_seps_neg] = rel_pos[update_seps_neg] + 0.5
     rel_pos[update_seps_pos] = rel_pos[update_seps_pos] - 0.5
     rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
@@ -252,8 +251,7 @@ for sink_id in formation_inds[1]:
         rel_pos_x = abspos_x.T - new_sink_pos_x
         rel_pos_y = abspos_y.T - new_sink_pos_y
         rel_pos_z = abspos_z.T - new_sink_pos_z
-        import pdb
-        pdb.set_trace()
+        
         update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
         update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
         rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 0.5
@@ -268,9 +266,6 @@ for sink_id in formation_inds[1]:
         update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
         rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 0.5
         rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 0.5
-        
-        import pdb
-        pdb.set_trace()
         
         rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
         
