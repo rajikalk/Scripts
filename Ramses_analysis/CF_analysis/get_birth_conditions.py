@@ -247,7 +247,7 @@ while sink_id < len(formation_inds[1]):
         closest_sink_id = np.argmin(rel_sep, axis=0)
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
         
-        if True not in (Etot_min_sink_id == closest_separations):
+        if True not in (Etot_min_sink_id == closest_sink_id):
             test_time_inds = []
         else:
             test_time_inds = list(set(Etot_bound_inds).intersection(set(sep_below_10000)))
