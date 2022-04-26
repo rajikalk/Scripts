@@ -90,12 +90,20 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
-Sink_bound_birth = []
+try:
+    file = open("sink_birth_conditions.pkl", 'wb')
+    Sink_bound_birth = pickle.load(file)
+    file.close()
+else:
+    Sink_bound_birth = []
 Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
 diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
 zero_inds = np.where(diff_arr == 0)
 diff_arr[zero_inds] = 1
 formation_inds = np.where(diff_arr == global_data['m'])
+if len(Sink_bound_birth) > 0:
+    import pdb
+    pdb.set_trace()
 n_stars = 0
 for sink_id in formation_inds[1]:
     new_sink_pos = np.array([global_data['x'][formation_inds[0][sink_id]][sink_id], global_data['y'][formation_inds[0][sink_id]][sink_id], global_data['z'][formation_inds[0][sink_id]][sink_id]]).T
@@ -193,6 +201,9 @@ for sink_id in formation_inds[1]:
                                                 most_bound_sep = sep_value
                                                 first_bound_sink = sub_sys[np.argwhere(sub_sys != sink_id)[0][0]]
                                                 first_bound_sink = losi(first_bound_sink, res)
+                                                if most_bound_sink_id != first_bound_sink:
+                                                    import pdb
+                                                    pdb.set_trace()
                                                 break
                                             replace_ind = np.where((res['index1']==sub_sys[0])&(res['index2']==sub_sys[1]))[0][0]
                                             replace_string = str(replace_ind)
@@ -328,6 +339,6 @@ for sink_id in formation_inds[1]:
     Sink_bound_birth.append([born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep, lowest_Etot])
     print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
-file = open("sink_birth_conditions.pkl", 'wb')
-pickle.dump((Sink_bound_birth),file)
-file.close()
+    file = open("sink_birth_conditions.pkl", 'wb')
+    pickle.dump((Sink_bound_birth),file)
+    file.close()
