@@ -94,7 +94,7 @@ try:
     file = open("sink_birth_conditions.pkl", 'wb')
     Sink_bound_birth = pickle.load(file)
     file.close()
-else:
+except:
     Sink_bound_birth = []
 Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
 diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
