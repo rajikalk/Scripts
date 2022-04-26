@@ -170,7 +170,6 @@ for sink_id in formation_inds[1]:
             first_bound_sink = losi(first_bound_sink, res)
             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
             most_bound_sep = res['separation'][sys_id]
-            break
     else:
         born_bound = False
         if len(Etot) > 0:
