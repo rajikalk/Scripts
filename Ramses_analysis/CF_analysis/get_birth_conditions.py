@@ -118,7 +118,7 @@ for sink_id in formation_inds[1]:
     rel_pos = abspos - new_sink_pos
     update_seps_neg = np.argwhere(abs(rel_pos)<-0.5)
     update_seps_pos = np.argwhere(abs(rel_pos)>0.5)
-    import
+    import pdb
     pdb.set_trace()
     for update_sep in update_seps:
         if rel_pos[update_sep[0]][update_sep[1]] < 0:
