@@ -249,9 +249,9 @@ for sink_id in formation_inds[1]:
         
         mass = np.array(global_data['m'][time_it:])
         
-        rel_pos_x = abspos_x - new_sink_pos_x
-        rel_pos_y = abspos_y - new_sink_pos_y
-        rel_pos_z = abspos_z - new_sink_pos_z
+        rel_pos_x = abspos_x.T - new_sink_pos_x
+        rel_pos_y = abspos_y.T - new_sink_pos_y
+        rel_pos_z = abspos_z.T - new_sink_pos_z
         import pdb
         pdb.set_trace()
         update_seps = np.array(np.where(abs(rel_pos)>0.5)).T
