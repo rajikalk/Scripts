@@ -253,9 +253,6 @@ while sink_id < len(formation_inds[1]):
             test_time_inds = list(set(Etot_bound_inds).intersection(set(sep_below_10000)))
         
         for test_time_ind in test_time_inds:
-            if test_time_ind > test_time_inds[0]:
-                import pdb
-                pdb.set_trace()
             if np.isnan(first_bound_sink):
                 time_it = formation_inds[0][sink_id] + test_time_ind
                 print("testing time_it", time_it)
@@ -289,6 +286,10 @@ while sink_id < len(formation_inds[1]):
                     lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                     most_bound_sep = res['separation'][sys_id]
                     break
+                    
+        if test_time_ind > test_time_inds[0]:
+            import pdb
+            pdb.set_trace()
 
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
         import pdb
