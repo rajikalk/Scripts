@@ -318,9 +318,18 @@ for sink_id in formation_inds[1]:
                     S._absvel = yt.YTArray(absvel, '')
                     S._mass = yt.YTArray(mass, '')
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                    if sink_id in res['index1'] or sink_id in res['index2']:
-                        import pdb
-                        pdb.set_trace()
+                    if sink_id in res['index1']:
+                        sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                        first_bound_sink = res['index2'][sys_id]
+                    elif sink_id in res['index2']:
+                        sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                        first_bound_sink = res['index1'][sys_id]
+                    else:
+                        sys_id = np.nan
+                    if np.isnan(sys_id) == False:
+                        first_bound_sink = losi(first_bound_sink, res)
+                        lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                        most_bound_sep = res['separation'][sys_id]
                     '''
                     multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                     most_bound_sep = np.nan
