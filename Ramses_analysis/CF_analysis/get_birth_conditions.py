@@ -229,30 +229,7 @@ for sink_id in formation_inds[1]:
         lowest_Etot = np.nan
         
         time_it = formation_inds[0][sink_id]
-        
-        while time_it < np.shape(global_data['time'])[0]:
-            n_stars = np.where(global_data['m'][time_it]>0)[0]
-            if len(n_stars) > 1:
-                abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-                absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-                mass = np.array(global_data['m'][time_it][n_stars])
-                time = global_data['time'][time_it][n_stars][0]
-                S = pr.Sink()
-                S._jet_factor = 1.
-                S._scale_l = scale_l.value
-                S._scale_v = scale_v.value
-                S._scale_t = scale_t.value
-                S._scale_d = scale_d.value
-                S._time = yt.YTArray(time, '')
-                S._abspos = yt.YTArray(abspos, '')
-                S._absvel = yt.YTArray(absvel, '')
-                S._mass = yt.YTArray(mass, '')
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                if sink_id in res['index1'] or sink_id in res['index2']:
-                    import pdb
-                    pdb.set_trace()
-            time_it = time_it + 1
-        '''
+
         new_sink_pos_x = global_data['x'][time_it:,sink_id]
         new_sink_pos_y = global_data['y'][time_it:,sink_id]
         new_sink_pos_z = global_data['z'][time_it:,sink_id]
@@ -341,6 +318,10 @@ for sink_id in formation_inds[1]:
                     S._absvel = yt.YTArray(absvel, '')
                     S._mass = yt.YTArray(mass, '')
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                    if sink_id in res['index1'] or sink_id in res['index2']:
+                        import pdb
+                        pdb.set_trace()
+                    '''
                     multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                     most_bound_sep = np.nan
                     for multi_ind in multi_inds:
@@ -402,7 +383,7 @@ for sink_id in formation_inds[1]:
                                                 else:
                                                     import pdb
                                                     pdb.set_trace()
-        '''
+                    '''
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
         import pdb
         pdb.set_trace()
