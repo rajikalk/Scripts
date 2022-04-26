@@ -229,16 +229,31 @@ for sink_id in formation_inds[1]:
         lowest_Etot = np.nan
         
         time_it = formation_inds[0][sink_id]
-        new_sink_pos = np.array([global_data['x'][time_it:,sink_id], global_data['y'][time_it:,sink_id], global_data['z'][time_it:,sink_id]]).T
-        new_sink_vel = np.array([global_data['ux'][time_it:,sink_id], global_data['uy'][time_it:,sink_id], global_data['uz'][time_it:,sink_id]]).T
+        new_sink_pos_x = global_data['x'][time_it:,sink_id]
+        new_sink_pos_y = global_data['y'][time_it:,sink_id]
+        new_sink_pos_z = global_data['z'][time_it:,sink_id]
+        
+        new_sink_vel_x = global_data['ux'][time_it:,sink_id]
+        new_sink_vel_y = global_data['uy'][time_it:,sink_id]
+        new_sink_vel_z = global_data['uz'][time_it:,sink_id]
+        
         new_sink_mass = np.array(global_data['m'][time_it:,sink_id])
-        abspos = np.array([global_data['x'][time_it:,:sink_id], global_data['y'][time_it:,:sink_id], global_data['z'][time_it:,:sink_id]]).T
-        absvel = np.array([global_data['ux'][time_it:,:sink_id], global_data['uy'][time_it:,:sink_id], global_data['uz'][time_it:,:sink_id]]).T
-        mass = np.array(global_data['m'][time_it:,:sink_id])
+        
+        abspos_x = global_data['x'][time_it:]
+        abspos_y = global_data['y'][time_it:]
+        abspos_z = global_data['z'][time_it:]
+        
+        absvel_x = global_data['ux'][time_it:]
+        absvel_y = global_data['uy'][time_it:]
+        absvel_z = global_data['uz'][time_it:]
+        
+        mass = np.array(global_data['m'][time_it:])
+        
+        rel_pos_x = abspos_x - new_sink_pos_x
+        rel_pos_y = abspos_y - new_sink_pos_y
+        rel_pos_z = abspos_z - new_sink_pos_z
         import pdb
         pdb.set_trace()
-        
-        rel_pos = abspos - new_sink_pos
         update_seps = np.array(np.where(abs(rel_pos)>0.5)).T
         for update_sep in update_seps:
             if rel_pos[update_sep[0]][update_sep[1]][update_sep[2]] < 0:
