@@ -137,6 +137,7 @@ while sink_id < len(formation_inds[1]):
     
     sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
     
+    sys_id = np.nan
     if True in (Etot[sep_below_10000]<0):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
@@ -172,7 +173,7 @@ while sink_id < len(formation_inds[1]):
             first_bound_sink = losi(first_bound_sink, res)
             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
             most_bound_sep = res['separation'][sys_id]
-    else:
+    if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
         born_bound = False
         if len(Etot) > 0:
             most_bound_sink_id = np.argmin(Etot)
