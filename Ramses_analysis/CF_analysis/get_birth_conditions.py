@@ -141,6 +141,7 @@ while sink_id < len(formation_inds[1]):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
         lowest_Etot = np.nanmin(Etot)
+        delay_time = 0
         #Do multiplicity analysis
         time_it = formation_inds[0][sink_id]
         n_stars = np.where(global_data['m'][time_it]>0)[0]
@@ -183,6 +184,8 @@ while sink_id < len(formation_inds[1]):
         lowest_Etot = np.nan
         
         time_it = formation_inds[0][sink_id]
+        import pdb
+        pdb.set_trace()
 
         new_sink_pos_x = global_data['x'][time_it:,sink_id]
         new_sink_pos_y = global_data['y'][time_it:,sink_id]
@@ -290,7 +293,7 @@ while sink_id < len(formation_inds[1]):
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
         import pdb
         pdb.set_trace()
-    Sink_bound_birth.append([born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep, lowest_Etot])
+    Sink_bound_birth.append([born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep, lowest_Etot, delay_time])
     print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
     file = open("sink_birth_conditions.pkl", 'wb')
