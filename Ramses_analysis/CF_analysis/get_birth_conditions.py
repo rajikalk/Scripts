@@ -250,7 +250,7 @@ while sink_id < len(formation_inds[1]):
         if True not in (Etot_min_sink_id == closest_sink_id):
             test_time_inds = []
         else:
-            test_time_inds = list(set(Etot_bound_inds).intersection(set(sep_below_10000)))
+            test_time_inds = sorted(list(set(Etot_bound_inds).intersection(set(sep_below_10000))))
         
         for test_time_ind in test_time_inds:
             if np.isnan(first_bound_sink):
