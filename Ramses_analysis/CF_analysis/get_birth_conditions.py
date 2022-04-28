@@ -289,7 +289,7 @@ while sink_id < len(formation_inds[1]):
                     lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                     most_bound_sep = res['separation'][sys_id]
                     bound_time = global_data['time'][test_time_ind][0]*units['time_unit'].in_units('yr')
-                    delay_time = (bound_time - formation_time).value
+                    delay_time = float((bound_time - formation_time).value)
                     break
 
     if np.isnan(most_bound_sep) and lowest_Etot < 0:
