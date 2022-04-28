@@ -217,7 +217,9 @@ while sink_id < len(formation_inds[1]):
         
         time_it = formation_inds[0][sink_id]
         formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
-
+        test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
+        
+        '''
         new_sink_pos_x = global_data['x'][time_it:,sink_id]
         new_sink_pos_y = global_data['y'][time_it:,sink_id]
         new_sink_pos_z = global_data['z'][time_it:,sink_id]
@@ -306,6 +308,7 @@ while sink_id < len(formation_inds[1]):
         Etot_min = np.min(Etot, axis=0)
         Etot_min_sink_id = np.argmin(Etot, axis=0)
         Etot_bound_inds = np.where(Etot_min<0)[0]
+        
         del Etot
         del Etot_min
         
@@ -321,10 +324,15 @@ while sink_id < len(formation_inds[1]):
         else:
             test_time_inds = sorted(list(set(Etot_bound_inds).intersection(set(sep_below_10000))))
         
+        if len(Etot_bound_inds) > 0:
+            test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
+        else:
+            test_time_inds = []
+        
         del closest_sink_id
         del Etot_bound_inds
         del sep_below_10000
-        
+        '''
         for test_time_ind in test_time_inds:
             if np.isnan(first_bound_sink):
                 time_it = formation_inds[0][sink_id] + test_time_ind
