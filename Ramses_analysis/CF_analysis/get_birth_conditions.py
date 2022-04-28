@@ -164,7 +164,6 @@ while sink_id < len(formation_inds[1]):
         born_bound = True
         most_bound_sink_id = np.argmin(Etot)
         lowest_Etot = np.nanmin(Etot)
-        del Etot
         delay_time = 0
         #Do multiplicity analysis
         time_it = formation_inds[0][sink_id]
