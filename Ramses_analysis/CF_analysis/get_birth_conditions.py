@@ -295,7 +295,7 @@ while sink_id < len(formation_inds[1]):
         del mass
         newtonianPotential = -1./rel_sep
         Ekin = 0.5 * mtm/mpm * rel_speed**2
-        del mtm
+        del mpm
         Epot = Grho * mtm * newtonianPotential
         del mtm
         del newtonianPotential
