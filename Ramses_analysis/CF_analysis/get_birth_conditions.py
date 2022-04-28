@@ -288,7 +288,7 @@ while sink_id < len(formation_inds[1]):
                     first_bound_sink = losi(first_bound_sink, res)
                     lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                     most_bound_sep = res['separation'][sys_id]
-                    bound_time = global_data['time'][test_time_ind][0]*units['time_unit'].in_units('yr')
+                    bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
                     delay_time = float((bound_time - formation_time).value)
                     break
 
