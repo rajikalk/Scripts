@@ -115,6 +115,12 @@ if len(Sink_bound_birth) > 0:
 else:
     sink_id = 0
 n_stars = 0
+
+mismatched_inds = [13, 15, 16, 20, 24, 28, 31, 40, 46, 50, 63, 65]
+true_delay = [700973.119076509, 825781.5734443031, 0.0, 656453.2060968727, 0.0,
+       0.0, 856.0596429631114, 13638.631729342043, 404753.4436713271,
+       6036.782605849206, 70337.8161722906, 79088.95493660122]
+
 rit = -1
 while sink_id < len(formation_inds[1]):
     rit = rit + 1
@@ -224,6 +230,10 @@ while sink_id < len(formation_inds[1]):
             first_bound_sink = np.nan
             lowest_Etot = np.nan
             delay_time = np.nan
+            
+            if sink_id in mismatched_inds:
+                import pdb
+                pdb.set_trace()
             
             time_it = formation_inds[0][sink_id]
             formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
@@ -383,7 +393,7 @@ while sink_id < len(formation_inds[1]):
         if np.isnan(most_bound_sep) and lowest_Etot < 0:
             import pdb
             pdb.set_trace()
-        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, first_bound_sink, most_bound_sep, lowest_Etot, delay_time])
+        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
         file = open("sink_birth_conditions_"+str(rank)+".pkl", 'wb')
@@ -395,7 +405,7 @@ while sink_id < len(formation_inds[1]):
 
 #compile pickles
 import glob
-birth_pickles = glob.glob("sink_birth_conditions_*.pkl")
+birth_pickles = sorted(glob.glob("sink_birth_conditions_*.pkl"))[1:]
 Sink_birth_all = []
 for birth_pick in birth_pickles:
     file = open(birth_pick, 'rb')
@@ -407,4 +417,25 @@ Sink_birth_all = np.array(Sink_birth_all)
 sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
 Sink_birth_all = Sink_birth_all[sink_sorted_inds]
 
+mismatched_inds = []
+true_delay = []
+
+for sink_id in range(np.shape(Sink_birth_fast)[0]):
+    if sink_id in Sink_birth_all[:,0]:
+        match_ind = np.argwhere(Sink_birth_all[:,0]==sink_id)[0]
+        Sink_match = Sink_birth_all[match_ind]
+        Sink_fast = Sink_birth_fast[sink_id]
+        try:
+            if False not in (Sink_match[0][1:] == np.array(Sink_fast)):
+                print('Birth conditions match for sink', sink_id)
+            else:
+                False_inds = np.argwhere((Sink_match[0][1:] == np.array(Sink_fast))==False).T[0]
+                if np.sum(np.nan_to_num(Sink_match[0][1:][False_inds].tolist())) == 0 and np.sum(np.nan_to_num(np.array(Sink_fast)[False_inds].tolist())) == 0:
+                    print("it's all nan")
+                else:
+                    mismatched_inds.append(sink_id)
+                    true_delay.append(Sink_match[-1])
+        except:
+            mismatched_inds.append(sink_id)
+            true_delay.append(Sink_match[-1])
 
