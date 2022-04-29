@@ -231,10 +231,6 @@ while sink_id < len(formation_inds[1]):
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            if sink_id in mismatched_inds:
-                import pdb
-                pdb.set_trace()
-            
             time_it = formation_inds[0][sink_id]
             formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
@@ -328,15 +324,19 @@ while sink_id < len(formation_inds[1]):
             Etot_min_sink_id = np.argmin(Etot, axis=0)
             Etot_bound_inds = np.where(Etot_min<0)[0]
             
-            del Etot
-            del Etot_min
+            #del Etot
+            #del Etot_min
             
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
-            del rel_sep
+            #del rel_sep
             sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
-            del closest_separations
+            #del closest_separations
+            
+            if sink_id in mismatched_inds:
+                import pdb
+                pdb.set_trace()
             
             if True not in (Etot_min_sink_id == closest_sink_id):
                 test_time_inds = []
