@@ -170,7 +170,7 @@ while sink_id < len(formation_inds[1]):
         
         sys_id = np.nan
         if True in (Etot[sep_below_10000]<0):
-            del sep_below_10000
+            #del sep_below_10000
             born_bound = True
             most_bound_sink_id = np.argmin(Etot)
             lowest_Etot = np.nanmin(Etot)
