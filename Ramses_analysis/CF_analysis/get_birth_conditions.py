@@ -93,6 +93,7 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
+# 136578 time inds for G50
 del file_open
 
 try:
@@ -226,9 +227,8 @@ while sink_id < len(formation_inds[1]):
             
             time_it = formation_inds[0][sink_id]
             formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
-            test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
+            #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
-            '''
             new_sink_pos_x = global_data['x'][time_it:,sink_id]
             new_sink_pos_y = global_data['y'][time_it:,sink_id]
             new_sink_pos_z = global_data['z'][time_it:,sink_id]
@@ -333,15 +333,10 @@ while sink_id < len(formation_inds[1]):
             else:
                 test_time_inds = sorted(list(set(Etot_bound_inds).intersection(set(sep_below_10000))))
             
-            if len(Etot_bound_inds) > 0:
-                test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-            else:
-                test_time_inds = []
-            
             del closest_sink_id
             del Etot_bound_inds
             del sep_below_10000
-            '''
+            
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
                     time_it = formation_inds[0][sink_id] + test_time_ind
@@ -396,3 +391,20 @@ while sink_id < len(formation_inds[1]):
         file.close()
         
     sink_id = sink_id + 1
+
+
+#compile pickles
+import glob
+birth_pickles = glob.glob("sink_birth_conditions_*.pkl")
+Sink_birth_all = []
+for birth_pick in birth_pickles:
+    file = open(birth_pick, 'rb')
+    Sink_bound_birth = pickle.load(file)
+    file.close()
+    Sink_birth_all = Sink_birth_all + Sink_bound_birth
+
+Sink_birth_all = np.array(Sink_birth_all)
+sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
+Sink_birth_all = Sink_birth_all[sink_sorted_inds]
+
+
