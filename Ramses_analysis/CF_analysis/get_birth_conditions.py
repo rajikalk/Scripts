@@ -399,9 +399,9 @@ birth_pickles = glob.glob("sink_birth_conditions_*.pkl")
 Sink_birth_all = []
 for birth_pick in birth_pickles:
     file = open(birth_pick, 'rb')
-    Sink_bound_birth = pickle.load(file)
+    Sink_bound_birth_rank = pickle.load(file)
     file.close()
-    Sink_birth_all = Sink_birth_all + Sink_bound_birth
+    Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
 
 Sink_birth_all = np.array(Sink_birth_all)
 sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
