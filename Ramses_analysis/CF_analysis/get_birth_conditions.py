@@ -278,7 +278,7 @@ while sink_id < len(formation_inds[1]):
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
-            
+            '''
             new_sink_vel_x = global_data['ux'][time_it:,sink_id]
             new_sink_vel_y = global_data['uy'][time_it:,sink_id]
             new_sink_vel_z = global_data['uz'][time_it:,sink_id]
@@ -326,18 +326,25 @@ while sink_id < len(formation_inds[1]):
             
             #del Etot
             #del Etot_min
-            
+            '''
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
             #del rel_sep
             sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
+            test_time_inds = sep_below_10000
             #del closest_separations
             
             if sink_id in mismatched_inds:
+                goal_delay = true_delay[mismatched_inds.index(sink_id)]
+                goal_time = formation_time.value + goal_delay
+                all_times = global_data['time'][time_it:].T[0]*units['time_unit'].in_units('yr')
+                goal_ind = np.argmin(abs(all_times.value - goal_time))
+                if goal_ind in sep_below_10000:
+                    print("find")
                 import pdb
                 pdb.set_trace()
-            
+            '''
             if True not in (Etot_min_sink_id == closest_sink_id):
                 test_time_inds = []
             else:
@@ -346,7 +353,7 @@ while sink_id < len(formation_inds[1]):
             del closest_sink_id
             del Etot_bound_inds
             del sep_below_10000
-            
+            '''
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
                     time_it = formation_inds[0][sink_id] + test_time_ind
@@ -419,6 +426,7 @@ Sink_birth_all = Sink_birth_all[sink_sorted_inds]
 
 mismatched_inds = []
 true_delay = []
+true_first_sys = []
 
 for sink_id in range(np.shape(Sink_birth_fast)[0]):
     if sink_id in Sink_birth_all[:,0]:
@@ -435,6 +443,7 @@ for sink_id in range(np.shape(Sink_birth_fast)[0]):
                 else:
                     mismatched_inds.append(sink_id)
                     true_delay.append(Sink_match[-1])
+                    true_first_sys.append(Sink_bound_birth[3])
         except:
             mismatched_inds.append(sink_id)
             true_delay.append(Sink_match[-1])
