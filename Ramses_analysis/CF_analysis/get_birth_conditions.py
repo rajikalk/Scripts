@@ -236,6 +236,7 @@ while sink_id < len(formation_inds[1]):
             first_bound_sink = np.nan
             lowest_Etot = np.nan
             delay_time = np.nan
+            most_bound_sink_id = np.argmin(Etot)
             
             time_it = formation_inds[0][sink_id]
             formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
