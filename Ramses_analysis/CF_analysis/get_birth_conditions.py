@@ -384,6 +384,8 @@ while sink_id < len(formation_inds[1]):
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
             #del rel_sep
+            import pdb
+            pdb.set_trace()
             sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             test_time_inds = sep_below_10000
             #del closest_separations
