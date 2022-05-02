@@ -278,6 +278,7 @@ while sink_id < len(formation_inds[1]):
         '''
         #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
         if np.isnan(sys_id):
+            born_bound = False
             most_bound_sep = np.nan
             first_bound_sink = np.nan
             lowest_Etot = np.nan
@@ -441,7 +442,6 @@ while sink_id < len(formation_inds[1]):
                         else:
                             sys_id = np.nan
                         if np.isnan(sys_id) == False:
-                            born_bound = False
                             first_bound_sink = losi(first_bound_sink, res)
                             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                             most_bound_sep = res['separation'][sys_id]
