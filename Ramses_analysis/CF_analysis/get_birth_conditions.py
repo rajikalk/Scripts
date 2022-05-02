@@ -116,10 +116,20 @@ else:
     sink_id = 0
 n_stars = 0
 
+file = open("All_sink_birth_conditions.pkl", 'rb')
+Sink_birth_all = pickle.load(file)
+file.close()
+
 mismatched_inds = [13, 15, 16, 20, 24, 28, 31, 40, 46, 50, 63, 65]
-true_delay = [700973.119076509, 825781.5734443031, 0.0, 656453.2060968727, 0.0,
-       0.0, 856.0596429631114, 13638.631729342043, 404753.4436713271,
-       6036.782605849206, 70337.8161722906, 79088.95493660122]
+true_delay = []
+true_first_sys = []
+
+for birth_con in Sink_birth_all:
+    if birth_con[0] in mismatched_inds:
+        true_delay.append(birth_con[-1])
+        true_first_sys.append(birth_con[3])
+
+#true_delay = [700973.119076509, 825781.5734443031, 0.0, 656453.2060968727, 0.0, 0.0, 856.0596429631114, 13638.631729342043, 404753.4436713271, 6036.782605849206, 70337.8161722906, 79088.95493660122]
 
 rit = -1
 while sink_id < len(formation_inds[1]):
@@ -128,6 +138,44 @@ while sink_id < len(formation_inds[1]):
         rit = 0
     if rank == rit:
         form_time_it = formation_inds[0][sink_id]
+        
+        n_stars = np.where(global_data['m'][form_time_it]>0)[0]
+        abspos = np.array([global_data['x'][form_time_it][n_stars], global_data['y'][form_time_it][n_stars], global_data['z'][form_time_it][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][form_time_it][n_stars], global_data['uy'][form_time_it][n_stars], global_data['uz'][form_time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][form_time_it][n_stars])
+        time = global_data['time'][form_time_it][n_stars][0]
+        del n_stars
+        S = pr.Sink()
+        S._jet_factor = 1.
+        S._scale_l = scale_l.value
+        S._scale_v = scale_v.value
+        S._scale_t = scale_t.value
+        S._scale_d = scale_d.value
+        S._time = yt.YTArray(time, '')
+        del time
+        S._abspos = yt.YTArray(abspos, '')
+        del abspos
+        S._absvel = yt.YTArray(absvel, '')
+        del absvel
+        S._mass = yt.YTArray(mass, '')
+        del mass
+        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+        if sink_id in res['index1']:
+            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+            first_bound_sink = res['index2'][sys_id]
+        elif sink_id in res['index2']:
+            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+            first_bound_sink = res['index1'][sys_id]
+        else:
+            sys_id = np.nan
+        if np.isnan(sys_id) == False:
+            first_bound_sink = losi(first_bound_sink, res)
+            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+            most_bound_sep = res['separation'][sys_id]
+            bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
+            delay_time = float((bound_time - formation_time).value)
+        
+        '''
         new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
         abspos = np.array([global_data['x'][form_time_it][:sink_id], global_data['y'][form_time_it][:sink_id], global_data['z'][form_time_it][:sink_id]]).T
         rel_pos = abspos - new_sink_pos
@@ -218,6 +266,7 @@ while sink_id < len(formation_inds[1]):
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
             del res
+        '''
         if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
             del sep_below_10000
             born_bound = False
@@ -409,7 +458,6 @@ while sink_id < len(formation_inds[1]):
         
     sink_id = sink_id + 1
 
-
 #compile pickles
 import glob
 birth_pickles = sorted(glob.glob("sink_birth_conditions_*.pkl"))[1:]
@@ -447,4 +495,3 @@ for sink_id in range(np.shape(Sink_birth_fast)[0]):
         except:
             mismatched_inds.append(sink_id)
             true_delay.append(Sink_match[-1])
-
