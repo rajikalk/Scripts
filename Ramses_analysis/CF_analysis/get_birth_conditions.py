@@ -351,8 +351,6 @@ while sink_id < len(formation_inds[1]):
                 goal_time = formation_time.value + goal_delay
                 all_times = global_data['time'][time_it:].T[0]*units['time_unit'].in_units('yr')
                 goal_ind = np.argmin(abs(all_times.value - goal_time))
-                import pdb
-                pdb.set_trace()
             '''
             if True not in (Etot_min_sink_id == closest_sink_id):
                 test_time_inds = []
@@ -403,6 +401,10 @@ while sink_id < len(formation_inds[1]):
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
+                            
+                            if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
+                                import pdb
+                                pdb.set_trace()
                             break
                         del res
 
