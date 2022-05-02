@@ -138,42 +138,50 @@ while sink_id < len(formation_inds[1]):
         rit = 0
     if rank == rit:
         form_time_it = formation_inds[0][sink_id]
-        
         n_stars = np.where(global_data['m'][form_time_it]>0)[0]
-        abspos = np.array([global_data['x'][form_time_it][n_stars], global_data['y'][form_time_it][n_stars], global_data['z'][form_time_it][n_stars]]).T#*scale_l
-        absvel = np.array([global_data['ux'][form_time_it][n_stars], global_data['uy'][form_time_it][n_stars], global_data['uz'][form_time_it][n_stars]]).T#*scale_v
-        mass = np.array(global_data['m'][form_time_it][n_stars])
-        time = global_data['time'][form_time_it][n_stars][0]
-        del n_stars
-        S = pr.Sink()
-        S._jet_factor = 1.
-        S._scale_l = scale_l.value
-        S._scale_v = scale_v.value
-        S._scale_t = scale_t.value
-        S._scale_d = scale_d.value
-        S._time = yt.YTArray(time, '')
-        del time
-        S._abspos = yt.YTArray(abspos, '')
-        del abspos
-        S._absvel = yt.YTArray(absvel, '')
-        del absvel
-        S._mass = yt.YTArray(mass, '')
-        del mass
-        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-        if sink_id in res['index1']:
-            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-            first_bound_sink = res['index2'][sys_id]
-        elif sink_id in res['index2']:
-            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-            first_bound_sink = res['index1'][sys_id]
-        else:
-            sys_id = np.nan
-        if np.isnan(sys_id) == False:
-            first_bound_sink = losi(first_bound_sink, res)
-            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-            most_bound_sep = res['separation'][sys_id]
-            bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
-            delay_time = float((bound_time - formation_time).value)
+        
+        most_bound_sink_id = np.nan
+        most_bound_sep = np.nan
+        first_bound_sink = np.nan
+        lowest_Etot = np.nan
+        delay_time = np.nan
+        sys_id = np.nan
+        
+        if len(n_stars)>1:
+            abspos = np.array([global_data['x'][form_time_it][n_stars], global_data['y'][form_time_it][n_stars], global_data['z'][form_time_it][n_stars]]).T#*scale_l
+            absvel = np.array([global_data['ux'][form_time_it][n_stars], global_data['uy'][form_time_it][n_stars], global_data['uz'][form_time_it][n_stars]]).T#*scale_v
+            mass = np.array(global_data['m'][form_time_it][n_stars])
+            time = global_data['time'][form_time_it][n_stars][0]
+            del n_stars
+            S = pr.Sink()
+            S._jet_factor = 1.
+            S._scale_l = scale_l.value
+            S._scale_v = scale_v.value
+            S._scale_t = scale_t.value
+            S._scale_d = scale_d.value
+            S._time = yt.YTArray(time, '')
+            del time
+            S._abspos = yt.YTArray(abspos, '')
+            del abspos
+            S._absvel = yt.YTArray(absvel, '')
+            del absvel
+            S._mass = yt.YTArray(mass, '')
+            del mass
+            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+            if sink_id in res['index1']:
+                sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                first_bound_sink = res['index2'][sys_id]
+            elif sink_id in res['index2']:
+                sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                first_bound_sink = res['index1'][sys_id]
+            else:
+                sys_id = np.nan
+            if np.isnan(sys_id) == False:
+                first_bound_sink = losi(first_bound_sink, res)
+                lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                most_bound_sep = res['separation'][sys_id]
+                bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
+                delay_time = float((bound_time - formation_time).value)
         
         '''
         new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
