@@ -179,11 +179,11 @@ while sink_id < len(formation_inds[1]):
         del newtonianPotential
         del mtm
         Etot = Ekin + Epot
+        most_bound_sink_id = np.argmin(Etot)
         del Ekin
         del Epot
         
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
-        most_bound_sink_id = np.argmin(Etot)
         del rel_sep
         
         sys_id = np.nan
