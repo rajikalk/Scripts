@@ -275,7 +275,8 @@ while sink_id < len(formation_inds[1]):
                 most_bound_sep = res['separation'][sys_id]
             del res
         '''
-        if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
+        #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
+        if np.isnan(sys_id):
             del sep_below_10000
             born_bound = False
             if len(Etot) > 0:
