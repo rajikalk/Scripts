@@ -384,8 +384,8 @@ while sink_id < len(formation_inds[1]):
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
             #del rel_sep
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             sep_below_10000 = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             test_time_inds = sep_below_10000
             #del closest_separations
@@ -395,8 +395,6 @@ while sink_id < len(formation_inds[1]):
                 goal_time = formation_time.value + goal_delay
                 all_times = global_data['time'][time_it:].T[0]*units['time_unit'].in_units('yr')
                 goal_ind = np.argmin(abs(all_times.value - goal_time))
-                if goal_ind in sep_below_10000:
-                    print("find")
                 import pdb
                 pdb.set_trace()
             '''
