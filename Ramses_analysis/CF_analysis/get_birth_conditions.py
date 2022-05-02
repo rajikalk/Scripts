@@ -421,22 +421,27 @@ while sink_id < len(formation_inds[1]):
     sink_id = sink_id + 1
 
 #compile pickles
-import glob
-birth_pickles = sorted(glob.glob("sink_birth_conditions_*.pkl"))
-Sink_birth_all = []
-for birth_pick in birth_pickles:
-    file = open(birth_pick, 'rb')
+if rank == 0:
+    import glob
+    birth_pickles = sorted(glob.glob("sink_birth_conditions_*.pkl"))
+    Sink_birth_all = []
+    for birth_pick in birth_pickles:
+        file = open(birth_pick, 'rb')
+        Sink_bound_birth_rank = pickle.load(file)
+        file.close()
+        Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
+        
+    file = open("sink_birth_all.pkl", 'wb')
     Sink_bound_birth_rank = pickle.load(file)
     file.close()
-    Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
 
-Sink_birth_all = np.array(Sink_birth_all)
-sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
-Sink_birth_all = Sink_birth_all[sink_sorted_inds]
+    Sink_birth_all = np.array(Sink_birth_all)
+    sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
+    Sink_birth_all = Sink_birth_all[sink_sorted_inds]
 
-mismatched_inds = []
-true_delay = []
-true_first_sys = []
+    mismatched_inds = []
+    true_delay = []
+    true_first_sys = []
 '''
 for sink_id in range(np.shape(Sink_birth_fast)[0]):
     if sink_id in Sink_birth_all[:,0]:
