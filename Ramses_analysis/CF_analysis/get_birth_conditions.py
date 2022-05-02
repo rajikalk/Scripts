@@ -278,11 +278,6 @@ while sink_id < len(formation_inds[1]):
         #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
         if np.isnan(sys_id):
             born_bound = False
-            if len(Etot) > 0:
-                most_bound_sink_id = np.argmin(Etot)
-            else:
-                most_bound_sink_id = np.nan
-            del Etot
             most_bound_sep = np.nan
             first_bound_sink = np.nan
             lowest_Etot = np.nan
