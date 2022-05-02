@@ -163,15 +163,15 @@ for time_it in time_it_range:
                 
                 if np.sum(abs(dx) > 0.5)>0:
                     update_x = np.argwhere(abs(dx) > 0.5).T[0]
-                    dx[update_x] = abs(dx[update_x]) - 0.5
+                    dx[update_x] = abs(dx[update_x]) - 1.0
                     #print('updated dx')
                 if np.sum(abs(dy) > 0.5)>0:
                     update_y = np.argwhere(abs(dy) > 0.5).T[0]
-                    dy[update_y] = abs(dy[update_y]) - 0.5
+                    dy[update_y] = abs(dy[update_y]) - 1.0
                     #print('updated dy')
                 if np.sum(abs(dz) > 0.5)>0:
                     update_z = np.argwhere(abs(dz) > 0.5).T[0]
-                    dz[update_z] = abs(dz[update_z]) - 0.5
+                    dz[update_z] = abs(dz[update_z]) - 1.0
                     #print('updated dz')
                 
                 sep = np.sqrt(dx**2 + dy**2 + dz**2)
