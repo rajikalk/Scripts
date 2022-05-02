@@ -50,7 +50,7 @@ for iteration in iter_range:
             if rank == (base_rank*ranks_per_iteration + base_rit):
                 diff_pos = rand_pos[rand_pos_it+1:] - rand_pos[rand_pos_it]
                 update_inds = np.where(abs(diff_pos)>0.5)
-                diff_pos[update_inds] = abs(diff_pos[update_inds]) - 0.5
+                diff_pos[update_inds] = abs(diff_pos[update_inds]) - 1.0
                 del update_inds
                 sep = np.sqrt(diff_pos.T[0]**2 + diff_pos.T[1]**2 + diff_pos.T[2]**2)
                 del diff_pos
