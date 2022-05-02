@@ -183,13 +183,13 @@ while sink_id < len(formation_inds[1]):
         del Epot
         
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
+        most_bound_sink_id = np.argmin(Etot)
         del rel_sep
         
         sys_id = np.nan
         if True in (Etot[sep_below_10000]<0):
             #del sep_below_10000
             born_bound = True
-            most_bound_sink_id = np.argmin(Etot)
             lowest_Etot = np.nanmin(Etot)
             delay_time = 0
             #Do multiplicity analysis
@@ -236,7 +236,6 @@ while sink_id < len(formation_inds[1]):
             first_bound_sink = np.nan
             lowest_Etot = np.nan
             delay_time = np.nan
-            most_bound_sink_id = np.argmin(Etot)
             
             time_it = formation_inds[0][sink_id]
             formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
