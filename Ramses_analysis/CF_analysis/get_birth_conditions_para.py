@@ -188,7 +188,7 @@ while sink_id < len(formation_inds[1]):
             abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][time_it][n_stars])
-            time = global_data['time'][time_it][n_stars][0]
+            time = global_data['time'][time_it]
             del n_stars
             S = pr.Sink()
             S._jet_factor = 1.
