@@ -92,7 +92,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 formation_inds = [0]
-for sink_id in range(1, len(np.shape(global_data['m'].T)[0])):
+for sink_id in range(1, np.shape(global_data['m'].T)[0]):
     formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
 
 formation_inds = np.array(formation_inds)
