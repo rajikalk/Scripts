@@ -444,18 +444,16 @@ if rank == 0:
         Sink_bound_birth_rank = pickle.load(file)
         file.close()
         Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
+        os.remove(birth_pick)
+    
+    sorted_inds = np.argsort(list(map(int, np.array(Sink_birth_all)[:,0])))
+    Sink_birth_all = np.array(Sink_birth_all)[sorted_inds]
         
     file = open("sink_birth_all.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
     file.close()
+    print("Collected sink birth data into sink_birth_all.pkl" )
 
-    Sink_birth_all = np.array(Sink_birth_all)
-    sink_sorted_inds = np.argsort(Sink_birth_all[:,0])
-    Sink_birth_all = Sink_birth_all[sink_sorted_inds]
-
-    mismatched_inds = []
-    true_delay = []
-    true_first_sys = []
 '''
 for sink_id in range(np.shape(Sink_birth_fast)[0]):
     if sink_id in Sink_birth_all[:,0]:

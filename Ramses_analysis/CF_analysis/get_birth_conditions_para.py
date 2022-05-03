@@ -87,12 +87,12 @@ del units_override
     
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
-    global_data = pickle.load(file_open,encoding="latin1")
+    global_data = pickle.load(file_open)
 except:
     file_open.close()
     import pickle5 as pickle
     file_open = open(args.global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open,encoding="latin1")
+    global_data = pickle.load(file_open)
 file_open.close()
 # 136578 time inds for G50
 del file_open
@@ -100,7 +100,6 @@ del file_open
 sys.stdout.flush()
 CW.Barrier()
 
-Sink_bound_birth = []
 Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
 diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
 del Mass_plus_blank_row
@@ -116,6 +115,7 @@ else:
 
 sys.stdout.flush()
 CW.Barrier()
+Sink_bound_birth = []
 
 rit = -1
 while sink_id < len(formation_inds[1]):
@@ -421,8 +421,22 @@ if rank == 0:
         Sink_bound_birth_rank = pickle.load(file)
         file.close()
         Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
+        os.remove(birth_pick)
+    
+    sorted_inds = np.argsort(list(map(int, np.array(Sink_birth_all)[:,0])))
+    Sink_birth_all = np.array(Sink_birth_all)[sorted_inds]
         
     file = open("sink_birth_all.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
+
+import pickle
+import numpy as np
+file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G400_full.pkl", "rb")
+global_data = pickle.load(file_open,encoding="latin1")
+file_open.close()
+SFE_5_ind = np.argmin(abs(np.sum(global_data['m'],axis=1)-0.05)) + 1
+file_open = open("global_reduced.pkl", "wb")
+pickle.dump(({'time':global_data['time'][:SFE_5_ind].T[0],'m': global_data['m'][:SFE_5_ind], 'x': global_data['x'][:SFE_5_ind], 'y': global_data['y'][:SFE_5_ind], 'z': global_data['z'][:SFE_5_ind], 'ux': global_data['ux'][:SFE_5_ind], 'uy': global_data['uy'][:SFE_5_ind], 'uz': global_data['uz'][:SFE_5_ind]}), file_open)
+file_open.close()
