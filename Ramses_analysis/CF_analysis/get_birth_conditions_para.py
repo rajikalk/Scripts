@@ -109,10 +109,6 @@ diff_arr[zero_inds] = 1
 del zero_inds
 formation_inds = np.where(diff_arr == global_data['m'])
 del diff_arr
-if len(Sink_bound_birth) > 0:
-    sink_id = len(Sink_bound_birth)
-else:
-    sink_id = 0
 
 sys.stdout.flush()
 CW.Barrier()
