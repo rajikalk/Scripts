@@ -111,7 +111,7 @@ while sink_id < len(formation_inds[1]):
     if rit == size:
         rit = 0
     if rank == rit:
-        form_time_it = np.where(global_data['time']==formation_times[3])[0][0]# formation_inds[0][sink_id]
+        form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]# formation_inds[0][sink_id]
         
         #truncate global data
         global_data['time'] = global_data['time'][form_time_it:]
