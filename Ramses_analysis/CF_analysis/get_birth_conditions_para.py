@@ -240,7 +240,7 @@ while sink_id < len(formation_inds[1]):
             time_it = 0
             formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-            
+            '''
             new_sink_pos_x = global_data['x'][time_it:,sink_id]
             new_sink_pos_y = global_data['y'][time_it:,sink_id]
             new_sink_pos_z = global_data['z'][time_it:,sink_id]
@@ -284,6 +284,7 @@ while sink_id < len(formation_inds[1]):
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
+            '''
             '''
             new_sink_vel_x = global_data['ux'][time_it:,sink_id]
             new_sink_vel_y = global_data['uy'][time_it:,sink_id]
@@ -333,6 +334,7 @@ while sink_id < len(formation_inds[1]):
             #del Etot
             #del Etot_min
             '''
+            '''
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
@@ -341,7 +343,7 @@ while sink_id < len(formation_inds[1]):
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
-            
+            '''
             '''
             if sink_id in mismatched_inds:
                 goal_delay = true_delay[mismatched_inds.index(sink_id)]
@@ -358,6 +360,9 @@ while sink_id < len(formation_inds[1]):
             del Etot_bound_inds
             del sep_below_10000
             '''
+            import pdb
+            pdb.set_trace()
+            
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
                     time_it = 0 + test_time_ind
