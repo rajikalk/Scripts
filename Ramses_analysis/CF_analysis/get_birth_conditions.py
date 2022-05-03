@@ -401,10 +401,12 @@ while sink_id < len(formation_inds[1]):
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
-                            
-                            if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
-                                import pdb
-                                pdb.set_trace()
+                            try:
+                                if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
+                                    import pdb
+                                    pdb.set_trace()
+                            except:
+                                pass
                             break
                         del res
 
