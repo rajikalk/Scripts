@@ -6,6 +6,7 @@ from pyramses import rsink
 import multiplicity as m
 import collections
 from mpi4py.MPI import COMM_WORLD as CW
+import sys
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -96,6 +97,9 @@ file_open.close()
 # 136578 time inds for G50
 del file_open
 
+sys.stdout.flush()
+CW.Barrier()
+
 try:
     file = open("sink_birth_conditions.pkl", 'rb')
     Sink_bound_birth = pickle.load(file)
@@ -114,7 +118,9 @@ if len(Sink_bound_birth) > 0:
     sink_id = len(Sink_bound_birth)
 else:
     sink_id = 0
-n_stars = 0
+
+sys.stdout.flush()
+CW.Barrier()
 
 file = open("All_sink_birth_conditions.pkl", 'rb')
 Sink_birth_all = pickle.load(file)
@@ -130,6 +136,9 @@ for birth_con in Sink_birth_all:
         true_first_sys.append(birth_con[3])
 
 #true_delay = [700973.119076509, 825781.5734443031, 0.0, 656453.2060968727, 0.0, 0.0, 856.0596429631114, 13638.631729342043, 404753.4436713271, 6036.782605849206, 70337.8161722906, 79088.95493660122]
+
+sys.stdout.flush()
+CW.Barrier()
 
 rit = -1
 while sink_id < len(formation_inds[1]):
@@ -421,6 +430,9 @@ while sink_id < len(formation_inds[1]):
         file.close()
         
     sink_id = sink_id + 1
+
+sys.stdout.flush()
+CW.Barrier()
 
 #compile pickles
 if rank == 0:
