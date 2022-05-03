@@ -434,7 +434,7 @@ if rank == 0:
         Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
         
     file = open("sink_birth_all.pkl", 'wb')
-    Sink_bound_birth_rank = pickle.load(file)
+    pickle.dump((Sink_birth_all), file)
     file.close()
 
     Sink_birth_all = np.array(Sink_birth_all)
