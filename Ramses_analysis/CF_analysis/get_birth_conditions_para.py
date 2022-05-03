@@ -407,7 +407,7 @@ while sink_id < len(formation_inds[1]):
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
-        file = open("sink_birth_conditions_"+str(rank)+".pkl", 'wb')
+        file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
         file.close()
         
@@ -428,7 +428,7 @@ if rank == 0:
         Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
         os.remove(birth_pick)
     
-    sorted_inds = np.argsort(list(map(int, np.array(Sink_birth_all)[:,0])))
+    sorted_inds = np.array(Sink_birth_all)[:,0]
     Sink_birth_all = np.array(Sink_birth_all)[sorted_inds]
         
     file = open("sink_birth_all.pkl", 'wb')
