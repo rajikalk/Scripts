@@ -108,6 +108,7 @@ zero_inds = np.where(diff_arr == 0)
 diff_arr[zero_inds] = 1
 del zero_inds
 formation_inds = np.where(diff_arr == global_data['m'])
+formation_times = global_data['time'][formation_inds[0]]
 del diff_arr
 
 sys.stdout.flush()
@@ -121,7 +122,19 @@ while sink_id < len(formation_inds[1]):
     if rit == size:
         rit = 0
     if rank == rit:
-        form_time_it = formation_inds[0][sink_id]
+        form_time_it = np.where(global_data['time']==formation_times[3])[0][0]# formation_inds[0][sink_id]
+        
+        #truncate global data
+        global_data['time'] = global_data['time'][form_time_it:]
+        global_data['m'] = global_data['m'][form_time_it:]
+        global_data['x'] = global_data['x'][form_time_it:]
+        global_data['y'] = global_data['y'][form_time_it:]
+        global_data['z'] = global_data['z'][form_time_it:]
+        global_data['ux'] = global_data['ux'][form_time_it:]
+        global_data['uy'] = global_data['uy'][form_time_it:]
+        global_data['uz'] = global_data['uz'][form_time_it:]
+        
+        form_time_it = 0
 
         new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
         abspos = np.array([global_data['x'][form_time_it][:sink_id], global_data['y'][form_time_it][:sink_id], global_data['z'][form_time_it][:sink_id]]).T
@@ -180,7 +193,7 @@ while sink_id < len(formation_inds[1]):
             lowest_Etot = np.nanmin(Etot)
             delay_time = 0
             #Do multiplicity analysis
-            time_it = formation_inds[0][sink_id]
+            time_it = 0
             n_stars = np.where(global_data['m'][time_it]>0)[0]
 
             abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
@@ -224,8 +237,8 @@ while sink_id < len(formation_inds[1]):
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            time_it = formation_inds[0][sink_id]
-            formation_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
+            time_it = 0
+            formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             new_sink_pos_x = global_data['x'][time_it:,sink_id]
@@ -347,14 +360,14 @@ while sink_id < len(formation_inds[1]):
             '''
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
-                    time_it = formation_inds[0][sink_id] + test_time_ind
+                    time_it = 0 + test_time_ind
                     print("testing time_it", time_it, "on rank", rank)
                     n_stars = np.where(global_data['m'][time_it]>0)[0]
                     if len(n_stars)>1:
                         abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
                         absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
                         mass = np.array(global_data['m'][time_it][n_stars])
-                        time = global_data['time'][time_it][n_stars][0]
+                        time = global_data['time'][time_it]
                         del n_stars
                         S = pr.Sink()
                         S._jet_factor = 1.
@@ -383,7 +396,7 @@ while sink_id < len(formation_inds[1]):
                             first_bound_sink = losi(first_bound_sink, res)
                             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                             most_bound_sep = res['separation'][sys_id]
-                            bound_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
+                            bound_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
                             try:
                                 if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
@@ -429,6 +442,7 @@ if rank == 0:
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
 
+'''
 import pickle
 import numpy as np
 file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G400_full.pkl", "rb")
@@ -438,3 +452,4 @@ SFE_5_ind = np.argmin(abs(np.sum(global_data['m'],axis=1)-0.05)) + 1
 file_open = open("global_reduced.pkl", "wb")
 pickle.dump(({'time':global_data['time'][:SFE_5_ind].T[0],'m': global_data['m'][:SFE_5_ind], 'x': global_data['x'][:SFE_5_ind], 'y': global_data['y'][:SFE_5_ind], 'z': global_data['z'][:SFE_5_ind], 'ux': global_data['ux'][:SFE_5_ind], 'uy': global_data['uy'][:SFE_5_ind], 'uz': global_data['uz'][:SFE_5_ind]}), file_open)
 file_open.close()
+'''
