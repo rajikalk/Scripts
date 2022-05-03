@@ -360,8 +360,7 @@ while sink_id < len(formation_inds[1]):
             del Etot_bound_inds
             del sep_below_10000
             '''
-            import pdb
-            pdb.set_trace()
+            test_time_inds = np.arange(np.shape(global_data['time'])[0])
             
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
