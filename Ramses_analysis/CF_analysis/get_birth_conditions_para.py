@@ -6,6 +6,7 @@ from pyramses import rsink
 import multiplicity as m
 import collections
 from mpi4py.MPI import COMM_WORLD as CW
+import sys
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -96,6 +97,8 @@ file_open.close()
 # 136578 time inds for G50
 del file_open
 
+sys.stdout.flush()
+CW.Barrier()
 
 Sink_bound_birth = []
 Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
@@ -110,7 +113,9 @@ if len(Sink_bound_birth) > 0:
     sink_id = len(Sink_bound_birth)
 else:
     sink_id = 0
-n_stars = 0
+
+sys.stdout.flush()
+CW.Barrier()
 
 rit = -1
 while sink_id < len(formation_inds[1]):
@@ -402,6 +407,9 @@ while sink_id < len(formation_inds[1]):
         file.close()
         
     sink_id = sink_id + 1
+
+sys.stdout.flush()
+CW.Barrier()
 
 #compile pickles
 if rank == 0:
