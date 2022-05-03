@@ -175,8 +175,6 @@ while sink_id < len(formation_inds[1]):
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
         del rel_sep
         
-        import pdb
-        pdb.set_trace()
         sys_id = np.nan
         if True in (Etot[sep_below_10000]<0):
             #del sep_below_10000
@@ -394,6 +392,9 @@ while sink_id < len(formation_inds[1]):
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
+                            if delay_time == 0:
+                                import pdb
+                                pdb.set_trace()
                             try:
                                 if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
                                     import pdb
