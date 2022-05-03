@@ -69,6 +69,7 @@ scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
+del scale_v
 
 units={}
 for key in units_override.keys():
@@ -90,14 +91,12 @@ del file_open
 sys.stdout.flush()
 CW.Barrier()
 
-Mass_plus_blank_row = np.vstack([np.zeros(len(global_data['m'][0])), global_data['m']])
-diff_arr =  (Mass_plus_blank_row[1:]-Mass_plus_blank_row[:-1])
-del Mass_plus_blank_row
-zero_inds = np.where(diff_arr == 0)
-diff_arr[zero_inds] = 1
-del zero_inds
-formation_inds = np.where(diff_arr == global_data['m'])
-formation_times = global_data['time'][formation_inds[0]]
+formation_inds = [0]
+for sink_id in range(1, len(np.shape(global_data['m'].T)[0])):
+    formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
+
+formation_inds = np.array(formation_inds)
+formation_times = global_data['time'][formation_inds]
 del diff_arr
 
 sys.stdout.flush()
@@ -106,7 +105,7 @@ Sink_bound_birth = []
 
 rit = -1
 sink_id = 0
-while sink_id < len(formation_inds[1]):
+while sink_id < len(formation_inds):
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -123,6 +122,46 @@ while sink_id < len(formation_inds[1]):
         global_data['uy'] = global_data['uy'][form_time_it:]
         global_data['uz'] = global_data['uz'][form_time_it:]
         
+        born_bound = True
+        delay_time = 0
+        
+        n_stars = np.where(global_data['m'][0]>0)[0]
+        abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][0][n_stars])
+        time = global_data['time'][0]
+        del n_stars
+        S = pr.Sink()
+        S._jet_factor = 1.
+        S._scale_l = scale_l.value
+        #S._scale_v = scale_v.value
+        S._scale_t = scale_t.value
+        S._scale_d = scale_d.value
+        S._time = yt.YTArray(time, '')
+        del time
+        S._abspos = yt.YTArray(abspos, '')
+        del abspos
+        S._absvel = yt.YTArray(absvel, '')
+        del absvel
+        S._mass = yt.YTArray(mass, '')
+        del mass
+        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+        import pdb
+        pdb.set_trace()
+        if sink_id in res['index1']:
+            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+            first_bound_sink = res['index2'][sys_id]
+        elif sink_id in res['index2']:
+            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+            first_bound_sink = res['index1'][sys_id]
+        else:
+            sys_id = np.nan
+        if np.isnan(sys_id) == False:
+            first_bound_sink = losi(first_bound_sink, res)
+            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+            most_bound_sep = res['separation'][sys_id]
+        del res
+        '''
         form_time_it = 0
 
         new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
@@ -179,7 +218,6 @@ while sink_id < len(formation_inds[1]):
         if True in (Etot[sep_below_10000]<0):
             #del sep_below_10000
             born_bound = True
-            lowest_Etot = np.nanmin(Etot)
             delay_time = 0
             #Do multiplicity analysis
             time_it = 0
@@ -193,7 +231,7 @@ while sink_id < len(formation_inds[1]):
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l.value
-            S._scale_v = scale_v.value
+            #S._scale_v = scale_v.value
             S._scale_t = scale_t.value
             S._scale_d = scale_d.value
             S._time = yt.YTArray(time, '')
@@ -219,6 +257,7 @@ while sink_id < len(formation_inds[1]):
                 most_bound_sep = res['separation'][sys_id]
             del res
         #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
+        '''
         if np.isnan(sys_id):
             born_bound = False
             most_bound_sep = np.nan
@@ -226,7 +265,6 @@ while sink_id < len(formation_inds[1]):
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            time_it = 0
             formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             '''
@@ -366,7 +404,7 @@ while sink_id < len(formation_inds[1]):
                         S = pr.Sink()
                         S._jet_factor = 1.
                         S._scale_l = scale_l.value
-                        S._scale_v = scale_v.value
+                        #S._scale_v = scale_v.value
                         S._scale_t = scale_t.value
                         S._scale_d = scale_d.value
                         S._time = yt.YTArray(time, '')
