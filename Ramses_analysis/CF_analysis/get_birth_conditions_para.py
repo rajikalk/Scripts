@@ -225,7 +225,7 @@ while sink_id < len(formation_inds[1]):
             delay_time = np.nan
             
             time_it = formation_inds[0][sink_id]
-            formation_time = global_data['time'][time_it][0]*units['time_unit'].in_units('yr')
+            formation_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             new_sink_pos_x = global_data['x'][time_it:,sink_id]
