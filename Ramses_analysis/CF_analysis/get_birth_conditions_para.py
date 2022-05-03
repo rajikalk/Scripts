@@ -354,7 +354,7 @@ while sink_id < len(formation_inds[1]):
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
                     time_it = 0 + test_time_ind
-                    if np.remainder(time_it,1000) == 0:
+                    if np.remainder(time_it,5000) == 0:
                         print("testing time_it", time_it, "on rank", rank)
                     n_stars = np.where(global_data['m'][time_it]>0)[0]
                     if len(n_stars)>1:
