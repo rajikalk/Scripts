@@ -40,22 +40,22 @@ units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "tim
 simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
 
 if simulation_density_id == '50':
-    Grho=50
+    Grho=50.
     units_override.update({"mass_unit":(1500,"Msun")})
 elif simulation_density_id == '100':
-    Grho=100
+    Grho=100.
     units_override.update({"mass_unit":(3000,"Msun")})
 elif simulation_density_id == '125':
-    Grho=125
+    Grho=125.
     units_override.update({"mass_unit":(3750,"Msun")})
 elif simulation_density_id == '150':
-    Grho=150
+    Grho=150.
     units_override.update({"mass_unit":(4500,"Msun")})
 elif simulation_density_id == '200':
-    Grho=200
+    Grho=200.
     units_override.update({"mass_unit":(6000,"Msun")})
 elif simulation_density_id == '400':
-    Grho=400
+    Grho=400.
     units_override.update({"mass_unit":(12000,"Msun")})
 else:
     print("MASS UNIT NOT SET")
@@ -124,44 +124,7 @@ while sink_id < len(formation_inds[1]):
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         form_time_it = 0
-        time_it = 0
-        
-        n_stars = np.where(global_data['m'][time_it]>0)[0]
-        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-        mass = np.array(global_data['m'][time_it][n_stars])
-        time = global_data['time'][time_it]
-        del n_stars
-        S = pr.Sink()
-        S._jet_factor = 1.
-        S._scale_l = scale_l.value
-        S._scale_v = scale_v.value
-        S._scale_t = scale_t.value
-        S._scale_d = scale_d.value
-        S._time = yt.YTArray(time, '')
-        del time
-        S._abspos = yt.YTArray(abspos, '')
-        del abspos
-        S._absvel = yt.YTArray(absvel, '')
-        del absvel
-        S._mass = yt.YTArray(mass, '')
-        del mass
-        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-        if sink_id in res['index1']:
-            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-            first_bound_sink = res['index2'][sys_id]
-        elif sink_id in res['index2']:
-            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-            first_bound_sink = res['index1'][sys_id]
-        else:
-            sys_id = np.nan
-        if np.isnan(sys_id) == False:
-            first_bound_sink = losi(first_bound_sink, res)
-            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-            most_bound_sep = res['separation'][sys_id]
-        del res
-        
-        '''
+
         new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
         abspos = np.array([global_data['x'][form_time_it][:sink_id], global_data['y'][form_time_it][:sink_id], global_data['z'][form_time_it][:sink_id]]).T
         rel_pos = abspos - new_sink_pos
@@ -257,7 +220,6 @@ while sink_id < len(formation_inds[1]):
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
             del res
-        '''
         #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
         if np.isnan(sys_id):
             born_bound = False
