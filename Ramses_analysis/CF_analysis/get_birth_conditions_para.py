@@ -115,6 +115,7 @@ CW.Barrier()
 Sink_bound_birth = []
 
 rit = -1
+sink_id = 0
 while sink_id < len(formation_inds[1]):
     rit = rit + 1
     if rit == size:
