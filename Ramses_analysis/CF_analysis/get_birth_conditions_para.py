@@ -105,7 +105,7 @@ CW.Barrier()
 Sink_bound_birth = []
 
 rit = -1
-sink_id = 16#0 [16, False, 13, '[6, 9]', 9430.53883048673, -0.039708306806860855, 0.0]
+sink_id = 0
 while sink_id < len(formation_inds[1]):
     rit = rit + 1
     if rit == size:
@@ -393,8 +393,8 @@ while sink_id < len(formation_inds[1]):
                             bound_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
                             if delay_time == 0:
-                                import pdb
-                                pdb.set_trace()
+                                born_bound = True
+                                most_bound_sink_id = str(first_bound_sink)
                             try:
                                 if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
                                     import pdb
