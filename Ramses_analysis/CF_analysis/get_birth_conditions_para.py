@@ -105,7 +105,7 @@ CW.Barrier()
 Sink_bound_birth = []
 
 rit = -1
-sink_id = 0
+sink_id = 16#0 [16, False, 13, '[6, 9]', 9430.53883048673, -0.039708306806860855, 0.0]
 while sink_id < len(formation_inds[1]):
     rit = rit + 1
     if rit == size:
@@ -175,6 +175,8 @@ while sink_id < len(formation_inds[1]):
         sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
         del rel_sep
         
+        import pdb
+        pdb.set_trace()
         sys_id = np.nan
         if True in (Etot[sep_below_10000]<0):
             #del sep_below_10000
