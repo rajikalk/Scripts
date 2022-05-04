@@ -113,7 +113,7 @@ except:
 
 
 rit = -1
-sink_id = 16 #0
+sink_id = 0
 while sink_id < len(formation_inds):
     rit = rit + 1
     if rit == size:
@@ -204,8 +204,6 @@ while sink_id < len(formation_inds):
             S._mass = yt.YTArray(mass, '')
             del mass
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-            import pdb
-            pdb.set_trace()
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                 first_bound_sink = res['index2'][sys_id]
@@ -218,6 +216,8 @@ while sink_id < len(formation_inds):
                 first_bound_sink = losi(first_bound_sink, res)
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
+                if most_bound_sink_id != first_bound_sink:
+                    most_bound_sink_id = first_bound_sink
             del res
         '''
         form_time_it = 0
