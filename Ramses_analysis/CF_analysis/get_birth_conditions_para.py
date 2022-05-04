@@ -155,7 +155,16 @@ if rank == 0:
 sys.stdout.flush()
 CW.Barrier()
 
+file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+formation_times, global_data = pickle.load(file_open)
+file_open.close()
+del file_open
+del global_data
+gc.collect()
 Sink_bound_birth = []
+
+sys.stdout.flush()
+CW.Barrier()
 
 rit = -1
 sink_id = 0
