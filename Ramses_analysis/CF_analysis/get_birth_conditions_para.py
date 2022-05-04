@@ -102,6 +102,7 @@ sys.stdout.flush()
 CW.Barrier()
 Sink_bound_birth = []
 
+'''
 #Testing accuracy:
 try:
     file = open("sink_birth_all_true.pkl", 'rb')
@@ -111,12 +112,10 @@ try:
     mismatched_inds = [25, 30, 73, 74, 75, 77, 78, 84]
 except:
     print("True birth conditions don't exist")
-
+'''
 
 rit = -1
-sink_id = 25
-#while sink_id < len(formation_inds):
-for sink_id in mismatched_inds:
+while sink_id < len(formation_inds):
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -405,6 +404,7 @@ for sink_id in mismatched_inds:
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
+        '''
         try:
             if str(sink_id) in True_sink_birth_conditions.keys():
                 if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
@@ -416,18 +416,18 @@ for sink_id in mismatched_inds:
                     print("short cut works for sink_id", sink_id)
         except:
             pass
-
+        '''
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
         file.close()
-        
+        '''
         try:
             file = open("mismatched_inds"+("%03d" % rank)+".pkl", 'wb')
             pickle.dump((mismatched_inds),file)
             file.close()
         except:
             pass
-        
+        '''
     sink_id = sink_id + 1
 
 sys.stdout.flush()
@@ -451,6 +451,7 @@ if rank == 0:
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
     
+    '''
     try:
         mismatched_pickles = sorted(glob.glob("mismatched_inds_*.pkl"))
         mismatched_inds = []
@@ -467,7 +468,7 @@ if rank == 0:
 
     except:
         pass
-
+    '''
 '''
 import pickle
 import numpy as np
