@@ -109,9 +109,6 @@ if rank == 0:
         file_open = open(args.global_data_pickle_file, 'rb')
         global_data = pickle.load(file_open)
     del file_open
-    
-    import pdb
-    pdb.set_trace()
 
     print("Finding formation inds")
 
@@ -125,6 +122,9 @@ if rank == 0:
     formation_times = global_data['time'][formation_inds]
 
     print("Found formation times")
+    
+    import pdb
+    pdb.set_trace()
     
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]# formation_inds[0][sink_id]
