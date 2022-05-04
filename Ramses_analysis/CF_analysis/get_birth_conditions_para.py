@@ -115,7 +115,7 @@ except:
 
 rit = -1
 sink_id = 25
-while sink_id < len(formation_inds):
+#while sink_id < len(formation_inds):
 for sink_id in mismatched_inds:
     rit = rit + 1
     if rit == size:
