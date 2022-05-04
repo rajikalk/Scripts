@@ -22,8 +22,6 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
-    parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='True')
-    parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
     
@@ -34,6 +32,8 @@ args = parse_inputs()
 
 #==========================================================================================
 
+if rank == 0:
+    print("creating units")
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 #simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
@@ -75,6 +75,9 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
+
+if rank == 0:
+    print("Reading in global data")
     
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -91,12 +94,21 @@ del file_open
 sys.stdout.flush()
 CW.Barrier()
 
+if rank == 0:
+    print("Finding formation inds")
+
 formation_inds = [0]
 for sink_id in range(1, np.shape(global_data['m'].T)[0]):
     formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
 
+if rank == 0:
+    print("Found formation inds")
+
 formation_inds = np.array(formation_inds)
 formation_times = global_data['time'][formation_inds]
+
+if rank == 0:
+    print("Found formation times")
 
 sys.stdout.flush()
 CW.Barrier()
