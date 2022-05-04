@@ -137,7 +137,7 @@ if rank == 0:
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
-        pickle.dump((global_data), file_open)
+        pickle.dump((formation_inds, formation_times, global_data), file_open)
         file_open.close()
         
     del global_data
@@ -145,7 +145,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-global_data = pickle.load(file_open)
+formation_inds, formation_times, global_data = pickle.load(file_open)
 file_open.close()
         
 sys.stdout.flush()
