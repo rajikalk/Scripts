@@ -89,10 +89,11 @@ except:
     global_data = pickle.load(file_open)
 file_open.close()
 '''
-import pickle5 as pickle
-file_open = open(args.global_data_pickle_file, 'rb')
-global_data = pickle.load(file_open)
-file_open.close()
+if rank == 0:
+    import pickle5 as pickle
+    file_open = open(args.global_data_pickle_file, 'rb')
+    global_data = pickle.load(file_open)
+    file_open.close()
 
 del file_open
 
