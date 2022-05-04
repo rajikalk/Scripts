@@ -280,13 +280,13 @@ while sink_id < len(formation_inds):
             formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
-            new_sink_pos_x = global_data['x'][time_it:,sink_id]
-            new_sink_pos_y = global_data['y'][time_it:,sink_id]
-            new_sink_pos_z = global_data['z'][time_it:,sink_id]
+            new_sink_pos_x = global_data['x'][:,sink_id]
+            new_sink_pos_y = global_data['y'][:,sink_id]
+            new_sink_pos_z = global_data['z'][:,sink_id]
             
-            abspos_x = global_data['x'][time_it:]
-            abspos_y = global_data['y'][time_it:]
-            abspos_z = global_data['z'][time_it:]
+            abspos_x = global_data['x'][:]
+            abspos_y = global_data['y'][:]
+            abspos_z = global_data['z'][:]
             
             rel_pos_x = abspos_x.T - new_sink_pos_x
             rel_pos_y = abspos_y.T - new_sink_pos_y
