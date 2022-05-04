@@ -94,8 +94,7 @@ if rank == 0:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
     file_open.close()
-
-del file_open
+    del file_open
 
 sys.stdout.flush()
 CW.Barrier()
