@@ -490,18 +490,15 @@ while sink_id < len(formation_inds):
                             if delay_time == 0:
                                 born_bound = True
                                 most_bound_sink_id = str(first_bound_sink)
-                            try:
-                                if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep:
-                                    mismatched_inds.append(sink_id)
-                                    print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
-                            except:
-                                pass
                             break
                         del res
 
-        if np.isnan(most_bound_sep) and lowest_Etot < 0:
-            import pdb
-            pdb.set_trace()
+        try:
+            if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep:
+                mismatched_inds.append(sink_id)
+                print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
+        except:
+            pass
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
