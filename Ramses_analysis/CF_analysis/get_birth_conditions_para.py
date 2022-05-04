@@ -131,19 +131,64 @@ while sink_id < len(formation_inds):
         global_data['uy'] = global_data['uy'][form_time_it:]
         global_data['uz'] = global_data['uz'][form_time_it:]
         
+        new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
+        abspos = np.array([global_data['x'][0][:sink_id], global_data['y'][0][:sink_id], global_data['z'][0][:sink_id]]).T
+        rel_pos = abspos - new_sink_pos
+        del new_sink_pos
+        del abspos
+        update_seps_neg = np.argwhere(rel_pos<-0.5)
+        update_seps_pos = np.argwhere(rel_pos>0.5)
+        
+        rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
+        del update_seps_neg
+        rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
+        del update_seps_pos
+
+        rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
+        del rel_pos
+        
+        new_sink_vel = np.array([global_data['ux'][0][sink_id], global_data['uy'][0][sink_id], global_data['uz'][0][sink_id]]).T
+        absvel = np.array([global_data['ux'][0][:sink_id], global_data['uy'][0][:sink_id], global_data['uz'][0][:sink_id]]).T
+        rel_vel = absvel - new_sink_vel
+        del new_sink_vel
+        del absvel
+        rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
+        del rel_vel
+        
+        new_sink_mass = np.array(global_data['m'][0][sink_id])
+        mass = np.array(global_data['m'][0][:sink_id])
+        mtm = new_sink_mass * mass
+        mpm = new_sink_mass + mass
+        del new_sink_mass
+        del mass
+        
+        newtonianPotential = -1./rel_sep
+        
+        Ekin = 0.5 * mtm/mpm * rel_speed**2
+        del rel_speed
+        del mpm
+        Epot = Grho * mtm * newtonianPotential
+        del newtonianPotential
+        del mtm
+        Etot = Ekin + Epot
+        try:
+            most_bound_sink_id = np.argmin(Etot)
+        except:
+            most_bound_sink_id = np.nan
+        del Ekin
+        del Epot
+        
         born_bound = True
         delay_time = 0
         
         n_stars = np.where(global_data['m'][0]>0)[0]
         sys_id = np.nan
-        if len(n_stars) == 1:
-            most_bound_sink_id = np.nan
         elif len(n_stars)>1:
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
-            time = global_data['time'][0]
             del n_stars
+            time = global_data['time'][0]
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l.value
@@ -159,8 +204,6 @@ while sink_id < len(formation_inds):
             S._mass = yt.YTArray(mass, '')
             del mass
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-            import pdb
-            pdb.set_trace()
             #Find most bound sink!
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
