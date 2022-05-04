@@ -103,6 +103,15 @@ sys.stdout.flush()
 CW.Barrier()
 Sink_bound_birth = []
 
+#Testing accuracy:
+try:
+    file = open("sink_birth_all.pkl", 'rb')
+    True_sink_birth_conditions = pickle.load(file)
+    file.close()
+except:
+    print("True birth conditions don't exist")
+
+
 rit = -1
 sink_id = 0
 while sink_id < len(formation_inds):
@@ -461,16 +470,14 @@ CW.Barrier()
 if rank == 0:
     import glob
     birth_pickles = sorted(glob.glob("sink_birth_conditions_*.pkl"))
-    Sink_birth_all = []
+    Sink_birth_all = {}
     for birth_pick in birth_pickles:
         file = open(birth_pick, 'rb')
         Sink_bound_birth_rank = pickle.load(file)
         file.close()
-        Sink_birth_all = Sink_birth_all + Sink_bound_birth_rank
-        os.remove(birth_pick)
-    
-    sorted_inds = np.array(Sink_birth_all)[:,0]
-    Sink_birth_all = np.array(Sink_birth_all)[sorted_inds]
+        for sink_birth_con in Sink_bound_birth_rank:
+            Sink_birth_all.update({str(sink_birth_con[0]):sink_birth_con[1:]})
+        #os.remove(birth_pick)
         
     file = open("sink_birth_all.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
