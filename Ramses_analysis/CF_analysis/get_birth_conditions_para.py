@@ -183,7 +183,7 @@ while sink_id < len(formation_inds):
         
         n_stars = np.where(global_data['m'][0]>0)[0]
         sys_id = np.nan
-        elif len(n_stars)>1:
+        if len(n_stars)>1:
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
