@@ -108,12 +108,13 @@ try:
     True_sink_birth_conditions = pickle.load(file)
     file.close()
     mismatched_inds = []
+    mismatched_inds = [25, 30, 73, 74, 75, 77, 78, 84]
 except:
     print("True birth conditions don't exist")
 
 
 rit = -1
-sink_id = 0
+sink_id = 25
 while sink_id < len(formation_inds):
     rit = rit + 1
     if rit == size:
@@ -131,6 +132,7 @@ while sink_id < len(formation_inds):
         global_data['uy'] = global_data['uy'][form_time_it:]
         global_data['uz'] = global_data['uz'][form_time_it:]
         
+        #Calculate energies to find most bound sink
         new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
         abspos = np.array([global_data['x'][0][:sink_id], global_data['y'][0][:sink_id], global_data['z'][0][:sink_id]]).T
         rel_pos = abspos - new_sink_pos
@@ -219,103 +221,7 @@ while sink_id < len(formation_inds):
                 if str(most_bound_sink_id) != str(first_bound_sink):
                     most_bound_sink_id = str(first_bound_sink)
             del res
-        '''
-        form_time_it = 0
 
-        new_sink_pos = np.array([global_data['x'][form_time_it][sink_id], global_data['y'][form_time_it][sink_id], global_data['z'][form_time_it][sink_id]]).T
-        abspos = np.array([global_data['x'][form_time_it][:sink_id], global_data['y'][form_time_it][:sink_id], global_data['z'][form_time_it][:sink_id]]).T
-        rel_pos = abspos - new_sink_pos
-        del new_sink_pos
-        del abspos
-        update_seps_neg = np.argwhere(rel_pos<-0.5)
-        update_seps_pos = np.argwhere(rel_pos>0.5)
-        
-        rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
-        del update_seps_neg
-        rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
-        del update_seps_pos
-
-        rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
-        del rel_pos
-        
-        new_sink_vel = np.array([global_data['ux'][form_time_it][sink_id], global_data['uy'][form_time_it][sink_id], global_data['uz'][form_time_it][sink_id]]).T
-        absvel = np.array([global_data['ux'][form_time_it][:sink_id], global_data['uy'][form_time_it][:sink_id], global_data['uz'][form_time_it][:sink_id]]).T
-        rel_vel = absvel - new_sink_vel
-        del new_sink_vel
-        del absvel
-        rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
-        del rel_vel
-        
-        new_sink_mass = np.array(global_data['m'][form_time_it][sink_id])
-        mass = np.array(global_data['m'][form_time_it][:sink_id])
-        mtm = new_sink_mass * mass
-        mpm = new_sink_mass + mass
-        del new_sink_mass
-        del mass
-        
-        newtonianPotential = -1./rel_sep
-        
-        Ekin = 0.5 * mtm/mpm * rel_speed**2
-        del rel_speed
-        del mpm
-        Epot = Grho * mtm * newtonianPotential
-        del newtonianPotential
-        del mtm
-        Etot = Ekin + Epot
-        try:
-            most_bound_sink_id = np.argmin(Etot)
-        except:
-            most_bound_sink_id = np.nan
-        del Ekin
-        del Epot
-        
-        sep_below_10000 = np.where((units['length_unit'].in_units('au')*rel_sep)<10000)[0]
-        del rel_sep
-        
-        sys_id = np.nan
-        if True in (Etot[sep_below_10000]<0):
-            #del sep_below_10000
-            born_bound = True
-            delay_time = 0
-            #Do multiplicity analysis
-            time_it = 0
-            n_stars = np.where(global_data['m'][time_it]>0)[0]
-
-            abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-            absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-            mass = np.array(global_data['m'][time_it][n_stars])
-            time = global_data['time'][time_it]
-            del n_stars
-            S = pr.Sink()
-            S._jet_factor = 1.
-            S._scale_l = scale_l.value
-            #S._scale_v = scale_v.value
-            S._scale_t = scale_t.value
-            S._scale_d = scale_d.value
-            S._time = yt.YTArray(time, '')
-            del time
-            S._abspos = yt.YTArray(abspos, '')
-            del abspos
-            S._absvel = yt.YTArray(absvel, '')
-            del absvel
-            S._mass = yt.YTArray(mass, '')
-            del mass
-            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-            if sink_id in res['index1']:
-                sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                first_bound_sink = res['index2'][sys_id]
-            elif sink_id in res['index2']:
-                sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                first_bound_sink = res['index1'][sys_id]
-            else:
-                sys_id = np.nan
-            if np.isnan(sys_id) == False:
-                first_bound_sink = losi(first_bound_sink, res)
-                lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-                most_bound_sep = res['separation'][sys_id]
-            del res
-        #if True not in (Etot[sep_below_10000]<0) or np.isnan(sys_id):
-        '''
         if np.isnan(sys_id):
             born_bound = False
             most_bound_sep = np.nan
@@ -428,6 +334,8 @@ while sink_id < len(formation_inds):
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
+            import pdb
+            pdb.set_trace()
             
             '''
             if sink_id in mismatched_inds:
@@ -498,12 +406,15 @@ while sink_id < len(formation_inds):
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
-        if str(sink_id) in True_sink_birth_conditions.keys():
-            if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
-                mismatched_inds.append(sink_id)
-                print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
-            else:
-                print("short cut works for sink_id", sink_id)
+        try:
+            if str(sink_id) in True_sink_birth_conditions.keys():
+                if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
+                    mismatched_inds.append(sink_id)
+                    print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
+                else:
+                    print("short cut works for sink_id", sink_id)
+        except:
+            pass
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
