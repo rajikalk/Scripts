@@ -438,6 +438,8 @@ while sink_id < len(formation_times):
                             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
+                            import pdb
+                            pdb.set_trace()
                             delay_time = float((bound_time - formation_time).value)
                             if delay_time == 0:
                                 import pdb
