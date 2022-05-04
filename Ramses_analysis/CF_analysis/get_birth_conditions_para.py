@@ -140,6 +140,7 @@ if rank == 0:
         file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
         pickle.dump((formation_times, global_data), file_open)
         file_open.close()
+        del form_time_it
         
     del formation_times
     del global_data
@@ -149,6 +150,7 @@ CW.Barrier()
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
 formation_times, global_data = pickle.load(file_open)
 file_open.close()
+del file_open
         
 sys.stdout.flush()
 CW.Barrier()
@@ -172,6 +174,8 @@ while sink_id < len(formation_times):
         global_data['ux'] = global_data['ux'][form_time_it:]
         global_data['uy'] = global_data['uy'][form_time_it:]
         global_data['uz'] = global_data['uz'][form_time_it:]
+        
+        del form_time_it
         
         #Calculate energies to find most bound sink
         new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
