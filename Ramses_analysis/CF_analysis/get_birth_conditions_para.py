@@ -1,6 +1,6 @@
 import numpy as np
 import yt
-#import pickle
+import pickle
 import pyramses as pr
 from pyramses import rsink
 import multiplicity as m
@@ -100,10 +100,14 @@ formation_times = global_data['time'][formation_inds]
 
 """
 if rank == 0:
-    import pickle5 as pickle
     file_open = open(args.global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open)
-    file_open.close()
+    try:
+        global_data = pickle.load(file_open)
+    except:
+        file_open.close()
+        import pickle5 as pickle
+        file_open = open(args.global_data_pickle_file, 'rb')
+        global_data = pickle.load(file_open)
     del file_open
 
     print("Finding formation inds")
