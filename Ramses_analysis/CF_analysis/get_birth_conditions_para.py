@@ -1,6 +1,6 @@
 import numpy as np
 import yt
-import pickle
+#import pickle
 import pyramses as pr
 from pyramses import rsink
 import multiplicity as m
@@ -78,7 +78,7 @@ del units_override
 
 if rank == 0:
     print("Reading in global data")
-    
+'''
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open)
@@ -88,7 +88,12 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
 file_open.close()
-# 136578 time inds for G50
+'''
+import pickle5 as pickle
+file_open = open(args.global_data_pickle_file, 'rb')
+global_data = pickle.load(file_open)
+file_open.close()
+
 del file_open
 
 sys.stdout.flush()
