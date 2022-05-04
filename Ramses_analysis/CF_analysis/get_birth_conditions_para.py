@@ -97,7 +97,6 @@ for sink_id in range(1, np.shape(global_data['m'].T)[0]):
 
 formation_inds = np.array(formation_inds)
 formation_times = global_data['time'][formation_inds]
-del diff_arr
 
 sys.stdout.flush()
 CW.Barrier()
