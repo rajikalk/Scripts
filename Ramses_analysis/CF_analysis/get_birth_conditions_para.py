@@ -120,11 +120,12 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
+    del formation_inds
 
     print("Found formation times")
     
     for trunc_it in range(size):
-        form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]# formation_inds[0][sink_id]
+        form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
         
         #truncate global data
         global_data['time'] = global_data['time'][form_time_it:]
@@ -137,15 +138,16 @@ if rank == 0:
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
-        pickle.dump((formation_inds, formation_times, global_data), file_open)
+        pickle.dump((formation_times, global_data), file_open)
         file_open.close()
         
+    del formation_times
     del global_data
 sys.stdout.flush()
 CW.Barrier()
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-formation_inds, formation_times, global_data = pickle.load(file_open)
+formation_times, global_data = pickle.load(file_open)
 file_open.close()
         
 sys.stdout.flush()
@@ -154,12 +156,12 @@ Sink_bound_birth = []
 
 rit = -1
 sink_id = 0
-while sink_id < len(formation_inds):
+while sink_id < len(formation_times):
     rit = rit + 1
     if rit == size:
         rit = 0
     if rank == rit:
-        form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]# formation_inds[0][sink_id]
+        form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]
         
         #truncate global data
         global_data['time'] = global_data['time'][form_time_it:]
