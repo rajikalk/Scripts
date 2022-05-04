@@ -162,6 +162,7 @@ except:
 '''
 
 rit = -1
+sink_id = 0
 while sink_id < len(formation_inds):
     rit = rit + 1
     if rit == size:
