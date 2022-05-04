@@ -109,6 +109,9 @@ if rank == 0:
         file_open = open(args.global_data_pickle_file, 'rb')
         global_data = pickle.load(file_open)
     del file_open
+    
+    import pdb
+    pdb.set_trace()
 
     print("Finding formation inds")
 
@@ -511,7 +514,7 @@ if rank == 0:
 '''
 import pickle
 import numpy as np
-file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G400_full.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl", "rb")
 global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 SFE_5_ind = np.argmin(abs(np.sum(global_data['m'],axis=1)-0.05)) + 1
