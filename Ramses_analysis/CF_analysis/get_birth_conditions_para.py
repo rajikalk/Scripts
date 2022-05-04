@@ -155,14 +155,6 @@ if rank == 0:
 sys.stdout.flush()
 CW.Barrier()
 
-file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-formation_times, global_data = pickle.load(file_open)
-file_open.close()
-del file_open
-gc.collect()
-        
-sys.stdout.flush()
-CW.Barrier()
 Sink_bound_birth = []
 
 rit = -1
@@ -172,19 +164,10 @@ while sink_id < len(formation_times):
     if rit == size:
         rit = 0
     if rank == rit:
-        form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]
-        
-        #truncate global data
-        global_data['time'] = global_data['time'][form_time_it:]
-        global_data['m'] = global_data['m'][form_time_it:]
-        global_data['x'] = global_data['x'][form_time_it:]
-        global_data['y'] = global_data['y'][form_time_it:]
-        global_data['z'] = global_data['z'][form_time_it:]
-        global_data['ux'] = global_data['ux'][form_time_it:]
-        global_data['uy'] = global_data['uy'][form_time_it:]
-        global_data['uz'] = global_data['uz'][form_time_it:]
-        
-        del form_time_it
+        file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+        formation_times, global_data = pickle.load(file_open)
+        file_open.close()
+        del file_open
         gc.collect()
         
         #Calculate energies to find most bound sink
@@ -293,6 +276,28 @@ while sink_id < len(formation_times):
             del res
             gc.collect()
         
+        if np.isnan(sys_id) == False:
+            next_id = sink_id + size
+            if next_id < len(formation_times):
+                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+            
+                #truncate global data
+                global_data['time'] = global_data['time'][form_time_it:]
+                global_data['m'] = global_data['m'][form_time_it:]
+                global_data['x'] = global_data['x'][form_time_it:]
+                global_data['y'] = global_data['y'][form_time_it:]
+                global_data['z'] = global_data['z'][form_time_it:]
+                global_data['ux'] = global_data['ux'][form_time_it:]
+                global_data['uy'] = global_data['uy'][form_time_it:]
+                global_data['uz'] = global_data['uz'][form_time_it:]
+                
+                file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
+                pickle.dump((formation_times, global_data), file_open)
+                file_open.close()
+                del form_time_it
+            del global_data
+            gc.collect()
+                
 
         if np.isnan(sys_id):
             born_bound = False
@@ -413,6 +418,8 @@ while sink_id < len(formation_times):
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
             gc.collect()
+            import pdb
+            pdb.set_trace()
             
             '''
             if sink_id in mismatched_inds:
@@ -443,6 +450,8 @@ while sink_id < len(formation_times):
                         absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
                         mass = np.array(global_data['m'][time_it][n_stars])
                         time = global_data['time'][time_it]
+                        
+                        #Remove global data:
                         del n_stars
                         gc.collect()
                         S = pr.Sink()
