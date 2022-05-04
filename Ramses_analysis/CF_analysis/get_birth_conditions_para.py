@@ -6,6 +6,7 @@ from pyramses import rsink
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
 import sys
+import gc
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -62,6 +63,7 @@ else:
     import pdb
     pdb.set_trace()
 del simulation_density_id
+gc.collect()
     
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
@@ -71,11 +73,13 @@ scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velo
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
 del scale_v
+gc.collect()
 
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
+gc.collect()
 """
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -109,6 +113,7 @@ if rank == 0:
         file_open = open(args.global_data_pickle_file, 'rb')
         global_data = pickle.load(file_open)
     del file_open
+    gc.collect()
 
     print("Finding formation inds")
 
@@ -121,6 +126,7 @@ if rank == 0:
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
     del formation_inds
+    gc.collect()
 
     print("Found formation times")
     
@@ -141,9 +147,11 @@ if rank == 0:
         pickle.dump((formation_times, global_data), file_open)
         file_open.close()
         del form_time_it
+        gc.collect()
         
     del formation_times
     del global_data
+    gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
@@ -151,6 +159,7 @@ file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
 formation_times, global_data = pickle.load(file_open)
 file_open.close()
 del file_open
+gc.collect()
         
 sys.stdout.flush()
 CW.Barrier()
@@ -176,6 +185,7 @@ while sink_id < len(formation_times):
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         del form_time_it
+        gc.collect()
         
         #Calculate energies to find most bound sink
         new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
@@ -183,24 +193,30 @@ while sink_id < len(formation_times):
         rel_pos = abspos - new_sink_pos
         del new_sink_pos
         del abspos
+        gc.collect()
         update_seps_neg = np.argwhere(rel_pos<-0.5)
         update_seps_pos = np.argwhere(rel_pos>0.5)
         
         rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
         del update_seps_neg
+        gc.collect()
         rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
         del update_seps_pos
+        gc.collect()
 
         rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
         del rel_pos
+        gc.collect()
         
         new_sink_vel = np.array([global_data['ux'][0][sink_id], global_data['uy'][0][sink_id], global_data['uz'][0][sink_id]]).T
         absvel = np.array([global_data['ux'][0][:sink_id], global_data['uy'][0][:sink_id], global_data['uz'][0][:sink_id]]).T
         rel_vel = absvel - new_sink_vel
         del new_sink_vel
         del absvel
+        gc.collect()
         rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
         del rel_vel
+        gc.collect()
         
         new_sink_mass = np.array(global_data['m'][0][sink_id])
         mass = np.array(global_data['m'][0][:sink_id])
@@ -208,15 +224,18 @@ while sink_id < len(formation_times):
         mpm = new_sink_mass + mass
         del new_sink_mass
         del mass
+        gc.collect()
         
         newtonianPotential = -1./rel_sep
         
         Ekin = 0.5 * mtm/mpm * rel_speed**2
         del rel_speed
         del mpm
+        gc.collect()
         Epot = Grho * mtm * newtonianPotential
         del newtonianPotential
         del mtm
+        gc.collect()
         Etot = Ekin + Epot
         try:
             most_bound_sink_id = np.argmin(Etot)
@@ -224,6 +243,7 @@ while sink_id < len(formation_times):
             most_bound_sink_id = np.nan
         del Ekin
         del Epot
+        gc.collect()
         
         born_bound = True
         delay_time = 0
@@ -235,6 +255,7 @@ while sink_id < len(formation_times):
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
             del n_stars
+            gc.collect()
             time = global_data['time'][0]
             S = pr.Sink()
             S._jet_factor = 1.
@@ -244,12 +265,16 @@ while sink_id < len(formation_times):
             S._scale_d = scale_d.value
             S._time = yt.YTArray(time, '')
             del time
+            gc.collect()
             S._abspos = yt.YTArray(abspos, '')
             del abspos
+            gc.collect()
             S._absvel = yt.YTArray(absvel, '')
             del absvel
+            gc.collect()
             S._mass = yt.YTArray(mass, '')
             del mass
+            gc.collect()
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
@@ -266,6 +291,8 @@ while sink_id < len(formation_times):
                 if str(most_bound_sink_id) != str(first_bound_sink):
                     most_bound_sink_id = str(first_bound_sink)
             del res
+            gc.collect()
+        
 
         if np.isnan(sys_id):
             born_bound = False
@@ -294,6 +321,7 @@ while sink_id < len(formation_times):
             del abspos_x
             del abspos_y
             del abspos_z
+            gc.collect()
             
             update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
             update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
@@ -301,6 +329,7 @@ while sink_id < len(formation_times):
             rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
             del update_seps_x_neg
             del update_seps_x_pos
+            gc.collect()
             
             update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
             update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
@@ -308,6 +337,7 @@ while sink_id < len(formation_times):
             rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
             del update_seps_y_neg
             del update_seps_y_pos
+            gc.collect()
             
             update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
             update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
@@ -315,11 +345,13 @@ while sink_id < len(formation_times):
             rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
             del update_seps_z_neg
             del update_seps_z_pos
+            gc.collect()
             
             rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
+            gc.collect()
             
             '''
             new_sink_vel_x = global_data['ux'][time_it:,sink_id]
@@ -375,10 +407,12 @@ while sink_id < len(formation_times):
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
             del rel_sep
+            gc.collect()
             #import pdb
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
+            gc.collect()
             
             '''
             if sink_id in mismatched_inds:
@@ -410,6 +444,7 @@ while sink_id < len(formation_times):
                         mass = np.array(global_data['m'][time_it][n_stars])
                         time = global_data['time'][time_it]
                         del n_stars
+                        gc.collect()
                         S = pr.Sink()
                         S._jet_factor = 1.
                         S._scale_l = scale_l.value
@@ -418,12 +453,16 @@ while sink_id < len(formation_times):
                         S._scale_d = scale_d.value
                         S._time = yt.YTArray(time, '')
                         del time
+                        gc.collect()
                         S._abspos = yt.YTArray(abspos, '')
                         del abspos
+                        gc.collect()
                         S._absvel = yt.YTArray(absvel, '')
                         del absvel
+                        gc.collect()
                         S._mass = yt.YTArray(mass, '')
                         del mass
+                        gc.collect()
                         res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
                         if sink_id in res['index1']:
                             sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
@@ -437,9 +476,7 @@ while sink_id < len(formation_times):
                             first_bound_sink = losi(first_bound_sink, res)
                             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                             most_bound_sep = res['separation'][sys_id]
-                            bound_time = global_data['time'][time_it]*units['time_unit'].in_units('yr')
-                            import pdb
-                            pdb.set_trace()
+                            bound_time = res['time']*units['time_unit'].in_units('yr')
                             delay_time = float((bound_time - formation_time).value)
                             if delay_time == 0:
                                 import pdb
@@ -448,6 +485,7 @@ while sink_id < len(formation_times):
                                 most_bound_sink_id = str(first_bound_sink)
                             break
                         del res
+                        gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
