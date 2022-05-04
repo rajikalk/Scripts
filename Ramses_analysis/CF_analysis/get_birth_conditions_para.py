@@ -61,6 +61,7 @@ else:
     print("MASS UNIT NOT SET")
     import pdb
     pdb.set_trace()
+del simulation_density_id
     
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
@@ -76,9 +77,6 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
 
-if rank == 0:
-    print("Reading in global data")
-
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open)
@@ -93,18 +91,12 @@ del file_open
 sys.stdout.flush()
 CW.Barrier()
 
-print("Finding formation inds")
-
 formation_inds = [0]
 for sink_id in range(1, np.shape(global_data['m'].T)[0]):
     formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
 
-print("Found formation inds")
-
 formation_inds = np.array(formation_inds)
 formation_times = global_data['time'][formation_inds]
-
-print("Found formation times")
 
 """
 if rank == 0:
@@ -148,18 +140,6 @@ if rank == 0:
 sys.stdout.flush()
 CW.Barrier()
 Sink_bound_birth = []
-
-'''
-#Testing accuracy:
-try:
-    file = open("sink_birth_all_true.pkl", 'rb')
-    True_sink_birth_conditions = pickle.load(file)
-    file.close()
-    mismatched_inds = []
-    mismatched_inds = [25, 30, 73, 74, 75, 77, 78, 84]
-except:
-    print("True birth conditions don't exist")
-'''
 
 rit = -1
 sink_id = 0
