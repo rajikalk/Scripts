@@ -105,9 +105,10 @@ Sink_bound_birth = []
 
 #Testing accuracy:
 try:
-    file = open("sink_birth_all.pkl", 'rb')
+    file = open("sink_birth_all_true.pkl", 'rb')
     True_sink_birth_conditions = pickle.load(file)
     file.close()
+    mismatched_inds = []
 except:
     print("True birth conditions don't exist")
 
@@ -276,7 +277,7 @@ while sink_id < len(formation_inds):
             
             formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-            '''
+            
             new_sink_pos_x = global_data['x'][time_it:,sink_id]
             new_sink_pos_y = global_data['y'][time_it:,sink_id]
             new_sink_pos_z = global_data['z'][time_it:,sink_id]
@@ -320,7 +321,7 @@ while sink_id < len(formation_inds):
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
-            '''
+            
             '''
             new_sink_vel_x = global_data['ux'][time_it:,sink_id]
             new_sink_vel_y = global_data['uy'][time_it:,sink_id]
@@ -370,7 +371,7 @@ while sink_id < len(formation_inds):
             #del Etot
             #del Etot_min
             '''
-            '''
+            
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             closest_sink_id = np.argmin(rel_sep, axis=0)
@@ -379,7 +380,7 @@ while sink_id < len(formation_inds):
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
-            '''
+            
             '''
             if sink_id in mismatched_inds:
                 goal_delay = true_delay[mismatched_inds.index(sink_id)]
@@ -396,7 +397,7 @@ while sink_id < len(formation_inds):
             del Etot_bound_inds
             del sep_below_10000
             '''
-            test_time_inds = np.arange(np.shape(global_data['time'])[0])
+            #test_time_inds = np.arange(np.shape(global_data['time'])[0])
             
             for test_time_ind in test_time_inds:
                 if np.isnan(first_bound_sink):
@@ -443,9 +444,9 @@ while sink_id < len(formation_inds):
                                 born_bound = True
                                 most_bound_sink_id = str(first_bound_sink)
                             try:
-                                if Sink_birth_all[np.argwhere(Sink_birth_all[:,0]==sink_id)][0][0][4] != most_bound_sep:
-                                    import pdb
-                                    pdb.set_trace()
+                                if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep:
+                                    mismatched_inds.append(sink_id)
+                                    print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
                             except:
                                 pass
                             break
@@ -460,6 +461,13 @@ while sink_id < len(formation_inds):
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
         file.close()
+        
+        try:
+            file = open("mismatched_inds"+("%03d" % rank)+".pkl", 'wb')
+            pickle.dump((mismatched_inds),file)
+            file.close()
+        except:
+            pass
         
     sink_id = sink_id + 1
 
@@ -483,6 +491,23 @@ if rank == 0:
     pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
+    
+    try:
+        mismatched_pickles = sorted(glob.glob("mismatched_inds_*.pkl"))
+        mismatched_inds = []
+        for mismatched_pickle in mismatched_pickles:
+            file = open(mismatched_pickle, 'rb')
+            mismatched_inds_rank = pickle.load(file)
+            file.close()
+            mismatched_inds = mismatched_inds + mismatched_inds_rank
+            
+        file = open("mismatched_inds.pkl", 'wb')
+        pickle.dump((mismatched_inds), file)
+        file.close()
+        print("Collected mismatched ind into mismatched_inds.pkl" )
+
+    except:
+        pass
 
 '''
 import pickle
