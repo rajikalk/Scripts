@@ -78,7 +78,7 @@ del units_override
 
 if rank == 0:
     print("Reading in global data")
-'''
+
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open)
@@ -88,7 +88,25 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
 file_open.close()
-'''
+del file_open
+
+sys.stdout.flush()
+CW.Barrier()
+
+print("Finding formation inds")
+
+formation_inds = [0]
+for sink_id in range(1, np.shape(global_data['m'].T)[0]):
+    formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
+
+print("Found formation inds")
+
+formation_inds = np.array(formation_inds)
+formation_times = global_data['time'][formation_inds]
+
+print("Found formation times")
+
+"""
 if rank == 0:
     import pickle5 as pickle
     file_open = open(args.global_data_pickle_file, 'rb')
@@ -96,25 +114,37 @@ if rank == 0:
     file_open.close()
     del file_open
 
-sys.stdout.flush()
-CW.Barrier()
-
-if rank == 0:
     print("Finding formation inds")
 
-formation_inds = [0]
-for sink_id in range(1, np.shape(global_data['m'].T)[0]):
-    formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
+    formation_inds = [0]
+    for sink_id in range(1, np.shape(global_data['m'].T)[0]):
+        formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
 
-if rank == 0:
     print("Found formation inds")
 
-formation_inds = np.array(formation_inds)
-formation_times = global_data['time'][formation_inds]
+    formation_inds = np.array(formation_inds)
+    formation_times = global_data['time'][formation_inds]
 
-if rank == 0:
     print("Found formation times")
-
+    
+    for trunc_it in range(size):
+        form_time_it = np.where(global_data['time']==formation_times[sink_id])[0][0]# formation_inds[0][sink_id]
+        
+        #truncate global data
+        global_data['time'] = global_data['time'][form_time_it:]
+        global_data['m'] = global_data['m'][form_time_it:]
+        global_data['x'] = global_data['x'][form_time_it:]
+        global_data['y'] = global_data['y'][form_time_it:]
+        global_data['z'] = global_data['z'][form_time_it:]
+        global_data['ux'] = global_data['ux'][form_time_it:]
+        global_data['uy'] = global_data['uy'][form_time_it:]
+        global_data['uz'] = global_data['uz'][form_time_it:]
+        
+        file_open = open("global_data_rank_"+trunc_it+".pkl", "wb")
+        pickle.dump((global_data), file_open)
+        file_open.close()
+"""
+        
 sys.stdout.flush()
 CW.Barrier()
 Sink_bound_birth = []
