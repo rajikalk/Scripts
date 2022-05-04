@@ -76,7 +76,7 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
-
+"""
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
     global_data = pickle.load(file_open)
@@ -135,7 +135,14 @@ if rank == 0:
         file_open = open("global_data_rank_"+trunc_it+".pkl", "wb")
         pickle.dump((global_data), file_open)
         file_open.close()
-"""
+        
+    del global_data
+sys.stdout.flush()
+CW.Barrier()
+
+file_open = open("global_data_rank_"+rank+".pkl", 'rb')
+global_data = pickle.load(file_open)
+file_open.close()
         
 sys.stdout.flush()
 CW.Barrier()
