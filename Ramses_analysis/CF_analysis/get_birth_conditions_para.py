@@ -496,14 +496,14 @@ while sink_id < len(formation_inds):
                             break
                         del res
 
+        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
+        print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
         if str(sink_id) in True_sink_birth_conditions.keys():
-            if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep or True_sink_birth_conditions[str(sink_id)][5] != delay_time:
+            if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
                 mismatched_inds.append(sink_id)
                 print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
             else:
                 print("short cut works for sink_id", sink_id)
-        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
-        print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
