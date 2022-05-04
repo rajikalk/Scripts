@@ -132,7 +132,7 @@ if rank == 0:
         global_data['uy'] = global_data['uy'][form_time_it:]
         global_data['uz'] = global_data['uz'][form_time_it:]
         
-        file_open = open("global_data_rank_"+trunc_it+".pkl", "wb")
+        file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
         pickle.dump((global_data), file_open)
         file_open.close()
         
