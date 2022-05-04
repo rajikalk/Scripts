@@ -419,7 +419,6 @@ while sink_id < len(formation_times):
             
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
-            closest_sink_id = np.argmin(rel_sep, axis=0)
             del rel_sep
             gc.collect()
             #import pdb
@@ -427,38 +426,47 @@ while sink_id < len(formation_times):
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
             gc.collect()
-            import pdb
-            pdb.set_trace()
             
-            '''
-            if sink_id in mismatched_inds:
-                goal_delay = true_delay[mismatched_inds.index(sink_id)]
-                goal_time = formation_time.value + goal_delay
-                all_times = global_data['time'][time_it:].T[0]*units['time_unit'].in_units('yr')
-                goal_ind = np.argmin(abs(all_times.value - goal_time))
+            global_test_inds = {}
+            global_test_inds.update({'m':global_data['m'][test_time_inds]})
+            global_test_inds.update({'x':global_data['x'][test_time_inds]})
+            global_test_inds.update({'y':global_data['y'][test_time_inds]})
+            global_test_inds.update({'z':global_data['z'][test_time_inds]})
+            global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
+            global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
+            global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
+            
+            next_id = sink_id + size
+            if next_id < len(formation_times):
+                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+            
+                #truncate global data
+                global_data['time'] = global_data['time'][form_time_it:]
+                global_data['m'] = global_data['m'][form_time_it:]
+                global_data['x'] = global_data['x'][form_time_it:]
+                global_data['y'] = global_data['y'][form_time_it:]
+                global_data['z'] = global_data['z'][form_time_it:]
+                global_data['ux'] = global_data['ux'][form_time_it:]
+                global_data['uy'] = global_data['uy'][form_time_it:]
+                global_data['uz'] = global_data['uz'][form_time_it:]
                 
-            if True not in (Etot_min_sink_id == closest_sink_id):
-                test_time_inds = []
-            else:
-                test_time_inds = sorted(list(set(Etot_bound_inds).intersection(set(sep_below_10000))))
+                file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
+                pickle.dump((formation_times, global_data), file_open)
+                file_open.close()
+                del form_time_it
+            del global_data
+            gc.collect()
             
-            del closest_sink_id
-            del Etot_bound_inds
-            del sep_below_10000
-            '''
-            #test_time_inds = np.arange(np.shape(global_data['time'])[0])
-            
-            for test_time_ind in test_time_inds:
+            for time_it in range(len(global_test_inds['m'])):
                 if np.isnan(first_bound_sink):
-                    time_it = 0 + test_time_ind
                     if np.remainder(time_it,5000) == 0:
                         print("testing time_it", time_it, "on rank", rank)
-                    n_stars = np.where(global_data['m'][time_it]>0)[0]
+                    n_stars = np.where(global_test_inds['m'][time_it]>0)[0]
                     if len(n_stars)>1:
-                        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-                        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-                        mass = np.array(global_data['m'][time_it][n_stars])
-                        time = global_data['time'][time_it]
+                        abspos = np.array([global_test_inds['x'][time_it][n_stars], global_test_inds['y'][time_it][n_stars], global_test_inds['z'][time_it][n_stars]]).T#*scale_l
+                        absvel = np.array([global_test_inds['ux'][time_it][n_stars], global_test_inds['uy'][time_it][n_stars], global_test_inds['uz'][time_it][n_stars]]).T#*scale_v
+                        mass = np.array(global_test_inds['m'][time_it][n_stars])
+                        time = global_test_inds['time'][time_it]
                         
                         #Remove global data:
                         del n_stars
