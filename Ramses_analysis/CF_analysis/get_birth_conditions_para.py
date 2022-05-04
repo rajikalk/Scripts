@@ -182,6 +182,14 @@ while sink_id < len(formation_times):
         #Calculate energies to find most bound sink
         new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
         abspos = np.array([global_data['x'][0][:sink_id], global_data['y'][0][:sink_id], global_data['z'][0][:sink_id]]).T
+        new_sink_vel = np.array([global_data['ux'][0][sink_id], global_data['uy'][0][sink_id], global_data['uz'][0][sink_id]]).T
+        absvel = np.array([global_data['ux'][0][:sink_id], global_data['uy'][0][:sink_id], global_data['uz'][0][:sink_id]]).T
+        new_sink_mass = np.array(global_data['m'][0][sink_id])
+        mass = np.array(global_data['m'][0][:sink_id])
+        n_stars = np.where(global_data['m'][0]>0)[0]
+        del global_data
+        gc.collect()
+        
         rel_pos = abspos - new_sink_pos
         del new_sink_pos
         del abspos
@@ -200,8 +208,6 @@ while sink_id < len(formation_times):
         del rel_pos
         gc.collect()
         
-        new_sink_vel = np.array([global_data['ux'][0][sink_id], global_data['uy'][0][sink_id], global_data['uz'][0][sink_id]]).T
-        absvel = np.array([global_data['ux'][0][:sink_id], global_data['uy'][0][:sink_id], global_data['uz'][0][:sink_id]]).T
         rel_vel = absvel - new_sink_vel
         del new_sink_vel
         del absvel
@@ -210,8 +216,6 @@ while sink_id < len(formation_times):
         del rel_vel
         gc.collect()
         
-        new_sink_mass = np.array(global_data['m'][0][sink_id])
-        mass = np.array(global_data['m'][0][:sink_id])
         mtm = new_sink_mass * mass
         mpm = new_sink_mass + mass
         del new_sink_mass
@@ -240,12 +244,17 @@ while sink_id < len(formation_times):
         born_bound = True
         delay_time = 0
         
-        n_stars = np.where(global_data['m'][0]>0)[0]
         sys_id = np.nan
         if len(n_stars)>1:
+            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+            formation_times, global_data = pickle.load(file_open)
+            file_open.close()
+            del file_open
+            gc.collect()
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
+            del global_data
             del n_stars
             gc.collect()
             time = global_data['time'][0]
@@ -286,6 +295,11 @@ while sink_id < len(formation_times):
             gc.collect()
         
         if np.isnan(sys_id) == False:
+            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+            formation_times, global_data = pickle.load(file_open)
+            file_open.close()
+            del file_open
+            gc.collect()
             next_id = sink_id + size
             if next_id < len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
@@ -318,6 +332,13 @@ while sink_id < len(formation_times):
             formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
+            
+            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+            formation_times, global_data = pickle.load(file_open)
+            file_open.close()
+            del file_open
+            gc.collect()
+            
             new_sink_pos_x = global_data['x'][:,sink_id]
             new_sink_pos_y = global_data['y'][:,sink_id]
             new_sink_pos_z = global_data['z'][:,sink_id]
@@ -325,6 +346,9 @@ while sink_id < len(formation_times):
             abspos_x = global_data['x'][:]
             abspos_y = global_data['y'][:]
             abspos_z = global_data['z'][:]
+            
+            del global_data
+            gc.collect()
             
             rel_pos_x = abspos_x.T - new_sink_pos_x
             rel_pos_y = abspos_y.T - new_sink_pos_y
@@ -367,56 +391,6 @@ while sink_id < len(formation_times):
             del rel_pos_z
             gc.collect()
             
-            '''
-            new_sink_vel_x = global_data['ux'][time_it:,sink_id]
-            new_sink_vel_y = global_data['uy'][time_it:,sink_id]
-            new_sink_vel_z = global_data['uz'][time_it:,sink_id]
-            
-            absvel_x = global_data['ux'][time_it:]
-            absvel_y = global_data['uy'][time_it:]
-            absvel_z = global_data['uz'][time_it:]
-            
-            rel_vel_x = absvel_x.T - new_sink_vel_x
-            rel_vel_y = absvel_y.T - new_sink_vel_y
-            rel_vel_z = absvel_z.T - new_sink_vel_z
-            del new_sink_vel_x
-            del new_sink_vel_y
-            del new_sink_vel_z
-            del absvel_x
-            del absvel_y
-            del absvel_z
-            
-            rel_speed = np.sqrt(rel_vel_x**2 + rel_vel_y**2 + rel_vel_z**2)
-            del rel_vel_x
-            del rel_vel_y
-            del rel_vel_z
-            
-            new_sink_mass = np.array(global_data['m'][time_it:,sink_id])
-            mass = np.array(global_data['m'][time_it:])
-            
-            mtm = new_sink_mass * mass.T
-            mpm = new_sink_mass + mass.T
-            del new_sink_mass
-            del mass
-            newtonianPotential = -1./rel_sep
-            Ekin = 0.5 * mtm/mpm * rel_speed**2
-            del mpm
-            Epot = Grho * mtm * newtonianPotential
-            del mtm
-            del newtonianPotential
-            Etot = Ekin + Epot
-            del Ekin
-            del Epot
-            Etot[Etot == -1*np.inf] = 0
-            
-            Etot_min = np.min(Etot, axis=0)
-            Etot_min_sink_id = np.argmin(Etot, axis=0)
-            Etot_bound_inds = np.where(Etot_min<0)[0]
-            
-            #del Etot
-            #del Etot_min
-            '''
-            
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             del rel_sep
@@ -425,6 +399,12 @@ while sink_id < len(formation_times):
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
+            gc.collect()
+            
+            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+            formation_times, global_data = pickle.load(file_open)
+            file_open.close()
+            del file_open
             gc.collect()
             
             global_test_inds = {}
