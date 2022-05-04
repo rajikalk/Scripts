@@ -334,8 +334,6 @@ while sink_id < len(formation_inds):
             #pdb.set_trace()
             test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
             del closest_separations
-            import pdb
-            pdb.set_trace()
             
             '''
             if sink_id in mismatched_inds:
@@ -411,6 +409,8 @@ while sink_id < len(formation_inds):
                 if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
                     mismatched_inds.append(sink_id)
                     print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
+                    import pdb
+                    pdb.set_trace()
                 else:
                     print("short cut works for sink_id", sink_id)
         except:
