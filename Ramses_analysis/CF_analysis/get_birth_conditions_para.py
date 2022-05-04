@@ -494,7 +494,7 @@ while sink_id < len(formation_inds):
                         del res
 
         try:
-            if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep:
+            if True_sink_birth_conditions[str(sink_id)][3] != most_bound_sep or True_sink_birth_conditions[str(sink_id)][5] != delay_time:
                 mismatched_inds.append(sink_id)
                 print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
         except:
