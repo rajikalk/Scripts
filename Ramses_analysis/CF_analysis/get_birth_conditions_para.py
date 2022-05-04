@@ -217,7 +217,7 @@ while sink_id < len(formation_inds):
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
                 if str(most_bound_sink_id) != str(first_bound_sink):
-                    most_bound_sink_id = first_bound_sink
+                    most_bound_sink_id = str(first_bound_sink)
             del res
         '''
         form_time_it = 0
