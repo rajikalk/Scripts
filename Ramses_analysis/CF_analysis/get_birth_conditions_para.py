@@ -408,6 +408,7 @@ while sink_id < len(formation_times):
             gc.collect()
             
             global_test_inds = {}
+            global_test_inds.update({'time':global_data['time'][test_time_inds]})
             global_test_inds.update({'m':global_data['m'][test_time_inds]})
             global_test_inds.update({'x':global_data['x'][test_time_inds]})
             global_test_inds.update({'y':global_data['y'][test_time_inds]})
