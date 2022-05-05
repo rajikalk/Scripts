@@ -1,5 +1,5 @@
 import numpy as np
-import pickle
+import pickle5 as pickle
 import pyramses as pr
 #from pyramses import rsink
 import multiplicity as m
@@ -18,19 +18,9 @@ def losi(i, res):
         i2 = losi(res['index2'][i],res)
         return [i1,i2]
 
-'''
-def parse_inputs():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
-    args = parser.parse_args()
-    return args
-'''
-
 #=====================================================================================================
 
 global_data_pickle_file = sys.argv[1]
-#args = parse_inputs()
 
 #==========================================================================================
 
@@ -77,6 +67,7 @@ if rank == 0:
     file_open = open(global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
     file_open.close()
+    del global_data_pickle_file
     del file_open
     gc.collect()
 
@@ -84,6 +75,8 @@ if rank == 0:
 
     formation_inds = [0]
     for sink_id in range(1, np.shape(global_data['m'].T)[0]):
+        import pdb
+        pdb.set_trace()
         formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
 
     print("Found formation inds")
