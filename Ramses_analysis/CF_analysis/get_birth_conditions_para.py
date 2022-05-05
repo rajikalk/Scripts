@@ -97,7 +97,10 @@ if rank == 0:
     for sink_id in sink_ids:
         new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
         global_data['m'] = global_data['m'][new_ind:]
-        formation_ind = formation_inds[-1]+new_ind
+        if len(formation_inds) == 0:
+            formation_ind = new_ind
+        else:
+            formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
     
     gc.collect()
