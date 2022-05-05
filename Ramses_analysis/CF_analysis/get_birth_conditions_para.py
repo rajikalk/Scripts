@@ -128,7 +128,7 @@ if rank == 0:
     collect()
 del global_data_pickle_file
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-#stdout.flush()
+stdout.flush()
 CW.Barrier()
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
@@ -143,7 +143,7 @@ if rank == 0:
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-#stdout.flush()
+stdout.flush()
 CW.Barrier()
 
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
