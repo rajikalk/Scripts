@@ -160,20 +160,15 @@ while sink_id < len(formation_times):
         print("loaded global data on rank", rank)
         
         #Calculate energies to find most bound sink
-        new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
-        abspos = np.array([global_data['x'][0][:sink_id], global_data['y'][0][:sink_id], global_data['z'][0][:sink_id]]).T
-        new_sink_vel = np.array([global_data['ux'][0][sink_id], global_data['uy'][0][sink_id], global_data['uz'][0][sink_id]]).T
-        absvel = np.array([global_data['ux'][0][:sink_id], global_data['uy'][0][:sink_id], global_data['uz'][0][:sink_id]]).T
-        new_sink_mass = np.array(global_data['m'][0][sink_id])
-        mass = np.array(global_data['m'][0][:sink_id])
-        n_stars = np.where(global_data['m'][0]>0)[0]
-        import pdb
-        pdb.set_trace()
+        
+        abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
+        absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
+        mass = np.array(global_data['m'][0][:sink_id+1])
+        n_stars = np.arange(len(mass))
         del global_data
         gc.collect()
         
-        rel_pos = abspos - new_sink_pos
-        del new_sink_pos
+        rel_pos = abspos[:-1] - abspos[-1]
         del abspos
         gc.collect()
         update_seps_neg = np.argwhere(rel_pos<-0.5)
@@ -190,17 +185,15 @@ while sink_id < len(formation_times):
         del rel_pos
         gc.collect()
         
-        rel_vel = absvel - new_sink_vel
-        del new_sink_vel
+        rel_vel = absvel[:-1] - absvel[-1]
         del absvel
         gc.collect()
         rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
         del rel_vel
         gc.collect()
         
-        mtm = new_sink_mass * mass
-        mpm = new_sink_mass + mass
-        del new_sink_mass
+        mtm = mass[-1] * mass[:-1]
+        mpm = mass[-1] + mass[:-1]
         del mass
         gc.collect()
         
@@ -329,6 +322,8 @@ while sink_id < len(formation_times):
             abspos_x = global_data['x'][:]
             abspos_y = global_data['y'][:]
             abspos_z = global_data['z'][:]
+            import pdb
+            pdb.set_trace()
             
             del global_data
             gc.collect()
