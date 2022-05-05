@@ -424,7 +424,7 @@ while sink_id < len(formation_times):
             while np.isnan(first_bound_sink):
                 counter = counter + 1
                 if np.remainder(counter,5000) == 0:
-                    print("testing time_it", time_it, "on rank", rank, flush=True)
+                    print("trying test ind No.", counter, "on rank", rank, flush=True)
                 if len(global_test_inds['m']) == 0:
                     break
                 else:
