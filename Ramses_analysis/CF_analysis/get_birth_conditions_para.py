@@ -65,7 +65,7 @@ if rank == 0:
     collect()
 
     print("Finding formation inds")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     del global_data['x']
     del global_data['y']
@@ -83,7 +83,7 @@ if rank == 0:
         formation_inds.append(formation_ind)
 
     print("Found formation inds")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
@@ -97,7 +97,7 @@ if rank == 0:
     del file_open
 
     print("Found formation times")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
@@ -118,7 +118,7 @@ if rank == 0:
         del form_time_it
         collect()
     print("Saved global_data for each rank")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
     del global_data
@@ -136,7 +136,7 @@ collect()
 Sink_bound_birth = []
 if rank == 0:
     print("loaded formation_times")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 stdout.flush()
 CW.Barrier()
@@ -154,7 +154,7 @@ while sink_id < len(formation_times):
         del file_open
         collect()
         print("loaded global data on rank", rank)
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #Calculate energies to find most bound sink
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
@@ -277,7 +277,7 @@ while sink_id < len(formation_times):
             file_open.close()
             del file_open
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             next_id = sink_id + size
             if next_id < len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
@@ -298,7 +298,7 @@ while sink_id < len(formation_times):
                 del form_time_it
             del global_data
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
         if np.isnan(sys_id):
             born_bound = False
@@ -381,7 +381,7 @@ while sink_id < len(formation_times):
             file_open.close()
             del file_open
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             next_id = sink_id + size
             if next_id < len(formation_times):
@@ -413,7 +413,7 @@ while sink_id < len(formation_times):
             del form_time_it
             del global_data
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             counter = 0
             while np.isnan(first_bound_sink):
@@ -456,7 +456,7 @@ while sink_id < len(formation_times):
                     S._mass = mass
                     del mass
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
                     print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     if sink_id in res['index1']:
