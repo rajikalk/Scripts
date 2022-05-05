@@ -425,67 +425,68 @@ while sink_id < len(formation_times):
                 counter = counter + 1
                 if np.remainder(counter,5000) == 0:
                     print("testing time_it", time_it, "on rank", rank, flush=True)
-                import pdb
-                pdb.set_trace()
-                n_stars = np.where(global_test_inds['m'][0]>0)[0]
-                if len(n_stars)>1:
-                    abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
-                    absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
-                    mass = np.array(global_test_inds['m'][0][n_stars])
-                    time = global_test_inds['time'][0]
-                    
-                    global_test_inds['time'] = global_test_inds['time'][1:]
-                    global_test_inds['m'] = global_test_inds['m'][1:]
-                    global_test_inds['x'] = global_test_inds['x'][1:]
-                    global_test_inds['y'] = global_test_inds['y'][1:]
-                    global_test_inds['z'] = global_test_inds['z'][1:]
-                    global_test_inds['ux'] = global_test_inds['ux'][1:]
-                    global_test_inds['uy'] = global_test_inds['uy'][1:]
-                    global_test_inds['uz'] = global_test_inds['uz'][1:]
-                    #Remove global data:
-                    del n_stars
-                    gc.collect()
-                    S = pr.Sink()
-                    S._jet_factor = 1.
-                    S._scale_l = scale_l
-                    #S._scale_v = scale_v.value
-                    S._scale_t = scale_t
-                    S._scale_d = scale_d
-                    S._time = time
-                    del time
-                    gc.collect()
-                    S._abspos = abspos
-                    del abspos
-                    gc.collect()
-                    S._absvel = absvel
-                    del absvel
-                    gc.collect()
-                    S._mass = mass
-                    del mass
-                    gc.collect()
-                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                    if sink_id in res['index1']:
-                        sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                        first_bound_sink = res['index2'][sys_id]
-                    elif sink_id in res['index2']:
-                        sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                        first_bound_sink = res['index1'][sys_id]
-                    else:
-                        sys_id = np.nan
-                    if np.isnan(sys_id) == False:
-                        first_bound_sink = losi(first_bound_sink, res)
-                        lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-                        most_bound_sep = res['separation'][sys_id]
-                        bound_time = res['time']*scale_t_yr
-                        delay_time = float(bound_time - formation_time)
-                        if delay_time == 0:
-                            born_bound = True
-                            most_bound_sink_id = str(first_bound_sink)
-                        break
-                    del res
-                    gc.collect()
+                if len(global_test_inds['m']) == 0:
+                    break
+                else:
+                    n_stars = np.where(global_test_inds['m'][0]>0)[0]
+                    if len(n_stars)>1:
+                        abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
+                        absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
+                        mass = np.array(global_test_inds['m'][0][n_stars])
+                        time = global_test_inds['time'][0]
+                        
+                        global_test_inds['time'] = global_test_inds['time'][1:]
+                        global_test_inds['m'] = global_test_inds['m'][1:]
+                        global_test_inds['x'] = global_test_inds['x'][1:]
+                        global_test_inds['y'] = global_test_inds['y'][1:]
+                        global_test_inds['z'] = global_test_inds['z'][1:]
+                        global_test_inds['ux'] = global_test_inds['ux'][1:]
+                        global_test_inds['uy'] = global_test_inds['uy'][1:]
+                        global_test_inds['uz'] = global_test_inds['uz'][1:]
+                        #Remove global data:
+                        del n_stars
+                        gc.collect()
+                        S = pr.Sink()
+                        S._jet_factor = 1.
+                        S._scale_l = scale_l
+                        #S._scale_v = scale_v.value
+                        S._scale_t = scale_t
+                        S._scale_d = scale_d
+                        S._time = time
+                        del time
+                        gc.collect()
+                        S._abspos = abspos
+                        del abspos
+                        gc.collect()
+                        S._absvel = absvel
+                        del absvel
+                        gc.collect()
+                        S._mass = mass
+                        del mass
+                        gc.collect()
+                        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                        if sink_id in res['index1']:
+                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                            first_bound_sink = res['index2'][sys_id]
+                        elif sink_id in res['index2']:
+                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                            first_bound_sink = res['index1'][sys_id]
+                        else:
+                            sys_id = np.nan
+                        if np.isnan(sys_id) == False:
+                            first_bound_sink = losi(first_bound_sink, res)
+                            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                            most_bound_sep = res['separation'][sys_id]
+                            bound_time = res['time']*scale_t_yr
+                            delay_time = float(bound_time - formation_time)
+                            if delay_time == 0:
+                                born_bound = True
+                                most_bound_sink_id = str(first_bound_sink)
+                            break
+                        del res
+                        gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Rank:", rank, "Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1], flush=True)
