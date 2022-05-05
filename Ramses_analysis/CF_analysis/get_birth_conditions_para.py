@@ -23,11 +23,9 @@ def losi(i, res):
 #=====================================================================================================
 if rank == 0:
     print("creating units")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 global_data_pickle_file = argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
@@ -60,11 +58,13 @@ stdout.flush()
 CW.Barrier()
 
 if rank == 0:
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     file_open = open(global_data_pickle_file, 'rb')
     global_data = load(file_open)
     file_open.close()
     del file_open
     collect()
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     print("Finding formation inds")
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -76,7 +76,8 @@ if rank == 0:
     del global_data['uy']
     del global_data['uz']
     collect()
-
+    
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = [0]
     for sink_id in range(1, np.shape(global_data['m'].T)[0]):
         new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
@@ -85,7 +86,7 @@ if rank == 0:
         formation_inds.append(formation_ind)
 
     print("Found formation inds")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
@@ -99,7 +100,7 @@ if rank == 0:
     del file_open
 
     print("Found formation times")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
@@ -120,7 +121,7 @@ if rank == 0:
         del form_time_it
         collect()
     print("Saved global_data for each rank")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
     del global_data
