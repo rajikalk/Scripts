@@ -5,10 +5,7 @@ import numpy as np
 import pickle
 import sys
 import gc
-#from pickle import load, dump
 from mpi4py.MPI import COMM_WORLD as CW
-#from sys import argv#, #stdout
-#from gc import collect
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -26,7 +23,7 @@ def losi(i, res):
 if rank == 0:
     print("creating units")
 
-global_data_pickle_file = argv[1]
+global_data_pickle_file = sys.argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
@@ -53,16 +50,16 @@ scale_t = scale_l/scale_v
 scale_t_yr = 21728716.033625457
 scale_d = scale_m/(scale_l**3)
 del scale_v
-collect()
+gc.collect()
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     file_open = open(global_data_pickle_file, 'rb')
-    global_data = load(file_open)
+    global_data = pickle.load(file_open)
     file_open.close()
     del file_open
-    collect()
+    gc.collect()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     print("Finding formation inds")
@@ -74,7 +71,7 @@ if rank == 0:
     del global_data['ux']
     del global_data['uy']
     del global_data['uz']
-    collect()
+    gc.collect()
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = [0]
@@ -91,10 +88,10 @@ if rank == 0:
     formation_times = global_data['time'][formation_inds]
     del formation_inds
     del global_data
-    collect()
+    gc.collect()
     
     file_open = open(global_data_pickle_file, 'rb')
-    global_data = load(file_open)
+    global_data = pickle.load(file_open)
     file_open.close()
     del file_open
 
@@ -115,16 +112,16 @@ if rank == 0:
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
-        dump((formation_times, global_data), file_open)
+        pickle.dump((formation_times, global_data), file_open)
         file_open.close()
         del form_time_it
-        collect()
+        gc.collect()
     print("Saved global_data for each rank")
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
     del global_data
-    collect()
+    gc.collect()
 del global_data_pickle_file
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 ##stdout.flush()
@@ -132,13 +129,13 @@ CW.barrier()
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-formation_times, global_data = load(file_open)
+formation_times, global_data = pickle.load(file_open)
 file_open.close()
 del file_open
 del global_data
-collect()
+gc.collect()
 if rank == 0:
-    print("loaded formation_times")
+    print("pickle.loaded formation_times")
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 import pyramses as pr
@@ -160,11 +157,11 @@ while sink_id < len(formation_times):
     if rank == rit:
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-        formation_times, global_data = load(file_open)
+        formation_times, global_data = pickle.load(file_open)
         file_open.close()
         del file_open
-        collect()
-        print("loaded global data on rank", rank)
+        gc.collect()
+        print("pickle.loaded global data on rank", rank)
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #Calculate energies to find most bound sink
@@ -173,50 +170,50 @@ while sink_id < len(formation_times):
         mass = np.array(global_data['m'][0][:sink_id+1])
         n_stars = np.arange(len(mass))
         del global_data
-        collect()
+        gc.collect()
         
         rel_pos = abspos[:-1] - abspos[-1]
         del abspos
-        collect()
+        gc.collect()
         
         update_seps_neg = np.argwhere(rel_pos<-0.5)
         rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
         del update_seps_neg
-        collect()
+        gc.collect()
         
         update_seps_pos = np.argwhere(rel_pos>0.5)
         rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
         del update_seps_pos
-        collect()
+        gc.collect()
 
         rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
         del rel_pos
-        collect()
+        gc.collect()
             
         rel_vel = absvel[:-1] - absvel[-1]
         del absvel
-        collect()
+        gc.collect()
         
         rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
         del rel_vel
-        collect()
+        gc.collect()
         
         mtm = mass[-1] * mass[:-1]
         mpm = mass[-1] + mass[:-1]
         del mass
-        collect()
+        gc.collect()
         
         newtonianPotential = -1./rel_sep
         
         Ekin = 0.5 * mtm/mpm * rel_speed**2
         del rel_speed
         del mpm
-        collect()
+        gc.collect()
         
         Epot = Grho * mtm * newtonianPotential
         del newtonianPotential
         del mtm
-        collect()
+        gc.collect()
 
         Etot = Ekin + Epot
         try:
@@ -225,7 +222,7 @@ while sink_id < len(formation_times):
             most_bound_sink_id = np.nan
         del Ekin
         del Epot
-        collect()
+        gc.collect()
         
         born_bound = True
         delay_time = 0
@@ -233,10 +230,10 @@ while sink_id < len(formation_times):
         sys_id = np.nan
         if len(n_stars)>1:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = load(file_open)
+            formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
-            collect()
+            gc.collect()
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
@@ -244,7 +241,7 @@ while sink_id < len(formation_times):
             
             time = global_data['time'][0]
             del global_data
-            collect()
+            gc.collect()
 
             S = pr.Sink()
             S._jet_factor = 1.
@@ -254,16 +251,16 @@ while sink_id < len(formation_times):
             S._scale_d = scale_d
             S._time = time
             del time
-            collect()
+            gc.collect()
             S._abspos = abspos
             del abspos
-            collect()
+            gc.collect()
             S._absvel = absvel
             del absvel
-            collect()
+            gc.collect()
             S._mass = mass
             del mass
-            collect()
+            gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -282,15 +279,15 @@ while sink_id < len(formation_times):
                 if str(most_bound_sink_id) != str(first_bound_sink):
                     most_bound_sink_id = str(first_bound_sink)
             del res
-            collect()
+            gc.collect()
     
         if np.isnan(sys_id) == False:
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = load(file_open)
+            formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
-            collect()
+            gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             next_id = sink_id + size
             if next_id < len(formation_times):
@@ -307,11 +304,11 @@ while sink_id < len(formation_times):
                 global_data['uz'] = global_data['uz'][form_time_it:]
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-                dump((formation_times, global_data), file_open)
+                pickle.dump((formation_times, global_data), file_open)
                 file_open.close()
                 del form_time_it
             del global_data
-            collect()
+            gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
         if np.isnan(sys_id):
@@ -326,17 +323,17 @@ while sink_id < len(formation_times):
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = load(file_open)
+            formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
-            collect()
+            gc.collect()
             
             abspos_x = global_data['x'][:]
             abspos_y = global_data['y'][:]
             abspos_z = global_data['z'][:]
             
             del global_data
-            collect()
+            gc.collect()
             
             rel_pos_x = abspos_x.T - abspos_x.T[sink_id]
             rel_pos_y = abspos_y.T - abspos_y.T[sink_id]
@@ -344,58 +341,58 @@ while sink_id < len(formation_times):
             del abspos_x
             del abspos_y
             del abspos_z
-            collect()
+            gc.collect()
             
             update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
             rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 1.0
             del update_seps_x_neg
-            collect()
+            gc.collect()
             
             update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
             rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
             del update_seps_x_pos
-            collect()
+            gc.collect()
             
             update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
             rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] = rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] + 1.0
             del update_seps_y_neg
-            collect()
+            gc.collect()
             
             update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
             rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
             del update_seps_y_pos
-            collect()
+            gc.collect()
             
             update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
             rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 1.0
             del update_seps_z_neg
-            collect()
+            gc.collect()
             
             update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
             rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
             del update_seps_z_pos
-            collect()
+            gc.collect()
             
             rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
-            collect()
+            gc.collect()
             
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             del rel_sep
-            collect()
+            gc.collect()
             
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
             del closest_separations
-            collect()
+            gc.collect()
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = load(file_open)
+            formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
-            collect()
+            gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             next_id = sink_id + size
@@ -423,11 +420,11 @@ while sink_id < len(formation_times):
             global_data['uz'] = global_data['uz'][form_time_it:]
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-            dump((formation_times, global_data), file_open)
+            pickle.dump((formation_times, global_data), file_open)
             file_open.close()
             del form_time_it
             del global_data
-            collect()
+            gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             counter = 0
@@ -452,7 +449,7 @@ while sink_id < len(formation_times):
                     global_test_inds['uz'] = global_test_inds['uz'][1:]
                     #Remove global data:
                     del n_stars
-                    collect()
+                    gc.collect()
                     S = pr.Sink()
                     S._jet_factor = 1.
                     S._scale_l = scale_l
@@ -461,16 +458,16 @@ while sink_id < len(formation_times):
                     S._scale_d = scale_d
                     S._time = time
                     del time
-                    collect()
+                    gc.collect()
                     S._abspos = abspos
                     del abspos
-                    collect()
+                    gc.collect()
                     S._absvel = absvel
                     del absvel
-                    collect()
+                    gc.collect()
                     S._mass = mass
                     del mass
-                    collect()
+                    gc.collect()
                     #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
                     #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -493,13 +490,13 @@ while sink_id < len(formation_times):
                             most_bound_sink_id = str(first_bound_sink)
                         break
                     del res
-                    collect()
+                    gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
-        dump((Sink_bound_birth),file)
+        pickle.dump((Sink_bound_birth),file)
         file.close()
 
     sink_id = sink_id + 1
@@ -514,13 +511,13 @@ if rank == 0:
     Sink_birth_all = {}
     for birth_pick in birth_pickles:
         file = open(birth_pick, 'rb')
-        Sink_bound_birth_rank = load(file)
+        Sink_bound_birth_rank = pickle.load(file)
         file.close()
         for sink_birth_con in Sink_bound_birth_rank:
             Sink_birth_all.update({str(sink_birth_con[0]):sink_birth_con[1:]})
         #os.remove(birth_pick)
         
     file = open("sink_birth_all.pkl", 'wb')
-    dump((Sink_birth_all), file)
+    pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
