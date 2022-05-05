@@ -1,6 +1,6 @@
 import numpy as np
 #import pickle
-from pickle import load
+from pickle import load, dump
 import pyramses as pr
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
@@ -113,7 +113,7 @@ if rank == 0:
         global_data['uz'] = global_data['uz'][form_time_it:]
         
         file_open = open("global_data_rank_"+str(trunc_it)+".pkl", "wb")
-        pickle.dump((formation_times, global_data), file_open)
+        dump((formation_times, global_data), file_open)
         file_open.close()
         del form_time_it
         collect()
@@ -293,7 +293,7 @@ while sink_id < len(formation_times):
                 global_data['uz'] = global_data['uz'][form_time_it:]
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-                pickle.dump((formation_times, global_data), file_open)
+                dump((formation_times, global_data), file_open)
                 file_open.close()
                 del form_time_it
             del global_data
@@ -408,7 +408,7 @@ while sink_id < len(formation_times):
             global_data['uz'] = global_data['uz'][form_time_it:]
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-            pickle.dump((formation_times, global_data), file_open)
+            dump((formation_times, global_data), file_open)
             file_open.close()
             del form_time_it
             del global_data
@@ -485,7 +485,7 @@ while sink_id < len(formation_times):
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
-        pickle.dump((Sink_bound_birth),file)
+        dump((Sink_bound_birth),file)
         file.close()
 
     sink_id = sink_id + 1
@@ -507,6 +507,6 @@ if rank == 0:
         #os.remove(birth_pick)
         
     file = open("sink_birth_all.pkl", 'wb')
-    pickle.dump((Sink_birth_all), file)
+    dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
