@@ -113,7 +113,7 @@ if rank == 0:
         file_open.close()
         del form_time_it
         gc.collect()
-    print("Saved global_data for each rank", flush=True)
+        print("Saved global_data_rank_"+str(trunc_it)+".pkl", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
@@ -131,8 +131,7 @@ file_open.close()
 del file_open
 del global_data
 gc.collect()
-if rank == 0:
-    print("pickle.loaded formation_times", flush=True)
+print("loaded global_data_rank_"+str(rank)+".pkl", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 import pyramses as pr
