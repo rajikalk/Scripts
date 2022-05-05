@@ -1,15 +1,10 @@
 import numpy as np
 import pickle
-#import pickle5 as pickle
 import pyramses as pr
-#from pyramses import rsink
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
-#import sys
 from sys import argv, stdout
-#import gc
 from gc import collect
-#import psutil
 from psutil import virtual_memory
 from inspect import currentframe, getframeinfo
 
@@ -25,15 +20,11 @@ def losi(i, res):
         return [i1,i2]
 
 #=====================================================================================================
-
-global_data_pickle_file = argv[1]
-
-#==========================================================================================
-
 if rank == 0:
     print("creating units")
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
+global_data_pickle_file = argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
@@ -491,64 +482,7 @@ while sink_id < len(formation_times):
                     del res
                     collect()
                     print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            
-            '''
-            for time_it in range(len(global_test_inds['m'])):
-                if np.isnan(first_bound_sink):
-                    if np.remainder(time_it,5000) == 0:
-                        print("testing time_it", time_it, "on rank", rank)
-                    n_stars = np.where(global_test_inds['m'][time_it]>0)[0]
-                    if len(n_stars)>1:
-                        abspos = np.array([global_test_inds['x'][time_it][n_stars], global_test_inds['y'][time_it][n_stars], global_test_inds['z'][time_it][n_stars]]).T#*scale_l
-                        absvel = np.array([global_test_inds['ux'][time_it][n_stars], global_test_inds['uy'][time_it][n_stars], global_test_inds['uz'][time_it][n_stars]]).T#*scale_v
-                        mass = np.array(global_test_inds['m'][time_it][n_stars])
-                        time = global_test_inds['time'][time_it]
-                        
-                        #Remove global data:
-                        del n_stars
-                        collect()
-                        S = pr.Sink()
-                        S._jet_factor = 1.
-                        S._scale_l = scale_l
-                        #S._scale_v = scale_v.value
-                        S._scale_t = scale_t
-                        S._scale_d = scale_d
-                        S._time = time
-                        del time
-                        collect()
-                        S._abspos = abspos
-                        del abspos
-                        collect()
-                        S._absvel = absvel
-                        del absvel
-                        collect()
-                        S._mass = mass
-                        del mass
-                        collect()
-                        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                        if sink_id in res['index1']:
-                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                            first_bound_sink = res['index2'][sys_id]
-                        elif sink_id in res['index2']:
-                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                            first_bound_sink = res['index1'][sys_id]
-                        else:
-                            sys_id = np.nan
-                        if np.isnan(sys_id) == False:
-                            first_bound_sink = losi(first_bound_sink, res)
-                            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-                            most_bound_sep = res['separation'][sys_id]
-                            bound_time = res['time']*scale_t_yr
-                            delay_time = float(bound_time - formation_time)
-                            if delay_time == 0:
-                                import pdb
-                                pdb.set_trace()
-                                born_bound = True
-                                most_bound_sink_id = str(first_bound_sink)
-                            break
-                        del res
-                        collect()
-        '''
+
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
