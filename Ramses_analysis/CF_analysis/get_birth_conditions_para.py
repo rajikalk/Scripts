@@ -156,7 +156,7 @@ while sink_id < len(formation_times):
         rit = 0
         #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     if rank == rit:
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
         formation_times, global_data = load(file_open)
         file_open.close()
@@ -262,9 +262,9 @@ while sink_id < len(formation_times):
             S._mass = mass
             del mass
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                 first_bound_sink = res['index2'][sys_id]
@@ -283,7 +283,7 @@ while sink_id < len(formation_times):
             collect()
     
         if np.isnan(sys_id) == False:
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = load(file_open)
             file_open.close()
@@ -313,7 +313,7 @@ while sink_id < len(formation_times):
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
         if np.isnan(sys_id):
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             born_bound = False
             most_bound_sep = np.nan
             first_bound_sink = np.nan
@@ -469,9 +469,9 @@ while sink_id < len(formation_times):
                     S._mass = mass
                     del mass
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     if sink_id in res['index1']:
                         sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                         first_bound_sink = res['index2'][sys_id]
