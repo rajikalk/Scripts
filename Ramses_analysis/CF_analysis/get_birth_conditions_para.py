@@ -1,6 +1,6 @@
-from psutil import virtual_memory
-from inspect import currentframe, getframeinfo
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#from psutil import virtual_memory
+#from inspect import currentframe, getframeinfo
+##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 import numpy as np
 #import pickle
 from pickle import load, dump
@@ -20,7 +20,7 @@ def losi(i, res):
         return [i1,i2]
 
 #=====================================================================================================
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 if rank == 0:
     print("creating units")
 
@@ -52,19 +52,19 @@ scale_t_yr = 21728716.033625457
 scale_d = scale_m/(scale_l**3)
 del scale_v
 collect()
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 if rank == 0:
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     file_open = open(global_data_pickle_file, 'rb')
     global_data = load(file_open)
     file_open.close()
     del file_open
     collect()
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     print("Finding formation inds")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     del global_data['x']
     del global_data['y']
@@ -74,7 +74,7 @@ if rank == 0:
     del global_data['uz']
     collect()
     
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = [0]
     for sink_id in range(1, np.shape(global_data['m'].T)[0]):
         new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
@@ -83,7 +83,7 @@ if rank == 0:
         formation_inds.append(formation_ind)
 
     print("Found formation inds")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
@@ -97,7 +97,7 @@ if rank == 0:
     del file_open
 
     print("Found formation times")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
@@ -118,16 +118,16 @@ if rank == 0:
         del form_time_it
         collect()
     print("Saved global_data for each rank")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
     del global_data
     collect()
 del global_data_pickle_file
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 ##stdout.flush()
 CW.barrier()
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
 formation_times, global_data = load(file_open)
@@ -137,24 +137,24 @@ del global_data
 collect()
 if rank == 0:
     print("loaded formation_times")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 import pyramses as pr
 import multiplicity as m
 
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 rit = -1
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 sink_id = 0
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 Sink_bound_birth = []
 while sink_id < len(formation_times):
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     rit = rit + 1
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     if rit == size:
         rit = 0
-        print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+        #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     if rank == rit:
         print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
