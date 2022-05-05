@@ -8,6 +8,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import sys
 import gc
 import psutil
+from inspect import currentframe, getframeinfo
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -28,7 +29,7 @@ global_data_pickle_file = sys.argv[1]
 
 if rank == 0:
     print("creating units")
-    print("Memory_useage:", psutil.virtual_memory().percent, "on line", sys._getframe().f_back.f_lineno)
+    print("Memory_useage:", psutil.virtual_memory().percent, "on line", inspect.getframeinfo(inspect.currentframe()).lineno)
 
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
