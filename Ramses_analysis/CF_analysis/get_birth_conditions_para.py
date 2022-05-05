@@ -23,10 +23,11 @@ def losi(i, res):
 #=====================================================================================================
 if rank == 0:
     print("creating units")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 global_data_pickle_file = argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
@@ -53,6 +54,7 @@ scale_t_yr = 21728716.033625457
 scale_d = scale_m/(scale_l**3)
 del scale_v
 collect()
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 stdout.flush()
 CW.Barrier()
