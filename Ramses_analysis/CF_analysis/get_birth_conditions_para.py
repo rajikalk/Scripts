@@ -61,7 +61,7 @@ if rank == 0 :
         Sink_bound_birth_rank = pickle.load(file_open)
         file_open.close()
         for birth_con in Sink_bound_birth_rank:
-            found_sinks.append(birth_con)
+            found_sinks.append(birth_con[0])
         Sink_bound_birth = Sink_bound_birth + Sink_bound_birth_rank
     del birth_con_pickles
     
@@ -90,8 +90,6 @@ if rank == 0:
     if len(Sink_bound_birth) == 0:
         sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     else:
-        import pdb
-        pdb.set_trace()
         sink_ids = list(set(found_sinks).symmetric_difference(set(all_inds)))
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
