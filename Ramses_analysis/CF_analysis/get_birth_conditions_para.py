@@ -68,8 +68,6 @@ if rank == 0:
 
     print("Finding formation inds")
     
-    import pdb
-    pdb.set_trace()
     del global_data['x']
     del global_data['y']
     del global_data['z']
