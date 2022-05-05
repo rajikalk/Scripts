@@ -1,5 +1,6 @@
 import numpy as np
-import pickle
+#import pickle
+from pickle import load
 import pyramses as pr
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
@@ -58,7 +59,7 @@ CW.Barrier()
 
 if rank == 0:
     file_open = open(global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open)
+    global_data = load(file_open)
     file_open.close()
     del file_open
     collect()
@@ -91,7 +92,7 @@ if rank == 0:
     collect()
     
     file_open = open(global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open)
+    global_data = load(file_open)
     file_open.close()
     del file_open
 
@@ -127,7 +128,7 @@ stdout.flush()
 CW.Barrier()
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-formation_times, global_data = pickle.load(file_open)
+formation_times, global_data = load(file_open)
 file_open.close()
 del file_open
 del global_data
@@ -148,7 +149,7 @@ while sink_id < len(formation_times):
         rit = 0
     if rank == rit:
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-        formation_times, global_data = pickle.load(file_open)
+        formation_times, global_data = load(file_open)
         file_open.close()
         del file_open
         collect()
@@ -221,7 +222,7 @@ while sink_id < len(formation_times):
         sys_id = np.nan
         if len(n_stars)>1:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = pickle.load(file_open)
+            formation_times, global_data = load(file_open)
             file_open.close()
             del file_open
             collect()
@@ -272,7 +273,7 @@ while sink_id < len(formation_times):
     
         if np.isnan(sys_id) == False:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = pickle.load(file_open)
+            formation_times, global_data = load(file_open)
             file_open.close()
             del file_open
             collect()
@@ -310,7 +311,7 @@ while sink_id < len(formation_times):
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = pickle.load(file_open)
+            formation_times, global_data = load(file_open)
             file_open.close()
             del file_open
             collect()
@@ -376,7 +377,7 @@ while sink_id < len(formation_times):
             collect()
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            formation_times, global_data = pickle.load(file_open)
+            formation_times, global_data = load(file_open)
             file_open.close()
             del file_open
             collect()
@@ -499,7 +500,7 @@ if rank == 0:
     Sink_birth_all = {}
     for birth_pick in birth_pickles:
         file = open(birth_pick, 'rb')
-        Sink_bound_birth_rank = pickle.load(file)
+        Sink_bound_birth_rank = load(file)
         file.close()
         for sink_birth_con in Sink_bound_birth_rank:
             Sink_birth_all.update({str(sink_birth_con[0]):sink_birth_con[1:]})
