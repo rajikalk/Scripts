@@ -1,13 +1,12 @@
 import numpy as np
 #import pickle
 from pickle import load, dump
-import pyramses as pr
-import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
 from sys import argv, stdout
 from gc import collect
 from psutil import virtual_memory
 from inspect import currentframe, getframeinfo
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -21,6 +20,7 @@ def losi(i, res):
         return [i1,i2]
 
 #=====================================================================================================
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 if rank == 0:
     print("creating units")
 
@@ -138,6 +138,9 @@ collect()
 if rank == 0:
     print("loaded formation_times")
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
+import pyramses as pr
+import multiplicity as m
 
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 rit = -1
