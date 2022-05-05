@@ -136,17 +136,22 @@ collect()
 Sink_bound_birth = []
 if rank == 0:
     print("loaded formation_times")
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 stdout.flush()
 CW.Barrier()
 
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 rit = -1
 sink_id = 0
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 while sink_id < len(formation_times):
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     rit = rit + 1
+    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     if rit == size:
         rit = 0
+        print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     if rank == rit:
         print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
