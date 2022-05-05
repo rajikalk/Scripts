@@ -1,6 +1,6 @@
 import numpy as np
 #import pickle
-from pickle5 import load, dump
+from pickle import load, dump
 import pyramses as pr
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
@@ -133,7 +133,6 @@ file_open.close()
 del file_open
 del global_data
 collect()
-Sink_bound_birth = []
 if rank == 0:
     print("loaded formation_times")
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -147,6 +146,7 @@ rit = -1
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 sink_id = 0
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+Sink_bound_birth = []
 while sink_id < len(formation_times):
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     rit = rit + 1
