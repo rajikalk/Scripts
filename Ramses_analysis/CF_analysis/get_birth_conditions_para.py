@@ -23,7 +23,7 @@ def losi(i, res):
 #=====================================================================================================
 if rank == 0:
     print("creating units")
-    print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 global_data_pickle_file = argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
@@ -456,8 +456,8 @@ while sink_id < len(formation_times):
                     S._mass = mass
                     del mass
                     collect()
-                    #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=True)
+                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
                     print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     if sink_id in res['index1']:
                         sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
@@ -481,11 +481,8 @@ while sink_id < len(formation_times):
                     collect()
                     print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         dump((Sink_bound_birth),file)
