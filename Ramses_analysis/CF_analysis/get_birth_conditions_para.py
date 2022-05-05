@@ -1,8 +1,7 @@
 import numpy as np
-import yt
 import pickle
 import pyramses as pr
-from pyramses import rsink
+#from pyramses import rsink
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
 import sys
@@ -19,99 +18,65 @@ def losi(i, res):
         i2 = losi(res['index2'][i],res)
         return [i1,i2]
 
+'''
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
     args = parser.parse_args()
     return args
-    
+'''
 
 #=====================================================================================================
 
-args = parse_inputs()
+global_data_pickle_file = sys.argv[1]
+#args = parse_inputs()
 
 #==========================================================================================
 
 if rank == 0:
     print("creating units")
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-#simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
-simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+simulation_density_id = global_data_pickle_file.split('/G')[-1].split('/')[0]
 
 if simulation_density_id == '50':
     Grho=50.
-    units_override.update({"mass_unit":(1500,"Msun")})
+    scale_m = 1500*1.98841586e+33
 elif simulation_density_id == '100':
     Grho=100.
-    units_override.update({"mass_unit":(3000,"Msun")})
+    scale_m = 3000*1.98841586e+33
 elif simulation_density_id == '125':
     Grho=125.
-    units_override.update({"mass_unit":(3750,"Msun")})
+    scale_m = 3750*1.98841586e+33
 elif simulation_density_id == '150':
     Grho=150.
-    units_override.update({"mass_unit":(4500,"Msun")})
+    scale_m = 4500*1.98841586e+33
 elif simulation_density_id == '200':
     Grho=200.
-    units_override.update({"mass_unit":(6000,"Msun")})
+    scale_m = 6000*1.98841586e+33
 elif simulation_density_id == '400':
     Grho=400.
-    units_override.update({"mass_unit":(12000,"Msun")})
+    scale_m = 12000*1.98841586e+33
 else:
     print("MASS UNIT NOT SET")
     import pdb
     pdb.set_trace()
 del simulation_density_id
 gc.collect()
-    
 
-units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
-    
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
-scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
+scale_l = 1.2342710323849298e+19
+scale_l_au = 825059.2245669405
+scale_v = 18000.0
+scale_t = scale_l/scale_v
+scale_t_yr = 21728716.033625457
+scale_d = scale_m/(scale_l**3)
 del scale_v
 gc.collect()
 
-units={}
-for key in units_override.keys():
-    units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-del units_override
-gc.collect()
-"""
-file_open = open(args.global_data_pickle_file, 'rb')
-try:
-    global_data = pickle.load(file_open)
-except:
-    file_open.close()
-    import pickle5 as pickle
-    file_open = open(args.global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open)
-file_open.close()
-del file_open
-
-sys.stdout.flush()
-CW.Barrier()
-
-formation_inds = [0]
-for sink_id in range(1, np.shape(global_data['m'].T)[0]):
-    formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
-
-formation_inds = np.array(formation_inds)
-formation_times = global_data['time'][formation_inds]
-
-"""
 if rank == 0:
-    file_open = open(args.global_data_pickle_file, 'rb')
-    try:
-        global_data = pickle.load(file_open)
-    except:
-        file_open.close()
-        import pickle5 as pickle
-        file_open = open(args.global_data_pickle_file, 'rb')
-        global_data = pickle.load(file_open)
+    file_open = open(global_data_pickle_file, 'rb')
+    global_data = pickle.load(file_open)
+    file_open.close()
     del file_open
     gc.collect()
 
@@ -254,26 +219,27 @@ while sink_id < len(formation_times):
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
+            del n_stars
+            
             time = global_data['time'][0]
             del global_data
-            del n_stars
             gc.collect()
             S = pr.Sink()
             S._jet_factor = 1.
-            S._scale_l = scale_l.value
+            S._scale_l = scale_l
             #S._scale_v = scale_v.value
-            S._scale_t = scale_t.value
-            S._scale_d = scale_d.value
-            S._time = yt.YTArray(time, '')
+            S._scale_t = scale_t
+            S._scale_d = scale_d
+            S._time = time
             del time
             gc.collect()
-            S._abspos = yt.YTArray(abspos, '')
+            S._abspos = abspos
             del abspos
             gc.collect()
-            S._absvel = yt.YTArray(absvel, '')
+            S._absvel = absvel
             del absvel
             gc.collect()
-            S._mass = yt.YTArray(mass, '')
+            S._mass = mass
             del mass
             gc.collect()
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
@@ -329,7 +295,7 @@ while sink_id < len(formation_times):
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            formation_time = formation_times[sink_id]*units['time_unit'].in_units('yr')
+            formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             
@@ -397,7 +363,7 @@ while sink_id < len(formation_times):
             gc.collect()
             #import pdb
             #pdb.set_trace()
-            test_time_inds = np.where((units['length_unit'].in_units('au')*closest_separations)<10000)[0]
+            test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
             del closest_separations
             gc.collect()
             
@@ -483,7 +449,7 @@ while sink_id < len(formation_times):
                             first_bound_sink = losi(first_bound_sink, res)
                             lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                             most_bound_sep = res['separation'][sys_id]
-                            bound_time = res['time']*units['time_unit'].in_units('yr')
+                            bound_time = res['time']*scale_t_yr
                             delay_time = float((bound_time - formation_time).value)
                             if delay_time == 0:
                                 import pdb
@@ -496,30 +462,11 @@ while sink_id < len(formation_times):
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
-        '''
-        try:
-            if str(sink_id) in True_sink_birth_conditions.keys():
-                if True_sink_birth_conditions[str(sink_id)] != Sink_bound_birth[-1][1:]:
-                    mismatched_inds.append(sink_id)
-                    print("SHORT CUT DOESN'T WORK FOR SINK_ID", sink_id)
-                    import pdb
-                    pdb.set_trace()
-                else:
-                    print("short cut works for sink_id", sink_id)
-        except:
-            pass
-        '''
+
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
         file.close()
-        '''
-        try:
-            file = open("mismatched_inds"+("%03d" % rank)+".pkl", 'wb')
-            pickle.dump((mismatched_inds),file)
-            file.close()
-        except:
-            pass
-        '''
+
     sink_id = sink_id + 1
 
 sys.stdout.flush()
@@ -542,33 +489,3 @@ if rank == 0:
     pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl" )
-    
-    '''
-    try:
-        mismatched_pickles = sorted(glob.glob("mismatched_inds_*.pkl"))
-        mismatched_inds = []
-        for mismatched_pickle in mismatched_pickles:
-            file = open(mismatched_pickle, 'rb')
-            mismatched_inds_rank = pickle.load(file)
-            file.close()
-            mismatched_inds = mismatched_inds + mismatched_inds_rank
-            
-        file = open("mismatched_inds.pkl", 'wb')
-        pickle.dump((mismatched_inds), file)
-        file.close()
-        print("Collected mismatched ind into mismatched_inds.pkl" )
-
-    except:
-        pass
-    '''
-'''
-import pickle
-import numpy as np
-file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl", "rb")
-global_data = pickle.load(file_open,encoding="latin1")
-file_open.close()
-SFE_5_ind = np.argmin(abs(np.sum(global_data['m'],axis=1)-0.05)) + 1
-file_open = open("global_reduced.pkl", "wb")
-pickle.dump(({'time':global_data['time'][:SFE_5_ind].T[0],'m': global_data['m'][:SFE_5_ind], 'x': global_data['x'][:SFE_5_ind], 'y': global_data['y'][:SFE_5_ind], 'z': global_data['z'][:SFE_5_ind], 'ux': global_data['ux'][:SFE_5_ind], 'uy': global_data['uy'][:SFE_5_ind], 'uz': global_data['uz'][:SFE_5_ind]}), file_open)
-file_open.close()
-'''
