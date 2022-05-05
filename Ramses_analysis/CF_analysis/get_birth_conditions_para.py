@@ -138,11 +138,13 @@ if rank == 0:
     print("loaded formation_times")
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
-stdout.flush()
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+#stdout.flush()
 CW.Barrier()
 
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 rit = -1
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 sink_id = 0
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 while sink_id < len(formation_times):
