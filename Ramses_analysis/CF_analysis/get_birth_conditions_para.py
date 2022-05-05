@@ -63,6 +63,9 @@ scale_d = scale_m/(scale_l**3)
 del scale_v
 gc.collect()
 
+sys.stdout.flush()
+CW.Barrier()
+
 if rank == 0:
     file_open = open(global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
@@ -72,12 +75,21 @@ if rank == 0:
     gc.collect()
 
     print("Finding formation inds")
+    
+    del global_data['x']
+    del global_data['y']
+    del global_data['z']
+    del global_data['ux']
+    del global_data['uy']
+    del global_data['uz']
+    gc.collect()
 
     formation_inds = [0]
     for sink_id in range(1, np.shape(global_data['m'].T)[0]):
-        import pdb
-        pdb.set_trace()
-        formation_inds.append(np.argwhere(global_data['m'].T[sink_id]>0)[0][0])
+        new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+        global_data['m'] = global_data['m'][new_ind:]
+        formation_ind = formation_inds[-1]+new_ind
+        formation_inds.append(formation_ind)
 
     print("Found formation inds")
 
@@ -106,6 +118,7 @@ if rank == 0:
         file_open.close()
         del form_time_it
         gc.collect()
+    print("Saved global_data for each rank")
         
     del formation_times
     del global_data
@@ -120,6 +133,8 @@ del file_open
 del global_data
 gc.collect()
 Sink_bound_birth = []
+if rank == 0:
+    print("loaded formation_times")
 
 sys.stdout.flush()
 CW.Barrier()
@@ -136,6 +151,7 @@ while sink_id < len(formation_times):
         file_open.close()
         del file_open
         gc.collect()
+        print("loaded global data on rank", rank)
         
         #Calculate energies to find most bound sink
         new_sink_pos = np.array([global_data['x'][0][sink_id], global_data['y'][0][sink_id], global_data['z'][0][sink_id]]).T
@@ -145,6 +161,8 @@ while sink_id < len(formation_times):
         new_sink_mass = np.array(global_data['m'][0][sink_id])
         mass = np.array(global_data['m'][0][:sink_id])
         n_stars = np.where(global_data['m'][0]>0)[0]
+        import pdb
+        pdb.set_trace()
         del global_data
         gc.collect()
         
