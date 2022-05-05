@@ -315,51 +315,48 @@ while sink_id < len(formation_times):
             del file_open
             gc.collect()
             
-            new_sink_pos_x = global_data['x'][:,sink_id]
-            new_sink_pos_y = global_data['y'][:,sink_id]
-            new_sink_pos_z = global_data['z'][:,sink_id]
-            
             abspos_x = global_data['x'][:]
             abspos_y = global_data['y'][:]
             abspos_z = global_data['z'][:]
-            import pdb
-            pdb.set_trace()
             
             del global_data
             gc.collect()
             
-            rel_pos_x = abspos_x.T - new_sink_pos_x
-            rel_pos_y = abspos_y.T - new_sink_pos_y
-            rel_pos_z = abspos_z.T - new_sink_pos_z
-            del new_sink_pos_x
-            del new_sink_pos_y
-            del new_sink_pos_z
+            rel_pos_x = abspos_x.T - abspos_x.T[sink_id]
+            rel_pos_y = abspos_y.T - abspos_y.T[sink_id]
+            rel_pos_z = abspos_z.T - abspos_z.T[sink_id]
             del abspos_x
             del abspos_y
             del abspos_z
             gc.collect()
             
             update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
-            update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
             rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 1.0
-            rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
             del update_seps_x_neg
+            gc.collect()
+            
+            update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
+            rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
             del update_seps_x_pos
             gc.collect()
             
             update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
-            update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
             rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] = rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] + 1.0
-            rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
             del update_seps_y_neg
+            gc.collect()
+            
+            update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
+            rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
             del update_seps_y_pos
             gc.collect()
             
             update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
-            update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
             rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 1.0
-            rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
             del update_seps_z_neg
+            gc.collect()
+            
+            update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
+            rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
             del update_seps_z_pos
             gc.collect()
             
@@ -385,37 +382,39 @@ while sink_id < len(formation_times):
             del file_open
             gc.collect()
             
-            global_test_inds = {}
-            global_test_inds.update({'time':global_data['time'][test_time_inds]})
-            global_test_inds.update({'m':global_data['m'][test_time_inds]})
-            global_test_inds.update({'x':global_data['x'][test_time_inds]})
-            global_test_inds.update({'y':global_data['y'][test_time_inds]})
-            global_test_inds.update({'z':global_data['z'][test_time_inds]})
-            global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
-            global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
-            global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
-            
             next_id = sink_id + size
             if next_id < len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+            else:
+                form_time_it = -2
             
-                #truncate global data
-                global_data['time'] = global_data['time'][form_time_it:]
-                global_data['m'] = global_data['m'][form_time_it:]
-                global_data['x'] = global_data['x'][form_time_it:]
-                global_data['y'] = global_data['y'][form_time_it:]
-                global_data['z'] = global_data['z'][form_time_it:]
-                global_data['ux'] = global_data['ux'][form_time_it:]
-                global_data['uy'] = global_data['uy'][form_time_it:]
-                global_data['uz'] = global_data['uz'][form_time_it:]
-                
-                file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-                pickle.dump((formation_times, global_data), file_open)
-                file_open.close()
-                del form_time_it
+            global_test_inds = {}
+            global_test_inds.update({'time':global_data['time'][test_time_inds]})
+            global_data['time'] = global_data['time'][form_time_it:]
+            global_test_inds.update({'m':global_data['m'][test_time_inds]})
+            global_data['m'] = global_data['m'][form_time_it:]
+            global_test_inds.update({'x':global_data['x'][test_time_inds]})
+            global_data['x'] = global_data['x'][form_time_it:]
+            global_test_inds.update({'y':global_data['y'][test_time_inds]})
+            global_data['y'] = global_data['y'][form_time_it:]
+            global_test_inds.update({'z':global_data['z'][test_time_inds]})
+            global_data['z'] = global_data['z'][form_time_it:]
+            global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
+            global_data['ux'] = global_data['ux'][form_time_it:]
+            global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
+            global_data['uy'] = global_data['uy'][form_time_it:]
+            global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
+            global_data['uz'] = global_data['uz'][form_time_it:]
+            
+            file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
+            pickle.dump((formation_times, global_data), file_open)
+            file_open.close()
+            del form_time_it
             del global_data
             gc.collect()
             
+            import pdb
+            pdb.set_trace()
             for time_it in range(len(global_test_inds['m'])):
                 if np.isnan(first_bound_sink):
                     if np.remainder(time_it,5000) == 0:
