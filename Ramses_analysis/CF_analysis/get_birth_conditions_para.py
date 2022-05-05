@@ -437,7 +437,6 @@ while sink_id < len(formation_times):
                     #Remove global data:
                     del n_stars
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     S = pr.Sink()
                     S._jet_factor = 1.
                     S._scale_l = scale_l
@@ -447,20 +446,18 @@ while sink_id < len(formation_times):
                     S._time = time
                     del time
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     S._abspos = abspos
                     del abspos
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     S._absvel = absvel
                     del absvel
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     S._mass = mass
                     del mass
                     collect()
                     print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                     if sink_id in res['index1']:
                         sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                         first_bound_sink = res['index2'][sys_id]
