@@ -146,7 +146,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 rit = -1
-sink_id = 1
+sink_id = 0
 while sink_id < len(formation_times):
     rit = rit + 1
     if rit == size:
