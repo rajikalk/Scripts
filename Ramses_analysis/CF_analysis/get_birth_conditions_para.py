@@ -221,6 +221,7 @@ while sink_id < len(formation_times):
         
         sys_id = np.nan
         if len(n_stars)>1:
+            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = load(file_open)
             file_open.close()
@@ -274,6 +275,7 @@ while sink_id < len(formation_times):
             collect()
     
         if np.isnan(sys_id) == False:
+            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = load(file_open)
             file_open.close()
@@ -303,6 +305,7 @@ while sink_id < len(formation_times):
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
         if np.isnan(sys_id):
+            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             born_bound = False
             most_bound_sep = np.nan
             first_bound_sink = np.nan
