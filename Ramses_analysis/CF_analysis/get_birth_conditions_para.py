@@ -1,5 +1,6 @@
 import numpy as np
-import pickle5 as pickle
+import pickle
+#import pickle5 as pickle
 import pyramses as pr
 #from pyramses import rsink
 import multiplicity as m
@@ -67,14 +68,14 @@ if rank == 0:
 
     print("Finding formation inds")
     
+    import pdb
+    pdb.set_trace()
     del global_data['x']
     del global_data['y']
     del global_data['z']
     del global_data['ux']
     del global_data['uy']
     del global_data['uz']
-    import pdb
-    pdb.set_trace()
     gc.collect()
 
     formation_inds = [0]
