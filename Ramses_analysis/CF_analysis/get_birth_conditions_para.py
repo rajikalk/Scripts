@@ -158,7 +158,6 @@ while sink_id < len(formation_times):
         file_open.close()
         del file_open
         gc.collect()
-        print("pickle.loaded global data on rank", rank, flush=True)
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #Calculate energies to find most bound sink
@@ -490,7 +489,7 @@ while sink_id < len(formation_times):
                     gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
-        print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1], flush=True)
+        print("Rank:", rank, "Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1], flush=True)
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
