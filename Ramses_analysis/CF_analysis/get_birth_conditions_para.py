@@ -2,7 +2,7 @@ import numpy as np
 #import pickle
 from pickle import load, dump
 from mpi4py.MPI import COMM_WORLD as CW
-from sys import argv, stdout
+from sys import argv#, #stdout
 from gc import collect
 from psutil import virtual_memory
 from inspect import currentframe, getframeinfo
@@ -125,7 +125,7 @@ if rank == 0:
     collect()
 del global_data_pickle_file
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-#stdout.flush()
+##stdout.flush()
 CW.barrier()
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
@@ -502,7 +502,7 @@ while sink_id < len(formation_times):
 
     sink_id = sink_id + 1
 
-stdout.flush()
+#stdout.flush()
 CW.Barrier()
 
 #compile pickles
