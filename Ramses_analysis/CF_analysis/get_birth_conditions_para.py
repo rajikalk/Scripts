@@ -16,7 +16,6 @@ def losi(i, res):
         return [i1,i2]
 
 #=====================================================================================================
-#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 if rank == 0:
     print("creating units", flush=True)
 
@@ -48,7 +47,6 @@ scale_t_yr = 21728716.033625457
 scale_d = scale_m/(scale_l**3)
 del scale_v
 gc.collect()
-#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -427,6 +425,8 @@ while sink_id < len(formation_times):
                 counter = counter + 1
                 if np.remainder(counter,5000) == 0:
                     print("testing time_it", time_it, "on rank", rank, flush=True)
+                import pdb
+                pdb.set_trace()
                 n_stars = np.where(global_test_inds['m'][0]>0)[0]
                 if len(n_stars)>1:
                     abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
