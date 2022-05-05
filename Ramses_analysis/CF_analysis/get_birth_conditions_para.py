@@ -143,10 +143,6 @@ if rank == 0:
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-stdout.flush()
-CW.Barrier()
-
-print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 rit = -1
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 sink_id = 0
