@@ -1,6 +1,6 @@
 import numpy as np
 #import pickle
-from pickle import load, dump
+from pickle5 import load, dump
 import pyramses as pr
 import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
