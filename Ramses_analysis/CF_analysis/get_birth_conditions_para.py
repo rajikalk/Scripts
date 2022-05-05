@@ -7,6 +7,7 @@ import multiplicity as m
 from mpi4py.MPI import COMM_WORLD as CW
 import sys
 import gc
+import psutil
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -27,6 +28,7 @@ global_data_pickle_file = sys.argv[1]
 
 if rank == 0:
     print("creating units")
+    print("Memory_useage:", psutil.virtual_memory().percent, "on line", sys._getframe().f_back.f_lineno)
 
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
@@ -67,6 +69,7 @@ if rank == 0:
     gc.collect()
 
     print("Finding formation inds")
+    print("Memory_useage:", psutil.virtual_memory().percent, "on line", sys._getframe().f_back.f_lineno)
     
     del global_data['x']
     del global_data['y']
@@ -84,6 +87,7 @@ if rank == 0:
         formation_inds.append(formation_ind)
 
     print("Found formation inds")
+    print("Memory_useage:", psutil.virtual_memory().percent)
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
@@ -98,6 +102,7 @@ if rank == 0:
     del global_data_pickle_file
 
     print("Found formation times")
+    print("Memory_useage:", psutil.virtual_memory().percent)
     
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
@@ -118,6 +123,7 @@ if rank == 0:
         del form_time_it
         gc.collect()
     print("Saved global_data for each rank")
+    print("Memory_useage:", psutil.virtual_memory().percent)
         
     del formation_times
     del global_data
@@ -134,6 +140,7 @@ gc.collect()
 Sink_bound_birth = []
 if rank == 0:
     print("loaded formation_times")
+    print("Memory_useage:", psutil.virtual_memory().percent)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -151,6 +158,7 @@ while sink_id < len(formation_times):
         del file_open
         gc.collect()
         print("loaded global data on rank", rank)
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         #Calculate energies to find most bound sink
         
@@ -160,35 +168,44 @@ while sink_id < len(formation_times):
         n_stars = np.arange(len(mass))
         del global_data
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         rel_pos = abspos[:-1] - abspos[-1]
         del abspos
         gc.collect()
-        update_seps_neg = np.argwhere(rel_pos<-0.5)
-        update_seps_pos = np.argwhere(rel_pos>0.5)
         
+        update_seps_neg = np.argwhere(rel_pos<-0.5)
         rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
         del update_seps_neg
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
+        
+        update_seps_pos = np.argwhere(rel_pos>0.5)
         rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
         del update_seps_pos
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
 
         rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
         del rel_pos
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         rel_vel = absvel[:-1] - absvel[-1]
         del absvel
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
+        
         rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
         del rel_vel
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         mtm = mass[-1] * mass[:-1]
         mpm = mass[-1] + mass[:-1]
         del mass
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         newtonianPotential = -1./rel_sep
         
@@ -196,10 +213,12 @@ while sink_id < len(formation_times):
         del rel_speed
         del mpm
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         Epot = Grho * mtm * newtonianPotential
         del newtonianPotential
         del mtm
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         Etot = Ekin + Epot
         try:
             most_bound_sink_id = np.argmin(Etot)
@@ -208,6 +227,7 @@ while sink_id < len(formation_times):
         del Ekin
         del Epot
         gc.collect()
+        print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         born_bound = True
         delay_time = 0
@@ -219,6 +239,7 @@ while sink_id < len(formation_times):
             file_open.close()
             del file_open
             gc.collect()
+            print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
@@ -227,6 +248,7 @@ while sink_id < len(formation_times):
             time = global_data['time'][0]
             del global_data
             gc.collect()
+            print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l
@@ -262,6 +284,7 @@ while sink_id < len(formation_times):
                     most_bound_sink_id = str(first_bound_sink)
             del res
             gc.collect()
+            print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
         
         if np.isnan(sys_id) == False:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
@@ -269,6 +292,7 @@ while sink_id < len(formation_times):
             file_open.close()
             del file_open
             gc.collect()
+            print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
             next_id = sink_id + size
             if next_id < len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
@@ -289,6 +313,7 @@ while sink_id < len(formation_times):
                 del form_time_it
             del global_data
             gc.collect()
+            print("Memory_useage on rank", rank,":", psutil.virtual_memory().percent)
                 
 
         if np.isnan(sys_id):
