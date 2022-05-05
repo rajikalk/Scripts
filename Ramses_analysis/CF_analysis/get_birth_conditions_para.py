@@ -90,7 +90,7 @@ if rank == 0:
     if len(Sink_bound_birth) == 0:
         sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     else:
-        sink_ids = list(set(founds_inds).symmetric_difference(set(all_inds)))
+        sink_ids = list(set(found_sinks).symmetric_difference(set(all_inds)))
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
@@ -514,7 +514,7 @@ for sink_id in sink_ids:
                         gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
-        print("Rank:", rank, "Birth conditions of sink", sink_id, "(of ", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
+        print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
