@@ -37,7 +37,7 @@ elif Grho == 125:
     scale_m = 3750*1.98841586e+33
 elif Grho == 150:
     scale_m = 4500*1.98841586e+33
-elif Grho = 200:
+elif Grho == 200:
     scale_m = 6000*1.98841586e+33
 elif Grho == 400:
     scale_m = 12000*1.98841586e+33
