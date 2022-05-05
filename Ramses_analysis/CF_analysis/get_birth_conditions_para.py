@@ -70,7 +70,6 @@ if rank == 0:
     file_open = open(global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
     file_open.close()
-    del global_data_pickle_file
     del file_open
     gc.collect()
 
@@ -96,7 +95,14 @@ if rank == 0:
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
     del formation_inds
+    del global_data
     gc.collect()
+    
+    file_open = open(global_data_pickle_file, 'rb')
+    global_data = pickle.load(file_open)
+    file_open.close()
+    del file_open
+    del global_data_pickle_file
 
     print("Found formation times")
     
