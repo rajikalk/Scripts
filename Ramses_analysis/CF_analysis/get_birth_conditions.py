@@ -475,3 +475,16 @@ for sink_id in range(np.shape(Sink_birth_fast)[0]):
             mismatched_inds.append(sink_id)
             true_delay.append(Sink_match[-1])
 '''
+"""
+import pickle
+   ...: import numpy as np
+   ...: file_open = open("/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl", "rb")
+   ...: global_data = pickle.load(file_open,encoding="latin1")
+   ...: file_open.close()
+   ...: SFE_5_ind = np.argmin(abs(np.sum(global_data['m'],axis=1)-0.05)) + 1
+   ...: max_sink = np.where(global_data['m'][SFE_5_ind]>0)[0][-1]+1
+   ...: file_open = open("global_reduced.pkl", "wb")
+   ...: pickle.dump(({'time':global_data['time'][:SFE_5_ind].T[0],'m': global_data['m'][:SFE_5_ind,:max_sink], 'x': global_data['x'][:SFE_5_ind,:max_sink], 'y'
+   ...: : global_data['y'][:SFE_5_ind,:max_sink], 'z': global_data['z'][:SFE_5_ind,:max_sink], 'ux': global_data['ux'][:SFE_5_ind,:max_sink], 'uy': global_data
+   ...: ['uy'][:SFE_5_ind,:max_sink], 'uz': global_data['uz'][:SFE_5_ind,:max_sink]}), file_open)
+   ...: file_open.close()

@@ -148,6 +148,7 @@ while sink_id < len(formation_times):
     if rit == size:
         rit = 0
     if rank == rit:
+        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
         formation_times, global_data = load(file_open)
         file_open.close()
@@ -221,7 +222,6 @@ while sink_id < len(formation_times):
         
         sys_id = np.nan
         if len(n_stars)>1:
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = load(file_open)
             file_open.close()
@@ -484,7 +484,6 @@ while sink_id < len(formation_times):
                         break
                     del res
                     collect()
-                    print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
