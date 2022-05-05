@@ -1,4 +1,3 @@
-print("loading modules")
 import numpy as np
 import pickle
 import sys
@@ -19,7 +18,7 @@ def losi(i, res):
 #=====================================================================================================
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 if rank == 0:
-    print("creating units")
+    print("creating units", flush=True)
 
 global_data_pickle_file = sys.argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
@@ -37,7 +36,7 @@ elif Grho == 200:
 elif Grho == 400:
     scale_m = 12000*1.98841586e+33
 else:
-    print("MASS UNIT NOT SET")
+    print("MASS UNIT NOT SET", flush=True)
     import pdb
     pdb.set_trace()
 
@@ -60,7 +59,7 @@ if rank == 0:
     gc.collect()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
-    print("Finding formation inds")
+    print("Finding formation inds", flush=True)
     ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     del global_data['x']
@@ -79,7 +78,7 @@ if rank == 0:
         formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
 
-    print("Found formation inds")
+    print("Found formation inds", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     formation_inds = np.array(formation_inds)
@@ -93,7 +92,7 @@ if rank == 0:
     file_open.close()
     del file_open
 
-    print("Found formation times")
+    print("Found formation times", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
@@ -114,7 +113,7 @@ if rank == 0:
         file_open.close()
         del form_time_it
         gc.collect()
-    print("Saved global_data for each rank")
+    print("Saved global_data for each rank", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
@@ -122,8 +121,8 @@ if rank == 0:
     gc.collect()
 del global_data_pickle_file
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-##stdout.flush()
-CW.barrier()
+#sys.stdout.flush()
+CW.Barrier()
 #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
@@ -133,7 +132,7 @@ del file_open
 del global_data
 gc.collect()
 if rank == 0:
-    print("pickle.loaded formation_times")
+    print("pickle.loaded formation_times", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 import pyramses as pr
@@ -159,7 +158,7 @@ while sink_id < len(formation_times):
         file_open.close()
         del file_open
         gc.collect()
-        print("pickle.loaded global data on rank", rank)
+        print("pickle.loaded global data on rank", rank, flush=True)
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #Calculate energies to find most bound sink
@@ -429,7 +428,7 @@ while sink_id < len(formation_times):
             while np.isnan(first_bound_sink):
                 counter = counter + 1
                 if np.remainder(counter,5000) == 0:
-                    print("testing time_it", time_it, "on rank", rank)
+                    print("testing time_it", time_it, "on rank", rank, flush=True)
                 n_stars = np.where(global_test_inds['m'][0]>0)[0]
                 if len(n_stars)>1:
                     abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
@@ -491,7 +490,7 @@ while sink_id < len(formation_times):
                     gc.collect()
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
-        print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
+        print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1], flush=True)
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
@@ -499,7 +498,7 @@ while sink_id < len(formation_times):
 
     sink_id = sink_id + 1
 
-#stdout.flush()
+#sys.stdout.flush()
 CW.Barrier()
 
 #compile pickles
@@ -518,4 +517,4 @@ if rank == 0:
     file = open("sink_birth_all.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
     file.close()
-    print("Collected sink birth data into sink_birth_all.pkl" )
+    print("Collected sink birth data into sink_birth_all.pkl", flush=True)
