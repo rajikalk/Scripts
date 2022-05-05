@@ -124,8 +124,10 @@ if rank == 0:
     del global_data
     collect()
 del global_data_pickle_file
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 stdout.flush()
 CW.Barrier()
+print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
 formation_times, global_data = load(file_open)
