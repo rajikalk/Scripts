@@ -2,11 +2,13 @@
 #from inspect import currentframe, getframeinfo
 ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 import numpy as np
-#import pickle
-from pickle import load, dump
+import pickle
+import sys
+import gc
+#from pickle import load, dump
 from mpi4py.MPI import COMM_WORLD as CW
-from sys import argv#, #stdout
-from gc import collect
+#from sys import argv#, #stdout
+#from gc import collect
 
 rank = CW.Get_rank()
 size = CW.Get_size()
