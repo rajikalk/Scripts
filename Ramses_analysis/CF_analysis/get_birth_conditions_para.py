@@ -54,9 +54,6 @@ del scale_v
 collect()
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
-#stdout.flush()
-CW.barrier()
-
 if rank == 0:
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     file_open = open(global_data_pickle_file, 'rb')
