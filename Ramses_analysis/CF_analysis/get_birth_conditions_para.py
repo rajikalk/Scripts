@@ -29,7 +29,7 @@ global_data_pickle_file = sys.argv[1]
 
 if rank == 0:
     print("creating units")
-    print("Memory_useage:", psutil.virtual_memory().percent, "on line", inspect.getframeinfo(inspect.currentframe()).lineno)
+    print("Memory_useage:", psutil.virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
