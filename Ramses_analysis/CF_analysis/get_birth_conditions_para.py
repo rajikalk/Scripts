@@ -420,20 +420,20 @@ while sink_id < len(formation_times):
                         gc.collect()
                         S = pr.Sink()
                         S._jet_factor = 1.
-                        S._scale_l = scale_l.value
+                        S._scale_l = scale_l
                         #S._scale_v = scale_v.value
-                        S._scale_t = scale_t.value
-                        S._scale_d = scale_d.value
-                        S._time = yt.YTArray(time, '')
+                        S._scale_t = scale_t
+                        S._scale_d = scale_d
+                        S._time = time
                         del time
                         gc.collect()
-                        S._abspos = yt.YTArray(abspos, '')
+                        S._abspos = abspos
                         del abspos
                         gc.collect()
-                        S._absvel = yt.YTArray(absvel, '')
+                        S._absvel = absvel
                         del absvel
                         gc.collect()
-                        S._mass = yt.YTArray(mass, '')
+                        S._mass = mass
                         del mass
                         gc.collect()
                         res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
