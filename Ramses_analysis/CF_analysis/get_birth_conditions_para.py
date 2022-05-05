@@ -27,32 +27,24 @@ global_data_pickle_file = sys.argv[1]
 if rank == 0:
     print("creating units")
 
-simulation_density_id = global_data_pickle_file.split('/G')[-1].split('/')[0]
+Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
-if simulation_density_id == '50':
-    Grho=50.
+if Grho == 50:
     scale_m = 1500*1.98841586e+33
-elif simulation_density_id == '100':
-    Grho=100.
+elif Grho == 100:
     scale_m = 3000*1.98841586e+33
-elif simulation_density_id == '125':
-    Grho=125.
+elif Grho == 125:
     scale_m = 3750*1.98841586e+33
-elif simulation_density_id == '150':
-    Grho=150.
+elif Grho == 150:
     scale_m = 4500*1.98841586e+33
-elif simulation_density_id == '200':
-    Grho=200.
+elif Grho = 200:
     scale_m = 6000*1.98841586e+33
-elif simulation_density_id == '400':
-    Grho=400.
+elif Grho == 400:
     scale_m = 12000*1.98841586e+33
 else:
     print("MASS UNIT NOT SET")
     import pdb
     pdb.set_trace()
-del simulation_density_id
-gc.collect()
 
 scale_l = 1.2342710323849298e+19
 scale_l_au = 825059.2245669405
@@ -81,6 +73,8 @@ if rank == 0:
     del global_data['ux']
     del global_data['uy']
     del global_data['uz']
+    import pdb
+    pdb.set_trace()
     gc.collect()
 
     formation_inds = [0]
@@ -415,6 +409,72 @@ while sink_id < len(formation_times):
             
             import pdb
             pdb.set_trace()
+            counter = 0
+            while np.isnan(first_bound_sink):
+                counter = counter + 1
+                if np.remainder(counter,5000) == 0:
+                    print("testing time_it", time_it, "on rank", rank)
+                n_stars = np.where(global_test_inds['m'][0]>0)[0]
+                if len(n_stars)>1:
+                    abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
+                    absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
+                    mass = np.array(global_test_inds['m'][0][n_stars])
+                    time = global_test_inds['time'][0]
+                    
+                    global_test_inds['time'] = global_test_inds['time'][1:]
+                    global_test_inds['m'] = global_test_inds['m'][1:]
+                    global_test_inds['x'] = global_test_inds['x'][1:]
+                    global_test_inds['y'] = global_test_inds['y'][1:]
+                    global_test_inds['z'] = global_test_inds['z'][1:]
+                    global_test_inds['ux'] = global_test_inds['ux'][1:]
+                    global_test_inds['uy'] = global_test_inds['uy'][1:]
+                    global_test_inds['uz'] = global_test_inds['uz'][1:]
+                    #Remove global data:
+                    del n_stars
+                    gc.collect()
+                    S = pr.Sink()
+                    S._jet_factor = 1.
+                    S._scale_l = scale_l
+                    #S._scale_v = scale_v.value
+                    S._scale_t = scale_t
+                    S._scale_d = scale_d
+                    S._time = time
+                    del time
+                    gc.collect()
+                    S._abspos = abspos
+                    del abspos
+                    gc.collect()
+                    S._absvel = absvel
+                    del absvel
+                    gc.collect()
+                    S._mass = mass
+                    del mass
+                    gc.collect()
+                    res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                    if sink_id in res['index1']:
+                        sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                        first_bound_sink = res['index2'][sys_id]
+                    elif sink_id in res['index2']:
+                        sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                        first_bound_sink = res['index1'][sys_id]
+                    else:
+                        sys_id = np.nan
+                    if np.isnan(sys_id) == False:
+                        first_bound_sink = losi(first_bound_sink, res)
+                        lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                        most_bound_sep = res['separation'][sys_id]
+                        bound_time = res['time']*scale_t_yr
+                        delay_time = float(bound_time - formation_time)
+                        if delay_time == 0:
+                            import pdb
+                            pdb.set_trace()
+                            born_bound = True
+                            most_bound_sink_id = str(first_bound_sink)
+                        break
+                    del res
+                    gc.collect()
+            
+            '''
             for time_it in range(len(global_test_inds['m'])):
                 if np.isnan(first_bound_sink):
                     if np.remainder(time_it,5000) == 0:
@@ -470,7 +530,7 @@ while sink_id < len(formation_times):
                             break
                         del res
                         gc.collect()
-
+        '''
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
         print("Birth conditions of sink", sink_id, "is", Sink_bound_birth[-1])
 
