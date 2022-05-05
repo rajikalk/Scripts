@@ -103,7 +103,6 @@ if rank == 0:
     global_data = pickle.load(file_open)
     file_open.close()
     del file_open
-    del global_data_pickle_file
 
     print("Found formation times")
     print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -132,6 +131,7 @@ if rank == 0:
     del formation_times
     del global_data
     collect()
+del global_data_pickle_file
 stdout.flush()
 CW.Barrier()
 
@@ -165,14 +165,12 @@ while sink_id < len(formation_times):
         print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #Calculate energies to find most bound sink
-        
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
         absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
         mass = np.array(global_data['m'][0][:sink_id+1])
         n_stars = np.arange(len(mass))
         del global_data
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         rel_pos = abspos[:-1] - abspos[-1]
         del abspos
@@ -182,34 +180,28 @@ while sink_id < len(formation_times):
         rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] = rel_pos[update_seps_neg.T[0], update_seps_neg.T[1]] + 1.0
         del update_seps_neg
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         update_seps_pos = np.argwhere(rel_pos>0.5)
         rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] = rel_pos[update_seps_pos.T[0], update_seps_pos.T[1]] - 1.0
         del update_seps_pos
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
         rel_sep = np.sqrt(rel_pos[:,0]**2 + rel_pos[:,1]**2 + rel_pos[:,2]**2)
         del rel_pos
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-        
+            
         rel_vel = absvel[:-1] - absvel[-1]
         del absvel
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         rel_speed = np.sqrt(rel_vel[:,0]**2 + rel_vel[:,1]**2 + rel_vel[:,2]**2)
         del rel_vel
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         mtm = mass[-1] * mass[:-1]
         mpm = mass[-1] + mass[:-1]
         del mass
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         newtonianPotential = -1./rel_sep
         
@@ -217,12 +209,12 @@ while sink_id < len(formation_times):
         del rel_speed
         del mpm
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+        
         Epot = Grho * mtm * newtonianPotential
         del newtonianPotential
         del mtm
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
         Etot = Ekin + Epot
         try:
             most_bound_sink_id = np.argmin(Etot)
@@ -231,7 +223,6 @@ while sink_id < len(formation_times):
         del Ekin
         del Epot
         collect()
-        print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         born_bound = True
         delay_time = 0
@@ -243,7 +234,6 @@ while sink_id < len(formation_times):
             file_open.close()
             del file_open
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
@@ -252,7 +242,7 @@ while sink_id < len(formation_times):
             time = global_data['time'][0]
             del global_data
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l
@@ -288,8 +278,7 @@ while sink_id < len(formation_times):
                     most_bound_sink_id = str(first_bound_sink)
             del res
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-        
+    
         if np.isnan(sys_id) == False:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = pickle.load(file_open)
@@ -319,7 +308,6 @@ while sink_id < len(formation_times):
             collect()
             print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
-
         if np.isnan(sys_id):
             born_bound = False
             most_bound_sep = np.nan
@@ -330,13 +318,11 @@ while sink_id < len(formation_times):
             formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
-            
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             abspos_x = global_data['x'][:]
             abspos_y = global_data['y'][:]
@@ -344,7 +330,6 @@ while sink_id < len(formation_times):
             
             del global_data
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             rel_pos_x = abspos_x.T - abspos_x.T[sink_id]
             rel_pos_y = abspos_y.T - abspos_y.T[sink_id]
@@ -353,62 +338,51 @@ while sink_id < len(formation_times):
             del abspos_y
             del abspos_z
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
             rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 1.0
             del update_seps_x_neg
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
             rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
             del update_seps_x_pos
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
             rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] = rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] + 1.0
             del update_seps_y_neg
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
             rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
             del update_seps_y_pos
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
             rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 1.0
             del update_seps_z_neg
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
             rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
             del update_seps_z_pos
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
             del rel_pos_x
             del rel_pos_y
             del rel_pos_z
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             rel_sep[np.where(rel_sep == 0)] = np.inf
             closest_separations = np.min(rel_sep, axis=0)
             del rel_sep
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            #import pdb
-            #pdb.set_trace()
+            
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
             del closest_separations
             collect()
-            print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             formation_times, global_data = pickle.load(file_open)
