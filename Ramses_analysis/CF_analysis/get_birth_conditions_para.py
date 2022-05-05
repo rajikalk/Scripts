@@ -128,8 +128,8 @@ if rank == 0:
     collect()
 del global_data_pickle_file
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-stdout.flush()
-CW.Barrier()
+#stdout.flush()
+CW.barrier()
 print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
