@@ -1,6 +1,3 @@
-#from psutil import virtual_memory
-#from inspect import currentframe, getframeinfo
-##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 print("loading modules")
 import numpy as np
 import pickle
