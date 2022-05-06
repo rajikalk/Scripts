@@ -155,6 +155,7 @@ file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
 sink_ids, formation_times, global_data = pickle.load(file_open)
 file_open.close()
 del file_open
+del formation_times
 del global_data
 gc.collect()
 print("loaded global_data_rank_"+str(rank)+".pkl", flush=True)
@@ -177,6 +178,7 @@ for sink_id in sink_ids:
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
         sink_ids, formation_times, global_data = pickle.load(file_open)
         file_open.close()
+        del formation_times
         del file_open
         gc.collect()
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -250,6 +252,7 @@ for sink_id in sink_ids:
             sink_ids, formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
+            del formation_times
             gc.collect()
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
@@ -306,8 +309,11 @@ for sink_id in sink_ids:
             del file_open
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            next_id = sink_id + size
-            if next_id < len(formation_times):
+            curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+            next_id = curr_it + size
+            del curr_it
+            #next_id = sink_id + size
+            if next_id < len(sink_ids):#len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
             
                 #truncate global data
@@ -325,6 +331,7 @@ for sink_id in sink_ids:
                 file_open.close()
                 del form_time_it
             del global_data
+            del next_id
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
@@ -336,13 +343,16 @@ for sink_id in sink_ids:
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
+            #sink_it = np.argwhere(sink_ids == sink_id)[0][0]
+            #formation_time = formation_times[sink_it]*scale_t_yr#units['time_unit'].in_units('yr')
+            #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
             sink_ids, formation_times, global_data = pickle.load(file_open)
             file_open.close()
             del file_open
+            del formation_times
             gc.collect()
             
             abspos_x = global_data['x'][:]
@@ -412,12 +422,21 @@ for sink_id in sink_ids:
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
+            curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+            next_id = curr_it + size
+            del curr_it
+            #next_id = sink_id + size
+            if next_id < len(sink_ids):
+                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+            else:
+                form_time_it = -2
+            '''
             next_id = sink_id + size
             if next_id < len(formation_times):
                 form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
             else:
                 form_time_it = -2
-            
+            '''
             global_test_inds = {}
             global_test_inds.update({'time':global_data['time'][test_time_inds]})
             global_data['time'] = global_data['time'][form_time_it:]
@@ -440,6 +459,7 @@ for sink_id in sink_ids:
             pickle.dump((sink_ids, formation_times, global_data), file_open)
             file_open.close()
             del form_time_it
+            del formation_times
             del global_data
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
