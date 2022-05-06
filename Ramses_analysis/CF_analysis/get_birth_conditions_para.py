@@ -258,6 +258,7 @@ for sink_id in sink_ids:
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
+            sfe = np.sum(mass)
             del n_stars
             
             time = global_data['time'][0]
@@ -271,7 +272,7 @@ for sink_id in sink_ids:
             S._scale_t = scale_t
             S._scale_d = scale_d
             S._time = time
-            del time
+            #del time
             gc.collect()
             S._abspos = abspos
             del abspos
@@ -297,6 +298,8 @@ for sink_id in sink_ids:
                 first_bound_sink = losi(first_bound_sink, res)
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
+                sys_form_time = sfe
+                #Find initial separation
                 if str(most_bound_sink_id) != str(first_bound_sink):
                     most_bound_sink_id = str(first_bound_sink)
             del res
@@ -343,6 +346,7 @@ for sink_id in sink_ids:
             first_bound_sink = np.nan
             lowest_Etot = np.nan
             delay_time = np.nan
+            sys_form_time = np.nan
             
             #units['time_unit'].in_units('yr')
             #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
@@ -479,6 +483,7 @@ for sink_id in sink_ids:
                         abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
                         absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
                         mass = np.array(global_test_inds['m'][0][n_stars])
+                        sfe = np.sum(mass)
                         time = global_test_inds['time'][0]
                         
                         global_test_inds['time'] = global_test_inds['time'][1:]
@@ -499,7 +504,7 @@ for sink_id in sink_ids:
                         S._scale_t = scale_t
                         S._scale_d = scale_d
                         S._time = time
-                        del time
+                        #del time
                         gc.collect()
                         S._abspos = abspos
                         del abspos
@@ -527,6 +532,8 @@ for sink_id in sink_ids:
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = res['time']*scale_t_yr
                             delay_time = float(bound_time - formation_time)
+                            sys_form_sfe = sfe
+                            #Find initial separation
                             if delay_time == 0:
                                 born_bound = True
                                 most_bound_sink_id = str(first_bound_sink)
@@ -534,7 +541,7 @@ for sink_id in sink_ids:
                         del res
                         gc.collect()
 
-        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time])
+        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
         print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')

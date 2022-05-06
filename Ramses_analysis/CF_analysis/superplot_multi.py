@@ -100,109 +100,7 @@ N_multi_stars_all = []
 SFE_all = []
 t_max = np.nan
 G50_t_max = 0
-"""
-if args.plot_all_separation_evolution == "True":
-    for pick_it in iter_range:
-        file = open(pickle_files[int(pick_it/2)], 'rb')
-        superplot_dict, Sink_bound_birth, Sink_E_tot, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
-        file.close()
-        
-        #Add SFE to the big array to plot later
-        Times_all.append(superplot_dict['Times'])
-        SFE_all.append(superplot_dict['SFE'])
-        M_tot_all.append(superplot_dict['M_tot'])
-        M_tot_multi_all.append(superplot_dict['M_tot_multi'])
-        N_stars_all.append(superplot_dict['N_stars'])
-        N_multi_stars_all.append(superplot_dict['N_multi_stars'])
-        
-        shrink = 100*((np.array(Initial_Seps) - np.array(Final_seps))/np.array(Initial_Seps))
-        Shrinks.append(shrink)
-        shrink_hist, bins = np.histogram(shrink, bins=Shrinkage_bins)
-        Shrinkage_hist.append(shrink_hist/np.sum(shrink_hist))
-        life_hist, bins = np.histogram(list(Lifetimes_sys.values()), bins=Lifetime_bins)
-        Lifetime_hist.append(life_hist/np.sum(life_hist))
-    
-    
-        sim_start_time = np.nan
-        for time_key in System_times.keys():
-            for sit in range(len(S_bins[1:])):
-                bin_inst = np.argwhere((superplot_dict[args.plot_key][time_key]>S_bins[sit])&(superplot_dict[args.plot_key][time_key]<S_bins[sit+1]))
-                CF_hist[int(pick_it/2)][sit] = CF_hist[int(pick_it/2)][sit] + np.shape(bin_inst)[0]
-            key_inds = flatten(eval(time_key))
-            if args.timescale == "first_sink":
-                first_sink = np.argmin(Sink_formation_times[key_inds])
-                Time_adjusted_formation = superplot_dict['System_times'][time_key] - Sink_formation_times[key_inds[first_sink]].value
-            else:
-                if np.isnan(sim_start_time):
-                    sim_start_time = System_times[time_key][0]
-                Time_adjusted_formation = superplot_dict['System_times'][time_key] - np.array(sim_start_time)
-            if np.isnan(t_max):
-                if Time_adjusted_formation[-1] > G50_t_max:
-                    G50_t_max = Time_adjusted_formation[-1]
-            axs.flatten()[pick_it].semilogy(Time_adjusted_formation, superplot_dict[args.plot_key][time_key], alpha=0.01, color='k')
-            if plot_booleans[rank][1] == False:
-                axs.flatten()[pick_it].scatter(np.ones(np.shape(superplot_dict[args.plot_key][time_key][0]))*Time_adjusted_formation[0], superplot_dict[args.plot_key][time_key][0], color='m', marker='o')
-            else:
-                if Lifetimes_sys[time_key] > args.sys_lifetime_threshold:
-                    axs.flatten()[pick_it].scatter(Time_adjusted_formation[0], superplot_dict[args.plot_key][time_key][0][np.argmax(superplot_dict[args.plot_key][time_key][0])], color='m', marker='o', s=0.5)
-            '''
-            if System_lifetimes[time_key] > args.sys_lifetime_threshold:
-                window = 50000
-                mean_time = []
-                mean_sep = []
-                for time in Time_adjusted_formation:
-                    start_time = time - window/2.
-                    end_time = time + window/2.
-                    start_ind = np.argmin(abs(np.array(Time_adjusted_formation) - start_time))
-                    end_ind = np.argmin(abs(np.array(Time_adjusted_formation) - end_time))
-                    if end_ind != start_ind:
-                        non_nan_inds = np.argwhere(np.isnan(np.array(System_seps[time_key][start_ind:end_ind]).T[0])==False).T[0]
-                        mean_t = np.mean(np.array(Time_adjusted_formation[start_ind:end_ind])[non_nan_inds])
-                        mean_s = np.mean(np.array(System_seps[time_key][start_ind:end_ind])[non_nan_inds], axis=0)
-                        mean_time.append(mean_t)
-                        mean_sep.append(mean_s)
-                axs.flatten()[pick_it].semilogy(mean_time, mean_sep, color='k', linewidth=0.25)
-            '''
-            #axs.flatten()[pick_it].semilogy(Time_adjusted_formation, System_semimajor[time_key], alpha=0.5, color='k')
-        print("Systems with lifetime greater than", args.sys_lifetime_threshold, "is", np.sum(np.array(list(Lifetimes_sys.values()))>args.sys_lifetime_threshold))
 
-        #if plot_booleans[rank][0] == True:
-        for bin_bound in S_bins:
-            axs.flatten()[pick_it].axhline(y=bin_bound, linewidth=0.5)
-        #if np.remainder(int(pick_it/2), 2) == 0:
-        axs.flatten()[pick_it].set_ylabel('Separation (AU)')
-        #else:
-        #    yticklabels = axs.flatten()[pick_it].get_yticklabels()
-        #    plt.setp(yticklabels, visible=False)
-        axs.flatten()[pick_it].set_ylim([10, 10000])
-        if np.isnan(t_max):
-            t_max = G50_t_max
-        axs.flatten()[pick_it].set_xlim([0, t_max])
-        #axs.flatten()[pick_it].set_xlim([Times[0], Times[-1]])
-        axs.flatten()[pick_it].add_patch(matplotlib.patches.Rectangle((0.85*t_max, 3500), 400000, 5600, facecolor="white", edgecolor="black", zorder=10))
-        axs.flatten()[pick_it].text((0.86*t_max), 6500, subplot_titles[int(pick_it/2)], zorder=11)
-        axs.flatten()[pick_it].text((0.86*t_max), 4000, "N$_{sys}$="+str(np.sum(np.array(list(Lifetimes_sys.values()))>args.sys_lifetime_threshold)), zorder=12)
-        
-        if args.add_histograms == "True":
-            CF_norm = np.array(CF_hist[int(pick_it/2)])/np.sum(CF_hist[int(pick_it/2)])
-            axs.flatten()[pick_it+1].step([CF_norm[0]] + CF_norm.tolist(), np.log10(S_bins), linewidth=2)
-            axs.flatten()[pick_it+1].set_ylim([1,4])
-            yticklabels =axs.flatten()[pick_it+1].get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        
-        plt.savefig('superplot_multi'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-        #plt.savefig('superplot_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-    
-    if args.timescale == "first_sink":
-        axs.flatten()[pick_it].set_xlabel('Time since formation of first component ($yr$)')
-    else:
-        axs.flatten()[pick_it].set_xlabel('Time since formation of first multiple star system ($yr$)')
-    if args.add_histograms == "True":
-        axs.flatten()[pick_it+1].set_xlabel('% of systems')
-    plt.savefig('superplot_multi'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-    plt.savefig('superplot_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-    print('Created superplot_multi.jpg')
-"""
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
 plot_frag_capt_frac = False
@@ -422,18 +320,15 @@ if plot_truncated_super_mult == True:
                                 import pdb
                                 pdb.set_trace()
                                 #Look at Sink_birth_all for birth conditions
-                                if birth_conditions[0] == True and birth_conditions[1] in key_inds:
+                                if Sink_birth_all[str(np.max(sub_sys))][0] == True and str(Sink_birth_all[str(np.max(sub_sys))][1]) == Sink_birth_all[str(np.max(sub_sys))][2]:
                                     marker_color = 'b'
                                     marker_shape = 's'
-                                    Sink_bound_birth.append([True, np.nan])
-                                elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
+                                elif Sink_birth_all[str(np.max(sub_sys))][0] == False and str(Sink_birth_all[str(np.max(sub_sys))][1]) == Sink_birth_all[str(np.max(sub_sys))][2]:
                                     marker_color = 'm'
                                     marker_shape = '^'
-                                    Sink_bound_birth.append([True, np.nan])
                                 else:
                                     marker_color = 'r'
                                     marker_shape = 'o'
-                                    Sink_bound_birth.append([False, np.nan])
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
                                     plotted_sinks = plotted_sinks + sub_sys
                                     print('plotted sinks', sub_sys)
@@ -447,16 +342,15 @@ if plot_truncated_super_mult == True:
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                             pathway_counters[0] = pathway_counters[0] + 1
-                                            #core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                         elif marker_color == 'm':
-                                            #delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
+                                            delayed_core_frag_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
                                             Initial_Seps[1].append(Sep_arr[0][sep_ind])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
-                                            #dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
+                                            dynamical_capture_marker_pos.append([SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind]])
                                             dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][sep_ind]])
                                             Initial_Seps[2].append(Sep_arr[0][sep_ind])
                                             if Lifetimes_sys[time_key]>100000:
