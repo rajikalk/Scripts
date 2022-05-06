@@ -354,10 +354,10 @@ if plot_truncated_super_mult == True:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
                                 if len(real_sinks) > 0:
-                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True:
+                                    if Sink_birth_all[str(np.max(real_sinks))][0] == True:
                                         marker_color = 'b'
                                         marker_shape = 's'
-                                    elif str(Sink_birth_all[str(np.max(sub_sys))][1]) in Sink_birth_all[str(np.max(sub_sys))][2]:
+                                    elif str(Sink_birth_all[str(np.max(real_sinks))][1]) in Sink_birth_all[str(np.max(real_sinks))][2]:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
