@@ -65,6 +65,8 @@ args = parse_inputs()
 
 pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G50/G50_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G100/G100_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G125/G125_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G150/G150_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G200/G200_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G400/G400_pathway.pkl"]
 
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all.pkl"]
+
 plt.clf()
 '''
 if plot_booleans[rank][0] == True:
@@ -324,6 +326,10 @@ if plot_truncated_super_mult == True:
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
         
+        file = open(birth_con_pickles[file_it], 'rb')
+        Sink_birth_all = pickle.load(file)
+        file.close()
+        
         Initial_Seps = [[],[],[],[]]
         Initial_Seps_100000 = [[],[],[],[]]
         
@@ -413,6 +419,9 @@ if plot_truncated_super_mult == True:
                             sub_sys = eval(sys_comps[open_ind:char_it+1])
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 birth_conditions = Sink_bound_birth[np.max(sub_sys)]
+                                import pdb
+                                pdb.set_trace()
+                                #Look at Sink_birth_all for birth conditions
                                 if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                     marker_color = 'b'
                                     marker_shape = 's'
