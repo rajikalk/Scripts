@@ -63,6 +63,8 @@ if rank == 0 :
         for birth_con in Sink_bound_birth_rank:
             found_sinks.append(birth_con[0])
         Sink_bound_birth = Sink_bound_birth + Sink_bound_birth_rank
+    import pdb
+    pdb.set_trace()
     del birth_con_pickles
     
 CW.Barrier()
@@ -90,6 +92,8 @@ if rank == 0:
     sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     if len(Sink_bound_birth) > 0:
         sink_ids = list(set(found_sinks).symmetric_difference(set(sink_ids)))
+    import pdb
+    pdb.set_trace()
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
@@ -101,7 +105,6 @@ if rank == 0:
         else:
             formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
-    
     gc.collect()
 
     print("Found formation inds", flush=True)
@@ -109,6 +112,8 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
+    import pdb
+    pdb.set_trace()
     del formation_inds
     del global_data
     gc.collect()
@@ -122,6 +127,8 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
+        import pdb
+        pdb.set_trace()
         form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
         
         #truncate global data
@@ -311,6 +318,8 @@ for sink_id in sink_ids:
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
+            import pdb
+            pdb.set_trace()
             del curr_it
             #next_id = sink_id + size
             if next_id < len(sink_ids):#len(formation_times):
@@ -425,6 +434,8 @@ for sink_id in sink_ids:
             
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
+            import pdb
+            pdb.set_trace()
             del curr_it
             #next_id = sink_id + size
             if next_id < len(sink_ids):
