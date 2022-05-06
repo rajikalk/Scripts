@@ -312,8 +312,6 @@ for sink_id in sink_ids:
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
-            import pdb
-            pdb.set_trace()
             del curr_it
             #next_id = sink_id + size
             if next_id < len(sink_ids):#len(formation_times):
@@ -428,8 +426,6 @@ for sink_id in sink_ids:
             
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
-            import pdb
-            pdb.set_trace()
             del curr_it
             #next_id = sink_id + size
             if next_id < len(sink_ids):
