@@ -371,20 +371,20 @@ if plot_truncated_super_mult == True:
                                         elif args.x_field == 'SFE':
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
-                                                core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                                Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
-                                                delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                                Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
-                                                dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                                Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[2] = pathway_counters[2] + 1
