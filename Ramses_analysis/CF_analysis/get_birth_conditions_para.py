@@ -63,8 +63,6 @@ if rank == 0 :
         for birth_con in Sink_bound_birth_rank:
             found_sinks.append(birth_con[0])
         Sink_bound_birth = Sink_bound_birth + Sink_bound_birth_rank
-    import pdb
-    pdb.set_trace()
     del birth_con_pickles
     
 CW.Barrier()
@@ -92,8 +90,8 @@ if rank == 0:
     sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     if len(Sink_bound_birth) > 0:
         sink_ids = list(set(found_sinks).symmetric_difference(set(sink_ids)))
-    import pdb
-    pdb.set_trace()
+    del found_sinks
+    gc.collect()
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
@@ -112,8 +110,6 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
-    import pdb
-    pdb.set_trace()
     del formation_inds
     del global_data
     gc.collect()
@@ -127,9 +123,7 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     for trunc_it in range(size):
-        import pdb
-        pdb.set_trace()
-        form_time_it = np.where(global_data['time']==formation_times[trunc_it])[0][0]
+        form_time_it = np.where(global_data['time']==formation_times[sink_ids[trunc_it]])[0][0]
         
         #truncate global data
         global_data['time'] = global_data['time'][form_time_it:]
