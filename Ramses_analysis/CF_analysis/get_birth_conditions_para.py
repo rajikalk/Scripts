@@ -532,7 +532,7 @@ for sink_id in sink_ids:
                             most_bound_sep = res['separation'][sys_id]
                             bound_time = res['time']*scale_t_yr
                             delay_time = float(bound_time - formation_time)
-                            sys_form_sfe = sfe
+                            sys_form_time = sfe
                             #Find initial separation
                             if delay_time == 0:
                                 born_bound = True
