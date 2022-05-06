@@ -320,10 +320,10 @@ if plot_truncated_super_mult == True:
                                 import pdb
                                 pdb.set_trace()
                                 #Look at Sink_birth_all for birth conditions
-                                if Sink_birth_all[str(np.max(sub_sys))][0] == True and str(Sink_birth_all[str(np.max(sub_sys))][1]) == Sink_birth_all[str(np.max(sub_sys))][2]:
+                                if Sink_birth_all[str(np.max(sub_sys))][0] == True:
                                     marker_color = 'b'
                                     marker_shape = 's'
-                                elif Sink_birth_all[str(np.max(sub_sys))][0] == False and str(Sink_birth_all[str(np.max(sub_sys))][1]) == Sink_birth_all[str(np.max(sub_sys))][2]:
+                                elif str(Sink_birth_all[str(np.max(sub_sys))][1]) in Sink_birth_all[str(np.max(sub_sys))][2]:
                                     marker_color = 'm'
                                     marker_shape = '^'
                                 else:
