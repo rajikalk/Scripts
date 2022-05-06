@@ -343,8 +343,8 @@ for sink_id in sink_ids:
             lowest_Etot = np.nan
             delay_time = np.nan
             
-            #sink_it = np.argwhere(sink_ids == sink_id)[0][0]
-            #formation_time = formation_times[sink_it]*scale_t_yr#units['time_unit'].in_units('yr')
+            sink_it = np.argwhere(sink_ids == sink_id)[0][0]
+            formation_time = formation_times[sink_it]*scale_t_yr#units['time_unit'].in_units('yr')
             #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
             #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
             
