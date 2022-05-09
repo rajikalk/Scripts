@@ -35,18 +35,24 @@ for birth_con_pickle in birth_con_pickles:
     Sink_birth_all = pickle.load(file)
     file.close()
     
+    Core_frag_seps = []
+    Delayed_core_frag_seps = []
+    Dynamical_capt_seps = []
     total_components = 0
     Core_frag_counter = 0
     Delayed_core_fra_counter = 0
     Dynamical_capt_counter = 0
     for key in Sink_birth_all.keys():
         total_components = total_components + 1
-        if Sink_birth_all[str(np.max(sub_sys))][0] == True:
+        if Sink_birth_all[key][0] == True:
             Core_frag_counter = Core_frag_counter + 1
-        elif str(Sink_birth_all[str(np.max(sub_sys))][1]) in Sink_birth_all[str(np.max(sub_sys))][2]:
+            Core_frag_seps.append(Sink_birth_all[key][3])
+        elif str(Sink_birth_all[key][1]) in Sink_birth_all[key][2]:
             Delayed_core_fra_counter = Delayed_core_fra_counter + 1
+            Core_frag_seps.append(Sink_birth_all[key][3])
         else:
             Dynamical_capt_counter = Dynamical_capt_counter + 1
+            Dynamical_capt_seps.append(Sink_birth_all[key][3])
         
     Core_frag_frac = Core_frag_counter/total_components
     Delayed_core_frag_frac = Delayed_core_frag_frac/total_components
@@ -55,6 +61,8 @@ for birth_con_pickle in birth_con_pickles:
     Core_frag_fracs.append(Core_frag_frac)
     Delayed_core_frag_fracs.append(Delayed_core_frag_frac)
     Dynamical_capt_fracs.append(Dynamical_capt_frac)
+    
+    Initial_Seps.append([Core_frag_seps, Delayed_core_frag_seps, Dynamical_capt_seps])
 
 x_labels = ['Core frag.', 'Delayed core frag.', 'Dynamical capture']
 
