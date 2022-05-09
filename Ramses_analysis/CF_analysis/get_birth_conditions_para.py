@@ -313,18 +313,12 @@ for sink_id in sink_ids:
             del file_open
             gc.collect()
             
-            import pdb
-            pdb.set_trace()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
             del curr_it
-            #next_id = sink_id + size
             if next_id < len(sink_ids):#len(formation_times):
-                try:
-                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0][0]
-                except:
-                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0]
+                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
             
                 #truncate global data
                 global_data['time'] = global_data['time'][form_time_it:]
@@ -434,17 +428,11 @@ for sink_id in sink_ids:
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             
-            import pdb
-            pdb.set_trace()
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
             del curr_it
-            #next_id = sink_id + size
             if next_id < len(sink_ids):
-                try:
-                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0][0]
-                except:
-                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0]
+                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
             else:
                 form_time_it = -2
             '''
