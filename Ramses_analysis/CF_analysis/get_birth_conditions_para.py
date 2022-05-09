@@ -318,7 +318,10 @@ for sink_id in sink_ids:
             del curr_it
             #next_id = sink_id + size
             if next_id < len(sink_ids):#len(formation_times):
-                form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0][0]
+                try:
+                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0][0]
+                except:
+                    form_time_it = np.where(global_data['time']==formation_times[sink_ids[next_id]])[0]
             
                 #truncate global data
                 global_data['time'] = global_data['time'][form_time_it:]
