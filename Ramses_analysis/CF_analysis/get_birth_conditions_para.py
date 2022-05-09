@@ -122,10 +122,14 @@ if rank == 0:
     print("Found formation times", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
+    import pdb
+    pdb.set_trace()
     for trunc_it in range(size):
         try:
             form_time_it = np.where(global_data['time']==formation_times[sink_ids[trunc_it]])[0][0]
         except:
+            import pdb
+            pdb.set_trace()
             print("FAILED ON  trun_it", trunc_it, "sink_is:", sink_ids[trunc_it])
         
         #truncate global data
