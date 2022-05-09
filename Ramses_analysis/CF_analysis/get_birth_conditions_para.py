@@ -90,8 +90,6 @@ if rank == 0:
     sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     if len(Sink_bound_birth) > 0:
         sink_ids = sorted(list(set(found_sinks).symmetric_difference(set(sink_ids))))
-    import pdb
-    pdb.set_trace()
     del found_sinks
     gc.collect()
     
@@ -124,6 +122,8 @@ if rank == 0:
     print("Found formation times", flush=True)
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
+    import pdb
+    pdb.set_trace()
     for trunc_it in range(size):
         form_time_it = np.where(global_data['time']==formation_times[sink_ids[trunc_it]])[0][0]
         
