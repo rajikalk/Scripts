@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 import matplotlib
 import pickle
 
+def flatten(x):
+    if isinstance(x, collections.Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
+
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -48,7 +54,7 @@ for birth_con_pickle in birth_con_pickles:
         if Sink_birth_all[key][0] == True:
             Core_frag_counter = Core_frag_counter + 1
             Core_frag_seps.append(Sink_birth_all[key][3])
-        elif str(Sink_birth_all[key][1]) in Sink_birth_all[key][2]:
+        elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2]))
             Delayed_core_fra_counter = Delayed_core_fra_counter + 1
             Delayed_core_frag_seps.append(Sink_birth_all[key][3])
         else:
@@ -86,7 +92,8 @@ ax.tick_params(axis='both', which='minor', labelsize=font_size, left=True, right
 plt.xticks(ind, ("1500", "3000", "3750", "4500", "6000", "12000"))
 ax.tick_params(which='both', direction='in')
 plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
-plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Delayed core frag.', 'Core fragmentation'), loc='upper right', fontsize=font_size)
+
+#plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Delayed core frag.', 'Core fragmentation'), loc='upper right', fontsize=font_size)
 plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
 plt.ylim([0,1])
 plt.savefig('formation_pathway.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
@@ -106,13 +113,13 @@ for pick_it in range(len(birth_con_pickles)):
     import pdb
     pdb.set_trace()
     
-    core_sep_hist, bins = np.histogram(Initial_Seps[0], S_bins)
-    core_delayed_sep_hist, bins = np.histogram(Initial_Seps[1], S_bins)
-    capt_sep_hist, bins = np.histogram(Initial_Seps[2], S_bins)
+    core_sep_hist, bins = np.histogram(Initial_Seps[pick_it][0], S_bins)
+    core_delayed_sep_hist, bins = np.histogram(Initial_Seps[pick_it][1], S_bins)
+    capt_sep_hist, bins = np.histogram(Initial_Seps[pick_it][2], S_bins)
     
     p1 = axs.flatten()[pick_it].bar(bin_centers, core_sep_hist, width=0.25, color='b')#, hatch='+')
     p2 = axs.flatten()[pick_it].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
-    p3 = axs.flatten()[pick_it].bar(bin_centers, capt_sep_hist, width=0.25, bottom=(np.array(core_sep_hist)+np.array(core_delayed_sep_hist)), color='r')#, hatch='O')
+    #p3 = axs.flatten()[pick_it].bar(bin_centers, capt_sep_hist, width=0.25, bottom=(np.array(core_sep_hist)+np.array(core_delayed_sep_hist)), color='r')#, hatch='O')
     if pick_it == 0:
         axs.flatten()[pick_it].legend((p1[0], p2[0], p3[0]), ('Core fragmentation', 'Delayed core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs.flatten()[pick_it].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
