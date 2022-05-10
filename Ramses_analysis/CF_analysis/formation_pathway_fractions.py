@@ -98,7 +98,7 @@ step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
-iter_range = range(0, len(pickles))
+iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.01)
 
