@@ -319,9 +319,7 @@ if plot_truncated_super_mult == True:
                                 if Sink_birth_all[str(np.max(sub_sys))][0] == True:
                                     marker_color = 'b'
                                     marker_shape = 's'
-                                elif str(Sink_birth_all[str(np.max(sub_sys))][1]) in Sink_birth_all[str(np.max(sub_sys))][2]:
-                                    import pdb
-                                    pdb.set_trace()
+                                elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                     marker_color = 'm'
                                     marker_shape = '^'
                                 else:
@@ -359,9 +357,7 @@ if plot_truncated_super_mult == True:
                                     if Sink_birth_all[str(np.max(real_sinks))][0] == True:
                                         marker_color = 'b'
                                         marker_shape = 's'
-                                    elif str(Sink_birth_all[str(np.max(real_sinks))][1]) in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                        import pdb
-                                        pdb.set_trace()
+                                    elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
