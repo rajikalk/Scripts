@@ -50,6 +50,9 @@ for birth_con_pickle in birth_con_pickles:
     Delayed_core_fra_counter = 0
     Dynamical_capt_counter = 0
     for key in Sink_birth_all.keys():
+        import pdb
+        pdb.set_trace()
+        #if np.isnan(eval(Sink_birth_all[key][2]))
         total_components = total_components + 1
         if Sink_birth_all[key][0] == True:
             Core_frag_counter = Core_frag_counter + 1
