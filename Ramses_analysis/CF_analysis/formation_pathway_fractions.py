@@ -60,6 +60,9 @@ for birth_con_pickle in birth_con_pickles:
             else:
                 prev_seps.append(Sink_birth_all[str(key)][3])
                 prev_energies.append(Sink_birth_all[str(key)][4])
+        else:
+            prev_seps.append(np.nan)
+            prev_energies.append(np.nan)
             '''
                 total_components = total_components + 1
             if Sink_birth_all[str(key)][0] == True:
