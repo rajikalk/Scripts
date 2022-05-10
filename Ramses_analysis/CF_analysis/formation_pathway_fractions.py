@@ -50,18 +50,28 @@ for birth_con_pickle in birth_con_pickles:
     Core_frag_counter = 0
     Delayed_core_fra_counter = 0
     Dynamical_capt_counter = 0
-    for key in Sink_birth_all.keys():
-        if Sink_birth_all[key][2] != 'nan':
-            total_components = total_components + 1
-            if Sink_birth_all[key][0] == True:
+    prev_seps = []
+    prev_energies = []
+    for key in range(len(Sink_birth_all.keys())):
+        if Sink_birth_all[str(key)][2] != 'nan':
+            if Sink_birth_all[str(key)][3] in prev_seps and Sink_birth_all[str(key)][4] in prev_energies:
+                import pdb
+                pdb.set_trace()
+            else:
+                prev_seps.append(Sink_birth_all[str(key)][3])
+                prev_energies.append(Sink_birth_all[str(key)][4])
+            '''
+                total_components = total_components + 1
+            if Sink_birth_all[str(key)][0] == True:
                 Core_frag_counter = Core_frag_counter + 1
                 Core_frag_seps.append(Sink_birth_all[key][3])
-            elif Sink_birth_all[key][1] in flatten(eval(Sink_birth_all[key][2])):
+            elif Sink_birth_all[str(key)][1] in flatten(eval(Sink_birth_all[str(key)][2])):
                 Delayed_core_fra_counter = Delayed_core_fra_counter + 1
-                Delayed_core_frag_seps.append(Sink_birth_all[key][3])
+                Delayed_core_frag_seps.append(Sink_birth_all[str(key)][3])
             else:
                 Dynamical_capt_counter = Dynamical_capt_counter + 1
-                Dynamical_capt_seps.append(Sink_birth_all[key][3])
+                Dynamical_capt_seps.append(Sink_birth_all[str(key)][3])
+            '''
         
     Core_frag_frac = Core_frag_counter/total_components
     Delayed_core_frag_frac = Delayed_core_fra_counter/total_components
