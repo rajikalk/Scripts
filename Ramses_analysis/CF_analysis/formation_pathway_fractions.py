@@ -62,7 +62,7 @@ for birth_con_pickle in birth_con_pickles:
                 if Sink_birth_all[str(key)][0] == True and eval(Sink_birth_all[str(key)][2]) == bound_it:
                     total_components = total_components + 1
                     Core_frag_counter = Core_frag_counter + 1
-                    Core_frag_seps.append(Sink_birth_all[key][3])
+                    Core_frag_seps.append(Sink_birth_all[str(key)][3])
                 elif Sink_birth_all[str(key)][1] in flatten(eval(Sink_birth_all[str(key)][2])) and eval(Sink_birth_all[str(key)][2]) == bound_it:
                     total_components = total_components + 1
                     Delayed_core_fra_counter = Delayed_core_fra_counter + 1
