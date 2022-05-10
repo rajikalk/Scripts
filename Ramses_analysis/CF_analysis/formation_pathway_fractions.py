@@ -55,6 +55,8 @@ for birth_con_pickle in birth_con_pickles:
             elif Sink_birth_all[str(key)][1] in flatten(eval(Sink_birth_all[str(key)][2])):
                 Delayed_core_frag_seps.append(Sink_birth_all[str(key)][3])
             else:
+                import pdb
+                pdb.set_trace()
                 Dynamical_capt_seps.append(Sink_birth_all[str(key)][3])
             
     remove_dyn = []
@@ -66,7 +68,7 @@ for birth_con_pickle in birth_con_pickles:
     Dynamical_capt_seps = list(set(Dynamical_capt_seps).intersection(set(Dynamical_capt_seps)))
     Core_frag_no = len(Core_frag_seps)
     Delayed_core_frag_no = len(Delayed_core_frag_seps)
-    Dynamical_capt_no = len(Dynamical_capt_seps)
+    Dynamical_capt_no = len(Dynamical_capt_seps) #True number should be 14
     Total_sys_no = Core_frag_no + Delayed_core_frag_no + Dynamical_capt_no
     Core_frag_frac = Core_frag_no/Total_sys_no
     Delayed_core_frag_frac = Delayed_core_frag_no/Total_sys_no
