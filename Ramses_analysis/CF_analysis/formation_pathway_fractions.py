@@ -56,9 +56,6 @@ for birth_con_pickle in birth_con_pickles:
         if Sink_birth_all[str(key)][2] != 'nan':
             if Sink_birth_all[str(key)][3] in prev_seps and Sink_birth_all[str(key)][4] in prev_energies:
                 bound_it = prev_seps.index(Sink_birth_all[str(key)][3])
-                if eval(Sink_birth_all[str(key)][2]) != bound_it:
-                    import pdb
-                    pdb.set_trace()
                 if Sink_birth_all[str(key)][0] == True and eval(Sink_birth_all[str(key)][2]) == bound_it:
                     total_components = total_components + 1
                     Core_frag_counter = Core_frag_counter + 1
@@ -73,6 +70,8 @@ for birth_con_pickle in birth_con_pickles:
                 prev_seps.append(Sink_birth_all[str(key)][3])
                 prev_energies.append(Sink_birth_all[str(key)][4])
             else:
+                import pdb
+                pdb.set_trace()
                 prev_seps.append(Sink_birth_all[str(key)][3])
                 prev_energies.append(Sink_birth_all[str(key)][4])
         else:
