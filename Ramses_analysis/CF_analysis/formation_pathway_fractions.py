@@ -51,7 +51,7 @@ for birth_con_pickle in birth_con_pickles:
     for key in range(len(Sink_birth_all.keys())):
         if Sink_birth_all[str(key)][2] != 'nan':
             if Sink_birth_all[str(key)][0] == True:
-                Core_frag_seps.append(Sink_birth_all[key][3])
+                Core_frag_seps.append(Sink_birth_all[str(key)][3])
             elif Sink_birth_all[str(key)][1] in flatten(eval(Sink_birth_all[str(key)][2])):
                 Delayed_core_frag_seps.append(Sink_birth_all[str(key)][3])
             else:
