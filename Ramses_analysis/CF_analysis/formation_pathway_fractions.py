@@ -54,7 +54,7 @@ for birth_con_pickle in birth_con_pickles:
         if Sink_birth_all[key][0] == True:
             Core_frag_counter = Core_frag_counter + 1
             Core_frag_seps.append(Sink_birth_all[key][3])
-        elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+        elif Sink_birth_all[key][1] in flatten(eval(Sink_birth_all[key][2])):
             Delayed_core_fra_counter = Delayed_core_fra_counter + 1
             Delayed_core_frag_seps.append(Sink_birth_all[key][3])
         else:
