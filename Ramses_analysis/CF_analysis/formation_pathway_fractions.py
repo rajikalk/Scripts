@@ -97,7 +97,7 @@ bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(pickles), figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.01)
