@@ -56,7 +56,7 @@ for birth_con_pickle in birth_con_pickles:
             Dynamical_capt_seps.append(Sink_birth_all[key][3])
         
     Core_frag_frac = Core_frag_counter/total_components
-    Delayed_core_frag_frac = Delayed_core_frag_frac/total_components
+    Delayed_core_frag_frac = Delayed_core_fra_counter/total_components
     Dynamical_capt_frac = Dynamical_capt_frac/total_components
     
     Core_frag_fracs.append(Core_frag_frac)
