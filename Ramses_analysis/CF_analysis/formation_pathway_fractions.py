@@ -56,9 +56,21 @@ for birth_con_pickle in birth_con_pickles:
                 Delayed_core_frag_seps.append(Sink_birth_all[str(key)][3])
             else:
                 Dynamical_capt_seps.append(Sink_birth_all[str(key)][3])
-    
-    import pdb
-    pdb.set_trace()
+            
+    remove_dyn = []
+    for dyn_sep in Dynamical_capt_seps:
+        if dyn_sep in Delayed_core_frag_seps or dyn_sep in Core_frag_seps:
+            remove_dyn.append(dyn_sep)
+    for dyn_sep in remove_dyn:
+        Dynamical_capt_seps.remove(dyn_sep)
+    Dynamical_capt_seps = list(set(Dynamical_capt_seps).intersection(set(Dynamical_capt_seps)))
+    Core_frag_no = len(Core_frag_seps)
+    Delayed_core_frag_no = len(Delayed_core_frag_seps)
+    Dynamical_capt_no = len(Dynamical_capt_seps)
+    Total_sys_no = Core_frag_no + Delayed_core_frag_no + Dynamical_capt_no
+    Core_frag_frac = Core_frag_no/Total_sys_no
+    Delayed_core_frag_frac = Delayed_core_frag_no/Total_sys_no
+    Dynamical_capt_frac = Dynamical_capt_no/Total_sys_no
     
     Core_frag_fracs.append(Core_frag_frac)
     Delayed_core_frag_fracs.append(Delayed_core_frag_frac)
