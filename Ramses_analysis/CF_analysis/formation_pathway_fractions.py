@@ -23,7 +23,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
 #Formation_pathway = [[252, 88, 105], [624, 859, 1209], [1893, 2000, 5105], [1255, 4381, 11458], [2921, 5951, 22602], [2172, 5412, 32412]]
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl"]#, "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all.pkl"]
 
 
 Core_frag_fracs = []
@@ -74,9 +74,9 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472
 font_size = 10
 
-p1 = plt.bar(ind, Core_frag_fracs, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
-p2 = plt.bar(ind, Delayed_core_frag_fracs, 0.95, bottom=Core_frag_fracs, color='m', linewidth=1, edgecolor='k')#, hatch='x'
-p3 = plt.bar(ind, Dynamical_capt_fracs, 0.95, bottom=(np.array(Delayed_core_frag_fracs)+np.array(Core_frag_fracs)), color='r', linewidth=1, edgecolor='k')#, hatch='O'
+p1 = plt.bar(ind[0], Core_frag_fracs, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
+p2 = plt.bar(ind[0], Delayed_core_frag_fracs, 0.95, bottom=Core_frag_fracs, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p3 = plt.bar(ind[0], Dynamical_capt_fracs, 0.95, bottom=(np.array(Delayed_core_frag_fracs)+np.array(Core_frag_fracs)), color='r', linewidth=1, edgecolor='k')#, hatch='O'
 
 plt.xlim([-0.6, 5.6])
 plt.minorticks_on()
@@ -101,10 +101,9 @@ iter_range = range(0, len(pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.01)
 
-for pick_it in range(len(pickles)):
-    file = open(pickles[pick_it], 'rb')
-    pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
-    file.close()
+for pick_it in range(len(birth_con_pickles)):
+    import pdb
+    pdb.set_trace()
     
     core_sep_hist, bins = np.histogram(Initial_Seps[0], S_bins)
     core_delayed_sep_hist, bins = np.histogram(Initial_Seps[1], S_bins)
