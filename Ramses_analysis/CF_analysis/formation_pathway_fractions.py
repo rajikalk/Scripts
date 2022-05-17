@@ -263,8 +263,7 @@ fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_
 x_val = [1500, 3000, 3750, 4500, 6000]# 12000]
 y_mean = np.array(guess_params).T[0]
 y_median = np.array(guess_params).T[1]
-import pdb
-pdb.set_trace()
+
 low_bounds = y_mean - np.array(guess_params).T[2]
 high_bounds = y_mean + np.array(guess_params).T[2]
 y_err_low = y_median - low_bounds
