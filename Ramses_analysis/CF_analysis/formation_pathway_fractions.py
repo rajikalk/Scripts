@@ -139,7 +139,8 @@ plt.ylim([0,1])
 plt.savefig('formation_pathway.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 ### Make histograms
-
+import scipy.stats as stats
+from scipy.optimize import curve_fit
 def Gaussian(x,scale,mean,sigma):
     return scale*stats.norm.pdf(x, mean, sigma)
     
