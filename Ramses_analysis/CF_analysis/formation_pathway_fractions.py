@@ -162,7 +162,7 @@ guess_params = []
 label_height = [2.5, 16, 32, 40, 65, 135]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*4), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2), sharex=True, sharey='row')
 iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -177,7 +177,7 @@ for pick_it in range(len(Initial_Seps_all)):
     p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r')#, hatch='O')
     if pick_it == 0:
         axs[pick_it][0].legend((p1[0], p2[0]), ('Core fragmentation', 'Delayed core frag.'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs[pick_it][1].legend((p3[0]), ('Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][1].legend(p3[0], 'Dynamical capture', loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
