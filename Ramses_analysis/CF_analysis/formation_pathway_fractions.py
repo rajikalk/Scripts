@@ -237,7 +237,7 @@ for pick_it in range(len(Initial_Seps_all)):
     axs[pick_it][1].tick_params(axis='x', direction='in')
     axs[pick_it][1].tick_params(axis='y', direction='in')
 
-    save_num = pickles[pick_it].split('_')[-1].split('.')[0]
+    save_num = subplot_titles[pick_it].split('M')[0]
     plt.savefig('initial_sep_dist_'+save_num+'.pdf', bbox_inches='tight', pad_inches=0.02)
     
 plt.clf()
