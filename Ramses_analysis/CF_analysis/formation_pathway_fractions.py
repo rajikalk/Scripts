@@ -271,5 +271,5 @@ y_err_high = high_bounds - y_median
 
 plt.errorbar(x_val, y_median, np.array([y_err_low, y_err_high]))
 plt.xlabel('GMC mass (M$_\odot$)')
-plt.ylabel('Core fragmentation scales (log au).pdf', bbox_inches='tight', pad_inches=0.02)
-plt.savefig('core_fragmentation_scales_data.pdf')
+plt.ylabel('Core fragmentation scales (log au)')
+plt.savefig('core_fragmentation_scales_data.pdf', bbox_inches='tight', pad_inches=0.02)
