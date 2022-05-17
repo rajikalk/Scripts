@@ -316,15 +316,19 @@ if plot_truncated_super_mult == True:
                             open_ind = open_braket_ind.pop()
                             sub_sys = eval(sys_comps[open_ind:char_it+1])
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
-                                if Sink_birth_all[str(np.max(sub_sys))][0] == True:
-                                    marker_color = 'b'
-                                    marker_shape = 's'
-                                elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                    marker_color = 'm'
-                                    marker_shape = '^'
+                                if str(np.max(sub_sys)) in Sink_birth_all.keys():
+                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True:
+                                        marker_color = 'b'
+                                        marker_shape = 's'
+                                    elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                        marker_color = 'm'
+                                        marker_shape = '^'
+                                    else:
+                                        marker_color = 'r'
+                                        marker_shape = 'o'
                                 else:
-                                    marker_color = 'r'
-                                    marker_shape = 'o'
+                                    marker_color = 'k'
+                                    marker_shape = 'x'
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
                                     plotted_sinks = plotted_sinks + sub_sys
                                     print('plotted sinks', sub_sys)
@@ -354,15 +358,19 @@ if plot_truncated_super_mult == True:
                                 real_sink_inds = np.where(np.array(sub_sys)<superplot_dict['N_stars'][-1])[0]
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
                                 if len(real_sinks) > 0:
-                                    if Sink_birth_all[str(np.max(real_sinks))][0] == True:
-                                        marker_color = 'b'
-                                        marker_shape = 's'
-                                    elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
-                                        marker_color = 'm'
-                                        marker_shape = '^'
+                                    if str(np.max(real_sinks)) in Sink_birth_all.keys():
+                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True:
+                                            marker_color = 'b'
+                                            marker_shape = 's'
+                                        elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                            marker_color = 'm'
+                                            marker_shape = '^'
+                                        else:
+                                            marker_color = 'r'
+                                            marker_shape = 'o'
                                     else:
-                                        marker_color = 'r'
-                                        marker_shape = 'o'
+                                        marker_color = 'k'
+                                        marker_shape = 'x'
                                     if set(real_sinks).issubset(set(plotted_sinks)) == False:
                                         plotted_sinks = plotted_sinks + real_sinks.tolist()
                                         print('plotted sinks', real_sinks.tolist())
@@ -395,18 +403,6 @@ if plot_truncated_super_mult == True:
                             if '[' not in sys_comps:
                                 reduced = True
                             break
-            '''
-            if pick_it == 1:
-                if len(core_frag_marker_pos) > 0:
-                    axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s')
-                if len(delayed_core_frag_marker_pos) > 0:
-                    axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^')
-                if len(dynamical_capture_marker_pos) > 0:
-                    axs.flatten()[pick_it].scatter(np.array(dynamical_capture_marker_pos).T[0], np.array(dynamical_capture_marker_pos).T[1], color='r', marker='o')
-                plt.savefig('Test_marker_pos.png')
-                import pdb
-                pdb.set_trace()
-            '''
         
         axs.flatten()[pick_it].scatter(np.array(core_frag_marker_pos).T[0], np.array(core_frag_marker_pos).T[1], color='b', marker='s', s=7, zorder=10)
         axs.flatten()[pick_it].scatter(np.array(delayed_core_frag_marker_pos).T[0], np.array(delayed_core_frag_marker_pos).T[1], color='m', marker='^', s=7, zorder=10)
@@ -502,93 +498,3 @@ plt.xlim([GMC_mass_arr[0], GMC_mass_arr[-1]])
 plt.savefig('N_stars_vs_GMC_mass.jpg', format='jpg', bbox_inches='tight')
 plt.savefig('N_stars_vs_GMC_mass.pdf', format='pdf', bbox_inches='tight')
 print('Saved N_stars_vs_GMC_mass.jpg')
-
-
-
-
-
-
-
-
-
-
-
-'''
-plt.clf()
-colors = ['b', 'orange', 'g', 'r', 'c', 'm']
-fig, axs = plt.subplots(3, 1, figsize=(6, 8), sharex=True)
-plt.subplots_adjust(wspace=0.0)
-for time_it in range(len(Times_all)):
-    axs.flatten()[0].plot(Times_all[time_it] - np.array(Times_all[time_it][0]), M_tot_all[time_it], label=subplot_titles[time_it], color=colors[time_it])
-    axs.flatten()[0].plot(Times_all[time_it] - np.array(Times_all[time_it][0]), M_tot_multi_all[time_it], color=colors[time_it], linestyle="--", alpha=0.5)
-    axs.flatten()[1].plot(Times_all[time_it] - np.array(Times_all[time_it][0]), N_stars_all[time_it], color=colors[time_it])
-    axs.flatten()[1].plot(Times_all[time_it] - np.array(Times_all[time_it][0]), N_multi_stars_all[time_it], color=colors[time_it], linestyle="--", alpha=0.5)
-    axs.flatten()[2].plot(Times_all[time_it] - np.array(Times_all[time_it][0]), SFE_all[time_it], color=colors[time_it])
-axs.flatten()[0].legend(loc='best')
-#plt.xlabel("Time in Simulation")
-plt.xlabel("Time since the first star formed")
-axs.flatten()[0].set_ylabel("Total acccreted mass ($M_\\odot$)")
-axs.flatten()[1].set_ylabel("Total number of stars ($M_\\odot$)")
-axs.flatten()[2].set_ylabel("Star formation efficiency (SFE)")
-axs.flatten()[0].set_ylim(bottom=0)
-axs.flatten()[1].set_ylim(bottom=0)
-axs.flatten()[2].set_ylim(bottom=0)
-axs.flatten()[0].set_xlim(left=0)
-plt.savefig('SFE_evolution.jpg', format='jpg', bbox_inches='tight')
-plt.savefig('SFE_evolution.pdf', format='pdf', bbox_inches='tight')
-
-plt.clf()
-fig = plt.figure(figsize=(8, 6))
-linestyles = ["-", "--", "-.", (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1, 1, 1)), ":"]
-for shrink_it in range(len(Shrinkage_hist)):
-    plt.step(np.linspace(-10, 100, 12), [Shrinkage_hist[shrink_it][0]] + Shrinkage_hist[shrink_it].tolist(), label=subplot_titles[shrink_it], linewidth=2, ls=linestyles[shrink_it])
-plt.xlabel('Orbital Shrinkage (% of inital separation)')
-plt.ylabel('% of systems')
-plt.legend(loc='best')
-plt.ylim(bottom=0.0)
-plt.xlim([-10, 100])
-plt.savefig('shrinkage_multi'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-plt.savefig('shrinkage_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-print('created shrinkage_multi.jpg')
-
-plt.clf()
-plt.plot(GMC_mass_arr, np.array(Shrinkage_hist)[:,0], label='ejections')
-plt.plot(GMC_mass_arr, np.array(Shrinkage_hist)[:,-1], label='strong inspiral')
-plt.xlabel('GMC cloud mass (M$_\odot$)')
-plt.ylabel('Fraction of systems')
-plt.legend(loc='best')
-plt.xlim([GMC_mass_arr[0], GMC_mass_arr[-1]])
-plt.savefig('ejection_inspiral'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-plt.savefig('ejection_inspiral'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-print('created ejection_inspiral.jpg')
-
-
-plt.clf()
-fig = plt.figure(figsize=(8, 6))
-linestyles = ["-", "--", "-.", (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1, 1, 1)), ":"]
-for CF_it in range(len(CF_hist)):
-    CF_norm = np.array(CF_hist[CF_it])/np.sum(CF_hist[CF_it])
-    plt.step(np.log10(S_bins), [CF_norm[0]] + CF_norm.tolist(), label=subplot_titles[CF_it], linewidth=2, ls=linestyles[CF_it])
-plt.xlabel('Log(Separation) (AU)')
-plt.ylabel('% of systems')
-plt.legend(loc='best')
-plt.ylim(bottom=0.0)
-plt.xlim([1, 4])
-plt.savefig('separation_hist_multi'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-plt.savefig('separation_hist_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-print('created separation_hist_multi.jpg')
-
-plt.clf()
-fig = plt.figure(figsize=(8, 6))
-linestyles = ["-", "--", "-.", (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1, 1, 1)), ":"]
-for life_it in range(len(Lifetime_hist)):
-    plt.step([0,1,2,3,4,5,6,7], [Lifetime_hist[life_it][0]] + Lifetime_hist[life_it].tolist(), label=subplot_titles[life_it], linewidth=2, ls=linestyles[life_it])
-plt.xlabel('Log(Lifetime) (yr)')
-plt.ylabel('% of systems')
-plt.legend(loc='best')
-plt.ylim(bottom=0.0)
-plt.xlim([-10, 100])
-plt.savefig('lifetime_multi'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight')
-plt.savefig('lifetime_multi'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight')
-print('created lifetime_multi.jpg')
-'''
