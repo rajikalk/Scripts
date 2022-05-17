@@ -178,9 +178,9 @@ for pick_it in range(len(Initial_Seps_all)):
     if pick_it == 0:
         axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][1].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.2*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.4*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
-        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.1*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.15*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     axs[pick_it][0].set_ylim(bottom=0)
     axs[pick_it][1].set_ylim(bottom=0)
     axs[pick_it][0].set_xlim([1,4])
@@ -243,7 +243,7 @@ for pick_it in range(len(Initial_Seps_all)):
     
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000, 12000]
+x_val = [1500, 3000, 3750, 4500, 6000]# 12000]
 y_mean = np.array(fit_params).T[1]#0]
 y_std = np.array(fit_params).T[2]
 
@@ -260,7 +260,7 @@ plt.savefig('core_fragmentation_scales_fit.pdf', bbox_inches='tight', pad_inches
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000, 12000]
+x_val = [1500, 3000, 3750, 4500, 6000]#, 12000]
 y_mean = np.array(guess_params).T[0]
 y_median = np.array(guess_params).T[1]
 
