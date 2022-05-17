@@ -31,15 +31,45 @@ matplotlib.rcParams['text.latex.preamble'] = [
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
 #Formation_pathway = [[252, 88, 105], [624, 859, 1209], [1893, 2000, 5105], [1255, 4381, 11458], [2921, 5951, 22602], [2172, 5412, 32412]]
-pickles = ['/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_1500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3000.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3750.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_4500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_6000.pkl',
-    '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_12000.pkl']
-
+Formation_pathway = [[21, 11, 14], [46, 28, 32], [91, 31, 68], [73, 41, 70], [73, 38, 60], [np.nan, np.nan, np.nan]]
+birth_con_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_1500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_6000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_12000.pkl']
 
 Core_frag_fracs = []
 Delayed_core_frag_fracs = []
 Dynamical_capt_fracs = []
-Initial_Seps = []
+'''
+for pathway_numbers in Formation_pathway:
+    Total_sys_no = np.sum(pathway_numbers)
+    Core_frag_frac = pathway_numbers[0]/Total_sys_no
+    Delayed_core_frag_frac = pathway_numbers[1]/Total_sys_no
+    Dynamical_capt_frac = pathway_numbers[2]/Total_sys_no
+    
+    Core_frag_fracs.append(Core_frag_frac)
+    Delayed_core_frag_fracs.append(Delayed_core_frag_frac)
+    Dynamical_capt_fracs.append(Dynamical_capt_frac)
+'''
+Initial_Seps_all = []
 for birth_con_pickle in birth_con_pickles:
+    try:
+        file = open(birth_con_pickle, 'rb')
+        pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
+        file.close()
+        
+        Total_sys_no = np.sum(pathway_counters[:3])
+        Core_frag_frac = pathway_counters[0]/Total_sys_no
+        Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
+        Dynamical_capt_frac = pathway_counters[2]/Total_sys_no
+        Initial_Seps_all.append(Initial_Seps)
+    except:
+        Core_frag_frac = np.nan
+        Delayed_core_frag_frac = np.nan
+        Dynamical_capt_frac = np.nan
+    
+    Core_frag_fracs.append(Core_frag_frac)
+    Delayed_core_frag_fracs.append(Delayed_core_frag_frac)
+    Dynamical_capt_fracs.append(Dynamical_capt_frac)
+    
+    '''
     file = open(birth_con_pickle, 'rb')
     Sink_birth_all = pickle.load(file)
     file.close()
@@ -80,7 +110,7 @@ for birth_con_pickle in birth_con_pickles:
     Dynamical_capt_fracs.append(Dynamical_capt_frac)
     
     Initial_Seps.append([Core_frag_seps, Delayed_core_frag_seps, Dynamical_capt_seps])
-
+    '''
 x_labels = ['Core frag.', 'Delayed core frag.', 'Dynamical capture']
 
 fig, ax = plt.subplots(1, 1, figsize=(5, 4))
@@ -119,13 +149,13 @@ iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.01)
 
-for pick_it in range(len(birth_con_pickles)):
+for pick_it in range(len(Initial_Seps_all)):
     import pdb
     pdb.set_trace()
     
-    core_sep_hist, bins = np.histogram(Initial_Seps[pick_it][0], S_bins)
-    core_delayed_sep_hist, bins = np.histogram(Initial_Seps[pick_it][1], S_bins)
-    capt_sep_hist, bins = np.histogram(Initial_Seps[pick_it][2], S_bins)
+    core_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][0], S_bins)
+    core_delayed_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][1], S_bins)
+    capt_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][2], S_bins)
     
     p1 = axs.flatten()[pick_it].bar(bin_centers, core_sep_hist, width=0.25, color='b')#, hatch='+')
     p2 = axs.flatten()[pick_it].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
@@ -154,7 +184,7 @@ for pick_it in range(len(birth_con_pickles)):
     '''
     
     #fitting core fragmentation
-    core_frag_total_separations = np.log10(Initial_Seps[0] + Initial_Seps[1])
+    core_frag_total_separations = np.log10(Initial_Seps_all[pick_it][0] + Initial_Seps_all[pick_it][1])
     poisson_err = np.sqrt(len(core_frag_total_separations))
     mean_guess = np.nanmean(core_frag_total_separations)
     median_guess = np.nanmedian(core_frag_total_separations)
