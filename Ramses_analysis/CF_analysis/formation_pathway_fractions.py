@@ -172,12 +172,12 @@ for pick_it in range(len(Initial_Seps_all)):
     core_delayed_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][1], S_bins)
     capt_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][2], S_bins)
     
-    p1 = axs[pick_it][0].bar(bin_centers, core_sep_hist, width=0.25, color='b')#, hatch='+')
-    p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
-    p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r')#, hatch='O')
+    p1 = axs[pick_it][0].bar(bin_centers, core_sep_hist, width=0.25, color='b', label='Core fragmentation')#, hatch='+')
+    p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m', label='Delayed core frag.')#, hatch='x')
+    p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r', label='Dynamical capture')#, hatch='O')
     if pick_it == 0:
-        axs[pick_it][0].legend((p1[0], p2[0]), ('Core fragmentation', 'Delayed core frag.'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs[pick_it][1].legend(p3[0], 'Dynamical capture', loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][1].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
