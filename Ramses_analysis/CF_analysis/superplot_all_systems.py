@@ -175,7 +175,7 @@ CW.Barrier()
 
 #Get birth conditions
 file_open = open(args.global_data_pickle_file, 'rb')
-Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
+#Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
 
 sys.stdout.flush()
 CW.Barrier()
