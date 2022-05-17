@@ -162,7 +162,7 @@ guess_params = []
 label_height = [2.5, 16, 32, 40, 65, 135]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*4), sharex=True, sharey='row')
 iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -176,7 +176,8 @@ for pick_it in range(len(Initial_Seps_all)):
     p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
     p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r')#, hatch='O')
     if pick_it == 0:
-        axs[pick_it][0].legend((p1[0], p2[0], p3[0]), ('Core fragmentation', 'Delayed core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][0].legend((p1[0], p2[0]), ('Core fragmentation', 'Delayed core frag.'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][1].legend((p3[0]), ('Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
@@ -187,7 +188,7 @@ for pick_it in range(len(Initial_Seps_all)):
     
     axs[pick_it][0].step(step_centers, np.append(core_sep_hist, np.array([core_sep_hist[-1]])), 'k', where="mid", linewidth=1)
     axs[pick_it][0].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
-    axs[pick_it][1].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist+capt_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist+capt_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][1].step(step_centers, np.append(capt_sep_hist, np.array([(capt_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
     '''
     plt.clf()
     fig, ax = plt.subplots()
@@ -242,7 +243,7 @@ for pick_it in range(len(Initial_Seps_all)):
     
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000, 12000]
+x_val = [1500, 3000, 3750, 4500, 6000]#12000]
 y_mean = np.array(fit_params).T[1]#0]
 y_std = np.array(fit_params).T[2]
 
