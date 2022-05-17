@@ -209,6 +209,7 @@ if plot_truncated_super_mult == True:
     CF_hist = np.zeros((len(pickle_files),12)).tolist()
     
     Formation_pathway = []
+    Not_plotted_sinks = [[],[],[],[],[],[]]
     if args.plot_key == 'System_seps':
         alpha = 0.025
     else:
@@ -327,6 +328,8 @@ if plot_truncated_super_mult == True:
                                         marker_color = 'r'
                                         marker_shape = 'o'
                                 else:
+                                    print("sink", np.max(sub_sys), "Not found in birth conditions")
+                                    Not_plotted_sinks[pick_it].append(np.max(sub_sys))
                                     marker_color = 'k'
                                     marker_shape = 'x'
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
@@ -369,6 +372,8 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                     else:
+                                        print("sink", np.max(real_sinks), "Not found in birth conditions")
+                                        Not_plotted_sinks[pick_it].append(np.max(real_sinks))
                                         marker_color = 'k'
                                         marker_shape = 'x'
                                     if set(real_sinks).issubset(set(plotted_sinks)) == False:
