@@ -178,9 +178,9 @@ for pick_it in range(len(Initial_Seps_all)):
     if pick_it == 0:
         axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][1].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.2*np.max(core_sep_hist+core_delayed_sep_hist, subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.2*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
-        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.1*np.max(core_sep_hist+core_delayed_sep_hist, subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.1*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     axs[pick_it][0].set_ylim(bottom=0)
     axs[pick_it][1].set_ylim(bottom=0)
     axs[pick_it][0].set_xlim([1,4])
