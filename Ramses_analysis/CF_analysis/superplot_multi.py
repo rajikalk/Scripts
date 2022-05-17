@@ -325,6 +325,10 @@ if plot_truncated_super_mult == True:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
+                                        if np.isnan(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                            print("misclassified birth conditions!")
+                                            import pdb
+                                            pdb.set_trace()
                                         marker_color = 'r'
                                         marker_shape = 'o'
                                 else:
@@ -369,6 +373,10 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
+                                            if np.isnan(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                                print("misclassified birth conditions!")
+                                                import pdb
+                                                pdb.set_trace()
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                     else:
