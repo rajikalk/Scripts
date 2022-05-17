@@ -224,8 +224,9 @@ for pick_it in range(len(Initial_Seps_all)):
     print('mean, std, mode, median, +/-:', popt[1], popt[2], mode, median, err_higher, err_lower)
     #fit_params.append([popt[1], median, err_lower, err_higher])
     fit_params.append(popt)
-    if pick_it == len(pickles) - 1:
-        axs[pick_it].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
+    if pick_it == len(Initial_Seps_all) - 1:
+        axs[pick_it][0].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
+        axs[pick_it][1].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
     axs[pick_it][0].set_ylabel('# Systems', fontsize=font_size)
     axs[pick_it][0].tick_params(axis='both', which='major', labelsize=font_size)
     axs[pick_it][0].tick_params(axis='both', which='minor', labelsize=font_size)
