@@ -90,7 +90,9 @@ size = CW.Get_size()
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
-if simulation_density_id == '':
+try:
+    simulation_density_id_int = int(simulation_density_id)
+except:
     simulation_density_id = args.global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
 
 if simulation_density_id == '50':
