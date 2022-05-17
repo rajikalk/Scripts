@@ -121,9 +121,9 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472
 font_size = 10
 
-p1 = plt.bar(ind[0], Core_frag_fracs, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
-p2 = plt.bar(ind[0], Delayed_core_frag_fracs, 0.95, bottom=Core_frag_fracs, color='m', linewidth=1, edgecolor='k')#, hatch='x'
-p3 = plt.bar(ind[0], Dynamical_capt_fracs, 0.95, bottom=(np.array(Delayed_core_frag_fracs)+np.array(Core_frag_fracs)), color='r', linewidth=1, edgecolor='k')#, hatch='O'
+p1 = plt.bar(ind, Core_frag_fracs, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
+p2 = plt.bar(ind, Delayed_core_frag_fracs, 0.95, bottom=Core_frag_fracs, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p3 = plt.bar(ind, Dynamical_capt_fracs, 0.95, bottom=(np.array(Delayed_core_frag_fracs)+np.array(Core_frag_fracs)), color='r', linewidth=1, edgecolor='k')#, hatch='O'
 
 plt.xlim([-0.6, 5.6])
 plt.minorticks_on()
