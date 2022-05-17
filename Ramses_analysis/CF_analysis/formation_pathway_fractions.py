@@ -162,7 +162,7 @@ guess_params = []
 label_height = [2.5, 16, 32, 40, 65, 135]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
 iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -178,9 +178,7 @@ for pick_it in range(len(Initial_Seps_all)):
     if pick_it == 0:
         axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][1].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
-    else:
-        axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     axs[pick_it][0].set_ylim(bottom=0)
     axs[pick_it][1].set_ylim(bottom=0)
     axs[pick_it][0].set_xlim([1,4])
@@ -243,7 +241,7 @@ for pick_it in range(len(Initial_Seps_all)):
     
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000]#12000]
+x_val = [1500, 3000, 3750, 4500, 6000, 12000]
 y_mean = np.array(fit_params).T[1]#0]
 y_std = np.array(fit_params).T[2]
 
@@ -260,7 +258,7 @@ plt.savefig('core_fragmentation_scales_fit.pdf', bbox_inches='tight', pad_inches
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)
-x_val = [1500, 3000, 3750, 4500, 6000]# 12000]
+x_val = [1500, 3000, 3750, 4500, 6000, 12000]
 y_mean = np.array(guess_params).T[0]
 y_median = np.array(guess_params).T[1]
 
@@ -269,8 +267,7 @@ high_bounds = y_mean + np.array(guess_params).T[2]
 y_err_low = y_median - low_bounds
 y_err_high = high_bounds - y_median
 
-
 plt.errorbar(x_val, y_median, np.array([y_err_low, y_err_high]))
 plt.xlabel('GMC mass (M$_\odot$)')
-plt.ylabel('Core fragmentation scales (log au)', bbox_inches='tight', pad_inches=0.02)
+plt.ylabel('Core fragmentation scales (log au).pdf', bbox_inches='tight', pad_inches=0.02)
 plt.savefig('core_fragmentation_scales_data.pdf')
