@@ -139,38 +139,54 @@ plt.ylim([0,1])
 plt.savefig('formation_pathway.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 ### Make histograms
+
+def Gaussian(x,scale,mean,sigma):
+    return scale*stats.norm.pdf(x, mean, sigma)
+    
+def Gaussian_cdf(x,scale,mean,sigma):
+    return scale*stats.norm.cdf(x, mean, sigma)
+
+def Skewed_Gaussian(x, scale, mean, sigma, skew):
+    return scale*stats.skewnorm.pdf(x, skew, loc=mean, scale=sigma)
+    
+def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
+    return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
+
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
+x_fit = np.linspace(0,6,10000)
+fit_params = []
+guess_params = []
+label_height = [2.5, 16, 32, 40, 65, 135]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey='row')
 iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.01)
+plt.subplots_adjust(hspace=0.0)
 
 for pick_it in range(len(Initial_Seps_all)):
-    import pdb
-    pdb.set_trace()
-    
     core_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][0], S_bins)
     core_delayed_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][1], S_bins)
     capt_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][2], S_bins)
     
-    p1 = axs.flatten()[pick_it].bar(bin_centers, core_sep_hist, width=0.25, color='b')#, hatch='+')
-    p2 = axs.flatten()[pick_it].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
-    #p3 = axs.flatten()[pick_it].bar(bin_centers, capt_sep_hist, width=0.25, bottom=(np.array(core_sep_hist)+np.array(core_delayed_sep_hist)), color='r')#, hatch='O')
+    p1 = axs[pick_it][0].bar(bin_centers, core_sep_hist, width=0.25, color='b')#, hatch='+')
+    p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
+    p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r')#, hatch='O')
     if pick_it == 0:
-        axs.flatten()[pick_it].legend((p1[0], p2[0], p3[0]), ('Core fragmentation', 'Delayed core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
-        axs.flatten()[pick_it].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs[pick_it][0].legend((p1[0], p2[0], p3[0]), ('Core fragmentation', 'Delayed core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
-        axs.flatten()[pick_it].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
-    axs.flatten()[pick_it].set_ylim(bottom=0)
-    axs.flatten()[pick_it].set_xlim([1,4])
+        axs[pick_it][0].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    axs[pick_it][0].set_ylim(bottom=0)
+    axs[pick_it][1].set_ylim(bottom=0)
+    axs[pick_it][0].set_xlim([1,4])
+    axs[pick_it][1].set_xlim([1,4])
     
-    axs.flatten()[pick_it].step(step_centers, np.append(core_sep_hist, np.array([core_sep_hist[-1]])), 'k', where="mid", linewidth=1)
-    axs.flatten()[pick_it].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
-    axs.flatten()[pick_it].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist+capt_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist+capt_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.append(core_sep_hist, np.array([core_sep_hist[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][1].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist+capt_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist+capt_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
     '''
     plt.clf()
     fig, ax = plt.subplots()
@@ -196,7 +212,7 @@ for pick_it in range(len(Initial_Seps_all)):
     popt, pcov = curve_fit(Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess])#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
     fit_core = Gaussian(x_fit, *popt)
     #fit_core = Skewed_Gaussian(x_fit, *popt)
-    axs.flatten()[pick_it].plot(x_fit, fit_core, 'k-')
+    axs[pick_it][0].plot(x_fit, fit_core, 'k-')
     #cdf_fit = Skewed_Gaussian_cdf(x_fit, *popt)
     cdf_fit = Gaussian_cdf(x_fit, *popt)
     cdf_norm = cdf_fit/cdf_fit[-1]
@@ -208,12 +224,16 @@ for pick_it in range(len(Initial_Seps_all)):
     #fit_params.append([popt[1], median, err_lower, err_higher])
     fit_params.append(popt)
     if pick_it == len(pickles) - 1:
-        axs.flatten()[pick_it].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
-    axs.flatten()[pick_it].set_ylabel('# Systems', fontsize=font_size)
-    axs.flatten()[pick_it].tick_params(axis='both', which='major', labelsize=font_size)
-    axs.flatten()[pick_it].tick_params(axis='both', which='minor', labelsize=font_size)
-    axs.flatten()[pick_it].tick_params(axis='x', direction='in')
-    axs.flatten()[pick_it].tick_params(axis='y', direction='in')
+        axs[pick_it].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
+    axs[pick_it][0].set_ylabel('# Systems', fontsize=font_size)
+    axs[pick_it][0].tick_params(axis='both', which='major', labelsize=font_size)
+    axs[pick_it][0].tick_params(axis='both', which='minor', labelsize=font_size)
+    axs[pick_it][1].tick_params(axis='both', which='major', labelsize=font_size)
+    axs[pick_it][1].tick_params(axis='both', which='minor', labelsize=font_size)
+    axs[pick_it][0].tick_params(axis='x', direction='in')
+    axs[pick_it][0].tick_params(axis='y', direction='in')
+    axs[pick_it][1].tick_params(axis='x', direction='in')
+    axs[pick_it][1].tick_params(axis='y', direction='in')
 
     save_num = pickles[pick_it].split('_')[-1].split('.')[0]
     plt.savefig('initial_sep_dist_'+save_num+'.pdf', bbox_inches='tight', pad_inches=0.02)
