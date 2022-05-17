@@ -178,6 +178,9 @@ for pick_it in range(len(Initial_Seps_all)):
     if pick_it == 0:
         axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs[pick_it][1].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs[pick_it][0].text((1.1), np.max(np.max(core_sep_hist+core_delayed_sep_hist))-4, subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    else:
+        axs[pick_it][0].text((1.1), np.max(np.max(core_sep_hist+core_delayed_sep_hist))-2, subplot_titles[pick_it], zorder=11, fontsize=font_size)
     axs[pick_it][0].set_ylim(bottom=0)
     axs[pick_it][1].set_ylim(bottom=0)
     axs[pick_it][0].set_xlim([1,4])
@@ -212,7 +215,6 @@ for pick_it in range(len(Initial_Seps_all)):
     fit_core = Gaussian(x_fit, *popt)
     #fit_core = Skewed_Gaussian(x_fit, *popt)
     axs[pick_it][0].plot(x_fit, fit_core, 'k-')
-    axs[pick_it][0].text((1.1), np.max(fit_core)-2, subplot_titles[pick_it], zorder=11, fontsize=font_size)
     #cdf_fit = Skewed_Gaussian_cdf(x_fit, *popt)
     cdf_fit = Gaussian_cdf(x_fit, *popt)
     cdf_norm = cdf_fit/cdf_fit[-1]
