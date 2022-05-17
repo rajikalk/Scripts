@@ -31,7 +31,8 @@ matplotlib.rcParams['text.latex.preamble'] = [
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
 #Formation_pathway = [[252, 88, 105], [624, 859, 1209], [1893, 2000, 5105], [1255, 4381, 11458], [2921, 5951, 22602], [2172, 5412, 32412]]
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl"]#, "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all.pkl"]
+pickles = ['/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_1500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3000.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3750.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_4500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_6000.pkl',
+    '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_12000.pkl']
 
 
 Core_frag_fracs = []

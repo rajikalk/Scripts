@@ -454,7 +454,7 @@ if plot_truncated_super_mult == True:
             xticklabels =axs.flatten()[pick_it].get_xticklabels()
             plt.setp(xticklabels, visible=False)
         
-        plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
+        plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02, dpi=300)
         print('plotted separations for pickle', pickle_files[file_it])
         
         file = open('formation_pathway_'+str(GMC_mass_arr[pick_it])+'.pkl', 'wb')
