@@ -392,7 +392,7 @@ if plot_truncated_super_mult == True:
                                                 other_sys = eval(other_sys_str)
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
                                             print("Core_frag: Bound==True")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))])
                                             print("full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             marker_color = 'b'
@@ -401,14 +401,14 @@ if plot_truncated_super_mult == True:
                                             #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                         elif other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
                                             print("Delayed_core_frag: Bound==False")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))])
                                             print("full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
                                             print("Dynamical_capt: Bound==False")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))])
                                             print("full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
