@@ -329,13 +329,16 @@ if plot_truncated_super_mult == True:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
-                                        import pdb
-                                        pdb.set_trace()
-                                        if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                        try:
+                                            if other_sys != int(Sink_birth_all[str(np.max(sub_sys))][1])
+                                                marker_color = 'r'
+                                                marker_shape = 'o'
+                                            else:
+                                                import pdb
+                                                pdb.set_trace()
+                                        except:
                                             import pdb
                                             pdb.set_trace()
-                                        marker_color = 'r'
-                                        marker_shape = 'o'
                                         if np.isnan(Sink_birth_all[str(np.max(sub_sys))][3]):
                                             print("misclassified birth conditions!")
                                             import pdb
@@ -405,13 +408,23 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
-                                            import pdb
-                                            pdb.set_trace()
+                                            try:
+                                                if other_sys != int(Sink_birth_all[str(np.max(real_sinks))][1])
+                                                    marker_color = 'r'
+                                                    marker_shape = 'o'
+                                                else:
+                                                    import pdb
+                                                    pdb.set_trace()
+                                            except:
+                                                import pdb
+                                                pdb.set_trace()
+                                            '''
                                             if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
                                                 import pdb
                                                 pdb.set_trace()
                                             marker_color = 'r'
                                             marker_shape = 'o'
+                                            '''
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
                                                 print("misclassified birth conditions!")
                                                 import pdb
