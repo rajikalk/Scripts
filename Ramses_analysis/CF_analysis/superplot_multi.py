@@ -345,6 +345,9 @@ if plot_truncated_super_mult == True:
                                     if args.x_field == 'Time':
                                         axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                     elif args.x_field == 'SFE':
+                                        if sub_sys == [254, 5370]:
+                                            import pdb
+                                            pdb.set_trace()
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
                                             print("Core_frag: Bound==True")
@@ -416,6 +419,9 @@ if plot_truncated_super_mult == True:
                                         if args.x_field == 'Time':
                                             axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                         elif args.x_field == 'SFE':
+                                            if sub_sys == [254, 5370]:
+                                                import pdb
+                                                pdb.set_trace()
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 print("Core_frag: Bound==True")
