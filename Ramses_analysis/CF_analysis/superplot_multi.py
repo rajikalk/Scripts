@@ -322,29 +322,20 @@ if plot_truncated_super_mult == True:
                                     other_sys = np.min(sub_sys)
                                     import pdb
                                     pdb.set_trace()
-                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys == Sink_birth_all[str(np.max(sub_sys))][1]:
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                    elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                        #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                    elif str(other_sys) == Sink_birth_all[str(np.max(sub_sys))][1]:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
-                                        if Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                        if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
                                             import pdb
                                             pdb.set_trace()
-                                            
-                                            if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                                import pdb
-                                                pdb.set_trace()
-                                                marker_color = 'm'
-                                                marker_shape = '^'
-                                            else:
-                                                marker_color = 'r'
-                                                marker_shape = 'o'
-                                        else:
-                                            marker_color = 'r'
-                                            marker_shape = 'o'
+                                        marker_color = 'r'
+                                        marker_shape = 'o'
                                         if np.isnan(Sink_birth_all[str(np.max(sub_sys))][3]):
                                             print("misclassified birth conditions!")
                                             import pdb
@@ -407,29 +398,20 @@ if plot_truncated_super_mult == True:
                                                 other_sys = eval(other_sys_str)
                                         import pdb
                                         pdb.set_trace()
-                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in str(Sink_birth_all[str(np.max(real_sinks))][1]):
+                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys == Sink_birth_all[str(np.max(real_sinks))][1]:
                                             marker_color = 'b'
                                             marker_shape = 's'
-                                            #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
-                                            #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
-                                        elif other_sys_str in str(Sink_birth_all[str(np.max(real_sinks))][1]):
+                                            #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                            #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                        elif str(other_sys) == Sink_birth_all[str(np.max(real_sinks))][1]:
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
-                                            if Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                            if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
                                                 import pdb
                                                 pdb.set_trace()
-                                                if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
-                                                    import pdb
-                                                    pdb.set_trace()
-                                                    marker_color = 'm'
-                                                    marker_shape = '^'
-                                                else:
-                                                    marker_color = 'r'
-                                                    marker_shape = 'o'
-                                            else:
-                                                marker_color = 'r'
-                                                marker_shape = 'o'
+                                            marker_color = 'r'
+                                            marker_shape = 'o'
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
                                                 print("misclassified birth conditions!")
                                                 import pdb
