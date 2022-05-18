@@ -335,9 +335,6 @@ if plot_truncated_super_mult == True:
                                         else:
                                             import pdb
                                             pdb.set_trace()
-                                        if Sink_birth_all[str(np.max(sub_sys))][0] == True:
-                                            import pdb
-                                            pdb.set_trace()
                                 else:
                                     print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
