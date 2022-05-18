@@ -329,6 +329,9 @@ if plot_truncated_super_mult == True:
                                         marker_shape = '^'
                                     else:
                                         if Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                            import pdb
+                                            pdb.set_trace()
+                                            '''
                                             if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
                                                 import pdb
                                                 pdb.set_trace()
@@ -337,6 +340,7 @@ if plot_truncated_super_mult == True:
                                             else:
                                                 marker_color = 'r'
                                                 marker_shape = 'o'
+                                            '''
                                         else:
                                             marker_color = 'r'
                                             marker_shape = 'o'
@@ -410,6 +414,9 @@ if plot_truncated_super_mult == True:
                                             marker_shape = '^'
                                         else:
                                             if Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                                import pdb
+                                                pdb.set_trace()
+                                                '''
                                                 if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
                                                     import pdb
                                                     pdb.set_trace()
@@ -418,6 +425,7 @@ if plot_truncated_super_mult == True:
                                                 else:
                                                     marker_color = 'r'
                                                     marker_shape = 'o'
+                                                '''
                                             else:
                                                 marker_color = 'r'
                                                 marker_shape = 'o'
