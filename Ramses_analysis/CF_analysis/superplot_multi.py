@@ -252,6 +252,7 @@ if plot_truncated_super_mult == True:
 
         sim_start_time = np.nan
         plotted_sinks = []
+        sub_sys_dict = {}
         for time_key in superplot_dict['System_times'].keys():
             for sit in range(len(S_bins[1:])):
                 bin_inst = np.argwhere((superplot_dict[args.plot_key][time_key]>S_bins[sit])&(superplot_dict[args.plot_key][time_key]<S_bins[sit+1]))
@@ -420,6 +421,8 @@ if plot_truncated_super_mult == True:
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
                             new_sys_id = new_sys_id + 1
+                            import pdb
+                            pdb.set_trace()
                             sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                             if '[' not in sys_comps:
                                 reduced = True
