@@ -320,12 +320,12 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
-                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys == eval(Sink_birth_all[str(np.max(sub_sys))][2]):
+                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                    elif other_sys == eval(Sink_birth_all[str(np.max(sub_sys))][2]):
+                                    elif other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         print("Delayed_core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                         marker_color = 'm'
                                         marker_shape = '^'
