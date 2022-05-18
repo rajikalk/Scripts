@@ -321,16 +321,25 @@ if plot_truncated_super_mult == True:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                        print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                        print("Core_frag: Bound==True")
+                                        print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
+                                        print("full system:", time_key, "sub_sys:", sub_sys)
+                                        print("-------------------------------------------------------")
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                     elif other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                        print("Delayed_core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                        print("Delayed_core_frag: Bound==False")
+                                        print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
+                                        print("full system:", time_key, "sub_sys:", sub_sys)
+                                        print("-------------------------------------------------------")
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
-                                        print("Dynamical_capt: False and", other_sys, "not in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                        print("Dynamical_capt: Bound==True")
+                                        print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
+                                        print("full system:", time_key, "sub_sys:", sub_sys)
+                                        print("-------------------------------------------------------")
                                         if np.isnan(Sink_birth_all[str(np.max(sub_sys))][3]):
                                             print("misclassified birth conditions!")
                                             import pdb
@@ -382,17 +391,26 @@ if plot_truncated_super_mult == True:
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                            print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
+                                            print("Core_frag: Bound==True")
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("full system:", time_key, "sub_sys:", sub_sys)
+                                            print("-------------------------------------------------------")
                                             marker_color = 'b'
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                             #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                         elif other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                            print("Core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
+                                            print("Delayed_core_frag: Bound==False")
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("full system:", time_key, "sub_sys:", sub_sys)
+                                            print("-------------------------------------------------------")
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
-                                            print("Core_frag: True and", other_sys, "not in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
+                                            print("Dynamical_capt: Bound==False")
+                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(real_sinks))]
+                                            print("full system:", time_key, "sub_sys:", sub_sys)
+                                            print("-------------------------------------------------------")
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
                                                 print("misclassified birth conditions!")
                                                 import pdb
