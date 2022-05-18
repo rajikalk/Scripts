@@ -319,8 +319,9 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True:
-                                        import pdb
-                                        pdb.set_trace()
+                                        if np.min(sub_sys) not in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                            import pdb
+                                            pdb.set_trace()
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
@@ -370,8 +371,9 @@ if plot_truncated_super_mult == True:
                                 if len(real_sinks) > 0:
                                     if str(np.max(real_sinks)) in Sink_birth_all.keys():
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True:
-                                            import pdb
-                                            pdb.set_trace()
+                                            if np.min(real_sinks) not in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                                import pdb
+                                                pdb.set_trace()
                                             marker_color = 'b'
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
