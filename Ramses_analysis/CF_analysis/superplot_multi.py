@@ -329,12 +329,8 @@ if plot_truncated_super_mult == True:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
-                                        if other_sys != Sink_birth_all[str(np.max(sub_sys))][1]:
-                                            marker_color = 'r'
-                                            marker_shape = 'o'
-                                        else:
-                                            import pdb
-                                            pdb.set_trace()
+                                        marker_color = 'r'
+                                        marker_shape = 'o'
                                 else:
                                     print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
@@ -400,12 +396,8 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         elif other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
-                                            if other_sys != Sink_birth_all[str(np.max(real_sinks))][1]:
-                                                marker_color = 'r'
-                                                marker_shape = 'o'
-                                            else:
-                                                import pdb
-                                                pdb.set_trace()
+                                            marker_color = 'r'
+                                            marker_shape = 'o'
                                     else:
                                         print("sink", np.max(real_sinks), "Not found in birth conditions")
                                         Not_plotted_sinks[pick_it].append(np.max(real_sinks))
