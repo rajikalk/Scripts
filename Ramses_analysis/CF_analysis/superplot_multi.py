@@ -328,21 +328,9 @@ if plot_truncated_super_mult == True:
                                     elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
                                         marker_color = 'm'
                                         marker_shape = '^'
-                                    else:
-                                        try:
-                                            if str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
-                                                marker_color = 'r'
-                                                marker_shape = 'o'
-                                            else:
-                                                import pdb
-                                                pdb.set_trace()
-                                        except:
-                                            import pdb
-                                            pdb.set_trace()
-                                        if np.isnan(Sink_birth_all[str(np.max(sub_sys))][3]):
-                                            print("misclassified birth conditions!")
-                                            import pdb
-                                            pdb.set_trace()
+                                    elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                        marker_color = 'r'
+                                        marker_shape = 'o'
                                 else:
                                     print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
@@ -356,10 +344,10 @@ if plot_truncated_super_mult == True:
                                     elif args.x_field == 'SFE':
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
-                                            print("Core_frag: Bound==True")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
-                                            print("full system:", time_key, "sub_sys:", sub_sys)
-                                            print("-------------------------------------------------------")
+                                            #print("Core_frag: Bound==True")
+                                            #print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
+                                            #print("full system:", time_key, "sub_sys:", sub_sys)
+                                            #print("-------------------------------------------------------")
                                             core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                             Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                             if Lifetimes_sys[time_key]>100000:
@@ -407,17 +395,9 @@ if plot_truncated_super_mult == True:
                                         elif other_sys_str == str(Sink_birth_all[str(np.max(real_sinks))][1]):
                                             marker_color = 'm'
                                             marker_shape = '^'
-                                        else:
-                                            try:
-                                                if other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
-                                                    marker_color = 'r'
-                                                    marker_shape = 'o'
-                                                else:
-                                                    import pdb
-                                                    pdb.set_trace()
-                                            except:
-                                                import pdb
-                                                pdb.set_trace()
+                                        elif other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
+                                            marker_color = 'r'
+                                            marker_shape = 'o'
                                             '''
                                             if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
                                                 import pdb
@@ -425,10 +405,6 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                             '''
-                                            if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
-                                                print("misclassified birth conditions!")
-                                                import pdb
-                                                pdb.set_trace()
                                     else:
                                         print("sink", np.max(real_sinks), "Not found in birth conditions")
                                         Not_plotted_sinks[pick_it].append(np.max(real_sinks))
@@ -442,10 +418,10 @@ if plot_truncated_super_mult == True:
                                         elif args.x_field == 'SFE':
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
-                                                print("Core_frag: Bound==True")
-                                                print("The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))])
-                                                print("full system:", time_key, "sub_sys:", sub_sys)
-                                                print("-------------------------------------------------------")
+                                                #print("Core_frag: Bound==True")
+                                                #print("The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))])
+                                                #print("full system:", time_key, "sub_sys:", sub_sys)
+                                                #print("-------------------------------------------------------")
                                                 core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                 Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                 if Lifetimes_sys[time_key]>100000:
