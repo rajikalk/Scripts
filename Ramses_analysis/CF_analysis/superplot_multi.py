@@ -382,17 +382,17 @@ if plot_truncated_super_mult == True:
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                            print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                            print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
                                             marker_color = 'b'
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                             #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                         elif other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                            print("Core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                            print("Core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
-                                            print("Core_frag: True and", other_sys, "not in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
+                                            print("Core_frag: True and", other_sys, "not in", eval(Sink_birth_all[str(np.max(real_sinks))][2]), "for sub_sys", sub_sys)
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
                                                 print("misclassified birth conditions!")
                                                 import pdb
