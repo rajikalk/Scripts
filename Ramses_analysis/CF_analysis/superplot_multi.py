@@ -405,7 +405,7 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
-                                            if Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2]))::
+                                            if Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                                 import pdb
                                                 pdb.set_trace()
                                                 marker_color = 'm'
