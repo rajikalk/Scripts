@@ -338,8 +338,6 @@ if plot_truncated_super_mult == True:
                                         if Sink_birth_all[str(np.max(sub_sys))][0] == True:
                                             import pdb
                                             pdb.set_trace()
-                                        marker_color = 'r'
-                                        marker_shape = 'o'
                                 else:
                                     print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
@@ -414,15 +412,6 @@ if plot_truncated_super_mult == True:
                                             if Sink_birth_all[str(np.max(real_sinks))][0] == True:
                                                 import pdb
                                                 pdb.set_trace()
-                                            marker_color = 'r'
-                                            marker_shape = 'o'
-                                            '''
-                                            if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(real_sinks))][1]))):
-                                                import pdb
-                                                pdb.set_trace()
-                                            marker_color = 'r'
-                                            marker_shape = 'o'
-                                            '''
                                     else:
                                         print("sink", np.max(real_sinks), "Not found in birth conditions")
                                         Not_plotted_sinks[pick_it].append(np.max(real_sinks))
