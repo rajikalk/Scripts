@@ -332,31 +332,27 @@ if plot_truncated_super_mult == True:
                                         marker_color = 'r'
                                         marker_shape = 'o'
                                 else:
-                                    print("sink", np.max(sub_sys), "Not found in birth conditions")
+                                    #print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
                                     marker_color = 'k'
                                     marker_shape = 'x'
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
                                     plotted_sinks = plotted_sinks + sub_sys
-                                    print('plotted sinks', sub_sys)
+                                    #print('plotted sinks', sub_sys)
                                     if args.x_field == 'Time':
                                         axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                     elif args.x_field == 'SFE':
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
-                                            #print("Core_frag: Bound==True")
-                                            #print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
-                                            #print("full system:", time_key, "sub_sys:", sub_sys)
-                                            #print("-------------------------------------------------------")
+                                            print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                            print("-------------------------------------------------------")
                                             core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                             Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                             pathway_counters[0] = pathway_counters[0] + 1
                                         elif marker_color == 'm':
-                                            print("Delayed_core_frag: Bound==False")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
-                                            print("full system:", time_key, "sub_sys:", sub_sys)
+                                            print("Delayed_core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                             Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
@@ -364,9 +360,7 @@ if plot_truncated_super_mult == True:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
-                                            print("Dynamical_capt: Bound==True")
-                                            print("The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))])
-                                            print("full system:", time_key, "sub_sys:", sub_sys)
+                                            print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                             Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
@@ -399,31 +393,27 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                     else:
-                                        print("sink", np.max(real_sinks), "Not found in birth conditions")
+                                        #print("sink", np.max(real_sinks), "Not found in birth conditions")
                                         Not_plotted_sinks[pick_it].append(np.max(real_sinks))
                                         marker_color = 'k'
                                         marker_shape = 'x'
                                     if set(real_sinks).issubset(set(plotted_sinks)) == False:
                                         plotted_sinks = plotted_sinks + real_sinks.tolist()
-                                        print('plotted sinks', real_sinks.tolist())
+                                        #print('plotted sinks', real_sinks.tolist())
                                         if args.x_field == 'Time':
                                             axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                         elif args.x_field == 'SFE':
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
-                                                #print("Core_frag: Bound==True")
-                                                #print("The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))])
-                                                #print("full system:", time_key, "sub_sys:", sub_sys)
-                                                #print("-------------------------------------------------------")
+                                                print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                print("-------------------------------------------------------")
                                                 core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                 Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
-                                                print("Delayed_core_frag: Bound==False")
-                                                print("The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))])
-                                                print("full system:", time_key, "sub_sys:", sub_sys)
+                                                print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
                                                 delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                 Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
@@ -431,9 +421,7 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
-                                                print("Dynamical_capt: Bound==False")
-                                                print("The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))])
-                                                print("full system:", time_key, "sub_sys:", sub_sys)
+                                                print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
                                                 dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                 Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
