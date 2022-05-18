@@ -321,13 +321,16 @@ if plot_truncated_super_mult == True:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys == eval(Sink_birth_all[str(np.max(sub_sys))][2]):
+                                        print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
-                                    elif np.min(sub_sys) == eval(Sink_birth_all[str(np.max(sub_sys))][2]):
+                                    elif other_sys == eval(Sink_birth_all[str(np.max(sub_sys))][2]):
+                                        print("Delayed_core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
+                                        print("Dynamical_capt: False and", other_sys, "not in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                         if np.isnan(Sink_birth_all[str(np.max(sub_sys))][3]):
                                             print("misclassified birth conditions!")
                                             import pdb
@@ -369,31 +372,27 @@ if plot_truncated_super_mult == True:
                                 real_sinks = np.array(sub_sys)[real_sink_inds]
                                 if len(real_sinks) > 0:
                                     if str(np.max(real_sinks)) in Sink_birth_all.keys():
-                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True:
-                                            other_sys = sub_sys_dict[str(list(set(sub_sys).difference(set(real_sinks)))[0])]
-                                            other_sys_str = str(other_sys)
-                                            import pdb
-                                            pdb.set_trace()
-                                            while True in (np.array(flatten(other_sys)) > superplot_dict['N_stars'][-1]):
-                                                greater_than_N_inds = np.argwhere(np.array(flatten(other_sys)) > superplot_dict['N_stars'][-1])[0]
-                                                for greater_ind in greater_than_N_inds:
-                                                    other_split = other_sys_str.split(str(flatten(other_sys)[greater_ind]))
-                                                    insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
-                                                    other_sys_str = other_split[0] + insert_str + other_split[1]
-                                                    other_sys = eval(other_sys_str)
-                                            import pdb
-                                            pdb.set_trace()
-                                            if str(other_sys) not in Sink_birth_all[str(np.max(real_sinks))][2]:
-                                                import pdb
-                                                pdb.set_trace()
+                                        other_sys = sub_sys_dict[str(list(set(sub_sys).difference(set(real_sinks)))[0])]
+                                        other_sys_str = str(other_sys)
+                                        while True in (np.array(flatten(other_sys)) > superplot_dict['N_stars'][-1]):
+                                            greater_than_N_inds = np.argwhere(np.array(flatten(other_sys)) > superplot_dict['N_stars'][-1])[0]
+                                            for greater_ind in greater_than_N_inds:
+                                                other_split = other_sys_str.split(str(flatten(other_sys)[greater_ind]))
+                                                insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
+                                                other_sys_str = other_split[0] + insert_str + other_split[1]
+                                                other_sys = eval(other_sys_str)
+                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
+                                            print("Core_frag: True and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                             marker_color = 'b'
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                             #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
-                                        elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                        elif other_sys_str in Sink_birth_all[str(np.max(real_sinks))][2]:
+                                            print("Core_frag: False and", other_sys, "in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
+                                            print("Core_frag: True and", other_sys, "not in", eval(Sink_birth_all[str(np.max(sub_sys))][2]), "for sub_sys", sub_sys)
                                             if np.isnan(Sink_birth_all[str(np.max(real_sinks))][3]):
                                                 print("misclassified birth conditions!")
                                                 import pdb
