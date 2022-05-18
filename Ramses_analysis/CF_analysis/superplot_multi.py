@@ -65,7 +65,7 @@ pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_s
 
 #pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G50/G50_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G100/G100_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G125/G125_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G150/G150_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G200/G200_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G400/G400_pathway.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all_temp.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all_temp.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all_temp.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all_temp.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
 plt.clf()
 '''
@@ -320,6 +320,8 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
+                                    import pdb
+                                    pdb.set_trace()
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True and other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
                                         marker_color = 'b'
                                         marker_shape = 's'
@@ -331,6 +333,7 @@ if plot_truncated_super_mult == True:
                                         if Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])) and other_sys in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                             import pdb
                                             pdb.set_trace()
+                                            
                                             if other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
                                                 import pdb
                                                 pdb.set_trace()
@@ -402,6 +405,8 @@ if plot_truncated_super_mult == True:
                                                 insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
+                                        import pdb
+                                        pdb.set_trace()
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str in str(Sink_birth_all[str(np.max(real_sinks))][1]):
                                             marker_color = 'b'
                                             marker_shape = 's'

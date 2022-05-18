@@ -569,3 +569,22 @@ if rank == 0:
     pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl", flush=True)
+
+
+if rank==0:
+    def flatten(x):
+        if isinstance(x, collections.Iterable):
+            return [a for i in x for a in flatten(i)]
+        else:
+            return [x]
+    file = open('sink_birth_all.pkl', 'rb')
+    Sink_birth_all = pickle.load(file)
+    file.close()
+
+    for sys_key in Sink_birth_all.keys():
+        if Sink_birth_all[sys_key][0]==False and np.isnan(Sink_birth_all[sys_key][3])==False and Sink_birth_all[sys_key][1] in flatten(eval(Sink_birth_all[sys_key][2])):
+            Sink_birth_all[sys_key][1] = Sink_birth_all[sys_key][2]
+
+    file = open("sink_birth_all_delayed_core_frag_cleaned.pkl", 'wb')
+    pickle.dump((Sink_birth_all), file)
+    file.close()
