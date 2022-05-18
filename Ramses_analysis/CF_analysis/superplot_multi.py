@@ -320,13 +320,19 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True:
-                                        if np.min(sub_sys) not in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                        other_sys = sub_sys_dict[str(list(set(sub_sys).difference(set(real_sinks)))[0])]
+                                        while True in (np.array(other_sys) > superplot_dict['N_stars'][-1]):
+                                            import pdb
+                                            pdb.set_trace()
+                                        if str(other_sys) not in Sink_birth_all[str(np.max(real_sinks))][2]:
                                             import pdb
                                             pdb.set_trace()
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                     elif np.min(sub_sys) in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                        import pdb
+                                        pdb.set_trace()
                                         marker_color = 'm'
                                         marker_shape = '^'
                                     else:
@@ -372,13 +378,20 @@ if plot_truncated_super_mult == True:
                                 if len(real_sinks) > 0:
                                     if str(np.max(real_sinks)) in Sink_birth_all.keys():
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True:
-                                            if np.min(real_sinks) not in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                            other_sys = sub_sys_dict[str(list(set(sub_sys).difference(set(real_sinks)))[0])]
+                                            while True in (np.array(other_sys) > superplot_dict['N_stars'][-1]):
+                                                import pdb
+                                                pdb.set_trace()
+                                            if str(other_sys) not in Sink_birth_all[str(np.max(real_sinks))][2]:
                                                 import pdb
                                                 pdb.set_trace()
                                             marker_color = 'b'
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                            #elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
                                         elif np.min(real_sinks) in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                            import pdb
+                                            pdb.set_trace()
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
