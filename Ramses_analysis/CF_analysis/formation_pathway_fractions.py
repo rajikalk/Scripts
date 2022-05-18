@@ -159,7 +159,6 @@ step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
 x_fit = np.linspace(0,6,10000)
 fit_params = []
 guess_params = []
-label_height = [2.5, 11, 21, 21, 20, ]
 
 plt.clf()
 fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
