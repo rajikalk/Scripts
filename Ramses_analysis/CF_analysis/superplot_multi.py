@@ -420,9 +420,8 @@ if plot_truncated_super_mult == True:
                                                 pathway_counters[2] = pathway_counters[2] + 1
                             sep_ind = sep_ind + 1
                             replace_string = str(new_sys_id)
+                            sub_sys_dict.update({str(new_sys_id):sub_sys})
                             new_sys_id = new_sys_id + 1
-                            import pdb
-                            pdb.set_trace()
                             sys_comps = sys_comps[:open_ind] + replace_string + sys_comps[char_it+1:]
                             if '[' not in sys_comps:
                                 reduced = True
