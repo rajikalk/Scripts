@@ -330,7 +330,7 @@ if plot_truncated_super_mult == True:
                                         marker_shape = '^'
                                     else:
                                         try:
-                                            if other_sys != int(Sink_birth_all[str(np.max(sub_sys))][1])
+                                            if other_sys != int(Sink_birth_all[str(np.max(sub_sys))][1]):
                                                 marker_color = 'r'
                                                 marker_shape = 'o'
                                             else:
@@ -409,7 +409,7 @@ if plot_truncated_super_mult == True:
                                             marker_shape = '^'
                                         else:
                                             try:
-                                                if other_sys != int(Sink_birth_all[str(np.max(real_sinks))][1])
+                                                if other_sys != int(Sink_birth_all[str(np.max(real_sinks))][1]):
                                                     marker_color = 'r'
                                                     marker_shape = 'o'
                                                 else:
