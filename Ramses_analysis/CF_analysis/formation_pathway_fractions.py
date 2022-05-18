@@ -133,7 +133,7 @@ plt.xticks(ind, ("1500", "3000", "3750", "4500", "6000", "12000"))
 ax.tick_params(which='both', direction='in')
 plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
 
-#plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Delayed core frag.', 'Core fragmentation'), loc='upper right', fontsize=font_size)
+plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Delayed core frag.', 'Core fragmentation'), loc='upper right', fontsize=font_size)
 plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
 plt.ylim([0,1])
 plt.savefig('formation_pathway.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
