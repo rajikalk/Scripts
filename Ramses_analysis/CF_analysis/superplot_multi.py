@@ -389,8 +389,6 @@ if plot_truncated_super_mult == True:
                                                 insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
-                                        import pdb
-                                        pdb.set_trace()
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str == str(Sink_birth_all[str(np.max(real_sinks))][2]):
                                             marker_color = 'b'
                                             marker_shape = 's'
@@ -419,6 +417,8 @@ if plot_truncated_super_mult == True:
                                         if args.x_field == 'Time':
                                             axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                         elif args.x_field == 'SFE':
+                                            import pdb
+                                            pdb.set_trace()
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
