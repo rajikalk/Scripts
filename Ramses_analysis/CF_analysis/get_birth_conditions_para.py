@@ -418,10 +418,7 @@ for sink_id in sink_ids:
             gc.collect()
             
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
-            #Look at event 10th index
-            #Maybe find consecutive inds, and then thin those out
-            import pdb
-            pdb.set_trace()
+            test_time_inds = test_time_inds[::10]
             del closest_separations
             gc.collect()
             
