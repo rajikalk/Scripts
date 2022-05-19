@@ -325,12 +325,16 @@ if plot_truncated_super_mult == True:
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                    elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                    elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]) and np.sum(np.array(flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])))>np.max(sub_sys))==0:
+                                        marker_color = 'm'
+                                        marker_shape = '^'
+                                        #elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                    else:
                                         marker_color = 'r'
                                         marker_shape = 'o'
-                                    else:
-                                        import pdb
-                                        pdb.set_trace()
+                                    #else:
+                                    #    import pdb
+                                    #    pdb.set_trace()
                                     #elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
                                     #    marker_color = 'm'
                                     #    marker_shape = '^'
