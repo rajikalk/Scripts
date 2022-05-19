@@ -155,7 +155,8 @@ def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
 
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
-step_centers = np.append(bin_centers-0.25, bin_centers[-1]+0.25)
+#step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
+step_centers = np.append(bin_centers[0]-0.25, bin_centers)
 x_fit = np.linspace(0,6,10000)
 fit_params = []
 guess_params = []
