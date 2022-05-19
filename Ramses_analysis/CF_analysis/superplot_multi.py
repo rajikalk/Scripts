@@ -394,9 +394,9 @@ if plot_truncated_super_mult == True:
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                             #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                        elif other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
-                                            marker_color = 'r'
-                                            marker_shape = 'o'
+                                            #elif other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
+                                            #marker_color = 'r'
+                                            #marker_shape = 'o'
                                         else:
                                             import pdb
                                             pdb.set_trace()
