@@ -156,7 +156,7 @@ def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 #step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
-step_centers = np.append(bin_centers[0]-0.25, bin_centers)
+step_centers = np.concatenate(([bin_centers[0]-0.25], bin_centers, [bin_centers[-1]+0.25]))
 x_fit = np.linspace(0,6,10000)
 fit_params = []
 guess_params = []
@@ -186,9 +186,9 @@ for pick_it in range(len(Initial_Seps_all)):
     axs[pick_it][0].set_xlim([1,4])
     axs[pick_it][1].set_xlim([1,4])
     
-    axs[pick_it][0].step(step_centers, np.append(core_sep_hist[0], core_sep_hist), 'k', where="mid", linewidth=1)
-    axs[pick_it][0].step(step_centers, np.append((core_sep_hist+core_delayed_sep_hist)[0], core_sep_hist+core_delayed_sep_hist), 'k', where="mid", linewidth=1)
-    axs[pick_it][1].step(step_centers, np.append(capt_sep_hist[0], capt_sep_hist), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.concatenate(([core_sep_hist[0]], core_sep_hist, [core_sep_hist[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.concatenate(([core_sep_hist+core_delayed_sep_hist)[0]], core_sep_hist+core_delayed_sep_hist, [core_sep_hist+core_delayed_sep_hist)[-1]]), 'k', where="mid", linewidth=1)
+    axs[pick_it][1].step(step_centers, np.concatenate(([capt_sep_hist[0]], capt_sep_hist, [capt_sep_hist[-1]]), 'k', where="mid", linewidth=1)
     
     #axs[pick_it][0].step(step_centers, np.append(core_sep_hist[0], np.append(core_sep_hist, np.array([core_sep_hist[-1]]))), 'k', where="mid", linewidth=1)
     #axs[pick_it][0].step(step_centers, np.append((core_sep_hist+core_delayed_sep_hist)[0], np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]]))), 'k', where="mid", linewidth=1)
