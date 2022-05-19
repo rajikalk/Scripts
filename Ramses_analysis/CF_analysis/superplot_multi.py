@@ -439,8 +439,6 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
-                                                import pdb
-                                                pdb.set_trace()
                                                 print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
                                                 delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
