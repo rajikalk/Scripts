@@ -22,8 +22,9 @@ sys.stdout.flush()
 CW.Barrier()
 
 pickle_file = sys.argv[1]
+true_birth_con_pickle = sys.argv[2]
 plot_gradient = False
-read_pickle = bool(sys.argv[2])
+read_pickle = bool(sys.argv[3])
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 
@@ -58,6 +59,10 @@ if read_pickle == True:
         del Initial_Seps
         del Final_seps
         print('Read means pickle on rank', rank)
+        
+        file = open(true_birth_con_pickle, 'rb')
+        Sink_birth_all = pickle.load(file)
+        file.close()
 
         sys.stdout.flush()
         CW.Barrier()
@@ -116,6 +121,8 @@ if read_pickle == True:
                                     real_sinks = np.array(sub_sys)[real_sink_inds]
                                     not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
                                     if len(not_plotted_sinks) > 0:
+                                        import pdb
+                                        pdb.set_trace()
                                         birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
                                         if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                             axis_ind = 0
