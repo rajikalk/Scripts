@@ -185,9 +185,13 @@ for pick_it in range(len(Initial_Seps_all)):
     axs[pick_it][0].set_xlim([1,4])
     axs[pick_it][1].set_xlim([1,4])
     
-    axs[pick_it][0].step(step_centers, np.append(core_sep_hist[0], np.append(core_sep_hist, np.array([core_sep_hist[-1]]))), 'k', where="mid", linewidth=1)
-    axs[pick_it][0].step(step_centers, np.append((core_sep_hist+core_delayed_sep_hist)[0], np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]]))), 'k', where="mid", linewidth=1)
-    axs[pick_it][1].step(step_centers, np.append(capt_sep_hist[0], np.append(capt_sep_hist, np.array([(capt_sep_hist)[-1]]))), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.append(core_sep_hist, np.array([core_sep_hist[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][0].step(step_centers, np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
+    axs[pick_it][1].step(step_centers, np.append(capt_sep_hist, np.array([(capt_sep_hist)[-1]])), 'k', where="mid", linewidth=1)
+    
+    #axs[pick_it][0].step(step_centers, np.append(core_sep_hist[0], np.append(core_sep_hist, np.array([core_sep_hist[-1]]))), 'k', where="mid", linewidth=1)
+    #axs[pick_it][0].step(step_centers, np.append((core_sep_hist+core_delayed_sep_hist)[0], np.append(core_sep_hist+core_delayed_sep_hist, np.array([(core_sep_hist+core_delayed_sep_hist)[-1]]))), 'k', where="mid", linewidth=1)
+    #axs[pick_it][1].step(step_centers, np.append(capt_sep_hist[0], np.append(capt_sep_hist, np.array([(capt_sep_hist)[-1]]))), 'k', where="mid", linewidth=1)
     '''
     plt.clf()
     fig, ax = plt.subplots()
