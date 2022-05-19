@@ -396,8 +396,8 @@ if plot_truncated_super_mult == True:
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                         else:
-                                            import pdb
-                                            pdb.set_trace()
+                                            marker_color = 'm'
+                                            marker_shape = '^'
                                         '''
                                         elif Sink_birth_all[str(np.max(real_sinks))][1] in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])) and np.sum(np.array(flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])))>np.max(real_sinks))==0 and str(other_sys) == str(Sink_birth_all[str(np.max(real_sinks))][2]):
                                             marker_color = 'm'
@@ -425,8 +425,6 @@ if plot_truncated_super_mult == True:
                                         if args.x_field == 'Time':
                                             axs.flatten()[pick_it].scatter(Time_adjusted_formation[:t_max][0], superplot_dict[args.plot_key][time_key][:t_max][0][sep_ind], color=marker_color, marker=marker_shape)
                                         elif args.x_field == 'SFE':
-                                            import pdb
-                                            pdb.set_trace()
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
                                                 print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
@@ -437,6 +435,8 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
+                                                import pdb
+                                                pdb.set_trace()
                                                 print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
                                                 delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
