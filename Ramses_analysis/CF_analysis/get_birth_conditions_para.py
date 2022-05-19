@@ -418,6 +418,10 @@ for sink_id in sink_ids:
             gc.collect()
             
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
+            #Look at event 10th index
+            #Maybe find consecutive inds, and then thin those out
+            import pdb
+            pdb.set_trace()
             del closest_separations
             gc.collect()
             
@@ -583,7 +587,11 @@ if rank==0:
 
     for sys_key in Sink_birth_all.keys():
         if Sink_birth_all[sys_key][0]==False and np.isnan(Sink_birth_all[sys_key][3])==False and Sink_birth_all[sys_key][1] in flatten(eval(Sink_birth_all[sys_key][2])):
-            Sink_birth_all[sys_key][1] = Sink_birth_all[sys_key][2]
+            if np.sum(np.array(flatten(eval(Sink_birth_all[sys_key][2])))>eval(sys_key)) == 0:
+                print('For', sys_key, 'Changing', Sink_birth_all[sys_key][1], 'to', Sink_birth_all[sys_key][2])
+                Sink_birth_all[sys_key][1] = Sink_birth_all[sys_key][2]
+            else:
+                print('delayed core fragmentation system connects to system with new sink IDS. Birth con for', sys_key, ':', Sink_birth_all[sys_key])
 
     file = open("sink_birth_all_delayed_core_frag_cleaned.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)

@@ -65,7 +65,7 @@ pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_s
 
 #pickle_files = ["/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G50/G50_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G100/G100_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G125/G125_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G150/G150_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G200/G200_pathway.pkl", "/Users/reggie/Documents/Simulation_analysis/Pathway_evolution/G400/G400_pathway.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/sink_birth_all.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/sink_birth_all.pkl"]
 
 plt.clf()
 '''
@@ -325,12 +325,16 @@ if plot_truncated_super_mult == True:
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                    elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
-                                        marker_color = 'm'
-                                        marker_shape = '^'
                                     elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
                                         marker_color = 'r'
                                         marker_shape = 'o'
+                                    else:
+                                        import pdb
+                                        pdb.set_trace()
+                                    #elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                    #    marker_color = 'm'
+                                    #    marker_shape = '^'
+                                    
                                 else:
                                     #print("sink", np.max(sub_sys), "Not found in birth conditions")
                                     Not_plotted_sinks[pick_it].append(np.max(sub_sys))
@@ -386,12 +390,15 @@ if plot_truncated_super_mult == True:
                                             marker_shape = 's'
                                             #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                             #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                        elif other_sys_str == str(Sink_birth_all[str(np.max(real_sinks))][1]):
-                                            marker_color = 'm'
-                                            marker_shape = '^'
                                         elif other_sys_str != str(Sink_birth_all[str(np.max(real_sinks))][1]):
                                             marker_color = 'r'
                                             marker_shape = 'o'
+                                        else:
+                                            import pdb
+                                            pdb.set_trace()
+                                        #elif other_sys_str == str(Sink_birth_all[str(np.max(real_sinks))][1]):
+                                        #    marker_color = 'm'
+                                        #    marker_shape = '^'
                                     else:
                                         #print("sink", np.max(real_sinks), "Not found in birth conditions")
                                         Not_plotted_sinks[pick_it].append(np.max(real_sinks))
