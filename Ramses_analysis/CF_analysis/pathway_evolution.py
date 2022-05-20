@@ -133,8 +133,6 @@ if read_pickle == True:
                                             line_style = ':'
                                             color='r'
                                         else:
-                                            import pdb
-                                            pdb.set_trace()
                                             print("Dynamical_capt | The birth conditions for", np.max(not_plotted_sinks), "is", Sink_birth_all[str(np.max(not_plotted_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             axis_ind = 2
@@ -153,8 +151,6 @@ if read_pickle == True:
                                     try:
                                         sub_1000_inds = np.where(Time_arr<1000)[0]
                                         dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
-                                        import pdb
-                                        pdb.set_trace()
                                         ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_1000[axis_ind]):
@@ -166,8 +162,6 @@ if read_pickle == True:
                                     try:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
-                                        import pdb
-                                        pdb.set_trace()
                                         ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
@@ -175,6 +169,8 @@ if read_pickle == True:
                                             pdb.set_trace()
                                         Initial_gradients_10000[axis_ind].append([mean_grad])
                                         if mean_grad < -1e4:
+                                            import pdb
+                                            pdb.set_trace()
                                             Grad_1e4.append(time_key)
                                         elif mean_grad < -1e3:
                                             Grad_1e3.append(time_key)
@@ -183,8 +179,6 @@ if read_pickle == True:
                                     try:
                                         sub_100000_inds = np.where(Time_arr<100000)[0]
                                         dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
-                                        import pdb
-                                        pdb.set_trace()
                                         ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
