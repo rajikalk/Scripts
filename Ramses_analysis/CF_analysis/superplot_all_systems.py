@@ -46,18 +46,6 @@ def luminosity(global_data, sink_inds, global_ind):
     L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
     return L_tot
-    
-def is_hierarchical(sys_structure):
-    close_braket = False
-    for char in str(sys_structure):
-        if char == ']':
-            close_braket = True
-        if char == '[' and close_braket == True:
-            is_hierarchical = False
-            break
-        else:
-            is_hierarchical = True
-    return is_hierarchical
 
 def parse_inputs():
     import argparse
@@ -68,7 +56,6 @@ def parse_inputs():
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=35.6)
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.04)
-    parser.add_argument("-cyclic", "--cyclic_bool", help="Do you want to set cyclic?", type=str, default='True')
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-start_time_it", "--start_time_index", help="What time index do you want to start at? mostly for diagnostic reasons.", type=int, default=0)
     parser.add_argument("-lifetime_thres", "--sys_lifetime_threshold", help="What lifeimteimte threshold do you want to define a stable system", type=float, default=100000.)
@@ -127,6 +114,7 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+del units_override
 
 sys.stdout.flush()
 CW.Barrier()
@@ -178,10 +166,6 @@ file_open = open(args.global_data_pickle_file, 'rb')
 sys.stdout.flush()
 CW.Barrier()
 
-if args.cyclic_bool == 'False':
-    cyclic_arg = False
-else:
-    cyclic_arg = True
 if args.bound_check == 'True':
     bound_check = True
 else:
@@ -244,7 +228,9 @@ if args.update_pickles == 'True':
                 S._time = yt.YTArray(time, '')
                 S._abspos = yt.YTArray(abspos, '')
                 S._absvel = yt.YTArray(absvel, '')
+                del absvel
                 S._mass = yt.YTArray(mass, '')
+                del mass
                 
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
@@ -259,7 +245,7 @@ if args.update_pickles == 'True':
                 SFE.append(SFE_val)
                 SFE_n.append(SFE_val/time_yr)
                 
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=cyclic_arg, Grho=Grho)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho)
                 if True in (res['separation']>10000):
                     import pdb
                     pdb.set_trace()
@@ -550,7 +536,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 print("gathered and sorted pickles and saved to", pickle_file+'.pkl')
-
+'''
 #calculate means:
 print("calculating means")
 rit = -1
@@ -770,3 +756,4 @@ sys.stdout.flush()
 CW.Barrier()
 
 print("Finished on rank", rank)
+'''
