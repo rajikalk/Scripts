@@ -122,7 +122,6 @@ if read_pickle == True:
                                     not_plotted_sinks = list(set(real_sinks).difference(set(plotted_sinks)))
                                     if len(not_plotted_sinks) > 0:
                                         other_sys = np.min(sub_sys)
-                                        birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
                                         if Sink_birth_all[str(np.max(not_plotted_sinks))][0] == True and str(other_sys) == str(Sink_birth_all[str(np.max(not_plotted_sinks))][1]):
                                             print("Core_frag | The birth conditions for", np.max(not_plotted_sinks), "is", Sink_birth_all[str(np.max(not_plotted_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
