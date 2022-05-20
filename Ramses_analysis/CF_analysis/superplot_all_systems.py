@@ -9,8 +9,6 @@ from mpi4py.MPI import COMM_WORLD as CW
 import sys
 import collections
 import os
-import matplotlib.collections as mcoll
-import matplotlib.path as mpath
 import pickle
 
 f_acc= 0.5
@@ -425,22 +423,6 @@ if args.update_pickles == 'True':
                 N_multi_stars.append(n_multi)
                 M_tot_multi.append(M_multi)
                 M_tot_vis.append(M_vis)
-                '''
-                #Another analysis to save all eccentricities
-                updated_systems = []
-                multi_inds_non_top = np.where(res['n']>1)[0]
-                if len(multi_inds_non_top)>0:
-                    for ind in multi_inds_non_top:
-                        sys_string = str(losi(ind, res))
-                        if sys_string not in System_ecc.keys():
-                            System_ecc.update({sys_string:[[float(time_yr), res['eccentricity'][ind]]]})
-                        else:
-                            System_ecc[sys_string].append([float(time_yr), res['eccentricity'][ind]])
-                        updated_systems.append(sys_string)
-                for sys_key in System_ecc.keys():
-                    if sys_key not in updated_systems:
-                        System_ecc[sys_key].append([float(time_yr), np.nan])
-                '''
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 
                 superplot_dict = {'Times':Times,
