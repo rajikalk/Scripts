@@ -147,6 +147,14 @@ if read_pickle == True:
                                         axis_ind = 3
                                         line_style = '-'
                                         color='k'
+                                    if axis_ind == 0:
+                                        form_path = 'Core_frag'
+                                    elif axis_ind == 1:
+                                        form_path = 'Delayed_core_frag'
+                                    elif axis_ind == 2:
+                                        form_path = 'Dynamical_capt'
+                                    elif axis_ind == 3:
+                                        form_path = 'Other'
                                     sep_ind = sep_ind + 1
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
                                     dsep = Sep_arr[1:] - Sep_arr[:-1]
@@ -174,27 +182,41 @@ if read_pickle == True:
                                             pdb.set_trace()
                                         Initial_gradients_10000[axis_ind].append([mean_grad])
                                         if mean_grad < -1e4:
-                                            import pdb
-                                            pdb.set_trace()
-                                            Grad_1e4.append(time_key)
-                                        elif mean_grad < -1e3:
-                                            import pdb
-                                            pdb.set_trace()
-                                            Grad_1e3.append(time_key)
-                                        elif mean_grad <  -1e2:
-                                            if axis_ind == 0:
-                                                form_path = 'Core_frag'
-                                            elif axis_ind == 1:
-                                                form_path = 'Delayed_core_frag'
-                                            elif axis_ind == 2:
-                                                form_path = 'Dynamical_capt'
-                                            elif axis_ind == 3:
-                                                form_path = 'Other'
                                             plt.clf()
                                             fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
                                             plt.subplots_adjust(wspace=0.0)
                                             plt.subplots_adjust(hspace=0.0)
-                                            plt.title('System:'+time_key+', form_path')
+                                            plt.title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+mean_grad)
+                                            axs[0].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_semimajor'][time_key], label='Semimajor axis')
+                                            axs[1].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_seps'][time_key], label='Separation')
+                                            axs[2].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_ecc'][time_key], label='Eccentricity')
+                                            axs[0].set_ylabel('Semimajor Axis (au)')
+                                            axs[1].set_ylabel('Separation (au)')
+                                            axs[2].set_ylabel('Eccentricity')
+                                            axs[2].set_xlabel('Time (yr)')
+                                            plt.savefig('System:'+time_key+'.png')
+                                            Grad_1e4.append(time_key)
+                                        elif mean_grad < -1e3:
+                                            plt.clf()
+                                            fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
+                                            plt.subplots_adjust(wspace=0.0)
+                                            plt.subplots_adjust(hspace=0.0)
+                                            plt.title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+mean_grad)
+                                            axs[0].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_semimajor'][time_key], label='Semimajor axis')
+                                            axs[1].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_seps'][time_key], label='Separation')
+                                            axs[2].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_ecc'][time_key], label='Eccentricity')
+                                            axs[0].set_ylabel('Semimajor Axis (au)')
+                                            axs[1].set_ylabel('Separation (au)')
+                                            axs[2].set_ylabel('Eccentricity')
+                                            axs[2].set_xlabel('Time (yr)')
+                                            plt.savefig('System:'+time_key+'.png')
+                                            Grad_1e3.append(time_key)
+                                        elif mean_grad <  -1e2:
+                                            plt.clf()
+                                            fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
+                                            plt.subplots_adjust(wspace=0.0)
+                                            plt.subplots_adjust(hspace=0.0)
+                                            plt.title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+mean_grad)
                                             axs[0].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_semimajor'][time_key], label='Semimajor axis')
                                             axs[1].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_seps'][time_key], label='Separation')
                                             axs[2].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_ecc'][time_key], label='Eccentricity')
