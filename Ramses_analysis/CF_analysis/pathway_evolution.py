@@ -119,14 +119,14 @@ if read_pickle == True:
                                         other_sys = np.min(sub_sys)
                                         birth_conditions = Sink_bound_birth[np.max(not_plotted_sinks)]
                                         if Sink_birth_all[str(np.max(not_plotted_sinks))][0] == True and str(other_sys) == str(Sink_birth_all[str(np.max(not_plotted_sinks))][1]):
-                                            print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                            print("Core_frag | The birth conditions for", np.max(not_plotted_sinks), "is", Sink_birth_all[str(np.max(not_plotted_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             #if birth_conditions[0] == True and birth_conditions[1] in key_inds:
                                             axis_ind = 0
                                             line_style = '-'
                                             color = 'b'
                                         elif str(other_sys) == str(Sink_birth_all[str(np.max(not_plotted_sinks))][1]) and np.sum(np.array(flatten(eval(Sink_birth_all[str(np.max(not_plotted_sinks))][2])))>np.max(not_plotted_sinks))==0:
-                                            print("Delayed_core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                            print("Delayed_core_frag | The birth conditions for", np.max(not_plotted_sinks), "is", Sink_birth_all[str(np.max(not_plotted_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             #elif birth_conditions[0] == False and birth_conditions[1] in key_inds:
                                             axis_ind = 1
@@ -135,7 +135,7 @@ if read_pickle == True:
                                         else:
                                             import pdb
                                             pdb.set_trace()
-                                            print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                            print("Dynamical_capt | The birth conditions for", np.max(not_plotted_sinks), "is", Sink_birth_all[str(np.max(not_plotted_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             axis_ind = 2
                                             line_style = '-'
@@ -153,6 +153,8 @@ if read_pickle == True:
                                     try:
                                         sub_1000_inds = np.where(Time_arr<1000)[0]
                                         dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
+                                        import pdb
+                                        pdb.set_trace()
                                         ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_1000[axis_ind]):
@@ -164,6 +166,8 @@ if read_pickle == True:
                                     try:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
+                                        import pdb
+                                        pdb.set_trace()
                                         ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
@@ -179,6 +183,8 @@ if read_pickle == True:
                                     try:
                                         sub_100000_inds = np.where(Time_arr<100000)[0]
                                         dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
+                                        import pdb
+                                        pdb.set_trace()
                                         ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
                                         mean_grad = ds/dt
                                         if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
