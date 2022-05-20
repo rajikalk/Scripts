@@ -173,6 +173,8 @@ if read_pickle == True:
                                     except:
                                         print('system has not mean times < 1000yr')
                                     try:
+                                        import pdb
+                                        pdb.set_trace()
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
                                         ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
@@ -180,7 +182,7 @@ if read_pickle == True:
                                         if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
                                             import pdb
                                             pdb.set_trace()
-                                        Initial_gradients_10000[axis_ind].append([mean_grad])
+                                        Initial_gradients_10000[axis_ind].append([c])
                                         if mean_grad < -1e4:
                                             plt.clf()
                                             fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
