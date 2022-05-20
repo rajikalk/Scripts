@@ -10,6 +10,7 @@ import sys
 import collections
 import os
 import pickle
+import gc
 
 f_acc= 0.5
 
@@ -115,6 +116,7 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
+gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -228,9 +230,7 @@ if args.update_pickles == 'True':
                 S._time = yt.YTArray(time, '')
                 S._abspos = yt.YTArray(abspos, '')
                 S._absvel = yt.YTArray(absvel, '')
-                del absvel
                 S._mass = yt.YTArray(mass, '')
-                del mass
                 
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
