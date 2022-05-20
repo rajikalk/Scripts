@@ -181,7 +181,7 @@ if read_pickle == True:
                                             if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
                                                 import pdb
                                                 pdb.set_trace()
-                                            Initial_gradients_10000[axis_ind].append([c])
+                                            Initial_gradients_10000[axis_ind].append([mean_grad])
                                             if mean_grad < -1e4:
                                                 plt.clf()
                                                 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
