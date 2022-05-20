@@ -18,6 +18,11 @@ def flatten(x):
 rank = CW.Get_rank()
 size = CW.Get_size()
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472
+font_size = 10
+
 sys.stdout.flush()
 CW.Barrier()
 
@@ -177,8 +182,27 @@ if read_pickle == True:
                                             pdb.set_trace()
                                             Grad_1e3.append(time_key)
                                         elif mean_grad <  -1e2:
-                                            import pdb
-                                            pdb.set_trace()
+                                            if axis_ind == 0:
+                                                form_path = 'Core_frag'
+                                            elif axis_ind == 1:
+                                                form_path = 'Delayed_core_frag'
+                                            elif axis_ind == 2:
+                                                form_path = 'Dynamical_capt'
+                                            elif axis_ind == 3:
+                                                form_path = 'Other'
+                                            plt.clf()
+                                            fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
+                                            plt.subplots_adjust(wspace=0.0)
+                                            plt.subplots_adjust(hspace=0.0)
+                                            plt.title('System:'+time_key+', form_path')
+                                            axs[0].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_semimajor'][time_key], label='Semimajor axis')
+                                            axs[1].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_seps'][time_key], label='Separation')
+                                            axs[2].semilogy(superplot_dict['System_times'][time_key], superplot_dict['System_ecc'][time_key], label='Eccentricity')
+                                            axs[0].set_ylabel('Semimajor Axis (au)')
+                                            axs[1].set_ylabel('Separation (au)')
+                                            axs[2].set_ylabel('Eccentricity')
+                                            axs[2].set_xlabel('Time (yr)')
+                                            plt.savefig('System:'+time_key+'.png')
                                     except:
                                         print('system has not mean times < 10000yr')
                                     try:
