@@ -173,7 +173,12 @@ if read_pickle == True:
                                             pdb.set_trace()
                                             Grad_1e4.append(time_key)
                                         elif mean_grad < -1e3:
+                                            import pdb
+                                            pdb.set_trace()
                                             Grad_1e3.append(time_key)
+                                        elif mean_grad <  -1e2:
+                                            import pdb
+                                            pdb.set_trace()
                                     except:
                                         print('system has not mean times < 10000yr')
                                     try:
