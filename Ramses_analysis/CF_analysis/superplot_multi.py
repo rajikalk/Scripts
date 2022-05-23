@@ -325,7 +325,6 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
-                                    counter = counter + 1
                                     if counter > 7:
                                         import pdb
                                         pdb.set_trace()
