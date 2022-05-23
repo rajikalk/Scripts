@@ -175,8 +175,6 @@ if read_pickle == True:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         non_nan_ind = np.where(np.isnan(Sep_arr)==False)[0]
                                         if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>10000 and np.max(sub_10000_inds[1:] - sub_10000_inds[:-1])==1:
-                                            import pdb
-                                            pdb.set_trace()
                                             dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
                                             ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
                                             mean_grad = ds/dt
@@ -194,7 +192,7 @@ if read_pickle == True:
                                                 plt.subplots_adjust(wspace=0.0)
                                                 plt.subplots_adjust(hspace=0.0)
                                                 axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy(Time_arr[time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
+                                                axs[0].semilogy(Time_arr, np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
                                                 axs[1].semilogy(Time_arr, np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
                                                 axs[1].set_ylim([10, 10000])
                                                 axs[2].plot(Time_arr, np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
