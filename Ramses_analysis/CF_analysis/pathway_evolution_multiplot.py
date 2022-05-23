@@ -144,8 +144,6 @@ for grad_it in range(len(grad_pickles)):
         grad_hist_capt_mean_rel_err = np.concatenate((grad_hist_capt_mean_rel_err, np.array([grad_hist_capt_mean_rel_err[-1]])))
         grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
 
-        import pdb
-        pdb.set_trace()
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
@@ -174,7 +172,7 @@ for grad_it in range(len(grad_pickles)):
             axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
             axs_list[time_means_counter+1][grad_it].set_xticks(x_range[::2])
             axs_list[time_means_counter+1][grad_it].set_xticklabels(ticklabels[::2][:-1])
-            axs_list[time_means_counter+1][grad_it].set_xlabel('Inspiral rate (au/yr)')
+            axs_list[time_means_counter+1][grad_it].set_xlabel('Semi-major axis inspiral rate (au/yr)')
             axs_list[time_means_counter+1][grad_it].set_ylim(bottom=0)
         fig_list[time_means_counter+1].savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png', bbox_inches='tight', pad_inches=0.02)
         time_means_counter = time_means_counter + 1
