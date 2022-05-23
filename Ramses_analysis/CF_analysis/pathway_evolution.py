@@ -174,10 +174,7 @@ if read_pickle == True:
                                     try:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
                                         non_nan_ind = np.where(np.isnan(Sep_arr)==False)[0]
-                                        if np.max(non_nan_ind[1:] - non_nan_ind[:-1])>1:
-                                            import pdb
-                                            pdb.set_trace()
-                                        if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>10000:
+                                        if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>10000, and np.max(sub_10000_inds[1:] - sub_10000_inds[:-1])==1:
                                             dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
                                             ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
                                             mean_grad = ds/dt
