@@ -356,30 +356,36 @@ if plot_truncated_super_mult == True:
                                         if marker_color == 'b':
                                             print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
-                                            import pdb
-                                            pdb.set_trace()
-                                            core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                            Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
+                                                core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
+                                                Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            else:
+                                                core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                             pathway_counters[0] = pathway_counters[0] + 1
                                         elif marker_color == 'm':
                                             print("Delayed_core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
-                                            import pdb
-                                            pdb.set_trace()
-                                            delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                            Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
+                                                delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
+                                                Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            else:
+                                                delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
                                             print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
-                                            import pdb
-                                            pdb.set_trace()
-                                            dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
-                                            Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
+                                                dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
+                                                Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                            else:
+                                                dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                             pathway_counters[2] = pathway_counters[2] + 1
@@ -441,30 +447,36 @@ if plot_truncated_super_mult == True:
                                             if marker_color == 'b':
                                                 print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
-                                                import pdb
-                                                pdb.set_trace()
-                                                core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                    core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                    Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                else:
+                                                    core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                    Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
                                                 print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
-                                                import pdb
-                                                pdb.set_trace()
-                                                delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                    delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                    Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                else:
+                                                    delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                    Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
                                                 print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
-                                                import pdb
-                                                pdb.set_trace()
-                                                dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                    dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                    Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                else:
+                                                    dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                    Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[2] = pathway_counters[2] + 1
