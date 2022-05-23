@@ -372,8 +372,8 @@ if plot_truncated_super_mult == True:
                                                 delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                             else:
-                                                import pdb
-                                                pdb.set_trace()
+                                                delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
