@@ -182,6 +182,43 @@ if read_pickle == True:
                                                 import pdb
                                                 pdb.set_trace()
                                             Initial_gradients_10000[axis_ind].append([mean_grad])
+                                            '''
+                                            if mean_grad < -1e4:
+                                                Grad_1e4.append(time_key)
+                                            if mean_grad < -1e3:
+                                                Grad_1e3.append(time_key)
+                                            if mean_grad < -1e2:
+                                                plt.clf()
+                                                fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
+                                                plt.subplots_adjust(wspace=0.0)
+                                                plt.subplots_adjust(hspace=0.0)
+                                                axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
+                                                axs[0].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
+                                                axs[1].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
+                                                axs[1].set_ylim([10, 10000])
+                                                axs[2].plot(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
+                                                axs[2].set_ylim([0.0, 1.1])
+                                                axs[0].set_ylabel('Semimajor Axis (au)')
+                                                axs[1].set_ylabel('Separation (au)')
+                                                axs[2].set_ylabel('Eccentricity')
+                                                axs[2].set_xlabel('Time (yr)')
+                                                plt.savefig('System:'+time_key+'.png')
+                                            '''
+                                        else:
+                                            print('Not enough points to suggest system stays bound for first  10000yr')
+                                    except:
+                                        print('system has no mean times < 10000yr')
+                                    try:
+                                        sub_100000_inds = np.where(Time_arr<100000)[0]
+                                        non_nan_ind = np.where(np.isnan(Sep_arr)==False)[0]
+                                        if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>100000 and np.max(sub_100000_inds[1:] - sub_100000_inds[:-1])==1:
+                                            dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
+                                            ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
+                                            mean_grad = ds/dt
+                                            if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
+                                                import pdb
+                                                pdb.set_trace()
+                                            Initial_gradients_100000[axis_ind].append([mean_grad])
                                             if mean_grad < -1e4:
                                                 Grad_1e4.append(time_key)
                                             if mean_grad < -1e3:
@@ -204,17 +241,6 @@ if read_pickle == True:
                                                 plt.savefig('System:'+time_key+'.png')
                                         else:
                                             print('Not enough points to suggest system stays bound for first  10000yr')
-                                    except:
-                                        print('system has no mean times < 10000yr')
-                                    try:
-                                        sub_100000_inds = np.where(Time_arr<100000)[0]
-                                        dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
-                                        ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
-                                        mean_grad = ds/dt
-                                        if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
-                                            import pdb
-                                            pdb.set_trace()
-                                        Initial_gradients_100000[axis_ind].append([mean_grad])
                                     except:
                                         print('system has not mean times < 100000yr')
                                     if len(grad) > 0:
