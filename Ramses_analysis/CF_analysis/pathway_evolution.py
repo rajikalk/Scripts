@@ -182,7 +182,6 @@ if read_pickle == True:
                                                 import pdb
                                                 pdb.set_trace()
                                             Initial_gradients_10000[axis_ind].append([mean_grad])
-                                            '''
                                             if mean_grad < -1e4:
                                                 Grad_1e4.append(time_key)
                                             if mean_grad < -1e3:
@@ -193,17 +192,16 @@ if read_pickle == True:
                                                 plt.subplots_adjust(wspace=0.0)
                                                 plt.subplots_adjust(hspace=0.0)
                                                 axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
-                                                axs[1].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
+                                                axs[0].semilogy(Time_arr[time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
+                                                axs[1].semilogy(Time_arr, np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
                                                 axs[1].set_ylim([10, 10000])
-                                                axs[2].plot(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
+                                                axs[2].plot(Time_arr, np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
                                                 axs[2].set_ylim([0.0, 1.1])
                                                 axs[0].set_ylabel('Semimajor Axis (au)')
                                                 axs[1].set_ylabel('Separation (au)')
                                                 axs[2].set_ylabel('Eccentricity')
                                                 axs[2].set_xlabel('Time (yr)')
                                                 plt.savefig('System:'+time_key+'.png')
-                                            '''
                                         else:
                                             print('Not enough points to suggest system stays bound for first  10000yr')
                                     except:
@@ -219,6 +217,7 @@ if read_pickle == True:
                                                 import pdb
                                                 pdb.set_trace()
                                             Initial_gradients_100000[axis_ind].append([mean_grad])
+                                            '''
                                             if mean_grad < -1e4:
                                                 Grad_1e4.append(time_key)
                                             if mean_grad < -1e3:
@@ -229,16 +228,17 @@ if read_pickle == True:
                                                 plt.subplots_adjust(wspace=0.0)
                                                 plt.subplots_adjust(hspace=0.0)
                                                 axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
-                                                axs[1].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
+                                                axs[0].semilogy(Time_arr, np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
+                                                axs[1].semilogy(Time_arr, np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
                                                 axs[1].set_ylim([10, 10000])
-                                                axs[2].plot(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
+                                                axs[2].plot(Time_arr, np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
                                                 axs[2].set_ylim([0.0, 1.1])
                                                 axs[0].set_ylabel('Semimajor Axis (au)')
                                                 axs[1].set_ylabel('Separation (au)')
                                                 axs[2].set_ylabel('Eccentricity')
                                                 axs[2].set_xlabel('Time (yr)')
                                                 plt.savefig('System:'+time_key+'.png')
+                                            '''
                                         else:
                                             print('Not enough points to suggest system stays bound for first  10000yr')
                                     except:
