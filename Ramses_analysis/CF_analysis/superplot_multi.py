@@ -309,12 +309,14 @@ if plot_truncated_super_mult == True:
                         Initial_Seps_100000[3].append(Sep_arr[0][sep_ind])
                 sys_comps = time_key
                 reduced = False
+                sub_sys_counter = 0
                 while reduced == False:
                     open_braket_ind = []
                     for char_it in range(len(sys_comps)):
                         if sys_comps[char_it] == '[':
                             open_braket_ind.append(char_it)
                         if sys_comps[char_it] == ']':
+                            sub_sys_counter = sub_sys_counter + 1
                             open_ind = open_braket_ind.pop()
                             sub_sys = eval(sys_comps[open_ind:char_it+1])
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
@@ -382,8 +384,7 @@ if plot_truncated_super_mult == True:
                                                 dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                             else:
-                                                import pdb
-                                                pdb.set_trace()
+                                                dynamical_capture_marker_pos.append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                             pathway_counters[2] = pathway_counters[2] + 1
