@@ -27,15 +27,15 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True, hspace=0.0)
-fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True, hspace=0.0)
-fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True, hspace=0.0)
-fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True, hspace=0.0)
+fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
 fig_list = [fig1, fig2, fig3, fig4]
 axs_list = [axs1, axs2, axs3, axs4]
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
-#plt.subplots_adjust(hspace=0.0)
+plt.subplots_adjust(hspace=0.0)
 
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
