@@ -31,7 +31,7 @@ true_birth_con_pickle = sys.argv[2]
 plot_gradient = False
 read_pickle = bool(sys.argv[3])
 #plot_key = sys.argv[2]
-plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
+plot_keys = ['System_seps']#['System_semimajor']#, 'System_ecc', 'System_energies']
 
 sys.stdout.flush()
 CW.Barrier()
