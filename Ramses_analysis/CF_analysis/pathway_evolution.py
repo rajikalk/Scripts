@@ -186,8 +186,6 @@ if read_pickle == True:
                                             if mean_grad < -1e3:
                                                 Grad_1e3.append(time_key)
                                             if mean_grad < -1e2:
-                                                import pdb
-                                                pdb.set_trace()
                                                 plt.clf()
                                                 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
                                                 plt.subplots_adjust(wspace=0.0)
