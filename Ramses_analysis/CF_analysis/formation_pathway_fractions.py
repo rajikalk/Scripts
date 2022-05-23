@@ -31,7 +31,8 @@ matplotlib.rcParams['text.latex.preamble'] = [
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
 #Formation_pathway = [[252, 88, 105], [624, 859, 1209], [1893, 2000, 5105], [1255, 4381, 11458], [2921, 5951, 22602], [2172, 5412, 32412]]
-Formation_pathway = [[21, 11, 14], [46, 28, 32], [91, 31, 68], [73, 41, 70], [73, 38, 60], [np.nan, np.nan, np.nan]]
+#Formation_pathway = [[21, 11, 14], [46, 28, 32], [91, 31, 68], [73, 41, 70], [73, 38, 60], [np.nan, np.nan, np.nan]]
+Formation_pathway = []
 birth_con_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_1500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_6000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_12000.pkl']
 
 Core_frag_fracs = []
@@ -60,6 +61,7 @@ for birth_con_pickle in birth_con_pickles:
         Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
         Dynamical_capt_frac = pathway_counters[2]/Total_sys_no
         Initial_Seps_all.append(Initial_Seps)
+        Formation_pathway.append([pathway_counters[0], pathway_counters[1], pathway_counters[2]])
     except:
         Core_frag_frac = np.nan
         Delayed_core_frag_frac = np.nan
