@@ -187,17 +187,15 @@ if read_pickle == True:
                                             if mean_grad < -1e3:
                                                 Grad_1e3.append(time_key)
                                             if mean_grad < -1e2:
-                                                import pdb
-                                                pdb.set_trace()
                                                 plt.clf()
                                                 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
                                                 plt.subplots_adjust(wspace=0.0)
                                                 plt.subplots_adjust(hspace=0.0)
                                                 axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy(Time_arr, np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
-                                                axs[1].semilogy(Time_arr, np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
+                                                axs[0].semilogy((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
+                                                axs[1].semilogy((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
                                                 axs[1].set_ylim([10, 10000])
-                                                axs[2].plot(Time_arr, np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
+                                                axs[2].plot((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
                                                 axs[2].set_ylim([0.0, 1.1])
                                                 axs[0].set_ylabel('Semimajor Axis (au)')
                                                 axs[1].set_ylabel('Separation (au)')
