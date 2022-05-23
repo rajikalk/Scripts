@@ -253,7 +253,12 @@ if plot_truncated_super_mult == True:
         sim_start_time = np.nan
         plotted_sinks = []
         sub_sys_dict = {}
+        counter = 0
         for time_key in superplot_dict['System_times'].keys():
+            counter = counter + 1
+            if counter > 7:
+                import pdb
+                pdb.set_trace()
             for sit in range(len(S_bins[1:])):
                 bin_inst = np.argwhere((superplot_dict[args.plot_key][time_key]>S_bins[sit])&(superplot_dict[args.plot_key][time_key]<S_bins[sit+1]))
                 CF_hist[file_it][sit] = CF_hist[file_it][sit] + np.shape(bin_inst)[0]
