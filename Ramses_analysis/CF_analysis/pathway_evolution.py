@@ -173,6 +173,8 @@ if read_pickle == True:
                                         print('system has not mean times < 1000yr')
                                     try:
                                         sub_10000_inds = np.where(Time_arr<10000)[0]
+                                        import pdb
+                                        pdb.set_trace()
                                         if len(sub_10000_inds)>9:
                                             dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
                                             ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
