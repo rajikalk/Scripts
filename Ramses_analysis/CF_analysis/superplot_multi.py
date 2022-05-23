@@ -325,6 +325,10 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
+                                    counter = counter + 1
+                                    if counter > 7:
+                                        import pdb
+                                        pdb.set_trace()
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True and str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
                                         marker_color = 'b'
                                         marker_shape = 's'
@@ -350,6 +354,9 @@ if plot_truncated_super_mult == True:
                                     marker_color = 'k'
                                     marker_shape = 'x'
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
+                                    if counter > 7:
+                                        import pdb
+                                        pdb.set_trace()
                                     plotted_sinks = plotted_sinks + sub_sys
                                     #print('plotted sinks', sub_sys)
                                     if args.x_field == 'Time':
@@ -357,6 +364,9 @@ if plot_truncated_super_mult == True:
                                     elif args.x_field == 'SFE':
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
+                                            if counter > 7:
+                                                import pdb
+                                                pdb.set_trace()
                                             print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
@@ -373,6 +383,9 @@ if plot_truncated_super_mult == True:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
+                                            if counter > 7:
+                                                import pdb
+                                                pdb.set_trace()
                                             print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                             print("-------------------------------------------------------")
                                             dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
