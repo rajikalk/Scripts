@@ -186,13 +186,11 @@ if read_pickle == True:
                                             if mean_grad < -1e3:
                                                 Grad_1e3.append(time_key)
                                             if mean_grad < -1e2:
-                                                import pdb
-                                                pdb.set_trace()
                                                 plt.clf()
                                                 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
                                                 plt.subplots_adjust(wspace=0.0)
                                                 plt.subplots_adjust(hspace=0.0)
-                                                axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+mean_grad)
+                                                axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
                                                 axs[0].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
                                                 axs[1].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
                                                 axs[2].semilogy(superplot_dict['System_times'][time_key], np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
