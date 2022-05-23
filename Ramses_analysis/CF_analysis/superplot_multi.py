@@ -384,7 +384,8 @@ if plot_truncated_super_mult == True:
                                                 dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                             else:
-                                                dynamical_capture_marker_pos.append(Sep_arr[0][-1*sub_sys_counter])
+                                                dynamical_capture_marker_pos.append(SFE_arr[0], Sep_arr[0][-1*sub_sys_counter])
+                                                Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                             pathway_counters[2] = pathway_counters[2] + 1
