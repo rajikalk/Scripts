@@ -31,7 +31,7 @@ true_birth_con_pickle = sys.argv[2]
 plot_gradient = False
 read_pickle = bool(sys.argv[3])
 #plot_key = sys.argv[2]
-plot_keys = ['System_seps']#['System_semimajor']#, 'System_ecc', 'System_energies']
+plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 
 sys.stdout.flush()
 CW.Barrier()
@@ -155,11 +155,9 @@ if read_pickle == True:
                                     elif axis_ind == 3:
                                         form_path = 'Other'
                                     sep_ind = sep_ind + 1
-                                    if plot_key == 'System_semimajor':
-                                        Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
-                                    elif plot_key == 'System_seps':
-                                        import pdb
-                                        pdb.set_trace()
+                                    Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
+                                    import pdb
+                                    pdb.set_trace()
                                         
                                     dsep = Sep_arr[1:] - Sep_arr[:-1]
                                     dtime = Time_arr[1:] - Time_arr[:-1]
