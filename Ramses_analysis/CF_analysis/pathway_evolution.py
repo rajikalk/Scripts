@@ -162,8 +162,8 @@ if read_pickle == True:
                                     dsep = Sep_arr_true[1:] - Sep_arr_true[:-1]
                                     dtime = Time_arr_full[1:] - Time_arr_full[:-1]
                                     grad = dsep/dtime
-                                    peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))
-                                    apas_inds = np.where((Sep_arr_true[1:-1] > Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] > Sep_arr_true[2:]))
+                                    peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))[0]
+                                    apas_inds = np.where((Sep_arr_true[1:-1] > Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] > Sep_arr_true[2:]))[0]
                                     plt.clf()
                                     plt.figure(figsize=(15, 3))
                                     plt.semilogy(Time_arr_full, Sep_arr_true)
