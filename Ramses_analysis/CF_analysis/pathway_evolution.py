@@ -178,7 +178,7 @@ if read_pickle == True:
                                         end_t_ind = np.argmin(abs(Time_arr - end_t))
                                         end_a = Sep_arr[end_t_ind]
                                         end_t_data = Time_arr[end_t_ind]
-                                        grad = (end_a-initial_a)/(end_t_data-initial_t)
+                                        mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                         Initial_gradients_10000[axis_ind].append([mean_grad])
  
                                     '''
