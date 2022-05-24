@@ -164,8 +164,9 @@ if read_pickle == True:
                                     grad = dsep/dtime
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))
                                     plt.clf()
+                                    plt.figure(figsize=(10, 3))
                                     plt.semilogy(Time_arr_full, Sep_arr_true)
-                                    plt.scatter(Time_arr_full[2:][peri_inds], Sep_arr_true[2:][peri_inds])
+                                    plt.scatter(np.array(Time_arr_full)[2:][peri_inds], Sep_arr_true[2:][peri_inds])
                                     plt.savefig('Test_peri_check.png')
                                     import pdb
                                     pdb.set_trace()
