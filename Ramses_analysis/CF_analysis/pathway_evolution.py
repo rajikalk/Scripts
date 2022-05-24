@@ -163,12 +163,25 @@ if read_pickle == True:
                                     dtime = Time_arr_full[1:] - Time_arr_full[:-1]
                                     grad = dsep/dtime
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))
+                                    apas_inds = np.where((Sep_arr_true[1:-1] > Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] > Sep_arr_true[2:]))
                                     plt.clf()
                                     plt.figure(figsize=(15, 3))
                                     plt.semilogy(Time_arr_full, Sep_arr_true)
                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                     plt.xlim([0, 100000])
                                     plt.savefig('Test_peri_check.png')
+                                    
+                                    if len(peri_inds) > 2:
+                                        initial_a = Sep_arr[1:][peri_inds[0]]
+                                        initial_t = Time_arr[1:][peri_inds[0]]
+                                        end_t = initial_t + 10000
+                                        end_t_ind = np.argmin(abs(Time_arr - end_t))
+                                        end_a = Sep_arr[end_t_ind]
+                                        end_t_data = Time_arr[end_t_ind]
+                                        grad = (end_a-initial_a)/(end_t_data-initial_t)
+                                        Initial_gradients_10000[axis_ind].append([mean_grad])
+ 
+                                    '''
                                     import pdb
                                     pdb.set_trace()
                                         
@@ -233,28 +246,6 @@ if read_pickle == True:
                                                 import pdb
                                                 pdb.set_trace()
                                             Initial_gradients_100000[axis_ind].append([mean_grad])
-                                            '''
-                                            if mean_grad < -1e4:
-                                                Grad_1e4.append(time_key)
-                                            if mean_grad < -1e3:
-                                                Grad_1e3.append(time_key)
-                                            if mean_grad < -1e2:
-                                                plt.clf()
-                                                fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
-                                                plt.subplots_adjust(wspace=0.0)
-                                                plt.subplots_adjust(hspace=0.0)
-                                                axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy(Time_arr, np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
-                                                axs[1].semilogy(Time_arr, np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
-                                                axs[1].set_ylim([10, 10000])
-                                                axs[2].plot(Time_arr, np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
-                                                axs[2].set_ylim([0.0, 1.1])
-                                                axs[0].set_ylabel('Semimajor Axis (au)')
-                                                axs[1].set_ylabel('Separation (au)')
-                                                axs[2].set_ylabel('Eccentricity')
-                                                axs[2].set_xlabel('Time (yr)')
-                                                plt.savefig('System:'+time_key+'.png')
-                                            '''
                                         else:
                                             print('Not enough points to suggest system stays bound for first  10000yr')
                                     except:
@@ -268,7 +259,7 @@ if read_pickle == True:
                                     
                                     Used_sub_sys.append(str(sub_sys))
                                     
-
+                                    '''
                                 if plot_gradient == True:
                                     if 'ecc' in plot_key:
                                         axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
