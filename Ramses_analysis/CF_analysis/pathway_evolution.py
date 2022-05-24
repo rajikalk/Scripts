@@ -156,6 +156,17 @@ if read_pickle == True:
                                         form_path = 'Other'
                                     sep_ind = sep_ind + 1
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
+                                    
+                                    Sep_arr_true = np.array(superplot_dict['System_seps'][time_key]).T[sep_ind]
+                                    Time_arr_full = superplot_dict['System_times'][time_key]
+                                    dsep = Sep_arr_true[1:] - Sep_arr_true[:-1]
+                                    dtime = np.array(Time_arr_full)[1:] - np.array(Time_arr_full)[:-1]
+                                    grad = dsep/dtime
+                                    peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))
+                                    plt.clf()
+                                    plt.semilogy(Time_arr_full, Sep_arr_true)
+                                    plt.scatter(Time_arr_full[2:][peri_inds], Sep_arr_true[2:][peri_inds])
+                                    plt.savefig('Test_peri_check.png')
                                     import pdb
                                     pdb.set_trace()
                                         
