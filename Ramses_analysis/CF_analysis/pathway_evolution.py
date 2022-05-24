@@ -54,8 +54,8 @@ if read_pickle == True:
         '''
 
         file = open(pickle_file, 'rb')
-        superplot_dict, Sink_bound_birth, Sink_formation_times = pickle.load(file)
-        #superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+        #superplot_dict, Sink_bound_birth, Sink_formation_times = pickle.load(file)
+        superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
         del Sink_formation_times
         print('Read means pickle on rank', rank)
@@ -158,16 +158,19 @@ if read_pickle == True:
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
                                     
                                     Sep_arr_true = np.array(superplot_dict['System_seps'][time_key]).T[sep_ind]
-                                    Time_arr_full = superplot_dict['System_times'][time_key]
+                                    Time_arr_full = np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]
                                     dsep = Sep_arr_true[1:] - Sep_arr_true[:-1]
-                                    dtime = np.array(Time_arr_full)[1:] - np.array(Time_arr_full)[:-1]
+                                    dtime = Time_arr_full[1:] - Time_arr_full[:-1]
                                     grad = dsep/dtime
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))
                                     plt.clf()
-                                    plt.figure(figsize=(10, 3))
+                                    plt.figure(figsize=(15, 3))
                                     plt.semilogy(Time_arr_full, Sep_arr_true)
-                                    plt.scatter(np.array(Time_arr_full)[2:][peri_inds], Sep_arr_true[2:][peri_inds])
+                                    plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
+                                    plt.xlim([0, 100000])
                                     plt.savefig('Test_peri_check.png')
+                                    
+                                    if len(
                                     import pdb
                                     pdb.set_trace()
                                         
