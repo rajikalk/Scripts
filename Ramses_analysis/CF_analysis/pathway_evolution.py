@@ -169,8 +169,6 @@ if read_pickle == True:
                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                     plt.xlim([0, 100000])
                                     plt.savefig('Test_peri_check.png')
-                                    
-                                    if len(
                                     import pdb
                                     pdb.set_trace()
                                         
