@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pickle
 from scipy import stats
 
-grad_pickles = ['/groups/astro/rlk/Analysis_home/Pathway_evolution/G50/grad_pickle.pkl', '/groups/astro/rlk/Analysis_home/Pathway_evolution/G100/grad_pickle.pkl', '/groups/astro/rlk/Analysis_home/Pathway_evolution/G125/grad_pickle.pkl', '/groups/astro/rlk/Analysis_home/Pathway_evolution/G150/grad_pickle.pkl']#, '/groups/astro/rlk/Analysis_home/Pathway_evolution/G200/grad_pickle.pkl', '/groups/astro/rlk/Analysis_home/Pathway_evolution/G400/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(5,-6,12), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
