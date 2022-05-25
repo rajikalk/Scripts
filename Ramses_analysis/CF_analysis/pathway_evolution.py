@@ -168,7 +168,7 @@ if read_pickle == True:
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
                                         if len(Time_arr) > 1:
-                                            if np.max(Time_arr_full[1:] - Time_arr_full[:-1]) > 1000:
+                                            if np.max(Time_arr_full[1:] - Time_arr_full[:-1]) > 2000:
                                                 jump_inds = np.where((Time_arr_full[1:] - Time_arr_full[:-1])>1000)[0]
                                                 start_jump_it = -1
                                                 for jump_ind in jump_inds:

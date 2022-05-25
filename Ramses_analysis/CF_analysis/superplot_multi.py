@@ -302,7 +302,7 @@ if plot_truncated_super_mult == True:
                         SFE_arr = smooth_SFE
                         Sep_arr = smooth_Sep
                     if len(Time_arr) > 1:
-                        if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 1000:
+                        if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 2000:
                             jump_inds = np.where((np.array(Time_arr)[1:] - np.array(Time_arr)[:-1])>1000)[0]
                             start_jump_it = -1
                             for jump_ind in jump_inds:
