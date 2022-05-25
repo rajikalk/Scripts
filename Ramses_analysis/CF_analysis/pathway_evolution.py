@@ -183,6 +183,8 @@ if read_pickle == True:
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         
+                                        import pdb
+                                        pdb.set_trace()
                                         
                                         initial_a = Sep_arr[1:][peri_inds[0]]
                                         initial_t = Time_arr[1:][peri_inds[0]]
