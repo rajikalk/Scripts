@@ -161,7 +161,7 @@ if read_pickle == True:
                                     Time_arr_full = np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))[0]
                                     
-                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0]:
+                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0] and Time_arr_full[-1]>10000:
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
                                         plt.semilogy(Time_arr_full, Sep_arr_true)
