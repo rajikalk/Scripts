@@ -36,6 +36,8 @@ plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 sys.stdout.flush()
 CW.Barrier()
 
+check_sub_sys = ['[13, 91]', '[15, 40]', '[43, 44]', '[48, 180]', '[51, 53]']
+
 if read_pickle == True:
     for plot_key in plot_keys:
         savename = 'pathway_evolution_'+plot_key
@@ -168,7 +170,7 @@ if read_pickle == True:
                                         plt.semilogy(Time_arr_full, Sep_arr_true)
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
-                                        if sub_sys == [13, 91]: #[13, 91], [15, 40], [43,44], [48, 180], [51,53]
+                                        if sub_sys in check_sub_sys: #[13, 91], [15, 40], [43,44], [48, 180], [51,53]
                                             import pdb
                                             pdb.set_trace()
                                         
