@@ -342,6 +342,7 @@ if args.update_pickles == 'True':
                                                 import pdb
                                                 pdb.set_trace()
                                         if sep_value == 0:
+                                            print("Separation of zero found for time_it", time_it, "for system sys_comps_str")
                                             import pdb
                                             pdb.set_trace()
                                         
