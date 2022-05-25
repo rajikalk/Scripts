@@ -158,18 +158,16 @@ if read_pickle == True:
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
                                     
                                     Sep_arr_true = np.array(superplot_dict['System_seps'][time_key]).T[sep_ind]
+                                    non_nan_inds = np.where(np.isnan(Sep_arr_true)==False)[0]
                                     Time_arr_full = np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))[0]
                                     
-                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0] and Time_arr_full[-1]>10000:
+                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0] and Time_arr_full[non_nan_inds][-1]>10000:
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
                                         plt.semilogy(Time_arr_full, Sep_arr_true)
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
-                                        if sub_sys == [17, 24]:
-                                            import pdb
-                                            pdb.set_trace()
                                         
                                         
                                         initial_a = Sep_arr[1:][peri_inds[0]]
