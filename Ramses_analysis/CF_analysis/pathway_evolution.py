@@ -173,7 +173,8 @@ if read_pickle == True:
                                         
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
-                                        plt.semilogy(np.array(superplot_dict['System_times'][time_key]), np.array(superplot_dict['System_seps'][time_key]).T)
+                                        for sub_sys_arr in np.array(superplot_dict['System_seps'][time_key]).T:
+                                            plt.semilogy(np.array(superplot_dict['System_times'][time_key]), sub_sys_arr)
                                         plt.savefig('Sys_evol_'+str(time_key).replace(' ', '')+'.png')
                                         
                                         if sub_sys in check_sub_sys:
