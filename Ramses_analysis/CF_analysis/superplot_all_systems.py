@@ -323,7 +323,6 @@ if args.update_pickles == 'True':
                                         ind_2 = sub_sys[1]
                                         pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
-                                        position = yt.YTArray(res['abspos'][np.array([ind_1,ind_2])].T, 'au')
                                         if sep_value > (scale_l.in_units('AU')/2):
                                             update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                             for ind in update_inds:
@@ -332,17 +331,11 @@ if args.update_pickles == 'True':
                                                 else:
                                                     pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
-                                            for ind in update_inds:
-                                                pos_update_ind = np.where(position[ind]<scale_l.in_units('AU')/2)[0]
-                                                position[ind][pos_update_ind] = position[ind][pos_update_ind] + scale_l.in_units('AU')
-                                                #velocity[ind][pos_update_ind] = -1*velocity[ind][pos_update_ind]# + scale_l.in_units('AU')
-                                            pos_diff = position[ind][0] - position[ind][0]
-                                            sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > 20000:
                                                 import pdb
                                                 pdb.set_trace()
                                         if sep_value == 0:
-                                            print("Separation of zero found for time_it", time_it, "for system sys_comps_str")
+                                            print("Separation of zero found for time_it", time_it, "for system", sys_comps_str)
                                             import pdb
                                             pdb.set_trace()
                                         
