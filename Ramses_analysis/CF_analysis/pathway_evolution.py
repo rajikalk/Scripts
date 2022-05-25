@@ -168,17 +168,17 @@ if read_pickle == True:
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
                                         if len(Time_arr) > 1:
-                                            if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 1000:
-                                                jump_inds = np.where((np.array(Time_arr)[1:] - np.array(Time_arr)[:-1])>1000)[0]
+                                            if np.max(Time_arr_full[1:] - Time_arr_full[:-1]) > 1000:
+                                                jump_inds = np.where((Time_arr_full[1:] - Time_arr_full[:-1])>1000)[0]
                                                 start_jump_it = -1
                                                 for jump_ind in jump_inds:
-                                                    plt.semilogy(SFE_arr[start_jump_it+1:jump_ind+1], Sep_arr[start_jump_it+1:jump_ind+1], alpha=alpha, color='k', rasterized=True)
+                                                    plt.semilogy(Time_arr_full[start_jump_it+1:jump_ind+1], Sep_arr_true[start_jump_it+1:jump_ind+1])
                                                     start_jump_it = jump_ind
-                                                plt.semilogy(SFE_arr[jump_ind+1:], Sep_arr[jump_ind+1:], alpha=alpha, color='k', rasterized=True)
+                                                plt.semilogy(Time_arr_full[jump_ind+1:], Sep_arr_true[jump_ind+1:])
                                             else:
-                                                plt.semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
+                                                plt.semilogy(Time_arr_full, Sep_arr_true)
                                         else:
-                                            plt.semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
+                                            plt.semilogy(Time_arr_full, Sep_arr_true)
                                     
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
