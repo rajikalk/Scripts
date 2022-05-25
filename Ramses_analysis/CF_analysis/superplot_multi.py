@@ -302,9 +302,9 @@ if plot_truncated_super_mult == True:
                         SFE_arr = smooth_SFE
                         Sep_arr = smooth_Sep
                     axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
-                    if np.nanmin(Sep_arr) == 0:
-                        import pdb
-                        pdb.set_trace()
+                    #if np.nanmin(Sep_arr) == 0:
+                    #    import pdb
+                    #    pdb.set_trace()
             if superplot_dict['System_times'][time_key][0] < SFE_5_time:
                 sep_ind = 0
                 if set(key_inds).issubset(set(plotted_sinks)):
