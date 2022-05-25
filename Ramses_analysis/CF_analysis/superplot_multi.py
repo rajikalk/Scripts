@@ -277,7 +277,7 @@ if plot_truncated_super_mult == True:
                 if superplot_dict['System_times'][time_key][0] < SFE_5_time:
                     sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) - SFE_5_time))
                     Time_arr = superplot_dict['System_times'][time_key][:sep_end_ind+1]
-                    if np.max(Time_arr[1:] - Time_arr[:-1]) > 1000:
+                    if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 1000:
                         import pdb
                         pdb.set_trace()
                     SFE_arr = []
