@@ -76,12 +76,14 @@ for grad_it in range(len(grad_pickles)):
     if grad_it == 0:
         axs1[grad_it].legend(loc='best')
     '''
+    '''
     if grad_it == (len(grad_pickles) - 1):
         axs_list[0][grad_it].set_xlim([x_range[0], x_range[-1]])
         axs_list[0][grad_it].set_xticks(x_range[::2])
         axs_list[0][grad_it].set_xticklabels(ticklabels[::2][:-1])
         axs_list[0][grad_it].set_xlabel('Inspiral rate (au/yr)')
         axs_list[0][grad_it].set_ylim(bottom=0)
+    '''
     fig_list[0].savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
 
     mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000]
