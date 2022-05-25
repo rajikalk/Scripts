@@ -533,7 +533,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 print("gathered and sorted pickles and saved to", pickle_file+'.pkl')
-'''
+
 #calculate means:
 print("calculating means")
 rit = -1
@@ -753,4 +753,3 @@ sys.stdout.flush()
 CW.Barrier()
 
 print("Finished on rank", rank)
-'''
