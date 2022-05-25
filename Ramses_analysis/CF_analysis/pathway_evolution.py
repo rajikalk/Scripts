@@ -167,6 +167,9 @@ if read_pickle == True:
                                         plt.semilogy(Time_arr_full, Sep_arr_true)
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
+                                        if sub_sys == [17, 24]:
+                                            import pdb
+                                            pdb.set_trace()
                                         
                                         
                                         initial_a = Sep_arr[1:][peri_inds[0]]
