@@ -281,9 +281,9 @@ if plot_truncated_super_mult == True:
                     for time_val in Time_arr:
                         SFE_arr.append(superplot_dict['SFE'][superplot_dict['Times'].index(time_val)])
                     Sep_arr = np.array(superplot_dict[args.plot_key][time_key][:sep_end_ind+1])
-                    if np.nanmin(Sep_arr) == 0.0:
-                        zero_inds = np.where(Sep_arr == 0.0)
-                        Sep_arr[zero_inds] = np.nan
+                    #if np.nanmin(Sep_arr) == 0.0:
+                    #    zero_inds = np.where(Sep_arr == 0.0)
+                    #    Sep_arr[zero_inds] = np.nan
                     if args.smooth_bool == 'True':
                         window = args.smooth_window_val #yr
                         smooth_SFE = [SFE_arr[0]]
