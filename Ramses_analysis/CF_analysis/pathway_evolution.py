@@ -37,7 +37,8 @@ sys.stdout.flush()
 CW.Barrier()
 
 check_sub_sys = [[21, 22], [23,97], [23,24], [23,97], [72,76], [78,235]]
-jump_time_intervals = []
+jump_time_start = []
+jump_time_end = []
 jump_sys = []
 
 if read_pickle == True:
@@ -177,8 +178,9 @@ if read_pickle == True:
                                                     plt.semilogy(Time_arr_full[start_jump_it+1:jump_ind+1], Sep_arr_true[start_jump_it+1:jump_ind+1])
                                                     start_jump_it = jump_ind
                                                 plt.semilogy(Time_arr_full[jump_ind+1:], Sep_arr_true[jump_ind+1:])
-                                                import pdb
-                                                pdb.set_trace()
+                                                jump_time_start.append(np.array(superplot_dict['System_times'][time_key])[jump_inds])
+                                                jump_time_end.append(np.array(superplot_dict['System_times'][time_key])[(jump_inds+1)])
+                                                jump_sys.append(sub_sys)
                                                 if np.sum(peri_inds < jump_inds[0]) > 2:
                                                     initial_a = Sep_arr[1:][peri_inds[0]]
                                                     initial_t = Time_arr[1:][peri_inds[0]]
