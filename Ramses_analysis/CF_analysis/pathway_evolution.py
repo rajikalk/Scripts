@@ -157,6 +157,9 @@ if read_pickle == True:
                                     elif axis_ind == 3:
                                         form_path = 'Other'
                                     sep_ind = sep_ind + 1
+                                    if np.nanmin(np.array(superplot_dict['System_seps'][time_key]).T[sep_ind]) == 0:
+                                        import pdb
+                                        pdb.set_trace()
                                     Sep_arr = np.array(superplot_dict[plot_key][time_key]).T[sep_ind][:sep_end_ind+1]
                                     
                                     Sep_arr_true = np.array(superplot_dict['System_seps'][time_key]).T[sep_ind]
@@ -170,9 +173,6 @@ if read_pickle == True:
                                         plt.semilogy(Time_arr_full, Sep_arr_true)
                                         plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                         plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
-                                        if sub_sys in check_sub_sys: #[13, 91], [15, 40], [43,44], [48, 180], [51,53]
-                                            import pdb
-                                            pdb.set_trace()
                                         
                                         
                                         initial_a = Sep_arr[1:][peri_inds[0]]
