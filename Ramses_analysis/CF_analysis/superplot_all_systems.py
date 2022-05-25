@@ -341,6 +341,9 @@ if args.update_pickles == 'True':
                                             if sep_value > 20000:
                                                 import pdb
                                                 pdb.set_trace()
+                                        if sep_value == 0:
+                                            import pdb
+                                            pdb.set_trace()
                                         
                                         
                                         midpoint_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
