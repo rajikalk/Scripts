@@ -6,7 +6,7 @@ from scipy import stats
 grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl']#, '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
 #Defining gradient bins and getting tick labels
-grad_bins = np.concatenate((-1*np.logspace(3,-6,19), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
+grad_bins = np.concatenate((-1*np.logspace(3,-6,37)[2:], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
 bin_widths = grad_bins[1:] - grad_bins[:-1]
@@ -178,6 +178,7 @@ for grad_it in range(len(grad_pickles)):
             axs_list[time_means_counter+1][grad_it].set_xlabel('Semi-major axis inspiral rate (au/yr)')
             axs_list[time_means_counter+1][grad_it].set_ylim(bottom=0)
         '''
+        axs_list[time_means_counter+1][grad_it].set_ylim(bottom=0)
         fig_list[time_means_counter+1].savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png', bbox_inches='tight', pad_inches=0.02)
         time_means_counter = time_means_counter + 1
 
