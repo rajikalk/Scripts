@@ -301,13 +301,16 @@ if plot_truncated_super_mult == True:
                             smooth_Sep.append(sep_smooth_val)
                         SFE_arr = smooth_SFE
                         Sep_arr = smooth_Sep
-                    if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 1000:
-                        jump_inds = np.where((np.array(Time_arr)[1:] - np.array(Time_arr)[:-1])>1000)[0]
-                        start_jump_it = -1
-                        for jump_ind in jump_inds:
-                            axs.flatten()[pick_it].semilogy(SFE_arr[start_jump_it+1:jump_ind+1], Sep_arr[start_jump_it+1:jump_ind+1], alpha=alpha, color='k', rasterized=True)
-                            start_jump_it = jump_ind
-                        axs.flatten()[pick_it].semilogy(SFE_arr[jump_ind+1:], Sep_arr[jump_ind+1:], alpha=alpha, color='k', rasterized=True)
+                    if len(Time_arr) > 1:
+                        if np.max(np.array(Time_arr)[1:] - np.array(Time_arr)[:-1]) > 1000:
+                            jump_inds = np.where((np.array(Time_arr)[1:] - np.array(Time_arr)[:-1])>1000)[0]
+                            start_jump_it = -1
+                            for jump_ind in jump_inds:
+                                axs.flatten()[pick_it].semilogy(SFE_arr[start_jump_it+1:jump_ind+1], Sep_arr[start_jump_it+1:jump_ind+1], alpha=alpha, color='k', rasterized=True)
+                                start_jump_it = jump_ind
+                            axs.flatten()[pick_it].semilogy(SFE_arr[jump_ind+1:], Sep_arr[jump_ind+1:], alpha=alpha, color='k', rasterized=True)
+                        else:
+                            axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
                     else:
                         axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
                     #if np.nanmin(Sep_arr) == 0:
