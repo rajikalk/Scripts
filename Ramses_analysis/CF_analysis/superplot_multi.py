@@ -271,6 +271,8 @@ if plot_truncated_super_mult == True:
                 t_max_ind = np.argmin(abs(Time_adjusted_formation - SFE_5_time))
                 if t_max_ind > 0:
                     axs.flatten()[pick_it].semilogy(Time_adjusted_formation[:t_max_ind], superplot_dict[args.plot_key][time_key][:t_max_ind], alpha=alpha, color='k', rasterized=True)
+                    import pdb
+                    pdb.set_trace()
             elif args.x_field == 'SFE':
                 if superplot_dict['System_times'][time_key][0] < SFE_5_time:
                     sep_end_ind = np.argmin(abs(np.array(superplot_dict['System_times'][time_key]) - SFE_5_time))
@@ -300,6 +302,8 @@ if plot_truncated_super_mult == True:
                         SFE_arr = smooth_SFE
                         Sep_arr = smooth_Sep
                     axs.flatten()[pick_it].semilogy(SFE_arr, Sep_arr, alpha=alpha, color='k', rasterized=True)
+                    import pdb
+                    pdb.set_trace()
             if superplot_dict['System_times'][time_key][0] < SFE_5_time:
                 sep_ind = 0
                 if set(key_inds).issubset(set(plotted_sinks)):
