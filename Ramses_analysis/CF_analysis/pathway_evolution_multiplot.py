@@ -6,7 +6,7 @@ from scipy import stats
 grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl']#, '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
 #Defining gradient bins and getting tick labels
-grad_bins = np.concatenate((-1*np.logspace(3,-6,37)[2:], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
+grad_bins = np.concatenate((-1*np.logspace(3,-6,28)[1:], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
 bin_widths = grad_bins[1:] - grad_bins[:-1]
