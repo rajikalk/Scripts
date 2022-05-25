@@ -184,6 +184,8 @@ if read_pickle == True:
                                                     end_t_data = Time_arr[end_t_ind]
                                                     mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                     Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                    plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
+                                                    plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                             else:
                                                 plt.semilogy(Time_arr_full, Sep_arr_true)
                                                 initial_a = Sep_arr[1:][peri_inds[0]]
@@ -194,6 +196,8 @@ if read_pickle == True:
                                                 end_t_data = Time_arr[end_t_ind]
                                                 mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                 Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
+                                                plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         else:
                                             plt.semilogy(Time_arr_full, Sep_arr_true)
                                             initial_a = Sep_arr[1:][peri_inds[0]]
@@ -204,9 +208,8 @@ if read_pickle == True:
                                             end_t_data = Time_arr[end_t_ind]
                                             mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                             Initial_gradients_10000[axis_ind].append([mean_grad])
-                                    
-                                        plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
-                                        plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
+                                            plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
+                                            plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
  
                                     '''
                                     import pdb
