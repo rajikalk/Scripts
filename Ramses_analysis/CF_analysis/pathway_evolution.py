@@ -36,7 +36,7 @@ plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 sys.stdout.flush()
 CW.Barrier()
 
-check_sub_sys = ['[13, 91]', '[15, 40]', '[43, 44]', '[48, 180]', '[51, 53]']
+check_sub_sys = [[13, 91], [15, 40], [43, 44], [48, 180], [51, 53]]
 
 if read_pickle == True:
     for plot_key in plot_keys:
