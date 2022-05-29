@@ -102,7 +102,7 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
     for sink_id in sink_ids:
-        if len(np.argwhere(global_data['m'].T[sink_id]>0)) > 0
+        if len(np.argwhere(global_data['m'].T[sink_id]>0)) > 0:
             new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
         else:
             new_ind = 0
