@@ -78,8 +78,6 @@ if rank == 0:
     file_open = open(global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
     file_open.close()
-    import pdb
-    pdb.set_trace()
     del file_open
     gc.collect()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -104,7 +102,10 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
     for sink_id in sink_ids:
-        new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+        if len(np.argwhere(global_data['m'].T[sink_id]>0)) > 0
+            new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+        else:
+            new_ind = 0
         global_data['m'] = global_data['m'][new_ind:]
         if len(formation_inds) == 0:
             formation_ind = new_ind
