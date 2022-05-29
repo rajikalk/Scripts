@@ -7,6 +7,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 rank = CW.Get_rank()
 size = CW.Get_size()
 
+
 def losi(i, res):
     if (res['n'][i]==1) or (res['n'][i]==0):
         return i
@@ -21,6 +22,11 @@ if rank == 0:
 
 global_data_pickle_file = sys.argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
+
+Low_cadence = False
+if 'Low_cadence' in global_data_pickle_file:
+    Low_cadence = True
+
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
@@ -418,7 +424,8 @@ for sink_id in sink_ids:
             gc.collect()
             
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
-            test_time_inds = test_time_inds[::10]
+            if Low_cadence == False:
+                test_time_inds = test_time_inds[::10]
             del closest_separations
             gc.collect()
             
