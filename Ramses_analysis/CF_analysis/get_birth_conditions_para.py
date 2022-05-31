@@ -23,9 +23,9 @@ if rank == 0:
 global_data_pickle_file = sys.argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
-Low_cadence = False
-if 'Low_cadence' in global_data_pickle_file:
-    Low_cadence = True
+#Low_cadence = False
+#if 'Low_cadence' in global_data_pickle_file:
+#    Low_cadence = True
 
 
 if Grho == 50:
@@ -188,6 +188,7 @@ for sink_id in sink_ids:
         file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
         sink_ids, formation_times, global_data = pickle.load(file_open)
         file_open.close()
+        print("Finding birth conditions for sink", sink_id, "on rank", rank)
         del formation_times
         del file_open
         gc.collect()
@@ -427,8 +428,8 @@ for sink_id in sink_ids:
             gc.collect()
             
             test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
-            if Low_cadence == False:
-                test_time_inds = test_time_inds[::10]
+            #if Low_cadence == False:
+            test_time_inds = test_time_inds[::10]
             del closest_separations
             gc.collect()
             

@@ -32,7 +32,9 @@ subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\od
 
 #Formation_pathway = [[18, 11, 17], [42, 25, 39], [86, 29, 84], [82, 50, 113], [97, 45, 102], [17, 8, 21]]
 Formation_pathway = []
-birth_con_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_1500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_6000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_12000.pkl']
+#birth_con_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_1500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_6000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_12000.pkl']
+
+birth_con_pickles = ['/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_1500.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3000.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_6000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/formation_pathway_12000.pkl']
 
 Core_frag_fracs = []
 Delayed_core_frag_fracs = []
