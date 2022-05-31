@@ -19,6 +19,7 @@ def losi(i, res):
 #=====================================================================================================
 if rank == 0:
     print("creating units", flush=True)
+    sys.stdout.flush()
 
 global_data_pickle_file = sys.argv[1]
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
@@ -42,6 +43,7 @@ elif Grho == 400:
     scale_m = 12000*1.98841586e+33
 else:
     print("MASS UNIT NOT SET", flush=True)
+    sys.stdout.flush()
     import pdb
     pdb.set_trace()
 
@@ -83,6 +85,7 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     print("Finding formation inds", flush=True)
+    sys.stdout.flush()
     ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     
     del global_data['x']
@@ -115,6 +118,7 @@ if rank == 0:
     gc.collect()
 
     print("Found formation inds", flush=True)
+    sys.stdout.flush()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     formation_inds = np.array(formation_inds)
@@ -129,6 +133,7 @@ if rank == 0:
     del file_open
 
     print("Found formation times", flush=True)
+    sys.stdout.flush()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
     for trunc_it in range(size):
@@ -150,6 +155,7 @@ if rank == 0:
         del form_time_it
         gc.collect()
         print("Saved global_data_rank_"+str(trunc_it)+".pkl", flush=True)
+        sys.stdout.flush()
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
     del formation_times
@@ -169,7 +175,8 @@ del formation_times
 del global_data
 gc.collect()
 print("loaded global_data_rank_"+str(rank)+".pkl", flush=True)
-    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+sys.stdout.flush()
+#print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
 import pyramses as pr
 import multiplicity as m
@@ -189,6 +196,7 @@ for sink_id in sink_ids:
         sink_ids, formation_times, global_data = pickle.load(file_open)
         file_open.close()
         print("Finding birth conditions for sink", sink_id, "on rank", rank)
+        sys.stdout.flush()
         del formation_times
         del file_open
         gc.collect()
@@ -486,6 +494,7 @@ for sink_id in sink_ids:
                 counter = counter + 1
                 if np.remainder(counter,5000) == 0:
                     print("trying test ind No.", counter, "on rank", rank, flush=True)
+                    sys.stdout.flush()
                 if len(global_test_inds['m']) == 0:
                     break
                 else:
@@ -554,6 +563,7 @@ for sink_id in sink_ids:
 
         Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
         print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
+        sys.stdout.flush()
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
@@ -581,6 +591,7 @@ if rank == 0:
     pickle.dump((Sink_birth_all), file)
     file.close()
     print("Collected sink birth data into sink_birth_all.pkl", flush=True)
+    sys.stdout.flush()
 
 
 if rank==0:
@@ -598,9 +609,11 @@ if rank==0:
         if Sink_birth_all[sys_key][0]==False and np.isnan(Sink_birth_all[sys_key][3])==False and Sink_birth_all[sys_key][1] in flatten(eval(Sink_birth_all[sys_key][2])):
             if np.sum(np.array(flatten(eval(Sink_birth_all[sys_key][2])))>eval(sys_key)) == 0:
                 print('For', sys_key, 'Changing', Sink_birth_all[sys_key][1], 'to', Sink_birth_all[sys_key][2])
+                sys.stdout.flush()
                 Sink_birth_all[sys_key][1] = Sink_birth_all[sys_key][2]
             else:
                 print('delayed core fragmentation system connects to system with new sink IDS. Birth con for', sys_key, ':', Sink_birth_all[sys_key])
+                sys.stdout.flush()
 
     file = open("sink_birth_all_delayed_core_frag_cleaned.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
