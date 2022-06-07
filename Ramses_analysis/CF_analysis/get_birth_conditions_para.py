@@ -403,12 +403,17 @@ for sink_id in sink_ids:
                 
                 sys_start_time = sys_times[first_sys][0]
                 
+                import pdb
+                pdb.set_trace()
+                del first_sys
+                
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
                 
                 first_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - sys_start_time))
                 test_time_inds = np.arange(first_test_ind-500, first_test_ind+1)
+                del first_test_ind
             
                 #units['time_unit'].in_units('yr')
                 #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
