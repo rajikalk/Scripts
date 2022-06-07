@@ -390,13 +390,30 @@ for sink_id in sink_ids:
                 print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
                 sys.stdout.flush()
             else:
-                import pdb
-                pdb.set_trace()
+                #find which system form first
+                if len([s for s in system_keys if ' '+str(sink_id) in s]) > 0 and len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
+                    first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
+                elif len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) > 0:
+                    first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
+                else:
+                    if sys_times[[s for s in system_keys if ' '+str(sink_id) in s][0]][0] < sys_times[[s for s in system_keys if str(sink_id)+',' in s][0]][0]:
+                        first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
+                    else:
+                        first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
+                
+                sys_start_time = sys_times[first_sys][0]
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+                sink_ids, formation_times, global_data = pickle.load(file_open)
+                file_open.close()
+                
+                first_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - sys_start_time))
+                test_time_inds = np.arange(first_test_ind-500, first_test_ind+1)
             
                 #units['time_unit'].in_units('yr')
                 #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
                 #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-                
+                """
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
@@ -473,6 +490,7 @@ for sink_id in sink_ids:
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
+                """
                 del file_open
                 gc.collect()
                 #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
