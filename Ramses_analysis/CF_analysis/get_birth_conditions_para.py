@@ -405,7 +405,11 @@ for sink_id in sink_ids:
                 
                 sys_start_time = sys_times[first_sys]
                 for key in system_keys:
-                    
+                    if key == first_sys:
+                        break
+                    else:
+                        del sys_times[key]
+                        system_keys.remove(key)
                 
                 if size == 0:
                     import pdb
