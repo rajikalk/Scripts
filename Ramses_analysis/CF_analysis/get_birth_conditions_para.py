@@ -504,7 +504,7 @@ for sink_id in sink_ids:
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
                 """
-                del file_open
+                #del file_open
                 gc.collect()
                 #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
