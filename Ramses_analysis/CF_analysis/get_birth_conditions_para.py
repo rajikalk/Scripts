@@ -404,6 +404,8 @@ for sink_id in sink_ids:
                         first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
                 
                 sys_start_time = sys_times[first_sys]
+                for key in system_keys:
+                    
                 
                 if size == 0:
                     import pdb
@@ -421,16 +423,15 @@ for sink_id in sink_ids:
                 #units['time_unit'].in_units('yr')
                 #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
                 #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-                """
-                file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-                sink_ids, formation_times, global_data = pickle.load(file_open)
-                file_open.close()
+                #file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+                #sink_ids, formation_times, global_data = pickle.load(file_open)
+                #file_open.close()
                 del file_open
                 sink_it = np.argwhere(sink_ids == sink_id)[0][0]
                 formation_time = formation_times[sink_it]*scale_t_yr
                 del formation_times
                 gc.collect()
-                
+                """
                 abspos_x = global_data['x'][:]
                 abspos_y = global_data['y'][:]
                 abspos_z = global_data['z'][:]
