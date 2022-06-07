@@ -184,13 +184,15 @@ import multiplicity as m
 #let's try getting all the systems that were found
 pickle_file = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/means_superplot.pkl"
 file = open(pickle_file, 'rb')
-superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+superplot_dict, Sink_bound_birth_means, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
 file.close()
 
-sys_times = superplot_dict['System_times']
+sys_times = {}
+for key in superplot_dict['System_times'].keys():
+    sys_times.update({key:superplot_dict['System_times'][key][0]})
 system_keys = list(superplot_dict['System_times'].keys())
 del superplot_dict
-del Sink_bound_birth
+del Sink_bound_birth_means
 del Sink_formation_times
 del means_dict
 del Lifetimes_sys
@@ -396,15 +398,16 @@ for sink_id in sink_ids:
                 elif len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) > 0:
                     first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
                 else:
-                    if sys_times[[s for s in system_keys if ' '+str(sink_id) in s][0]][0] < sys_times[[s for s in system_keys if str(sink_id)+',' in s][0]][0]:
+                    if sys_times[[s for s in system_keys if ' '+str(sink_id) in s][0]] < sys_times[[s for s in system_keys if str(sink_id)+',' in s][0]]:
                         first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
                     else:
                         first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
                 
-                sys_start_time = sys_times[first_sys][0]
+                sys_start_time = sys_times[first_sys]
                 
-                import pdb
-                pdb.set_trace()
+                if size == 0:
+                    import pdb
+                    pdb.set_trace()
                 del first_sys
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
