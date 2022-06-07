@@ -181,6 +181,25 @@ sys.stdout.flush()
 import pyramses as pr
 import multiplicity as m
 
+#let's try getting all the systems that were found
+pickle_file = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/means_superplot.pkl"
+file = open(pickle_file, 'rb')
+superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+file.close()
+
+sys_times = superplot_dict['System_times']
+system_keys = list(superplot_dict['System_times'].keys())
+del superplot_dict
+del Sink_bound_birth
+del Sink_formation_times
+del means_dict
+del Lifetimes_sys
+del Sep_maxs
+del Sep_mins
+del Initial_Seps
+del Final_seps
+gc.collect()
+
 rit = -1
 sink_id = 0
 for sink_id in sink_ids:
@@ -366,202 +385,210 @@ for sink_id in sink_ids:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            #units['time_unit'].in_units('yr')
-            #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
-            #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
-            
-            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            sink_ids, formation_times, global_data = pickle.load(file_open)
-            file_open.close()
-            del file_open
-            sink_it = np.argwhere(sink_ids == sink_id)[0][0]
-            formation_time = formation_times[sink_it]*scale_t_yr
-            del formation_times
-            gc.collect()
-            
-            abspos_x = global_data['x'][:]
-            abspos_y = global_data['y'][:]
-            abspos_z = global_data['z'][:]
-            
-            del global_data
-            gc.collect()
-            
-            rel_pos_x = abspos_x.T - abspos_x.T[sink_id]
-            rel_pos_y = abspos_y.T - abspos_y.T[sink_id]
-            rel_pos_z = abspos_z.T - abspos_z.T[sink_id]
-            del abspos_x
-            del abspos_y
-            del abspos_z
-            gc.collect()
-            
-            update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
-            rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 1.0
-            del update_seps_x_neg
-            gc.collect()
-            
-            update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
-            rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
-            del update_seps_x_pos
-            gc.collect()
-            
-            update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
-            rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] = rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] + 1.0
-            del update_seps_y_neg
-            gc.collect()
-            
-            update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
-            rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
-            del update_seps_y_pos
-            gc.collect()
-            
-            update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
-            rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 1.0
-            del update_seps_z_neg
-            gc.collect()
-            
-            update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
-            rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
-            del update_seps_z_pos
-            gc.collect()
-            
-            rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
-            del rel_pos_x
-            del rel_pos_y
-            del rel_pos_z
-            gc.collect()
-            
-            rel_sep[np.where(rel_sep == 0)] = np.inf
-            closest_separations = np.min(rel_sep, axis=0)
-            del rel_sep
-            gc.collect()
-            
-            test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
-            import pdb
-            pdb.set_trace()
-            #if Low_cadence == False:
-            test_time_inds = test_time_inds[::10]
-            del closest_separations
-            gc.collect()
-            
-            file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
-            sink_ids, formation_times, global_data = pickle.load(file_open)
-            file_open.close()
-            del file_open
-            gc.collect()
-            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            
-            curr_it = np.argwhere(sink_ids == sink_id)[0][0]
-            next_id = curr_it + size
-            del curr_it
-            if next_id < len(sink_ids):
-                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+            if len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
+                Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
+                print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
+                sys.stdout.flush()
             else:
-                form_time_it = -2
-            '''
-            next_id = sink_id + size
-            if next_id < len(formation_times):
-                form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
-            else:
-                form_time_it = -2
-            '''
-            global_test_inds = {}
-            global_test_inds.update({'time':global_data['time'][test_time_inds]})
-            global_data['time'] = global_data['time'][form_time_it:]
-            global_test_inds.update({'m':global_data['m'][test_time_inds]})
-            global_data['m'] = global_data['m'][form_time_it:]
-            global_test_inds.update({'x':global_data['x'][test_time_inds]})
-            global_data['x'] = global_data['x'][form_time_it:]
-            global_test_inds.update({'y':global_data['y'][test_time_inds]})
-            global_data['y'] = global_data['y'][form_time_it:]
-            global_test_inds.update({'z':global_data['z'][test_time_inds]})
-            global_data['z'] = global_data['z'][form_time_it:]
-            global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
-            global_data['ux'] = global_data['ux'][form_time_it:]
-            global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
-            global_data['uy'] = global_data['uy'][form_time_it:]
-            global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
-            global_data['uz'] = global_data['uz'][form_time_it:]
+                import pdb
+                pdb.set_trace()
             
-            file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
-            pickle.dump((sink_ids, formation_times, global_data), file_open)
-            file_open.close()
-            del form_time_it
-            del formation_times
-            del global_data
-            gc.collect()
-            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            
-            counter = 0
-            while np.isnan(first_bound_sink):
-                counter = counter + 1
-                if np.remainder(counter,5000) == 0:
-                    print("trying test ind No.", counter, "on rank", rank, flush=True)
-                    sys.stdout.flush()
-                if len(global_test_inds['m']) == 0:
-                    break
+                #units['time_unit'].in_units('yr')
+                #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
+                #test_time_inds = range(len(global_data['x'][time_it:,sink_id]))
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+                sink_ids, formation_times, global_data = pickle.load(file_open)
+                file_open.close()
+                del file_open
+                sink_it = np.argwhere(sink_ids == sink_id)[0][0]
+                formation_time = formation_times[sink_it]*scale_t_yr
+                del formation_times
+                gc.collect()
+                
+                abspos_x = global_data['x'][:]
+                abspos_y = global_data['y'][:]
+                abspos_z = global_data['z'][:]
+                
+                del global_data
+                gc.collect()
+                
+                rel_pos_x = abspos_x.T - abspos_x.T[sink_id]
+                rel_pos_y = abspos_y.T - abspos_y.T[sink_id]
+                rel_pos_z = abspos_z.T - abspos_z.T[sink_id]
+                del abspos_x
+                del abspos_y
+                del abspos_z
+                gc.collect()
+                
+                update_seps_x_neg = np.argwhere(rel_pos_x<-0.5)
+                rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] = rel_pos_x[update_seps_x_neg.T[0], update_seps_x_neg.T[1]] + 1.0
+                del update_seps_x_neg
+                gc.collect()
+                
+                update_seps_x_pos = np.argwhere(rel_pos_x>0.5)
+                rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] = rel_pos_x[update_seps_x_pos.T[0], update_seps_x_pos.T[1]] - 1.0
+                del update_seps_x_pos
+                gc.collect()
+                
+                update_seps_y_neg = np.argwhere(rel_pos_y<-0.5)
+                rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] = rel_pos_y[update_seps_y_neg.T[0], update_seps_y_neg.T[1]] + 1.0
+                del update_seps_y_neg
+                gc.collect()
+                
+                update_seps_y_pos = np.argwhere(rel_pos_y>0.5)
+                rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] = rel_pos_y[update_seps_y_pos.T[0], update_seps_y_pos.T[1]] - 1.0
+                del update_seps_y_pos
+                gc.collect()
+                
+                update_seps_z_neg = np.argwhere(rel_pos_z<-0.5)
+                rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] = rel_pos_z[update_seps_z_neg.T[0], update_seps_z_neg.T[1]] + 1.0
+                del update_seps_z_neg
+                gc.collect()
+                
+                update_seps_z_pos = np.argwhere(rel_pos_z>0.5)
+                rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] = rel_pos_z[update_seps_z_pos.T[0], update_seps_z_pos.T[1]] - 1.0
+                del update_seps_z_pos
+                gc.collect()
+                
+                rel_sep = np.sqrt(rel_pos_x**2 + rel_pos_y**2 + rel_pos_z**2)
+                del rel_pos_x
+                del rel_pos_y
+                del rel_pos_z
+                gc.collect()
+                
+                rel_sep[np.where(rel_sep == 0)] = np.inf
+                closest_separations = np.min(rel_sep, axis=0)
+                del rel_sep
+                gc.collect()
+                
+                test_time_inds = np.where((scale_l_au*closest_separations)<10000)[0]
+                import pdb
+                pdb.set_trace()
+                #if Low_cadence == False:
+                test_time_inds = test_time_inds[::10]
+                del closest_separations
+                gc.collect()
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+                sink_ids, formation_times, global_data = pickle.load(file_open)
+                file_open.close()
+                del file_open
+                gc.collect()
+                #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                
+                curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+                next_id = curr_it + size
+                del curr_it
+                if next_id < len(sink_ids):
+                    form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
                 else:
-                    n_stars = np.where(global_test_inds['m'][0]>0)[0]
-                    if len(n_stars)>1:
-                        abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
-                        absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
-                        mass = np.array(global_test_inds['m'][0][n_stars])
-                        sfe = np.sum(mass)
-                        time = global_test_inds['time'][0]
-                        
-                        global_test_inds['time'] = global_test_inds['time'][1:]
-                        global_test_inds['m'] = global_test_inds['m'][1:]
-                        global_test_inds['x'] = global_test_inds['x'][1:]
-                        global_test_inds['y'] = global_test_inds['y'][1:]
-                        global_test_inds['z'] = global_test_inds['z'][1:]
-                        global_test_inds['ux'] = global_test_inds['ux'][1:]
-                        global_test_inds['uy'] = global_test_inds['uy'][1:]
-                        global_test_inds['uz'] = global_test_inds['uz'][1:]
-                        #Remove global data:
-                        del n_stars
-                        gc.collect()
-                        S = pr.Sink()
-                        S._jet_factor = 1.
-                        S._scale_l = scale_l
-                        #S._scale_v = scale_v.value
-                        S._scale_t = scale_t
-                        S._scale_d = scale_d
-                        S._time = time
-                        #del time
-                        gc.collect()
-                        S._abspos = abspos
-                        del abspos
-                        gc.collect()
-                        S._absvel = absvel
-                        del absvel
-                        gc.collect()
-                        S._mass = mass
-                        del mass
-                        gc.collect()
-                        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                        #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                        if sink_id in res['index1']:
-                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                            first_bound_sink = res['index2'][sys_id]
-                        elif sink_id in res['index2']:
-                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                            first_bound_sink = res['index1'][sys_id]
-                        else:
-                            sys_id = np.nan
-                        if np.isnan(sys_id) == False:
-                            first_bound_sink = losi(first_bound_sink, res)
-                            lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
-                            most_bound_sep = res['separation'][sys_id]
-                            bound_time = res['time']*scale_t_yr
-                            delay_time = float(bound_time - formation_time)
-                            sys_form_time = sfe
-                            #Find initial separation
-                            if delay_time == 0:
-                                born_bound = True
-                                most_bound_sink_id = str(first_bound_sink)
-                            break
-                        del res
-                        gc.collect()
+                    form_time_it = -2
+                '''
+                next_id = sink_id + size
+                if next_id < len(formation_times):
+                    form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+                else:
+                    form_time_it = -2
+                '''
+                global_test_inds = {}
+                global_test_inds.update({'time':global_data['time'][test_time_inds]})
+                global_data['time'] = global_data['time'][form_time_it:]
+                global_test_inds.update({'m':global_data['m'][test_time_inds]})
+                global_data['m'] = global_data['m'][form_time_it:]
+                global_test_inds.update({'x':global_data['x'][test_time_inds]})
+                global_data['x'] = global_data['x'][form_time_it:]
+                global_test_inds.update({'y':global_data['y'][test_time_inds]})
+                global_data['y'] = global_data['y'][form_time_it:]
+                global_test_inds.update({'z':global_data['z'][test_time_inds]})
+                global_data['z'] = global_data['z'][form_time_it:]
+                global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
+                global_data['ux'] = global_data['ux'][form_time_it:]
+                global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
+                global_data['uy'] = global_data['uy'][form_time_it:]
+                global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
+                global_data['uz'] = global_data['uz'][form_time_it:]
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
+                pickle.dump((sink_ids, formation_times, global_data), file_open)
+                file_open.close()
+                del form_time_it
+                del formation_times
+                del global_data
+                gc.collect()
+                #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                
+                counter = 0
+                while np.isnan(first_bound_sink):
+                    counter = counter + 1
+                    if np.remainder(counter,5000) == 0:
+                        print("trying test ind No.", counter, "on rank", rank, flush=True)
+                        sys.stdout.flush()
+                    if len(global_test_inds['m']) == 0:
+                        break
+                    else:
+                        n_stars = np.where(global_test_inds['m'][0]>0)[0]
+                        if len(n_stars)>1:
+                            abspos = np.array([global_test_inds['x'][0][n_stars], global_test_inds['y'][0][n_stars], global_test_inds['z'][0][n_stars]]).T#*scale_l
+                            absvel = np.array([global_test_inds['ux'][0][n_stars], global_test_inds['uy'][0][n_stars], global_test_inds['uz'][0][n_stars]]).T#*scale_v
+                            mass = np.array(global_test_inds['m'][0][n_stars])
+                            sfe = np.sum(mass)
+                            time = global_test_inds['time'][0]
+                            
+                            global_test_inds['time'] = global_test_inds['time'][1:]
+                            global_test_inds['m'] = global_test_inds['m'][1:]
+                            global_test_inds['x'] = global_test_inds['x'][1:]
+                            global_test_inds['y'] = global_test_inds['y'][1:]
+                            global_test_inds['z'] = global_test_inds['z'][1:]
+                            global_test_inds['ux'] = global_test_inds['ux'][1:]
+                            global_test_inds['uy'] = global_test_inds['uy'][1:]
+                            global_test_inds['uz'] = global_test_inds['uz'][1:]
+                            #Remove global data:
+                            del n_stars
+                            gc.collect()
+                            S = pr.Sink()
+                            S._jet_factor = 1.
+                            S._scale_l = scale_l
+                            #S._scale_v = scale_v.value
+                            S._scale_t = scale_t
+                            S._scale_d = scale_d
+                            S._time = time
+                            #del time
+                            gc.collect()
+                            S._abspos = abspos
+                            del abspos
+                            gc.collect()
+                            S._absvel = absvel
+                            del absvel
+                            gc.collect()
+                            S._mass = mass
+                            del mass
+                            gc.collect()
+                            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                            #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                            if sink_id in res['index1']:
+                                sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                first_bound_sink = res['index2'][sys_id]
+                            elif sink_id in res['index2']:
+                                sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                first_bound_sink = res['index1'][sys_id]
+                            else:
+                                sys_id = np.nan
+                            if np.isnan(sys_id) == False:
+                                first_bound_sink = losi(first_bound_sink, res)
+                                lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                                most_bound_sep = res['separation'][sys_id]
+                                bound_time = res['time']*scale_t_yr
+                                delay_time = float(bound_time - formation_time)
+                                sys_form_time = sfe
+                                #Find initial separation
+                                if delay_time == 0:
+                                    born_bound = True
+                                    most_bound_sink_id = str(first_bound_sink)
+                                break
+                            del res
+                            gc.collect()
         
         try:
             Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
