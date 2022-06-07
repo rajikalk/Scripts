@@ -433,7 +433,6 @@ for sink_id in sink_ids:
                 del file_open
                 sink_it = np.argwhere(sink_ids == sink_id)[0][0]
                 formation_time = formation_times[sink_it]*scale_t_yr
-                del formation_times
                 gc.collect()
                 """
                 abspos_x = global_data['x'][:]
