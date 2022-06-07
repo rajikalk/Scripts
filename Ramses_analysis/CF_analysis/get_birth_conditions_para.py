@@ -356,7 +356,7 @@ for sink_id in sink_ids:
             del next_id
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                
+        """
         if np.isnan(sys_id):
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             born_bound = False
@@ -560,10 +560,14 @@ for sink_id in sink_ids:
                             break
                         del res
                         gc.collect()
-
-        Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
-        print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
-        sys.stdout.flush()
+        """
+        try:
+            Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
+            print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
+            sys.stdout.flush()
+        except:
+            print("Rank:", rank, "sink", sink_id, "(of", sink_ids[-1],") is not bound at birth", flush=True)
+            sys.stdout.flush()
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
