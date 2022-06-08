@@ -420,7 +420,8 @@ for sink_id in loop_inds:
                 file_open.close()
                 
                 first_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - sys_start_time))
-                test_time_inds = np.arange(first_test_ind-500, first_test_ind+1)
+                start_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - (sys_start_time-500)))
+                test_time_inds = np.arange(start_test_ind, first_test_ind+1)
                 del first_test_ind
             
                 #units['time_unit'].in_units('yr')
@@ -621,6 +622,10 @@ for sink_id in loop_inds:
                                 if delay_time == 0:
                                     born_bound = True
                                     most_bound_sink_id = str(first_bound_sink)
+                                if Grho == 50 and size == 1:
+                                    if sink_id in diff_conds:
+                                        import pdb
+                                        pdb.set_trace()
                                 break
                             del res
                             gc.collect()
