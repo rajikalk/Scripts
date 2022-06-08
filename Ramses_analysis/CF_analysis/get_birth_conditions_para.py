@@ -682,3 +682,4 @@ if rank==0:
     file = open("sink_birth_all_delayed_core_frag_cleaned.pkl", 'wb')
     pickle.dump((Sink_birth_all), file)
     file.close()
+    print("Wrote sink_birth_all_delayed_core_frag_cleaned.pkl", flush=True)
