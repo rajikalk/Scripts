@@ -235,7 +235,7 @@ for sink_id in loop_inds:
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
         absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
         mass = np.array(global_data['m'][0][:sink_id+1])
-        n_stars = np.arange(len(mass))
+        n_stars = np.argwhere(global_data['m'][0]>0).T[0]
         del global_data
         gc.collect()
         
@@ -294,7 +294,7 @@ for sink_id in loop_inds:
         born_bound = True
         delay_time = 0
         
-        if Grho == 50 and size == 1:
+        if Grho == 50:
             if sink_id in diff_conds:
                 import pdb
                 pdb.set_trace()
@@ -337,7 +337,7 @@ for sink_id in loop_inds:
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
-            if Grho == 50 and size == 1:
+            if Grho == 50:
                 if sink_id in diff_conds:
                     import pdb
                     pdb.set_trace()
@@ -351,7 +351,7 @@ for sink_id in loop_inds:
             else:
                 sys_id = np.nan
             if np.isnan(sys_id) == False:
-                if Grho == 50 and size == 1:
+                if Grho == 50:
                     if sink_id in diff_conds:
                         import pdb
                         pdb.set_trace()
@@ -408,7 +408,7 @@ for sink_id in loop_inds:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            if Grho == 50 and size == 1:
+            if Grho == 50:
                 if sink_id in diff_conds:
                     import pdb
                     pdb.set_trace()
@@ -615,7 +615,7 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                            if Grho == 50 and size == 1:
+                            if Grho == 50:
                                 if sink_id in diff_conds:
                                     import pdb
                                     pdb.set_trace()
@@ -639,7 +639,7 @@ for sink_id in loop_inds:
                                 if delay_time == 0:
                                     born_bound = True
                                     most_bound_sink_id = str(first_bound_sink)
-                                if Grho == 50 and size == 1:
+                                if Grho == 50:
                                     if sink_id in diff_conds:
                                         import pdb
                                         pdb.set_trace()
