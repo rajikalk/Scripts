@@ -31,7 +31,7 @@ file.close()
 
 sys_times = {}
 for key in superplot_dict['System_times'].keys():
-    sys_times.update({key:superplot_dict['System_times'][key][0]})
+    sys_times.update({key:np.min(superplot_dict['System_times'][key][0])})
 system_keys = list(superplot_dict['System_times'].keys())
 del superplot_dict
 del Sink_bound_birth_means
@@ -413,7 +413,8 @@ for sink_id in sink_ids:
                         first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 
                 sys_start_time = sys_times[first_sys]
-                system_keys = system_keys[system_keys.index(first_sys)+1:]
+                del sys_times[first_sys]
+                system_keys.remove(first_sys)
                 
                 if size == 1:
                     import pdb
