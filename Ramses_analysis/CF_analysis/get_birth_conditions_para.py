@@ -404,7 +404,7 @@ for sink_id in sink_ids:
                 #find which system form first
                 if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                     first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
-                elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
+                elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
                     first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 else:
                     if sys_times[[s for s in system_keys if ' '+str(sink_id)+']' in s][0]] < sys_times[[s for s in system_keys if '['+str(sink_id)+',' in s][0]]:
