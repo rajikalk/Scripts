@@ -410,8 +410,8 @@ for sink_id in sink_ids:
                         first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 
                 sys_start_time = sys_times[first_sys]
-                del sys_times[first_sys]
-                system_keys.remove(first_sys)
+                #del sys_times[first_sys]
+                #system_keys.remove(first_sys)
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
                 sink_ids, formation_times, global_data = pickle.load(file_open)
