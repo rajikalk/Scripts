@@ -396,7 +396,7 @@ for sink_id in sink_ids:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            if len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
+            if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                 if Grho == 50:
                     if sink_id in diff_conds:
                         import pdb
@@ -410,15 +410,15 @@ for sink_id in sink_ids:
                         import pdb
                         pdb.set_trace()
                 #find which system form first
-                if len([s for s in system_keys if ' '+str(sink_id) in s]) > 0 and len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
-                    first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
-                elif len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) > 0:
-                    first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
+                if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
+                    first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
+                elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
+                    first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 else:
-                    if sys_times[[s for s in system_keys if ' '+str(sink_id) in s][0]] < sys_times[[s for s in system_keys if str(sink_id)+',' in s][0]]:
-                        first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
+                    if sys_times[[s for s in system_keys if ' '+str(sink_id)+']' in s][0]] < sys_times[[s for s in system_keys if '['+str(sink_id)+',' in s][0]]:
+                        first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
                     else:
-                        first_sys = [s for s in system_keys if str(sink_id)+',' in s][0]
+                        first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 
                 sys_start_time = sys_times[first_sys]
                 for key in system_keys:
