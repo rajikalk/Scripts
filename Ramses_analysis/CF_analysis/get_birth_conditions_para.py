@@ -411,11 +411,6 @@ for sink_id in sink_ids:
                 del sys_times[first_sys]
                 system_keys.remove(first_sys)
                 
-                if size == 1:
-                    import pdb
-                    pdb.set_trace()
-                del first_sys
-                
                 file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
