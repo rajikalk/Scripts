@@ -54,6 +54,7 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
+    diff_conds = [4,  5,  6,  7,  8,  9, 12, 13, 14, 15, 17, 18, 20, 21, 23, 29, 31, 33, 34, 35, 36, 37, 39, 40, 41, 43, 44, 46, 48, 49, 50, 51, 52, 53, 54, 57, 58, 59, 62, 63, 64, 65, 66, 67, 68, 72, 76, 77, 78, 79, 80, 81, 83, 85]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
 elif Grho == 125:
@@ -388,6 +389,11 @@ for sink_id in sink_ids:
             lowest_Etot = np.nan
             delay_time = np.nan
             sys_form_time = np.nan
+            
+            if Grho == 50:
+                if sink_id in diff_conds:
+                    import pdb
+                    pdb.set_trace()
             
             if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                 Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
