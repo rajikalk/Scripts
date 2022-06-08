@@ -22,6 +22,29 @@ if rank == 0:
     sys.stdout.flush()
 
 global_data_pickle_file = sys.argv[1]
+means_pickle = sys.argv[2]
+
+#let's try getting all the systems that were found
+file = open(means_pickle, 'rb')
+superplot_dict, Sink_bound_birth_means, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+file.close()
+
+sys_times = {}
+for key in superplot_dict['System_times'].keys():
+    sys_times.update({key:superplot_dict['System_times'][key][0]})
+system_keys = list(superplot_dict['System_times'].keys())
+del superplot_dict
+del Sink_bound_birth_means
+del Sink_formation_times
+del means_dict
+del Lifetimes_sys
+del Sep_maxs
+del Sep_mins
+del Initial_Seps
+del Final_seps
+gc.collect()
+
+
 Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 #Low_cadence = False
@@ -180,27 +203,6 @@ sys.stdout.flush()
 
 import pyramses as pr
 import multiplicity as m
-
-#let's try getting all the systems that were found
-pickle_file = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/means_superplot.pkl"
-file = open(pickle_file, 'rb')
-superplot_dict, Sink_bound_birth_means, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
-file.close()
-
-sys_times = {}
-for key in superplot_dict['System_times'].keys():
-    sys_times.update({key:superplot_dict['System_times'][key][0]})
-system_keys = list(superplot_dict['System_times'].keys())
-del superplot_dict
-del Sink_bound_birth_means
-del Sink_formation_times
-del means_dict
-del Lifetimes_sys
-del Sep_maxs
-del Sep_mins
-del Initial_Seps
-del Final_seps
-gc.collect()
 
 rit = -1
 sink_id = 0
