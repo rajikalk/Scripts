@@ -417,7 +417,55 @@ for sink_id in loop_inds:
                     import pdb
                     pdb.set_trace()
             
-            if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
+            if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 or len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
+                try:
+                    curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+                except:
+                    curr_it = sink_ids.index(sink_id)
+                next_id = curr_it + size
+                del curr_it
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
+                sink_ids, formation_times, global_data = pickle.load(file_open)
+                file_open.close()
+                
+                if next_id < len(sink_ids):
+                    form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+                else:
+                    form_time_it = -2
+                '''
+                next_id = sink_id + size
+                if next_id < len(formation_times):
+                    form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
+                else:
+                    form_time_it = -2
+                '''
+                global_test_inds = {}
+                global_test_inds.update({'time':global_data['time'][test_time_inds]})
+                global_data['time'] = global_data['time'][form_time_it:]
+                global_test_inds.update({'m':global_data['m'][test_time_inds]})
+                global_data['m'] = global_data['m'][form_time_it:]
+                global_test_inds.update({'x':global_data['x'][test_time_inds]})
+                global_data['x'] = global_data['x'][form_time_it:]
+                global_test_inds.update({'y':global_data['y'][test_time_inds]})
+                global_data['y'] = global_data['y'][form_time_it:]
+                global_test_inds.update({'z':global_data['z'][test_time_inds]})
+                global_data['z'] = global_data['z'][form_time_it:]
+                global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
+                global_data['ux'] = global_data['ux'][form_time_it:]
+                global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
+                global_data['uy'] = global_data['uy'][form_time_it:]
+                global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
+                global_data['uz'] = global_data['uz'][form_time_it:]
+                
+                file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
+                pickle.dump((sink_ids, formation_times, global_data), file_open)
+                file_open.close()
+                del form_time_it
+                del formation_times
+                del global_data
+                gc.collect()
+            else:
                 if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                     first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
                 elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
