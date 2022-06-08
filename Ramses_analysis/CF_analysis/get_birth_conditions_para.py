@@ -237,7 +237,7 @@ for sink_id in loop_inds:
         mass = np.array(global_data['m'][0][:sink_id+1])
         n_stars = np.argwhere(global_data['m'][0]>0).T[0]
         if len(n_stars) < sink_id:
-            print("NUMBER OF STARS THE LESS THAN SINK_ID:", sink_id)
+            print("NUMBER OF STARS", len(n_stars), "THE LESS THAN SINK_ID:", sink_id)
             import pdb
             pdb.set_trace()
         del global_data
