@@ -412,12 +412,7 @@ for sink_id in sink_ids:
                         first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 
                 sys_start_time = sys_times[first_sys]
-                for key in system_keys:
-                    if key == first_sys:
-                        break
-                    else:
-                        del sys_times[key]
-                        system_keys.remove(key)
+                system_keys = system_keys[system_keys.index(first_sys)+1:]
                 
                 if size == 0:
                     import pdb
