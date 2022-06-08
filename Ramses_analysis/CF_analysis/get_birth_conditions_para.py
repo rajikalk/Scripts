@@ -54,6 +54,7 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
+    diff_conds = [5,  9, 12, 13, 14, 15, 17, 18, 20, 21, 23, 29, 31, 33, 34, 35, 36, 37, 39, 40, 41, 43, 44, 46, 48, 49, 50, 51, 53, 54, 57, 58, 59, 62, 63, 64, 65, 66, 67, 68, 72, 76, 77, 78, 79, 80, 81, 83, 85]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
 elif Grho == 125:
@@ -225,6 +226,11 @@ for sink_id in sink_ids:
         gc.collect()
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
+        #FIND OUT WHY BIRTH CONDITIONS ARE DIFFERENT:
+        if sink_id in diff_conds:
+            import pdb
+            pdb.set_trace()
+
         #Calculate energies to find most bound sink
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
         absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
@@ -390,10 +396,16 @@ for sink_id in sink_ids:
             sys_form_time = np.nan
             
             if len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
+                if sink_id in diff_conds:
+                import pdb
+                pdb.set_trace()
                 Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
                 print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
                 sys.stdout.flush()
             else:
+                if sink_id in diff_conds:
+                import pdb
+                pdb.set_trace()
                 #find which system form first
                 if len([s for s in system_keys if ' '+str(sink_id) in s]) > 0 and len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
                     first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
