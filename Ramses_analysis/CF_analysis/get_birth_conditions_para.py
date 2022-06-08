@@ -624,7 +624,7 @@ for sink_id in sink_ids:
         
                 Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
                 print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
-                sqsys.stdout.flush()
+                sys.stdout.flush()
 
         file = open("sink_birth_conditions_"+("%03d" % rank)+".pkl", 'wb')
         pickle.dump((Sink_bound_birth),file)
