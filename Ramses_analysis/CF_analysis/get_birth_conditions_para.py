@@ -509,7 +509,10 @@ for sink_id in loop_inds:
                 gc.collect()
                 #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
-                curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+                try:
+                    curr_it = np.argwhere(sink_ids == sink_id)[0][0]
+                except:
+                    curr_it = sink_ids.index(sink_id)
                 next_id = curr_it + size
                 del curr_it
                 if next_id < len(sink_ids):
