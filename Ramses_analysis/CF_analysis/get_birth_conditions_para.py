@@ -54,7 +54,8 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
-    diff_conds = [46, 48, 77, 83]
+    if size == 1:
+        diff_conds = [46, 48, 77, 83]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
 elif Grho == 125:
@@ -293,7 +294,7 @@ for sink_id in loop_inds:
         born_bound = True
         delay_time = 0
         
-        if Grho == 50:
+        if Grho == 50 and size == 1:
             if sink_id in diff_conds:
                 import pdb
                 pdb.set_trace()
@@ -336,7 +337,7 @@ for sink_id in loop_inds:
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
-            if Grho == 50:
+            if Grho == 50 and size == 1:
                 if sink_id in diff_conds:
                     import pdb
                     pdb.set_trace()
@@ -350,7 +351,7 @@ for sink_id in loop_inds:
             else:
                 sys_id = np.nan
             if np.isnan(sys_id) == False:
-                if Grho == 50:
+                if Grho == 50 and size == 1:
                     if sink_id in diff_conds:
                         import pdb
                         pdb.set_trace()
@@ -407,7 +408,7 @@ for sink_id in loop_inds:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            if Grho == 50:
+            if Grho == 50 and size == 1:
                 if sink_id in diff_conds:
                     import pdb
                     pdb.set_trace()
@@ -614,7 +615,7 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                            if Grho == 50:
+                            if Grho == 50 and size == 1:
                                 if sink_id in diff_conds:
                                     import pdb
                                     pdb.set_trace()
@@ -638,7 +639,7 @@ for sink_id in loop_inds:
                                 if delay_time == 0:
                                     born_bound = True
                                     most_bound_sink_id = str(first_bound_sink)
-                                if Grho == 50:
+                                if Grho == 50 and size == 1:
                                     if sink_id in diff_conds:
                                         import pdb
                                         pdb.set_trace()
