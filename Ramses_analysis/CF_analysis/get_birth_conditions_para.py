@@ -440,22 +440,13 @@ for sink_id in loop_inds:
                 else:
                     form_time_it = -2
                 '''
-                global_test_inds = {}
-                global_test_inds.update({'time':global_data['time'][test_time_inds]})
                 global_data['time'] = global_data['time'][form_time_it:]
-                global_test_inds.update({'m':global_data['m'][test_time_inds]})
                 global_data['m'] = global_data['m'][form_time_it:]
-                global_test_inds.update({'x':global_data['x'][test_time_inds]})
                 global_data['x'] = global_data['x'][form_time_it:]
-                global_test_inds.update({'y':global_data['y'][test_time_inds]})
                 global_data['y'] = global_data['y'][form_time_it:]
-                global_test_inds.update({'z':global_data['z'][test_time_inds]})
                 global_data['z'] = global_data['z'][form_time_it:]
-                global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
                 global_data['ux'] = global_data['ux'][form_time_it:]
-                global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
                 global_data['uy'] = global_data['uy'][form_time_it:]
-                global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
                 global_data['uz'] = global_data['uz'][form_time_it:]
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
