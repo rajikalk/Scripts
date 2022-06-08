@@ -236,6 +236,10 @@ for sink_id in loop_inds:
         absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
         mass = np.array(global_data['m'][0][:sink_id+1])
         n_stars = np.argwhere(global_data['m'][0]>0).T[0]
+        if len(n_stars) < sink_id:
+            print("NUMBER OF STARS THE LESS THAN SINK_ID:", sink_id)
+            import pdb
+            pdb.set_trace()
         del global_data
         gc.collect()
         
