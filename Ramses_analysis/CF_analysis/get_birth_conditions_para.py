@@ -430,7 +430,10 @@ for sink_id in loop_inds:
                 #sink_ids, formation_times, global_data = pickle.load(file_open)
                 #file_open.close()
                 del file_open
-                sink_it = np.argwhere(sink_ids == sink_id)[0][0]
+                try:
+                    sink_it = np.argwhere(sink_ids == sink_id)[0][0]
+                except:
+                    sink_it = sink_ids.index(sink_id)
                 formation_time = formation_times[sink_it]*scale_t_yr
                 gc.collect()
                 """
