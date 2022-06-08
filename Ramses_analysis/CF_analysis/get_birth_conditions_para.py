@@ -54,8 +54,7 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
-    if size == 1:
-        diff_conds = [46, 48, 77, 83]
+    diff_conds = [46, 48, 77, 83]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
 elif Grho == 125:
