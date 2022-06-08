@@ -55,7 +55,7 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
     if size == 1:
-        diff_conds = [23, 33, 44, 46, 48, 49, 57, 66, 67, 68, 77, 79, 80, 81, 83]
+        diff_conds = [46, 48, 77, 83]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
 elif Grho == 125:
@@ -294,6 +294,11 @@ for sink_id in loop_inds:
         born_bound = True
         delay_time = 0
         
+        if Grho == 50 and size == 1:
+            if sink_id in diff_conds:
+                import pdb
+                pdb.set_trace()
+        
         sys_id = np.nan
         if len(n_stars)>1:
             file_open = open("global_data_rank_"+str(rank)+".pkl", 'rb')
@@ -332,6 +337,10 @@ for sink_id in loop_inds:
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
+            if Grho == 50 and size == 1:
+                if sink_id in diff_conds:
+                    import pdb
+                    pdb.set_trace()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
@@ -342,6 +351,10 @@ for sink_id in loop_inds:
             else:
                 sys_id = np.nan
             if np.isnan(sys_id) == False:
+                if Grho == 50 and size == 1:
+                    if sink_id in diff_conds:
+                        import pdb
+                        pdb.set_trace()
                 first_bound_sink = losi(first_bound_sink, res)
                 lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
                 most_bound_sep = res['separation'][sys_id]
@@ -602,6 +615,10 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                            if Grho == 50 and size == 1:
+                                if sink_id in diff_conds:
+                                    import pdb
+                                    pdb.set_trace()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             if sink_id in res['index1']:
                                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
