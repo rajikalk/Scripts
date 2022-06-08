@@ -227,9 +227,10 @@ for sink_id in sink_ids:
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
         
         #FIND OUT WHY BIRTH CONDITIONS ARE DIFFERENT:
-        if sink_id in diff_conds:
-            import pdb
-            pdb.set_trace()
+        if Grho == 50:
+            if sink_id in diff_conds:
+                import pdb
+                pdb.set_trace()
 
         #Calculate energies to find most bound sink
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
@@ -396,16 +397,18 @@ for sink_id in sink_ids:
             sys_form_time = np.nan
             
             if len([s for s in system_keys if ' '+str(sink_id) in s]) == 0 or len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
-                if sink_id in diff_conds:
-                    import pdb
-                    pdb.set_trace()
+                if Grho == 50:
+                    if sink_id in diff_conds:
+                        import pdb
+                        pdb.set_trace()
                 Sink_bound_birth.append([sink_id, born_bound, most_bound_sink_id, str(first_bound_sink), most_bound_sep, lowest_Etot, delay_time, sys_form_time])
                 print("Rank:", rank, "Birth conditions of sink", sink_id, "(of", sink_ids[-1],") is", Sink_bound_birth[-1], flush=True)
                 sys.stdout.flush()
             else:
-                if sink_id in diff_conds:
-                    import pdb
-                    pdb.set_trace()
+                if Grho == 50:
+                    if sink_id in diff_conds:
+                        import pdb
+                        pdb.set_trace()
                 #find which system form first
                 if len([s for s in system_keys if ' '+str(sink_id) in s]) > 0 and len([s for s in system_keys if str(sink_id)+',' in s]) == 0:
                     first_sys = [s for s in system_keys if ' '+str(sink_id) in s][0]
