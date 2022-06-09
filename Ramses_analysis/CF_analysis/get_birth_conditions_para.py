@@ -395,7 +395,7 @@ for sink_id in loop_inds:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            if Ghro == 50 and sink_id in diff_conds:
+            if Grho == 50 and sink_id in diff_conds:
                 import pdb
                 pdb.set_trace()
             
