@@ -56,6 +56,7 @@ if Grho == 50:
     scale_m = 1500*1.98841586e+33
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
+    diff_conds = [13, 46, 49, 55, 70, 77, 80, 96, 100]
 elif Grho == 125:
     scale_m = 3750*1.98841586e+33
 elif Grho == 150:
@@ -452,9 +453,10 @@ for sink_id in loop_inds:
                 file_open.close()
                 
                 first_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - sys_start_time))
-                start_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - (sys_start_time-500)))
+                start_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - (sys_start_time-1000)))
                 test_time_inds = np.arange(start_test_ind, first_test_ind+1)
                 del first_test_ind
+                del start_test_ind
             
                 #units['time_unit'].in_units('yr')
                 #formation_time = formation_times[sink_id]*scale_t_yr#units['time_unit'].in_units('yr')
@@ -634,6 +636,9 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                            if Grho == 100 and sink_id in diff_conds:
+                                import pdb
+                                pdb.set_trace()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             if sink_id in res['index1']:
                                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
