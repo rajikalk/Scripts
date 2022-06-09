@@ -564,21 +564,32 @@ for sink_id in loop_inds:
                 import pdb
                 pdb.set_trace()
                 global_test_inds = {}
+                '''
                 global_test_inds.update({'time':global_data['time'][test_time_inds]})
-                global_data['time'] = global_data['time'][form_time_it:]
                 global_test_inds.update({'m':global_data['m'][test_time_inds]})
-                global_data['m'] = global_data['m'][form_time_it:]
                 global_test_inds.update({'x':global_data['x'][test_time_inds]})
-                global_data['x'] = global_data['x'][form_time_it:]
                 global_test_inds.update({'y':global_data['y'][test_time_inds]})
-                global_data['y'] = global_data['y'][form_time_it:]
                 global_test_inds.update({'z':global_data['z'][test_time_inds]})
-                global_data['z'] = global_data['z'][form_time_it:]
                 global_test_inds.update({'ux':global_data['ux'][test_time_inds]})
-                global_data['ux'] = global_data['ux'][form_time_it:]
                 global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
-                global_data['uy'] = global_data['uy'][form_time_it:]
                 global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
+                '''
+                global_test_inds.update({'time':global_data['time'][test_time_inds][::-1]})
+                global_test_inds.update({'m':global_data['m'][test_time_inds][::-1]})
+                global_test_inds.update({'x':global_data['x'][test_time_inds][::-1]})
+                global_test_inds.update({'y':global_data['y'][test_time_inds][::-1]})
+                global_test_inds.update({'z':global_data['z'][test_time_inds][::-1]})
+                global_test_inds.update({'ux':global_data['ux'][test_time_inds][::-1]})
+                global_test_inds.update({'uy':global_data['uy'][test_time_inds][::-1]})
+                global_test_inds.update({'uz':global_data['uz'][test_time_inds][::-1]})
+                
+                global_data['time'] = global_data['time'][form_time_it:]
+                global_data['m'] = global_data['m'][form_time_it:]
+                global_data['x'] = global_data['x'][form_time_it:]
+                global_data['y'] = global_data['y'][form_time_it:]
+                global_data['z'] = global_data['z'][form_time_it:]
+                global_data['ux'] = global_data['ux'][form_time_it:]
+                global_data['uy'] = global_data['uy'][form_time_it:]
                 global_data['uz'] = global_data['uz'][form_time_it:]
                 
                 file_open = open("global_data_rank_"+str(rank)+".pkl", "wb")
@@ -644,6 +655,46 @@ for sink_id in loop_inds:
                             #    for top_sys_ind in top_sys_inds:
                             #        sys_string = str(losi(top_sys_ind, res))
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+                            
+                            #Update initial conditions until first system is not found
+                            #step one, find if system still exists:
+                            if sink_id in res['index1'] or sink_id in res['index2']:
+                                #Find system that is in
+                                Top_found = False
+                                sys_id = sink_id
+                                while Top_found == False:
+                                    if sys_id in res['index1']:
+                                        sys_id = np.argwhere(res['index1'] == sys_id)[0][0]
+                                    elif sys_id in res['index2']:
+                                        sys_id = np.argwhere(res['index2'] == sys_id)[0][0]
+                                    else:
+                                        print("SOME ERROR FINDING TOP SYSTEM")
+                                        import pdb
+                                        pdb.set_trace()
+                                    if res['topSystem'][sys_id] == True:
+                                        Top_found = True
+                                if str(losi(sys_id, res)) != first_sys:
+                                    break
+                                else:
+                                    if sink_id in res['index1']:
+                                        sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                        first_bound_sink = res['index2'][sys_id]
+                                    else:
+                                        sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                        first_bound_sink = res['index1'][sys_id]
+                                    first_bound_sink = losi(first_bound_sink, res)
+                                    lowest_Etot = res['epot'][sys_id] + res['ekin'][sys_id]
+                                    most_bound_sep = res['separation'][sys_id]
+                                    bound_time = res['time']*scale_t_yr
+                                    delay_time = float(bound_time - formation_time)
+                                    sys_form_time = sfe
+                                    #Find initial separation
+                                    if delay_time == 0:
+                                        born_bound = True
+                                        most_bound_sink_id = str(first_bound_sink)
+                            else:
+                                break #Because the target sink is no longer found in a system!
+                            '''
                             if sink_id in res['index1']:
                                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                                 if res['topSystem'][sys_id] == True:
@@ -708,6 +759,7 @@ for sink_id in loop_inds:
                                     born_bound = True
                                     most_bound_sink_id = str(first_bound_sink)
                                 break
+                            '''
                             del res
                             gc.collect()
         
