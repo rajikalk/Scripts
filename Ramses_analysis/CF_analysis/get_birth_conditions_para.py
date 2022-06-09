@@ -624,7 +624,6 @@ for sink_id in loop_inds:
                             S._scale_d = scale_d
                             S._time = time
                             #del time
-                            gc.collect()
                             S._abspos = abspos
                             del abspos
                             gc.collect()
@@ -636,6 +635,9 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                            if sink_id in diff_conds:
+                                import pdb
+                                pdb.set_trace()
                             #if Grho == 100 and sink_id in diff_conds:
                             #    import pdb
                             #    pdb.set_trace()
@@ -644,9 +646,6 @@ for sink_id in loop_inds:
                             #        sys_string = str(losi(top_sys_ind, res))
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             if sink_id in res['index1']:
-                                if Grho == 100 and sink_id in diff_conds:
-                                    import pdb
-                                    pdb.set_trace()
                                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                                 if res['topSystem'][sys_id] == True:
                                     if str(losi(sys_id, res)) != first_sys:
@@ -672,9 +671,6 @@ for sink_id in loop_inds:
                                         sub_sys = np.argwhere(res['index1'] == sink_id)[0][0]
                                         first_bound_sink = res['index2'][sub_sys]
                             elif sink_id in res['index2']:
-                                if Grho == 100 and sink_id in diff_conds:
-                                    import pdb
-                                    pdb.set_trace()
                                 sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
                                 if res['topSystem'][sys_id] == True:
                                     if str(losi(sys_id, res)) != first_sys:
