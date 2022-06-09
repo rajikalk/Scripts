@@ -56,7 +56,7 @@ if Grho == 50:
     scale_m = 1500*1.98841586e+33
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
-    diff_conds = [13, 46, 49, 55, 70, 77, 80, 96, 100]
+    diff_conds = [46, 49, 55, 70, 80, 96]
 elif Grho == 125:
     scale_m = 3750*1.98841586e+33
 elif Grho == 150:
@@ -648,13 +648,57 @@ for sink_id in loop_inds:
                                     import pdb
                                     pdb.set_trace()
                                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
-                                first_bound_sink = res['index2'][sys_id]
+                                if res['topSystem'][sys_id] == True:
+                                    if str(losi(sys_id, res)) != first_sys:
+                                        sys_id = np.nan
+                                    else:
+                                        first_bound_sink = res['index2'][sys_id]
+                                else:
+                                    Top_found = False
+                                    while Top_found == False:
+                                        if sys_id in res['index1']:
+                                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                        elif sys_id in res['index2']:
+                                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                        else:
+                                            print("SOME ERROR FINDING TOP SYSTEM")
+                                            import pdb
+                                            pdb.set_trace()
+                                        if res['topSystem'][sys_id] == True:
+                                            Top_found = True
+                                    if str(losi(sys_id, res)) != first_sys:
+                                        sys_id = np.nan
+                                    else:
+                                        sub_sys = np.argwhere(res['index1'] == sink_id)[0][0]
+                                        first_bound_sink = res['index2'][sub_sys]
                             elif sink_id in res['index2']:
                                 if Grho == 100 and sink_id in diff_conds:
                                     import pdb
                                     pdb.set_trace()
                                 sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
-                                first_bound_sink = res['index1'][sys_id]
+                                if res['topSystem'][sys_id] == True:
+                                    if str(losi(sys_id, res)) != first_sys:
+                                        sys_id = np.nan
+                                    else:
+                                        first_bound_sink = res['index1'][sys_id]
+                                else:
+                                    Top_found = False
+                                    while Top_found == False:
+                                        if sys_id in res['index1']:
+                                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                        elif sys_id in res['index2']:
+                                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                        else:
+                                            print("SOME ERROR FINDING TOP SYSTEM")
+                                            import pdb
+                                            pdb.set_trace()
+                                        if res['topSystem'][sys_id] == True:
+                                            Top_found = True
+                                    if str(losi(sys_id, res)) != first_sys:
+                                        sys_id = np.nan
+                                    else:
+                                        sub_sys = np.argwhere(res['index1'] == sink_id)[0][0]
+                                        first_bound_sink = res['index2'][sub_sys]
                             else:
                                 sys_id = np.nan
                             if np.isnan(sys_id) == False:
