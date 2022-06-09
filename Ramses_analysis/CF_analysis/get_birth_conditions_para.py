@@ -635,9 +635,6 @@ for sink_id in loop_inds:
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                             res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
-                            if sink_id in diff_conds:
-                                import pdb
-                                pdb.set_trace()
                             #if Grho == 100 and sink_id in diff_conds:
                             #    import pdb
                             #    pdb.set_trace()
