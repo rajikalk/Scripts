@@ -600,7 +600,8 @@ for sink_id in loop_inds:
                 #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
                 
                 counter = 0
-                while np.isnan(first_bound_sink):
+                found_pre_sys_time = False
+                while found_pre_sys_time == False:
                     counter = counter + 1
                     if np.remainder(counter,5000) == 0:
                         print("trying test ind No.", counter, "on rank", rank, flush=True)
@@ -672,6 +673,7 @@ for sink_id in loop_inds:
                                     if res['topSystem'][sys_id] == True:
                                         Top_found = True
                                 if str(losi(sys_id, res)) != first_sys:
+                                    found_pre_sys_time = True
                                     break
                                 else:
                                     if sink_id in res['index1']:
