@@ -395,10 +395,6 @@ for sink_id in loop_inds:
             delay_time = np.nan
             sys_form_time = np.nan
             
-            if Grho == 50 and sink_id in diff_conds:
-                import pdb
-                pdb.set_trace()
-            
             if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                 try:
                     curr_it = np.argwhere(sink_ids == sink_id)[0][0]
