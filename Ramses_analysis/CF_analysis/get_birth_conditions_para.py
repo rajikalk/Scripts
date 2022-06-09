@@ -29,11 +29,6 @@ file = open(means_pickle, 'rb')
 superplot_dict, Sink_bound_birth_means, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
 file.close()
 
-sys_times = {}
-for key in superplot_dict['System_times'].keys():
-    sys_times.update({key:np.min(superplot_dict['System_times'][key][0])})
-system_keys = list(superplot_dict['System_times'].keys())
-del superplot_dict
 del Sink_bound_birth_means
 del Sink_formation_times
 del means_dict
@@ -42,6 +37,13 @@ del Sep_maxs
 del Sep_mins
 del Initial_Seps
 del Final_seps
+gc.collect()
+
+sys_times = {}
+for key in superplot_dict['System_times'].keys():
+    sys_times.update({key:np.min(superplot_dict['System_times'][key][0])})
+system_keys = list(superplot_dict['System_times'].keys())
+del superplot_dict
 gc.collect()
 
 
@@ -54,10 +56,8 @@ Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
 
 if Grho == 50:
     scale_m = 1500*1.98841586e+33
-    diff_conds = [15, 27, 40, 63]
 elif Grho == 100:
     scale_m = 3000*1.98841586e+33
-    diff_conds = [46, 49, 55, 70, 80, 96]
 elif Grho == 125:
     scale_m = 3750*1.98841586e+33
 elif Grho == 150:
