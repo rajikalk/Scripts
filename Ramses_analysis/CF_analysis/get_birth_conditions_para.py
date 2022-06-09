@@ -453,7 +453,7 @@ for sink_id in loop_inds:
                 file_open.close()
                 
                 first_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - sys_start_time))
-                start_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - (sys_start_time-1000)))
+                start_test_ind = np.argmin(abs(global_data['time']*scale_t_yr - (sys_start_time-10000)))
                 test_time_inds = np.arange(start_test_ind, first_test_ind+1)
                 del first_test_ind
                 del start_test_ind
