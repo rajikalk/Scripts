@@ -561,6 +561,8 @@ for sink_id in loop_inds:
                 else:
                     form_time_it = -2
                 '''
+                import pdb
+                pdb.set_trace()
                 global_test_inds = {}
                 global_test_inds.update({'time':global_data['time'][test_time_inds]})
                 global_data['time'] = global_data['time'][form_time_it:]
