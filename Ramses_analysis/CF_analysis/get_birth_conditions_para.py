@@ -653,9 +653,9 @@ for sink_id in loop_inds:
                                     Top_found = False
                                     while Top_found == False:
                                         if sys_id in res['index1']:
-                                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                            sys_id = np.argwhere(res['index1'] == sys_id)[0][0]
                                         elif sys_id in res['index2']:
-                                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                            sys_id = np.argwhere(res['index2'] == sys_id)[0][0]
                                         else:
                                             print("SOME ERROR FINDING TOP SYSTEM")
                                             import pdb
@@ -678,9 +678,9 @@ for sink_id in loop_inds:
                                     Top_found = False
                                     while Top_found == False:
                                         if sys_id in res['index1']:
-                                            sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
+                                            sys_id = np.argwhere(res['index1'] == sys_id)[0][0]
                                         elif sys_id in res['index2']:
-                                            sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
+                                            sys_id = np.argwhere(res['index2'] == sys_id)[0][0]
                                         else:
                                             print("SOME ERROR FINDING TOP SYSTEM")
                                             import pdb
