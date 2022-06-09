@@ -672,10 +672,7 @@ for sink_id in loop_inds:
                                         pdb.set_trace()
                                     if res['topSystem'][sys_id] == True:
                                         Top_found = True
-                                if str(losi(sys_id, res)) != first_sys:
-                                    found_pre_sys_time = True
-                                    break
-                                else:
+                                if str(losi(sys_id, res)) == first_sys:
                                     if sink_id in res['index1']:
                                         sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                                         first_bound_sink = res['index2'][sys_id]
@@ -692,6 +689,9 @@ for sink_id in loop_inds:
                                     if delay_time == 0:
                                         born_bound = True
                                         most_bound_sink_id = str(first_bound_sink)
+                                else:
+                                    found_pre_sys_time = True
+                                    break
                             else:
                                 break #Because the target sink is no longer found in a system!
                             '''
