@@ -339,15 +339,12 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
-                                    if len(flatten(eval(time_key)))>2:
-                                        import pdb
-                                        pdb.set_trace()
                                     if Sink_birth_all[str(np.max(sub_sys))][0] == True and str(other_sys) == Sink_birth_all[str(np.max(sub_sys))][2]:
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                    elif Sink_birth_all[str(np.max(sub_sys))][1] == Sink_birth_all[str(np.max(sub_sys))][2] == str(other_sys):
+                                    elif Sink_birth_all[str(np.max(real_sinks))][0] == False and Sink_birth_all[str(np.max(sub_sys))][1] == Sink_birth_all[str(np.max(sub_sys))][2] == str(other_sys):
                                         marker_color = 'm'
                                         marker_shape = '^'
                                         #elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
@@ -429,13 +426,10 @@ if plot_truncated_super_mult == True:
                                                 insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
-                                        if len(flatten(eval(time_key)))>2:
-                                            import pdb
-                                            pdb.set_trace()
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True and str(other_sys) == Sink_birth_all[str(np.max(real_sinks))][2]:
                                             marker_color = 'b'
                                             marker_shape = 's'
-                                        elif Sink_birth_all[str(np.max(real_sinks))][1] == Sink_birth_all[str(np.max(real_sinks))][2] == str(other_sys):
+                                        elif Sink_birth_all[str(np.max(real_sinks))][0] == False and Sink_birth_all[str(np.max(real_sinks))][1] == Sink_birth_all[str(np.max(real_sinks))][2] == str(other_sys):
                                             marker_color = 'm'
                                             marker_shape = '^'
                                         else:
