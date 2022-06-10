@@ -371,11 +371,11 @@ if plot_truncated_super_mult == True:
                                     elif args.x_field == 'SFE':
                                         #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                         if marker_color == 'b':
-                                            print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                            print("-------------------------------------------------------")
                                             if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
                                                 core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                print("-------------------------------------------------------")
                                             else:
                                                 core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                 Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
@@ -383,11 +383,11 @@ if plot_truncated_super_mult == True:
                                                 Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                             pathway_counters[0] = pathway_counters[0] + 1
                                         elif marker_color == 'm':
-                                            print("Delayed_core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                            print("-------------------------------------------------------")
                                             if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
                                                 delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[1].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                print("Delayed_core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                print("-------------------------------------------------------")
                                             else:
                                                 delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                 Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
@@ -395,11 +395,11 @@ if plot_truncated_super_mult == True:
                                                 Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                             pathway_counters[1] = pathway_counters[1] + 1
                                         elif marker_color == 'r':
-                                            print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                            print("-------------------------------------------------------")
                                             if Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(sub_sys))][3] not in Initial_Seps[2]:
                                                 dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(sub_sys))][-1], Sink_birth_all[str(np.max(sub_sys))][3]])
                                                 Initial_Seps[2].append(Sink_birth_all[str(np.max(sub_sys))][3])
+                                                print("Dynamical_capt | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                print("-------------------------------------------------------")
                                             else:
                                                 dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                 Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
@@ -462,11 +462,11 @@ if plot_truncated_super_mult == True:
                                         elif args.x_field == 'SFE':
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
-                                                print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                print("-------------------------------------------------------")
                                                 if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
                                                     core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                     Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                    print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                    print("-------------------------------------------------------")
                                                 else:
                                                     core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                     Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
@@ -474,11 +474,11 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
-                                                print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                print("-------------------------------------------------------")
                                                 if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
                                                     delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                     Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                    print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                    print("-------------------------------------------------------")
                                                 else:
                                                     delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                     Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
@@ -486,11 +486,11 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
-                                                print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                print("-------------------------------------------------------")
                                                 if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
                                                     dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
                                                     Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                    print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                    print("-------------------------------------------------------")
                                                 else:
                                                     dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
                                                     Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
