@@ -422,10 +422,10 @@ if plot_truncated_super_mult == True:
                                                 other_sys = eval(other_sys_str)
                                         import pdb
                                         pdb.set_trace()
-                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True and other_sys_str == str(Sink_birth_all[str(np.max(real_sinks))][2]):
+                                        if Sink_birth_all[str(np.max(real_sinks))][0] == True:
                                             marker_color = 'b'
                                             marker_shape = 's'
-                                        elif Sink_birth_all[str(np.max(real_sinks))][1] not in flatten(eval(Sink_birth_all[str(np.max(real_sinks))][2])):
+                                        elif Sink_birth_all[str(np.max(real_sinks))][1] == Sink_birth_all[str(np.max(real_sinks))][2]:
                                             marker_color = 'r'
                                             marker_shape = 'o'
                                         else:
