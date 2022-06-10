@@ -469,7 +469,7 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                     print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                     print("-------------------------------------------------------")
-                                                    if Sink_birth_all[str(np.max(sub_sys))][3] < 100:
+                                                    if Sink_birth_all[str(np.max(real_sinks))][3] < 100:
                                                         import pdb
                                                         pdb.set_trace()
                                                 else:
