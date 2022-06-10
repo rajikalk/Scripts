@@ -339,14 +339,12 @@ if plot_truncated_super_mult == True:
                             if np.mean(np.array(sub_sys)<superplot_dict['N_stars'][-1]) == 1:
                                 if str(np.max(sub_sys)) in Sink_birth_all.keys():
                                     other_sys = np.min(sub_sys)
-                                    import pdb
-                                    pdb.set_trace()
-                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True and str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                    if Sink_birth_all[str(np.max(sub_sys))][0] == True:
                                         marker_color = 'b'
                                         marker_shape = 's'
                                         #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
                                         #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
-                                    elif str(other_sys) == str(Sink_birth_all[str(np.max(sub_sys))][1]) and np.sum(np.array(flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])))>np.max(sub_sys))==0:
+                                    elif Sink_birth_all[str(np.max(sub_sys))][1] == Sink_birth_all[str(np.max(sub_sys))][2]:
                                         marker_color = 'm'
                                         marker_shape = '^'
                                         #elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
