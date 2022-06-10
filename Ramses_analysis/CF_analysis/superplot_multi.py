@@ -423,7 +423,7 @@ if plot_truncated_super_mult == True:
                                                 insert_str = str(sub_sys_dict[str(flatten(other_sys)[greater_ind])])
                                                 other_sys_str = other_split[0] + insert_str + other_split[1]
                                                 other_sys = eval(other_sys_str)
-                                        if np.max(sub_sys) == 31:
+                                        if np.max(real_sinks) == 31:
                                             import pdb
                                             pdb.set_trace()
                                         if Sink_birth_all[str(np.max(real_sinks))][0] == True:
