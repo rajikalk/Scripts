@@ -376,8 +376,14 @@ if plot_truncated_super_mult == True:
                                                 Initial_Seps[0].append(Sink_birth_all[str(np.max(sub_sys))][3])
                                                 print("Core_frag | The birth conditions for", np.max(sub_sys), "is", Sink_birth_all[str(np.max(sub_sys))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                 print("-------------------------------------------------------")
+                                                if Sink_birth_all[str(np.max(sub_sys))][3] < 100:
+                                                    import pdb
+                                                    pdb.set_trace()
                                             else:
                                                 core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                if Sep_arr[0][-1*sub_sys_counter] < 100:
+                                                    import pdb
+                                                    pdb.set_trace()
                                                 Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
                                             if Lifetimes_sys[time_key]>100000:
                                                 Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
@@ -463,8 +469,14 @@ if plot_truncated_super_mult == True:
                                                     Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
                                                     print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
                                                     print("-------------------------------------------------------")
+                                                    if Sink_birth_all[str(np.max(sub_sys))][3] < 100:
+                                                        import pdb
+                                                        pdb.set_trace()
                                                 else:
                                                     core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                    if Sep_arr[0][-1*sub_sys_counter] < 100:
+                                                        import pdb
+                                                        pdb.set_trace()
                                                     Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
