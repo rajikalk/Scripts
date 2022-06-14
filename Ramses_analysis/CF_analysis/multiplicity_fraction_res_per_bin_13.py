@@ -198,6 +198,26 @@ for bin_it in range(1, len(S_bins)):
         smaller_seps = len(np.argwhere(np.array(Perseus_objs_cleaned[key]) < S_bins[bin_it-1]))
         larger_seps = len(np.argwhere(np.array(Perseus_objs_cleaned[key]) > S_bins[bin_it]))
         binaries = len(np.argwhere((np.array(Perseus_objs_cleaned[key]) < S_bins[bin_it])&(np.array(Perseus_objs_cleaned[key]) > S_bins[bin_it-1])))
+        
+        sys_sub_comps = []
+        if N_comps == 1:
+            sys_sub_comps = sys_sub_comps + [1]
+        if smaller_seps > 0:
+            #All separations between the lower bound are collapsed to one system
+            sys_sub_comps = sys_sub_comps + [1]
+        if binaries > 0:
+            #if one sep, add 2 stars, if 2 seps, add 3 star, if 3 seps add 4 stars, etc...
+            sys_sub_comps = sys_sub_comps + [binaries+1]
+        if larger_seps > 0:
+            if binaries == 0 and smaller_seps == 0:
+                #If all separations are greater than that the upper bound, all stars are seen as single
+                sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps+1)))
+            else:
+                sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps)))
+
+        N_comps_in_sys = N_comps_in_sys + sys_sub_comps
+        
+        """
         if N_comps == 1:
             N_comps_in_sys = N_comps_in_sys + [1]
         elif N_comps == 2:
@@ -287,6 +307,7 @@ for bin_it in range(1, len(S_bins)):
             else:
                 import pdb
                 pdb.set_trace()
+        """
     '''
     N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
     N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
@@ -352,8 +373,7 @@ for bin_it in range(1, len(S_bins)):
                 #If all separations are greater than that the upper bound, all stars are seen as single
                 sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps+1)))
             else:
-                import pdb
-                pdb.set_trace()
+                sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps)))
                 
         N_comps_in_sys = N_comps_in_sys + sys_sub_comps
         
