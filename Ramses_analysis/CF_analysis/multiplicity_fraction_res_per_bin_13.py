@@ -277,13 +277,25 @@ for bin_it in range(1, len(S_bins)):
             else:
                 import pdb
                 pdb.set_trace()
+    '''
     N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
     N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
     N_s = len(np.argwhere(np.array(N_comps_in_sys) == 1))
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
+    '''
+    N_s = len(np.argwhere(np.array(N_comps_in_sys) == 1))
+    N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
+    N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
+    N_q = len(np.argwhere(np.array(N_comps_in_sys) == 4))
+    N_q5 = len(np.argwhere(np.array(N_comps_in_sys) == 5))
+    N_s6 = len(np.argwhere(np.array(N_comps_in_sys) == 6))
+    N_s7 = len(np.argwhere(np.array(N_comps_in_sys) == 7))
+    N_sys = np.array([N_s, N_b, N_t, N_q, N_q5, N_s6, N_s7])
+    cf = (np.arange(7)*N_sys)/np.sum(N_sys)
+    
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
-    CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
+    CF_err = ((N_comp*(1-(N_comp/np.sum(N_sys))))**0.5)*(1/np.sum(N_sys))
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
     CF_per_bin_Tobin.append(cf)
@@ -1098,7 +1110,7 @@ if update == True and args.make_plots_only == 'False':
                 if (ns+nb+nt+nq+nq5+ns6+ns7) == 0:
                     cf = 0
                 else:
-                    cf = (nb+nt*2+nq*3+nq5*4+ns6*5+ns7*6)/(ns+nb+nt+nq+nq5+ns6+ns7)
+                    cf = np.arange(7)*np.array(n_systems[-1])/np.sum(n_systems[-1])
                 if args.verbose_printing != 'False':
                     print_line = "CF = " + str(cf)
                     if size == 1:
