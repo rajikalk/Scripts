@@ -556,9 +556,9 @@ if rank == 0:
     plt.ylim([0, 0.2])
     #plt.plot(x, fit1, ls='--')
     #plt.plot(x, fit2, ls='--')
-    plt.plot(x, sum_fit)
+    #plt.plot(x, sum_fit)
     #plt.plot(x, fit4, ls='--')
-    plt.plot(x, sum_line)
+    #plt.plot(x, sum_line)
     #plt.savefig("Tobin_2018_class_0_I.jpg")
 
 
