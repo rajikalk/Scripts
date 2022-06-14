@@ -407,6 +407,8 @@ for bin_it in range(1, len(S_bins)):
         elif N_comps == 6:
             if larger_seps == 5:
                 N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1, 1, 1]
+            elif binaries == 1 and larger_seps == 4:
+                N_comps_in_sys = N_comps_in_sys + [2, 1, 1, 1, 1]
             elif binaries == 2 and larger_seps == 3:
                 N_comps_in_sys = N_comps_in_sys + [2, 2, 1, 1]
             elif smaller_seps == 2 and larger_seps == 3:
