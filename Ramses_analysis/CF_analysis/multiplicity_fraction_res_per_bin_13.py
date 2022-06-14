@@ -547,8 +547,8 @@ sum_line = fit3 + fit4
 """
 if rank == 0:
     plt.clf()
-    plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, fill=False)
-    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, fill=False)
+    plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, fill=False, edgecolor='b')
+    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, fill=False, edgecolor='orange')
     #plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
     plt.ylabel("Companion Frequency")
     plt.xlabel("Log (AU)")
