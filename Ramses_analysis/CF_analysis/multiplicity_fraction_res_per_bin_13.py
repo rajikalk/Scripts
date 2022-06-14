@@ -354,10 +354,7 @@ for bin_it in range(1, len(S_bins)):
             else:
                 import pdb
                 pdb.set_trace()
-        
-        if N_comps > 1:
-            import pdb
-            pdb.set_trace()
+                
         N_comps_in_sys = N_comps_in_sys + sys_sub_comps
         
         """
