@@ -314,6 +314,21 @@ for bin_it in range(1, len(S_bins)):
 CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
 CF_errs = np.array(CF_errs)
 
+#Repeat for Orion:
+file = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
+Orion_objects = pickle.load(file)
+file.close()
+
+Orion_objs_cleaned = {}
+for per_key in Orion_objs_cleaned.keys():
+    if Orion_objs_cleaned[per_key][0] == 0:
+            Orion_objs_cleaned.update({per_key:[]})
+    else:
+        Orion_objs_cleaned.update({per_key:Orion_objs_cleaned[per_key][0]})
+
+import pdb
+pdb.set_trace()
+
 #raghaven dist
 sep_mean_rag = 1.7
 sep_std_rag = 1.52
