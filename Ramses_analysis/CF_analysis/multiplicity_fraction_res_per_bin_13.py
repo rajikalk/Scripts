@@ -314,9 +314,6 @@ for bin_it in range(1, len(S_bins)):
 CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
 CF_errs = np.array(CF_errs)
 
-import pdb
-pdb.set_trace()
-
 #raghaven dist
 sep_mean_rag = 1.7
 sep_std_rag = 1.52
@@ -387,6 +384,9 @@ file = open("Tobin_CF.pkl", 'wb')
 pickle.dump((S_bins, CF_per_bin_Tobin),file)
 print('updated pickle', "Tobin_CF.pkl")
 file.close()
+
+import pdb
+pdb.set_trace()
 
 #=====================================================================================================
 #Create units override
