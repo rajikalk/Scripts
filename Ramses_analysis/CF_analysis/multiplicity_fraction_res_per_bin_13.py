@@ -350,7 +350,7 @@ for bin_it in range(1, len(S_bins)):
         if larger_seps > 0:
             if binaries == 0 and smaller_seps == 0:
                 #If all separations are greater than that the upper bound, all stars are seen as single
-                sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps)))
+                sys_sub_comps = sys_sub_comps + list(map(int,np.ones(larger_seps+1)))
             else:
                 import pdb
                 pdb.set_trace()
