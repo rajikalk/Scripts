@@ -339,6 +339,8 @@ for bin_it in range(1, len(S_bins)):
         binaries = len(np.argwhere((np.array(Orion_objs_cleaned[key]) < S_bins[bin_it])&(np.array(Orion_objs_cleaned[key]) > S_bins[bin_it-1])))
         
         sys_sub_comps = []
+        if N_comps == 1:
+            sys_sub_comps = sys_sub_comps + [1]
         if smaller_seps > 0:
             #All separations between the lower bound are collapsed to one system
             sys_sub_comps = sys_sub_comps + [1]
@@ -352,8 +354,11 @@ for bin_it in range(1, len(S_bins)):
             else:
                 import pdb
                 pdb.set_trace()
-        import pdb
-        pdb.set_trace()
+        
+        if N_comps > 1:
+            import pdb
+            pdb.set_trace()
+        N_comps_in_sys = N_comps_in_sys + sys_sub_comps
         
         """
         if N_comps == 1:
