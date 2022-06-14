@@ -187,8 +187,8 @@ Tobin_objects = {
 "Per-emb-58+Per-emb-65": [8663.3]
 }
 '''
-CF_per_bin_Tobin = []
-CF_errs = []
+CF_per_bin_Tobin_Per = []
+CF_errs_Per = []
 #S_true = 17#14
 
 for bin_it in range(1, len(S_bins)):
@@ -308,11 +308,11 @@ for bin_it in range(1, len(S_bins)):
     CF_err = ((N_comp*(1-(N_comp/np.sum(N_sys))))**0.5)*(1/np.sum(N_sys))
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
-    CF_per_bin_Tobin.append(cf)
-    CF_errs.append(CF_err)
+    CF_per_bin_Tobin_Per.append(cf)
+    CF_errs_Per.append(CF_err)
 
-CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
-CF_errs = np.array(CF_errs)
+CF_per_bin_Tobin_Per = np.array(CF_per_bin_Tobin_Per)
+CF_errs_Per = np.array(CF_errs_Per)
 
 #Repeat for Orion:
 file = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
@@ -320,11 +320,138 @@ Orion_objects = pickle.load(file)
 file.close()
 
 Orion_objs_cleaned = {}
-for per_key in Orion_objs_cleaned.keys():
-    if Orion_objs_cleaned[per_key][0] == 0:
+for per_key in Orion_objects.keys():
+    if Orion_objects[per_key][0] == 0:
             Orion_objs_cleaned.update({per_key:[]})
     else:
-        Orion_objs_cleaned.update({per_key:Orion_objs_cleaned[per_key][0]})
+        Orion_objs_cleaned.update({per_key:Orion_objects[per_key][0]})
+
+CF_per_bin_Tobin_Ori = []
+CF_errs_Ori = []
+#S_true = 17#14
+
+for bin_it in range(1, len(S_bins)):
+    N_comps_in_sys = []
+    for key in Orion_objs_cleaned.keys():
+        N_comps = len(Orion_objs_cleaned[key]) + 1
+        smaller_seps = len(np.argwhere(np.array(Orion_objs_cleaned[key]) < S_bins[bin_it-1]))
+        larger_seps = len(np.argwhere(np.array(Orion_objs_cleaned[key]) > S_bins[bin_it]))
+        binaries = len(np.argwhere((np.array(Orion_objs_cleaned[key]) < S_bins[bin_it])&(np.array(Orion_objs_cleaned[key]) > S_bins[bin_it-1])))
+        if N_comps == 1:
+            N_comps_in_sys = N_comps_in_sys + [1]
+        elif N_comps == 2:
+            if larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1, 1]
+            elif binaries == 1:
+                N_comps_in_sys = N_comps_in_sys + [2]
+            elif smaller_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1]
+        elif N_comps == 3:
+            if larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
+            elif binaries == 1 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [2, 1]
+            elif smaller_seps == 1 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1, 1]
+            elif smaller_seps == 1 and binaries == 1:
+                N_comps_in_sys = N_comps_in_sys + [2]
+            elif smaller_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [1]
+            elif binaries == 2:
+                N_comps_in_sys = N_comps_in_sys + [3]
+            else:
+                import pdb
+                pdb.set_trace()
+        elif N_comps == 4:
+            if larger_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
+            elif binaries == 1 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
+            elif smaller_seps == 1 and binaries == 1 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [2, 1]
+            elif smaller_seps == 2 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1, 1]
+            elif smaller_seps == 1 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
+            elif smaller_seps == 2 and binaries == 1:
+                N_comps_in_sys = N_comps_in_sys + [2]
+            elif smaller_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [1]
+            else:
+                import pdb
+                pdb.set_trace()
+        elif N_comps == 5:
+            if larger_seps == 4:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1, 1]
+            elif binaries == 1 and larger_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [2, 1, 1, 1]
+            elif smaller_seps == 1 and larger_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
+            elif smaller_seps == 1 and binaries == 1 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
+            elif smaller_seps == 2 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
+            elif smaller_seps == 2 and binaries == 1 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [2, 1]
+            elif smaller_seps == 3 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1, 1]
+            elif smaller_seps == 3 and binaries == 1:
+                N_comps_in_sys = N_comps_in_sys + [2]
+            elif binaries == 2 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [2, 2, 1]
+            elif smaller_seps == 4:
+                N_comps_in_sys = N_comps_in_sys + [1]
+            else:
+                import pdb
+                pdb.set_trace()
+        elif N_comps == 6:
+            if larger_seps == 5:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1, 1, 1]
+            elif binaries == 2 and larger_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [2, 2, 1, 1]
+            elif smaller_seps == 2 and larger_seps == 3:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1, 1]
+            elif smaller_seps == 2 and binaries == 1 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [2, 1, 1]
+            elif smaller_seps == 3 and larger_seps == 2:
+                N_comps_in_sys = N_comps_in_sys + [1, 1, 1]
+            elif smaller_seps == 3 and binaries == 1 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [2, 1]
+            elif smaller_seps == 4 and larger_seps == 1:
+                N_comps_in_sys = N_comps_in_sys + [1, 1]
+            elif smaller_seps == 4 and binaries == 1:
+                N_comps_in_sys = N_comps_in_sys + [2]
+            elif smaller_seps == 5:
+                N_comps_in_sys = N_comps_in_sys + [1]
+            else:
+                import pdb
+                pdb.set_trace()
+    '''
+    N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
+    N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
+    N_s = len(np.argwhere(np.array(N_comps_in_sys) == 1))
+    N_sys = N_s + N_b + N_t
+    cf = (N_b+2*N_t)/N_sys
+    '''
+    N_s = len(np.argwhere(np.array(N_comps_in_sys) == 1))
+    N_b = len(np.argwhere(np.array(N_comps_in_sys) == 2))
+    N_t = len(np.argwhere(np.array(N_comps_in_sys) == 3))
+    N_q = len(np.argwhere(np.array(N_comps_in_sys) == 4))
+    N_q5 = len(np.argwhere(np.array(N_comps_in_sys) == 5))
+    N_s6 = len(np.argwhere(np.array(N_comps_in_sys) == 6))
+    N_s7 = len(np.argwhere(np.array(N_comps_in_sys) == 7))
+    N_sys = np.array([N_s, N_b, N_t, N_q, N_q5, N_s6, N_s7])
+    cf = np.sum(np.arange(7)*N_sys)/np.sum(N_sys)
+    
+    N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    CF_err = ((N_comp*(1-(N_comp/np.sum(N_sys))))**0.5)*(1/np.sum(N_sys))
+    #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
+    
+    CF_per_bin_Tobin_Ori.append(cf)
+    CF_errs_Ori.append(CF_err)
+
+CF_per_bin_Tobin_Ori = np.array(CF_per_bin_Tobin_Ori)
+CF_errs_Ori = np.array(CF_errs_Ori)
 
 import pdb
 pdb.set_trace()
