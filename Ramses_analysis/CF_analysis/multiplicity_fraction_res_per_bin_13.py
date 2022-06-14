@@ -121,9 +121,14 @@ file = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/P
 Perseus_objects = pickle.load(file)
 file.close()
 
-import pdb
-pdb.set_trace()
+Perseus_objs_cleaned = {}
+for per_key in Perseus_objects.keys():
+    if Perseus_objects[per_key][0] == 0:
+            Perseus_objs_cleaned.update({per_key:[]})
+    else:
+        Perseus_objs_cleaned.update({per_key:Perseus_objects[per_key][0]})
 
+'''
 #2018 Class 0+I
 Tobin_objects = {
 "Per-emb-1 (0)": [],
@@ -181,18 +186,18 @@ Tobin_objects = {
 "Per-emb-35": [572.3],
 "Per-emb-58+Per-emb-65": [8663.3]
 }
-
+'''
 CF_per_bin_Tobin = []
 CF_errs = []
 #S_true = 17#14
 
 for bin_it in range(1, len(S_bins)):
     N_comps_in_sys = []
-    for key in Tobin_objects.keys():
-        N_comps = len(Tobin_objects[key]) + 1
-        smaller_seps = len(np.argwhere(np.array(Tobin_objects[key]) < S_bins[bin_it-1]))
-        larger_seps = len(np.argwhere(np.array(Tobin_objects[key]) > S_bins[bin_it]))
-        binaries = len(np.argwhere((np.array(Tobin_objects[key]) < S_bins[bin_it])&(np.array(Tobin_objects[key]) > S_bins[bin_it-1])))
+    for key in Perseus_objs_cleaned.keys():
+        N_comps = len(Perseus_objs_cleaned[key]) + 1
+        smaller_seps = len(np.argwhere(np.array(Perseus_objs_cleaned[key]) < S_bins[bin_it-1]))
+        larger_seps = len(np.argwhere(np.array(Perseus_objs_cleaned[key]) > S_bins[bin_it]))
+        binaries = len(np.argwhere((np.array(Perseus_objs_cleaned[key]) < S_bins[bin_it])&(np.array(Perseus_objs_cleaned[key]) > S_bins[bin_it-1])))
         if N_comps == 1:
             N_comps_in_sys = N_comps_in_sys + [1]
         elif N_comps == 2:
@@ -305,10 +310,12 @@ for bin_it in range(1, len(S_bins)):
     
     CF_per_bin_Tobin.append(cf)
     CF_errs.append(CF_err)
-    
 
 CF_per_bin_Tobin = np.array(CF_per_bin_Tobin)
 CF_errs = np.array(CF_errs)
+
+import pdb
+pdb.set_trace()
 
 #raghaven dist
 sep_mean_rag = 1.7
