@@ -302,7 +302,7 @@ for bin_it in range(1, len(S_bins)):
     N_s6 = len(np.argwhere(np.array(N_comps_in_sys) == 6))
     N_s7 = len(np.argwhere(np.array(N_comps_in_sys) == 7))
     N_sys = np.array([N_s, N_b, N_t, N_q, N_q5, N_s6, N_s7])
-    cf = (np.arange(7)*N_sys)/np.sum(N_sys)
+    cf = np.sum(np.arange(7)*N_sys)/np.sum(N_sys)
     
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
     CF_err = ((N_comp*(1-(N_comp/np.sum(N_sys))))**0.5)*(1/np.sum(N_sys))
