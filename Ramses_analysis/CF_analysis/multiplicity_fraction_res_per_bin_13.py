@@ -498,10 +498,7 @@ for bin_it in range(1, len(S_bins)):
 
 CF_per_bin_Tobin_Ori = np.array(CF_per_bin_Tobin_Ori)
 CF_errs_Ori = np.array(CF_errs_Ori)
-
-import pdb
-pdb.set_trace()
-
+"""
 #raghaven dist
 sep_mean_rag = 1.7
 sep_std_rag = 1.52
@@ -547,18 +544,20 @@ fit4 = line(x, *popt4)
 
 fit4 = np.clip(fit4, 0, np.max(fit4))
 sum_line = fit3 + fit4
+"""
 if rank == 0:
     plt.clf()
-    plt.bar(bin_centers, CF_per_bin_Tobin, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
+    plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
+    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
     #plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
     plt.ylabel("Companion Frequency")
     plt.xlabel("Log (AU)")
     plt.xlim([1,4])
     plt.ylim([0, 0.2])
-    plt.plot(x, fit1, ls='--')
-    plt.plot(x, fit2, ls='--')
+    #plt.plot(x, fit1, ls='--')
+    #plt.plot(x, fit2, ls='--')
     plt.plot(x, sum_fit)
-    plt.plot(x, fit4, ls='--')
+    #plt.plot(x, fit4, ls='--')
     plt.plot(x, sum_line)
     #plt.savefig("Tobin_2018_class_0_I.jpg")
 
