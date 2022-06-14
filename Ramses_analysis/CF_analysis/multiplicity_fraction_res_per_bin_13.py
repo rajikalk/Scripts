@@ -117,7 +117,7 @@ Tobin_luminosities_0_1 = [1.8, 0.50, 0.6, 0.7, 0.4, 0.36, 1.40, 0.80, 0.43, 1.20
 Tobin_Luminosities_multiples = np.array([0.9, 1.3, 4.2, 0.87, 1.5, 1.3, 3.6, 3.2, 9.1, 0.04, 9.08, 1.5, 4.4, 1.1, 1.19, 18.9, 10.8, 0.79, 11.1, 24.3, 0.9, 2.44, 35.54, 2.1])
 
 #Open perseus pickle:
-file = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_10000au.pkl", "rb")
+file = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_trunc.pkl", "rb")
 Perseus_objects = pickle.load(file)
 file.close()
 
