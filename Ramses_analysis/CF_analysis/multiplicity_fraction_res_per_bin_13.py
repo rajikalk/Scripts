@@ -547,8 +547,8 @@ sum_line = fit3 + fit4
 """
 if rank == 0:
     plt.clf()
-    plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
-    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs, width=0.25, fill=False, edgecolor='black')
+    plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, fill=False, edgecolor='black')
+    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, fill=False, edgecolor='b')
     #plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
     plt.ylabel("Companion Frequency")
     plt.xlabel("Log (AU)")
@@ -568,7 +568,7 @@ sys.stdout.flush()
 CW.Barrier()
         
 file = open("Tobin_CF.pkl", 'wb')
-pickle.dump((S_bins, CF_per_bin_Tobin),file)
+pickle.dump((S_bins, CF_per_bin_Tobin_Per, CF_per_bin_Tobin_Ori),file)
 print('updated pickle', "Tobin_CF.pkl")
 file.close()
 
