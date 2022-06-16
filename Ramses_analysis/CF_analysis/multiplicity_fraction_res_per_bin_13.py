@@ -876,7 +876,7 @@ if update == True and args.make_plots_only == 'False':
                     print("NOT ALL VISIBLE STARS HAVE BEEN ACCOUNTED FOR!")
                     import pdb
                     pdb.set_trace()
-                if size > 1:
+                if size > 1 and args.verbose_printing != 'False':
                     for print_line in print_lines:
                         print(print_line)
 
