@@ -113,11 +113,11 @@ L_bins = np.logspace(-1.25,3.5,20)
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
-file_open = ("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
 bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
 file_open.close()
 
-file_open = ("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
 bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
 file_open.close()
 
@@ -953,10 +953,12 @@ if rank == 0:
     plt.clf()
     try:
         plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-        plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
     except:
         plt.bar(bin_centers[1:], CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-        plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
         S_bins = S_bins[1:]
     plt.legend(loc='best')
     plt.xlabel('Log Separation (AU)')
@@ -1072,7 +1074,8 @@ if rank == 0:
         plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
     except:
         plt.bar(bin_centers[1:], CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+    plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
+    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
     plt.legend(loc='best')
     plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
