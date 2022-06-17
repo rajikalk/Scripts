@@ -894,7 +894,8 @@ if update == True and args.make_plots_only == 'False':
     print("FINISHED GOING THROUGH TIMES ON RANK", rank)
     
     
-        
+sys.stdout.flush()
+CW.Barrier()
 #=====================================================
 #Create plots below
 
