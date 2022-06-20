@@ -38,6 +38,7 @@ def parse_inputs():
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     
     #Time inputs
+    parser.add_argument("-all_files", "--make_proj_of_all_files", help="Do you want to make projections of every simulation output?", default='False', type=str)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
@@ -349,7 +350,9 @@ if args.make_frames_only == 'False':
     verbatim = False
     if rank == 0:
         verbatim = True
-    if args.specific_file == None:
+    if args.make_proj_of_all_files == 'True':
+        usable_files = files
+    elif args.specific_file == None:
         usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
     else:
         usable_files = [args.specific_file]
@@ -407,7 +410,11 @@ if args.make_frames_only == 'False':
             has_particles = has_sinks(ds)
             part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
-            time_val = m_times[file_int]
+            if args.make_proj_of_all_files == 'False':
+                time_val = m_times[file_int]
+            else:
+                import pdb
+                pdb.set_trace()
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
@@ -620,7 +627,8 @@ if args.make_frames_only == 'False':
                         args_dict.update({'xlim':xlim})
                         args_dict.update({'ylim':ylim})
                         args_dict.update({'has_particles':has_particles})
-                        args_dict.update({'proj_vector': proj_vector_unit})
+                        args_dict.update({'proj_vector': proj_vector_unit}
+                        args_dict.update({'simulation_file': usable_files[fn_it]}))
                         
                         pickle_file = pickle_file + 'projection_' + str(proj_it) + '.pkl'
                         file = open(pickle_file, 'wb')

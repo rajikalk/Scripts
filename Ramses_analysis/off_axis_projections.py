@@ -334,6 +334,9 @@ if args.make_frames_only == 'False':
     else:
         usable_files = [args.specific_file]
     if rank == 0:
+        if size == 0:
+            import pdb
+            pdb.set_trace()
         print("Usable_files=", usable_files)
     del sink_form_time
     del files
