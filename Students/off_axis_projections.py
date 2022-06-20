@@ -34,9 +34,6 @@ def parse_inputs():
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     
-    #Time inputs
-    parser.add_argument("-all_files", "--make_proj_of_all_files", help="Do you want to make projections of every simulation output?", default='False', type=str)
-    
     #plotting parameters
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
@@ -360,10 +357,7 @@ if args.make_frames_only == 'False':
             has_particles = has_sinks(ds)
             part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
-            if args.make_proj_of_all_files == 'False':
-                time_val = m_times[file_int]
-            else:
-                time_val = ds.current_time.value*scale_t.in_units('yr') - dd['sink_particle_form_time'][sink_id]
+            time_val = ds.current_time.value*scale_t.in_units('yr') - dd['sink_particle_form_time'][sink_id]
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
