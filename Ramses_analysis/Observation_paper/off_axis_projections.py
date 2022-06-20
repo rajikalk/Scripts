@@ -627,7 +627,7 @@ if args.make_frames_only == 'False':
                         args_dict.update({'xlim':xlim})
                         args_dict.update({'ylim':ylim})
                         args_dict.update({'has_particles':has_particles})
-                        args_dict.update({'proj_vector': proj_vector_unit}
+                        args_dict.update({'proj_vector': proj_vector_unit})
                         args_dict.update({'simulation_file': usable_files[fn_it]})
                         
                         pickle_file = pickle_file + 'projection_' + str(proj_it) + '.pkl'
