@@ -347,7 +347,7 @@ if args.make_frames_only == 'False':
             has_particles = has_sinks(ds)
             part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
-            time_val = ds.current_time.value*scale_t.in_units('yr') - dd['sink_particle_form_time'][sink_id]
+            time_val = ds.current_time.value*scale_t.in_units('yr') - sink_form_time# dd['sink_particle_form_time'][sink_id]
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
