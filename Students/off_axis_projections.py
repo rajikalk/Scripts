@@ -337,11 +337,11 @@ if args.make_frames_only == 'False':
             file_int = usable_files.index(fn)
         else:
             file_int = file_int + 1
-        if os.path.exists(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1])) == False:
+        if os.path.exists(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1]))) == False:
             try:
                 os.makedirs(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1])))
             except:
-                print(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1])), "Already exists"
+                print(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1])), "Already exists")
                 
         if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % int(re.findall(r'\d+', usable_files[fn_it])[-1])) + "/*.pkl")) == 8:
             make_pickle = False
