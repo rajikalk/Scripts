@@ -22,7 +22,7 @@ def parse_inputs():
     #parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
     #parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="cm**-3")
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 500AU", type=float, default=500.)
-    #parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that? (in AU)", type=float, default=200.0)
     parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
