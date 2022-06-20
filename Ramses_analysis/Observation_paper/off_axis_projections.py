@@ -345,9 +345,6 @@ frames = list(range(args.start_frame, no_frames))
 sys.stdout.flush()
 CW.Barrier()
 
-import pdb
-pdb.set_trace()
-
 if args.make_frames_only == 'False':
     verbatim = False
     if rank == 0:
@@ -357,6 +354,9 @@ if args.make_frames_only == 'False':
     else:
         usable_files = [args.specific_file]
     if rank == 0:
+        if size==0:
+            import pdb
+            pdb.set_trace()
         print("Usable_files=", usable_files)
     del sink_form_time
     del files
