@@ -21,6 +21,9 @@ from scipy.ndimage import gaussian_filter
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    #Simulation properties
+    parser.add_argument("-Grho", "--simulation_grav_constant", help="What is the gravitational constant of the simulation?", type=int, default=100)
+    
     #Projection properties
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Number_Density")
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="cm**-3")
@@ -218,7 +221,7 @@ CW.Barrier()
 #BEWARE THIS IS HARD CODED
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/G')[-1].split('/')[0]
+simulation_density_id = args.simulation_grav_constant
 
 if simulation_density_id == '50':
     Grho=50
