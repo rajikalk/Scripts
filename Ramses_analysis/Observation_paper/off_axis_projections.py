@@ -221,7 +221,7 @@ CW.Barrier()
 #BEWARE THIS IS HARD CODED
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.simulation_grav_constant
+simulation_density_id = str(args.simulation_grav_constant)
 
 if simulation_density_id == '50':
     Grho=50
