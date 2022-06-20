@@ -291,14 +291,6 @@ if args.weight_field == 'None':
     weight_field = None
 else:
     weight_field = args.weight_field
-
-if args.plot_time != None:
-    if args.weight_field == 'None':
-        weight_field = None
-        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
-    else:
-        weight_field = args.weight_field
-        pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "/"
        
 sys.stdout.flush()
 CW.Barrier()
