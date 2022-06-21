@@ -12,7 +12,7 @@ for birth_con_pickle in birth_con_pickles:
     T_delay.append([])
     Initial_seps.append([])
     
-    file = open(birth_con_pickles[birth_con_pickle], 'rb')
+    file = open(birth_con_pickle, 'rb')
     Sink_birth_all = pickle.load(file)
     file.close()
     
