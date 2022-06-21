@@ -62,7 +62,7 @@ axs.tick_params(axis='both', which='minor', labelsize=font_size)
 axs.tick_params(axis='x', direction='in')
 axs.tick_params(axis='y', direction='in')
 
-plt.savefig('delay_vs_sep.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('delay_vs_SFE.pdf', bbox_inches='tight', pad_inches=0.02)
 
 
             
