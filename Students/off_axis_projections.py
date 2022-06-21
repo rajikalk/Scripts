@@ -562,6 +562,16 @@ if args.make_frames_only == 'False':
                         args_dict.update({'proj_vector': proj_vector_unit})
                         args_dict.update({'simulation_file': usable_files[fn_it]})
                         
+                        image_pickle = pickle_file + 'projection_' + str(proj_it) + '_image.pkl'
+                        file = open(image_pickle, 'wb')
+                        pickle.dump((image), file)
+                        file.close()
+                        
+                        rv_pickle = pickle_file + 'projection_' + str(proj_it) + '_rv.pkl'
+                        file = open(rv_pickle, 'wb')
+                        pickle.dump((vel_rad), file)
+                        file.close()
+                        
                         pickle_file = pickle_file + 'projection_' + str(proj_it) + '.pkl'
                         file = open(pickle_file, 'wb')
                         pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv), file)
@@ -588,8 +598,6 @@ from matplotlib import transforms
 import matplotlib.patheffects as path_effects
 from matplotlib import ticker
 from scipy.ndimage import gaussian_filter
-
-
 
 pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
 start_pickle = save_dir + "movie_frame_" + ("%06d" % args.start_frame) + "/projection_0.pkl"
