@@ -33,7 +33,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
 
 for sim in range(len(subplot_titles)):
-    plt.scatter(Initial_seps[sim], T_delay[sim], label=subplot_titles[sim])
+    plt.scatter(Initial_seps[sim], T_delay[sim], label=subplot_titles[sim], marker='.')
 
 plt.legend()
 
@@ -51,7 +51,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
 
 for sim in range(len(subplot_titles)):
-    plt.scatter(SFE[sim], T_delay[sim], label=subplot_titles[sim])
+    plt.scatter(SFE[sim], T_delay[sim], label=subplot_titles[sim], marker='.')
 
 plt.legend()
 plt.xlabel('SFE', fontsize=font_size)
