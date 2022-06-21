@@ -52,21 +52,16 @@ for pathway_numbers in Formation_pathway:
 '''
 Initial_Seps_all = []
 for birth_con_pickle in birth_con_pickles:
-    try:
-        file = open(birth_con_pickle, 'rb')
-        pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
-        file.close()
-        
-        Total_sys_no = np.sum(pathway_counters[:3])
-        Core_frag_frac = pathway_counters[0]/Total_sys_no
-        Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
-        Dynamical_capt_frac = pathway_counters[2]/Total_sys_no
-        Initial_Seps_all.append(Initial_Seps)
-        Formation_pathway.append([pathway_counters[0], pathway_counters[1], pathway_counters[2]])
-    except:
-        Core_frag_frac = np.nan
-        Delayed_core_frag_frac = np.nan
-        Dynamical_capt_frac = np.nan
+    file = open(birth_con_pickle, 'rb')
+    pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
+    file.close()
+    
+    Total_sys_no = np.sum(pathway_counters[:3])
+    Core_frag_frac = pathway_counters[0]/Total_sys_no
+    Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
+    Dynamical_capt_frac = pathway_counters[2]/Total_sys_no
+    Initial_Seps_all.append(Initial_Seps)
+    Formation_pathway.append([pathway_counters[0], pathway_counters[1], pathway_counters[2]])
     
     Core_frag_fracs.append(Core_frag_frac)
     Delayed_core_frag_fracs.append(Delayed_core_frag_frac)
