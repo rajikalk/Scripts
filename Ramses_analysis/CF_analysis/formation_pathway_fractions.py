@@ -258,7 +258,7 @@ axs.tick_params(axis='both', which='minor', labelsize=font_size)
 axs.tick_params(axis='x', direction='in')
 axs.tick_params(axis='y', direction='in')
 
-plt.savefig('core_fragmentation_scales_fit.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('core_fragmentation_scales_mean.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)
@@ -274,4 +274,4 @@ y_err_high = high_bounds - y_median
 plt.errorbar(x_val, y_median, np.array([y_err_low, y_err_high]))
 plt.xlabel('GMC mass (M$_\odot$)')
 plt.ylabel('Core fragmentation scales (log au)')
-plt.savefig('core_fragmentation_scales_data.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('core_fragmentation_scales_median.pdf', bbox_inches='tight', pad_inches=0.02)
