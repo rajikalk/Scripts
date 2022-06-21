@@ -22,6 +22,7 @@ for birth_con_pickle in birth_con_pickles:
             T_delay[-1].append(Sink_birth_all[sink_key][-2])
             Initial_seps[-1].append(Sink_birth_all[sink_key][-4])
 
+import numpy as np
 import matplotlib.pyplot as plt
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 two_col_width = 7.20472 #inches
