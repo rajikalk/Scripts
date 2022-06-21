@@ -54,8 +54,8 @@ for sim in range(len(subplot_titles)):
     plt.scatter(SFE[sim], T_delay[sim], label=subplot_titles[sim])
 
 plt.legend()
-plt.xlabel('Initial Separation (au)', fontsize=font_size)
-plt.ylabel('SFE', fontsize=font_size)
+plt.xlabel('SFE', fontsize=font_size)
+plt.ylabel('T$_{delay}$ (yr)', fontsize=font_size)
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 axs.tick_params(axis='both', which='minor', labelsize=font_size)
