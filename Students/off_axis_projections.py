@@ -307,7 +307,7 @@ sink_form_time = dd['sink_particle_form_time'][sink_id]
 sink_form_companion = dd['sink_particle_form_time'][sink_id+1]#Assumes the companion has the sink id of the primary+1
 first_sim_file_time = sink_form_companion - sink_form_time
 first_file = mym.find_files([first_sim_file_time.value], files, sink_form_time, sink_id, verbatim=False)
-files = files[files.index(first_file[0]):]
+files = files[files.index(first_file[0])+1:]
 del dd
 
 if args.make_frames_only == 'False':
