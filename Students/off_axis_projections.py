@@ -305,6 +305,9 @@ if rank == 0:
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 sink_form_companion = dd['sink_particle_form_time'][sink_id+1]#Assumes the companion has the sink id of the primary+1
+import pdb
+pdb.set_trace()
+#Find first file where companion formed.
 del dd
 
 if args.make_frames_only == 'False':
