@@ -31,14 +31,17 @@ font_size = 10
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
+ax = plt.gca()
 
 for sim in range(len(subplot_titles)):
     plt.scatter(Initial_seps[sim], T_delay[sim], label=subplot_titles[sim], marker='.')
 
+ax.set_yscale('log')
 plt.legend()
 
 plt.xlabel('Initial Separation (au)', fontsize=font_size)
 plt.ylabel('T$_{delay}$ (yr)', fontsize=font_size)
+plt.xlim([0, 10000])
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 axs.tick_params(axis='both', which='minor', labelsize=font_size)
@@ -49,13 +52,16 @@ plt.savefig('delay_vs_sep.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
+ax = plt.gca()
 
 for sim in range(len(subplot_titles)):
-    plt.scatter(SFE[sim], T_delay[sim], label=subplot_titles[sim], marker='.')
-
+    plt.scatter(np.array(SFE[sim])*100, T_delay[sim], label=subplot_titles[sim], marker='.')
+ax.set_yscale('log')
 plt.legend()
-plt.xlabel('SFE', fontsize=font_size)
+
+plt.xlabel('SFE (%)', fontsize=font_size)
 plt.ylabel('T$_{delay}$ (yr)', fontsize=font_size)
+plt.xlim([0, 5])
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 axs.tick_params(axis='both', which='minor', labelsize=font_size)
