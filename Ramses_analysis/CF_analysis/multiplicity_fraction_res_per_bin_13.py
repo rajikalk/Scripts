@@ -859,7 +859,7 @@ if update == True and args.make_plots_only == 'False':
                 if (ns+nb+nt+nq+nq5+ns6+ns7) == 0:
                     cf = 0
                 else:
-                    cf = np.arange(7)*np.array(n_systems[-1])/np.sum(n_systems[-1])
+                    cf = np.sum(np.arange(7)*np.array(n_systems[-1]))/np.sum(n_systems[-1])
                 if args.verbose_printing != 'False':
                     print_line = "CF = " + str(cf)
                     if size == 1:
