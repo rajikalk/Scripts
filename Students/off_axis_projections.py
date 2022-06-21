@@ -429,10 +429,6 @@ if args.make_frames_only == 'False':
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(8)):# range(len(projection_vectors)):
                 if True in np.isnan(projection_vectors[proj_it]):
                     print("Skipping projection because vector is Nan")
-                elif args.plot_time == None and os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it) + ".pkl"):
-                    print("Skipping because", save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/projection_" + str(proj_it) + ".pkl", "exists")
-                elif args.plot_time != None and os.path.exists(save_dir + "time_" + (str(int(args.plot_time))) + "/projection_" + str(proj_it) + ".pkl"):
-                    print("Skipping because", save_dir + "time_" + (str(int(args.plot_time))) + "/projection_" + str(proj_it) + ".pkl", "exists")
                 else:
                     #Calculate projected particle positions
                     projected_particle_posy = projected_vector(pos_array, north_vectors[proj_it])
@@ -731,16 +727,7 @@ for pickle_file in pickle_files:
             title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
             ax.set_title(title_str)
             
-            if len(m_times) > 1:
-                if args.output_filename == None:
-                    file_name = pickle_file.split('.pkl')[0] + "_rv"
-                else:
-                    file_name = args.output_filename + "_" + str(int(time_val)) + "_rv"
-            else:
-                if args.output_filename != None:
-                    file_name = args.output_filename +"_rv"
-                else:
-                    file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
+            file_name = pickle_file.split('.pkl')[0] + "_rv"
             
             bool_den_array = image>args.density_threshold
             vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
