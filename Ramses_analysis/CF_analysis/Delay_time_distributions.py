@@ -88,7 +88,7 @@ for pickle_it in range(len(birth_con_pickles)):
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(Initial_seps[T_del_it], T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
     if pickle_it == 0:
-        axs[pickle_it].legend(ncol=3, loc='lower centre')
+        axs[pickle_it].legend(ncol=3, loc='lower center')
     axs[pickle_it].set_yscale('log')
     
     if pickle_it == len(birth_con_pickles)-1:
