@@ -112,9 +112,7 @@ if rank == 0:
     print("Finding formation inds", flush=True)
     sys.stdout.flush()
     ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-    
-    import pdb
-    pdb.set_trace()
+
     del global_data['x']
     del global_data['y']
     del global_data['z']
