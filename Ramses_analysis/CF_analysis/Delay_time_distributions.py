@@ -25,7 +25,7 @@ plt.subplots_adjust(hspace=0.0)
 markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
-for pickle_it in birth_con_pickles:
+for pickle_it in range(len(birth_con_pickles)):
     SFE = [[], [], [], [], [], []]
     T_delay = [[], [], [], [], [], []]
     Initial_seps = [[], [], [], [], [], []]
