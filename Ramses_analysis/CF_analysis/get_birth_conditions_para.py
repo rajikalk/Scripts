@@ -134,6 +134,8 @@ if rank == 0:
             new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
         else:
             new_ind = 0
+        import pdb
+        pdb.set_trace()
         global_data['m'] = global_data['m'][new_ind:]
         if len(formation_inds) == 0:
             formation_ind = new_ind
@@ -223,12 +225,14 @@ for sink_id in loop_inds:
         file_open.close()
         print("Finding birth conditions for sink", sink_id, "on rank", rank)
         sys.stdout.flush()
-        del formation_times
+        formation_times
         del file_open
         gc.collect()
         #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
 
         #Calculate energies to find most bound sink
+        import pdb
+        pdb.set_trace()
         abspos = np.array([global_data['x'][0][:sink_id+1], global_data['y'][0][:sink_id+1], global_data['z'][0][:sink_id+1]]).T
         absvel = np.array([global_data['ux'][0][:sink_id+1], global_data['uy'][0][:sink_id+1], global_data['uz'][0][:sink_id+1]]).T
         mass = np.array(global_data['m'][0][:sink_id+1])
@@ -299,6 +303,8 @@ for sink_id in loop_inds:
             del file_open
             del formation_times
             gc.collect()
+            import pdb
+            pdb.set_trace()
             abspos = np.array([global_data['x'][0][n_stars], global_data['y'][0][n_stars], global_data['z'][0][n_stars]]).T#*scale_l
             absvel = np.array([global_data['ux'][0][n_stars], global_data['uy'][0][n_stars], global_data['uz'][0][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][0][n_stars])
@@ -306,7 +312,9 @@ for sink_id in loop_inds:
             del n_stars
             
             time = global_data['time'][0]
-            pdb.set_trace()
+            if time != formation_times[sink_id]:
+                import pdb
+                pdb.set_trace()
             del global_data
             gc.collect()
 
@@ -359,6 +367,8 @@ for sink_id in loop_inds:
             gc.collect()
             
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+            import pdb
+            pdb.set_trace()
             curr_it = np.argwhere(sink_ids == sink_id)[0][0]
             next_id = curr_it + size
             del curr_it
@@ -405,6 +415,8 @@ for sink_id in loop_inds:
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
                 
+                import pdb
+                pdb.set_trace()
                 if next_id < len(sink_ids):
                     form_time_it = np.where(global_data['time']==formation_times[next_id])[0][0]
                 else:
@@ -571,6 +583,8 @@ for sink_id in loop_inds:
                 global_test_inds.update({'uy':global_data['uy'][test_time_inds]})
                 global_test_inds.update({'uz':global_data['uz'][test_time_inds]})
                 '''
+                import pdb
+                pdb.set_trace()
                 global_test_inds.update({'time':global_data['time'][test_time_inds][::-1]})
                 global_test_inds.update({'m':global_data['m'][test_time_inds][::-1]})
                 global_test_inds.update({'x':global_data['x'][test_time_inds][::-1]})
