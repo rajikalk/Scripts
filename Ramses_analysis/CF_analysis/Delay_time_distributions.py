@@ -57,6 +57,8 @@ for pickle_it in range(len(birth_con_pickles)):
     axs[pickle_it].tick_params(axis='x', direction='in')
     axs[pickle_it].tick_params(axis='y', direction='in')
     
+    axs[pickle_it].text((4), 10, subplot_titles[pickle_it], zorder=11, fontsize=font_size)
+    
 plt.savefig('delay_vs_SFE.pdf', bbox_inches='tight', pad_inches=0.02)
 
 '''
