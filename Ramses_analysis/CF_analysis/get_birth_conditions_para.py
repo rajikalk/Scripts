@@ -141,8 +141,6 @@ if rank == 0:
             formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
     gc.collect()
-    import pdb
-    pdb.set_trace()
 
     print("Found formation inds", flush=True)
     sys.stdout.flush()
