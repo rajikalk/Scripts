@@ -127,15 +127,15 @@ if rank == 0:
     del found_sinks
     gc.collect()
     
+    formation_inds_full = []
+    for sink_id in sink_ids:
+        formation_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+        formation_inds_full.append(formation_ind)
+    
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
     for sink_id in sink_ids:
-        if len(np.argwhere(global_data['m'].T[sink_id]>0)) > 0:
-            new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
-        else:
-            new_ind = 0
-        import pdb
-        pdb.set_trace()
+        new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
         global_data['m'] = global_data['m'][new_ind:]
         if len(formation_inds) == 0:
             formation_ind = new_ind
@@ -143,6 +143,9 @@ if rank == 0:
             formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
     gc.collect()
+    
+    import pdb
+    pdb.set_trace()
 
     print("Found formation inds", flush=True)
     sys.stdout.flush()
