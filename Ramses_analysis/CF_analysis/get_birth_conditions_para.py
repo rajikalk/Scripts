@@ -141,6 +141,8 @@ if rank == 0:
             formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
     gc.collect()
+    import pdb
+    pdb.set_trace()
 
     print("Found formation inds", flush=True)
     sys.stdout.flush()
@@ -148,6 +150,7 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
+    pdb.set_trace()
     del formation_inds
     del global_data
     gc.collect()
@@ -306,6 +309,7 @@ for sink_id in loop_inds:
             del n_stars
             
             time = global_data['time'][0]
+            pdb.set_trace()
             del global_data
             gc.collect()
 
