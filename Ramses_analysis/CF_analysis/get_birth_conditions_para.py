@@ -208,10 +208,7 @@ import multiplicity as m
 
 rit = -1
 sink_id = 0
-if size == 1 and Grho == 50:
-    loop_inds = diff_conds
-else:
-    loop_inds = sink_ids
+loop_inds = sink_ids
 for sink_id in loop_inds:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     rit = rit + 1
