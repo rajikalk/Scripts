@@ -148,7 +148,6 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
-    pdb.set_trace()
     del formation_inds
     del global_data
     gc.collect()
