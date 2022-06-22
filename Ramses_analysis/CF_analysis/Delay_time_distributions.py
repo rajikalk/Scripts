@@ -86,7 +86,7 @@ for pickle_it in range(len(birth_con_pickles)):
             Initial_seps[n_stars-1].append(Sink_birth_all[sink_key][-4])
             
     for T_del_it in range(len(T_delay)):
-        axs[pickle_it].scatter(Initial_seps, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
+        axs[pickle_it].scatter(Initial_seps[T_del_it], T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
     if pickle_it == 0:
         axs[pickle_it].legend(ncol=3, loc='lower left')
     axs[pickle_it].set_yscale('log')
