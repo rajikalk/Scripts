@@ -19,6 +19,9 @@ from scipy.optimize import curve_fit
 f_acc= 0.5
 Accretion_array = []
 
+Perseus_L_lims = [0.07, 55.29]
+Orion_L_lims = [0.02, 1404.97]
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -29,8 +32,8 @@ def parse_inputs():
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
-    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=32.6)
-    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.04)
+    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
+    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
     parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
@@ -185,7 +188,7 @@ CF_arrays = []
 Sink_Luminosities = {}
 Sink_Accretion = {}
 
-#Overwrite saved variables is need be
+#Overwrite saved variables if need be
 pickle_file = savedir + args.pickled_file
 if rank == 0:
     pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
