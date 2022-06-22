@@ -18,7 +18,7 @@ birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_ent
 
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
