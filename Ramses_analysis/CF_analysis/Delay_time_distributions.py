@@ -50,7 +50,7 @@ for pickle_it in range(len(birth_con_pickles)):
     if pickle_it == len(birth_con_pickles)-1:
         axs[pickle_it].set_xlabel('SFE (%)', fontsize=font_size)
     axs[pickle_it].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
-    axs[pickle_it].set_xlim([0, 10000])
+    axs[pickle_it].set_xlim([0, 5])
 
     axs[pickle_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
     axs[pickle_it].tick_params(axis='both', which='minor', labelsize=font_size)
