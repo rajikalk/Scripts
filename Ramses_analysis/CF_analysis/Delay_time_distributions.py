@@ -42,21 +42,21 @@ for pickle_it in range(len(birth_con_pickles)):
             Initial_seps[n_stars-2].append(Sink_birth_all[sink_key][-4])
             
     for T_del_it in range(len(T_delay)):
-        axs[pickle_it][0].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
+        axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
     if pickle_it == 0:
-        axs[pickle_it][0].legend()
-    axs[pickle_it][0].set_yscale('log')
+        axs[pickle_it].legend()
+    axs[pickle_it].set_yscale('log')
     
     if pickle_it == len(birth_con_pickles)-1:
-        axs[pickle_it][0].set_xlabel('SFE (%)', fontsize=font_size)
-    axs[pickle_it][0].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
-    axs[pickle_it][0].set_xlim([0, 10000])
+        axs[pickle_it].set_xlabel('SFE (%)', fontsize=font_size)
+    axs[pickle_it].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
+    axs[pickle_it].set_xlim([0, 10000])
 
-    axs[pickle_it][0].tick_params(axis='both', which='major', labelsize=font_size, right=True)
-    axs[pickle_it][0].tick_params(axis='both', which='minor', labelsize=font_size)
-    axs[pickle_it][0].tick_params(axis='x', direction='in')
-    axs[pickle_it][0].tick_params(axis='y', direction='in')
-
+    axs[pickle_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
+    axs[pickle_it].tick_params(axis='both', which='minor', labelsize=font_size)
+    axs[pickle_it].tick_params(axis='x', direction='in')
+    axs[pickle_it].tick_params(axis='y', direction='in')
+    
 plt.savefig('delay_vs_SFE.pdf', bbox_inches='tight', pad_inches=0.02)
 
 '''
