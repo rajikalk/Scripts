@@ -26,9 +26,9 @@ markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
 for pickle_it in range(len(birth_con_pickles)):
-    SFE = [[], [], [], [], [], []]
-    T_delay = [[], [], [], [], [], []]
-    Initial_seps = [[], [], [], [], [], []]
+    SFE = [[], [], [], [], []]
+    T_delay = [[], [], [], [], []]
+    Initial_seps = [[], [], [], [], []]
     
     file = open(birth_con_pickles[pickle_it], 'rb')
     Sink_birth_all = pickle.load(file)
