@@ -37,9 +37,9 @@ for pickle_it in range(len(birth_con_pickles)):
     for sink_key in Sink_birth_all.keys():
         if Sink_birth_all[sink_key][0] == False and Sink_birth_all[sink_key][1] == Sink_birth_all[sink_key][2]:
             n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
-            SFE[n_stars-2].append(Sink_birth_all[sink_key][-1])
-            T_delay[n_stars-2].append(Sink_birth_all[sink_key][-2])
-            Initial_seps[n_stars-2].append(Sink_birth_all[sink_key][-4])
+            SFE[n_stars-1].append(Sink_birth_all[sink_key][-1])
+            T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
+            Initial_seps[n_stars-1].append(Sink_birth_all[sink_key][-4])
             
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
