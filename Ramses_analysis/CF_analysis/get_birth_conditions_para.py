@@ -138,9 +138,6 @@ if rank == 0:
             formation_ind = formation_inds[-1]+new_ind
         formation_inds.append(formation_ind)
     gc.collect()
-    
-    import pdb
-    pdb.set_trace()
 
     print("Found formation inds", flush=True)
     sys.stdout.flush()
@@ -298,7 +295,7 @@ for sink_id in loop_inds:
             file_open.close()
             del file_open
             time = global_data['time'][0]
-            if time != formation_times[sink_id]:
+            if time != formation_times[loop_inds.index(sink_id)]:
                 import pdb
                 pdb.set_trace()
             
