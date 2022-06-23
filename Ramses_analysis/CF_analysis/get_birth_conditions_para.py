@@ -451,7 +451,7 @@ for sink_id in loop_inds:
                 sink_ids, formation_times, global_data = pickle.load(file_open)
                 file_open.close()
                 
-                if sink_id == 33 or sink_id = 44:
+                if sink_id == 33 or sink_id == 44:
                     import pbd
                     pdb.set_trace()
                 
@@ -687,7 +687,7 @@ for sink_id in loop_inds:
                                     most_bound_sep = res['separation'][sys_id]
                                     bound_time = res['time']*scale_t_yr
                                     delay_time = float(bound_time - formation_time)
-                                    if sink_id == 33 or sink_id = 44:
+                                    if sink_id == 33 or sink_id == 44:
                                         import pbd
                                         pdb.set_trace()
                                     sys_form_time = sfe
