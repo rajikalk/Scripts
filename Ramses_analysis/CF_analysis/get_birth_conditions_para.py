@@ -124,6 +124,8 @@ if rank == 0:
     sink_ids = np.arange(np.shape(global_data['m'].T)[0])
     if len(Sink_bound_birth) > 0:
         sink_ids = sorted(list(set(found_sinks).symmetric_difference(set(sink_ids))))
+    import pdb
+    pdb.set_trace()
     del found_sinks
     gc.collect()
     
