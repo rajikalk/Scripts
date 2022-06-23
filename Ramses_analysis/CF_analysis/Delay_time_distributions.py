@@ -2,6 +2,8 @@ import pickle
 import collections
 import numpy as np
 import matplotlib.pyplot as plt
+import gc
+import sys
 
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 two_col_width = 7.20472 #inches
@@ -17,6 +19,8 @@ def flatten(x):
 birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
 
+full_global_data_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/global_reduced.pkl']
+
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(birth_con_pickles))
@@ -26,6 +30,61 @@ markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
 for pickle_it in range(len(birth_con_pickles)):
+    scale_t_yr = 21728716.033625457
+
+    file_open = open(full_global_data_pickles[pickle_it], 'rb')
+    global_data = pickle.load(file_open)
+    file_open.close()
+    del file_open
+    gc.collect()
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
+    print("Finding formation inds", flush=True)
+    sys.stdout.flush()
+    ##print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
+    del global_data['x']
+    del global_data['y']
+    del global_data['z']
+    del global_data['ux']
+    del global_data['uy']
+    del global_data['uz']
+    gc.collect()
+    
+    sink_ids = np.arange(np.shape(global_data['m'].T)[0])
+    if len(Sink_bound_birth) > 0:
+        sink_ids = sorted(list(set(found_sinks).symmetric_difference(set(sink_ids))))
+    del found_sinks
+    gc.collect()
+    
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    formation_inds = []
+    for sink_id in sink_ids:
+        try:
+            new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+            global_data['m'] = global_data['m'][new_ind:]
+            if len(formation_inds) == 0:
+                formation_ind = new_ind
+            else:
+                formation_ind = formation_inds[-1]+new_ind
+            formation_inds.append(formation_ind)
+        except:
+            sink_ids = sink_ids[:np.argwhere(sink_ids == sink_id)[0][0]]
+            break
+    import pdb
+    pdb.set_trace()
+    gc.collect()
+
+    print("Found formation inds", flush=True)
+    sys.stdout.flush()
+    #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+
+    formation_inds = np.array(formation_inds)
+    formation_times = global_data['time'][formation_inds]*scale_t_yr
+    
+    del global_data
+    gc.collect()
+
     SFE = [[], [], [], [], []]
     T_delay = [[], [], [], [], []]
     Initial_seps = [[], [], [], [], []]
@@ -38,6 +97,8 @@ for pickle_it in range(len(birth_con_pickles)):
         if Sink_birth_all[sink_key][0] == False and Sink_birth_all[sink_key][1] == Sink_birth_all[sink_key][2]:
             n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
             SFE[n_stars-1].append(Sink_birth_all[sink_key][-1])
+            import pdb
+            pdb.set_trace()
             T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
             Initial_seps[n_stars-1].append(Sink_birth_all[sink_key][-4])
             
