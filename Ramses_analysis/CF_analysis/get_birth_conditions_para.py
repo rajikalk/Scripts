@@ -472,7 +472,7 @@ for sink_id in loop_inds:
                     sink_it = np.argwhere(sink_ids == sink_id)[0][0]
                 except:
                     sink_it = sink_ids.index(sink_id)
-                formation_time = formation_times[sink_it]*scale_t_yr
+                formation_time = formation_times[loop_inds.index(sink_id)]*scale_t_yr
                 gc.collect()
                 """
                 abspos_x = global_data['x'][:]
