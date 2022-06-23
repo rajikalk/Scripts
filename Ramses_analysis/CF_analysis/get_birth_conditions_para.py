@@ -302,9 +302,6 @@ for sink_id in sink_ids:
                 sink_it = np.argwhere(sink_ids == sink_id)[0][0]
             except:
                 sink_it = sink_ids.index(sink_id)
-            if time != formation_times[sink_it]:
-                import pdb
-                pdb.set_trace()
             
             del formation_times
             gc.collect()
@@ -341,9 +338,11 @@ for sink_id in sink_ids:
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
                 first_bound_sink = res['index2'][sys_id]
+                #Find top system
             elif sink_id in res['index2']:
                 sys_id = np.argwhere(res['index2'] == sink_id)[0][0]
                 first_bound_sink = res['index1'][sys_id]
+                #Find top system.
             else:
                 sys_id = np.nan
             if np.isnan(sys_id) == False:
@@ -609,9 +608,11 @@ for sink_id in sink_ids:
                 found_pre_sys_time = False
                 while found_pre_sys_time == False:
                     counter = counter + 1
+                    '''
                     if np.remainder(counter,5000) == 0:
                         print("trying test ind No.", counter, "on rank", rank, flush=True)
                         sys.stdout.flush()
+                    '''
                     if len(global_test_inds['m']) == 0:
                         break
                     else:
