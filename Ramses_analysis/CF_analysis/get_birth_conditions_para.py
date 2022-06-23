@@ -130,13 +130,17 @@ if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
     for sink_id in sink_ids:
-        new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
-        global_data['m'] = global_data['m'][new_ind:]
-        if len(formation_inds) == 0:
-            formation_ind = new_ind
-        else:
-            formation_ind = formation_inds[-1]+new_ind
-        formation_inds.append(formation_ind)
+        try:
+            new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
+            global_data['m'] = global_data['m'][new_ind:]
+            if len(formation_inds) == 0:
+                formation_ind = new_ind
+            else:
+                formation_ind = formation_inds[-1]+new_ind
+            formation_inds.append(formation_ind)
+        except:
+            sink_ids = sink_ids[:np.argwhere(sink_ids == sink_id)[0][0]]
+            break
     gc.collect()
 
     print("Found formation inds", flush=True)
