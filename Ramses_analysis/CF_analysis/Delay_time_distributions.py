@@ -217,4 +217,4 @@ for pickle_it in range(len(birth_con_pickles)):
     
     axs[pickle_it].text((9000), 2, subplot_titles[pickle_it], zorder=11, fontsize=font_size)
     
-plt.savefig('delay_vs_sep.pdf', bbox_inches='tight', pad_inches=0.02)
+    plt.savefig('delay_vs_sep.pdf', bbox_inches='tight', pad_inches=0.02)
