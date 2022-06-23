@@ -55,8 +55,8 @@ for pickle_it in range(len(birth_con_pickles)):
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
-    import pdb
-    pdb.set_trace()
+    SFE_arr = np.sum(global_data['m'], axis=1)
+    
     for sink_id in sink_ids:
         try:
             new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
@@ -78,7 +78,7 @@ for pickle_it in range(len(birth_con_pickles)):
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]*scale_t_yr
     
-    del global_data
+    del global_data['m']
     gc.collect()
 
     SFE = [[], [], [], [], []]
