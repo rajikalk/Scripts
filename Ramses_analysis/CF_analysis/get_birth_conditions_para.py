@@ -205,8 +205,7 @@ import multiplicity as m
 
 rit = -1
 sink_id = 0
-loop_inds = sink_ids
-for sink_id in loop_inds:
+for sink_id in sink_ids:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     rit = rit + 1
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
@@ -295,7 +294,7 @@ for sink_id in loop_inds:
             file_open.close()
             del file_open
             time = global_data['time'][0]
-            if time != formation_times[loop_inds.index(sink_id)]:
+            if time != formation_times[sink_ids.index(sink_id)]:
                 import pdb
                 pdb.set_trace()
             
@@ -468,7 +467,7 @@ for sink_id in loop_inds:
                     sink_it = np.argwhere(sink_ids == sink_id)[0][0]
                 except:
                     sink_it = sink_ids.index(sink_id)
-                formation_time = formation_times[loop_inds.index(sink_id)]*scale_t_yr
+                formation_time = formation_times[sink_ids.index(sink_id)]*scale_t_yr
                 gc.collect()
                 """
                 abspos_x = global_data['x'][:]
