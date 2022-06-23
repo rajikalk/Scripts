@@ -55,6 +55,8 @@ for pickle_it in range(len(birth_con_pickles)):
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
+    import pdb
+    pdb.set_trace()
     for sink_id in sink_ids:
         try:
             new_ind = np.argwhere(global_data['m'].T[sink_id]>0)[0][0]
@@ -67,8 +69,6 @@ for pickle_it in range(len(birth_con_pickles)):
         except:
             sink_ids = sink_ids[:np.argwhere(sink_ids == sink_id)[0][0]]
             break
-    import pdb
-    pdb.set_trace()
     gc.collect()
 
     print("Found formation inds", flush=True)
