@@ -100,6 +100,9 @@ for pickle_it in range(len(birth_con_pickles)):
             T_delay[n_stars-1].append(delay)
             Initial_seps[n_stars-1].append(Sink_birth_all[sink_key][-4])
             
+    import pdb
+    pdb.set_trace()
+            
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
     if pickle_it == 0:
