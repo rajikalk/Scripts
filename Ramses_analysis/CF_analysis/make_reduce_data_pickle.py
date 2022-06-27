@@ -17,7 +17,7 @@ file_open.close()
 
 SFE_5_ind = np.argmin(abs(np.sum(global_data['m'], axis=1)-0.05))
 reduced_data = {}
-reduced_data.update({'time': global_data['time'][:SFE_5_ind]})
+reduced_data.update({'time': global_data['time'].T[0][:SFE_5_ind]})
 reduced_data.update({'m': global_data['m'][:SFE_5_ind]})
 reduced_data.update({'x': global_data['x'][:SFE_5_ind]})
 reduced_data.update({'y': global_data['y'][:SFE_5_ind]})
