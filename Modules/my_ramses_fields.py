@@ -357,7 +357,10 @@ def _magx(field,data):
     try:
         magx = yt.YTArray((data['x-Bfield-left'].value + data['x-Bfield-right'].value)/2., "G")
     except:
-        magx = yt.YTArray((data['B_x_left'].value + data['B_x_right'].value)/2., "G")
+        try:
+            magx = yt.YTArray((data['B_x_left'].value + data['B_x_right'].value)/2., "G")
+        except:
+            magx = yt.YTArray((data['hydro_B_left_x'].value + data['hydro_B_right_x'].value)/2., "G")
     return magx
     
 yt.add_field("magx", function=_magx, units=r"gauss")
@@ -369,7 +372,10 @@ def _magy(field,data):
     try:
         magy = yt.YTArray((data['y-Bfield-left'].value + data['y-Bfield-right'].value)/2., "G")
     except:
-        magy = yt.YTArray((data['B_y_left'].value + data['B_y_right'].value)/2., "G")
+        try:
+            magy = yt.YTArray((data['B_y_left'].value + data['B_y_right'].value)/2., "G")
+        except:
+            magy = yt.YTArray((data['hydro_B_left_y'].value + data['hydro_B_right_y'].value)/2., "G")
     return magy
     
 yt.add_field("magy", function=_magy, units=r"gauss")
@@ -381,7 +387,10 @@ def _magz(field,data):
     try:
         magz = yt.YTArray((data['z-Bfield-left'].value + data['z-Bfield-right'].value)/2., "G")
     except:
-        magz = yt.YTArray((data['B_z_left'].value + data['B_z_right'].value)/2., "G")
+        try:
+            magz = yt.YTArray((data['B_z_left'].value + data['B_z_right'].value)/2., "G")
+        except:
+            magy = yt.YTArray((data['hydro_B_left_z'].value + data['hydro_B_right_z'].value)/2., "G")
     return magz
     
 yt.add_field("magz", function=_magz, units=r"gauss")

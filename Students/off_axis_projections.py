@@ -198,8 +198,6 @@ CW.Barrier()
 
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
-if args.sink_number == 48:
-    files.remove('/lustre/astro/troels/IMF_512_cores/sink_49/data/output_00362/info_00362.txt')
 
 sys.stdout.flush()
 CW.Barrier()
