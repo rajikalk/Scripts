@@ -46,8 +46,10 @@ system_keys = list(superplot_dict['System_times'].keys())
 del superplot_dict
 gc.collect()
 
-
-Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
+try:
+    Grho = int(global_data_pickle_file.split('/G')[-1].split('/')[0])
+except:
+    Grho = int(global_data_pickle_file.split('/G')[-1].split('.')[0])
 
 #Low_cadence = False
 #if 'Low_cadence' in global_data_pickle_file:
