@@ -93,7 +93,7 @@ for pickle_it in range(len(birth_con_pickles)):
     
     for sink_key in Sink_birth_all.keys():
         if Sink_birth_all[sink_key][0] == False and Sink_birth_all[sink_key][1] == Sink_birth_all[sink_key][2]:
-            #n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
+            n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
             SFE[n_stars-1].append(Sink_birth_all[sink_key][-1])
             #sfe_it = np.argmin(abs(SFE_arr - Sink_birth_all[sink_key][-1]))
             #time_sys_form = global_data['time'][sfe_it]*scale_t_yr
