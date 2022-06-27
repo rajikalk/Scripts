@@ -15,5 +15,17 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
-import pdb
-pdb.set_trace()
+SFE_5_ind = np.argmin(abs(np.sum(global_data['m'], axis=1)-0.05))
+reduced_data = {}
+reduced_data.update({'time': global_data['time'][:SFE_5_ind]})
+reduced_data.update({'m': global_data['m'][:SFE_5_ind]})
+reduced_data.update({'x': global_data['x'][:SFE_5_ind]})
+reduced_data.update({'y': global_data['y'][:SFE_5_ind]})
+reduced_data.update({'z': global_data['z'][:SFE_5_ind]})
+reduced_data.update({'ux': global_data['ux'][:SFE_5_ind]})
+reduced_data.update({'uy': global_data['uy'][:SFE_5_ind]})
+reduced_data.update({'uz': global_data['uz'][:SFE_5_ind]})
+
+file = open(outfile, 'wb')
+pickle.dump((reduced_data), file)
+file.close()
