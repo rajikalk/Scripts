@@ -197,6 +197,8 @@ CW.Barrier()
 
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
+if args.sink_number == 48:
+    files = files[1:]
 
 sys.stdout.flush()
 CW.Barrier()
