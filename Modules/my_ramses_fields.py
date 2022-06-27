@@ -390,7 +390,7 @@ def _magz(field,data):
         try:
             magz = yt.YTArray((data['B_z_left'].value + data['B_z_right'].value)/2., "G")
         except:
-            magy = yt.YTArray((data['hydro_B_left_z'].value + data['hydro_B_right_z'].value)/2., "G")
+            magz = yt.YTArray((data['hydro_B_left_z'].value + data['hydro_B_right_z'].value)/2., "G")
     return magz
     
 yt.add_field("magz", function=_magz, units=r"gauss")
