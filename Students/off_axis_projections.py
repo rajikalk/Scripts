@@ -33,6 +33,7 @@ def parse_inputs():
     #projection processing
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
+    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     
     #plotting parameters
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
@@ -198,6 +199,8 @@ CW.Barrier()
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 if args.sink_number == 48:
+    import pdb
+    pdb.set_trace()
     files = files[1:]
 
 sys.stdout.flush()
