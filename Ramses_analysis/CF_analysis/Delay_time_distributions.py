@@ -24,14 +24,14 @@ birth_con_pickles_high_cadence = ["/groups/astro/rlk/rlk/Analysis_plots/Superplo
 full_global_data_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/global_reduced.pkl']
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
-iter_range = range(0, len(birth_con_pickles))
+fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles_low_cadence), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(birth_con_pickles_low_cadence))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
-for pickle_it in range(len(birth_con_pickles)):
+for pickle_it in range(len(birth_con_pickles_low_cadence)):
     scale_t_yr = 21728716.033625457
 
     file_open = open(full_global_data_pickles[pickle_it], 'rb')
@@ -116,7 +116,7 @@ for pickle_it in range(len(birth_con_pickles)):
         axs[pickle_it].legend(ncol=3, loc='lower left')
     axs[pickle_it].set_yscale('log')
     
-    if pickle_it == len(birth_con_pickles)-1:
+    if pickle_it == len(birth_con_pickles_low_cadence)-1:
         axs[pickle_it].set_xlabel('SFE (%)', fontsize=font_size)
     axs[pickle_it].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
     axs[pickle_it].set_xlim([0, 5])
@@ -131,14 +131,14 @@ for pickle_it in range(len(birth_con_pickles)):
     plt.savefig('delay_vs_SFE.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
-iter_range = range(0, len(birth_con_pickles))
+fig, axs = plt.subplots(ncols=1, nrows=len(birth_con_pickles_low_cadence), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(birth_con_pickles_low_cadence))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
-for pickle_it in range(len(birth_con_pickles)):
+for pickle_it in range(len(birth_con_pickles_low_cadence)):
     scale_t_yr = 21728716.033625457
 
     file_open = open(full_global_data_pickles[pickle_it], 'rb')
@@ -194,7 +194,7 @@ for pickle_it in range(len(birth_con_pickles)):
     T_delay = [[], [], [], [], []]
     Initial_seps = [[], [], [], [], []]
     
-    file = open(birth_con_pickles[pickle_it], 'rb')
+    file = open(birth_con_pickles_low_cadence[pickle_it], 'rb')
     Sink_birth_all = pickle.load(file)
     file.close()
     
@@ -215,7 +215,7 @@ for pickle_it in range(len(birth_con_pickles)):
         axs[pickle_it].legend(ncol=3, loc='lower center')
     axs[pickle_it].set_yscale('log')
     
-    if pickle_it == len(birth_con_pickles)-1:
+    if pickle_it == len(birth_con_pickles_low_cadence)-1:
         axs[pickle_it].set_xlabel('Initial Separation (au)', fontsize=font_size)
     axs[pickle_it].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
     axs[pickle_it].set_xlim([0, 10000])
