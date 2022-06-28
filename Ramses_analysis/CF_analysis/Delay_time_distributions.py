@@ -119,13 +119,13 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
             T_delay[n_stars-1].append(delay)
             if Sink_birth_all_low_cad[sink_key][0] == True:
                 CF_delays[-1].append(delay)
-                CF_delays_diff.append(Sink_birth_all[sink_key][-2] - delay)
+                CF_delays_diff.append(Sink_birth_all_low_cad[sink_key][-2] - delay)
             elif Sink_birth_all_low_cad[sink_key][0] == False and Sink_birth_all_low_cad[sink_key][1] == Sink_birth_all_low_cad[sink_key][2]:
                 DCF_delays[-1].append(delay)
-                DCF_delays_diff.append(Sink_birth_all[sink_key][-2] - delay)
+                DCF_delays_diff.append(Sink_birth_all_low_cad[sink_key][-2] - delay)
             else:
                 DC_delays[-1].append(delay)
-                DC_delays_diff.append(Sink_birth_all[sink_key][-2] - delay)
+                DC_delays_diff.append(Sink_birth_all_low_cad[sink_key][-2] - delay)
             #T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
             Initial_seps[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-4])
             
