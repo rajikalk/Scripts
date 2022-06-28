@@ -601,10 +601,10 @@ from matplotlib import ticker
 from scipy.ndimage import gaussian_filter
 
 pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
-start_pickle = save_dir + "movie_frame_" + ("%06d" % args.start_frame) + "/projection_0.pkl"
+#start_pickle = save_dir + "movie_frame_" + ("%06d" % args.start_frame) + "/projection_0.pkl"
 
-start_ind = pickle_files.index(start_pickle)
-pickle_files = pickle_files[start_ind:]
+#start_ind = pickle_files.index(start_pickle)
+#pickle_files = pickle_files[start_ind:]
 #if rank==0:
 #    print("pickle_files =", pickle_files)
 rit = -1
