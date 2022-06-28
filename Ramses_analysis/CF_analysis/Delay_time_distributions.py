@@ -31,7 +31,10 @@ plt.subplots_adjust(hspace=0.0)
 markers = ['o', '^', 's', 'p', 'h']
 marker_labels = ['Binary', 'Trinary', 'Quadruple', 'Quintuple', 'Sextuple']
 
+New_T_delays = []
+
 for pickle_it in range(len(birth_con_pickles_low_cadence)):
+    New_T_delays.append([])
     scale_t_yr = 21728716.033625457
 
     file_open = open(full_global_data_pickles[pickle_it], 'rb')
@@ -97,9 +100,6 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
     
     for sink_key in Sink_birth_all_high_cad.keys():
         if Sink_birth_all_high_cad[sink_key][0] == False and Sink_birth_all_high_cad[sink_key][1] == Sink_birth_all_high_cad[sink_key][2]:
-            if Sink_birth_all_low_cad[sink_key][0] == True:
-                import pdb
-                pdb.set_trace()
             n_stars = len(flatten(eval(Sink_birth_all_high_cad[sink_key][2])))
             SFE[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-1])
             sfe_it = np.argmin(abs(SFE_arr - Sink_birth_all_high_cad[sink_key][-1]))
@@ -107,6 +107,8 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
             sink_form = formation_times[eval(sink_key)]
             delay = time_sys_form - sink_form
             T_delay[n_stars-1].append(delay)
+            if Sink_birth_all_low_cad[sink_key][0] == True:
+                New_T_delays[-1].append(delay)
             #T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
             Initial_seps[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-4])
             
