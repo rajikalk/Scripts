@@ -16,9 +16,9 @@ def flatten(x):
     else:
         return [x]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles_low_cadence = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
-#birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles_high_cadence = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
 
 full_global_data_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/global_reduced.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/global_reduced.pkl']
@@ -87,12 +87,19 @@ for pickle_it in range(len(birth_con_pickles)):
     T_delay = [[], [], [], [], []]
     Initial_seps = [[], [], [], [], []]
     
-    file = open(birth_con_pickles[pickle_it], 'rb')
-    Sink_birth_all = pickle.load(file)
+    file = open(birth_con_pickles_low_cadence[pickle_it], 'rb')
+    Sink_birth_all_low_cad = pickle.load(file)
+    file.close()
+    
+    file = open(birth_con_pickles_high_cadence[pickle_it], 'rb')
+    Sink_birth_all_high_cad = pickle.load(file)
     file.close()
     
     for sink_key in Sink_birth_all.keys():
-        if Sink_birth_all[sink_key][0] == False and Sink_birth_all[sink_key][1] == Sink_birth_all[sink_key][2]:
+        if Sink_birth_all_high_cad[sink_key][0] == False and Sink_birth_all_high_cad[sink_key][1] == Sink_birth_all_high_cad[sink_key][2]:
+            if Sink_birth_all_low_cad [sink_key][0] == True:
+                import pdb
+                pdb.set_trace()
             n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
             SFE[n_stars-1].append(Sink_birth_all[sink_key][-1])
             sfe_it = np.argmin(abs(SFE_arr - Sink_birth_all[sink_key][-1]))
