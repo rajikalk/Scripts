@@ -146,6 +146,8 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
             else:
                 Formation_pathway_low_cad[-1][2] = Formation_pathway_low_cad[-1][2] + 1
         except:
+            import pdb
+            pdb.set_trace()
             print("Sink", sink_key, "not found in low_cadence_data")
             
     for T_del_it in range(len(T_delay)):
