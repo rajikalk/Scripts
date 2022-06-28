@@ -95,20 +95,20 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
     Sink_birth_all_high_cad = pickle.load(file)
     file.close()
     
-    for sink_key in Sink_birth_all.keys():
+    for sink_key in Sink_birth_all_high_cad.keys():
         if Sink_birth_all_high_cad[sink_key][0] == False and Sink_birth_all_high_cad[sink_key][1] == Sink_birth_all_high_cad[sink_key][2]:
-            if Sink_birth_all_low_cad [sink_key][0] == True:
+            if Sink_birth_all_low_cad[sink_key][0] == True:
                 import pdb
                 pdb.set_trace()
-            n_stars = len(flatten(eval(Sink_birth_all[sink_key][2])))
-            SFE[n_stars-1].append(Sink_birth_all[sink_key][-1])
-            sfe_it = np.argmin(abs(SFE_arr - Sink_birth_all[sink_key][-1]))
+            n_stars = len(flatten(eval(Sink_birth_all_high_cad[sink_key][2])))
+            SFE[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-1])
+            sfe_it = np.argmin(abs(SFE_arr - Sink_birth_all_high_cad[sink_key][-1]))
             time_sys_form = global_data['time'][sfe_it]*scale_t_yr
             sink_form = formation_times[eval(sink_key)]
             delay = time_sys_form - sink_form
             T_delay[n_stars-1].append(delay)
             #T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
-            Initial_seps[n_stars-1].append(Sink_birth_all[sink_key][-4])
+            Initial_seps[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-4])
             
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
