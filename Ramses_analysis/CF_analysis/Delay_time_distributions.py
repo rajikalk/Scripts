@@ -108,6 +108,13 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
     Sink_birth_all_low_cad = pickle.load(file)
     file.close()
     
+    for sink_key in Sink_birth_all_low_cad.keys():
+        if Sink_birth_all_low_cad[sink_key][0] == False and Sink_birth_all_low_cad[sink_key][1] == Sink_birth_all_low_cad[sink_key][2]:
+            n_stars = len(flatten(eval(Sink_birth_all_high_cad[sink_key][2])))
+            SFE[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-1])
+            T_delay[n_stars-1].append(Sink_birth_all[sink_key][-2])
+            Initial_seps[n_stars-1].append(Sink_birth_all_high_cad[sink_key][-4])
+    '''
     file = open(birth_con_pickles_high_cadence[pickle_it], 'rb')
     Sink_birth_all_high_cad = pickle.load(file)
     file.close()
@@ -149,7 +156,8 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
             import pdb
             pdb.set_trace()
             print("Sink", sink_key, "not found in low_cadence_data")
-            
+    '''
+    
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
     if pickle_it == 0:
@@ -161,6 +169,7 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
     axs[pickle_it].set_ylabel('T$_{delay}$ (yr)', fontsize=font_size)
     axs[pickle_it].set_xlim([0, 5])
 
+    axs[pickle_it].axhline(y=100)
     axs[pickle_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
     axs[pickle_it].tick_params(axis='both', which='minor', labelsize=font_size)
     axs[pickle_it].tick_params(axis='x', direction='in')
