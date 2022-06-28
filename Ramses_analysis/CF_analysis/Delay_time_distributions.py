@@ -168,6 +168,58 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
     
     plt.savefig('delay_vs_SFE.pdf', bbox_inches='tight', pad_inches=0.02)
 
+
+Core_frag_fracs_low = []
+Delayed_core_frag_fracs_low = []
+Dynamical_capt_fracs_low = []
+Core_frag_fracs_high = []
+Delayed_core_frag_fracs_high = []
+Dynamical_capt_fracs_high = []
+for sim in range(len(Formation_pathway_low_cad)):
+    Total_sys_no = np.sum(Formation_pathway_low_cad[sim])
+    Core_frag_frac = Formation_pathway_low_cad[sim][0]/Total_sys_no
+    Delayed_core_frag_frac = Formation_pathway_low_cad[sim][1]/Total_sys_no
+    Dynamical_capt_frac = Formation_pathway_low_cad[sim][2]/Total_sys_no
+    
+    Core_frag_fracs_low.append(Core_frag_frac)
+    Delayed_core_frag_fracs_low.append(Delayed_core_frag_frac)
+    Dynamical_capt_fracs_low.append(Dynamical_capt_frac)
+    
+    Total_sys_no = np.sum(Formation_pathway_high_cad[sim])
+    Core_frag_frac = Formation_pathway_high_cad[sim][0]/Total_sys_no
+    Delayed_core_frag_frac = Formation_pathway_high_cad[sim][1]/Total_sys_no
+    Dynamical_capt_frac = Formation_pathway_high_cad[sim][2]/Total_sys_no
+    
+    Core_frag_fracs_high.append(Core_frag_frac)
+    Delayed_core_frag_fracs_high.append(Delayed_core_frag_frac)
+    Dynamical_capt_fracs_high.append(Dynamical_capt_frac)
+
+ind_low = np.arange(len(subplot_titles)*2)[::2]
+ind_high = np.arange(len(subplot_titles)*2)[::2]+1
+
+fig, ax = plt.subplots(1, 1, figsize=(5, 4))
+
+p1 = plt.bar(ind_low, Core_frag_fracs_low, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
+p2 = plt.bar(ind_low, Delayed_core_frag_fracs_low, 0.95, bottom=Core_frag_fracs_low, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p3 = plt.bar(ind_low, Dynamical_capt_fracs_low, 0.95, bottom=(np.array(Delayed_core_frag_fracs_low)+np.array(Core_frag_fracs_low)), color='r', linewidth=1, edgecolor='k')#, hatch='O'
+
+p4 = plt.bar(ind_high, Core_frag_fracs_high, 0.95, color='b', linewidth=1, edgecolor='k')#, hatch='+'
+p5 = plt.bar(ind_high, Delayed_core_frag_fracs_high, 0.95, bottom=Core_frag_fracs_high, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p6 = plt.bar(ind_high, Dynamical_capt_fracs_high, 0.95, bottom=(np.array(Delayed_core_frag_fracs_high)+np.array(Core_frag_fracs_high)), color='r', linewidth=1, edgecolor='k')
+
+#plt.xlim([-0.6, 5.6])
+plt.minorticks_on()
+ax.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+ax.tick_params(axis='both', which='minor', labelsize=font_size, left=True, right=True, top=False, bottom=False)
+plt.xticks(ind_low, ("1500", "3000", "3750", "4500", "6000", "12000"))
+ax.tick_params(which='both', direction='in')
+plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
+
+plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Delayed core frag.', 'Core fragmentation'), loc='upper right', fontsize=font_size)
+plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
+plt.ylim([0,1])
+plt.savefig('formation_pathway_comp.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+
 import pdb
 pdb.set_trace()
 
