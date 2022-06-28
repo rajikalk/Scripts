@@ -182,6 +182,8 @@ for sim in range(len(Formation_pathway_low_cad)):
     Core_frag_frac = Formation_pathway_low_cad[sim][0]/Total_sys_no
     Delayed_core_frag_frac = Formation_pathway_low_cad[sim][1]/Total_sys_no
     Dynamical_capt_frac = Formation_pathway_low_cad[sim][2]/Total_sys_no
+    import pdb
+    pdb.set_trace()
     
     Core_frag_fracs_low.append(Core_frag_frac)
     Delayed_core_frag_fracs_low.append(Delayed_core_frag_frac)
