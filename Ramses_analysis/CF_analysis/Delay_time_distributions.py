@@ -138,12 +138,15 @@ for pickle_it in range(len(birth_con_pickles_low_cadence)):
         else:
             Formation_pathway_high_cad[-1][2] = Formation_pathway_high_cad[-1][2] + 1
     
-        if Sink_birth_all_low_cad[sink_key][0] == True:
-            Formation_pathway_low_cad[-1][0] = Formation_pathway_low_cad[-1][0] + 1
-        elif Sink_birth_all_low_cad[sink_key][0] == False and Sink_birth_all_low_cad[sink_key][1] == Sink_birth_all_low_cad[sink_key][2]:
-            Formation_pathway_low_cad[-1][1] = Formation_pathway_low_cad[-1][1] + 1
-        else:
-            Formation_pathway_low_cad[-1][2] = Formation_pathway_low_cad[-1][2] + 1
+        try:
+            if Sink_birth_all_low_cad[sink_key][0] == True:
+                Formation_pathway_low_cad[-1][0] = Formation_pathway_low_cad[-1][0] + 1
+            elif Sink_birth_all_low_cad[sink_key][0] == False and Sink_birth_all_low_cad[sink_key][1] == Sink_birth_all_low_cad[sink_key][2]:
+                Formation_pathway_low_cad[-1][1] = Formation_pathway_low_cad[-1][1] + 1
+            else:
+                Formation_pathway_low_cad[-1][2] = Formation_pathway_low_cad[-1][2] + 1
+        except:
+            print("Sink", sink_key, "not found in low_cadence_data")
             
     for T_del_it in range(len(T_delay)):
         axs[pickle_it].scatter(np.array(SFE[T_del_it])*100, T_delay[T_del_it], marker=markers[T_del_it], label=marker_labels[T_del_it])
