@@ -130,6 +130,8 @@ if rank == 0:
         sink_ids = sorted(list(set(found_sinks).symmetric_difference(set(sink_ids))))
     del found_sinks
     gc.collect()
+    import pdb
+    pdb.set_trace()
     
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
     formation_inds = []
@@ -146,6 +148,8 @@ if rank == 0:
             sink_ids = sink_ids[:np.argwhere(sink_ids == sink_id)[0][0]]
             break
     gc.collect()
+    import pdb
+    pdb.set_trace()
 
     print("Found formation inds", flush=True)
     sys.stdout.flush()
@@ -153,6 +157,8 @@ if rank == 0:
 
     formation_inds = np.array(formation_inds)
     formation_times = global_data['time'][formation_inds]
+    import pdb
+    pdb.set_trace()
     del formation_inds
     del global_data
     gc.collect()
