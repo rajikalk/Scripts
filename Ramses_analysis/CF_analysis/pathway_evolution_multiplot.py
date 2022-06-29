@@ -156,6 +156,7 @@ for grad_it in range(len(grad_pickles)):
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
+        axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
         
         axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='major', labelsize=font_size)
         axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='minor', labelsize=font_size)
@@ -194,7 +195,8 @@ for grad_it in range(len(grad_pickles)):
         ticklabels.append("")
         
         axs_list[time_means_counter+1][grad_it].set_xticklabels(ticklabels[::2])
-        axs_list[time_means_counter+1][grad_it].set_xlabel('Inspiral rate (au/yr)')
+        if grad_it == 5:
+            axs_list[time_means_counter+1][grad_it].set_xlabel('Inspiral rate (au/yr)')
         axs_list[time_means_counter+1][grad_it].set_ylabel('#')
         
         fig_list[time_means_counter+1].savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png', bbox_inches='tight', pad_inches=0.02)
