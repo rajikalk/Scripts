@@ -442,10 +442,10 @@ for sink_id in sink_ids:
                 gc.collect()
             else:
                 if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
-                    first_sys = np.nan
+                    first_sys = ''
                     sys_start_time = 0
                     for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
-                        if np.isnan(first_sys):
+                        if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                         elif sys_times[first_sys] < first_form_time:
@@ -457,7 +457,7 @@ for sink_id in sink_ids:
                     first_sys = np.nan
                     sys_start_time = 0
                     for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
-                        if np.isnan(first_sys):
+                        if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                         elif sys_times[first_sys] < first_form_time:
@@ -468,14 +468,14 @@ for sink_id in sink_ids:
                     first_sys = np.nan
                     sys_start_time = 0
                     for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
-                        if np.isnan(first_sys):
+                        if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                         elif sys_times[first_sys] < first_form_time:
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                     for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
-                        if np.isnan(first_sys):
+                        if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                         elif sys_times[first_sys] < first_form_time:
