@@ -448,7 +448,7 @@ for sink_id in sink_ids:
                         if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
-                        elif sys_times[first_sys] < first_form_time:
+                        elif sys_times[first_sys] < sys_start_time:
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                         
@@ -460,7 +460,7 @@ for sink_id in sink_ids:
                         if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
-                        elif sys_times[first_sys] < first_form_time:
+                        elif sys_times[first_sys] < sys_start_time:
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                     #first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
@@ -471,14 +471,14 @@ for sink_id in sink_ids:
                         if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
-                        elif sys_times[first_sys] < first_form_time:
+                        elif sys_times[first_sys] < sys_start_time:
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                     for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
                         if first_sys == '':
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
-                        elif sys_times[first_sys] < first_form_time:
+                        elif sys_times[first_sys] < sys_start_time:
                             first_sys = sys_key
                             sys_start_time = sys_times[first_sys]
                     '''
