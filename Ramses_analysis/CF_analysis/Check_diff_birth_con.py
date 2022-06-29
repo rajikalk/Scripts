@@ -15,7 +15,7 @@ Sink_birth_all_first = pickle.load(file_open)
 file_open.close()
 
 for key in Sink_birth_all_full.keys():
-    if Sink_birth_all_full[key] != Sink_birth_all_first[key]:
+    if str(Sink_birth_all_full[key]) != str(Sink_birth_all_first[key]):
         import pdb
         pdb.set_trace()
 
