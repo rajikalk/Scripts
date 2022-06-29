@@ -443,7 +443,7 @@ for sink_id in sink_ids:
             else:
                 if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
                     first_sys = ''
-                    sys_start_time = 0
+                    sys_start_time = np.inf
                     for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
                         if first_sys == '':
                             first_sys = sys_key
@@ -454,8 +454,8 @@ for sink_id in sink_ids:
                         
                     #first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
                 elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
-                    first_sys = np.nan
-                    sys_start_time = 0
+                    first_sys = ''
+                    sys_start_time = np.inf
                     for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
                         if first_sys == '':
                             first_sys = sys_key
@@ -465,8 +465,8 @@ for sink_id in sink_ids:
                             sys_start_time = sys_times[first_sys]
                     #first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 else:
-                    first_sys = np.nan
-                    sys_start_time = 0
+                    first_sys = ''
+                    sys_start_time = np.inf
                     for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
                         if first_sys == '':
                             first_sys = sys_key
