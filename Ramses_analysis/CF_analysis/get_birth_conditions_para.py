@@ -442,16 +442,53 @@ for sink_id in sink_ids:
                 gc.collect()
             else:
                 if len([s for s in system_keys if ' '+str(sink_id)+']' in s]) > 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) == 0:
-                    first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
+                    first_sys = np.nan
+                    sys_start_time = 0
+                    for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
+                        if np.isnan(first_sys):
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                        elif sys_times[first_sys] < first_form_time:
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                        
+                    #first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
                 elif len([s for s in system_keys if ' '+str(sink_id)+']' in s]) == 0 and len([s for s in system_keys if '['+str(sink_id)+',' in s]) > 0:
-                    first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
+                    first_sys = np.nan
+                    sys_start_time = 0
+                    for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
+                        if np.isnan(first_sys):
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                        elif sys_times[first_sys] < first_form_time:
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                    #first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
                 else:
+                    first_sys = np.nan
+                    sys_start_time = 0
+                    for sys_key in [s for s in system_keys if ' '+str(sink_id)+']' in s]:
+                        if np.isnan(first_sys):
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                        elif sys_times[first_sys] < first_form_time:
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                    for sys_key in [s for s in system_keys if '['+str(sink_id)+',' in s]:
+                        if np.isnan(first_sys):
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                        elif sys_times[first_sys] < first_form_time:
+                            first_sys = sys_key
+                            sys_start_time = sys_times[first_sys]
+                    '''
                     if sys_times[[s for s in system_keys if ' '+str(sink_id)+']' in s][0]] < sys_times[[s for s in system_keys if '['+str(sink_id)+',' in s][0]]:
                         first_sys = [s for s in system_keys if ' '+str(sink_id)+']' in s][0]
                     else:
                         first_sys = [s for s in system_keys if '['+str(sink_id)+',' in s][0]
+                    '''
                 
-                sys_start_time = sys_times[first_sys]
+                #sys_start_time = sys_times[first_sys]
                 #del sys_times[first_sys]
                 #system_keys.remove(first_sys)
                 
