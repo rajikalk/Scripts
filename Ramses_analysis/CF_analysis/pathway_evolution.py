@@ -36,7 +36,7 @@ plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 sys.stdout.flush()
 CW.Barrier()
 
-check_sub_sys = [[21, 22], [23,97], [23,24], [23,97], [72,76], [78,235]]
+#check_sub_sys = [[21, 22], [23,97], [23,24], [23,97], [72,76], [78,235]]
 jump_time_start = []
 jump_time_end = []
 jump_sys = []
@@ -503,6 +503,7 @@ for Initial_mean_grad in mean_grads:
     ax.set_xlabel('Inspiral rate (au/yr)')
     ax.set_ylabel('#')
     ax.set_ylim(bottom=0)
+    
     ax.legend(loc='best')
     plt.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
     time_means_counter = time_means_counter + 1

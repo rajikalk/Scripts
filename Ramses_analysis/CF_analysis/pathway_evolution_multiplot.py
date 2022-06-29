@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pickle
 from scipy import stats
 
-grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl']#, '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(3,-6,19)[1:], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
@@ -31,8 +31,10 @@ fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_
 fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
 fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
 fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
-fig_list = [fig1, fig2, fig3, fig4]
-axs_list = [axs1, axs2, axs3, axs4]
+fig5, axs5 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig6, axs6 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig_list = [fig1, fig2, fig3, fig4, fig5, fig6]
+axs_list = [axs1, axs2, axs3, axs4, axs5, axs6]
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -179,6 +181,22 @@ for grad_it in range(len(grad_pickles)):
             axs_list[time_means_counter+1][grad_it].set_ylim(bottom=0)
         '''
         axs_list[time_means_counter+1][grad_it].set_ylim(bottom=0)
+        
+        ticklabels = []
+        for bin_val in grad_bins:
+            if int(np.sign(bin_val)) < 0:
+                tick_str = str(int(np.sign(bin_val)))+'0$^{'+str(int(np.log10(abs(bin_val))))+'}$'
+            elif int(np.sign(bin_val)) > 0:
+                tick_str = '>0'
+            else:
+                tick_str = '0'
+            ticklabels.append(r'{}'.format(tick_str))
+        ticklabels.append("")
+        
+        axs_list[time_means_counter+1][grad_it].set_xticklabels(ticklabels[::2])
+        axs_list[time_means_counter+1][grad_it].set_xlabel('Inspiral rate (au/yr)')
+        axs_list[time_means_counter+1][grad_it].set_ylabel('#')
+        
         fig_list[time_means_counter+1].savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png', bbox_inches='tight', pad_inches=0.02)
         time_means_counter = time_means_counter + 1
 
