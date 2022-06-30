@@ -171,6 +171,8 @@ for grad_it in range(len(grad_pickles)):
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
+            import pdb
+            pdb.set_trace()
             try:
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
