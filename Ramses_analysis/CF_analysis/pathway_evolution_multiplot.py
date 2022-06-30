@@ -202,10 +202,13 @@ for grad_it in range(len(grad_pickles)):
             scale_guess = np.max(grad_hist_misc_mean_norm)
             mean_guess = np.nanmean(misc_mean)
             std_guess = np.nanstd(misc_mean)
-            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_misc_mean_norm), [scale_guess, mean_guess, std_guess])
-            x_fit = np.linspace(0, len(grad_hist_core))
-            fit = Gaussian(x_fit, *popt)
-            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
+            try:
+                popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_misc_mean_norm), [scale_guess, mean_guess, std_guess])
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit = Gaussian(x_fit, *popt)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
+            except:
+                print("No fit found for Misc")
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
         
