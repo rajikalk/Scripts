@@ -18,6 +18,7 @@ def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
 
 grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
+Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(2,-5,15), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(2,-6,28)[1:-2], np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(3,-6,19)[1:-2], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 #inpiral only:
@@ -187,10 +188,13 @@ for grad_it in range(len(grad_pickles)):
             scale_guess = np.max(grad_hist_capt_mean_norm)
             mean_guess = np.nanmean(capt_mean)
             std_guess = np.nanstd(capt_mean)
-            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_capt_mean_norm), [scale_guess, mean_guess, std_guess])
-            x_fit = np.linspace(0, len(grad_hist_core))
-            fit = Gaussian(x_fit, *popt)
-            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
+            try:
+                popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_capt_mean_norm), [scale_guess, mean_guess, std_guess])
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit = Gaussian(x_fit, *popt)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
+            except:
+                print("No fit found for Dynamical Capture")
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
