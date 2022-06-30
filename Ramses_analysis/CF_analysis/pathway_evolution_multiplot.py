@@ -109,7 +109,8 @@ for grad_it in range(len(grad_pickles)):
     time_means_counter = 0
     bin_centres = (np.log10(grad_bins[:-2]*-1)[:-1] + np.log10(grad_bins[:-2]*-1)[1:])/2
     bin_centres = np.append(bin_centres, -5.25)
-    bin_centres = np.log10(grad_bins[:-2]*-1)
+    #bin_centres = np.log10(grad_bins[:-2]*-1)
+    median_grad = [[], [], [], []]
     for Initial_mean_grad in mean_grads:
         plt.subplots_adjust(hspace=-0.1)
         core_mean = []
@@ -172,6 +173,7 @@ for grad_it in range(len(grad_pickles)):
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_mean)*-1))
             skew_guess = (3*(median_guess - mean_guess))/std_guess
+            median_grad[0].append(median_guess)
             try:
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_core_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -5*abs(skew_guess)], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), 5*abs(skew_guess)]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
@@ -192,6 +194,7 @@ for grad_it in range(len(grad_pickles)):
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
+            median_grad[1].append(median_guess)
             try:
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_core_delayed_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
@@ -213,6 +216,7 @@ for grad_it in range(len(grad_pickles)):
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
+            median_grad[2].append(median_guess)
             try:
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_capt_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
@@ -234,6 +238,7 @@ for grad_it in range(len(grad_pickles)):
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
+            median_grad[3].append(median_guess)
             try:
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_misc_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
@@ -292,6 +297,15 @@ for grad_it in range(len(grad_pickles)):
         
         fig_list[time_means_counter+1].savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png', bbox_inches='tight', pad_inches=0.02)
         time_means_counter = time_means_counter + 1
+
+plt.clf()
+masses = [1500, 3000, 3750, 4500, 6000, 12000]
+labels = ['Core Frag', 'Delayed Core Frag', 'Dynamical Capt', 'Misc']
+for lit in range(len(labels)):
+    plt.plot(masses, med_grad, label=labels[lit])
+plt.xlabel('Mass')
+plt.ylabel('Inspiral rate (AU/yr)')
+plt.savefig('inspiral_vs_mass.png')
 
 """
 
