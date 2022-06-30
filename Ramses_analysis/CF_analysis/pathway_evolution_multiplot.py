@@ -8,7 +8,6 @@ grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pic
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(2,-5,15), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(2,-6,28)[1:-2], np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(3,-6,19)[1:-2], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 #inpiral only:
-grad_bins = -1*np.logspace(2,-5,15)
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
 bin_widths = grad_bins[1:] - grad_bins[:-1]
@@ -149,16 +148,15 @@ for grad_it in range(len(grad_pickles)):
         grad_hist_capt_mean_rel_err = np.concatenate((grad_hist_capt_mean_rel_err, np.array([grad_hist_capt_mean_rel_err[-1]])))
         grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
 
-        axs_list[time_means_counter+1][grad_it].step(grad_bin_centers, grad_hist_core_mean_norm[:-1], where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+        axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
-        axs_list[time_means_counter+1][grad_it].step(grad_bin_centers, grad_hist_core_delayed_mean_norm[:-1], where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
+        axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
-        axs_list[time_means_counter+1][grad_it].step(grad_bin_centers, grad_hist_capt_mean_norm[:-1], where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+        axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
-        axs_list[time_means_counter+1][grad_it].step(grad_bin_centers, grad_hist_misc_mean_norm[:-1], where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+        axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
-        axs_list[time_means_counter+1][grad_it].set_xscale('log')
-        #axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
+        axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
         
         axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='major', labelsize=font_size)
         axs_list[time_means_counter+1][grad_it].tick_params(axis='both', which='minor', labelsize=font_size)
