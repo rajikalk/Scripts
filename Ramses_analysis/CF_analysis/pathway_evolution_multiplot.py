@@ -41,10 +41,10 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
-fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
-fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
-fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+fig1, axs1 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
+fig2, axs2 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
+fig3, axs3 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
+fig4, axs4 = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
 fig_list = [fig1, fig2, fig3, fig4]
 axs_list = [axs1, axs2, axs3, axs4]
 iter_range = range(0, len(grad_pickles))
@@ -107,7 +107,7 @@ for grad_it in range(len(grad_pickles)):
     time_means = [1000, 10000, 100000]
     time_means_counter = 0
     for Initial_mean_grad in mean_grads:
-        plt.subplots_adjust(hspace=0.0)
+        plt.subplots_adjust(hspace=-0.1)
         core_mean = []
         for grit in range(len(Initial_mean_grad[0])):
             core_mean.append(np.mean(Initial_mean_grad[0][grit]))
@@ -162,42 +162,46 @@ for grad_it in range(len(grad_pickles)):
         grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
 
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-        scale_guess = np.max(grad_hist_core_mean_norm)
-        mean_guess = np.nanmean(core_mean)
-        std_guess = np.nanstd(core_mean)
-        popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_mean_norm), [scale_guess, mean_guess, std_guess])
-        x_fit = np.linspace(0, len(grad_hist_core))
-        fit = Gaussian(x_fit, *popt)
-        axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
+        if time_means[time_means_counter] == 10000:
+            scale_guess = np.max(grad_hist_core_mean_norm)
+            mean_guess = np.nanmean(core_mean)
+            std_guess = np.nanstd(core_mean)
+            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_mean_norm), [scale_guess, mean_guess, std_guess])
+            x_fit = np.linspace(0, len(grad_hist_core))
+            fit = Gaussian(x_fit, *popt)
+            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-        scale_guess = np.max(grad_hist_core_delayed_mean_norm)
-        mean_guess = np.nanmean(core_delayed_mean)
-        std_guess = np.nanstd(core_delayed_mean)
-        popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_delayed_mean_norm), [scale_guess, mean_guess, std_guess])
-        x_fit = np.linspace(0, len(grad_hist_core))
-        fit = Gaussian(x_fit, *popt)
-        axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
+        if time_means[time_means_counter] == 10000:
+            scale_guess = np.max(grad_hist_core_delayed_mean_norm)
+            mean_guess = np.nanmean(core_delayed_mean)
+            std_guess = np.nanstd(core_delayed_mean)
+            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_delayed_mean_norm), [scale_guess, mean_guess, std_guess])
+            x_fit = np.linspace(0, len(grad_hist_core))
+            fit = Gaussian(x_fit, *popt)
+            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
-        scale_guess = np.max(grad_hist_capt_mean_norm)
-        mean_guess = np.nanmean(capt_mean)
-        std_guess = np.nanstd(capt_mean)
-        popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_capt_mean_norm), [scale_guess, mean_guess, std_guess])
-        x_fit = np.linspace(0, len(grad_hist_core))
-        fit = Gaussian(x_fit, *popt)
-        axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
+        if time_means[time_means_counter] == 10000:
+            scale_guess = np.max(grad_hist_capt_mean_norm)
+            mean_guess = np.nanmean(capt_mean)
+            std_guess = np.nanstd(capt_mean)
+            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_capt_mean_norm), [scale_guess, mean_guess, std_guess])
+            x_fit = np.linspace(0, len(grad_hist_core))
+            fit = Gaussian(x_fit, *popt)
+            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
-        scale_guess = np.max(grad_hist_misc_mean_norm)
-        mean_guess = np.nanmean(misc_mean)
-        std_guess = np.nanstd(misc_mean)
-        popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_misc_mean_norm), [scale_guess, mean_guess, std_guess])
-        x_fit = np.linspace(0, len(grad_hist_core))
-        fit = Gaussian(x_fit, *popt)
-        axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
+        if time_means[time_means_counter] == 10000:
+            scale_guess = np.max(grad_hist_misc_mean_norm)
+            mean_guess = np.nanmean(misc_mean)
+            std_guess = np.nanstd(misc_mean)
+            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_misc_mean_norm), [scale_guess, mean_guess, std_guess])
+            x_fit = np.linspace(0, len(grad_hist_core))
+            fit = Gaussian(x_fit, *popt)
+            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
         
