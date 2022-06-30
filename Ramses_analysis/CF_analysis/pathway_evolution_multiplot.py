@@ -192,7 +192,7 @@ for grad_it in range(len(grad_pickles)):
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
             try:
-                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
+                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_core_delayed_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
@@ -213,7 +213,7 @@ for grad_it in range(len(grad_pickles)):
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
             try:
-                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
+                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_capt_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
@@ -234,7 +234,7 @@ for grad_it in range(len(grad_pickles)):
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             skew_guess = (3*(mean_guess - median_guess))/std_guess
             try:
-                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
+                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_misc_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
