@@ -4,6 +4,18 @@ import pickle
 from scipy import stats
 from scipy.optimize import curve_fit
 
+def Gaussian(x,scale,mean,sigma):
+    return scale*stats.norm.pdf(x, mean, sigma)
+    
+def Gaussian_cdf(x,scale,mean,sigma):
+    return scale*stats.norm.cdf(x, mean, sigma)
+
+def Skewed_Gaussian(x, scale, mean, sigma, skew):
+    return scale*stats.skewnorm.pdf(x, skew, loc=mean, scale=sigma)
+    
+def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
+    return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
+
 grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
 #Defining gradient bins and getting tick labels
@@ -152,6 +164,7 @@ for grad_it in range(len(grad_pickles)):
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
         import pdb
         pdb.set_trace()
+        popt, pcov = curve_fit(Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess])
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
