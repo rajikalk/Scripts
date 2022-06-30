@@ -164,20 +164,22 @@ for grad_it in range(len(grad_pickles)):
 
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
         if time_means[time_means_counter] == 10000:
-            scale_guess = np.max(grad_hist_core_mean_norm)
+            scale_guess = np.max(grad_hist_core_mean_norm[:-1])
+            import pdb
+            pdb.set_trace()
             mean_guess = np.nanmean(core_mean)
             std_guess = np.nanstd(core_mean)
-            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_mean_norm), [scale_guess, mean_guess, std_guess])
+            popt, pcov = curve_fit(Gaussian, x_range[:-1], (grad_hist_core_mean_norm[:-1]), [scale_guess, mean_guess, std_guess])
             x_fit = np.linspace(0, len(grad_hist_core))
             fit = Gaussian(x_fit, *popt)
             axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
         if time_means[time_means_counter] == 10000:
-            scale_guess = np.max(grad_hist_core_delayed_mean_norm)
+            scale_guess = np.max(grad_hist_core_delayed_mean_norm[:-1])
             mean_guess = np.nanmean(core_delayed_mean)
             std_guess = np.nanstd(core_delayed_mean)
-            popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_core_delayed_mean_norm), [scale_guess, mean_guess, std_guess])
+            popt, pcov = curve_fit(Gaussian, x_range[:-1], (grad_hist_core_delayed_mean_norm[:-1]), [scale_guess, mean_guess, std_guess])
             x_fit = np.linspace(0, len(grad_hist_core))
             fit = Gaussian(x_fit, *popt)
             axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
@@ -185,11 +187,11 @@ for grad_it in range(len(grad_pickles)):
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
         if time_means[time_means_counter] == 10000:
-            scale_guess = np.max(grad_hist_capt_mean_norm)
+            scale_guess = np.max(grad_hist_capt_mean_norm[:-1])
             mean_guess = np.nanmean(capt_mean)
             std_guess = np.nanstd(capt_mean)
             try:
-                popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_capt_mean_norm), [scale_guess, mean_guess, std_guess])
+                popt, pcov = curve_fit(Gaussian, x_range[:-1], (grad_hist_capt_mean_norm[:-1]), [scale_guess, mean_guess, std_guess])
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(x_fit, *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
@@ -199,11 +201,11 @@ for grad_it in range(len(grad_pickles)):
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_misc_mean_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
         if time_means[time_means_counter] == 10000:
-            scale_guess = np.max(grad_hist_misc_mean_norm)
+            scale_guess = np.max(grad_hist_misc_mean_norm[:-1])
             mean_guess = np.nanmean(misc_mean)
             std_guess = np.nanstd(misc_mean)
             try:
-                popt, pcov = curve_fit(Gaussian, x_range, (grad_hist_misc_mean_norm), [scale_guess, mean_guess, std_guess])
+                popt, pcov = curve_fit(Gaussian, x_range[:-1], (grad_hist_misc_mean_norm[:-1]), [scale_guess, mean_guess, std_guess])
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(x_fit, *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
