@@ -168,9 +168,12 @@ for grad_it in range(len(grad_pickles)):
         if time_means[time_means_counter] == 10000:
             scale_guess = np.max(grad_hist_core_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(core_mean)*-1))
+            median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
+            skew_guess = median_guess - mean_guess
             std_guess = np.nanstd(np.log10(np.array(core_mean)*-1))
             try:
-                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), (bin_centres[0]-bin_centres[-1])]))
+                #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
@@ -181,9 +184,11 @@ for grad_it in range(len(grad_pickles)):
         if time_means[time_means_counter] == 10000:
             scale_guess = np.max(grad_hist_core_delayed_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(core_delayed_mean)*-1))
+            median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
+            skew_guess = median_guess - mean_guess
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
             try:
-                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
@@ -195,9 +200,11 @@ for grad_it in range(len(grad_pickles)):
         if time_means[time_means_counter] == 10000:
             scale_guess = np.max(grad_hist_capt_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(capt_mean)*-1))
+            median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
+            skew_guess = median_guess - mean_guess
             std_guess = np.nanstd(np.log10(np.array(capt_mean)*-1))
             try:
-                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
@@ -209,9 +216,11 @@ for grad_it in range(len(grad_pickles)):
         if time_means[time_means_counter] == 10000:
             scale_guess = np.max(grad_hist_misc_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(misc_mean)*-1))
+            median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
+            skew_guess = median_guess - mean_guess
             std_guess = np.nanstd(np.log10(np.array(misc_mean)*-1))
             try:
-                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
                 fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
