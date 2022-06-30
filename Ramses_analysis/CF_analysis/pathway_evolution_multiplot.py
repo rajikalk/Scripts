@@ -169,20 +169,26 @@ for grad_it in range(len(grad_pickles)):
             scale_guess = np.max(grad_hist_core_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_mean)*-1))
-            popt, pcov = curve_fit(Gaussian, bin_centres, (grad_hist_core_mean_norm[:-2]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
-            x_fit = np.linspace(0, len(grad_hist_core))
-            fit = Gaussian(x_fit, *popt)
-            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
+            try:
+                popt, pcov = curve_fit(Gaussian, bin_centres, (grad_hist_core_mean_norm[:-2]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit = Gaussian(x_fit, *popt)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
+            except:
+                print("No fit found for Core Fragmentaion")
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
         if time_means[time_means_counter] == 10000:
             scale_guess = np.max(grad_hist_core_delayed_mean_norm[:-2])
             mean_guess = np.nanmean(np.log10(np.array(core_delayed_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_delayed_mean)*-1))
-            popt, pcov = curve_fit(Gaussian, bin_centres, (grad_hist_core_delayed_mean_norm[:-2]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
-            x_fit = np.linspace(0, len(grad_hist_core))
-            fit = Gaussian(x_fit, *popt)
-            axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
+            try:
+                popt, pcov = curve_fit(Gaussian, bin_centres, (grad_hist_core_delayed_mean_norm[:-2]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit = Gaussian(x_fit, *popt)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
+            except:
+                print("No fit found for Delayed Core Fragmentaion")
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_capt_mean_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
