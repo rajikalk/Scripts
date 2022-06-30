@@ -148,6 +148,8 @@ for grad_it in range(len(grad_pickles)):
         grad_hist_misc_mean_rel_err = np.concatenate((grad_hist_misc_mean_rel_err, np.array([grad_hist_misc_mean_rel_err[-1]])))
 
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_mean_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
+        import pdb
+        pdb.set_trace()
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
