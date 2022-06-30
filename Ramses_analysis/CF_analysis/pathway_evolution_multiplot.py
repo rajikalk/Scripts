@@ -170,16 +170,18 @@ for grad_it in range(len(grad_pickles)):
             mean_guess = np.nanmean(np.log10(np.array(core_mean)*-1))
             median_guess = np.nanmedian(np.log10(np.array(core_mean)*-1))
             std_guess = np.nanstd(np.log10(np.array(core_mean)*-1))
-            skew_guess = (3*(mean_guess - median_guess))/std_guess
-            import pdb
-            pdb.set_trace()
+            skew_guess = (3*(median_guess - mean_guess))/std_guess
             try:
-                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
+                popt, pcov = curve_fit(Skewed_Gaussian, bin_centres, (grad_hist_core_mean_norm[:-2]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -5*abs(skew_guess)], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), 5*abs(skew_guess)]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
-                fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                #fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='b')
             except:
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit_guess = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), scale_guess, mean_guess, std_guess, skew_guess)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit_guess, color='b')
                 print("No fit found for Core Fragmentation")
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_mean_norm, yerr=(grad_hist_core_mean_rel_err*grad_hist_core_mean_norm), fmt='none', linewidth=2, color='b', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].step(x_range, grad_hist_core_delayed_mean_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
@@ -193,9 +195,13 @@ for grad_it in range(len(grad_pickles)):
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_core_delayed_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
-                fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                #fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='purple')
             except:
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit_guess = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), scale_guess, mean_guess, std_guess, skew_guess)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit_guess, color='b')
                 print("No fit found for Delayed Core Fragmentation")
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_core_delayed_mean_norm, yerr=(grad_hist_core_delayed_mean_rel_err*grad_hist_core_delayed_mean_norm), fmt='none', linewidth=2, color='purple', alpha=0.5)
@@ -210,9 +216,13 @@ for grad_it in range(len(grad_pickles)):
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_capt_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
-                fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                #fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='red')
             except:
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit_guess = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), scale_guess, mean_guess, std_guess, skew_guess)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit_guess, color='b')
                 print("No fit found for Dynamical Capture")
         
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_capt_mean_norm, yerr=(grad_hist_capt_mean_rel_err*grad_hist_capt_mean_norm), fmt='none', linewidth=2, color='red', alpha=0.5)
@@ -227,9 +237,13 @@ for grad_it in range(len(grad_pickles)):
                 popt, pcov = curve_fit(Skewed_Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0, -np.inf], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1]), np.inf]))
                 #popt, pcov = curve_fit(Gaussian, bin_centres[::-1], (grad_hist_misc_mean_norm[:-2][::-1]), [scale_guess, mean_guess, std_guess, skew_guess], bounds=([0.0, bin_centres[-1], 0.0], [1.0, bin_centres[0], (bin_centres[0]-bin_centres[-1])]))
                 x_fit = np.linspace(0, len(grad_hist_core))
-                fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                fit = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
+                #fit = Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), *popt)
                 axs_list[time_means_counter+1][grad_it].plot(x_fit, fit, color='orange')
             except:
+                x_fit = np.linspace(0, len(grad_hist_core))
+                fit_guess = Skewed_Gaussian(np.linspace(bin_centres[0], bin_centres[-1]), scale_guess, mean_guess, std_guess, skew_guess)
+                axs_list[time_means_counter+1][grad_it].plot(x_fit, fit_guess, color='b')
                 print("No fit found for Misc")
         #axs_list[time_means_counter+1][grad_it].errorbar(x_range+0.5, grad_hist_misc_mean_norm, yerr=(grad_hist_misc_mean_rel_err*grad_hist_misc_mean_norm), fmt='none', linewidth=2, color='orange', alpha=0.5)
         axs_list[time_means_counter+1][grad_it].set_xlim([x_range[0], x_range[-1]])
