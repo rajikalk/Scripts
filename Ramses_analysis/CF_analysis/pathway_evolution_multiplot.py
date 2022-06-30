@@ -302,7 +302,7 @@ plt.clf()
 masses = [1500, 3000, 3750, 4500, 6000, 12000]
 labels = ['Core Frag', 'Delayed Core Frag', 'Dynamical Capt', 'Misc']
 for lit in range(len(labels)):
-    plt.plot(masses, med_grad, label=labels[lit])
+    plt.plot(masses, median_grad[lit], label=labels[lit])
 plt.xlabel('Mass')
 plt.ylabel('Inspiral rate (AU/yr)')
 plt.savefig('inspiral_vs_mass.png')
