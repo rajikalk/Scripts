@@ -109,7 +109,7 @@ for grad_it in range(len(grad_pickles)):
     time_means_counter = 0
     bin_centres = (np.log10(grad_bins[:-2]*-1)[:-1] + np.log10(grad_bins[:-2]*-1)[1:])/2
     bin_centres = np.append(bin_centres, -5.25)
-    bin_centres = len(np.log10(grad_bins[:-2]*-1))
+    bin_centres = np.log10(grad_bins[:-2]*-1)
     for Initial_mean_grad in mean_grads:
         plt.subplots_adjust(hspace=-0.1)
         core_mean = []
