@@ -138,7 +138,7 @@ Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.a
 
 plt.clf()
 fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(single_col_width, 0.75*single_col_width)
+fig.set_size_inches(single_col_width, 1.25*single_col_width)
 plt.errorbar(masses, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
 plt.errorbar(np.array(masses)+10, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Fragmentation', color='purple')
 plt.errorbar(np.array(masses)+20, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
