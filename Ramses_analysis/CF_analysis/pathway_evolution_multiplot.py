@@ -18,6 +18,8 @@ def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
 
 grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
 
+#grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/1000_yr/grad_pickle.pkl']
+
 Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(2,-5,15), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(2,-6,28)[1:-2], np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(3,-6,19)[1:-2], np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
