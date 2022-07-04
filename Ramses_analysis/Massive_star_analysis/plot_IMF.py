@@ -67,7 +67,7 @@ for global_pickle in global_pickles:
 
     masses_end = global_data['m'][-1]*units['mass_unit']
 
-    bins = np.logspace(-2,2,9)
+    bins = np.logspace(-2,2,13)
     IMF_SFE_5, bins =np.histogram(masses_SFE_5, bins=bins)
     IMF_end, bins =np.histogram(masses_end, bins=bins)
     bins_centers = (bins[1:] + bins[:-1])/2
