@@ -146,7 +146,7 @@ plt.errorbar(np.array(masses)+30, Median_grads[3], yerr=Other_err, label='Other'
 plt.tick_params(which='both', direction='in')
 plt.tick_params(axis='both', which='major', labelsize=font_size)
 plt.tick_params(axis='both', which='minor', labelsize=font_size)
-plt.legend(loc='upper center'fontsize=font_size)
+plt.legend(loc='upper center', fontsize=font_size)
 plt.xlabel('Gas Mass', size=font_size)
 plt.ylabel('Log Inspiral rate (au/yr)', size=font_size)
 plt.ylim(upper=1.5)
