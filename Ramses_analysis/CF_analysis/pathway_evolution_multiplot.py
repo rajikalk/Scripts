@@ -49,11 +49,16 @@ iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
+Mean_grads = [[], [], [], []]
+Median_grads = [[], [], [], []]
+Std_grads = [[], [], [], []]
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
     Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
     file.close()
 
+    import pdb
+    pdb.set_trace()
     #Plotting initial gradients
     #grad_bins = np.concatenate((-1*np.logspace(4,-3,15), np.array([0, 1.e10])))
     grad_hist_core, grad_bins = np.histogram(Initial_gradients_10000[0], bins=grad_bins)
