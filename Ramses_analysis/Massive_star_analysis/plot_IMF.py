@@ -71,7 +71,6 @@ for global_pickle in global_pickles:
     IMF_end, bins =np.histogram(masses_end, bins=bins)
     bins_centers = (bins[1:] + bins[:-1])/2
 
-    plt.clf()
     plt.semilogx(bins_centers, IMF_end, label='G'+str(simulation_density_id))
 plt.xlabel('Mass (M$_\odot$)')
 plt.ylabel('Number')
