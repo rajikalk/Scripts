@@ -22,7 +22,7 @@ grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/1000_yr/
 
 Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
-grad_bins = np.concatenate((-1*np.logspace(0.5,-5,12), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(0.5,-5,23), np.array([0, 1.e10])))
+grad_bins = np.concatenate((-1*np.logspace(1.5,-4,12), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(0.5,-5,23), np.array([0, 1.e10])))
 #inpiral only:
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
@@ -137,9 +137,9 @@ Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.a
 
 plt.clf()
 plt.errorbar(masses, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
-plt.errorbar(masses, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Fragmentation', color='purple')
-plt.errorbar(masses, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
-plt.errorbar(masses, Median_grads[3], yerr=Other_err, label='Other', color='orange')
+plt.errorbar(np.array(masses)+10, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Fragmentation', color='purple')
+plt.errorbar(np.array(masses)+20, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+plt.errorbar(np.array(masses)+30, Median_grads[3], yerr=Other_err, label='Other', color='orange')
 plt.legend()
 plt.xlabel('Gas Mass')
 plt.ylabel('Log Inspiral rate (au/yr)')
