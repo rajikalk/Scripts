@@ -72,6 +72,19 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
-import pdb
-pdb.set_trace()
+SFE_5_time_ind = np.argmin(abs(np.sum(global_data['m'], axis=1)-0.05))
+masses_SFE_5 = global_data['m'][SFE_5_time_ind]*units['mass_unit']
+
+masses_end = global_data['m'][-1]*units['mass_unit']
+
+bins = np.logspace(-2,2,9)
+IMF_SFE_5, bins =np.histogram(masses_SFE_5, bins=bins)
+IMF_end, bins =np.histogram(masses_end, bins=bins)
+bins_centers = (bins[1:] + bins[:-1])/2
+
+plt.clf()
+plt.semilogx(bins_centers, IMF_end)
+plt.xlabel('Mass (M$\odot$)')
+plt.ylabel('#')
+plt.savefig('IMF.png')
 
