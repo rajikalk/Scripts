@@ -85,7 +85,7 @@ for grad_it in range(len(grad_pickles)):
     axs[grad_it].tick_params(axis='x', direction='in')
     axs[grad_it].tick_params(axis='y', direction='in')
     
-    axs[grad_it].set_ylim([0, 0.6])
+    axs[grad_it].set_ylim([0, 0.8])
     axs[grad_it].set_xlim([x_range[0], x_range[-1]])
 
 fig.savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
