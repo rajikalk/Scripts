@@ -57,8 +57,27 @@ for grad_it in range(len(grad_pickles)):
     Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
     file.close()
 
-    import pdb
-    pdb.set_trace()
+    core_inspiral_inds = np.where(np.array(Initial_gradients_10000[0]) < 0)[0]
+    delayed_core_inspiral_inds = np.where(np.array(Initial_gradients_10000[1]) < 0)[0]
+    capt_inspiral_inds = np.where(np.array(Initial_gradients_10000[2]) < 0)[0]
+    other_inspiral_inds = np.where(np.array(Initial_gradients_10000[3]) < 0)[0]
+    
+    Mean_grads[0].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
+    Median_grads[0].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
+    Std_grads[0].append(np.std(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
+    
+    Mean_grads[1].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds])))
+    Median_grads[1].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds])))
+    Std_grads[1].append(np.std(np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds])))
+    
+    Mean_grads[2].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds])))
+    Median_grads[2].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds])))
+    Std_grads[2].append(np.std(np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds])))
+    
+    Mean_grads[3].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[3]).T[0][other_inspiral_inds])))
+    Median_grads[3].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[3]).T[0][other_inspiral_inds])))
+    Std_grads[3].append(np.std(np.log10(-1*np.array(Initial_gradients_10000[3]).T[0][other_inspiral_inds])))
+    
     #Plotting initial gradients
     #grad_bins = np.concatenate((-1*np.logspace(4,-3,15), np.array([0, 1.e10])))
     grad_hist_core, grad_bins = np.histogram(Initial_gradients_10000[0], bins=grad_bins)
@@ -94,3 +113,14 @@ for grad_it in range(len(grad_pickles)):
     axs[grad_it].set_xlim([x_range[0], x_range[-1]])
 
 fig.savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
+
+masses = [1500, 3000, 3750, 4500, 6000, 12000]
+plt.clf()
+plt.errorbar(masses, Mean_grads[0], yerr=Std_grads[0], label='Core Fragmentation')
+plt.errorbar(masses, Mean_grads[1], yerr=Std_grads[1], label='Delayed Core Fragmentation')
+plt.errorbar(masses, Mean_grads[2], yerr=Std_grads[2], label='Dynamical Capture')
+plt.errorbar(masses, Mean_grads[3], yerr=Std_grads[3], label='Other')
+plt.xlabel('Gas Mass')
+plt.ylabel('Log Inspiral rate (au/yr)')
+plt.savefig('inspiral_rate_comparison')
+
