@@ -84,7 +84,7 @@ bins_centers = (bins[1:] + bins[:-1])/2
 
 plt.clf()
 plt.semilogx(bins_centers, IMF_end)
-plt.xlabel('Mass (Msun)')
-plt.ylabel('#')
+plt.xlabel('Mass (M$_\odot$)')
+plt.ylabel('Number')
 plt.savefig('IMF.png')
 
