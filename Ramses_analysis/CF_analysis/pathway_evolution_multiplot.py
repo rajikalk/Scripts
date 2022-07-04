@@ -22,7 +22,7 @@ grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pic
 
 Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
-grad_bins = np.concatenate((-1*np.logspace(0.5,-5,23), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(0.5,-5,12), np.array([0, 1.e10])))
+grad_bins = np.concatenate((-1*np.logspace(0.5,-5,12), np.array([0, 1.e10])))#np.concatenate((-1*np.logspace(0.5,-5,23), np.array([0, 1.e10])))
 #inpiral only:
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
 
