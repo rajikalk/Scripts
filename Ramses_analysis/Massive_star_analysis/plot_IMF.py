@@ -51,13 +51,13 @@ for global_pickle in global_pickles:
         units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
     #====================================================================================================================================================
-    file_open = open(args.global_data_pickle_file, 'rb')
+    file_open = open(global_pickle, 'rb')
     try:
         global_data = pickle.load(file_open,encoding="latin1")
     except:
         file_open.close()
         import pickle5 as pickle
-        file_open = open(args.global_data_pickle_file, 'rb')
+        file_open = open(global_pickle, 'rb')
         global_data = pickle.load(file_open,encoding="latin1")
     file_open.close()
 
