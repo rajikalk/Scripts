@@ -123,5 +123,24 @@ plt.errorbar(masses, Mean_grads[3], yerr=Std_grads[3], label='Other', color='ora
 plt.legend()
 plt.xlabel('Gas Mass')
 plt.ylabel('Log Inspiral rate (au/yr)')
-plt.savefig('inspiral_rate_comparison')
+plt.savefig('inspiral_rate_comparison_means')
 
+Core_bounds = [np.array(Mean_grads[0])-np.array(Std_grads[0]), np.array(Mean_grads[0])+np.array(Std_grads[0])]
+Delayed_core_bounds = [np.array(Mean_grads[1])-np.array(Std_grads[1]), np.array(Mean_grads[1])+np.array(Std_grads[1])]
+Capt_bounds = [np.array(Mean_grads[2])-np.array(Std_grads[2]), np.array(Mean_grads[2])+np.array(Std_grads[2])]
+Other_bounds = [np.array(Mean_grads[3])-np.array(Std_grads[3]), np.array(Mean_grads[3])+np.array(Std_grads[3])]
+
+Core_err = [np.array(Median_grads[0]) - Core_bounds[0], Core_bounds[1] - np.array(Median_grads[0])]
+Delayed_core_err = [np.array(Median_grads[1]) - Delayed_core_bounds[0], Delayed_core_bounds[1] - np.array(Median_grads[1])]
+Capt_err = [np.array(Median_grads[2]) - Capt_bounds[0], Capt_bounds[1] - np.array(Median_grads[2])]
+Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.array(Median_grads[3])]
+
+plt.clf()
+plt.errorbar(masses, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
+plt.errorbar(masses, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Fragmentation', color='purple')
+plt.errorbar(masses, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+plt.errorbar(masses, Median_grads[3], yerr=Other_err, label='Other', color='orange')
+plt.legend()
+plt.xlabel('Gas Mass')
+plt.ylabel('Log Inspiral rate (au/yr)')
+plt.savefig('inspiral_rate_comparison_medians')
