@@ -120,6 +120,7 @@ plt.errorbar(masses, Mean_grads[0], yerr=Std_grads[0], label='Core Fragmentation
 plt.errorbar(masses, Mean_grads[1], yerr=Std_grads[1], label='Delayed Core Fragmentation')
 plt.errorbar(masses, Mean_grads[2], yerr=Std_grads[2], label='Dynamical Capture')
 plt.errorbar(masses, Mean_grads[3], yerr=Std_grads[3], label='Other')
+plt.legend()
 plt.xlabel('Gas Mass')
 plt.ylabel('Log Inspiral rate (au/yr)')
 plt.savefig('inspiral_rate_comparison')
