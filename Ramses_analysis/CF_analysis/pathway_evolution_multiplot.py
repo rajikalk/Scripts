@@ -136,6 +136,7 @@ Capt_err = [np.array(Median_grads[2]) - Capt_bounds[0], Capt_bounds[1] - np.arra
 Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.array(Median_grads[3])]
 
 plt.clf()
+plt.figsize(single_col_width, 0.75*single_col_width)
 plt.errorbar(masses, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
 plt.errorbar(np.array(masses)+10, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Fragmentation', color='purple')
 plt.errorbar(np.array(masses)+20, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
@@ -143,4 +144,4 @@ plt.errorbar(np.array(masses)+30, Median_grads[3], yerr=Other_err, label='Other'
 plt.legend()
 plt.xlabel('Gas Mass')
 plt.ylabel('Log Inspiral rate (au/yr)')
-plt.savefig('inspiral_rate_comparison_medians')
+plt.savefig('inspiral_rate_comparison_medians', bbox_inches='tight')
