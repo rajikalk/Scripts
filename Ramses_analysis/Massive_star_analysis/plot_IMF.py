@@ -18,7 +18,7 @@ def parse_inputs():
     args = parser.parse_args()
     return args
 
-
+args = parse_inputs()
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 if args.simulation_G == '':
