@@ -30,6 +30,7 @@ pickle_file = sys.argv[1]
 true_birth_con_pickle = sys.argv[2]
 plot_gradient = False
 read_pickle = bool(sys.argv[3])
+baseline_yr = float(sys.argv[4])
 #plot_key = sys.argv[2]
 plot_keys = ['System_semimajor']#, 'System_ecc', 'System_energies']
 
@@ -167,7 +168,7 @@ if read_pickle == True:
                                     Time_arr_full = np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]
                                     peri_inds = np.where((Sep_arr_true[1:-1] < Sep_arr_true[:-2]) & (Sep_arr_true[1:-1] < Sep_arr_true[2:]))[0]
                                     
-                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0] and Time_arr_full[non_nan_inds][-1]>10000:
+                                    if len(peri_inds) > 2 and len(Sep_arr[1:])>peri_inds[0] and Time_arr_full[non_nan_inds][-1]>baseline_yr:
                                         plt.clf()
                                         plt.figure(figsize=(15, 3))
                                         if len(Time_arr) > 1:
@@ -184,7 +185,7 @@ if read_pickle == True:
                                                 if np.sum(peri_inds < jump_inds[0]) > 2:
                                                     initial_a = Sep_arr[1:][peri_inds[0]]
                                                     initial_t = Time_arr[1:][peri_inds[0]]
-                                                    end_t = initial_t + 10000
+                                                    end_t = initial_t + baseline_yr
                                                     end_t_ind = np.argmin(abs(Time_arr - end_t))
                                                     end_a = Sep_arr[end_t_ind]
                                                     end_t_data = Time_arr[end_t_ind]
@@ -196,7 +197,7 @@ if read_pickle == True:
                                                 plt.semilogy(Time_arr_full, Sep_arr_true)
                                                 initial_a = Sep_arr[1:][peri_inds[0]]
                                                 initial_t = Time_arr[1:][peri_inds[0]]
-                                                end_t = initial_t + 10000
+                                                end_t = initial_t + baseline_yr
                                                 end_t_ind = np.argmin(abs(Time_arr - end_t))
                                                 end_a = Sep_arr[end_t_ind]
                                                 end_t_data = Time_arr[end_t_ind]
@@ -208,7 +209,7 @@ if read_pickle == True:
                                             plt.semilogy(Time_arr_full, Sep_arr_true)
                                             initial_a = Sep_arr[1:][peri_inds[0]]
                                             initial_t = Time_arr[1:][peri_inds[0]]
-                                            end_t = initial_t + 10000
+                                            end_t = initial_t + baseline_yr
                                             end_t_ind = np.argmin(abs(Time_arr - end_t))
                                             end_a = Sep_arr[end_t_ind]
                                             end_t_data = Time_arr[end_t_ind]
