@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 import pickle
 from scipy import stats
 from scipy.optimize import curve_fit
