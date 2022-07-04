@@ -13,10 +13,7 @@ global_pickles = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G50/stars_
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 for global_pickle in global_pickles:
-    if args.simulation_G == '':
-        simulation_density_id = global_pickle.split('/G')[-1].split('/')[0]
-    else:
-        simulation_density_id = args.simulation_G
+    simulation_density_id = global_pickle.split('/G')[-1].split('/')[0]
 
     if simulation_density_id == '50':
         Grho=50
