@@ -92,7 +92,7 @@ for time_it in range(start_time_it, end_time_it):
             plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
-            plt.title("SFE:"+str(np.round(SFE[time_it], decimals=2))+" ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
+            plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+" ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
