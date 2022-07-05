@@ -777,7 +777,7 @@ if update == True and args.make_plots_only == 'False':
                                                     else:
                                                         pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
                                                 sep_value = np.sqrt(np.sum(pos_diff**2))
-                                                if sep_value > 20000.:
+                                                if sep_value > (scale_l.in_units('AU')/2):
                                                     print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
                                                     if args.debugging == "True":
                                                         import pdb
