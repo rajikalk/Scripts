@@ -552,6 +552,7 @@ if update == True and args.make_plots_only == 'False':
             absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
             mass = np.array(global_data['m'][time_it][n_stars])
             time = global_data['time'][time_it][n_stars][0]
+            sfe = np.sum(mass)
             
             S = pr.Sink()
             S._jet_factor = 1.
@@ -565,7 +566,7 @@ if update == True and args.make_plots_only == 'False':
             S._mass = yt.YTArray(mass, '')
             
             time_yt = yt.YTArray(time*scale_t, 's')
-            Times.append(int(time_yt.in_units('yr').value))
+            Times.append([int(time_yt.in_units('yr').value), sfe])
             
             sink_inds = np.where(global_data['m'][time_it]>0)[0]
             L_tot = luminosity(global_data, sink_inds, time_it)

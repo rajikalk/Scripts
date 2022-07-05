@@ -86,7 +86,7 @@ for time_it in range(start_time_it, end_time_it):
                 plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
             plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
             plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
-            plt.legend(loc='best')
+            plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')
             plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
