@@ -183,6 +183,7 @@ CW.Barrier()
 
 #What do I need to save?
 Times = []
+SFE = []
 N_sys_total = []
 CF_arrays = []
 Sink_Luminosities = {}
@@ -566,7 +567,8 @@ if update == True and args.make_plots_only == 'False':
             S._mass = yt.YTArray(mass, '')
             
             time_yt = yt.YTArray(time*scale_t, 's')
-            Times.append([int(time_yt.in_units('yr').value), sfe])
+            Times.append(int(time_yt.in_units('yr').value))
+            SFE.append(sfe)
             
             sink_inds = np.where(global_data['m'][time_it]>0)[0]
             L_tot = luminosity(global_data, sink_inds, time_it)
@@ -890,7 +892,7 @@ if update == True and args.make_plots_only == 'False':
             N_sys_total.append(n_systems)
             pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
             file = open(pickle_file_rank, 'wb')
-            pickle.dump((CF_arrays, N_sys_total, Times, Sink_Luminosities, Sink_Accretion),file)
+            pickle.dump((CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion),file)
             file.close()
             print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
                 
@@ -908,16 +910,17 @@ if rank == 0:
     #compile together data
     try:
         file = open(pickle_file+'.pkl', 'rb')
-        Times, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
         file.close()
     except:
         pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
         Times_full = []
+        SFE_full = []
         CF_per_bin_full = []
         n_systems_full = []
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            CF_arrays, N_sys_total, Times, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+            CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion = pickle.load(file)
             file.close()
             Sink_Luminosities_full = {}
             Sink_Accretion_full = {}
@@ -929,6 +932,7 @@ if rank == 0:
                     Sink_Luminosities_full[L_key] = Sink_Luminosities_full[L_key] + Sink_Luminosities[L_key]
                     Sink_Accretion_full[L_key] = Sink_Accretion_full[L_key] + Sink_Accretion[L_key]
             Times_full = Times_full + Times
+            SFE_full = SFE_full + SFE
             CF_per_bin_full = CF_per_bin_full + CF_arrays
             n_systems_full = n_systems_full + N_sys_total
             os.remove(pick_file)
@@ -945,11 +949,12 @@ if rank == 0:
             Sink_Accretion[L_key] = sorted_array.tolist()
         sorted_inds = np.argsort(Times_full)
         Times = np.array(Times_full)[sorted_inds]
+        SFE = np.array(SFE_full)[sorted_inds]
         CF_Array_Full = np.array(CF_per_bin_full)[sorted_inds]
         N_sys_total = np.array(n_systems_full)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion),file)
+        pickle.dump((Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion),file)
         file.close()
     
     Summed_systems = np.sum(np.array(N_sys_total), axis=0)
