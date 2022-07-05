@@ -48,6 +48,7 @@ def parse_inputs():
     parser.add_argument("-thres_spread", "--threshold_spread", help="Over what spread (as a fraction of the threshold) do you want to intergrate?", type=float, default=0.1)
     parser.add_argument("-entire_sim", "--integrate_over_entire_sim", help="Do you want to integrate over the entire sim?", type=str, default="False")
     parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
+    parser.add_argument("-debug", "--debugging", help="This flag is to stop at PDB steps", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -540,9 +541,14 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
+if args.debugging == "True":
+    time_its = [10815, 10818, 10821, 10825]
+else:
+    time_its = range(start_time_ind, end_time_ind+1)
+
 if update == True and args.make_plots_only == 'False':
     rit = -1
-    for time_it in range(start_time_ind, end_time_ind+1):
+    for time_it in time_its:
         rit = rit + 1
         if rit == size:
             rit = 0
@@ -770,8 +776,9 @@ if update == True and args.make_plots_only == 'False':
                                                 sep_value = np.sqrt(np.sum(pos_diff**2))
                                                 if sep_value > 20000.:
                                                     print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
-                                                    #import pdb
-                                                    #pdb.set_trace()
+                                                    if args.debugging == "True":
+                                                        import pdb
+                                                        pdb.set_trace()
                                             if sep_value < S_bins[bin_it-1]:
                                                 #Reduce systems! Let's check if any of the components are visible
                                                 vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))

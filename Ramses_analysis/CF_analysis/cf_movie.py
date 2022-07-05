@@ -50,7 +50,7 @@ if pickle_file[-4:] != '.pkl':
     pickle_file = pickle_file + '.pkl'
 
 file = open(pickle_file, 'rb')
-Times, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
 file.close()
 
 if args.starting_ind == 0:
@@ -84,15 +84,15 @@ for time_it in range(start_time_it, end_time_it):
                 plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
             except:
                 plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
-            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
+            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')
             plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
-            plt.title("Time:"+str(time_val - Times[0])+"yr, Median over " + str(end_integration_it-start_integration_it) + " histograms")
+            plt.title("SFE:"+str(SFE[time_it])+"("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
