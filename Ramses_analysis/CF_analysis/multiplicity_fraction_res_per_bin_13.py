@@ -595,11 +595,12 @@ if update == True and args.make_plots_only == 'False':
             n_systems = []
             
             for bin_it in range(1,len(S_bins)):
-                try:
-                    if args.projected_separation == "False":
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
-                    else:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
+                #try:
+                if args.projected_separation == "False":
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
+                else:
+                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
+                '''
                 except:
                       res = {'abspos'      : abspos*units['length_unit'].in_units('AU'),
                             'absvel'      : absvel,
@@ -622,7 +623,7 @@ if update == True and args.make_plots_only == 'False':
                             'nmax'        : 6,
                             'converged'   : False,
                             'time'        : time}
-                    
+                '''
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
                 nan_size = len(sink_inds_total) - len(sink_inds)
