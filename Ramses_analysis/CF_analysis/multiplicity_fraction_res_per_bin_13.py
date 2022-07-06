@@ -600,8 +600,6 @@ if update == True and args.make_plots_only == 'False':
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
                     else:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho, true_bound=True)#cyclic=False
-                        import pdb
-                        pdb.set_trace()
                         if args.axis == 'x':
                             zero_ind = 0
                         elif args.axis == 'y':
@@ -609,14 +607,11 @@ if update == True and args.make_plots_only == 'False':
                         else:
                             zero_ind = 2
                         res['midpoint'].T[zero_ind] = 0
-                        update_midspoint_sep = np.where(res['midpointSep']>0)[0]
-                        import pdb
-                        pdb.set_trace()
-                        for update_mid in update_midspoint_sep:
-                            pos1 = res['midpoint'][res['index1'][update_mid]]
-                            pos2 = res['midpoint'][res['index2'][update_mid]]
-                            mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2)))
-                            res['midpointSep'][update_mid] = mid_sep
+                        update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
+                        pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
+                        pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
+                        mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
+                        res['midpointSep'][update_midspoint_sep:] = mid_sep
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
@@ -629,7 +624,7 @@ if update == True and args.make_plots_only == 'False':
                             'reducedMass' : np.ones(mass.shape,dtype=np.float),
                             'separation'  : np.zeros(mass.shape,dtype=np.float),
                             'separation_vector': np.zeros(abspos.shape,dtype=np.float),
-                            'midpoint'    : np.zeros(abspos.shape,dtype=np.float),
+                            'midpoint'    : abspos,
                             'midpointSep' : np.zeros(mass.shape,dtype=np.float),
                             'relativeSpeed' : np.zeros(mass.shape,dtype=np.float),
                             'semiMajorAxis' : np.zeros(mass.shape,dtype=np.float),
