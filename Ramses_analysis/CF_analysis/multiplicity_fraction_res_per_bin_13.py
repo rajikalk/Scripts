@@ -26,7 +26,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-proj", "--projected_separation", help="do you want to use projected separation instead of true separation?", default="False", type=str)
-    parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='x', type=str)
+    parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='z', type=str)
     parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
@@ -599,7 +599,22 @@ if update == True and args.make_plots_only == 'False':
                     if args.projected_separation == "False":
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
                     else:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho, true_bound=True)#cyclic=False
+                        if args.axis == 'x':
+                            zero_ind = 0
+                        elif args.axis == 'y':
+                            zero_ind = 1
+                        else:
+                            zero_ind = 2
+                        res['midpoint'].T[zero_ind] = 0
+                        update_midspoint_sep = np.where(res['midpointSep']>0)[0]
+                        for update_mid in update_midspoint_sep:
+                            pos1 = res['midpoint'][res['index1'][update_mid]]
+                            pos2 = res['midpoint'][res['index2'][update_mid]]
+                            mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2)))
+                            res['midpointSep'][update_mid] = mid_sep
+                    #else:
+                    #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
                       res = {'abspos'      : abspos*units['length_unit'].in_units('AU'),
                             'absvel'      : absvel,
@@ -609,7 +624,8 @@ if update == True and args.make_plots_only == 'False':
                             'epot'        : np.ones(mass.shape,dtype=np.float),
                             'reducedMass' : np.ones(mass.shape,dtype=np.float),
                             'separation'  : np.zeros(mass.shape,dtype=np.float),
-                            'midpoint'    : abspos *units['length_unit'].in_units('AU'),
+                            'separation_vector': np.zeros(abspos.shape,dtype=np.float),
+                            'midpoint'    : np.zeros(abspos.shape,dtype=np.float),
                             'midpointSep' : np.zeros(mass.shape,dtype=np.float),
                             'relativeSpeed' : np.zeros(mass.shape,dtype=np.float),
                             'semiMajorAxis' : np.zeros(mass.shape,dtype=np.float),
@@ -767,6 +783,8 @@ if update == True and args.make_plots_only == 'False':
                                             binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                             ind_1 = res['index1'][binary_ind]
                                             ind_2 = res['index2'][binary_ind]
+                                            import pdb
+                                            pdb.set_tace()
                                             pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > (scale_l.in_units('AU')/2):
