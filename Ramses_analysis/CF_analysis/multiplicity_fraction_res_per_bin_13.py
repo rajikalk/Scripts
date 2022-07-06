@@ -595,13 +595,12 @@ if update == True and args.make_plots_only == 'False':
             n_systems = []
             
             for bin_it in range(1,len(S_bins)):
-                #try:
-                if args.projected_separation == "False":
-                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
+                if len(n_stars) > 1:
+                    if args.projected_separation == "False":
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
+                    else:
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
-                    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
-                '''
-                except:
                       res = {'abspos'      : abspos*units['length_unit'].in_units('AU'),
                             'absvel'      : absvel,
                             'mass'        : mass*units['mass_unit'].in_units('Msun'),
