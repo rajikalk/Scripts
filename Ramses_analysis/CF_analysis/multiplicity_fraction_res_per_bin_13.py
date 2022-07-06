@@ -600,6 +600,8 @@ if update == True and args.make_plots_only == 'False':
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
                     else:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho, true_bound=True)#cyclic=False
+                        import pdb
+                        pdb.set_trace()
                         if args.axis == 'x':
                             zero_ind = 0
                         elif args.axis == 'y':
