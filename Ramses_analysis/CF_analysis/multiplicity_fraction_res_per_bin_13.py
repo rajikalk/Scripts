@@ -608,6 +608,8 @@ if update == True and args.make_plots_only == 'False':
                             zero_ind = 2
                         res['midpoint'].T[zero_ind] = 0
                         update_midspoint_sep = np.where(res['midpointSep']>0)[0]
+                        import pdb
+                        pdb.set_trace()
                         for update_mid in update_midspoint_sep:
                             pos1 = res['midpoint'][res['index1'][update_mid]]
                             pos2 = res['midpoint'][res['index2'][update_mid]]
