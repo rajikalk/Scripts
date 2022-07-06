@@ -782,8 +782,6 @@ if update == True and args.make_plots_only == 'False':
                                             binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                             ind_1 = res['index1'][binary_ind]
                                             ind_2 = res['index2'][binary_ind]
-                                            import pdb
-                                            pdb.set_tace()
                                             pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > (scale_l.in_units('AU')/2):
