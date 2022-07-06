@@ -607,11 +607,12 @@ if update == True and args.make_plots_only == 'False':
                         else:
                             zero_ind = 2
                         res['midpoint'].T[zero_ind] = 0
-                        update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
-                        pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
-                        pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
-                        mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
-                        res['midpointSep'][update_midspoint_sep:] = mid_sep
+                        if len(np.where(res['midpointSep']>0)[0]) > 0:
+                            update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
+                            pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
+                            pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
+                            mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
+                            res['midpointSep'][update_midspoint_sep:] = mid_sep
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
