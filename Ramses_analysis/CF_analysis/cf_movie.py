@@ -68,8 +68,8 @@ for time_it in range(start_time_it, end_time_it):
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
             time_val = Times[time_it]
-            start_time = Times[time_it] - args.time_spread
-            end_time = Times[time_it] + args.time_spread
+            start_time = Times[time_it] - args.time_spread/2.
+            end_time = Times[time_it] + args.time_spread/2.
             
             start_integration_it = np.argmin(abs(Times - start_time))
             end_integration_it = np.argmin(abs(Times - end_time))
