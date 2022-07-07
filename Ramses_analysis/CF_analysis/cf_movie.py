@@ -54,10 +54,10 @@ Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pick
 file.close()
 
 if args.starting_ind == 0:
-    start_time_it = np.argmin(abs(Times - args.time_spread))
+    start_time_it = np.argmin(abs(Times - args.time_spread/2.))
 else:
     start_time_it = args.starting_ind
-end_time_it = np.argmin(abs(Times - (Times[-1] - args.time_spread)))
+end_time_it = np.argmin(abs(Times - (Times[-1] - args.time_spread/2.)))
 rit = -1
 
 for time_it in range(start_time_it, end_time_it):
