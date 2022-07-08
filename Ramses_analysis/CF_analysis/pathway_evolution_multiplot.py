@@ -207,20 +207,26 @@ Delayed_core_err = [np.array(Median_grads[1]) - Delayed_core_bounds[0], Delayed_
 Capt_err = [np.array(Median_grads[2]) - Capt_bounds[0], Capt_bounds[1] - np.array(Median_grads[2])]
 Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.array(Median_grads[3])]
 
-import pdb
-pdb.set_trace()
 plt.clf()
-fig = matplotlib.pyplot.gcf()
-fig.set_size_inches(single_col_width, 1.25*single_col_width)
-plt.errorbar(np.array(masses)-180, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
-plt.errorbar(np.array(masses)-60, Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
-plt.errorbar(np.array(masses)+60, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
-plt.errorbar(np.array(masses)+180, Median_grads[3], yerr=Other_err, label='Other', color='orange')
+fig, axs = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)#, hspace=0.0)
+iter_range = range(0, len(grad_pickles))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+axs[0].errorbar(np.array(masses)-120, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
+axs[0].errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
+axs[0].errorbar(np.array(masses)+120, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+
+axs[1].errorbar(np.array(masses)-120, Median_grads_10000[0], yerr=Core_err, label='Core Fragmentation', color='b')
+axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
+axs[1].errorbar(np.array(masses)+120, Median_grads_10000[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+
 plt.tick_params(which='both', direction='in')
 plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
-plt.legend(loc='upper center', fontsize=font_size)
-plt.xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
-plt.ylabel('Log Inspiral rate (au/yr)', size=font_size)
-plt.ylim(top=1.5)
+axs[0].legend(loc='upper center', fontsize=font_size)
+axs[1].xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
+axs[0].ylabel('Log Inspiral rate (au/yr)', size=font_size)
+axs[1].ylabel('Log Inspiral rate (au/yr)', size=font_size)
+#plt.ylim(top=1.5)
 plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inches=0.02)
