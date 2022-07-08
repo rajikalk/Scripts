@@ -222,12 +222,12 @@ axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err, 
 axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, label='Dynamical Capture', color='r')
 
 axs[0].tick_params(which='both', direction='in')
-axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True)
-axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
+axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
 
 axs[1].tick_params(which='both', direction='in')
-axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True)
-axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
+axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
 
 axs[0].legend(loc='upper center', fontsize=font_size)
 axs[1].set_xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
