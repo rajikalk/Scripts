@@ -224,10 +224,12 @@ axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, labe
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
+axs[0].text(5000, -1.25, "Baseline=1000yr", zorder=11, size=args.text_font)
 
 axs[1].tick_params(which='both', direction='in')
 axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
+axs[1].text(5000, -2.25, "Baseline=10000yr", zorder=11, size=args.text_font)
 
 axs[0].legend(loc='upper center', fontsize=font_size)
 axs[1].set_xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
