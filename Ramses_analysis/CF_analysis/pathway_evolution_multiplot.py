@@ -208,18 +208,18 @@ Capt_err = [np.array(Median_grads[2]) - Capt_bounds[0], Capt_bounds[1] - np.arra
 Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.array(Median_grads[3])]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*2), sharex=True)#, hspace=0.0)
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.9), sharex=True)#, hspace=0.0)
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-axs[0].errorbar(np.array(masses)-120, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
+axs[0].errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
 axs[0].errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
-axs[0].errorbar(np.array(masses)+120, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+axs[0].errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
 
-axs[1].errorbar(np.array(masses)-120, Median_grads_10000[0], yerr=Core_err, label='Core Fragmentation', color='b')
+axs[1].errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err, label='Core Fragmentation', color='b')
 axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
-axs[1].errorbar(np.array(masses)+120, Median_grads_10000[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, label='Dynamical Capture', color='r')
 
 plt.tick_params(which='both', direction='in')
 plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
