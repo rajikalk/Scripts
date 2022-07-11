@@ -123,7 +123,7 @@ for pick_it in iter_range:
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_vis_stars'], label="Visible stars")
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_stars'], label="Total number of stars")
         axs.flatten()[pick_it].set_ylabel('# ('+subplot_titles[pick_it]+')')
-        axs.flatten()[pick_it].axhline(y=148, label='Number of Perseus objects')
+        axs.flatten()[pick_it].axhline(y=148, 'k--', label='Number of Perseus objects')
         if pick_it == 0:
             axs.flatten()[pick_it].legend(loc='best')
     except:
