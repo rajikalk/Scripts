@@ -531,6 +531,13 @@ if args.make_frames_only == 'False':
                         #check to see if all proj files exist yet
                         import pdb
                         pdb.set_trace()
+                        proj_pickles = []
+                        for kit in range(1,len(proj_dict_keys)):
+                            proj_pickles.append(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+                        file_exists = [f for f in proj_pickles if os.path.isfile(f)]
+                        while len(file_exists) != (len(proj_dict_keys)-1):
+                            file_exists = [f for f in proj_pickles if os.path.isfile(f)]
+                        print('All proj_data pickles exist')
                         for kit in range(1,len(proj_dict_keys)):
                             file = open(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                             key, proj_array = pickle.load(file)
