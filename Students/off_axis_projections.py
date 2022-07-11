@@ -527,6 +527,9 @@ if args.make_frames_only == 'False':
                             pickle.dump((field[1], proj_array), file)
                             file.close()
                     
+                    sys.stdout.flush()
+                    CW.Barrier()
+                    
                     if rank == proj_root_rank and size > 1:
                         #check to see if all proj files exist yet
                         for kit in range(1,len(proj_dict_keys)):
