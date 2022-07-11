@@ -26,7 +26,6 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-proj", "--projected_separation", help="do you want to use projected separation instead of true separation?", default="False", type=str)
-    parser.add_argument("-bound_check", "--bound_checking", help="do you want to check wither pairs are actually bound?", default="True", type=str)
     parser.add_argument("-ax", "--axis", help="what axis do you want to project separation onto?", default='z', type=str)
     parser.add_argument("-preffix", "--figure_prefix", help="Do you want to give saved figures a preffix?", default="", type=str)
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
@@ -250,6 +249,11 @@ if args.bound_check == 'True':
     bound_check = True
 else:
     bound_check = False
+    
+if args.projected_separation == 'True':
+    multiplicity_analysis_projection = True
+else:
+    multiplicity_analysis_projection = False
 
 #Calculate variables
 luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
@@ -597,39 +601,23 @@ if update == True and args.make_plots_only == 'False':
             
             for bin_it in range(1,len(S_bins)):
                 if len(n_stars) > 1:
-                    if args.projected_separation == "False":
+                    if multiplicity_analysis_projection = False:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
                     else:
-                        if args.bound_checking == "True":
-                            res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho, true_bound=True)#cyclic=False
-                            if args.axis == 'x':
-                                zero_ind = 0
-                            elif args.axis == 'y':
-                                zero_ind = 1
-                            else:
-                                zero_ind = 2
-                            res['midpoint'].T[zero_ind] = 0
-                            if len(np.where(res['midpointSep']>0)[0]) > 0:
-                                update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
-                                pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
-                                pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
-                                mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
-                                res['midpointSep'][update_midspoint_sep:] = mid_sep
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
+                        if args.axis == 'x':
+                            zero_ind = 0
+                        elif args.axis == 'y':
+                            zero_ind = 1
                         else:
-                            res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho, true_bound=False)
-                            if args.axis == 'x':
-                                zero_ind = 0
-                            elif args.axis == 'y':
-                                zero_ind = 1
-                            else:
-                                zero_ind = 2
-                            res['midpoint'].T[zero_ind] = 0
-                            if len(np.where(res['midpointSep']>0)[0]) > 0:
-                                update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
-                                pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
-                                pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
-                                mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
-                                res['midpointSep'][update_midspoint_sep:] = mid_sep
+                            zero_ind = 2
+                        res['midpoint'].T[zero_ind] = 0
+                        if len(np.where(res['midpointSep']>0)[0]) > 0:
+                            update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
+                            pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
+                            pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
+                            mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
+                            res['midpointSep'][update_midspoint_sep:] = mid_sep
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
