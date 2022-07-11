@@ -527,11 +527,10 @@ if args.make_frames_only == 'False':
                             pickle.dump((field[1], proj_array), file)
                             file.close()
                     
-                    sys.stdout.flush()
-                    CW.Barrier()
-                    
                     if rank == proj_root_rank and size > 1:
                         #check to see if all proj files exist yet
+                        import pdb
+                        pdb.set_trace()
                         for kit in range(1,len(proj_dict_keys)):
                             file = open(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                             key, proj_array = pickle.load(file)
