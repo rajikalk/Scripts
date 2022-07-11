@@ -737,7 +737,7 @@ if rank == 0:
         print("saving superplot")
         plt.savefig('superplot.jpg', format='jpg', bbox_inches='tight')
         print('Created superplot.jpg')
-        plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
+        #plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
         
     d_sep = np.array(Initial_Seps) - np.array(Final_seps)
     shrinkage = 100*(d_sep/np.array(Initial_Seps))
