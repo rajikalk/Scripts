@@ -529,8 +529,6 @@ if args.make_frames_only == 'False':
                     
                     if rank == proj_root_rank and size > 1:
                         #check to see if all proj files exist yet
-                        import pdb
-                        pdb.set_trace()
                         proj_pickles = []
                         for kit in range(1,len(proj_dict_keys)):
                             proj_pickles.append(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
