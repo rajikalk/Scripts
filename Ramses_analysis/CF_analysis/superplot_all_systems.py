@@ -55,8 +55,8 @@ def parse_inputs():
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-update", "--update_pickles", help="Do you want to remake the pickles?", type=str, default='True')
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
-    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=35.6)
-    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.04)
+    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
+    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-start_time_it", "--start_time_index", help="What time index do you want to start at? mostly for diagnostic reasons.", type=int, default=0)
     parser.add_argument("-lifetime_thres", "--sys_lifetime_threshold", help="What lifeimteimte threshold do you want to define a stable system", type=float, default=100000.)
@@ -235,7 +235,7 @@ if args.update_pickles == 'True':
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
                 vis_inds = np.where((L_tot>=args.lower_L_limit)&(M_dot>=args.accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-                real_vis = np.where((L_tot>=0.04)&(M_dot>=1.e-7)&(L_tot<=35.6))[0]#Remember to update if you adjust criteria
+                real_vis = np.where((L_tot>=0.07)&(M_dot>=1.e-7)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
                 N_vis_stars.append(len(real_vis))
                 
                 N_stars.append(len(n_stars))
