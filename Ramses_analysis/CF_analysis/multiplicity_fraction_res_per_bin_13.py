@@ -601,7 +601,7 @@ if update == True and args.make_plots_only == 'False':
             
             for bin_it in range(1,len(S_bins)):
                 if len(n_stars) > 1:
-                    if multiplicity_analysis_projection = False:
+                    if multiplicity_analysis_projection == False:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
                     else:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
