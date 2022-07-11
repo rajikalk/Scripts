@@ -246,7 +246,7 @@ if args.update_pickles == 'True':
                 SFE.append(SFE_val)
                 SFE_n.append(SFE_val/time_yr)
                 
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho, max_iter=args.max_iterations)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho, max_iter=int(args.max_iterations))
                 if True in (res['separation']>10000):
                     import pdb
                     pdb.set_trace()
