@@ -130,5 +130,6 @@ for pick_it in iter_range:
         print(pickle_files[file_it] + "doesn't exist yet")
 
 axs.flatten()[pick_it].set_xlabel('SFE')
+axs.flatten()[pick_it].set_xlim([0, 0.05])
 plt.savefig('Visible_star_comparison.png')
 
