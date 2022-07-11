@@ -57,7 +57,8 @@ def parse_inputs():
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
-    parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
+    parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=int, default=20)
+    parser.add_argument("-max_iter", "--max_iterations", help="How many iterations for multiplicity analysis", type=str, default='True')
     parser.add_argument("-start_time_it", "--start_time_index", help="What time index do you want to start at? mostly for diagnostic reasons.", type=int, default=0)
     parser.add_argument("-lifetime_thres", "--sys_lifetime_threshold", help="What lifeimteimte threshold do you want to define a stable system", type=float, default=100000.)
     parser.add_argument("-plot_super", "--plot_superplot", help="do you want to plot the superplot?", type=str, default='True')
@@ -245,7 +246,7 @@ if args.update_pickles == 'True':
                 SFE.append(SFE_val)
                 SFE_n.append(SFE_val/time_yr)
                 
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho, max_iter=args.max_iter)
                 if True in (res['separation']>10000):
                     import pdb
                     pdb.set_trace()
