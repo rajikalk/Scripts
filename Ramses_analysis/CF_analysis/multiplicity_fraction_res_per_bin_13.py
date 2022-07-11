@@ -1163,6 +1163,6 @@ if rank == 0:
     print('created L_mean_hist.jpg')
     """
     
+print("FINISHED ON RANK", rank)
 sys.stdout.flush()
 CW.Barrier()
-
