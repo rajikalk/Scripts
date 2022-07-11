@@ -119,7 +119,13 @@ for pick_it in iter_range:
     superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
-    import pdb
-    pdb.set_trace()
-    
-    axs.flatten()[pick_it].semilogy(Time_adjusted_formation[:t_max_ind], superplot_dict[args.plot_key][time_key][:t_max_ind], alpha=alpha, color='k', rasterized=True)
+    axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_vis_stars'], label="Visible stars")
+    axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_stars'], label="Total number of stars")
+    axs.flatten()[pick_it].set_ylabel('# ('+subplot_titles[pick_it]+')')
+    axs.flatten()[pick_it].axhline(y=148, label='Number of Perseus objects')
+    if pick_it == 0:
+        axs.flatten()[pick_it].legend(loc='best')
+
+axs.flatten()[pick_it].set_xlabel('SFE')
+plt.savefig('Visible_star_comparison.png')
+
