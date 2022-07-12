@@ -569,6 +569,14 @@ if update == True and args.make_plots_only == 'False':
             time = global_data['time'][time_it][n_stars][0]
             sfe = np.sum(mass)
             
+            sink_inds = np.where(global_data['m'][time_it]>0)[0]
+            L_tot = luminosity(global_data, sink_inds, time_it)
+            M_dot = accretion(sink_inds, time_it)
+            vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+            
+            import pdb
+            pdb.set_trace()
+            
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l.value
@@ -584,10 +592,6 @@ if update == True and args.make_plots_only == 'False':
             Times.append(int(time_yt.in_units('yr').value))
             SFE.append(sfe)
             
-            sink_inds = np.where(global_data['m'][time_it]>0)[0]
-            L_tot = luminosity(global_data, sink_inds, time_it)
-            M_dot = accretion(sink_inds, time_it)
-            
             for sink_ind in sink_inds:
                 if str(sink_ind) not in Sink_Luminosities.keys():
                     Sink_Luminosities.update({str(sink_ind): [[int(time_yt.in_units('yr').value), float(L_tot[sink_ind].value)]]})
@@ -602,9 +606,9 @@ if update == True and args.make_plots_only == 'False':
             for bin_it in range(1,len(S_bins)):
                 if len(n_stars) > 1:
                     if multiplicity_analysis_projection == False:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=50)#cyclic=False
                     else:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho, max_iter=50)#cyclic=False
                         if args.axis == 'x':
                             zero_ind = 0
                         elif args.axis == 'y':
