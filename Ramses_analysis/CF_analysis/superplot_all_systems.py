@@ -718,7 +718,7 @@ if rank == 0:
         yticklabels = axs[2].get_yticklabels()
         plt.setp(yticklabels[0], visible=False)
         plt.savefig('superplot.jpg', format='jpg', bbox_inches='tight')
-        plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
+        #plt.savefig('superplot.pdf', format='pdf', bbox_inches='tight')
         print("plotted N_star")
         
         window = 50000#year
