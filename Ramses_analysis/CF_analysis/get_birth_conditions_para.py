@@ -335,7 +335,7 @@ for sink_id in sink_ids:
             del mass
             gc.collect()
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False)
+            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, verbose=False, max_iter=100)
             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
             if sink_id in res['index1']:
                 sys_id = np.argwhere(res['index1'] == sink_id)[0][0]
@@ -692,7 +692,7 @@ for sink_id in sink_ids:
                             del mass
                             gc.collect()
                             #print("Memory_useage on rank", rank,":", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
-                            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho)
+                            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, cyclic=True, Grho=Grho, max_iter=100)
                             #if Grho == 100 and sink_id in diff_conds:
                             #    import pdb
                             #    pdb.set_trace()
