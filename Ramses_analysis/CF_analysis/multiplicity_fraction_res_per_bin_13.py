@@ -574,8 +574,9 @@ if update == True and args.make_plots_only == 'False':
             M_dot = accretion(sink_inds, time_it)
             vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             
-            import pdb
-            pdb.set_trace()
+            if len(n_stars)>1:
+                import pdb
+                pdb.set_trace()
             
             S = pr.Sink()
             S._jet_factor = 1.
