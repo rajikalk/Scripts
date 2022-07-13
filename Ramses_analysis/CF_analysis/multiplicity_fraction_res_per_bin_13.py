@@ -49,6 +49,7 @@ def parse_inputs():
     parser.add_argument("-entire_sim", "--integrate_over_entire_sim", help="Do you want to integrate over the entire sim?", type=str, default="False")
     parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
     parser.add_argument("-debug", "--debugging", help="This flag is to stop at PDB steps", type=str, default="False")
+    parser.add_argument("-vis_only", "--visible_only", help="Do you only want to feed the visible stars into multiplicity analysis?", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -574,7 +575,7 @@ if update == True and args.make_plots_only == 'False':
             M_dot = accretion(sink_inds, time_it)
             vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             
-            if len(n_stars)>1:
+            if args.visible_only == "True":
                 import pdb
                 pdb.set_trace()
             
@@ -607,9 +608,9 @@ if update == True and args.make_plots_only == 'False':
             for bin_it in range(1,len(S_bins)):
                 if len(n_stars) > 1:
                     if multiplicity_analysis_projection == False:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=50)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=100)#cyclic=False
                     else:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho, max_iter=50)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho, max_iter=100)#cyclic=False
                         if args.axis == 'x':
                             zero_ind = 0
                         elif args.axis == 'y':
