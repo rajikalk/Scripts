@@ -575,10 +575,6 @@ if update == True and args.make_plots_only == 'False':
             M_dot = accretion(sink_inds, time_it)
             vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             
-            if args.visible_only == "True":
-                import pdb
-                pdb.set_trace()
-            
             S = pr.Sink()
             S._jet_factor = 1.
             S._scale_l = scale_l.value
@@ -586,9 +582,14 @@ if update == True and args.make_plots_only == 'False':
             S._scale_t = scale_t.value
             S._scale_d = scale_d.value
             S._time = yt.YTArray(time, '')
-            S._abspos = yt.YTArray(abspos, '')
-            S._absvel = yt.YTArray(absvel, '')
-            S._mass = yt.YTArray(mass, '')
+            if args.visible_only == "True":
+                S._abspos = yt.YTArray(abspos[vis_inds], '')
+                S._absvel = yt.YTArray(absvel[vis_inds], '')
+                S._mass = yt.YTArray(mass[vis_inds], '')
+            else:
+                S._abspos = yt.YTArray(abspos, '')
+                S._absvel = yt.YTArray(absvel, '')
+                S._mass = yt.YTArray(mass, '')
             
             time_yt = yt.YTArray(time*scale_t, 's')
             Times.append(int(time_yt.in_units('yr').value))
@@ -660,6 +661,9 @@ if update == True and args.make_plots_only == 'False':
                 L_tot = np.append(L_tot, nan_array)
                 M_dot = np.append(M_dot, nan_array)
                 vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+                if len(vis_inds) < len(n_stars):
+                    import pdb
+                    pdb.set_trace()
                 visible_stars = sink_inds[vis_inds]
                 visible_subcomps = visible_stars[np.where(res['topSystem'][visible_stars]==False)]
                 checked_visible_inds = []
