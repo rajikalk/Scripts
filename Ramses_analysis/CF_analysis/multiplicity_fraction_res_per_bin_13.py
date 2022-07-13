@@ -661,9 +661,6 @@ if update == True and args.make_plots_only == 'False':
                 L_tot = np.append(L_tot, nan_array)
                 M_dot = np.append(M_dot, nan_array)
                 vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-                if len(vis_inds) < len(n_stars):
-                    import pdb
-                    pdb.set_trace()
                 visible_stars = sink_inds[vis_inds]
                 visible_subcomps = visible_stars[np.where(res['topSystem'][visible_stars]==False)]
                 checked_visible_inds = []
