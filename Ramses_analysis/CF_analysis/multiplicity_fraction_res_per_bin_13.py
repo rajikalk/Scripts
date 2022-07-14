@@ -715,7 +715,7 @@ if update == True and args.make_plots_only == 'False':
                         print_lines.append(print_line)
                         
                 res['n'][invisible_singles] = 0
-                if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1::
+                if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1:
                     import pdb
                     pdb.set_trace()
                 if args.verbose_printing != 'False':
@@ -735,7 +735,7 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = sorted(flatten(sys_comps))
                     
                     vis_s_fake_inds = set(sys_comps).intersection(set(visible_stars))
-                    if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1::
+                    if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1:
                         import pdb
                         pdb.set_trace()
                     
@@ -772,7 +772,7 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = losi(multi_ind, res)
                     
                     vis_multi_ind = set(sorted(flatten(sys_comps))).intersection(set(visible_stars))
-                    if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1::
+                    if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1:
                         import pdb
                         pdb.set_trace()
                     
@@ -901,7 +901,7 @@ if update == True and args.make_plots_only == 'False':
                         L_tot[multi_ind] = np.sum(L_tot[list(vis_multi_ind)])
                         M_dot[multi_ind] = np.sum(M_dot[list(vis_multi_ind)])
                         checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
-                        if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1::
+                        if len(n_stars) > len(vis_inds) and len(vis_inds)>2 and np.max(res['n'])>1:
                             import pdb
                             pdb.set_trace()
                 
