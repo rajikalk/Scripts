@@ -573,7 +573,7 @@ if update == True and args.make_plots_only == 'False':
             sink_inds = np.where(global_data['m'][time_it]>0)[0]
             L_tot = luminosity(global_data, sink_inds, time_it)
             M_dot = accretion(sink_inds, time_it)
-            vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+            vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             
             S = pr.Sink()
             S._jet_factor = 1.
@@ -583,9 +583,9 @@ if update == True and args.make_plots_only == 'False':
             S._scale_d = scale_d.value
             S._time = yt.YTArray(time, '')
             if args.visible_only == "True":
-                S._abspos = yt.YTArray(abspos[vis_inds], '')
-                S._absvel = yt.YTArray(absvel[vis_inds], '')
-                S._mass = yt.YTArray(mass[vis_inds], '')
+                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
+                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
+                S._mass = yt.YTArray(mass[vis_inds_tot], '')
             else:
                 S._abspos = yt.YTArray(abspos, '')
                 S._absvel = yt.YTArray(absvel, '')
@@ -661,11 +661,19 @@ if update == True and args.make_plots_only == 'False':
                 nan_size = len(sink_inds_total) - len(sink_inds)
                 nan_array = yt.YTArray(np.ones(nan_size)*np.nan, 'Lsun')
                 #sink_inds = np.arange(len(res['n']))
-                L_tot = luminosity(global_data, sink_inds, time_it)
-                M_dot = accretion(sink_inds, time_it)
-                L_tot = np.append(L_tot, nan_array)
-                M_dot = np.append(M_dot, nan_array)
-                vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+                #If ONLY using visible stars, makes sure to recalculate the L_tot and M_tot for only those!
+                if args.visible_only == "True":
+                    L_tot = luminosity(global_data, vis_inds_tot, time_it)
+                    M_dot = accretion(vis_inds_tot, time_it)
+                    L_tot = np.append(L_tot, nan_array)
+                    M_dot = np.append(M_dot, nan_array)
+                    vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+                else:
+                    L_tot = luminosity(global_data, sink_inds, time_it)
+                    M_dot = accretion(sink_inds, time_it)
+                    L_tot = np.append(L_tot, nan_array)
+                    M_dot = np.append(M_dot, nan_array)
+                    vis_inds = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
                 visible_stars = sink_inds[vis_inds]
                 visible_subcomps = visible_stars[np.where(res['topSystem'][visible_stars]==False)]
                 checked_visible_inds = []
