@@ -586,9 +586,6 @@ if update == True and args.make_plots_only == 'False':
                 S._abspos = yt.YTArray(abspos[vis_inds], '')
                 S._absvel = yt.YTArray(absvel[vis_inds], '')
                 S._mass = yt.YTArray(mass[vis_inds], '')
-                if len(n_stars) > len(vis_inds) and len(vis_inds)>2:
-                    import pdb
-                    pdb.set_trace()
             else:
                 S._abspos = yt.YTArray(abspos, '')
                 S._absvel = yt.YTArray(absvel, '')
@@ -628,6 +625,11 @@ if update == True and args.make_plots_only == 'False':
                             pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
+                    
+                    if len(n_stars) > len(vis_inds) and len(vis_inds)>2:
+                        import pdb
+                        pdb.set_trace()
+                    
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
                 else:
