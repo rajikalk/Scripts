@@ -754,9 +754,6 @@ if update == True and args.make_plots_only == 'False':
                 
                 #Determine which systems could still be multiples
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                if len(multi_inds) > 0:
-                    import pdb
-                    pdb.set_trace()
                 
                 #Let's go over the multiple systems and remove subsystems that are below the separation bin, or invisible
                 removed_stars = 0
@@ -767,9 +764,6 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = losi(multi_ind, res)
                     
                     vis_multi_ind = set(sorted(flatten(sys_comps))).intersection(set(visible_stars))
-                    if len(multi_inds) > 0:
-                        import pdb
-                        pdb.set_trace()
                     
                     if len(vis_multi_ind) < len(flatten(sys_comps)):
                         redef_ind = len(flatten(sys_comps)) - 1
@@ -896,9 +890,6 @@ if update == True and args.make_plots_only == 'False':
                         L_tot[multi_ind] = np.sum(L_tot[list(vis_multi_ind)])
                         M_dot[multi_ind] = np.sum(M_dot[list(vis_multi_ind)])
                         checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
-                        if len(multi_inds) > 0:
-                            import pdb
-                            pdb.set_trace()
                 
                 if args.verbose_printing != 'False':
                     print_line = "AFTER REDEFINING", str(redefined_systems), "SYSTEMS WITH", str(removed_stars),"INVISIBLE COMPONENTS TO", str(added_systems), ":" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds]))
