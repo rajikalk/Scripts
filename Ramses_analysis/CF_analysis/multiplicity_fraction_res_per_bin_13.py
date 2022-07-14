@@ -586,6 +586,9 @@ if update == True and args.make_plots_only == 'False':
                 S._abspos = yt.YTArray(abspos[vis_inds], '')
                 S._absvel = yt.YTArray(absvel[vis_inds], '')
                 S._mass = yt.YTArray(mass[vis_inds], '')
+                if len(n_stars) > len(vis_inds):
+                    import pdb
+                    pdb.set_trace()
             else:
                 S._abspos = yt.YTArray(abspos, '')
                 S._absvel = yt.YTArray(absvel, '')
@@ -664,6 +667,9 @@ if update == True and args.make_plots_only == 'False':
                 visible_stars = sink_inds[vis_inds]
                 visible_subcomps = visible_stars[np.where(res['topSystem'][visible_stars]==False)]
                 checked_visible_inds = []
+                if len(n_stars) > len(vis_inds):
+                    import pdb
+                    pdb.set_trace()
             
                 top_inds = np.where(res['topSystem'])[0]
                 
@@ -696,6 +702,9 @@ if update == True and args.make_plots_only == 'False':
                 visible_singles = list(set(s_true).intersection(set(visible_stars)))
                 checked_visible_inds = visible_singles
                 invisible_singles = np.setdiff1d(s_true,visible_singles)
+                if len(n_stars) > len(vis_inds):
+                    import pdb
+                    pdb.set_trace()
                 if args.verbose_printing != 'False':
                     print_line = "UP TO " + str(int(S_bins[bin_it])) +"AU:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds]))
                     if size == 1:
@@ -704,6 +713,9 @@ if update == True and args.make_plots_only == 'False':
                         print_lines.append(print_line)
                         
                 res['n'][invisible_singles] = 0
+                if len(n_stars) > len(vis_inds):
+                    import pdb
+                    pdb.set_trace()
                 if args.verbose_printing != 'False':
                     print_line = "AFTER REMOVING " + str(len(invisible_singles)) + " INVISIBLE SINGLE STARS:" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds]))
                     if size == 1:
@@ -721,6 +733,9 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = sorted(flatten(sys_comps))
                     
                     vis_s_fake_inds = set(sys_comps).intersection(set(visible_stars))
+                    if len(n_stars) > len(vis_inds):
+                        import pdb
+                        pdb.set_trace()
                     
                     if len(vis_s_fake_inds) == 0:
                         res['n'][fake] = 0
@@ -755,6 +770,9 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = losi(multi_ind, res)
                     
                     vis_multi_ind = set(sorted(flatten(sys_comps))).intersection(set(visible_stars))
+                    if len(n_stars) > len(vis_inds):
+                        import pdb
+                        pdb.set_trace()
                     
                     if len(vis_multi_ind) < len(flatten(sys_comps)):
                         redef_ind = len(flatten(sys_comps)) - 1
@@ -881,6 +899,9 @@ if update == True and args.make_plots_only == 'False':
                         L_tot[multi_ind] = np.sum(L_tot[list(vis_multi_ind)])
                         M_dot[multi_ind] = np.sum(M_dot[list(vis_multi_ind)])
                         checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
+                        if len(n_stars) > len(vis_inds):
+                            import pdb
+                            pdb.set_trace()
                 
                 if args.verbose_printing != 'False':
                     print_line = "AFTER REDEFINING", str(redefined_systems), "SYSTEMS WITH", str(removed_stars),"INVISIBLE COMPONENTS TO", str(added_systems), ":" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds]))
