@@ -35,6 +35,7 @@ def parse_inputs():
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
+    parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='False')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
     parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
     parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
@@ -255,6 +256,11 @@ if args.projected_separation == 'True':
     multiplicity_analysis_projection = True
 else:
     multiplicity_analysis_projection = False
+
+if args.use_midpoint_separation == 'True':
+    use_mid_point_sep = True
+else:
+    use_mid_point_sep = False
 
 #Calculate variables
 luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
@@ -609,9 +615,9 @@ if update == True and args.make_plots_only == 'False':
             for bin_it in range(1,len(S_bins)):
                 if len(n_stars) > 1:
                     if multiplicity_analysis_projection == False:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=100)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=100, use_mid_point_sep=use_mid_point_sep)#cyclic=False
                     else:
-                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho, max_iter=100)#cyclic=False
+                        res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=multiplicity_analysis_projection, axis=args.axis, projection_vector=proj_unit, Grho=Grho, max_iter=100, use_mid_point_sep=use_mid_point_sep)#cyclic=False
                         if args.axis == 'x':
                             zero_ind = 0
                         elif args.axis == 'y':
