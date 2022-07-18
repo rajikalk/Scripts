@@ -171,6 +171,41 @@ sys.stdout.flush()
 CW.Barrier()
 print("FINISHED GOING THROUGH TIMES ON RANK", rank)
     
+if rank == 0:
+    #compile together data
+    try:
+        file = open(pickle_file+'.pkl', 'rb')
+        Times, SFE, MF = pickle.load(file)
+        file.close()
+    except:
+        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
+        Times_full = []
+        SFE_full = []
+        MF_full = []
+        for pick_file in pickle_files:
+            file = open(pick_file, 'rb')
+            Times, SFE, MF = pickle.load(file)
+            file.close()
+            Times_full = Times_full + Times
+            SFE_full = SFE_full + SFE
+            MF_full = MF_full + MF
+            os.remove(pick_file)
+        
+        #Let's sort the data
+        sorted_inds = np.argsort(Times_full)
+        Times = np.array(Times_full)[sorted_inds]
+        SFE = np.array(SFE_full)[sorted_inds]
+        MF_full = np.array(MF_full)[sorted_inds]
+        
+        file = open(pickle_file+'.pkl', 'wb')
+        pickle.dump((Times, SFE, MF_full),file)
+        file.close()
+        
+        plt.clf()
+        plt.plot(Times, MF_full)
+        plt.xlabel('Time (yr)')
+        plt.ylabel('MF')
+        plt.savefig('MF_v_time.png')
     
 sys.stdout.flush()
 CW.Barrier()
