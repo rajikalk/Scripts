@@ -281,7 +281,7 @@ file_open.close()
 dm = (global_data['m'][2:] - global_data['m'][:-2])*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'][2:] - global_data['time'][:-2])*units['time_unit'].in_units('yr')
 Accretion_array = np.hstack((np.nan*np.zeros(((dm/dt).shape[1], 1)), (dm/dt).T, np.nan*np.zeros(((dm/dt).shape[1], 1))))
-Accretion_array = yt.YTArray(Accretion_array, 'Msun/yr')
+Accretion_array = yt.YTArray(Accretion_array.T, 'Msun/yr')
 
 '''
 dm = global_data['dm']*units['mass_unit'].in_units('Msun')
