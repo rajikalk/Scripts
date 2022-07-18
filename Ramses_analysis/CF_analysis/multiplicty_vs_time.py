@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
     parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
+    parser.add_argument("-start_ind", "--starting_ind", help="Do you want to start the analysis at a particular starting ind?", type=int, default=None)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
