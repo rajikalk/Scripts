@@ -587,7 +587,7 @@ if update == True and args.make_plots_only == 'False':
             sink_inds = np.where(global_data['m'][time_it]>0)[0]
             L_tot = luminosity(global_data, sink_inds, time_it)
             M_dot = accretion(sink_inds, time_it)
-            if np.isnan(np.min(M_dot)):
+            if True in np.isnan(M_dot):
                 import pdb
                 pdb.set_trace()
             vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
