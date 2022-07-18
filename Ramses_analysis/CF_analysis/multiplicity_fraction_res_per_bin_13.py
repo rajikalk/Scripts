@@ -925,6 +925,9 @@ if update == True and args.make_plots_only == 'False':
                         print("CF =", cf)
                     else:
                         print_lines.append(print_line)
+                if cf > 0.2:
+                    import pdb
+                    pdb.set_trace()
                 CF_per_bin.append(cf)
                 
                 if len(vis_inds) == len(checked_visible_inds):
