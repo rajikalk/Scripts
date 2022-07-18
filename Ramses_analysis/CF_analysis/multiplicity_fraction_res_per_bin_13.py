@@ -925,7 +925,7 @@ if update == True and args.make_plots_only == 'False':
                         print("CF =", cf)
                     else:
                         print_lines.append(print_line)
-                if cf > 0.5:
+                if sfe>0.045 and cf > 0.2:
                     import pdb
                     pdb.set_trace()
                 CF_per_bin.append(cf)
