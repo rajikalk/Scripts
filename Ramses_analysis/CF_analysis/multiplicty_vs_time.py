@@ -88,7 +88,7 @@ CW.Barrier()
 #What do I need to save?
 Times = []
 SFE = []
-MF = [[]]
+MF = []
 
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -202,7 +202,7 @@ if rank == 0:
         file.close()
         
         plt.clf()
-        plt.plot(Times, MF_full)
+        plt.plot(Times, MF_full[1:])
         plt.xlabel('Time (yr)')
         plt.ylabel('MF')
         plt.savefig('MF_v_time.png')
