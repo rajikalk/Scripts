@@ -34,6 +34,7 @@ size = CW.Get_size()
 
 datadir = sys.argv[1]
 savedir = sys.argv[2]
+pickle_file = savedir + args.pickled_file
 #=====================================================================================================
 #Create units override
 
