@@ -278,9 +278,16 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
+dm = (global_data['m'][2:] - global_data['m'][:-2])*units['mass_unit'].in_units('Msun')
+dt = (global_data['time'][2:] - global_data['time'][:-2])*units['time_unit'].in_units('yr')
+Accretion_array = np.hstack((np.nan*np.zeros(((dm/dt).shape[1], 1)), (dm/dt).T, np.nan*np.zeros(((dm/dt).shape[1], 1))))
+Accretion_array = yt.YTArray(Accretion_array, 'Msun/yr')
+
+'''
 dm = global_data['dm']*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
 Accretion_array = dm/dt
+'''
 print('Loaded global pickle data')
 
 #dt == integration window, if you don't want to integrate over the entire simulation
