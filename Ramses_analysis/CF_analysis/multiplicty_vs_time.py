@@ -203,7 +203,7 @@ if rank == 0:
         file.close()
         
         plt.clf()
-        plt.plot(Times, MF_full[1:])
+        plt.plot(Times, MF_full)
         plt.xlabel('Time (yr)')
         plt.ylabel('MF')
         plt.savefig('MF_v_time.png')
