@@ -194,8 +194,8 @@ if update == True and args.make_plots_only == 'False':
                 MF_true.append(MF_value)
                 
                 #Multiplicity with accretion limit
-                L_tot = luminosity(global_data, sink_inds, time_it)
-                M_dot = accretion(sink_inds, time_it)
+                L_tot = luminosity(global_data, n_stars, time_it)
+                M_dot = accretion(n_stars, time_it)
                 vis_inds_tot = np.where((M_dot>accretion_limit))[0]
                 
                 S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
