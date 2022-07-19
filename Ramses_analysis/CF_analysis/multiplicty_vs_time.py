@@ -15,6 +15,8 @@ import matplotlib.gridspec as gridspec
 from scipy.stats import norm
 from scipy.optimize import curve_fit
 
+f_acc= 0.5
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
