@@ -206,6 +206,7 @@ if rank == 0:
         plt.xlabel('Time (yr)')
         plt.ylabel('MF')
         plt.savefig('MF_v_time.png')
+        print('made figure MF_v_time.png')
     
 sys.stdout.flush()
 CW.Barrier()
