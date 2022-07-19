@@ -6,14 +6,9 @@ import multiplicity as m
 import yt
 import glob
 import sys
-import collections
-import matplotlib as mpl
 import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
-import matplotlib.gridspec as gridspec
-from scipy.stats import norm
-from scipy.optimize import curve_fit
 
 f_acc= 0.5
 
@@ -292,12 +287,14 @@ if rank == 0:
         file.close()
         
         plt.clf()
-        plt.plot(SFE, MF_true, label="True")
-        plt.plot(SFE, MF_acc_lim, label="Accretion limit")
-        plt.plot(SFE, MF_acc_L_lower, label="Accretion + lower Luminosity limit")
-        plt.plot(SFE, MF_acc_L_upper, label="Accretion + lower + upper Luminosity limit")
+        plt.plot(SFE, MF_true, alpha=0.5, label="True")
+        plt.plot(SFE, MF_acc_lim, alpha=0.5, label="Accretion limit")
+        plt.plot(SFE, MF_acc_L_lower, alpha=0.5, label="Accretion + lower Luminosity limit")
+        plt.plot(SFE, MF_acc_L_upper, alpha=0.5, label="Accretion + lower + upper Luminosity limit")
         plt.legend(loc='best')
         plt.xlabel('Time (yr)')
+        plt.xlim(left=0)
+        plt.ylim(bottom=0)
         plt.ylabel('MF')
         plt.savefig('MF_v_SFE.png')
         print('made figure MF_v_SFE.png')
