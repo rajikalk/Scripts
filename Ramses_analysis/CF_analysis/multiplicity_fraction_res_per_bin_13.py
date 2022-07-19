@@ -32,7 +32,7 @@ def parse_inputs():
     parser.add_argument("-verbose", "--verbose_printing", help="Would you like to print debug lines?", type=str, default='False')
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
-    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
+    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)#120?
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='False')
@@ -278,17 +278,15 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
-
+'''
 dm = (global_data['m'][2:] - global_data['m'][:-2])*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'][2:] - global_data['time'][:-2])*units['time_unit'].in_units('yr')
 Accretion_array = np.hstack((np.nan*np.zeros(((dm/dt).shape[1], 1)), (dm/dt).T, np.nan*np.zeros(((dm/dt).shape[1], 1))))
 Accretion_array = yt.YTArray(Accretion_array.T, 'Msun/yr')
-
 '''
 dm = global_data['dm']*units['mass_unit'].in_units('Msun')
 dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
 Accretion_array = dm/dt
-'''
 
 print('Loaded global pickle data')
 
