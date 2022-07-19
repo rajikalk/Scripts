@@ -23,9 +23,33 @@ def parse_inputs():
     parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
     parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
     parser.add_argument("-start_ind", "--starting_ind", help="Do you want to start the analysis at a particular starting ind?", type=int, default=None)
+    parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
+    parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)
+    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
+
+def accretion(sink_inds, time_ind):
+    """
+    Calculates the accretion of the given indeexes
+    """
+    global Accretion_array
+    M_dot = Accretion_array[time_ind, sink_inds]
+    return M_dot
+    
+
+def luminosity(global_data, sink_inds, global_ind):
+    """
+    Calculates the luminosity of the given indexes
+    """
+    global f_acc
+    radius = yt.YTQuantity(2.0, 'rsun')
+    M_dot = accretion(sink_inds, global_ind)
+    M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
+    L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
+    L_tot = L_acc.in_units('Lsun')
+    return L_tot
 
 args = parse_inputs()
 
@@ -88,7 +112,10 @@ CW.Barrier()
 #What do I need to save?
 Times = []
 SFE = []
-MF = []
+MF_true = []
+MF_acc_lim = []
+MF_acc_L_lower = []
+MF_acc_L_upper = []
 
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -99,6 +126,9 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
+dm = global_data['dm']*units['mass_unit'].in_units('Msun')
+dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
+Accretion_array = dm/dt
 print('Loaded global pickle data')
 
 #dt == integration window, if you don't want to integrate over the entire simulation
@@ -139,6 +169,11 @@ if update == True and args.make_plots_only == 'False':
                 time = global_data['time'][time_it][n_stars][0]
                 sfe = np.sum(mass)
                 
+                time_yt = yt.YTArray(time*scale_t, 's')
+                Times.append(int(time_yt.in_units('yr').value))
+                SFE.append(sfe)
+                
+                #True multiplicity
                 S = pr.Sink()
                 S._jet_factor = 1.
                 S._scale_l = scale_l.value
@@ -150,9 +185,22 @@ if update == True and args.make_plots_only == 'False':
                 S._absvel = yt.YTArray(absvel, '')
                 S._mass = yt.YTArray(mass, '')
                 
-                time_yt = yt.YTArray(time*scale_t, 's')
-                Times.append(int(time_yt.in_units('yr').value))
-                SFE.append(sfe)
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+                
+                total_systems = len(s_true) + len(multi_inds)
+                MF_value = len(multi_inds)/total_systems
+                MF_true.append(MF_value)
+                
+                #Multiplicity with accretion limit
+                L_tot = luminosity(global_data, sink_inds, time_it)
+                M_dot = accretion(sink_inds, time_it)
+                vis_inds_tot = np.where((M_dot>accretion_limit))[0]
+                
+                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
+                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
+                S._mass = yt.YTArray(mass[vis_inds_tot], '')
                 
                 res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
@@ -160,11 +208,41 @@ if update == True and args.make_plots_only == 'False':
                 
                 total_systems = len(s_true) + len(multi_inds)
                 MF_value = len(multi_inds)/total_systems
-                MF.append(MF_value)
+                MF_acc_lim.append(MF_value)
+                
+                #Multiplicity with accretion and lower luminosity limit
+                vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit))[0]
+                
+                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
+                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
+                S._mass = yt.YTArray(mass[vis_inds_tot], '')
+                
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+                
+                total_systems = len(s_true) + len(multi_inds)
+                MF_value = len(multi_inds)/total_systems
+                MF_acc_L_lower.append(MF_value)
+                
+                #Multiplicity with accretion and lower and upper luminosity limit
+                vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+                
+                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
+                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
+                S._mass = yt.YTArray(mass[vis_inds_tot], '')
+                
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+                
+                total_systems = len(s_true) + len(multi_inds)
+                MF_value = len(multi_inds)/total_systems
+                MF_acc_L_upper.append(MF_value)
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, MF),file)
+                pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper),file)
                 file.close()
                 print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
             
@@ -176,38 +254,51 @@ if rank == 0:
     #compile together data
     try:
         file = open(pickle_file+'.pkl', 'rb')
-        Times, SFE, MF = pickle.load(file)
+        Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper = pickle.load(file)
         file.close()
     except:
         pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
         Times_full = []
         SFE_full = []
-        MF_full = []
+        MF_true_full = []
+        MF_acc_lim_full = []
+        MF_acc_L_lower_full = []
+        MF_acc_L_upper_full = []
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, MF = pickle.load(file)
+            Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper = pickle.load(file)
             file.close()
             Times_full = Times_full + Times
             SFE_full = SFE_full + SFE
-            MF_full = MF_full + MF
+            MF_true_full = MF_true_full + MF_true
+            MF_acc_lim_full = MF_acc_lim_full + MF_acc_lim
+            MF_acc_L_lower_full = MF_acc_L_lower_full + MF_acc_L_lower
+            MF_acc_L_upper_full = MF_acc_L_upper_full + MF_acc_L_upper
             os.remove(pick_file)
         
         #Let's sort the data
         sorted_inds = np.argsort(Times_full)
         Times = np.array(Times_full)[sorted_inds]
         SFE = np.array(SFE_full)[sorted_inds]
-        MF_full = np.array(MF_full)[sorted_inds]
+        MF_true = np.array(MF_true_full)[sorted_inds]
+        MF_acc_lim = np.array(MF_acc_lim_full)[sorted_inds]
+        MF_acc_L_lower = np.array(MF_acc_L_lower_full)[sorted_inds]
+        MF_acc_L_upper = np.array(MF_acc_L_upper_full)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, MF_full),file)
+        pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper),file)
         file.close()
         
         plt.clf()
-        plt.plot(Times, MF_full)
+        plt.plot(SFE, MF_true, label="True")
+        plt.plot(SFE, MF_acc_lim, label="Accretion limit")
+        plt.plot(SFE, MF_acc_L_lower, label="Accretion + lower Luminosity limit")
+        plt.plot(SFE, MF_acc_L_upper, label="Accretion + lower + upper Luminosity limit")
+        plt.legend(loc='best')
         plt.xlabel('Time (yr)')
         plt.ylabel('MF')
-        plt.savefig('MF_v_time.png')
-        print('made figure MF_v_time.png')
+        plt.savefig('MF_v_SFE.png')
+        print('made figure MF_v_SFE.png')
     
 sys.stdout.flush()
 CW.Barrier()
