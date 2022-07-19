@@ -113,6 +113,10 @@ MF_true = []
 MF_acc_lim = []
 MF_acc_L_lower = []
 MF_acc_L_upper = []
+Single_L_mean = []
+Single_L_std = []
+Single_M_dot_mean = []
+Single_M_dot_std = []
 
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -186,13 +190,18 @@ if update == True and args.make_plots_only == 'False':
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
                 multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
                 
+                L_tot = luminosity(global_data, n_stars, time_it)
+                M_dot = accretion(n_stars, time_it)
+                Single_L_mean.append(np.mean(L_tot[s_true]))
+                Single_L_std.append(np.std(L_tot[s_true]))
+                Single_M_dot_mean.append(np.mean(M_dot[s_true]))
+                Single_M_dot_std.append(np.std(M_dot[s_true]))
+                
                 total_systems = len(s_true) + len(multi_inds)
                 MF_value = len(multi_inds)/total_systems
                 MF_true.append(MF_value)
                 
                 #Multiplicity with accretion limit
-                L_tot = luminosity(global_data, n_stars, time_it)
-                M_dot = accretion(n_stars, time_it)
                 vis_inds_tot = np.where((M_dot>args.accretion_limit))[0]
                 
                 S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
@@ -239,7 +248,7 @@ if update == True and args.make_plots_only == 'False':
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper),file)
+                pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_mean, Single_L_std, Single_M_dot_mean, Single_M_dot_std),file)
                 file.close()
                 print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
             
@@ -251,7 +260,7 @@ if rank == 0:
     #compile together data
     try:
         file = open(pickle_file+'.pkl', 'rb')
-        Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper = pickle.load(file)
+        Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_mean, Single_L_std, Single_M_dot_mean, Single_M_dot_std = pickle.load(file)
         file.close()
     except:
         pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
@@ -261,9 +270,13 @@ if rank == 0:
         MF_acc_lim_full = []
         MF_acc_L_lower_full = []
         MF_acc_L_upper_full = []
+        Single_L_mean_full = []
+        Single_L_std_full = []
+        Single_M_dot_mean_full = []
+        Single_M_dot_std_full = []
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper = pickle.load(file)
+            Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_mean, Single_L_std, Single_M_dot_mean, Single_M_dot_std = pickle.load(file)
             file.close()
             Times_full = Times_full + Times
             SFE_full = SFE_full + SFE
@@ -271,6 +284,10 @@ if rank == 0:
             MF_acc_lim_full = MF_acc_lim_full + MF_acc_lim
             MF_acc_L_lower_full = MF_acc_L_lower_full + MF_acc_L_lower
             MF_acc_L_upper_full = MF_acc_L_upper_full + MF_acc_L_upper
+            Single_L_mean_full = Single_L_mean_full + Single_L_mean
+            Single_L_std_full = Single_L_std_full + Single_L_std
+            Single_M_dot_mean_full = Single_M_dot_mean_full + Single_M_dot_mean
+            Single_M_dot_std_full = Single_M_dot_std_full + Single_M_dot_std
             os.remove(pick_file)
         
         #Let's sort the data
@@ -281,9 +298,13 @@ if rank == 0:
         MF_acc_lim = np.array(MF_acc_lim_full)[sorted_inds]
         MF_acc_L_lower = np.array(MF_acc_L_lower_full)[sorted_inds]
         MF_acc_L_upper = np.array(MF_acc_L_upper_full)[sorted_inds]
+        Single_L_mean = np.array(Single_L_mean_full)[sorted_inds]
+        Single_L_std = np.array(Single_L_std_full)[sorted_inds]
+        Single_M_dot_mean = np.array(Single_M_dot_mean_full)[sorted_inds]
+        Single_M_dot_std = np.array(Single_M_dot_std_full)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper),file)
+        pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_mean, Single_L_std, Single_M_dot_mean, Single_M_dot_std),file)
         file.close()
         
         plt.clf()
@@ -292,13 +313,31 @@ if rank == 0:
         plt.plot(SFE, MF_acc_L_lower, alpha=0.5, label="Accretion + lower Luminosity limit")
         plt.plot(SFE, MF_acc_L_upper, alpha=0.5, label="Accretion + lower + upper Luminosity limit")
         plt.legend(loc='best')
-        plt.xlabel('Time (yr)')
+        plt.xlabel('SFE')
         plt.xlim(left=0)
         plt.ylim(bottom=0)
         plt.ylabel('MF')
         plt.savefig('MF_v_SFE.png')
         print('made figure MF_v_SFE.png')
-    
+        
+        plt.clf()
+        plt.plot(SFE, Single_L_mean)
+        plt.fill_between(SFE, np.array(Single_L_mean)-np.array(Single_L_std), np.array(Single_L_mean)+np.array(Single_L_std), alpha=0.2)
+        plt.xlim(left=0)
+        plt.ylim(bottom=0)
+        plt.xlabel('SFE')
+        plt.ylabel('Luminosity')
+        plt.savefig('L_vs_SFE.png')
+        
+        plt.clf()
+        plt.semilogy(SFE, Single_M_dot_mean)
+        plt.fill_between(SFE, np.array(Single_M_dot_mean)-np.array(Single_M_dot_std), np.array(Single_M_dot_mean)+np.array(Single_M_dot_std), alpha=0.2)
+        plt.xlim(left=0)
+        plt.ylim(bottom=0)
+        plt.xlabel('SFE')
+        plt.ylabel('Accretion')
+        plt.savefig('M_dot_vs_SFE.png')
+        
 sys.stdout.flush()
 CW.Barrier()
 #=====================================================
