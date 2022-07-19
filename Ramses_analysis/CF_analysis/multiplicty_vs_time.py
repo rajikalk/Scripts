@@ -198,7 +198,7 @@ if update == True and args.make_plots_only == 'False':
                 #Multiplicity with accretion limit
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
-                vis_inds_tot = np.where((M_dot>accretion_limit))[0]
+                vis_inds_tot = np.where((M_dot>args.accretion_limit))[0]
                 
                 S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
                 S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
@@ -213,7 +213,7 @@ if update == True and args.make_plots_only == 'False':
                 MF_acc_lim.append(MF_value)
                 
                 #Multiplicity with accretion and lower luminosity limit
-                vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit))[0]
+                vis_inds_tot = np.where((L_tot>=args.lower_L_limit)&(M_dot>args.accretion_limit))[0]
                 
                 S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
                 S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
@@ -228,7 +228,7 @@ if update == True and args.make_plots_only == 'False':
                 MF_acc_L_lower.append(MF_value)
                 
                 #Multiplicity with accretion and lower and upper luminosity limit
-                vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+                vis_inds_tot = np.where((L_tot>=args.lower_L_limit)&(M_dot>args.accretion_limit)&(L_tot<=args.upper_L_limit))[0]
                 
                 S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
                 S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
