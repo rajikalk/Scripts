@@ -132,40 +132,41 @@ if update == True and args.make_plots_only == 'False':
         if rank == rit:
             #"""
             n_stars = np.where(global_data['m'][time_it]>0)[0]
-            abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-            absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-            mass = np.array(global_data['m'][time_it][n_stars])
-            time = global_data['time'][time_it][n_stars][0]
-            sfe = np.sum(mass)
-            
-            S = pr.Sink()
-            S._jet_factor = 1.
-            S._scale_l = scale_l.value
-            S._scale_v = scale_v.value
-            S._scale_t = scale_t.value
-            S._scale_d = scale_d.value
-            S._time = yt.YTArray(time, '')
-            S._abspos = yt.YTArray(abspos, '')
-            S._absvel = yt.YTArray(absvel, '')
-            S._mass = yt.YTArray(mass, '')
-            
-            time_yt = yt.YTArray(time*scale_t, 's')
-            Times.append(int(time_yt.in_units('yr').value))
-            SFE.append(sfe)
-            
-            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-            s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-            multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-            
-            total_systems = len(s_true) + len(multi_inds)
-            MF_value = len(multi_inds)/total_systems
-            MF.append(MF_value)
-            
-            pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
-            file = open(pickle_file_rank, 'wb')
-            pickle.dump((Times, SFE, MF),file)
-            file.close()
-            print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
+            if len(n_stars) > 1:
+                abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+                absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+                mass = np.array(global_data['m'][time_it][n_stars])
+                time = global_data['time'][time_it][n_stars][0]
+                sfe = np.sum(mass)
+                
+                S = pr.Sink()
+                S._jet_factor = 1.
+                S._scale_l = scale_l.value
+                S._scale_v = scale_v.value
+                S._scale_t = scale_t.value
+                S._scale_d = scale_d.value
+                S._time = yt.YTArray(time, '')
+                S._abspos = yt.YTArray(abspos, '')
+                S._absvel = yt.YTArray(absvel, '')
+                S._mass = yt.YTArray(mass, '')
+                
+                time_yt = yt.YTArray(time*scale_t, 's')
+                Times.append(int(time_yt.in_units('yr').value))
+                SFE.append(sfe)
+                
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+                
+                total_systems = len(s_true) + len(multi_inds)
+                MF_value = len(multi_inds)/total_systems
+                MF.append(MF_value)
+                
+                pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
+                file = open(pickle_file_rank, 'wb')
+                pickle.dump((Times, SFE, MF),file)
+                file.close()
+                print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
             
 sys.stdout.flush()
 CW.Barrier()
