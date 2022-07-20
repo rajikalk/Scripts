@@ -818,7 +818,7 @@ if update == True and args.make_plots_only == 'False':
                                             ind_1 = res['index1'][binary_ind]
                                             ind_2 = res['index2'][binary_ind]
                                             pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
-                                            if args.projected_separation == True:
+                                            if args.projected_separation == "True":
                                                 import pdb
                                                 pdb.set_trace()
                                             #MAKE SURE 2D SEP IS BEING SAVED.
