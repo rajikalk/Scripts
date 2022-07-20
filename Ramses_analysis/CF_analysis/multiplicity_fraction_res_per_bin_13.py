@@ -737,7 +737,7 @@ if update == True and args.make_plots_only == 'False':
                 removed_stars = 0
                 redefined_n = 0
                 vis_stars_in_collapsed_systems = 0
-                #Check fact sinle systems
+                #Check fake single systems
                 for fake in s_fake:
                     sys_comps = losi(fake, res)
                     sys_comps = sorted(flatten(sys_comps))
@@ -777,6 +777,8 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = losi(multi_ind, res)
                     
                     vis_multi_ind = set(sorted(flatten(sys_comps))).intersection(set(visible_stars))
+                    import pdb
+                    pdb.set_trace()
                     
                     if len(vis_multi_ind) < len(flatten(sys_comps)):
                         redef_ind = len(flatten(sys_comps)) - 1
