@@ -834,7 +834,7 @@ if update == True and args.make_plots_only == 'False':
                                                         import pdb
                                                         pdb.set_trace()
                                             if sep_value < S_bins[bin_it-1]:
-                                                if multiplicity_analysis_projection == "True":
+                                                if multiplicity_analysis_projection:
                                                     print("FAILING ON TIME_IT", time_it)
                                                     import pdb
                                                     pdb.set_trace()
