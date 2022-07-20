@@ -933,7 +933,7 @@ if update == True and args.make_plots_only == 'False':
                     else:
                         print_lines.append(print_line)
                 CF_per_bin.append(cf)
-                if bin_it == len(S_bins) and cf>0.2:
+                if bin_it == len(S_bins)-1 and cf>0.5:
                     import pdb
                     pdb.set_trace()
                 
