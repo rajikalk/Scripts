@@ -706,6 +706,9 @@ if update == True and args.make_plots_only == 'False':
 
                 #Find all singles and top systems with separations below the bin lower bound
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0] #These are true singles
+                if True in (res['midpointSep']<S_bins[bin_it-1]):
+                    import pdb
+                    pdb.set_trace()
                 s_fake = np.where((res['midpointSep']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin. But these separations are calculated using the center of mass.
 
                 if args.verbose_printing != 'False':
