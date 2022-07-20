@@ -933,6 +933,9 @@ if update == True and args.make_plots_only == 'False':
                     else:
                         print_lines.append(print_line)
                 CF_per_bin.append(cf)
+                if bin_it == len(S_bins) and cf>0.2:
+                    import pdb
+                    pdb.set_trace()
                 
                 if len(vis_inds) == len(checked_visible_inds):
                     if args.verbose_printing != 'False':
