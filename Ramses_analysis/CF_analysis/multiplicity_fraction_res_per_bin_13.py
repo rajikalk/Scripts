@@ -777,137 +777,128 @@ if update == True and args.make_plots_only == 'False':
                     sys_comps = losi(multi_ind, res)
                     
                     vis_multi_ind = set(sorted(flatten(sys_comps))).intersection(set(visible_stars))
-                    import pdb
-                    pdb.set_trace()
                     
-                    if len(vis_multi_ind) < len(flatten(sys_comps)):
-                        redef_ind = len(flatten(sys_comps)) - 1
-                        redefined_systems[redef_ind] = redefined_systems[redef_ind] + 1
-                        if len(vis_multi_ind) == 0:
-                            L_tot[multi_ind] = 0.0
-                            M_dot[multi_ind] = 0.0
-                            res['n'][multi_ind] = 0
-                            removed_stars = removed_stars + len(flatten(sys_comps))
-                        elif len(vis_multi_ind) == 1:
-                            L_tot[multi_ind] = L_tot[list(vis_multi_ind)]
-                            M_dot[multi_ind] = M_dot[list(vis_multi_ind)]
-                            res['n'][multi_ind] = 1
-                            removed_stars = removed_stars + len(flatten(sys_comps)) - 1
-                            added_systems[0] = added_systems[0] + 1
-                            checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
-                        elif len(vis_multi_ind) > 1:
-                            checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
-                            invisible_components = list(set(flatten(sys_comps)).symmetric_difference(vis_multi_ind))
-                            #Remove invisible inds
-                            system_structure = losi(multi_ind, res)
-                            sys_string = str(system_structure)
-                            
-                            reduced = False
-                            while reduced == False:
-                                bracket_pos = []
-                                for char_it in range(len(sys_string)):
-                                    if sys_string[char_it] == '[':
-                                        bracket_pos.append(char_it)
-                                    elif sys_string[char_it] == ']':
-                                        open_ind = bracket_pos.pop()
-                                        try:
-                                            sub_sys_comps = eval(sys_string[open_ind:char_it+1])
-                                        except:
-                                            comma_split = sys_string[open_ind:char_it+1].split(',')
-                                            sub_sys_comps = eval(comma_split[0]+comma_split[1])
-                                        if len(sub_sys_comps) == 2:
-                                            binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
-                                            ind_1 = res['index1'][binary_ind]
-                                            ind_2 = res['index2'][binary_ind]
-                                            pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
-                                            #MAKE SURE 2D SEP IS BEING SAVED.
+                    #if len(vis_multi_ind) < len(flatten(sys_comps)):
+                    redef_ind = len(flatten(sys_comps)) - 1
+                    redefined_systems[redef_ind] = redefined_systems[redef_ind] + 1
+                    if len(vis_multi_ind) == 0:
+                        L_tot[multi_ind] = 0.0
+                        M_dot[multi_ind] = 0.0
+                        res['n'][multi_ind] = 0
+                        removed_stars = removed_stars + len(flatten(sys_comps))
+                    elif len(vis_multi_ind) == 1:
+                        L_tot[multi_ind] = L_tot[list(vis_multi_ind)]
+                        M_dot[multi_ind] = M_dot[list(vis_multi_ind)]
+                        res['n'][multi_ind] = 1
+                        removed_stars = removed_stars + len(flatten(sys_comps)) - 1
+                        added_systems[0] = added_systems[0] + 1
+                        checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
+                    elif len(vis_multi_ind) > 1:
+                        checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
+                        invisible_components = list(set(flatten(sys_comps)).symmetric_difference(vis_multi_ind))
+                        #Remove invisible inds
+                        system_structure = losi(multi_ind, res)
+                        sys_string = str(system_structure)
+                        
+                        reduced = False
+                        while reduced == False:
+                            bracket_pos = []
+                            for char_it in range(len(sys_string)):
+                                if sys_string[char_it] == '[':
+                                    bracket_pos.append(char_it)
+                                elif sys_string[char_it] == ']':
+                                    open_ind = bracket_pos.pop()
+                                    try:
+                                        sub_sys_comps = eval(sys_string[open_ind:char_it+1])
+                                    except:
+                                        comma_split = sys_string[open_ind:char_it+1].split(',')
+                                        sub_sys_comps = eval(comma_split[0]+comma_split[1])
+                                    if len(sub_sys_comps) == 2:
+                                        binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
+                                        ind_1 = res['index1'][binary_ind]
+                                        ind_2 = res['index2'][binary_ind]
+                                        pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                        #MAKE SURE 2D SEP IS BEING SAVED.
+                                        sep_value = np.sqrt(np.sum(pos_diff**2))
+                                        if sep_value > (scale_l.in_units('AU')/2):
+                                            update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
+                                            for ind in update_inds:
+                                                if pos_diff[ind] < 0:
+                                                    pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
+                                                else:
+                                                    pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > (scale_l.in_units('AU')/2):
-                                                update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
-                                                for ind in update_inds:
-                                                    if pos_diff[ind] < 0:
-                                                        pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
-                                                    else:
-                                                        pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
-                                                sep_value = np.sqrt(np.sum(pos_diff**2))
-                                                if sep_value > (scale_l.in_units('AU')/2):
-                                                    print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
-                                                    if args.debugging == "True":
-                                                        import pdb
-                                                        pdb.set_trace()
-                                            if sep_value < S_bins[bin_it-1]:
-                                                import pdb
-                                                pdb.set_trace()
-                                                #Reduce systems! Let's check if any of the components are visible
-                                                vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
-                                                if len(vis_subs) > 0:
-                                                    L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                                    M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
-                                                    replace_string = str(binary_ind)
-                                                    res['n'][multi_ind] = res['n'][multi_ind] - 1
-                                                    removed_stars = removed_stars + 1
-                                                else:
-                                                    L_tot[binary_ind] = 0.0
-                                                    M_dot[binary_ind] = 0.0
-                                                    replace_string = ""
-                                                    res['n'][multi_ind] = res['n'][multi_ind] - 2
-                                                    removed_stars = removed_stars + 2
-                                            else:
-                                                vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
-                                                if len(vis_subs) > 0:
-                                                    L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                                    M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
-                                                    replace_string = str(binary_ind)
-                                                    if len(vis_subs) == 1:
-                                                        res['n'][multi_ind] = res['n'][multi_ind] - 1
-                                                        removed_stars = removed_stars + 1
-                                                else:
-                                                    L_tot[binary_ind] = 0.0
-                                                    M_dot[binary_ind] = 0.0
-                                                    replace_string = ""
-                                                    res['n'][multi_ind] = res['n'][multi_ind] - 2
-                                                    removed_stars = removed_stars + 2
-                                            str_1 = sys_string[:open_ind]
-                                            str_2 = sys_string[char_it+1:]
-                                            sys_string = str_1 + replace_string + str_2
-                                            if '[' not in sys_string:
-                                                reduced = True
-                                            break
-                                        elif len(sub_sys_comps) == 1:
-                                            binary_ind = np.where((res['index1']==sub_sys_comps[0])|(res['index2']==sub_sys_comps[0]))[0][0]
-                                            vis_subs = set(sub_sys_comps).intersection(set(visible_stars))
-                                            L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                            M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                            if len(vis_subs)>0:
-                                                res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                                print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
+                                                if args.debugging == "True":
+                                                    import pdb
+                                                    pdb.set_trace()
+                                        if sep_value < S_bins[bin_it-1]:
+                                            #Reduce systems! Let's check if any of the components are visible
+                                            vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
+                                            if len(vis_subs) > 0:
+                                                L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
+                                                M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
+                                                res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
                                                 replace_string = str(binary_ind)
-                                            else:
-                                                replace_string = ""
                                                 res['n'][multi_ind] = res['n'][multi_ind] - 1
                                                 removed_stars = removed_stars + 1
-                                            str_1 = sys_string[:open_ind]
-                                            str_2 = sys_string[char_it+1:]
-                                            sys_string = str_1 + replace_string + str_2
-                                            if '[' not in sys_string:
-                                                reduced = True
-                                            break
+                                            else:
+                                                L_tot[binary_ind] = 0.0
+                                                M_dot[binary_ind] = 0.0
+                                                replace_string = ""
+                                                res['n'][multi_ind] = res['n'][multi_ind] - 2
+                                                removed_stars = removed_stars + 2
+                                        else:
+                                            vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
+                                            if len(vis_subs) > 0:
+                                                L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
+                                                M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
+                                                res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
+                                                replace_string = str(binary_ind)
+                                                if len(vis_subs) == 1:
+                                                    res['n'][multi_ind] = res['n'][multi_ind] - 1
+                                                    removed_stars = removed_stars + 1
+                                            else:
+                                                L_tot[binary_ind] = 0.0
+                                                M_dot[binary_ind] = 0.0
+                                                replace_string = ""
+                                                res['n'][multi_ind] = res['n'][multi_ind] - 2
+                                                removed_stars = removed_stars + 2
+                                        str_1 = sys_string[:open_ind]
+                                        str_2 = sys_string[char_it+1:]
+                                        sys_string = str_1 + replace_string + str_2
+                                        if '[' not in sys_string:
+                                            reduced = True
+                                        break
+                                    elif len(sub_sys_comps) == 1:
+                                        binary_ind = np.where((res['index1']==sub_sys_comps[0])|(res['index2']==sub_sys_comps[0]))[0][0]
+                                        vis_subs = set(sub_sys_comps).intersection(set(visible_stars))
+                                        L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
+                                        M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
+                                        if len(vis_subs)>0:
+                                            res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                            replace_string = str(binary_ind)
                                         else:
                                             replace_string = ""
-                                            str_1 = sys_string[:open_ind]
-                                            str_2 = sys_string[char_it+1:]
-                                            sys_string = str_1 + replace_string + str_2
-                                            if '[' not in sys_string:
-                                                reduced = True
-                                            break
-                            add_ind = res['n'][multi_ind] - 1
-                            added_systems[add_ind] = added_systems[add_ind] + 1
-
-                    else:
-                        L_tot[multi_ind] = np.sum(L_tot[list(vis_multi_ind)])
-                        M_dot[multi_ind] = np.sum(M_dot[list(vis_multi_ind)])
-                        checked_visible_inds = checked_visible_inds + list(vis_multi_ind)
+                                            res['n'][multi_ind] = res['n'][multi_ind] - 1
+                                            removed_stars = removed_stars + 1
+                                        str_1 = sys_string[:open_ind]
+                                        str_2 = sys_string[char_it+1:]
+                                        sys_string = str_1 + replace_string + str_2
+                                        if '[' not in sys_string:
+                                            reduced = True
+                                        break
+                                    else:
+                                        replace_string = ""
+                                        str_1 = sys_string[:open_ind]
+                                        str_2 = sys_string[char_it+1:]
+                                        sys_string = str_1 + replace_string + str_2
+                                        if '[' not in sys_string:
+                                            reduced = True
+                                        break
+                        add_ind = res['n'][multi_ind] - 1
+                        added_systems[add_ind] = added_systems[add_ind] + 1
                 
                 if args.verbose_printing != 'False':
                     print_line = "AFTER REDEFINING", str(redefined_systems), "SYSTEMS WITH", str(removed_stars),"INVISIBLE COMPONENTS TO", str(added_systems), ":" + str(len(np.where(res['n'][top_inds]==1)[0])) + ':' + str(len(np.where(res['n'][top_inds]==2)[0])) + ':' + str(len(np.where(res['n'][top_inds]==3)[0])) + ':' + str(len(np.where(res['n'][top_inds]==4)[0])) + ':' + str(len(np.where(res['n'][top_inds]==5)[0])) + ':' + str(len(np.where(res['n'][top_inds]==6)[0])) + ':' + str(len(np.where(res['n'][top_inds]==7)[0])) + '=' + str(np.sum(res['n'][top_inds]))
