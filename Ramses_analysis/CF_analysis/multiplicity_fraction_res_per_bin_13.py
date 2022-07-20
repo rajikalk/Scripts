@@ -834,8 +834,6 @@ if update == True and args.make_plots_only == 'False':
                                                     import pdb
                                                     pdb.set_trace()
                                         if sep_value < S_bins[bin_it-1]:
-                                            import pdb
-                                            pdb.set_trace()
                                             #Reduce systems! Let's check if any of the components are visible
                                             vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
                                             if len(vis_subs) > 0:
