@@ -706,9 +706,6 @@ if update == True and args.make_plots_only == 'False':
 
                 #Find all singles and top systems with separations below the bin lower bound
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0] #These are true singles
-                if True in (res['midpointSep']<S_bins[bin_it-1]):
-                    import pdb
-                    pdb.set_trace()
                 s_fake = np.where((res['midpointSep']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin. But these separations are calculated using the center of mass.
 
                 if args.verbose_printing != 'False':
@@ -821,9 +818,6 @@ if update == True and args.make_plots_only == 'False':
                                             ind_1 = res['index1'][binary_ind]
                                             ind_2 = res['index2'][binary_ind]
                                             pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
-                                            if args.projected_separation == "True":
-                                                import pdb
-                                                pdb.set_trace()
                                             #MAKE SURE 2D SEP IS BEING SAVED.
                                             sep_value = np.sqrt(np.sum(pos_diff**2))
                                             if sep_value > (scale_l.in_units('AU')/2):
@@ -840,6 +834,10 @@ if update == True and args.make_plots_only == 'False':
                                                         import pdb
                                                         pdb.set_trace()
                                             if sep_value < S_bins[bin_it-1]:
+                                                if multiplicity_analysis_projection == "True":
+                                                    print("FAILING ON TIME_IT", time_it)
+                                                    import pdb
+                                                    pdb.set_trace()
                                                 #Reduce systems! Let's check if any of the components are visible
                                                 vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
                                                 if len(vis_subs) > 0:
