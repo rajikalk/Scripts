@@ -115,7 +115,7 @@ for CF_it in range(len(CF_Array_Full)):
     if chi_red_tobin < 0.5:
         plt.clf()
         plt.bar(bin_centers, CF_hist, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-        plt.bar(bin_centers, CF_per_bin_Tobin, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
         plt.legend(loc='best')
         plt.xlabel('Log Separation (AU)')
         plt.ylabel('Companion Frequency')
