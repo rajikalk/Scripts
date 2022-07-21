@@ -17,9 +17,9 @@ CF_per_bin_Tobin_per = []
 CF_err_per = []
 for bin_it in range(1, len(S_bins)):
     smaller_seps = len(np.argwhere(Perseus_separations < S_bins[bin_it-1]))
-    n_b = len(np.argwhere((Perseus_separations < S_bins[bin_it])&(Perseus_separations > S_bins[bin_it-1])))
+    N_b = len(np.argwhere((Perseus_separations < S_bins[bin_it])&(Perseus_separations > S_bins[bin_it-1])))
     larger_seps = len(np.argwhere(Perseus_separations > S_bins[bin_it]))
-    n_s = Perseus_singles + smaller_seps + 2*larger_seps
+    N_s = Perseus_singles + smaller_seps + 2*larger_seps
     N_sys = N_s + N_b
     cf = N_b/N_sys
     cf_err = CF_err
