@@ -13,9 +13,30 @@ bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 Perseus_singles = 33
 Perseus_separations = [24.1, 25.5, 29.1, 75.3, 79.6, 83.4, 90.1, 93.3, 93.9, 103.7, 117.3, 185.4, 186, 225.4, 263.2, 297.4, 414.5, 549, 572.5, 885, 1560.3, 1820.1, 2176.5, 2431.5, 2782.9, 3197, 3281.8, 3974, 4012.3, 4188.1, 4819, 5937.4, 6101.2, 8305.3, 8665.4, 8868, 9585.9]
 
+CF_per_bin_Tobin_per = []
+CF_err_per = []
 for bin_it in range(1, len(S_bins)):
-    import pdb
-    pdb.set_trace()
+    smaller_seps = len(np.argwhere(Perseus_separations < S_bins[bin_it-1]))
+    n_b = len(np.argwhere((Perseus_separations < S_bins[bin_it])&(Perseus_separations > S_bins[bin_it-1])))
+    larger_seps = len(np.argwhere(np.array(Tobin_objects[key]) > S_bins[bin_it]))
+    n_s = Perseus_singles + smaller_seps + 2*larger_seps
+    N_sys = N_s + N_b
+    cf = N_b/N_sys
+    cf_err = CF_err
+    CF_per_bin_Tobin_per.append(cf)
+    CF_err_per.append(cf_err)
+
+plt.clf()
+plt.bar(bin_centers, CF_per_bin_Tobin_per, yerr=CF_err_per, width=0.25, fill=False, edgecolor='black')
+#plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
+plt.ylabel("Companion Frequency")
+plt.xlabel("Log (AU)")
+plt.xlim([1,4])
+plt.ylim([0, 0.2])
+plt.savefig("Tobin_2022_perseus.png")
+
+import pdb
+pdb.set_trace()
 
 #2016
 Tobin_objects = {
