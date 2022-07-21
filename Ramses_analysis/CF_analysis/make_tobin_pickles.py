@@ -22,7 +22,7 @@ for bin_it in range(1, len(S_bins)):
     N_s = Perseus_singles + smaller_seps + 2*larger_seps
     N_sys = N_s + N_b
     cf = N_b/N_sys
-    cf_err = CF_err
+    cf_err = CF_err(cf, N_sys)
     CF_per_bin_Tobin_per.append(cf)
     CF_err_per.append(cf_err)
 
