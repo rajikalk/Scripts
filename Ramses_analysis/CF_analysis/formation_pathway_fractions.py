@@ -252,8 +252,15 @@ x_val = [1500, 3000, 3750, 4500, 6000, 12000]
 y_mean = np.array(fit_params).T[1]#0]
 y_std = np.array(fit_params).T[2]
 
-import pdb
-pdb.set_trace()
+y_lin = 10**y_mean
+y_lower = 10**(y_mean-y_std)
+y_upper = 10**(y_mean+y_std)
+y_lower_err = y_lin - y_lower
+y_upper_err = y_upper - y_lin
+
+#import pdb
+#pdb.set_trace()
+#plt.errorbar(x_val, 10**y_mean, )
 
 plt.errorbar(x_val, y_mean, y_std)
 plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size)
