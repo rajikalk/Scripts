@@ -22,12 +22,13 @@ for bin_it in range(1, len(S_bins)):
     N_s = Perseus_singles + smaller_seps + 2*larger_seps
     N_sys = N_s + N_b
     cf = N_b/N_sys
-    cf_err = CF_err(cf, N_sys)
+    cf_err_abs = CF_err(cf, N_sys)
+    cf_err = [cf-cf_err_abs[0], cf_err_abs[1]-cf]
     CF_per_bin_Tobin_per.append(cf)
     CF_err_per.append(cf_err)
 
 plt.clf()
-plt.bar(bin_centers, CF_per_bin_Tobin_per, yerr=CF_err_per, width=0.25, fill=False, edgecolor='black')
+plt.bar(bin_centers, CF_per_bin_Tobin_per, yerr=np.array(CF_err_per).T, width=0.25, fill=False, edgecolor='black')
 #plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, fill=False, edgecolor='black')
 plt.ylabel("Companion Frequency")
 plt.xlabel("Log (AU)")
