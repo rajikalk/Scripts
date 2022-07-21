@@ -105,7 +105,7 @@ Bimodal_dist = np.array([0.00780592, 0.01872544, 0.03498372, 0.05090101, 0.05767
        0.05090462, 0.03504812, 0.01944561, 0.01284564, 0.02460516,
        0.06113053, 0.10387658, 0.11138321])
 
-for CF_it in range(len(CF_Array_Full):
+for CF_it in range(len(CF_Array_Full)):
     CF_hist = CF_Array_Full[CF_it]
     N_sys = np.sum(N_sys_total[CF_it],axis=1)
     Err_L, Err_U = CF_err(CF_hist, N_sys)
