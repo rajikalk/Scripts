@@ -14,6 +14,11 @@ import matplotlib.gridspec as gridspec
 f_acc= 0.5
 Accretion_array = []
 
+def CF_err(CF, N_sys, z=1):
+    Err_lower = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) - (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
+    Err_upper = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) + (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
+    return Err_lower, Err_upper
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -102,6 +107,8 @@ Bimodal_dist = np.array([0.00780592, 0.01872544, 0.03498372, 0.05090101, 0.05767
 CF_it = -1
 for CF_hist in CF_Array_Full:
     CF_it = CF_it + 1
+    import pdb
+    pdb.set_trace()
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.5:
