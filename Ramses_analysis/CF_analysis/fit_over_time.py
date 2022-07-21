@@ -112,7 +112,7 @@ for CF_it in range(len(CF_Array_Full)):
     CF_errs = (Err_U-Err_L)/2
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
-    if chi_red_tobin < 0.05:
+    if chi_red_tobin < 0.02:
         plt.clf()
         plt.bar(bin_centers, CF_hist, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
