@@ -1,9 +1,0 @@
-Table 5
-Class II Multiple Systems
-
-Source	Separation	Separation	Flux Difference	
-	(")	(au)	(Log [F_1/F_2])	
-EDJ2009-269	0.524 +or- 0.007	120.6 +or- 1.6	0.12 +or- 0.08	
-EDJ2009-156	3.107 +or- 0.011	714.6 +or- 2.5	0.17 +or- 0.13	
-
-Note. This table includes only Class II + Class II multiple systems. The flux difference is calculated in the 9 mm band.

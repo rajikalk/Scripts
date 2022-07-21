@@ -665,6 +665,10 @@ if update == True and args.make_plots_only == 'False':
                             'converged'   : False,
                             'time'        : time}
                 
+                if size == 1 and bin_it == len(S_bins):
+                    import pdb
+                    pdb.set_trace()
+                
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
                 nan_size = len(sink_inds_total) - len(sink_inds)
