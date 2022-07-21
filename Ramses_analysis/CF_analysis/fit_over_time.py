@@ -44,7 +44,7 @@ file_open.close()
 
 pickle_file = args.pickled_file
 try:
-    file = open(pickle_file+'.pkl', 'rb')
+    file = open(pickle_file, 'rb')
     Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
     file.close()
 except:
