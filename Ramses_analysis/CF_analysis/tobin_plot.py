@@ -1,6 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def CF_err(CF, N_sys, z=1):
+    Err_lower = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) - (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
+    Err_upper = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) + (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
+    return Err_lower, Err_upper
+
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
@@ -170,6 +175,8 @@ for bin_it in range(1, len(S_bins)):
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    import pdb
+    pdb.set_trace()
     CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
@@ -327,6 +334,8 @@ for bin_it in range(1, len(S_bins)):
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    import pdb
+    pdb.set_trace()
     CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
@@ -512,6 +521,8 @@ for bin_it in range(1, len(S_bins)):
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    import pdb
+    pdb.set_trace()
     CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
@@ -670,6 +681,8 @@ for bin_it in range(1, len(S_bins)):
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    import pdb
+    pdb.set_trace()
     CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
@@ -850,6 +863,8 @@ for bin_it in range(1, len(S_bins)):
     N_sys = N_s + N_b + N_t
     cf = (N_b+2*N_t)/N_sys
     N_comp = np.sum(np.array(N_comps_in_sys) - 1)
+    import pdb
+    pdb.set_trace()
     CF_err = ((N_comp*(1-(N_comp/N_sys)))**0.5)*(1/N_sys)
     #CF_err = (N_comp*(1-(N_comp/N_sys))**0.5)*(1/N_sys)
     
