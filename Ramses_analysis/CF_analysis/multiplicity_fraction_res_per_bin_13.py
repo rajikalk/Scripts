@@ -816,7 +816,7 @@ if update == True and args.make_plots_only == 'False':
                                         if use_mid_point_sep:
                                             pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
                                         else:
-                                            pos_diff = res['separation_vector'][ind_1] - res['separation_vector'][ind_2]
+                                            pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                         #MAKE SURE 2D SEP IS BEING SAVED.
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
                                         if sep_value > (scale_l.in_units('AU')/2):
@@ -841,7 +841,7 @@ if update == True and args.make_plots_only == 'False':
                                                 if use_mid_point_sep:
                                                     res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
                                                 else:
-                                                    res['separation_vector'][binary_ind] = (res['separation_vector'][ind_1]*res['mass'][ind_1] + res['separation_vector'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
+                                                    res['separation_vector'][binary_ind] = (res['abspos'][ind_1]*res['mass'][ind_1] + res['abspos'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
                                                 replace_string = str(binary_ind)
                                                 res['n'][multi_ind] = res['n'][multi_ind] - 1
                                                 removed_stars = removed_stars + 1
@@ -859,7 +859,7 @@ if update == True and args.make_plots_only == 'False':
                                                 if use_mid_point_sep:
                                                     res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
                                                 else:
-                                                    res['separation_vector'][binary_ind] = (res['separation_vector'][ind_1]*res['mass'][ind_1] + res['separation_vector'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
+                                                    res['separation_vector'][binary_ind] = (res['abspos'][ind_1]*res['mass'][ind_1] + res['abspos'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
                                                 replace_string = str(binary_ind)
                                                 if len(vis_subs) == 1:
                                                     res['n'][multi_ind] = res['n'][multi_ind] - 1
@@ -885,7 +885,7 @@ if update == True and args.make_plots_only == 'False':
                                             if use_mid_point_sep:
                                                 res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
                                             else:
-                                                res['separation_vector'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                                res['abspos'][binary_ind] = res['abspos'][list(vis_subs)][0]
                                             replace_string = str(binary_ind)
                                         else:
                                             replace_string = ""
