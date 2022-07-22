@@ -119,14 +119,6 @@ L_bins = np.logspace(-1.25,3.5,20)
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
-file_open.close()
-
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
-file_open.close()
-
 #=====================================================================================================
 #Create units override
 
@@ -1030,6 +1022,14 @@ if rank == 0:
     CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
     CF_bot = np.sum(Summed_systems, axis=1)
     CF_Total = CF_top/CF_bot
+
+    file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
+    bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
+    file_open.close()
+
+    file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
+    bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
+    file_open.close()
 
     plt.clf()
     try:
