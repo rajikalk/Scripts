@@ -851,6 +851,7 @@ if update == True and args.make_plots_only == 'False':
                                                 replace_string = ""
                                                 res['n'][multi_ind] = res['n'][multi_ind] - 2
                                                 removed_stars = removed_stars + 2
+                                        replace_string = str(binary_ind)
                                         str_1 = sys_string[:open_ind]
                                         str_2 = sys_string[char_it+1:]
                                         sys_string = str_1 + replace_string + str_2
