@@ -35,7 +35,7 @@ def parse_inputs():
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)#120?
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
-    parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='False')
+    parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
     parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
     parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
@@ -254,13 +254,21 @@ else:
     
 if args.projected_separation == 'True':
     multiplicity_analysis_projection = True
-else:
-    multiplicity_analysis_projection = False
-
-if args.use_midpoint_separation == 'True':
     use_mid_point_sep = True
 else:
+    multiplicity_analysis_projection = False
     use_mid_point_sep = False
+
+if args.use_midpoint_separation != '':
+    if args.use_midpoint_separation == 'True':
+        use_mid_point_sep = True
+    else:
+        use_mid_point_sep = False
+
+if use_mid_point_sep:
+    sep_key = 'midpoint'
+else:
+    sep_key = 'separation'
 
 #Calculate variables
 luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
@@ -817,7 +825,7 @@ if update == True and args.make_plots_only == 'False':
                                         binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                         ind_1 = res['index1'][binary_ind]
                                         ind_2 = res['index2'][binary_ind]
-                                        pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                        pos_diff = res[sep_key][ind_1] - res[sep_key][ind_2]
                                         #MAKE SURE 2D SEP IS BEING SAVED.
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
                                         if sep_value > (scale_l.in_units('AU')/2):
@@ -839,7 +847,7 @@ if update == True and args.make_plots_only == 'False':
                                             if len(vis_subs) > 0:
                                                 L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                                 M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
+                                                res[sep_key][binary_ind] = (res[sep_key][ind_1] + res[sep_key][ind_2])/2#res['midpoint'][central_ind]
                                                 replace_string = str(binary_ind)
                                                 res['n'][multi_ind] = res['n'][multi_ind] - 1
                                                 removed_stars = removed_stars + 1
@@ -854,7 +862,7 @@ if update == True and args.make_plots_only == 'False':
                                             if len(vis_subs) > 0:
                                                 L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                                 M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
+                                                res[sep_key][binary_ind] = (res[sep_key][ind_1] + res[sep_key][ind_2])/2 #res['midpoint'][central_ind]
                                                 replace_string = str(binary_ind)
                                                 if len(vis_subs) == 1:
                                                     res['n'][multi_ind] = res['n'][multi_ind] - 1
@@ -877,7 +885,7 @@ if update == True and args.make_plots_only == 'False':
                                         L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                         M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
                                         if len(vis_subs)>0:
-                                            res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                            res[sep_key][binary_ind] = res['abspos'][list(vis_subs)][0]
                                             replace_string = str(binary_ind)
                                         else:
                                             replace_string = ""
