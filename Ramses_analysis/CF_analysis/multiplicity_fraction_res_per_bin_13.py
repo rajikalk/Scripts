@@ -562,10 +562,7 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
-if args.debugging == "True":
-    time_its = [10815, 10818, 10821, 10825]
-else:
-    time_its = range(start_time_ind, end_time_ind+1)
+time_its = range(start_time_ind, end_time_ind+1)
 
 if update == True and args.make_plots_only == 'False':
     rit = -1
