@@ -748,8 +748,8 @@ if update == True and args.make_plots_only == 'False':
                         M_dot[fake] = 0.0
                     else:
                         res['n'][fake] = 1
-                        L_tot[fake] = np.sum(L_tot[list(vis_s_fake_inds)])
-                        M_dot[fake] = np.sum(M_dot[list(vis_s_fake_inds)])
+                        L_tot[fake] = np.max(L_tot[list(vis_s_fake_inds)]) #np.sum(L_tot[list(vis_s_fake_inds)])
+                        M_dot[fake] = np.max(M_dot[list(vis_s_fake_inds)]) #np.sum(M_dot[list(vis_s_fake_inds)])
                         vis_stars_in_collapsed_systems = vis_stars_in_collapsed_systems + len(vis_s_fake_inds)
                         redefined_n = redefined_n + 1
                         checked_visible_inds = checked_visible_inds + list(vis_s_fake_inds)
@@ -879,8 +879,8 @@ if update == True and args.make_plots_only == 'False':
                                     elif len(sub_sys_comps) == 1:
                                         binary_ind = np.where((res['index1']==sub_sys_comps[0])|(res['index2']==sub_sys_comps[0]))[0][0]
                                         vis_subs = set(sub_sys_comps).intersection(set(visible_stars))
-                                        L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                        M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
+                                        L_tot[binary_ind] = np.max(L_tot[list(vis_subs)]) #np.sum(L_tot[list(vis_subs)])
+                                        M_dot[binary_ind] = np.max(M_dot[list(vis_subs)]) #np.sum(M_dot[list(vis_subs)])
                                         if len(vis_subs)>0:
                                             if use_mid_point_sep:
                                                 res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
