@@ -118,7 +118,6 @@ savedir = sys.argv[2]
 L_bins = np.logspace(-1.25,3.5,20)
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
-
 #=====================================================================================================
 #Create units override
 
@@ -258,7 +257,7 @@ if args.use_midpoint_separation != '':
         use_mid_point_sep = False
 
 if use_mid_point_sep:
-    sep_key = 'midpoint'
+    sep_key = 'midpointSep'
 else:
     sep_key = 'separation'
 
@@ -706,7 +705,7 @@ if update == True and args.make_plots_only == 'False':
 
                 #Find all singles and top systems with separations below the bin lower bound
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0] #These are true singles
-                s_fake = np.where((res['midpointSep']<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin. But these separations are calculated using the center of mass.
+                s_fake = np.where((res[sep_key]<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin. But these separations are calculated using the center of mass.
 
                 if args.verbose_printing != 'False':
                     print_line = "AND", len(set(s_true).intersection(set(visible_stars))), "ARE VISIBLE SINGLE STARS"
@@ -766,7 +765,7 @@ if update == True and args.make_plots_only == 'False':
                         print_lines.append(print_line)
                 
                 #Determine which systems could still be multiples
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True) & (res['midpointSep']>S_bins[bin_it-1]))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True) & (res[sep_key]>S_bins[bin_it-1]))[0]
                 
                 #Let's go over the multiple systems and remove subsystems that are below the separation bin, or invisible
                 removed_stars = 0
@@ -817,7 +816,10 @@ if update == True and args.make_plots_only == 'False':
                                         binary_ind = np.where((res['index1']==sub_sys_comps[0])&(res['index2']==sub_sys_comps[1]))[0][0]
                                         ind_1 = res['index1'][binary_ind]
                                         ind_2 = res['index2'][binary_ind]
-                                        pos_diff = res[sep_key][ind_1] - res[sep_key][ind_2]
+                                        if use_mid_point_sep:
+                                            pos_diff = res['midpoint'][ind_1] - res['midpoint'][ind_2]
+                                        else:
+                                            pos_diff = res['separation_vector'][ind_1] - res['separation_vector'][ind_2]
                                         #MAKE SURE 2D SEP IS BEING SAVED.
                                         sep_value = np.sqrt(np.sum(pos_diff**2))
                                         if sep_value > (scale_l.in_units('AU')/2):
@@ -837,9 +839,12 @@ if update == True and args.make_plots_only == 'False':
                                             #Reduce systems! Let's check if any of the components are visible
                                             vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
                                             if len(vis_subs) > 0:
-                                                L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                                M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                res[sep_key][binary_ind] = (res[sep_key][ind_1] + res[sep_key][ind_2])/2#res['midpoint'][central_ind]
+                                                L_tot[binary_ind] = np.max(L_tot[list(vis_subs)]) #np.sum(L_tot[list(vis_subs)])
+                                                M_dot[binary_ind] = np.max(M_dot[list(vis_subs)]) #np.sum(M_dot[list(vis_subs)])
+                                                if use_mid_point_sep:
+                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2#res['midpoint'][central_ind]
+                                                else:
+                                                    res['separation_vector'][binary_ind] = (res['separation_vector'][ind_1]*res['mass'][ind_1] + res['separation_vector'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
                                                 replace_string = str(binary_ind)
                                                 res['n'][multi_ind] = res['n'][multi_ind] - 1
                                                 removed_stars = removed_stars + 1
@@ -852,9 +857,12 @@ if update == True and args.make_plots_only == 'False':
                                         else:
                                             vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))
                                             if len(vis_subs) > 0:
-                                                L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
-                                                M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
-                                                res[sep_key][binary_ind] = (res[sep_key][ind_1] + res[sep_key][ind_2])/2 #res['midpoint'][central_ind]
+                                                L_tot[binary_ind] = np.max(L_tot[list(vis_subs)])#np.sum(L_tot[list(vis_subs)])
+                                                M_dot[binary_ind] = np.max(M_dot[list(vis_subs)])#np.sum(M_dot[list(vis_subs)])
+                                                if use_mid_point_sep:
+                                                    res['midpoint'][binary_ind] = (res['midpoint'][ind_1] + res['midpoint'][ind_2])/2 #res['midpoint'][central_ind]
+                                                else:
+                                                    res['separation_vector'][binary_ind] = (res['separation_vector'][ind_1]*res['mass'][ind_1] + res['separation_vector'][ind_2]*res['mass'][ind_2])/(res['mass'][ind_1]+res['mass'][ind_2])
                                                 replace_string = str(binary_ind)
                                                 if len(vis_subs) == 1:
                                                     res['n'][multi_ind] = res['n'][multi_ind] - 1
@@ -877,7 +885,10 @@ if update == True and args.make_plots_only == 'False':
                                         L_tot[binary_ind] = np.sum(L_tot[list(vis_subs)])
                                         M_dot[binary_ind] = np.sum(M_dot[list(vis_subs)])
                                         if len(vis_subs)>0:
-                                            res[sep_key][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                            if use_mid_point_sep:
+                                                res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
+                                            else:
+                                                res['separation_vector'][binary_ind] = res['abspos'][list(vis_subs)][0]
                                             replace_string = str(binary_ind)
                                         else:
                                             replace_string = ""
@@ -1030,6 +1041,7 @@ if rank == 0:
     file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
     bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
     file_open.close()
+
 
     plt.clf()
     try:
