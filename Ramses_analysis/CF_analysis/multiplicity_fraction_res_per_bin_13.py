@@ -665,10 +665,6 @@ if update == True and args.make_plots_only == 'False':
                             'converged'   : False,
                             'time'        : time}
                 
-                if size == 1 and bin_it == 13:
-                    import pdb
-                    pdb.set_trace()
-                
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
                 nan_size = len(sink_inds_total) - len(sink_inds)
@@ -770,7 +766,7 @@ if update == True and args.make_plots_only == 'False':
                         print_lines.append(print_line)
                 
                 #Determine which systems could still be multiples
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
+                multi_inds = np.where((res['n']>1) & (res['topSystem']==True) & (res['midpointSep']>S_bins[bin_it-1]))[0]
                 
                 #Let's go over the multiple systems and remove subsystems that are below the separation bin, or invisible
                 removed_stars = 0
