@@ -879,8 +879,8 @@ if update == True and args.make_plots_only == 'False':
                                     elif len(sub_sys_comps) == 1:
                                         binary_ind = np.where((res['index1']==sub_sys_comps[0])|(res['index2']==sub_sys_comps[0]))[0][0]
                                         vis_subs = set(sub_sys_comps).intersection(set(visible_stars))
-                                        L_tot[binary_ind] = np.max(L_tot[list(vis_subs)]) #np.sum(L_tot[list(vis_subs)])
-                                        M_dot[binary_ind] = np.max(M_dot[list(vis_subs)]) #np.sum(M_dot[list(vis_subs)])
+                                        L_tot[binary_ind] = L_tot[list(vis_subs)] #np.sum(L_tot[list(vis_subs)])
+                                        M_dot[binary_ind] = M_dot[list(vis_subs)] #np.sum(M_dot[list(vis_subs)])
                                         if len(vis_subs)>0:
                                             if use_mid_point_sep:
                                                 res['midpoint'][binary_ind] = res['abspos'][list(vis_subs)][0]
