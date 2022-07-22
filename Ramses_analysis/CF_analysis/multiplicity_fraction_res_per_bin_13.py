@@ -665,7 +665,7 @@ if update == True and args.make_plots_only == 'False':
                             'converged'   : False,
                             'time'        : time}
                 
-                if size == 1 and bin_it == len(S_bins)-1:
+                if size == 1 and bin_it == 13:
                     import pdb
                     pdb.set_trace()
                 
