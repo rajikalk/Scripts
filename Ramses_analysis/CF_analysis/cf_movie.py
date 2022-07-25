@@ -44,11 +44,11 @@ file_open.close()
 import scipy.stats as stats
 
 #first peak
-lower_amp = 0.12
-lower_mean = np.log10(100)
-lower_std = 0.5
-upper_amp = 0.05
-upper_mean = np.log10(4000)
+lower_amp = 0.11
+lower_mean = np.log10(120)
+lower_std = 0.4
+upper_amp = 0.045
+upper_mean = np.log10(3500)
 upper_std = 0.3
 x = np.linspace(1,4,100)
 lower_gauss = lower_amp*stats.norm.pdf(x, lower_mean, lower_std)
