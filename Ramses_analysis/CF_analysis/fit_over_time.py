@@ -15,8 +15,10 @@ f_acc= 0.5
 Accretion_array = []
 
 def CF_err(CF, N_sys, z=1):
-    Err_lower = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) - (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
-    Err_upper = (1/(1+((z**2)/N_sys)))*(CF + (z**2/(2*N_sys))) + (z/(1+((z**2)/N_sys)))*np.sqrt((((CF*(1-CF))/N_sys)+((z**2)/(4*N_sys))))
+    Err_lower = (1/(1+(np.square(z)/N_sys)))*(CF + (np.square(z)/(2*N_sys))) - (z/(1+(np.square(z)/N_sys)))*np.sqrt(((CF*(1-CF))/N_sys)+(np.square(z)/(4*(N_sys**2))))
+    Err_upper = (1/(1+(np.square(z)/N_sys)))*(CF + (np.square(z)/(2*N_sys))) + (z/(1+(np.square(z)/N_sys)))*np.sqrt(((CF*(1-CF))/N_sys)+(np.square(z)/(4*(N_sys**2))))
+    Err_lower = CF - Err_lower
+    Err_upper = Err_upper - CF
     return Err_lower, Err_upper
 
 def parse_inputs():
@@ -38,11 +40,11 @@ size = CW.Get_size()
 
 #=====================================================================================================
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
+bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
 file_open.close()
 
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
+bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
 #=====================================================================================================
@@ -96,6 +98,8 @@ except:
 
 #do chi squared
 reduced_chi_square_tobin = []
+import pdb
+pdb.set_trace()
 usable_bin_inds = np.array([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 Times = (Times-Times[0])/1e6
 Non_bimodal_dist = np.array([0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 ,
@@ -109,7 +113,7 @@ for CF_it in range(len(CF_Array_Full)):
     CF_hist = CF_Array_Full[CF_it]
     N_sys = np.sum(N_sys_total[CF_it],axis=1)
     Err_L, Err_U = CF_err(CF_per_bin_Tobin_Per, N_sys)
-    CF_errs = (Err_U-Err_L)/2
+    CF_errs = (Err_L+Err_U)/2
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.02:
