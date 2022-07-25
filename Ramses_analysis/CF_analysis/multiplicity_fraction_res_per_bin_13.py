@@ -246,6 +246,7 @@ else:
 if args.projected_separation == 'True':
     multiplicity_analysis_projection = True
     use_mid_point_sep = True
+    max_separations = []
 else:
     multiplicity_analysis_projection = False
     use_mid_point_sep = False
@@ -635,9 +636,7 @@ if update == True and args.make_plots_only == 'False':
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
                         
-                        if np.max(res['separation']>20000):
-                            import pdb
-                            pdb.set_trace()
+                        max_separations.append(res['separation']>20000)
                     
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
@@ -956,10 +955,26 @@ if update == True and args.make_plots_only == 'False':
     CW.Barrier()
     print("FINISHED GOING THROUGH TIMES ON RANK", rank)
     
+if multiplicity_analysis_projection:
+    file = open('max_separations_'+str(rank)+'.pkl', 'wb')
+    pickle.dump((max_separations),file)
+    file.close()
     
 sys.stdout.flush()
 CW.Barrier()
 #=====================================================
+if rank == 0 and multiplicity_analysis_projection:
+    pickle_files = sorted(glob.glob('max_separations_*.pkl'))
+    All_max_seps = []
+    for pick_file in pickle_files:
+        file = open(pick_file, 'rb')
+        max_separations = pickle.load(file)
+        file.close
+        All_max_seps = All_max_seps + max_separations
+    file = open('max_separations.pkl', 'wb')
+    pickle.dump((All_max_seps),file)
+    file.close()
+
 #Create plots below
 
 if rank == 0:
