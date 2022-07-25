@@ -110,7 +110,7 @@ Bimodal_dist = np.array([0.00780592, 0.01872544, 0.03498372, 0.05090101, 0.05767
 for CF_it in range(len(CF_Array_Full)):
     CF_hist = CF_Array_Full[CF_it]
     N_sys = np.sum(N_sys_total[CF_it],axis=1)
-    CF_errs = np.mean(CF_errs,axis=0)
+    CF_errs = np.mean(CF_errs_Per,axis=0)
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.02:
