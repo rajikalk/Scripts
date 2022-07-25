@@ -113,7 +113,7 @@ for CF_it in range(len(CF_Array_Full)):
     CF_errs = np.mean(CF_errs_Per,axis=0)
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
-    if chi_red_tobin < 0.02:
+    if chi_red_tobin < 2:
         plt.clf()
         plt.bar(bin_centers, CF_hist, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
@@ -127,7 +127,7 @@ for CF_it in range(len(CF_Array_Full)):
         print('saved', args.save_directory+'Time_'+str(Times[CF_it])+'Myr_chi_tobin.png')
     
 plt.clf()
-plt.semilogy(SFE, reduced_chi_square_tobin)
+plt.plot(SFE, reduced_chi_square_tobin)
 plt.xlabel("SFE")
 plt.ylabel("mean Chi squared (<$\chi^2$>)")
 plt.xlim([0, 0.05])
