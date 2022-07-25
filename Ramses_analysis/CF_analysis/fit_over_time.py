@@ -123,8 +123,8 @@ for CF_it in range(len(CF_Array_Full)):
         plt.xlim([1, 4])
         plt.ylim(bottom=0.0)
         plt.title("reduced chi$^2$ = " + str(chi_red_tobin))
-        plt.savefig(args.save_directory+'Time_'+str(Times[CF_it])+'Myr_chi_tobin.png', format='png', bbox_inches='tight')
-        print('saved', args.save_directory+'Time_'+str(Times[CF_it])+'Myr_chi_tobin.png')
+        plt.savefig(args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png', format='png', bbox_inches='tight')
+        print('saved', args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png')
     
 plt.clf()
 plt.plot(SFE, reduced_chi_square_tobin)
