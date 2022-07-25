@@ -634,6 +634,10 @@ if update == True and args.make_plots_only == 'False':
                             pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
+                        
+                        if np.max(res['separation']>20000):
+                            import pdb
+                            pdb.set_trace()
                     
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
