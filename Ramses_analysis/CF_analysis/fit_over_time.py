@@ -100,17 +100,38 @@ except:
 reduced_chi_square_tobin = []
 usable_bin_inds = np.array([2, 4, 6, 7, 8, 9, 10, 11, 12])
 Times = (Times-Times[0])/1e6
-Non_bimodal_dist = np.array([0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 ,
-       0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 ,
-       0.05457945, 0.09212946, 0.12967947])
-Bimodal_dist = np.array([0.00780592, 0.01872544, 0.03498372, 0.05090101, 0.05767853,
-       0.05090462, 0.03504812, 0.01944561, 0.01284564, 0.02460516,
-       0.06113053, 0.10387658, 0.11138321])
+
+import scipy.stats as stats
+
+#first peak
+lower_amp = 0.12
+lower_mean = np.log10(100)
+lower_std = 0.5
+upper_amp = 0.05
+upper_mean = np.log10(4000)
+upper_std = 0.3
+x = np.linspace(1,4,100)
+lower_gauss = lower_amp*stats.norm.pdf(x, lower_mean, lower_std)
+upper_gauss = upper_amp*stats.norm.pdf(x, upper_mean, upper_std)
+gauss_total = lower_gauss + upper_gauss
+
 
 for CF_it in range(len(CF_Array_Full)):
-    CF_hist = CF_Array_Full[CF_it]
-    N_sys = np.sum(N_sys_total[CF_it],axis=1)
-    CF_errs = np.mean(CF_errs_Per,axis=0)
+    time_val = Times[CF_it]
+    start_time = Times[CF_it] - args.time_spread/2.
+    end_time = Times[CF_it] + args.time_spread/2.
+    
+    start_integration_it = np.argmin(abs(Times - start_time))
+    end_integration_it = np.argmin(abs(Times - end_time))
+    
+    CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+    CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+    CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+    CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+
+    CF_hist = CF_mean#CF_Array_Full[CF_it]
+    #N_sys = np.sum(N_sys_total[CF_it],axis=1)
+    CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.5:
