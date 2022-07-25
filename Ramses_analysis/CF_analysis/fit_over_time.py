@@ -98,7 +98,7 @@ except:
 
 #do chi squared
 reduced_chi_square_tobin = []
-usable_bin_inds = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
+usable_bin_inds = np.array([2, 4, 6, 7, 8, 9, 10, 11, 12])
 Times = (Times-Times[0])/1e6
 Non_bimodal_dist = np.array([0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 ,
        0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 , 0.0379096 ,
