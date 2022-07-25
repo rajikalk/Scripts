@@ -34,11 +34,11 @@ size = CW.Get_size()
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
+bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
 file_open.close()
 
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
+bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
 datadir = sys.argv[1]
@@ -84,8 +84,8 @@ for time_it in range(start_time_it, end_time_it):
                 plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
             except:
                 plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
-            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')

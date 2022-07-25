@@ -1036,19 +1036,19 @@ if rank == 0:
     CF_Total = CF_top/CF_bot
 
     file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
-    bin_centers, CF_per_bin_Tobin_Per = pickle.load(file_open)
+    bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
     file_open.close()
 
     file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
-    bin_centers, CF_per_bin_Tobin_Ori = pickle.load(file_open)
+    bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
     file_open.close()
 
 
     plt.clf()
     try:
         plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
+        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
     except:
         plt.bar(bin_centers[1:], CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
