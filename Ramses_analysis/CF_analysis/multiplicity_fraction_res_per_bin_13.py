@@ -636,7 +636,7 @@ if update == True and args.make_plots_only == 'False':
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
                         
-                        max_separations.append(res['separation']>20000)
+                        max_separations.append(np.max(res['separation']))
                     
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
@@ -971,6 +971,7 @@ if rank == 0 and multiplicity_analysis_projection:
         max_separations = pickle.load(file)
         file.close
         All_max_seps = All_max_seps + max_separations
+        os.remove(pick_file)
     file = open('max_separations.pkl', 'wb')
     pickle.dump((All_max_seps),file)
     file.close()
