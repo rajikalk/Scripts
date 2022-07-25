@@ -41,6 +41,20 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
+import scipy.stats as stats
+
+#first peak
+lower_amp = 0.12
+lower_mean = np.log10(100)
+lower_std = 0.5
+upper_amp = 0.05
+upper_mean = np.log10(4000)
+upper_std = 0.3
+x = np.linspace(1,4,100)
+lower_gauss = lower_amp*stats.norm.pdf(x, lower_mean, lower_std)
+upper_gauss = upper_amp*stats.norm.pdf(x, upper_mean, upper_std)
+gauss_total = lower_gauss + upper_gauss
+
 datadir = sys.argv[1]
 savedir = sys.argv[2]
 
@@ -84,8 +98,9 @@ for time_it in range(start_time_it, end_time_it):
                 plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
             except:
                 plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
-            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
+            plt.plot(x,gauss_total)
             plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')
