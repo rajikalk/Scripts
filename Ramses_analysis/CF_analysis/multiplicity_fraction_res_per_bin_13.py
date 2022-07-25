@@ -636,7 +636,8 @@ if update == True and args.make_plots_only == 'False':
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
                         
-                        max_separations.append(np.max(res['separation']))
+                        if bin_it == 13:
+                            max_separations.append(np.max(res['separation']))
                     
                     #else:
                     #    res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, projection=True, axis=args.axis, projection_vector=proj_unit, Grho=Grho)#cyclic=False
