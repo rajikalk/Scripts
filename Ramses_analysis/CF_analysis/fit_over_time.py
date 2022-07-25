@@ -104,15 +104,15 @@ Times = (Times-Times[0])/1e6
 import scipy.stats as stats
 
 #first peak
-lower_amp = 0.12
+lower_amp = 0.11
 lower_mean = np.log10(120)
-lower_std = 0.45
-upper_amp = 0.05
-upper_mean = np.log10(3000)
+lower_std = 0.4
+upper_amp = 0.045
+upper_mean = np.log10(3500)
 upper_std = 0.3
 x = np.linspace(1,4,100)
-lower_gauss = lower_amp*stats.norm.pdf(x, lower_mean, lower_std)
-upper_gauss = upper_amp*stats.norm.pdf(x, upper_mean, upper_std)
+lower_gauss = lower_amp*stats.norm.pdf(bin_centers[1:], lower_mean, lower_std)
+upper_gauss = upper_amp*stats.norm.pdf(bin_centers[1:], upper_mean, upper_std)
 gauss_total = lower_gauss + upper_gauss
 
 
@@ -132,7 +132,8 @@ for CF_it in range(len(CF_Array_Full)):
     CF_hist = CF_mean#CF_Array_Full[CF_it]
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
-    chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
+    chi_red_tobin = (np.sum(((CF_hist[1:]-gauss_total)**2)/(CF_errs[1:]**2)))/len(CF_hist[1:])
+    #chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.5:
         plt.clf()
