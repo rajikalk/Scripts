@@ -133,9 +133,9 @@ for CF_it in range(len(CF_Array_Full)):
     curr_errs = []
     for cf_val in range(len(CF_hist[1:])):
         if CF_hist[1:][cf_val] < gauss_total[cf_val]:
-            curr_errs.append(CF_err[0][cf_val])
-        else:
             curr_errs.append(CF_err[1][cf_val])
+        else:
+            curr_errs.append(CF_err[0][cf_val])
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     chi_red_tobin = (np.sum(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
