@@ -96,16 +96,9 @@ except:
     pickle.dump((Times, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion),file)
     file.close()
 
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
-scale_t = scale_l/scale_v
-Times = Times*scale_t.in_units('yr')
-
 #do chi squared
 reduced_chi_square_tobin = []
 usable_bin_inds = np.array([2, 4, 6, 7, 8, 9, 10, 11, 12])
-Times = (Times-Times[0])/1e6
 
 import scipy.stats as stats
 

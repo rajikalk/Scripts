@@ -71,8 +71,6 @@ if pickle_file[-4:] != '.pkl':
 file = open(pickle_file, 'rb')
 Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
 file.close()
-import pdb
-pdb.set_trace()
 
 if args.starting_ind == 0:
     start_time_it = np.argmin(abs(Times - args.time_spread/2.))
