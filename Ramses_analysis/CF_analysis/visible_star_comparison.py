@@ -104,7 +104,7 @@ G50_t_max = 0
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.02)
@@ -122,10 +122,14 @@ for pick_it in iter_range:
     
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_vis_stars'], label="Visible stars")
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_stars'], label="Total number of stars")
-        axs.flatten()[pick_it].set_ylabel('# ('+subplot_titles[pick_it]+')', fontsize=font_size)
+        axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
         axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
         if pick_it == 0:
-            axs.flatten()[pick_it].legend(loc='best', fontsize=font_size)
+            axs.flatten()[pick_it].text((0.005), np.max(superplot_dict['N_vis_stars'])-0.5*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        else:
+            axs.flatten()[pick_it].text((0.005), np.max(superplot_dict['N_vis_stars'])-0.15*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        if pick_it == 0:
+            axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
     except:
         print(pickle_files[file_it] + "doesn't exist yet")
 
