@@ -125,6 +125,8 @@ for CF_it in range(len(CF_Array_Full)):
     end_integration_it = np.argmin(abs(Times - end_time))
     
     CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+    import pdb
+    pdb.set_trace()
     CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
