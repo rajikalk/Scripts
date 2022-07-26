@@ -129,7 +129,7 @@ for CF_it in range(len(CF_Array_Full)):
     CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
 
-    CF_hist = np.median#CF_Array_Full[CF_it]
+    CF_hist = CF_median#CF_Array_Full[CF_it]
     curr_errs = []
     for cf_val in range(len(CF_hist[1:])):
         if CF_hist[1:][cf_val] < gauss_total[cf_val]:
