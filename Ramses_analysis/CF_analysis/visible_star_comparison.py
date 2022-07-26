@@ -104,7 +104,7 @@ G50_t_max = 0
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2*single_col_width), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 3*single_col_width), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.02)
