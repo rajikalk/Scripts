@@ -119,15 +119,17 @@ for pick_it in iter_range:
         file = open(pickle_files[file_it], 'rb')
         superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
         file.close()
+        
+        sfe_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
     
-        axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_vis_stars'], label="Visible stars")
-        axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_stars'], label="Total number of stars")
+        axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_vis_stars'][:sfe_5_ind], label="Visible stars")
+        axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_stars'][:sfe_5_ind], label="Total number of stars")
         axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
         axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
         if pick_it == 0:
-            axs.flatten()[pick_it].text((0.005), np.max(superplot_dict['N_vis_stars'])-0.5*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_vis_stars'])-0.45*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         else:
-            axs.flatten()[pick_it].text((0.005), np.max(superplot_dict['N_vis_stars'])-0.15*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+            axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_vis_stars'])-0.05*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         if pick_it == 0:
             axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
     except:
