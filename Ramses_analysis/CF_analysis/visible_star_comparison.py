@@ -122,7 +122,7 @@ for pick_it in iter_range:
     
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_vis_stars'], label="Visible stars")
         axs.flatten()[pick_it].plot(superplot_dict['SFE'], superplot_dict['N_stars'], label="Total number of stars")
-        axs.flatten()[pick_it].set_ylabel('# ('+subplot_titles[pick_it]+')', labelsize=font_size)
+        axs.flatten()[pick_it].set_ylabel('# ('+subplot_titles[pick_it]+')', fontsize=font_size)
         axs.flatten()[pick_it].set_ylim(bottom=0)
         axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
         if pick_it == 0:
