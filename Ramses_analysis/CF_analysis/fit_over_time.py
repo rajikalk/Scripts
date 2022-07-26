@@ -125,15 +125,21 @@ for CF_it in range(len(CF_Array_Full)):
     end_integration_it = np.argmin(abs(Times - end_time))
     
     CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-    import pdb
-    pdb.set_trace()
     CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
 
-    CF_hist = CF_mean#CF_Array_Full[CF_it]
+    CF_hist = np.median#CF_Array_Full[CF_it]
+    curr_errs = []
+    for cf_val in range(len(CF_hist[1:])):
+        if CF_hist[1:][cf_val] < gauss_total[cf_val]:
+            curr_errs.append(CF_err[0][cf_val])
+        else:
+            curr_errs.append(CF_err[1][cf_val])
+    import pdb
+    pdb.set_trace()
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
-    CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
+    #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     chi_red_tobin = (np.sum(((CF_hist[1:]-gauss_total)**2)/(CF_errs[1:]**2)))/len(CF_hist[1:])
     #chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
