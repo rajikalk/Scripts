@@ -136,14 +136,12 @@ for CF_it in range(len(CF_Array_Full)):
             curr_errs.append(CF_err[0][cf_val])
         else:
             curr_errs.append(CF_err[1][cf_val])
-    import pdb
-    pdb.set_trace()
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
-    chi_red_tobin = (np.sum(((CF_hist[1:]-gauss_total)**2)/(CF_errs[1:]**2)))/len(CF_hist[1:])
+    chi_red_tobin = (np.sum(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
     #chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
-    if chi_red_tobin < 0.25:
+    if chi_red_tobin < 0.1:
         plt.clf()
         plt.bar(bin_centers, CF_hist, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
