@@ -41,6 +41,11 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v
+
 import scipy.stats as stats
 
 #first peak
@@ -66,6 +71,8 @@ if pickle_file[-4:] != '.pkl':
 file = open(pickle_file, 'rb')
 Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
 file.close()
+import pdb
+pdb.set_trace()
 
 if args.starting_ind == 0:
     start_time_it = np.argmin(abs(Times - args.time_spread/2.))
