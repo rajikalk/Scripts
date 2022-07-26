@@ -127,9 +127,9 @@ for pick_it in iter_range:
         axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
         axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
         if pick_it == 0:
-            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_vis_stars'])-0.45*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.45*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         else:
-            axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_vis_stars'])-0.05*np.max(superplot_dict['N_vis_stars']), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+            axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.05*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         if pick_it == 0:
             axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
     except:
