@@ -126,8 +126,9 @@ for pick_it in iter_range:
         axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_stars'][:sfe_5_ind], label="Total number of stars")
         axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
         axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
+        axs.flatten()[pick_it].set_ylim(bottom=0)
         if pick_it == 0:
-            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.6*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.65*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         else:
             axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.1*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         if pick_it == 0:
@@ -135,8 +136,7 @@ for pick_it in iter_range:
     except:
         print(pickle_files[file_it] + "doesn't exist yet")
 
-axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
-axs.flatten()[pick_it].set_xlim([0, 0.05])
-axs.flatten()[pick_it].set_ylim(bottom=0)
-plt.savefig('Visible_star_comparison.pdf', bbox_inches='tight', pad_inches=0.02)
+    axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
+    axs.flatten()[pick_it].set_xlim([0, 0.05])
+    plt.savefig('Visible_star_comparison.pdf', bbox_inches='tight', pad_inches=0.02)
 
