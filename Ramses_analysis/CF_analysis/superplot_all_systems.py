@@ -462,18 +462,32 @@ if rank == 0:
             superplot_dict = pickle.load(file)
             file.close()
             
-            for time_key in superplot_dict['System_times'].keys():
-                if time_key not in full_dict['System_times_full'].keys():
-                    for full_key in full_dict.keys():
-                        if 'System' in full_key:
-                            full_dict[full_key].update({time_key:superplot_dict[full_key.split('_full')[0]][time_key]})
-                else:
-                    for full_key in full_dict.keys():
-                        if 'System' in full_key:
-                            full_dict[full_key][time_key] = full_dict[full_key][time_key] + superplot_dict[full_key.split('_full')[0]][time_key]
-            for full_key in full_dict.keys():
-                if 'System' not in full_key:
-                    full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
+            try:
+                for time_key in superplot_dict['System_times'].keys():
+                    if time_key not in full_dict['System_times_full'].keys():
+                        for full_key in full_dict.keys():
+                            if 'System' in full_key:
+                                full_dict[full_key].update({time_key:superplot_dict[full_key.split('_full')[0]][time_key]})
+                    else:
+                        for full_key in full_dict.keys():
+                            if 'System' in full_key:
+                                full_dict[full_key][time_key] = full_dict[full_key][time_key] + superplot_dict[full_key.split('_full')[0]][time_key]
+                for full_key in full_dict.keys():
+                    if 'System' not in full_key:
+                        full_dict[full_key] = full_dict[full_key] + superplot_dict[full_key.split('_full')[0]]
+            except:
+                for time_key in superplot_dict[0]['System_times'].keys():
+                    if time_key not in full_dict['System_times_full'].keys():
+                        for full_key in full_dict.keys():
+                            if 'System' in full_key:
+                                full_dict[full_key].update({time_key:superplot_dict[0][full_key.split('_full')[0]][time_key]})
+                    else:
+                        for full_key in full_dict.keys():
+                            if 'System' in full_key:
+                                full_dict[full_key][time_key] = full_dict[full_key][time_key] + superplot_dict[0][full_key.split('_full')[0]][time_key]
+                for full_key in full_dict.keys():
+                    if 'System' not in full_key:
+                        full_dict[full_key] = full_dict[full_key] + superplot_dict[0][full_key.split('_full')[0]]
             #os.remove(pick_file)
         
         #Let's sort the data
@@ -482,22 +496,38 @@ if rank == 0:
                 if 'System' in full_key:
                     dict_sort = np.argsort(np.array(full_dict['System_times_full'][time_key]).T)
                     sorted_array = np.array(full_dict[full_key][time_key])[dict_sort]
-                    superplot_dict[full_key.split('_full')[0]][time_key] = sorted_array.tolist()
+                    try:
+                        superplot_dict[full_key.split('_full')[0]][time_key] = sorted_array.tolist()
+                    except:
+                        superplot_dict[0][full_key.split('_full')[0]][time_key] = sorted_array.tolist()
             
         sorted_inds = np.argsort(full_dict['Times_full'])
-        for super_key in superplot_dict.keys():
-            if 'System' not in super_key:
-                try:
-                    superplot_dict[super_key] = np.array(full_dict[super_key+'_full'])[sorted_inds].tolist()
-                except:
-                    print(super_key, 'does not exist')
+        try:
+            for super_key in superplot_dict.keys():
+                if 'System' not in super_key:
+                    try:
+                        superplot_dict[super_key] = np.array(full_dict[super_key+'_full'])[sorted_inds].tolist()
+                    except:
+                        print(super_key, 'does not exist')
+        except:
+            for super_key in superplot_dict[0].keys():
+                if 'System' not in super_key:
+                    try:
+                        superplot_dict[0][super_key] = np.array(full_dict[super_key+'_full'])[sorted_inds].tolist()
+                    except:
+                        print(super_key, 'does not exist')
         
         #sort keys into chronological order of system formation
         Start_times = []
         Sort_keys = []
-        for time_key in superplot_dict['System_times'].keys():
-            Start_times.append(superplot_dict['System_times'][time_key][0])
-            Sort_keys.append(time_key)
+        try:
+            for time_key in superplot_dict['System_times'].keys():
+                Start_times.append(superplot_dict['System_times'][time_key][0])
+                Sort_keys.append(time_key)
+        except:
+            for time_key in superplot_dict[0]['System_times'].keys():
+                Start_times.append(superplot_dict[0]['System_times'][time_key][0])
+                Sort_keys.append(time_key)
         sorted_inds = np.argsort(Start_times)
         Sorted_keys = np.array(Sort_keys)[sorted_inds]
         del Sort_keys
@@ -510,23 +540,42 @@ if rank == 0:
         System_ecc = {}
         System_energies = {}
         for sorted_key in Sorted_keys:
-            System_seps.update({sorted_key:superplot_dict['System_seps'][sorted_key]})
-            System_midpoint_seps.update({sorted_key:superplot_dict['System_midpoint_seps'][sorted_key]})
-            System_semimajor.update({sorted_key:superplot_dict['System_semimajor'][sorted_key]})
-            System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
-            System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
-            System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
+            try:
+                System_seps.update({sorted_key:superplot_dict['System_seps'][sorted_key]})
+                System_midpoint_seps.update({sorted_key:superplot_dict['System_midpoint_seps'][sorted_key]})
+                System_semimajor.update({sorted_key:superplot_dict['System_semimajor'][sorted_key]})
+                System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
+                System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
+                System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
+            except:
+                System_seps.update({sorted_key:superplot_dict[0]['System_seps'][sorted_key]})
+                System_midpoint_seps.update({sorted_key:superplot_dict[0]['System_midpoint_seps'][sorted_key]})
+                System_semimajor.update({sorted_key:superplot_dict[0]['System_semimajor'][sorted_key]})
+                System_times.update({sorted_key:superplot_dict[0]['System_times'][sorted_key]})
+                System_ecc.update({sorted_key:superplot_dict[0]['System_ecc'][sorted_key]})
+                System_energies.update({sorted_key:superplot_dict[0]['System_energies'][sorted_key]})
         del Sorted_keys
-        superplot_dict['System_seps'] = System_seps
-        superplot_dict['System_midpoint_seps'] = System_midpoint_seps
-        superplot_dict['System_semimajor'] = System_semimajor
-        superplot_dict['System_times'] = System_times
-        superplot_dict['System_ecc'] = System_ecc
-        superplot_dict['System_energies'] = System_energies
+        try:
+            superplot_dict['System_seps'] = System_seps
+            superplot_dict['System_midpoint_seps'] = System_midpoint_seps
+            superplot_dict['System_semimajor'] = System_semimajor
+            superplot_dict['System_times'] = System_times
+            superplot_dict['System_ecc'] = System_ecc
+            superplot_dict['System_energies'] = System_energies
+            file = open(pickle_file+'.pkl', 'wb')
+            pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times),file)
+            file.close()
+        except:
+            superplot_dict[0]['System_seps'] = System_seps
+            superplot_dict[0]['System_midpoint_seps'] = System_midpoint_seps
+            superplot_dict[0]['System_semimajor'] = System_semimajor
+            superplot_dict[0]['System_times'] = System_times
+            superplot_dict[0]['System_ecc'] = System_ecc
+            superplot_dict[0]['System_energies'] = System_energies
+            file = open(pickle_file+'.pkl', 'wb')
+            pickle.dump((superplot_dict[0], Sink_bound_birth, Sink_formation_times),file)
+            file.close()
         
-        file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times),file)
-        file.close()
 
 del System_seps
 del System_midpoint_seps
