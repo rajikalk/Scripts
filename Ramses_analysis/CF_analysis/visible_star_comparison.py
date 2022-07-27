@@ -134,6 +134,9 @@ for pick_it in iter_range:
             axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.75*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
         else:
             axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.15*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        if pick_it == 2:
+            yticklabels =axs.flatten()[pick_it].get_yticklabels()
+            plt.setp(yticklabels[0], visible=False)
     except:
         print(pickle_files[file_it] + "doesn't exist yet")
 
