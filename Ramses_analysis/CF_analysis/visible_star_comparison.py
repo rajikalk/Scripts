@@ -115,30 +115,27 @@ Formation_pathway = []
 Not_plotted_sinks = [[],[],[],[],[],[]]
 for pick_it in iter_range:
     file_it = pick_it
-    try:
-        file = open(pickle_files[file_it], 'rb')
-        superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
-        file.close()
-        
-        sfe_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
+    file = open(pickle_files[file_it], 'rb')
+    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+    file.close()
     
-        axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_vis_stars'][:sfe_5_ind], label="Visible stars")
-        axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_stars'][:sfe_5_ind], label="Total number of stars")
-        axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
-        axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
-        axs.flatten()[pick_it].set_ylim(bottom=0)
-        if pick_it == 0:
-            yticklabels =axs.flatten()[pick_it].get_yticklabels()
-            plt.setp(yticklabels[0], visible=False)
-            axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
-            axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.75*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
-        else:
-            axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.15*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
-        if pick_it == 2:
-            yticklabels =axs.flatten()[pick_it].get_yticklabels()
-            plt.setp(yticklabels[0], visible=False)
-    except:
-        print(pickle_files[file_it] + "doesn't exist yet")
+    sfe_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
+
+    axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_vis_stars'][:sfe_5_ind], label="Visible stars")
+    axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_stars'][:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
+    axs.flatten()[pick_it].set_ylim(bottom=0)
+    if pick_it == 0:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+        axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
+        axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.75*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    else:
+        axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.15*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 2:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
 
     axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
     axs.flatten()[pick_it].set_xlim([0, 0.05])
