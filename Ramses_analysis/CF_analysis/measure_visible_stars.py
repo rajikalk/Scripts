@@ -125,6 +125,8 @@ CW.Barrier()
 #Define arrays of quantities to be saved.
 Times = []
 SFE = []
+Class_0 = []
+Class_0_I = []
 N_vis_stars_UL = []
 N_vis_stars_NUL = []
 
@@ -211,15 +213,19 @@ if args.update_pickles == 'True':
 
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
-                vis_upper_limit = np.where((L_tot>=0.09)&(M_dot>=1.e-7)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
-                vis_no_upper_limit = np.where((L_tot>=0.09)&(M_dot>=1.e-7))[0]
+                Class_0_val = np.where(M_dot>=1.e-5)[0]
+                Class_0_I_val = np.where(M_dot>=1.e-7)[0]
+                vis_upper_limit = np.where((L_tot>=0.09)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
+                vis_no_upper_limit = np.where((L_tot>=0.09))[0]
+                Class_0.append(Class_0_val)
+                Class_0_I.append(Class_0_I_val)
                 N_vis_stars_UL.append(len(vis_upper_limit))
                 N_vis_stars_NUL.append(len(vis_no_upper_limit))
                 
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, N_vis_stars_UL, N_vis_stars_NUL),file)
+                pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
                 file.close()
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
             
@@ -232,27 +238,33 @@ if rank == 0:
     if len(pickle_files) > 0:
         Full_Times = []
         Full_SFE = []
+        Full_Class_0 = []
+        Full_Class_0_I = []
         Full_N_vis_stars_UL = []
         Full_N_vis_stars_NUL = []
 
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+            Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
             file.close()
             Full_Times = Full_Times + Times
             Full_SFE = Full_SFE + SFE
+            Full_Class_0 = Full_Class_0 + Class_0
+            Full_Class_0_I = Full_Class_0_I + Class_0_I
             Full_N_vis_stars_UL = Full_N_vis_stars_UL + N_vis_stars_UL
             Full_N_vis_stars_NUL = Full_N_vis_stars_NUL + N_vis_stars_NUL
             #os.remove(pick_file)
 
         sorted_inds = np.argsort(Full_Times)
-        Times = Full_Times[sorted_inds]
-        SFE = Full_SFE[sorted_inds]
-        N_vis_stars_UL = Full_N_vis_stars_UL[sorted_inds]
-        N_vis_stars_NUL = Full_N_vis_stars_NUL[sorted_inds]
+        Times = np.array(Full_Times)[sorted_inds]
+        SFE = np.array(Full_SFE)[sorted_inds]
+        Class_0 = np.array(Full_Class_0)[sorted_inds]
+        Class_0_I = np.array(Full_Class_0_I)[sorted_inds]
+        N_vis_stars_UL = np.array(Full_N_vis_stars_UL)[sorted_inds]
+        N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
         file = open(pickle_file, 'wb')
-        pickle.dump((Times, SFE, N_vis_stars_UL, N_vis_stars_NUL),file)
+        pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
         file.close()
         
 print('finished measuring visible stars')
