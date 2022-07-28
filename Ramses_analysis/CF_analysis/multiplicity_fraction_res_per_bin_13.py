@@ -245,7 +245,8 @@ else:
     bound_check = False
     
 if args.projected_separation == 'True':
-    multiplicity_analysis_projection = True
+    #multiplicity_analysis_projection = True
+    multiplicity_analysis_projection = False
     use_mid_point_sep = True
     max_separations = []
 else:
