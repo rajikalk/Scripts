@@ -312,8 +312,6 @@ elif args.match_method == 1:
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
         SFE_t_ff_max = global_data['time'].T[0][SFE_max_ind]*units['time_unit'].in_units('yr')
         time_bounds = [SFE_t_ff_min*units['time_unit'].in_units('yr'),SFE_t_ff_max*units['time_unit'].in_units('yr')]
-        del SFE
-        SFE = []
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE)
@@ -323,6 +321,8 @@ elif args.match_method == 1:
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
         plt.savefig("SFE.jpg")
+    del SFE
+    SFE = []
 elif args.match_method == 2:
     #Match at SFE of 3.4%
     SFE_n_value = args.SFE_n_threshold
@@ -348,6 +348,8 @@ elif args.match_method == 2:
         plt.axvline(x=time_bounds[0])
         plt.axvline(x=time_bounds[1])
         plt.savefig("SFE_n.jpg")
+    del SFE
+    SFE = []
 elif args.match_method == 3:
     N_vis_val = args.n_visible_threshold#115#70#115
     N_prev = 0
