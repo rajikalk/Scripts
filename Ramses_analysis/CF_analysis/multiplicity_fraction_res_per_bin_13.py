@@ -1062,7 +1062,6 @@ if rank == 0:
     plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
     plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
-    plt.ylim([0, args.y_limit])
     plt.ylim(bottom=0.0)
     plt.savefig('Median_CF.pdf')
 
