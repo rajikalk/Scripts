@@ -35,6 +35,7 @@ def parse_inputs():
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)#120?
     parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.09)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
+    parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickles", type=str, default='')
     parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
     parser.add_argument("-proj_vec", "--projection_vector", help="What projection vector do you want to use?", type=str, default='')
@@ -557,6 +558,11 @@ elif len(Times) == (end_time_ind-start_time_ind+1):
 else:
     update = True
     start_time_ind = start_time_ind + len(Times)
+
+if args.update_pickle == 'True':
+    update = True
+elif args.update_pickle == 'False':
+    update = False
     
 #============================================================================================
 #Now we enter the actual multiplicity analysis
