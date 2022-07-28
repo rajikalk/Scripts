@@ -259,9 +259,9 @@ for pick_it in iter_range:
     sfe_5_ind = np.argmin(abs(SFE-0.05))
 
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
-    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin[:sfe_5_ind], label="Total number of stars")
-    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin_C0[:sfe_5_ind], label="Total number of stars")
-    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin_C0I[:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin[:sfe_5_ind], label="L limis only")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin_C0[:sfe_5_ind], label="Class 0/I")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin_C0I[:sfe_5_ind], label="Class 0")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
     axs.flatten()[pick_it].axhline(y=55, ls=':', color='k', label='Number of Class 0 in Perseus')
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
