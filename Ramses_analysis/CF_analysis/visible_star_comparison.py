@@ -62,7 +62,7 @@ plot_booleans = [[False, True], [False, False], [True, True], [True, False]]
 args = parse_inputs()
 
 #Server pickles
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Max_iter_100/means_superplot.pkl"]
+pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Visible_star_count/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Visible_star_count/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Visible_star_count/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Visible_star_count/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Visible_star_count/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Visible_star_count/means_superplot.pkl"]
 
 #birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
@@ -109,20 +109,16 @@ iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.02)
 
-CF_hist = np.zeros((len(pickle_files),12)).tolist()
-
-Formation_pathway = []
-Not_plotted_sinks = [[],[],[],[],[],[]]
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
     file.close()
     
-    sfe_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
+    sfe_5_ind = np.argmin(abs(SFE-0.05))
 
-    axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_vis_stars'][:sfe_5_ind], label="Visible stars")
-    axs.flatten()[pick_it].plot(superplot_dict['SFE'][:sfe_5_ind], superplot_dict['N_stars'][:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_NUL[:sfe_5_ind], label="Total number of stars")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
     axs.flatten()[pick_it].set_ylim(bottom=0)
@@ -130,14 +126,116 @@ for pick_it in iter_range:
         yticklabels =axs.flatten()[pick_it].get_yticklabels()
         plt.setp(yticklabels[0], visible=False)
         axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
-        axs.flatten()[pick_it].text((0.03), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.75*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.75*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
-        axs.flatten()[pick_it].text((0.002), np.max(superplot_dict['N_stars'][:sfe_5_ind])-0.15*np.max(superplot_dict['N_stars'][:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs.flatten()[pick_it].text((0.002), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     if pick_it == 2:
         yticklabels =axs.flatten()[pick_it].get_yticklabels()
         plt.setp(yticklabels[0], visible=False)
 
     axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
     axs.flatten()[pick_it].set_xlim([0, 0.05])
-    plt.savefig('Visible_star_comparison.pdf', bbox_inches='tight', pad_inches=0.02)
+    plt.savefig('Visible_star_comparison_01.pdf', bbox_inches='tight', pad_inches=0.02)
+    
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True)#, sharey=True)
+iter_range = range(0, len(pickle_files))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.02)
+
+for pick_it in iter_range:
+    file_it = pick_it
+    file = open(pickle_files[file_it], 'rb')
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    file.close()
+    
+    sfe_5_ind = np.argmin(abs(SFE-0.05))
+
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_UL[:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
+    axs.flatten()[pick_it].set_ylim(bottom=0)
+    if pick_it == 0:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+        axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
+        axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.75*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    else:
+        axs.flatten()[pick_it].text((0.002), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 2:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+
+    axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
+    axs.flatten()[pick_it].set_xlim([0, 0.05])
+    plt.savefig('Visible_star_comparison_01_120.pdf', bbox_inches='tight', pad_inches=0.02)
+    
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True)#, sharey=True)
+iter_range = range(0, len(pickle_files))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.02)
+
+for pick_it in iter_range:
+    file_it = pick_it
+    file = open(pickle_files[file_it], 'rb')
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    file.close()
+    
+    sfe_5_ind = np.argmin(abs(SFE-0.05))
+
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_UL[:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
+    axs.flatten()[pick_it].set_ylim(bottom=0)
+    if pick_it == 0:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+        axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
+        axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.75*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    else:
+        axs.flatten()[pick_it].text((0.002), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 2:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+
+    axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
+    axs.flatten()[pick_it].set_xlim([0, 0.05])
+    plt.savefig('Visible_star_comparison_01_120.pdf', bbox_inches='tight', pad_inches=0.02)
+    
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True)#, sharey=True)
+iter_range = range(0, len(pickle_files))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.02)
+
+for pick_it in iter_range:
+    file_it = pick_it
+    file = open(pickle_files[file_it], 'rb')
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    file.close()
+    
+    sfe_5_ind = np.argmin(abs(SFE-0.05))
+
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
+    axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin[:sfe_5_ind], label="Total number of stars")
+    axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
+    axs.flatten()[pick_it].set_ylim(bottom=0)
+    if pick_it == 0:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+        axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
+        axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.75*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    else:
+        axs.flatten()[pick_it].text((0.002), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 2:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[0], visible=False)
+
+    axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
+    axs.flatten()[pick_it].set_xlim([0, 0.05])
+    plt.savefig('Visible_star_comparison_009_5529.pdf', bbox_inches='tight', pad_inches=0.02)
 
