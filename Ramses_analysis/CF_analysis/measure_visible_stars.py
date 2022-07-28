@@ -130,7 +130,7 @@ Class_0_I = []
 N_total = []
 N_vis_tobin = []
 N_vis_tobin_C0 = []
-N_vis_tobin_C0+I = []
+N_vis_tobin_C0_I = []
 N_vis_stars_UL = []
 N_vis_stars_NUL = []
 
@@ -221,7 +221,7 @@ if args.update_pickles == 'True':
                 Class_0_I_val = np.where((M_dot>=1.e-7))[0]
                 vis_tobin = np.where((L_tot>=0.09)&(L_tot<=55.29))[0]
                 vis_tobin_C0 = np.where((L_tot>=0.09)&(L_tot<=55.29)&(M_dot>=1.e-6))[0]
-                vis_tobin_C0+I = np.where((L_tot>=0.09)&(L_tot<=55.29)&(M_dot>=1.e-7))[0]
+                vis_tobin_C0_I = np.where((L_tot>=0.09)&(L_tot<=55.29)&(M_dot>=1.e-7))[0]
                 vis_upper_limit = np.where((L_tot>=0.1)&(L_tot<=120))[0]#Remember to update if you adjust criteria
                 vis_no_upper_limit = np.where((L_tot>=0.1))[0]
                 Class_0.append(len(Class_0_val))
@@ -229,14 +229,14 @@ if args.update_pickles == 'True':
                 N_total.append(len(n_stars))
                 N_vis_tobin.append(len(vis_tobin))
                 N_vis_tobin_C0.append(len(vis_tobin_C0))
-                N_vis_tobin_C0+I.append(len(vis_tobin_C0+I))
+                N_vis_tobin_C0_I.append(len(vis_tobin_C0_I))
                 N_vis_stars_UL.append(len(vis_upper_limit))
                 N_vis_stars_NUL.append(len(vis_no_upper_limit))
                 
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0+I, N_vis_stars_UL, N_vis_stars_NUL),file)
+                pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
                 file.close()
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
             
@@ -254,13 +254,13 @@ if rank == 0:
         Full_N_Total = []
         Full_N_vis_tobin = []
         Full_N_vis_tobin_C0 = []
-        Full_N_vis_tobin_C0+I = []
+        Full_N_vis_tobin_C0_I = []
         Full_N_vis_stars_UL = []
         Full_N_vis_stars_NUL = []
 
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0+I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+            Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0_I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
             file.close()
             Full_Times = Full_Times + Times
             Full_SFE = Full_SFE + SFE
@@ -269,7 +269,7 @@ if rank == 0:
             Full_N_Total = Full_N_Total + N_total
             Full_N_vis_tobin = Full_N_vis_tobin + N_vis_tobin
             Full_N_vis_tobin_C0 = Full_N_vis_tobin_C0 + N_vis_tobin_C0
-            Full_N_vis_tobin_C0+I = Full_N_vis_tobin_C0+I + N_vis_tobin_C0+I
+            Full_N_vis_tobin_C0_I = Full_N_vis_tobin_C0_I + N_vis_tobin_C0_I
             Full_N_vis_stars_UL = Full_N_vis_stars_UL + N_vis_stars_UL
             Full_N_vis_stars_NUL = Full_N_vis_stars_NUL + N_vis_stars_NUL
             os.remove(pick_file)
@@ -282,12 +282,12 @@ if rank == 0:
         N_total = np.array(Full_N_Total)[sorted_inds]
         N_vis_tobin = np.array(Full_N_vis_tobin)[sorted_inds]
         N_vis_tobin_C0 = np.array(Full_N_vis_tobin_C0)[sorted_inds]
-        N_vis_tobin_C0+I = np.array(Full_N_vis_tobin_C0+I)[sorted_inds]
+        N_vis_tobin_C0_I = np.array(Full_N_vis_tobin_C0_I)[sorted_inds]
         N_vis_stars_UL = np.array(Full_N_vis_stars_UL)[sorted_inds]
         N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0+I, N_vis_stars_UL, N_vis_stars_NUL),file)
+        pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
         file.close()
         
 print('finished measuring visible stars')
@@ -315,7 +315,7 @@ plt.savefig('visible_stars.png')
 plt.clf()
 plt.plot(SFE, N_vis_tobin, label='Tobin L limits')
 plt.plot(SFE, N_vis_tobin_C0, label='C0')
-plt.plot(SFE, N_vis_tobin_C0+I, label='C0+I')
+plt.plot(SFE, N_vis_tobin_C0_I, label='C0_I')
 plt.legend(loc='best')
 plt.xlabel('SFE')
 plt.ylabel('N stars')
