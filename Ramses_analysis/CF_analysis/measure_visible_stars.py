@@ -215,8 +215,8 @@ if args.update_pickles == 'True':
                 M_dot = accretion(n_stars, time_it)
                 Class_0_val = np.where((M_dot>=1.e-5))[0]
                 Class_0_I_val = np.where((M_dot>=1.e-7))[0]
-                vis_upper_limit = np.where((L_tot>=0.09)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
-                vis_no_upper_limit = np.where((L_tot>=0.09))[0]
+                vis_upper_limit = np.where((L_tot>=0.1)&(L_tot<=120))[0]#Remember to update if you adjust criteria
+                vis_no_upper_limit = np.where((L_tot>=0.1))[0]
                 Class_0.append(Class_0_val)
                 Class_0_I.append(Class_0_I_val)
                 N_vis_stars_UL.append(len(vis_upper_limit))
@@ -253,7 +253,7 @@ if rank == 0:
             Full_Class_0_I = Full_Class_0_I + Class_0_I
             Full_N_vis_stars_UL = Full_N_vis_stars_UL + N_vis_stars_UL
             Full_N_vis_stars_NUL = Full_N_vis_stars_NUL + N_vis_stars_NUL
-            #os.remove(pick_file)
+            os.remove(pick_file)
 
         sorted_inds = np.argsort(Full_Times)
         Times = np.array(Full_Times)[sorted_inds]
@@ -269,4 +269,18 @@ if rank == 0:
         
 print('finished measuring visible stars')
         
-        
+plt.clf()
+plt.plot(SFE, Class_0, label='Class 0 only')
+plt.plot(SFE, Class_0, label='Class 0+I')
+plt.xlabel('SFE')
+plt.ylabel('N_{stars}')
+plt.xlim([0, 0.05])
+plt.savefig('N_class.png')
+
+plt.clf()
+plt.plot(SFE, N_vis_stars_UL, label='With 120Lsun limit')
+plt.plot(SFE, Class_0, label='Without upper limit')
+plt.xlabel('SFE')
+plt.ylabel('N_{stars}')
+plt.xlim([0, 0.05])
+plt.savefig('visible_stars.png')
