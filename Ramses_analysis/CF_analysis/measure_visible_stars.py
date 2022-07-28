@@ -127,6 +127,7 @@ Times = []
 SFE = []
 Class_0 = []
 Class_0_I = []
+N_total = []
 N_vis_tobin = []
 N_vis_stars_UL = []
 N_vis_stars_NUL = []
@@ -221,6 +222,7 @@ if args.update_pickles == 'True':
                 vis_no_upper_limit = np.where((L_tot>=0.1))[0]
                 Class_0.append(len(Class_0_val))
                 Class_0_I.append(len(Class_0_I_val))
+                N_total.append(len(n_stars))
                 N_vis_tobin.append(len(vis_tobin))
                 N_vis_stars_UL.append(len(vis_upper_limit))
                 N_vis_stars_NUL.append(len(vis_no_upper_limit))
@@ -228,7 +230,7 @@ if args.update_pickles == 'True':
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL),file)
+                pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL),file)
                 file.close()
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
             
@@ -243,18 +245,20 @@ if rank == 0:
         Full_SFE = []
         Full_Class_0 = []
         Full_Class_0_I = []
+        Full_N_Total = []
         Full_N_vis_tobin = []
         Full_N_vis_stars_UL = []
         Full_N_vis_stars_NUL = []
 
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, Class_0, Class_0_I, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+            Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
             file.close()
             Full_Times = Full_Times + Times
             Full_SFE = Full_SFE + SFE
             Full_Class_0 = Full_Class_0 + Class_0
             Full_Class_0_I = Full_Class_0_I + Class_0_I
+            Full_N_Total = Full_N_Total + N_total
             Full_N_vis_tobin = Full_N_vis_tobin + N_vis_tobin
             Full_N_vis_stars_UL = Full_N_vis_stars_UL + N_vis_stars_UL
             Full_N_vis_stars_NUL = Full_N_vis_stars_NUL + N_vis_stars_NUL
@@ -265,12 +269,13 @@ if rank == 0:
         SFE = np.array(Full_SFE)[sorted_inds]
         Class_0 = np.array(Full_Class_0)[sorted_inds]
         Class_0_I = np.array(Full_Class_0_I)[sorted_inds]
+        N_total = np.array(Full_N_Total)[sorted_inds]
         N_vis_tobin = np.array(Full_N_vis_tobin)[sorted_inds]
         N_vis_stars_UL = np.array(Full_N_vis_stars_UL)[sorted_inds]
         N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
+        pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_stars_UL, N_vis_stars_NUL),file)
         file.close()
         
 print('finished measuring visible stars')
@@ -285,8 +290,9 @@ plt.xlim([0, 0.05])
 plt.savefig('N_class.png')
 
 plt.clf()
-plt.plot(SFE, N_vis_stars_UL, label='With 120Lsun limit')
+plt.plot(SFE, N_total, label='Total sinks')
 plt.plot(SFE, N_vis_stars_NUL, label='Without upper limit')
+plt.plot(SFE, N_vis_stars_UL, label='With 120Lsun limit')
 plt.plot(SFE, N_vis_tobin, label='with Tobin object limits')
 plt.legend(loc='best')
 plt.xlabel('SFE')
