@@ -112,7 +112,7 @@ plt.subplots_adjust(hspace=0.02)
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
     file.close()
     
     sfe_5_ind = np.argmin(abs(SFE-0.05))
@@ -147,7 +147,7 @@ plt.subplots_adjust(hspace=0.02)
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
     file.close()
     
     sfe_5_ind = np.argmin(abs(SFE-0.05))
@@ -182,7 +182,7 @@ plt.subplots_adjust(hspace=0.02)
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
     file.close()
     
     sfe_5_ind = np.argmin(abs(SFE-0.05))
@@ -217,7 +217,7 @@ plt.subplots_adjust(hspace=0.02)
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+    Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_tobin_C0, N_vis_tobin_C0I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
     file.close()
     
     sfe_5_ind = np.argmin(abs(SFE-0.05))
