@@ -1166,7 +1166,7 @@ if rank == 0:
         CF_err.append(standard_deviation)
 
     
-    plt.savefig(savedir+"error_dist.pdf", format='pdf', bbox_inches='tight')
+    #plt.savefig(savedir+"error_dist.pdf", format='pdf', bbox_inches='tight')
     #plt.ylim(bottom=0.0)
     #plt.savefig(savedir+"error_dist.jpg")
     CF_err = np.array(CF_err)
@@ -1184,8 +1184,8 @@ if rank == 0:
     plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     plt.ylim(bottom=0.0)
     plt.title("Median over " + str(np.shape(CF_Array_Full)[0]) + " histograms")
-    plt.savefig(savedir+'Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
-    print('created Median_companion_frequency.pdf')
+    #plt.savefig(savedir+'Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
+    #print('created Median_companion_frequency.pdf')
     """
     #CF calculated by SUMMING all CF historgrams
     CF_Array_Full = np.array(CF_Array_Full)
