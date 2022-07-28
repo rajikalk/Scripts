@@ -45,7 +45,7 @@ def parse_inputs():
     parser.add_argument("-match_meth", "--match_method", help="How do you want to select times? 1. SFE, 2.SPE/t_ff, 3. No. visible stars, 4. Total Accreted Mass", type=int, default=1)
     parser.add_argument("-start_ind", "--starting_ind", help="Do you want to start the analysis at a particular starting ind?", type=int, default=None)
     parser.add_argument("-n_vis_thres", "--n_visible_threshold", help="what threshold do you want to use for number fo stars?", type=int, default=106)
-    parser.add_argument("-SFE_thres", "--SFE_threshold", help="What threshold do you want to use for the SFE?", type=float, default=0.045)
+    parser.add_argument("-SFE_thres", "--SFE_threshold", help="What threshold do you want to use for the SFE?", type=float, default=0.04)
     parser.add_argument("-SFE_n_thres", "--SFE_n_threshold", help="What threshod do you want to use for the SFE_n (defined by ARce et al, 2010)", type=float, default=0.022)
     parser.add_argument("-thres_spread", "--threshold_spread", help="Over what spread (as a fraction of the threshold) do you want to intergrate?", type=float, default=0.1)
     parser.add_argument("-entire_sim", "--integrate_over_entire_sim", help="Do you want to integrate over the entire sim?", type=str, default="False")
@@ -312,6 +312,7 @@ elif args.match_method == 1:
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
         SFE_t_ff_max = global_data['time'].T[0][SFE_max_ind]*units['time_unit'].in_units('yr')
         time_bounds = [SFE_t_ff_min*units['time_unit'].in_units('yr'),SFE_t_ff_max*units['time_unit'].in_units('yr')]
+        del SFE
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE)
