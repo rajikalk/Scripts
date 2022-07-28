@@ -120,6 +120,7 @@ for pick_it in iter_range:
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_NUL[:sfe_5_ind], label="Total number of stars")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=55, ls=':', color='k', label='Number of Class 0 in Perseus')
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
     axs.flatten()[pick_it].set_ylim(bottom=0)
     if pick_it == 0:
@@ -154,6 +155,7 @@ for pick_it in iter_range:
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_UL[:sfe_5_ind], label="Total number of stars")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=55, ls=':', color='k', label='Number of Class 0 in Perseus')
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
     axs.flatten()[pick_it].set_ylim(bottom=0)
     if pick_it == 0:
@@ -188,6 +190,7 @@ for pick_it in iter_range:
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_stars_UL[:sfe_5_ind], label="Total number of stars")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=55, ls=':', color='k', label='Number of Class 0 in Perseus')
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
     axs.flatten()[pick_it].set_ylim(bottom=0)
     if pick_it == 0:
@@ -222,6 +225,7 @@ for pick_it in iter_range:
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_total[:sfe_5_ind], label="Visible stars")
     axs.flatten()[pick_it].plot(SFE[:sfe_5_ind], N_vis_tobin[:sfe_5_ind], label="Total number of stars")
     axs.flatten()[pick_it].set_ylabel('# Stars', fontsize=font_size)
+    axs.flatten()[pick_it].axhline(y=55, ls=':', color='k', label='Number of Class 0 in Perseus')
     axs.flatten()[pick_it].axhline(y=92, ls='--', color='k', label='Number of Class 0/I in Perseus')
     axs.flatten()[pick_it].set_ylim(bottom=0)
     if pick_it == 0:
