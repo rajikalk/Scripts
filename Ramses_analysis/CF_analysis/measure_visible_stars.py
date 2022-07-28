@@ -217,6 +217,8 @@ if args.update_pickles == 'True':
                 Class_0_I_val = np.where((M_dot>=1.e-7))[0]
                 vis_upper_limit = np.where((L_tot>=0.1)&(L_tot<=120))[0]#Remember to update if you adjust criteria
                 vis_no_upper_limit = np.where((L_tot>=0.1))[0]
+                import pdb
+                pdb.set_trace()
                 Class_0.append(Class_0_val)
                 Class_0_I.append(Class_0_I_val)
                 N_vis_stars_UL.append(len(vis_upper_limit))
@@ -273,14 +275,14 @@ plt.clf()
 plt.plot(SFE, Class_0, label='Class 0 only')
 plt.plot(SFE, Class_0, label='Class 0+I')
 plt.xlabel('SFE')
-plt.ylabel('N_{stars}')
+plt.ylabel('N stars')
 plt.xlim([0, 0.05])
 plt.savefig('N_class.png')
 
 plt.clf()
 plt.plot(SFE, N_vis_stars_UL, label='With 120Lsun limit')
-plt.plot(SFE, Class_0, label='Without upper limit')
+plt.plot(SFE, N_vis_stars_NUL, label='Without upper limit')
 plt.xlabel('SFE')
-plt.ylabel('N_{stars}')
+plt.ylabel('N stars')
 plt.xlim([0, 0.05])
 plt.savefig('visible_stars.png')
