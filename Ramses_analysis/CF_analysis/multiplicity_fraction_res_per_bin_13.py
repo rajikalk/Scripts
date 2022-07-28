@@ -951,10 +951,12 @@ if update == True and args.make_plots_only == 'False':
             pickle.dump((CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion),file)
             file.close()
             print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
-                
+           
+    sys.stdout.flush()
+    print("FINISHED GOING THROUGH TIMES ON RANK", rank)
+
 sys.stdout.flush()
 CW.Barrier()
-print("FINISHED GOING THROUGH TIMES ON RANK", rank)
     
 if multiplicity_analysis_projection:
     file = open('max_separations_'+str(rank)+'.pkl', 'wb')
@@ -980,7 +982,7 @@ if rank == 0 and multiplicity_analysis_projection:
 #Create plots below
 
 if rank == 0:
-    #compile together data
+    print("GATHERING PICKLES")
     try:
         file = open(pickle_file+'.pkl', 'rb')
         Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
