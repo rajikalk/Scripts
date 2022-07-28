@@ -1043,190 +1043,30 @@ if rank == 0:
         pickle.dump((Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion),file)
         file.close()
     
-    Summed_systems = np.sum(np.array(N_sys_total), axis=0)
-    CF_top = Summed_systems[:,1] + Summed_systems[:,2]*2 + Summed_systems[:,3]*3 + Summed_systems[:,4]*4 + Summed_systems[:,5]*5 + Summed_systems[:,6]*6
-    CF_bot = np.sum(Summed_systems, axis=1)
-    CF_Total = CF_top/CF_bot
-
     file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
     bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
     file_open.close()
-
-    file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Orion_data.pkl", "rb")
-    bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
-    file_open.close()
-
-
+    
+    CF_median = np.median(CF_Array_Full, axis=0)
+    CF_mean = np.mean(CF_Array_Full, axis=0)
+    CF_std = np.std(CF_Array_Full, axis=0)
+    CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+    
     plt.clf()
     try:
-        plt.bar(bin_centers, CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, yerr=CF_errs_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
+        plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
     except:
-        plt.bar(bin_centers[1:], CF_Total, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
-        plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
-        S_bins = S_bins[1:]
-    plt.legend(loc='best')
+        plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+    plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+    plt.plot(x,gauss_total)
+    plt.legend(loc='upper left')
     plt.xlabel('Log Separation (AU)')
     plt.ylabel('Companion Frequency')
     plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+    plt.ylim([0, args.y_limit])
     plt.ylim(bottom=0.0)
-    plt.savefig(savedir +  args.figure_prefix + 'Total_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
-    print('created Total_companion_frequency.jpg')
-    
-    #Create mean CF
-    CF_median = []
-    CF_err = []
-    N = np.shape(N_sys_total)[0]
+    plt.savefig('Median_CF.pdf')
 
-    #plt.clf()
-    #fig, axs = plt.subplots(3, 4, constrained_layout=True, sharex=True, sharey=True) #figsize=(4, 3*len(pickle_files))
-    #axs = axs.flatten()
-    #plt.subplots_adjust(wspace=0.0, hspace=0.0)
-    
-    plt.clf()
-    fig = plt.figure()
-    total_number_of_figures = len(bin_centers)
-    columns = 4
-    rows = int(np.ceil(total_number_of_figures/columns))
-    fig.set_size_inches(3.25*columns, 3.25*rows)
-    gs = gridspec.GridSpec(rows, columns)\
-    
-    gs.update(wspace=0.0, hspace=0.0)
-    axes_dict = {}
-
-    for bit in range(len(S_bins)-1):
-        ax_label = 'ax' + str(bit)
-        if bit == 0:
-            axes_dict.update({ax_label:fig.add_subplot(gs[0,bit])})
-            xticklabels = axes_dict[ax_label].get_xticklabels()
-            plt.setp(xticklabels, visible=False)
-            axes_dict[ax_label].tick_params(axis="x",direction="in")
-            axes_dict[ax_label].set_xlim([0, 0.4])
-            axes_dict[ax_label].set_ylim([0, 1600])
-            #axes_dict[ax_label].set_ylim(bottom=0.0)
-            #axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
-            axes_dict[ax_label].set_ylabel("Count")
-            axes_dict[ax_label].set_xlabel("CF")
-            axes_dict[ax_label].tick_params(axis="y",direction="in")
-        else:
-            axes_dict.update({ax_label:fig.add_subplot(gs[int(bit/columns),np.remainder(bit,columns)], sharex=axes_dict['ax0'], sharey=axes_dict['ax0'])})
-            if bit > 6:
-                xticklabels = axes_dict[ax_label].get_xticklabels()
-                plt.setp(xticklabels[0], visible=False)
-                if bit == 8:
-                    plt.setp(xticklabels[0], visible=True)
-            else:
-                xticklabels = axes_dict[ax_label].get_xticklabels()
-                plt.setp(xticklabels, visible=False)
-            if np.remainder(bit,columns) != 0:
-                yticklabels = axes_dict[ax_label].get_yticklabels()
-                plt.setp(yticklabels, visible=False)
-                yticklabels = axes_dict[ax_label].get_yticklabels(minor=True)
-                plt.setp(yticklabels, visible=False)
-            else:
-                #axes_dict[ax_label].set_ylabel("Accretion Rate ($10^{-4}$ M$_\odot$/yr)", fontsize=args.text_font)
-                axes_dict[ax_label].set_ylabel("Count")
-            axes_dict[ax_label].set_xlabel("CF")
-            axes_dict[ax_label].tick_params(axis="x",direction="in")
-            axes_dict[ax_label].tick_params(axis="y",direction="in")
-        time_text = plt.text(0.08, 1500, 'Log Separtion (AU) = ['+str(np.log10(S_bins)[bit])+','+str(np.log10(S_bins)[bit+1])+']', va="center", ha="left", color='k')
-        
-        #err_bins = np.linspace(0, 0.4, 41)
-        err_bins = np.linspace(0, 0.4, 21)
-        #err_bins = np.linspace(np.min(np.array(CF_Array_Full)[:,bit]), np.max(np.array(CF_Array_Full)[:,bit]), 15)
-        err_centers = (err_bins[:-1]+err_bins[1:])/2
-        err_hist, err_bins = np.histogram(CF_Array_Full[:,bit], bins=err_bins)
-        width = err_bins[1] - err_bins[0]
-        axes_dict[ax_label].bar(err_centers, err_hist, width=width)
-        #plt.bar(err_centers, err_hist, width=width)
-        
-        xs = np.ones(np.shape(CF_Array_Full[:,bit]))*bin_centers[bit]
-        #plt.scatter(xs, np.array(CF_Array_Full)[:,bit], alpha=0.5, color='b')
-        median = np.median(CF_Array_Full[:,bit])
-        axes_dict[ax_label].axvline(x=median, label='median', color='r', alpha=0.25)
-        #plt.axvline(x=median, label='median', color='r')
-        #plt.scatter(bin_centers[bit], median, color='r')
-        mean = np.mean(CF_Array_Full[:,bit])
-        axes_dict[ax_label].axvline(x=mean, label='mean', color='orange', alpha=0.25)
-        #plt.axvline(x=mean, label='mean', color='orange')
-        #plt.scatter(bin_centers[bit], median, color='orange')
-        std = np.std(CF_Array_Full[:,bit], ddof=1)
-        standard_error = std/np.sqrt(N)
-        #rough_and_ready_err = (np.max(np.array(CF_Array_Full)[:,bit]) - np.min(np.array(CF_Array_Full)[:,bit]))*(2./3.)
-        axes_dict[ax_label].axvline(x=mean-std, label='std', color='b', alpha=0.25)
-        axes_dict[ax_label].axvline(x=mean+std, label='std', color='b', alpha=0.25)
-        #plt.axvline(x=mean-std, label='std', color='b')
-        #plt.axvline(x=mean+std, label='std', color='b')
-        #plt.axvline(x=mean-standard_error, label='standard error', color='b', linestyle=":")
-        #plt.axvline(x=mean+standard_error, label='standard error', color='b', linestyle=":")
-        if bit == 10:
-            axes_dict[ax_label].legend(loc='best')#,bbox_to_anchor=(0.985, 0.5))
-        #plt.ylim([0, 1600])
-        #plt.savefig(savedir+"error_dist_bin_"+str(bit)+".jpg", format='jpg', bbox_inches='tight')
-        standard_deviation = [median-(mean-std), (mean+std)-median]
-        #plt.plot([bin_centers[bit], bin_centers[bit]], [mean-std, mean+std], color='black')
-        CF_median.append(median)
-        CF_err.append(standard_deviation)
-
-    
-    #plt.savefig(savedir+"error_dist.pdf", format='pdf', bbox_inches='tight')
-    #plt.ylim(bottom=0.0)
-    #plt.savefig(savedir+"error_dist.jpg")
-    CF_err = np.array(CF_err)
-
-    plt.clf()
-    try:
-        plt.bar(bin_centers, CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-    except:
-        plt.bar(bin_centers[1:], CF_median, yerr=CF_err.T, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-    plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus")
-    plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion")
-    plt.legend(loc='best')
-    plt.xlabel('Log Separation (AU)')
-    plt.ylabel('Companion Frequency')
-    plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
-    plt.ylim(bottom=0.0)
-    plt.title("Median over " + str(np.shape(CF_Array_Full)[0]) + " histograms")
-    #plt.savefig(savedir+'Median_companion_frequency.pdf', format='pdf', bbox_inches='tight')
-    #print('created Median_companion_frequency.pdf')
-    """
-    #CF calculated by SUMMING all CF historgrams
-    CF_Array_Full = np.array(CF_Array_Full)
-    CF_sum = np.sum(CF_Array_Full, axis=0)
-
-    plt.clf()
-    plt.bar(bin_centers, CF_sum, width=0.25, edgecolor='black', alpha=0.5, label="Simulation")
-    plt.bar(bin_centers, CF_per_bin_Tobin, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
-    plt.legend(loc='best')
-    plt.xlabel('Log Separation (AU)')
-    plt.ylabel('Companion Frequency')
-    plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
-    plt.ylim(bottom=0.0)
-    plt.savefig(savedir + args.figure_prefix + 'Sum_companion_frequency_.jpg', format='jpg', bbox_inches='tight')
-    print('created Sum_companion_frequency.jpg')
-    
-    Sink_L_means = []
-    for L_key in Sink_Luminosities.keys():
-        Sink_L_means.append(np.mean(np.array(Sink_Luminosities[L_key]).T[1]))
-    L_bins = np.logspace(-2,4,25)
-    L_hist, L_bins = np.histogram(Sink_L_means, bins=L_bins)
-    
-    Tobin_luminosities_0_1 = np.array([1.8, 0.50, 0.6, 0.7, 0.4, 0.36, 1.40, 0.80, 0.43, 1.20, 3.70, 1.70, 0.16, 0.05, 1.6, 0.54, 0.3, 1.20, 23.2, 0.16, 4.7, 16.80, 0.54, 0.09, 0.24, 1.80, 1.90, 3.20, 0.69, 1.50, 0.90, 1.30, 4.20, 3.60, 8.40, 0.68, 2.6, 1.80, 0.40, 0.70, 0.30, 0.60, 19.00, 5.30, 1.50, 0.30, 0.50, 0.54, 0.17, 0.32, 0.70, 2.80, 6.9, 1.10, 4.00, 7.00, 0.10, 32.50, 1.00, 8.3, 9.2, 1.4, 0.87, 1.50, 3.20, 9.1, 0.63, 0.16])
-    Tobin_hist, L_bins = np.histogram(Tobin_luminosities_0_1, bins=L_bins)
-    
-    plt.clf()
-    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), L_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Simulation")
-    plt.bar(((np.log10(L_bins[:-1])+np.log10(L_bins[1:]))/2), Tobin_hist, width=(np.log10(L_bins[1])-np.log10(L_bins[0])), edgecolor='black', alpha=0.5, label="Tobin et al (2016)")
-    plt.legend(loc='best')
-    plt.xlabel('Mean Luminosty (log(L))')
-    plt.ylabel('Number')
-    plt.ylim(bottom=0.0)
-    plt.savefig(savedir + args.figure_prefix + 'L_mean_hist.jpg', format='jpg', bbox_inches='tight')
-    print('created L_mean_hist.jpg')
-    """
-    
 print("FINISHED ON RANK", rank)
 sys.stdout.flush()
 CW.Barrier()
