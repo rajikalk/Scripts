@@ -127,6 +127,7 @@ Times = []
 SFE = []
 Class_0 = []
 Class_0_I = []
+N_vis_tobin = []
 N_vis_stars_UL = []
 N_vis_stars_NUL = []
 
@@ -215,17 +216,19 @@ if args.update_pickles == 'True':
                 M_dot = accretion(n_stars, time_it)
                 Class_0_val = np.where((M_dot>=1.e-6))[0]
                 Class_0_I_val = np.where((M_dot>=1.e-7))[0]
+                vis_tobin = np.where((L_tot>=0.09)&(L_tot<=55.29))[0]
                 vis_upper_limit = np.where((L_tot>=0.1)&(L_tot<=120))[0]#Remember to update if you adjust criteria
                 vis_no_upper_limit = np.where((L_tot>=0.1))[0]
                 Class_0.append(len(Class_0_val))
                 Class_0_I.append(len(Class_0_I_val))
+                N_vis_tobin.append(len(vis_tobin))
                 N_vis_stars_UL.append(len(vis_upper_limit))
                 N_vis_stars_NUL.append(len(vis_no_upper_limit))
                 
                 
                 pickle_file_rank = pickle_file.split('.pkl')[0] + "_" + ("%03d" % rank) + ".pkl"
                 file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
+                pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL),file)
                 file.close()
                 print("time_it", time_it, "of", len(global_data['time'].T[0]), "Updated pickle file:", pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl")
             
@@ -240,17 +243,19 @@ if rank == 0:
         Full_SFE = []
         Full_Class_0 = []
         Full_Class_0_I = []
+        Full_N_vis_tobin = []
         Full_N_vis_stars_UL = []
         Full_N_vis_stars_NUL = []
 
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
+            Times, SFE, Class_0, Class_0_I, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL = pickle.load(file)
             file.close()
             Full_Times = Full_Times + Times
             Full_SFE = Full_SFE + SFE
             Full_Class_0 = Full_Class_0 + Class_0
             Full_Class_0_I = Full_Class_0_I + Class_0_I
+            Full_N_vis_tobin = Full_N_vis_tobin + N_vis_tobin
             Full_N_vis_stars_UL = Full_N_vis_stars_UL + N_vis_stars_UL
             Full_N_vis_stars_NUL = Full_N_vis_stars_NUL + N_vis_stars_NUL
             os.remove(pick_file)
@@ -260,6 +265,7 @@ if rank == 0:
         SFE = np.array(Full_SFE)[sorted_inds]
         Class_0 = np.array(Full_Class_0)[sorted_inds]
         Class_0_I = np.array(Full_Class_0_I)[sorted_inds]
+        N_vis_tobin = np.array(Full_N_vis_tobin)[sorted_inds]
         N_vis_stars_UL = np.array(Full_N_vis_stars_UL)[sorted_inds]
         N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
@@ -281,6 +287,7 @@ plt.savefig('N_class.png')
 plt.clf()
 plt.plot(SFE, N_vis_stars_UL, label='With 120Lsun limit')
 plt.plot(SFE, N_vis_stars_NUL, label='Without upper limit')
+plt.plot(SFE, N_vis_tobin, label='with Tobin object limits')
 plt.legend(loc='best')
 plt.xlabel('SFE')
 plt.ylabel('N stars')
