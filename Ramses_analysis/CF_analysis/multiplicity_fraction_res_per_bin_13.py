@@ -33,7 +33,7 @@ def parse_inputs():
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
     parser.add_argument("-upper_L", "--upper_L_limit", help="What is the upper Luminosity limit?", type=float, default=55.29)#120?
-    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.07)
+    parser.add_argument("-lower_L", "--lower_L_limit", help="What is the upper Luminosity limit?", type=float, default=0.09)
     parser.add_argument("-bound", "--bound_check", help="Do you actually want to analyse bound systems?", type=str, default='True')
     parser.add_argument("-use_midpoint", "--use_midpoint_separation", help="Do you want to use the midpoint separation instread of separation", type=str, default='')
     parser.add_argument("-lifetime", "--lifetime_threshold", help="What life time threshold do you want to consider when making Luminosity histogram", type=float, default=10000)
@@ -952,9 +952,9 @@ if update == True and args.make_plots_only == 'False':
             file.close()
             print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
                 
-    sys.stdout.flush()
-    CW.Barrier()
-    print("FINISHED GOING THROUGH TIMES ON RANK", rank)
+sys.stdout.flush()
+CW.Barrier()
+print("FINISHED GOING THROUGH TIMES ON RANK", rank)
     
 if multiplicity_analysis_projection:
     file = open('max_separations_'+str(rank)+'.pkl', 'wb')
