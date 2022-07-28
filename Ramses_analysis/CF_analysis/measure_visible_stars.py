@@ -213,8 +213,8 @@ if args.update_pickles == 'True':
 
                 L_tot = luminosity(global_data, n_stars, time_it)
                 M_dot = accretion(n_stars, time_it)
-                Class_0_val = np.where(M_dot>=1.e-5)[0]
-                Class_0_I_val = np.where(M_dot>=1.e-7)[0]
+                Class_0_val = np.where((M_dot>=1.e-5))[0]
+                Class_0_I_val = np.where((M_dot>=1.e-7))[0]
                 vis_upper_limit = np.where((L_tot>=0.09)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
                 vis_no_upper_limit = np.where((L_tot>=0.09))[0]
                 Class_0.append(Class_0_val)
@@ -263,7 +263,7 @@ if rank == 0:
         N_vis_stars_UL = np.array(Full_N_vis_stars_UL)[sorted_inds]
         N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
-        file = open(pickle_file, 'wb')
+        file = open(pickle_file+'.pkl', 'wb')
         pickle.dump((Times, SFE, Class_0, Class_0_I, N_vis_stars_UL, N_vis_stars_NUL),file)
         file.close()
         
