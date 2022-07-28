@@ -275,7 +275,7 @@ if rank == 0:
         N_vis_stars_NUL = np.array(Full_N_vis_stars_NUL)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_stars_UL, N_vis_stars_NUL),file)
+        pickle.dump((Times, SFE, Class_0, Class_0_I, N_total, N_vis_tobin, N_vis_stars_UL, N_vis_stars_NUL),file)
         file.close()
         
 print('finished measuring visible stars')
