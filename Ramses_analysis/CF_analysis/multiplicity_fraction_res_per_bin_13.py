@@ -576,8 +576,6 @@ if update == True and args.make_plots_only == 'False':
     rit = -1
     for time_it in time_its:
         rit = rit + 1
-        if rit == 49:
-            rit = rit + 1
         if rit == size:
             rit = 0
         if rank == rit:
