@@ -66,7 +66,7 @@ for pick_it_top in range(len(plot_pickles)):
         
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='--')
     if pick_it_top == 1:
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='Upper left', fontsize=font_size)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper left', fontsize=font_size)
     if pick_it_top > 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlim([1, 4])
