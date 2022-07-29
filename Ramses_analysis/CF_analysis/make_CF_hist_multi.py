@@ -30,7 +30,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
 
 subplot_titles = ["3D_all_sinks", "3D_L_limits", "2D_L_limits", "2D_unbound"]
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55.29$L$_\odot$']
-plot_colours = ['b', 'tab:orange']
+plot_colours = ['tab:blue', 'tab:orange']
 
 plot_pickles = [['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_full/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_L_lim/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_L_lim/Tobin_limits/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Bound/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Bound/Tobin_limits/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Unbound/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Unbound/Tobin_limits/plot_cf_hist.pkl']]
 
@@ -62,7 +62,7 @@ for pick_it_top in range(len(plot_pickles)):
         else:
             ecolor = plot_colours[pick_it_bot]
         #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=ecolor, ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)}, ecolor=ecolor)
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
