@@ -29,8 +29,8 @@ matplotlib.rcParams['text.latex.preamble'] = [
 ]
 
 subplot_titles = ["3D_all_sinks", "3D_L_limits", "2D_L_limits", "2D_unbound"]
-plot_label = ['$L_{max}=120\,\mathrm{L}_\odot$', '$L_{max}=55.29\,\mathrm{L}_\odot$']
-plot_colours = ['b', 'orange']
+plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55.29$L$_\odot$']
+plot_colours = ['orange', 'b']
 
 plot_pickles = [['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_full/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_L_lim/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/3D_L_lim/Tobin_limits/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Bound/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Bound/Tobin_limits/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Unbound/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/2D_obs_Unbound/Tobin_limits/plot_cf_hist.pkl']]
 
@@ -58,10 +58,10 @@ for pick_it_top in range(len(plot_pickles)):
         file.close()
         
         if pick_it_top == 0:
-            label = None
+            ecolor = 'b'
         else:
-            label = plot_label[pick_it_bot]
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], ecolor=plot_colours[pick_it_bot], width=0.25, alpha=0.5, label=label, error_kw = {'elinewidth':(1+pick_it_bot)})
+            ecolor = plot_colours[pick_it_bot]
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], ecolor=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
@@ -86,6 +86,6 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='x', direction='in')
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in')
     
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.25), (0.19), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.25), (0.18), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
     
 plt.savefig('CF_hist_paper.pdf')
