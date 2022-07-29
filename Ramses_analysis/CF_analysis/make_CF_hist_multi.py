@@ -70,10 +70,11 @@ for pick_it_top in range(len(plot_pickles)):
     if pick_it_top == 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
     if pick_it_top == 2:
-        xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
-        plt.setp(xticklabels[6], visible=False)
         yticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_yticklabels()
         plt.setp(yticklabels[-1], visible=False)
+    if pick_it_top == 3:
+        xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
+        plt.setp(xticklabels[0], visible=False)
     if pick_it_top > 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlim([1, 4])
