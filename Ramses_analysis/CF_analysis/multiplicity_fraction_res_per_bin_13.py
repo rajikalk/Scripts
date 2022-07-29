@@ -300,7 +300,7 @@ if args.integrate_over_entire_sim == "True":
 elif args.match_method == 1:
     #Match at SFE of 4.9%
     SFE_value = args.SFE_threshold
-    SFE = (np.sum(global_data['m'], axis=1)*units['mass_unit'].value)/units['mass_unit'].value
+    SFE = np.sum(global_data['m'], axis=1)
     if args.use_t_spread == 'True':
         SFE_ind = np.argmin(np.abs(SFE_value-SFE))
         SFE_t_ff = global_data['time'].T[0][SFE_ind]*units['time_unit'].in_units('yr')
@@ -311,9 +311,7 @@ elif args.match_method == 1:
         SFE_t_ff_min = global_data['time'].T[0][SFE_min_ind]*units['time_unit'].in_units('yr')
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
         SFE_t_ff_max = global_data['time'].T[0][SFE_max_ind]*units['time_unit'].in_units('yr')
-        time_bounds = [SFE_t_ff_min*units['time_unit'].in_units('yr'),SFE_t_ff_max*units['time_unit'].in_units('yr')]
-        import pdb
-        pdb.set_trace()
+        time_bounds = [SFE_t_ff_min,SFE_t_ff_max]
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE)
