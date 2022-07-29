@@ -1063,6 +1063,10 @@ if rank == 0:
     plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
     plt.ylim(bottom=0.0)
     plt.savefig('Median_CF.pdf')
+    
+    file = open('plot_cf_hist.pkl', 'wb')
+    pickle.dump((bin_centers, CF_median, CF_err),file)
+    file.close()
 
 print("FINISHED ON RANK", rank)
 sys.stdout.flush()
