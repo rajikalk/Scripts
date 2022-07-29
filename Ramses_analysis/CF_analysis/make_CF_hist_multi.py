@@ -47,7 +47,7 @@ S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, two_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 0.9*two_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -61,13 +61,18 @@ for pick_it_top in range(len(plot_pickles)):
             label = None
         else:
             label = plot_label[pick_it_bot]
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], width=0.25, alpha=0.5, label=label, linewidth=(1+pick_it_bot))
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], ecolor=plot_colours[pick_it_bot], width=0.25, alpha=0.5, label=label, elinewidth=(1+pick_it_bot))
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='--')
     if pick_it_top == 1:
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper left', fontsize=font_size)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
+    if pick_it_top == 2:
+        xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
+        plt.setp(xticklabels[-1], visible=False)
+        yticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_yticklabels()
+        plt.setp(yticklabels[-1], visible=False)
     if pick_it_top > 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlim([1, 4])
@@ -77,9 +82,10 @@ for pick_it_top in range(len(plot_pickles)):
         
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='major', labelsize=font_size)
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='minor', labelsize=font_size)
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='major', labelsize=font_size)
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='minor', labelsize=font_size)
     
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((2), (0.17), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='x', direction='in')
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in')
+    
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.25), (0.19), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
     
 plt.savefig('CF_hist_paper.pdf')
