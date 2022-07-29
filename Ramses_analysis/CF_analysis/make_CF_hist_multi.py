@@ -79,6 +79,6 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='major', labelsize=font_size)
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='minor', labelsize=font_size)
     
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((2), (0.17, subplot_titles[pick_it_top]), zorder=11, fontsize=font_size)
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((2), (0.17), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
     
 plt.savefig('CF_hist_paper.pdf')
