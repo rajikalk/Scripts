@@ -58,11 +58,11 @@ for pick_it_top in range(len(plot_pickles)):
         file.close()
         
         if pick_it_top == 0:
-            ecolor = 'b'
+            ecolor = 'tab:blue'
         else:
             ecolor = plot_colours[pick_it_bot]
         #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=ecolor, ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)}, ecolor=ecolor)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(4/(1+pick_it_bot)}, ecolor=ecolor, edgecolor=ecolor)
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
@@ -71,7 +71,7 @@ for pick_it_top in range(len(plot_pickles)):
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
     if pick_it_top == 2:
         xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
-        plt.setp(xticklabels[-1], visible=False)
+        plt.setp(xticklabels[5], visible=False)
         yticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_yticklabels()
         plt.setp(yticklabels[-1], visible=False)
     if pick_it_top > 1:
