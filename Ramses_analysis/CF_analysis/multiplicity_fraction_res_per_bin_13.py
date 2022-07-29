@@ -312,6 +312,8 @@ elif args.match_method == 1:
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
         SFE_t_ff_max = global_data['time'].T[0][SFE_max_ind]*units['time_unit'].in_units('yr')
         time_bounds = [SFE_t_ff_min*units['time_unit'].in_units('yr'),SFE_t_ff_max*units['time_unit'].in_units('yr')]
+        import pdb
+        pdb.set_trace()
     if rank == 0:
         plt.clf()
         plt.plot(global_data['time'].T[0]*units['time_unit'].in_units('yr'), SFE)
