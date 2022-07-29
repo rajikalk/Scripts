@@ -47,7 +47,7 @@ S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 0.9*two_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 0.8*two_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -61,7 +61,7 @@ for pick_it_top in range(len(plot_pickles)):
             ecolor = 'b'
         else:
             ecolor = plot_colours[pick_it_bot]
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], ecolor=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=plot_colours[pick_it_bot], ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
