@@ -28,7 +28,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-subplot_titles = ["3D_all_sinks", "3D_L_limits", "2D_L_limits", "2D_unbound"]
+subplot_titles = ["3D all sinks", "3D L limits", "2D L limits", "2D unbound"]
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55.29$L$_\odot$']
 plot_colours = ['tab:blue', 'tab:orange']
 
@@ -62,7 +62,7 @@ for pick_it_top in range(len(plot_pickles)):
         else:
             ecolor = plot_colours[pick_it_bot]
         #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=ecolor, ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(4/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(3/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor)
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
@@ -71,7 +71,7 @@ for pick_it_top in range(len(plot_pickles)):
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
     if pick_it_top == 2:
         xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
-        plt.setp(xticklabels[5], visible=False)
+        plt.setp(xticklabels[6], visible=False)
         yticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_yticklabels()
         plt.setp(yticklabels[-1], visible=False)
     if pick_it_top > 1:
@@ -85,8 +85,8 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='both', which='minor', labelsize=font_size)
     
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='x', direction='in')
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in')
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in', right=True)
     
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.25), (0.18), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
     
-plt.savefig('CF_hist_paper.pdf')
+plt.savefig('CF_hist_paper.pdf', bbox_inches='tight', pad_inches=0.02)
