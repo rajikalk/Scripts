@@ -628,6 +628,8 @@ if update == True and args.make_plots_only == 'False':
             
             for bin_it in range(1,len(S_bins)):
                 if len(vis_inds_tot) > 1:
+                    import pdb
+                    pdb.set_trace()
                     if multiplicity_analysis_projection == False:
                         res = m.multipleAnalysis(S,cutoff=S_bins[bin_it], bound_check=bound_check, nmax=6, Grho=Grho, max_iter=100, use_mid_point_sep=use_mid_point_sep)#cyclic=False
                     else:
