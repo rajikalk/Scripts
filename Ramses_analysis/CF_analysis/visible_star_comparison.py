@@ -341,7 +341,7 @@ for pick_it in iter_range:
     if pick_it == 0:
         yticklabels =axs.flatten()[pick_it].get_yticklabels()
         plt.setp(yticklabels[0], visible=False)
-        axs.flatten()[pick_it].set_ylim(top=400)
+        axs.flatten()[pick_it].set_ylim(top=450)
         axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
         axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.75*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
