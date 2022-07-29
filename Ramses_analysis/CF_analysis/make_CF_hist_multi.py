@@ -150,6 +150,6 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in', right=True)
     
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.03), (0.187), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
-plt.suptitle('SFE=4.0$\pm0.1$%', y=0.91)
+plt.suptitle('SFE=4.2$\pm0.1$%', y=0.91)
     
 plt.savefig('CF_hist_paper_42.pdf', bbox_inches='tight', pad_inches=0.02)
