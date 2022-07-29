@@ -306,7 +306,7 @@ elif args.match_method == 1:
         SFE_t_ff = global_data['time'].T[0][SFE_ind]*units['time_unit'].in_units('yr')
         time_bounds = [(SFE_t_ff-dt),(SFE_t_ff+dt)]
     else:
-        SFE_spread = SFE_value*args.threshold_spread
+        SFE_spread = args.threshold_spread
         SFE_min_ind = np.argmin(np.abs((SFE_value-SFE_spread)-SFE))
         SFE_t_ff_min = global_data['time'].T[0][SFE_min_ind]*units['time_unit'].in_units('yr')
         SFE_max_ind = np.argmin(np.abs((SFE_value+SFE_spread)-SFE))
