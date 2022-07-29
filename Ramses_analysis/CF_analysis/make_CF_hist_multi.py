@@ -47,7 +47,6 @@ bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
 plt.clf()
 fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, two_col_width), sharex=True, sharey=True)
-iter_range = range(0, len(birth_con_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -62,6 +61,9 @@ for pick_it_top in range(len(plot_pickles)):
         else:
             label = plot_label[pick_it_bot]
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, width=0.25, alpha=0.5, label=label)
+        
+        print('plotted', plot_pickles[pick_it_top][pick_it_bot])
+        
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='--')
     if pick_it_top == 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='Upper left', fontsize=font_size)
