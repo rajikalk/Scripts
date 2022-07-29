@@ -247,22 +247,21 @@ else:
 if args.projected_separation == 'True':
     #multiplicity_analysis_projection = True
     multiplicity_analysis_projection = False
-    use_mid_point_sep = True
     max_separations = []
 else:
     multiplicity_analysis_projection = False
-    use_mid_point_sep = False
 
 if args.use_midpoint_separation != '':
     if args.use_midpoint_separation == 'True':
         use_mid_point_sep = True
+        sep_key = 'midpointSep'
     else:
         use_mid_point_sep = False
-
-if use_mid_point_sep:
-    sep_key = 'midpointSep'
+        sep_key = 'separation'
 else:
+    use_mid_point_sep = False
     sep_key = 'separation'
+
 
 #Calculate variables
 luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
