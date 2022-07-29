@@ -28,7 +28,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-subplot_titles = ["3D all sinks", "3D L limits", "2D L limits", "2D unbound"]
+subplot_titles = ["3D all sinks", "3D L limits", "2D L limits", "2D L limits + unbound"]
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
 plot_colours = ['tab:blue', 'tab:orange']
 
@@ -88,6 +88,6 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='x', direction='in')
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].tick_params(axis='y', direction='in', right=True)
     
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.05), (0.185), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.04), (0.186), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
     
 plt.savefig('CF_hist_paper.pdf', bbox_inches='tight', pad_inches=0.02)
