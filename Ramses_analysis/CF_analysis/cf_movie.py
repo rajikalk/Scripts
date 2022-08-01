@@ -93,8 +93,8 @@ for time_it in range(start_time_it, end_time_it):
     if rank == rit:
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
+            time_val = Times[time_it]
             if args.time_spread != None:
-                time_val = Times[time_it]
                 start_time = Times[time_it] - args.time_spread/2.
                 end_time = Times[time_it] + args.time_spread/2.
             
@@ -107,6 +107,8 @@ for time_it in range(start_time_it, end_time_it):
                 
                 start_integration_it = np.argmin(abs(SFE - start_SFE))
                 end_integration_it = np.argmin(abs(SFE - end_SFE))
+                
+            N_stars = np.sum(N_sys_total[time_it]*np.array([1, 2, 3, 4, 5, 6, 7]))
             
             CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
             CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
@@ -128,9 +130,9 @@ for time_it in range(start_time_it, end_time_it):
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
             if args.time_spread != None:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr, N_stars:" + str(N_stars))
             else:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((SFE_val - SFE[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val) + "\% SFE")
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val*100) + "\% SFE, N_stars:" + str(N_stars))
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
