@@ -117,17 +117,17 @@ gauss_total = lower_gauss + upper_gauss
 
 
 for CF_it in range(len(CF_Array_Full)):
-    time_val = Times[time_it]
+    time_val = Times[CF_it]
     if args.time_spread != None:
-        start_time = Times[time_it] - args.time_spread/2.
-        end_time = Times[time_it] + args.time_spread/2.
+        start_time = Times[CF_it] - args.time_spread/2.
+        end_time = Times[CF_it] + args.time_spread/2.
     
         start_integration_it = np.argmin(abs(Times - start_time))
         end_integration_it = np.argmin(abs(Times - end_time))
     else:
-        SFE_val = SFE[time_it]
-        start_SFE = SFE[time_it] - args.SFE_spread_val
-        end_SFE = SFE[time_it] + args.SFE_spread_val
+        SFE_val = SFE[CF_it]
+        start_SFE = SFE[CF_it] - args.SFE_spread_val
+        end_SFE = SFE[CF_it] + args.SFE_spread_val
         
         start_integration_it = np.argmin(abs(SFE - start_SFE))
         end_integration_it = np.argmin(abs(SFE - end_SFE))
