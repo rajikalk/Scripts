@@ -116,8 +116,9 @@ upper_gauss = upper_amp*stats.norm.pdf(bin_centers[1:], upper_mean, upper_std)
 gauss_total = lower_gauss + upper_gauss
 
 SFE_1_ind = np.argmin(abs(SFE-0.01))
+CF_Array_Full = CF_Array_Full[SFE_1_ind:]
 
-for CF_it in range(len(CF_Array_Full[SFE_1_ind:])):
+for CF_it in range(len(CF_Array_Full)):
     time_val = Times[CF_it]
     if args.time_spread != None:
         start_time = Times[CF_it] - args.time_spread/2.
