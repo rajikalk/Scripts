@@ -132,9 +132,6 @@ for CF_it in range(len(CF_Array_Full)):
         start_integration_it = np.argmin(abs(SFE - start_SFE))
         end_integration_it = np.argmin(abs(SFE - end_SFE))
     
-    start_integration_it = np.argmin(abs(Times - start_time))
-    end_integration_it = np.argmin(abs(Times - end_time))
-    
     CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
     CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
