@@ -115,6 +115,7 @@ lower_gauss = lower_amp*stats.norm.pdf(bin_centers[1:], lower_mean, lower_std)
 upper_gauss = upper_amp*stats.norm.pdf(bin_centers[1:], upper_mean, upper_std)
 gauss_total = lower_gauss + upper_gauss
 
+SFE_1_ind = np.argmin(abs(SFE-0.01))
 
 for CF_it in range(len(CF_Array_Full)):
     time_val = Times[CF_it]
@@ -149,7 +150,7 @@ for CF_it in range(len(CF_Array_Full)):
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
-    if chi_red_tobin < 0.01:
+    if chi_red_tobin < 0.3:
         plt.clf()
         plt.bar(bin_centers[1:], CF_hist[1:], yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
@@ -166,7 +167,7 @@ plt.clf()
 plt.semilogy(SFE, reduced_chi_square_tobin)
 plt.xlabel("SFE")
 plt.ylabel("mean Chi squared (<$\chi^2$>)")
-plt.xlim([0, 0.05])
-plt.ylim(top=1000)
+plt.xlim([0.01, 0.05])
+#plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.png")
