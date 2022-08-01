@@ -140,7 +140,7 @@ for CF_it in range(len(CF_Array_Full)):
     CF_hist = CF_median#CF_Array_Full[CF_it]
     curr_errs = []
     for cf_val in range(len(CF_hist)):
-        if CF_hist[cf_val] < gauss_total[cf_val]:
+        if CF_hist[cf_val] < CF_per_bin_Tobin_Per[cf_val]:
             curr_errs.append(CF_err[1][cf_val])
         else:
             curr_errs.append(CF_err[0][cf_val])
