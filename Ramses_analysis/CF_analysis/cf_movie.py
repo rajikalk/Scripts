@@ -77,10 +77,13 @@ if args.starting_ind == 0:
     if args.time_spread != None:
         start_time_it = np.argmin(abs(Times - args.time_spread/2.))
     else:
-        start_time_it = np.argmin(abs(SFE - args.SFE_spread_val/2.))
+        start_time_it = np.argmin(abs(SFE - args.SFE_spread_val))
 else:
     start_time_it = args.starting_ind
-end_time_it = np.argmin(abs(Times - (Times[-1] - args.time_spread/2.)))
+if args.time_spread != None:
+    end_time_it = np.argmin(abs(Times - (Times[-1] - args.time_spread/2.)))
+else:
+    end_time_it = np.argmin(abs(SFE - (SFE[-1] - args.SFE_spread_val)))
 rit = -1
 
 for time_it in range(start_time_it, end_time_it):
