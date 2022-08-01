@@ -150,7 +150,7 @@ for CF_it in range(len(CF_Array_Full[SFE_1_ind:])):
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
     chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
-    if chi_red_tobin < 0.3:
+    if chi_red_tobin < 0.25:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
