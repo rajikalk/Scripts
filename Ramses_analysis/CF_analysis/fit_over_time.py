@@ -10,6 +10,24 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import matplotlib.gridspec as gridspec
 
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
+
 #Define globals
 f_acc= 0.5
 Accretion_array = []
@@ -100,6 +118,10 @@ except:
 #do chi squared
 reduced_chi_square_tobin = []
 usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
 
 import scipy.stats as stats
 
@@ -165,10 +187,11 @@ for CF_it in range(len(CF_Array_Full)):
         print('saved', args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png')
     
 plt.clf()
+plt.figure(figsize=(single_col_width,0.7*single_col_width))
 plt.semilogy(SFE[SFE_1_ind:], reduced_chi_square_tobin)
 plt.xlabel("SFE")
-plt.ylabel("mean Chi squared (<$\chi^2$>)")
+plt.ylabel("Fit (<$\chi^2$>)")
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "reduced_chi_squared_tobin.png")
+plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf")

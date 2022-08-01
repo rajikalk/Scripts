@@ -31,7 +31,6 @@ args = parse_inputs()
 rank = CW.Get_rank()
 size = CW.Get_size()
 
-
 #Set units
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
