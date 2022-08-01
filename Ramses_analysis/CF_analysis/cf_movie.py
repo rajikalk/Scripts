@@ -74,7 +74,7 @@ Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pick
 file.close()
 
 if args.starting_ind == 0:
-    if args.time_spread != None
+    if args.time_spread != None:
         start_time_it = np.argmin(abs(Times - args.time_spread/2.))
     else:
         start_time_it = np.argmin(abs(SFE - args.SFE_spread_val/2.))
