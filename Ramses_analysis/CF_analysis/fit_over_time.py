@@ -147,7 +147,7 @@ for CF_it in range(len(CF_Array_Full)):
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
-    chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(CF_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
+    chi_red_tobin = (np.sum(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(curr_errs[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.01:
         plt.clf()
