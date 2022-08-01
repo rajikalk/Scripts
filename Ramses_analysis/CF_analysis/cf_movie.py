@@ -20,7 +20,8 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
-    parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=1000)
+    parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=None)
+    parser.add_argument("-SFE_spread", "--SFE_spread_val", help="If you don't want to use the t_spread, you can use SFE_spread", type=float, default=0.1)
     parser.add_argument("-start_ind", "--starting_ind", help="What frame do you want to start at?", type=int, default=0)
     parser.add_argument("-y_lim", "--y_limit", help="do you want to set a ylim for the frames?", type=float, default=0.2)
     parser.add_argument("files", nargs='*')
@@ -86,12 +87,20 @@ for time_it in range(start_time_it, end_time_it):
     if rank == rit:
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
-            time_val = Times[time_it]
-            start_time = Times[time_it] - args.time_spread/2.
-            end_time = Times[time_it] + args.time_spread/2.
+            if args.time_spread != None:
+                time_val = Times[time_it]
+                start_time = Times[time_it] - args.time_spread/2.
+                end_time = Times[time_it] + args.time_spread/2.
             
-            start_integration_it = np.argmin(abs(Times - start_time))
-            end_integration_it = np.argmin(abs(Times - end_time))
+                start_integration_it = np.argmin(abs(Times - start_time))
+                end_integration_it = np.argmin(abs(Times - end_time))
+            else:
+                SFE_val = SFE[time_it]
+                start_SFE = SFE[time_it] - args.SFE_spread_val
+                end_SFE = SFE[time_it] + args.SFE_spread_val
+                
+                start_integration_it = np.argmin(abs(SFE - start_SFE))
+                end_integration_it = np.argmin(abs(SFE - end_SFE))
             
             CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
             CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
@@ -112,7 +121,10 @@ for time_it in range(start_time_it, end_time_it):
             plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
-            plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
+            if args.time_spread != None:
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
+            else:
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val) + "\% SFE")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
