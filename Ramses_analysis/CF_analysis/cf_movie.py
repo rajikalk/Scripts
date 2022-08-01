@@ -21,7 +21,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=None)
-    parser.add_argument("-SFE_spread", "--SFE_spread_val", help="If you don't want to use the t_spread, you can use SFE_spread", type=float, default=0.1)
+    parser.add_argument("-SFE_spread", "--SFE_spread_val", help="If you don't want to use the t_spread, you can use SFE_spread", type=float, default=0.001)
     parser.add_argument("-start_ind", "--starting_ind", help="What frame do you want to start at?", type=int, default=0)
     parser.add_argument("-y_lim", "--y_limit", help="do you want to set a ylim for the frames?", type=float, default=0.2)
     parser.add_argument("files", nargs='*')
