@@ -117,7 +117,7 @@ gauss_total = lower_gauss + upper_gauss
 
 SFE_1_ind = np.argmin(abs(SFE-0.01))
 
-for CF_it in range(len(CF_Array_Full)):
+for CF_it in range(len(CF_Array_Full[SFE_1_ind:])):
     time_val = Times[CF_it]
     if args.time_spread != None:
         start_time = Times[CF_it] - args.time_spread/2.
@@ -152,7 +152,7 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.3:
         plt.clf()
-        plt.bar(bin_centers[1:], CF_hist[1:], yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+        plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
         plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Tobin et al")
         plt.legend(loc='best')
         plt.xlabel('Log Separation (AU)')
