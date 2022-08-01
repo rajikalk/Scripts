@@ -164,7 +164,7 @@ for CF_it in range(len(CF_Array_Full[SFE_1_ind:])):
         print('saved', args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png')
     
 plt.clf()
-plt.semilogy(SFE, reduced_chi_square_tobin)
+plt.semilogy(SFE[SFE_1_ind:], reduced_chi_square_tobin)
 plt.xlabel("SFE")
 plt.ylabel("mean Chi squared (<$\chi^2$>)")
 plt.xlim([0.01, 0.05])
