@@ -343,7 +343,7 @@ for pick_it in iter_range:
         plt.setp(yticklabels[0], visible=False)
         #axs.flatten()[pick_it].set_ylim(top=400)
         axs.flatten()[pick_it].legend(loc='upper left', fontsize=font_size)
-        axs.flatten()[pick_it].text((0.03), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+        axs.flatten()[pick_it].text((0.028), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs.flatten()[pick_it].text((0.002), np.max(N_total[:sfe_5_ind])-0.15*np.max(N_total[:sfe_5_ind]), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     if pick_it == 2:
