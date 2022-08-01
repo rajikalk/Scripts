@@ -9,6 +9,7 @@ import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import matplotlib.gridspec as gridspec
+import matplotlib
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
