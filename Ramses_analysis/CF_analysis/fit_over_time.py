@@ -26,7 +26,8 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-savedir", "--save_directory", help="Where do you want to save the figures?", type=str, default="./")
-    parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=10000)
+    parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=None)
+    parser.add_argument("-SFE_spread", "--SFE_spread_val", help="how much SFE around the central SFE do you want to intergrate over?", type=float, default=0.001)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -116,9 +117,20 @@ gauss_total = lower_gauss + upper_gauss
 
 
 for CF_it in range(len(CF_Array_Full)):
-    time_val = Times[CF_it]
-    start_time = Times[CF_it] - args.time_spread/2.
-    end_time = Times[CF_it] + args.time_spread/2.
+    time_val = Times[time_it]
+    if args.time_spread != None:
+        start_time = Times[time_it] - args.time_spread/2.
+        end_time = Times[time_it] + args.time_spread/2.
+    
+        start_integration_it = np.argmin(abs(Times - start_time))
+        end_integration_it = np.argmin(abs(Times - end_time))
+    else:
+        SFE_val = SFE[time_it]
+        start_SFE = SFE[time_it] - args.SFE_spread_val
+        end_SFE = SFE[time_it] + args.SFE_spread_val
+        
+        start_integration_it = np.argmin(abs(SFE - start_SFE))
+        end_integration_it = np.argmin(abs(SFE - end_SFE))
     
     start_integration_it = np.argmin(abs(Times - start_time))
     end_integration_it = np.argmin(abs(Times - end_time))
