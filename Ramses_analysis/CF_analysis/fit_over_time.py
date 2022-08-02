@@ -202,10 +202,10 @@ for CF_it in range(len(CF_Array_Full)):
         usable_seps = np.argwhere(All_separations[CF_it]>=np.sort(Perseus_sep)[0]).T[0]
         frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
-        p_val = stats.kstest(frequency, Perseus_frequency)[1]
+        KS_val = stats.kstest(frequency, Perseus_frequency)[0]
     except:
-        p_val = np.nan
-    p_values.append(p_val)
+        KS_val = np.nan
+    p_values.append(KS_val)
     if chi_red_tobin < 0.01:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
