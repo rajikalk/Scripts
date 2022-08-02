@@ -55,6 +55,7 @@ file = open(pickle_file, 'rb')
 Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
 file.close()
 
+rit=-1
 for time_it in range(len(Times)):
     rit = rit + 1
     if rit == size:
