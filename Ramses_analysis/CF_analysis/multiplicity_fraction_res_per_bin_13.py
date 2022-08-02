@@ -676,9 +676,11 @@ if update == True and args.make_plots_only == 'False':
                             'time'        : time}
                 
                 
-                import pdb
-                pdb.set_trace()
-                #SAVE ALL SEPARATIONS
+                if np.max(res['separation']) > 0:
+                    import pdb
+                    pdb.set_trace()
+                    #all_separation =
+                    #SAVE ALL SEPARATIONS
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
                 nan_size = len(sink_inds_total) - len(sink_inds)
