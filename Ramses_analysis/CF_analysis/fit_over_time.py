@@ -197,6 +197,6 @@ plt.xlim([0.01, 0.05])
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
-file = open('chi_squared_fit.pkl', 'wb')
+file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
 pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_tobin), file)
 file.close()
