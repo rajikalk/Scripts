@@ -51,3 +51,19 @@ plt.xlabel('SFE')
 plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 plt.savefig("reduced_chi_squared_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+
+plt.clf()
+plt.figure(figsize=(single_col_width,0.7*single_col_width))
+
+for fit_pick in range(len(fit_pickles)):
+    file = open(fit_pickles[fit_pick], 'rb')
+    SFE, reduced_chi_square_tobin, p_values = pickle.load(file)
+    file.close()
+    
+    plt.semilogy(SFE, p_values, label=subplot_titles[fit_pick])
+    
+plt.legend(loc='best')
+plt.xlabel('SFE')
+plt.ylabel("P-values", labelpad=-0.2)
+plt.xlim([0.01, 0.05])
+plt.savefig("p_values.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
