@@ -184,7 +184,6 @@ for CF_it in range(len(CF_Array_Full)):
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
     chi_red_calc = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))
-    reduced_chi_square_sim.append(chi_red_calc)
     chi_red_tobin = (np.mean(((CF_Array_Full[CF_it][usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(Tobin_errs)[usable_bin_inds]**2)))
     reduced_chi_square_sim.append(chi_red_calc)
     reduced_chi_square_tobin.append(chi_red_tobin)
