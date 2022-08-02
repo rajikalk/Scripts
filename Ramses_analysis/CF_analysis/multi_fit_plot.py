@@ -73,9 +73,11 @@ plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_sim, reduced_chi_square_tobin, p_values = pickle.load(file)
+    SFE, reduced_chi_square_sim, reduced_chi_square_tobin, KS_test = pickle.load(file)
     file.close()
     
+    import pdb
+    pdb.set_trace()
     plt.semilogy(SFE, p_values, label=subplot_titles[fit_pick])
     
 plt.legend(loc='upper left')
