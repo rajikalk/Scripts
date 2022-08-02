@@ -202,7 +202,7 @@ for CF_it in range(len(CF_Array_Full)):
         usable_seps = np.argwhere(All_separations[CF_it]>=np.sort(Perseus_sep)[0]).T[0]
         frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
-        KS_test_result = stats.kstest(frequency, Perseus_frequency)[0]
+        KS_test_result = stats.kstest(frequency, Perseus_frequency)
     except:
         KS_test_result = (np.nan, np.nan)
     KS_test.append(KS_test_result)
@@ -230,5 +230,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 '''
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_sim, reduced_chi_square_tobin, p_values), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_sim, reduced_chi_square_tobin, KS_test), file)
 file.close()
