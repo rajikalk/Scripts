@@ -67,7 +67,7 @@ for time_it in range(len(Times)):
             plt.clf()
             plt.step(Perseus_log_sep, Perseus_frequency, label='Perseus')
             if len(All_separations[time_it])>0:
-                usable_seps = np.argwhere(All_separations[time_it]=>10**1.25).T[0]
+                usable_seps = np.argwhere(All_separations[time_it]>=10**1.25).T[0]
                 log_sep = np.log10(np.sort(All_separations[time_it][usable_seps]))
                 frequency = np.arange(len(All_separations[time_it][usable_seps]))/np.arange(len(All_separations[time_it][usable_seps]))[-1]
                 plt.step(log_sep, frequency, label='Simulation')

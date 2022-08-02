@@ -724,6 +724,9 @@ if update == True and args.make_plots_only == 'False':
 
                 #Find all singles and top systems with separations below the bin lower bound
                 s_true = np.where((res['n']==1) & (res['topSystem']==True))[0] #These are true singles
+                s_below_obs_lim = np.where((res[sep_key]=<(10**1.25))&(res['topSystem']==True)&(res['n']!=1))[0]
+                res['n'][s_below_obs_lim] = 0
+                
                 s_fake = np.where((res[sep_key]<S_bins[bin_it-1])&(res['topSystem']==True)&(res['n']!=1))[0] #These are Top systems whose largest separation is below the separatino bin.
 
                 if args.verbose_printing != 'False':
