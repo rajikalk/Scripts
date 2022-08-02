@@ -218,7 +218,7 @@ for CF_it in range(len(CF_Array_Full)):
         plt.title("reduced chi$^2$ = " + str(chi_red_tobin))
         plt.savefig(args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png', format='png', bbox_inches='tight')
         print('saved', args.save_directory+'SFE_'+str(SFE[CF_it])+'Myr_chi_tobin.png')
-'''
+
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
 plt.semilogy(SFE[SFE_1_ind:], reduced_chi_square_tobin)
@@ -228,7 +228,7 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
-'''
+
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
 pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_sim, reduced_chi_square_tobin, KS_test), file)
 file.close()
