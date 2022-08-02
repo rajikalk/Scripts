@@ -70,10 +70,11 @@ for fit_pick in range(len(fit_pickles)):
     plt.semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
-plt.legend(loc='upper left', ncol=3)
+plt.legend(loc='upper left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlabel('SFE')
 plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
+plt.ylim(top=100)
 plt.savefig("fit_tobin_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
