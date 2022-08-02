@@ -93,6 +93,7 @@ plt.savefig("fit_sim_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
+'''
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
     SFE, reduced_chi_square_sim, reduced_chi_square_tobin, KS_test = pickle.load(file)
@@ -105,3 +106,4 @@ plt.xlabel('SFE')
 plt.ylabel("P-values", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 plt.savefig("p_values.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+'''
