@@ -10,6 +10,7 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import matplotlib.gridspec as gridspec
 import matplotlib
+from scipy import stats
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
@@ -118,6 +119,7 @@ except:
 
 #do chi squared
 reduced_chi_square_tobin = []
+p_values = []
 usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -174,6 +176,8 @@ for CF_it in range(len(CF_Array_Full)):
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
     chi_red_tobin = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))
     reduced_chi_square_tobin.append(chi_red_tobin)
+    p_val = stats.kstest(CF_Array_Full[CF_it], CF_per_bin_Tobin_Per)[1]
+    p_values.append(p_val)
     if chi_red_tobin < 0.01:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
@@ -198,5 +202,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_tobin), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_tobin, p_values), file)
 file.close()
