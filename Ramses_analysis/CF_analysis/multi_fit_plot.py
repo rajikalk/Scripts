@@ -47,7 +47,7 @@ for fit_pick in range(len(fit_pickles)):
     smoothed_chi = []
     smoothed_upp = []
     smoothed_low = []
-    smooth_window = 0.0005
+    smooth_window = 0.0001
     for SFE_it in range(len(SFE)):
         low_SFE = SFE[SFE_it] - smooth_window
         if low_SFE < 0:
