@@ -136,8 +136,8 @@ except:
 reduced_chi_square_tobin = []
 reduced_chi_square_sim = []
 KS_test = []
-#usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
-usable_bin_inds = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
+usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
+#usable_bin_inds = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
