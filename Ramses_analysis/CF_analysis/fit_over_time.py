@@ -172,7 +172,7 @@ for CF_it in range(len(CF_Array_Full)):
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
-    chi_red_tobin = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))/len(CF_hist[usable_bin_inds])
+    chi_red_tobin = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))
     reduced_chi_square_tobin.append(chi_red_tobin)
     if chi_red_tobin < 0.01:
         plt.clf()
@@ -196,3 +196,7 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+
+file = open('chi_squared_fit.pkl', 'wb')
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_tobin), file)
+file.close()
