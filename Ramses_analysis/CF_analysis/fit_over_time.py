@@ -129,7 +129,7 @@ except:
 #do chi squared
 reduced_chi_square_tobin = []
 reduced_chi_square_sim = []
-p_values = []
+KS_test = []
 #usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
 usable_bin_inds = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
 two_col_width = 7.20472 #inches
@@ -202,10 +202,10 @@ for CF_it in range(len(CF_Array_Full)):
         usable_seps = np.argwhere(All_separations[CF_it]>=np.sort(Perseus_sep)[0]).T[0]
         frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
-        KS_val = stats.kstest(frequency, Perseus_frequency)[0]
+        KS_test_result = stats.kstest(frequency, Perseus_frequency)[0]
     except:
-        KS_val = np.nan
-    p_values.append(KS_val)
+        KS_test_result = (np.nan, np.nan)
+    KS_test.append(KS_test_result)
     if chi_red_tobin < 0.01:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
