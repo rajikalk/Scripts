@@ -174,7 +174,7 @@ for CF_it in range(len(CF_Array_Full)):
             curr_errs.append(CF_err[0][cf_val])
             
     Tobin_errs = []
-    for cf_val in range(len(CF_Array_Full[CF_it]))
+    for cf_val in range(len(CF_Array_Full[CF_it])):
         if CF_per_bin_Tobin_Per[cf_val] < CF_Array_Full[CF_it][cf_val]:
             Tobin_errs.append(CF_errs_Per[1][cf_val])
         else:
