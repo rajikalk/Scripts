@@ -677,12 +677,13 @@ if update == True and args.make_plots_only == 'False':
                             'time'        : time}
                 
                 
-                if np.max(res['separation']) > 0:
-                    all_seps = res['separation'][np.argwhere(res['separation']>0).T[0]]
-                else:
-                    all_seps = np.array([])
+                if S_bins[bin_it] == S_bins[-1]:
+                    if np.max(res['separation']) > 0:
+                        all_seps = res['separation'][np.argwhere(res['separation']>0).T[0]]
+                    else:
+                        all_seps = np.array([])
                     
-                All_separations.append(all_seps)
+                    All_separations.append(all_seps)
                     
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
