@@ -73,7 +73,7 @@ for time_it in range(len(Times)):
             plt.ylabel('Frequency')
             plt.xlim([0, 4])
             plt.ylim([0, 1])
-            plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr)"))
+            plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr)")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
