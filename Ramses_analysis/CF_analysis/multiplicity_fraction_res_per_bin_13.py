@@ -183,6 +183,7 @@ N_sys_total = []
 CF_arrays = []
 Sink_Luminosities = {}
 Sink_Accretion = {}
+All_separations = []
 
 #Overwrite saved variables if need be
 pickle_file = savedir + args.pickled_file
@@ -677,10 +678,12 @@ if update == True and args.make_plots_only == 'False':
                 
                 
                 if np.max(res['separation']) > 0:
-                    import pdb
-                    pdb.set_trace()
-                    #all_separation =
-                    #SAVE ALL SEPARATIONS
+                    all_seps = res['separation'][np.argwhere(res['separation']>0).T[0]]
+                else:
+                    all_seps = np.array([])
+                    
+                All_separations.append(all_seps)
+                    
                 sink_inds = np.where((res['n']==1))[0]
                 sink_inds_total = np.arange(len(res['n']))
                 nan_size = len(sink_inds_total) - len(sink_inds)
@@ -964,7 +967,7 @@ if update == True and args.make_plots_only == 'False':
             N_sys_total.append(n_systems)
             pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
             file = open(pickle_file_rank, 'wb')
-            pickle.dump((CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion),file)
+            pickle.dump((CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion, All_separations),file)
             file.close()
             print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
            
@@ -1001,7 +1004,7 @@ if rank == 0:
     print("GATHERING PICKLES")
     try:
         file = open(pickle_file+'.pkl', 'rb')
-        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
         file.close()
     except:
         pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
@@ -1009,9 +1012,10 @@ if rank == 0:
         SFE_full = []
         CF_per_bin_full = []
         n_systems_full = []
+        All_separations_full = []
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+            CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
             file.close()
             Sink_Luminosities_full = {}
             Sink_Accretion_full = {}
@@ -1026,6 +1030,7 @@ if rank == 0:
             SFE_full = SFE_full + SFE
             CF_per_bin_full = CF_per_bin_full + CF_arrays
             n_systems_full = n_systems_full + N_sys_total
+            All_separations_full = All_separations_full + All_separations
             os.remove(pick_file)
         
         #Let's sort the data
@@ -1043,9 +1048,10 @@ if rank == 0:
         SFE = np.array(SFE_full)[sorted_inds]
         CF_Array_Full = np.array(CF_per_bin_full)[sorted_inds]
         N_sys_total = np.array(n_systems_full)[sorted_inds]
+        All_separations = np.array(All_separations_full)[sorted_inds]
         
         file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion),file)
+        pickle.dump((Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations),file)
         file.close()
     
     file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
