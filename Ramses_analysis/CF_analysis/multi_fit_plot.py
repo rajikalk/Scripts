@@ -46,7 +46,7 @@ for fit_pick in range(len(fit_pickles)):
     
     plt.semilogy(SFE, reduced_chi_square_tobin, label=subplot_titles[fit_pick])
     
-plt.legend(loc='best')
+plt.legend(loc='upper left')
 plt.xlabel('SFE')
 plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
@@ -62,7 +62,7 @@ for fit_pick in range(len(fit_pickles)):
     
     plt.semilogy(SFE, reduced_chi_square_sim, label=subplot_titles[fit_pick])
     
-plt.legend(loc='best')
+plt.legend(loc='upper left')
 plt.xlabel('SFE')
 plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
@@ -78,7 +78,7 @@ for fit_pick in range(len(fit_pickles)):
     
     plt.semilogy(SFE, p_values, label=subplot_titles[fit_pick])
     
-plt.legend(loc='best')
+plt.legend(loc='upper left')
 plt.xlabel('SFE')
 plt.ylabel("P-values", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
