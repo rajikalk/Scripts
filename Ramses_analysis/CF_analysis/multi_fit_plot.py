@@ -35,6 +35,8 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
+colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
+line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
@@ -65,10 +67,10 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_chi.append(median_chi)
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
-    plt.semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick])
+    plt.semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
-plt.legend(loc='upper left')
+plt.legend(loc='upper left', ncol=3)
 plt.xlabel('SFE')
 plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
