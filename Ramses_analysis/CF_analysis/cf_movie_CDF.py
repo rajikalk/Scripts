@@ -63,12 +63,13 @@ for time_it in range(len(Times)):
     if rank == rit:
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
-            log_sep = np.log10(np.sort(All_separations[time_it]))
-            frequency = np.arange(len(All_separations[time_it]))/np.arange(len(All_separations[time_it]))[-1]
-            
             plt.clf()
+            if len(All_separations[time_it])>0:
+                log_sep = np.log10(np.sort(All_separations[time_it]))
+                frequency = np.arange(len(All_separations[time_it]))/np.arange(len(All_separations[time_it]))[-1]
+                plt.step(log_sep, frequency, label='Simulation')
+            
             plt.step(Perseus_log_sep, Perseus_frequency, label='Perseus')
-            plt.step(log_sep, frequency, label='Simulation')
             plt.legend(loc='upper left')
             plt.xlabel('Separation (Log$_{10}$(AU))')
             plt.ylabel('Frequency')
