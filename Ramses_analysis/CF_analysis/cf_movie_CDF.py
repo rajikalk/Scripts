@@ -35,7 +35,7 @@ Perseus_sep = pickle.load(file_open)
 file_open.close()
 
 Perseus_log_sep = np.log10(np.sort(Perseus_sep))
-Perseus_frequency = np.arange(len(Separations))/np.arange(len(Separations))[-1]
+Perseus_frequency = np.arange(len(Perseus_sep))/np.arange(len(Perseus_sep))[-1]
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
