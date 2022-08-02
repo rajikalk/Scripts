@@ -68,12 +68,21 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
+S_bins = np.logspace(0.75,4,14)
+bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_CDF.pkl", "rb")
+Perseus_sep = pickle.load(file_open)
+file_open.close()
+
+Perseus_log_sep = np.log10(np.sort(Perseus_sep))
+Perseus_frequency = np.arange(len(Perseus_sep))/np.arange(len(Perseus_sep))[-1]
+
 #=====================================================================================================
 
 pickle_file = args.pickled_file
 try:
     file = open(pickle_file, 'rb')
-    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
     file.close()
 except:
     pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
@@ -188,6 +197,13 @@ for CF_it in range(len(CF_Array_Full)):
     chi_red_tobin = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(Tobin_errs)[usable_bin_inds]**2)))
     reduced_chi_square_sim.append(chi_red_calc)
     reduced_chi_square_tobin.append(chi_red_tobin)
+    
+    try:
+        usable_seps = np.argwhere(All_separations[time_it]>=10**1.25).T[0]
+        frequency = np.arange(len(All_separations[time_it][usable_seps]))/np.arange(len(All_separations[time_it][usable_seps]))[-1]
+        log_sep = np.log10(np.sort(All_separations[time_it][usable_seps]))
+                except:
+                    pass
     p_val = stats.kstest(CF_Array_Full[CF_it], CF_per_bin_Tobin_Per)[1]
     p_values.append(p_val)
     if chi_red_tobin < 0.01:
