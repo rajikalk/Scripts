@@ -63,6 +63,7 @@ for time_it in range(len(Times)):
     if rank == rit:
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
+            time_val = Times[time_it]
             plt.clf()
             if len(All_separations[time_it])>0:
                 log_sep = np.log10(np.sort(All_separations[time_it]))
