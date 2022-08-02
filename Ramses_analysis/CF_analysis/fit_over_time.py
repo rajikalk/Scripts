@@ -199,9 +199,9 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_tobin.append(chi_red_tobin)
     
     try:
-        usable_seps = np.argwhere(All_separations[time_it]>=np.sort(Perseus_sep)[0]).T[0]
-        frequency = np.arange(len(All_separations[time_it][usable_seps]))/np.arange(len(All_separations[time_it][usable_seps]))[-1]
-        log_sep = np.log10(np.sort(All_separations[time_it][usable_seps]))
+        usable_seps = np.argwhere(All_separations[CF_it]>=np.sort(Perseus_sep)[0]).T[0]
+        frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
+        log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         p_val = stats.kstest(frequency, Perseus_frequency)[1]
     except:
         p_val = np.nan
