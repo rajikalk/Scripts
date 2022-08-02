@@ -82,8 +82,14 @@ Perseus_frequency = np.arange(len(Perseus_sep))/np.arange(len(Perseus_sep))[-1]
 pickle_file = args.pickled_file
 try:
     file = open(pickle_file, 'rb')
-    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
-    file.close()
+    try:
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
+        file.close()
+    except:
+        file.close()
+        file = open(pickle_file, 'rb')
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+        file.close()
 except:
     pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
     Times_full = []
