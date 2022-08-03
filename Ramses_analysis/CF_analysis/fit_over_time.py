@@ -74,8 +74,10 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
-Perseus_log_sep = np.log10(np.sort(Perseus_sep))
-Perseus_frequency = np.arange(len(Perseus_sep))/np.arange(len(Perseus_sep))[-1]
+import pdb
+pdb.set_trace()
+Perseus_log_sep = np.log10(np.sort(bin_centers))
+Perseus_frequency = np.arange(len(CF_per_bin_Tobin_Per))/np.arange(len(CF_per_bin_Tobin_Per))[-1]
 
 #=====================================================================================================
 
@@ -204,8 +206,9 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_sim.append(chi_red_calc)
     reduced_chi_square_tobin.append(chi_red_tobin)
     
+    import pdb
+    pdb.set_trace()
     try:
-        usable_seps = np.argwhere(All_separations[CF_it]>=np.sort(Perseus_sep)[0]).T[0]
         frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         KS_test_result = stats.kstest(frequency, Perseus_frequency)
