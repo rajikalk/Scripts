@@ -40,7 +40,7 @@ line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, 
 
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width,1.5*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.07)
+plt.subplots_adjust(hspace=0.0)
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
@@ -95,14 +95,13 @@ for fit_pick in range(len(fit_pickles)):
     axs[1].semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     axs[1].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
-axs[0].legend(loc='upper right', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs[0].legend(loc='low left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[1].set_xlabel('SFE', size=10)
 axs[0].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2, size=10)
 axs[1].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2, size=10)
-axs[0].text((0.02), (0.6), "All bins", zorder=11, size=10)
-axs[1].text((0.02), (0.6), "Selected bins", zorder=11, size=10)
+axs[0].text((0.011), (30), "All bins", zorder=11, size=10)
+axs[1].text((0.011), (30), "Selected bins", zorder=11, size=10)
 axs[0].set_xlim([0.01, 0.05])
-axs[0].set_ylim(top=100)
 plt.savefig("fit_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
