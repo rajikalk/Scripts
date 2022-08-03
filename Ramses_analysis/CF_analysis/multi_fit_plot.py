@@ -96,13 +96,13 @@ for fit_pick in range(len(fit_pickles)):
     axs[1].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
 axs[0].legend(loc='upper right', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
-axs[1].xlabel('SFE')
-axs[0].ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
-axs[1].ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
+axs[1].set_xlabel('SFE')
+axs[0].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
+axs[1].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 axs[0].text((0.02), (0.6), "All bins", zorder=11, size=args.text_font)
 axs[1].text((0.02), (0.6), "Selected bins", zorder=11, size=args.text_font)
-axs[0].xlim([0.01, 0.05])
-axs[0].ylim(top=100)
+axs[0].set_xlim([0.01, 0.05])
+axs[0].set_ylim(top=100)
 plt.savefig("fit_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
