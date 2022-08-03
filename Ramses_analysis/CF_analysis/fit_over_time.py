@@ -204,8 +204,6 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_sim.append(chi_red_calc)
     reduced_chi_square_tobin.append(chi_red_tobin)
     
-    import pdb
-    pdb.set_trace()
     try:
         frequency = np.cumsum(CF_hist[CF_it][2:])/np.cumsum(CF_hist[CF_it][2:])[-1]
         log_sep = bin_centers[2:]
