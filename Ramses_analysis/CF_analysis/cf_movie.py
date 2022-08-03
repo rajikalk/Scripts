@@ -70,8 +70,13 @@ if pickle_file[-4:] != '.pkl':
     pickle_file = pickle_file + '.pkl'
 
 file = open(pickle_file, 'rb')
-Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
-file.close()
+try:
+    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+    file.close
+except:
+    file = open(pickle_file, 'rb')
+    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
+    file.close()
 
 if args.starting_ind == 0:
     if args.time_spread != None:
