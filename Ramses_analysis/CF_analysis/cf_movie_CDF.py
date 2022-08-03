@@ -71,7 +71,7 @@ for time_it in range(len(Times)):
             plt.clf()
             plt.step(Perseus_log_sep, Perseus_frequency, label='Perseus')
             
-            frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
+            frequency = np.cumsum(CF_Array_Full[time_it][2:])/np.cumsum(CF_Array_Full[time_it][2:])[-1]
             log_sep = bin_centers[2:]
             plt.step(log_sep, frequency, label='Perseus')
         
