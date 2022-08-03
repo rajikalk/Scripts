@@ -74,10 +74,8 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
-import pdb
-pdb.set_trace()
-Perseus_log_sep = np.log10(np.sort(bin_centers))
-Perseus_frequency = np.arange(len(CF_per_bin_Tobin_Per))/np.arange(len(CF_per_bin_Tobin_Per))[-1]
+Perseus_log_sep = bin_centers[2:]
+Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
 
 #=====================================================================================================
 
@@ -209,8 +207,8 @@ for CF_it in range(len(CF_Array_Full)):
     import pdb
     pdb.set_trace()
     try:
-        frequency = np.arange(len(All_separations[CF_it][usable_seps]))/np.arange(len(All_separations[CF_it][usable_seps]))[-1]
-        log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
+        frequency = np.cumsum(CF_hist[CF_it][2:])/np.cumsum(CF_hist[CF_it][2:])[-1]
+        log_sep = bin_centers[2:]
         KS_test_result = stats.kstest(frequency, Perseus_frequency)
     except:
         KS_test_result = (np.nan, np.nan)
