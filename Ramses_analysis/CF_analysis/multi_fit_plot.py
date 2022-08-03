@@ -95,7 +95,7 @@ for fit_pick in range(len(fit_pickles)):
     axs[1].semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     axs[1].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
-axs[0].legend(loc='low left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs[0].legend(loc='lower left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[1].set_xlabel('SFE', size=10)
 axs[0].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2, size=10)
 axs[1].set_ylabel("Fit (<$\chi^2$>)", labelpad=-0.2, size=10)
