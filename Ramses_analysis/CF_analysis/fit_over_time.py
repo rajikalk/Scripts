@@ -134,10 +134,11 @@ except:
 
 #do chi squared
 reduced_chi_square_tobin = []
+reduced_chi_square_selected = []
 reduced_chi_square_sim = []
 KS_test = []
-usable_bin_inds = np.array([2, 4, 6, 8, 10, 11, 12])
-#usable_bin_inds = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
+selected_bins = np.array([2, 4, 6, 8, 10, 11, 12])
+tobin_bins = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -199,10 +200,12 @@ for CF_it in range(len(CF_Array_Full)):
     #N_sys = np.sum(N_sys_total[CF_it],axis=1)
     #CF_errs = CF_std#np.mean(CF_errs_Per,axis=0)
     #chi_red_tobin = (np.median(((CF_hist[1:]-gauss_total)**2)/(np.array(curr_errs)**2)))/len(CF_hist[1:])
-    chi_red_calc = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(curr_errs)[usable_bin_inds]**2)))
-    chi_red_tobin = (np.mean(((CF_hist[usable_bin_inds]-CF_per_bin_Tobin_Per[usable_bin_inds])**2)/(np.array(Tobin_errs)[usable_bin_inds]**2)))
+    chi_red_calc = (np.mean(((CF_hist[selected_bins]-CF_per_bin_Tobin_Per[selected_bins])**2)/(np.array(curr_errs)[selected_bins]**2)))
+    chi_red_selected = (np.mean(((CF_hist[selected_bins]-CF_per_bin_Tobin_Per[selected_bins])**2)/(np.array(Tobin_errs)[selected_bins]**2)))
+    chi_red_tobin = (np.mean(((CF_hist[tobin_bins]-CF_per_bin_Tobin_Per[tobin_bins])**2)/(np.array(Tobin_errs)[tobin_bins]**2)))
     reduced_chi_square_sim.append(chi_red_calc)
     reduced_chi_square_tobin.append(chi_red_tobin)
+    reduced_chi_square_selected.append(chi_red_selected)
     
     try:
         frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
@@ -235,5 +238,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_sim, reduced_chi_square_tobin, KS_test), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test), file)
 file.close()

@@ -34,6 +34,10 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
+bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
+file_open.close()
+
 Perseus_log_sep = bin_centers[2:]
 Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
 
