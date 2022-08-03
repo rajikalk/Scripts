@@ -39,7 +39,6 @@ colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:b
 line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width,1.5*single_col_width), sharex=True, sharey=True)
-iter_range = range(0, len(pickle_files)*2)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.07)
 
