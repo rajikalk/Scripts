@@ -210,9 +210,9 @@ for CF_it in range(len(CF_Array_Full)):
     try:
         frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
         log_sep = bin_centers[2:]
-        KS_test_result = stats.kstest(frequency, Perseus_frequency)
+        KS_test_result = np.max(abs(Perseus_frequency - frequency))
     except:
-        KS_test_result = (np.nan, np.nan)
+        KS_test_result = np.nan
     KS_test.append(KS_test_result)
     if chi_red_tobin < 0.01:
         plt.clf()
