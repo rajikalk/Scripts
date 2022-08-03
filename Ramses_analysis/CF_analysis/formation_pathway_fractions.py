@@ -109,7 +109,7 @@ for birth_con_pickle in birth_con_pickles:
     
     Initial_Seps.append([Core_frag_seps, Delayed_core_frag_seps, Dynamical_capt_seps])
     '''
-x_labels = ['Core frag.', 'Delayed core frag.', 'Dynamical capture']
+x_labels = ['Bound core frag.', 'Unbound core frag.', 'Dynamical capture']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
