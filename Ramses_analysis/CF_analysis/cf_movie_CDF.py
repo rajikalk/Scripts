@@ -34,8 +34,8 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
-Perseus_log_sep = np.log10(np.sort(Perseus_sep))
-Perseus_frequency = np.arange(len(Perseus_sep))/np.arange(len(Perseus_sep))[-1]
+Perseus_log_sep = bin_centers[2:]
+Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
@@ -66,14 +66,10 @@ for time_it in range(len(Times)):
             time_val = Times[time_it]
             plt.clf()
             plt.step(Perseus_log_sep, Perseus_frequency, label='Perseus')
-            if len(All_separations[time_it])>0:
-                usable_seps = np.argwhere(All_separations[time_it]>=np.sort(Perseus_sep)[0]).T[0]
-                try:
-                    frequency = np.arange(len(All_separations[time_it][usable_seps]))/np.arange(len(All_separations[time_it][usable_seps]))[-1]
-                    log_sep = np.log10(np.sort(All_separations[time_it][usable_seps]))
-                    plt.step(log_sep, frequency, label='Simulation')
-                except:
-                    pass
+            
+            frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
+            log_sep = bin_centers[2:]
+            plt.step(log_sep, frequency, label='Perseus')
         
             plt.legend(loc='upper left')
             plt.xlabel('Separation (Log$_{10}$(AU))')
