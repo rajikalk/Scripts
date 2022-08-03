@@ -109,36 +109,14 @@ plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, p_values = pickle.load(file)
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test = pickle.load(file)
     file.close()
-    
-    smoothed_chi = []
-    smoothed_upp = []
-    smoothed_low = []
-    smooth_window = 0.0001
-    for SFE_it in range(len(SFE)):
-        low_SFE = SFE[SFE_it] - smooth_window
-        if low_SFE < 0:
-            low_SFE = 0
-        high_SFE = SFE[SFE_it] + smooth_window
-        if high_SFE > 0.05:
-            high_SFE = 5
-        low_SFE_it = np.argmin(abs(SFE-low_SFE))
-        high_SFE_it = np.argmin(abs(SFE-high_SFE))
-        mean_chi = np.mean(reduced_chi_square_selected[low_SFE_it:high_SFE_it])
-        median_chi = np.median(reduced_chi_square_selected[low_SFE_it:high_SFE_it])
-        std_chi = np.std(reduced_chi_square_selected[low_SFE_it:high_SFE_it])
-        err_upper = mean_chi+std_chi
-        err_lower = mean_chi-std_chi
-        smoothed_chi.append(median_chi)
-        smoothed_upp.append(err_upper)
-        smoothed_low.append(err_lower)
-    plt.semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
-    plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+
+    plt.semilogy(SFE, KS_test, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     
 plt.legend(loc='upper right', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlabel('SFE')
-plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
+plt.ylabel("KS Statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 plt.ylim(top=100)
-plt.savefig("fit_selected_bins_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig("KS_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
