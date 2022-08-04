@@ -264,5 +264,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test_sep, D_crits_sep, KS_test_CF, D_crits_CF), file)
 file.close()
