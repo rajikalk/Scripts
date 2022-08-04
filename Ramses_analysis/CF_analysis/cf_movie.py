@@ -122,11 +122,13 @@ for time_it in range(start_time_it, end_time_it):
             
             plt.clf()
             try:
-                plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                plt.bar(bin_centers, CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
             except:
-                plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
-            plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
+                #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+            plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+            #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             plt.plot(x,gauss_total)
             plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
