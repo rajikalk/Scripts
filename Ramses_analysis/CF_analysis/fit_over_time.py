@@ -224,7 +224,7 @@ for CF_it in range(len(CF_Array_Full)):
         
         
         frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
-        KS_test_result_CF = np.max(abs(Perseus_frequency - frequency))
+        KS_test_result_CF = np.max(abs(Perseus_frequency_CF - frequency))
         alpha = 0.99
         m = len(CF_hist[2:])
         n = len(CF_hist[2:])
