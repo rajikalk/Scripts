@@ -44,7 +44,7 @@ plt.subplots_adjust(hspace=0.0)
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits = pickle.load(file)
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF = pickle.load(file)
     file.close()
     
     smoothed_chi = []
@@ -109,7 +109,7 @@ plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits = pickle.load(file)
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF = pickle.load(file)
     file.close()
 
     plt.semilogy(SFE, KS_test, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
@@ -127,7 +127,7 @@ plt.subplots_adjust(hspace=0.0)
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits = pickle.load(file)
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF = pickle.load(file)
     file.close()
     
     smoothed_KS_test = []
@@ -143,9 +143,9 @@ for fit_pick in range(len(fit_pickles)):
             high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
-        mean_chi = np.nanmean(KS_test[low_SFE_it:high_SFE_it])
-        median_chi = np.nanmedian(KS_test[low_SFE_it:high_SFE_it])
-        std_chi = np.nanstd(KS_test[low_SFE_it:high_SFE_it])
+        mean_chi = np.nanmean(KS_test_CF[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(KS_test_CF[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(KS_test_CF[low_SFE_it:high_SFE_it])
         err_upper = mean_chi+std_chi
         err_lower = mean_chi-std_chi
         smoothed_KS_test.append(median_chi)
@@ -167,9 +167,9 @@ for fit_pick in range(len(fit_pickles)):
             high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
-        mean_chi = np.nanmean(D_crits[low_SFE_it:high_SFE_it])
-        median_chi = np.nanmedian(D_crits[low_SFE_it:high_SFE_it])
-        std_chi = np.nanstd(D_crits[low_SFE_it:high_SFE_it])
+        mean_chi = np.nanmean(D_crits_CF[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(D_crits_CF[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(D_crits_CF[low_SFE_it:high_SFE_it])
         err_upper = mean_chi+std_chi
         err_lower = mean_chi-std_chi
         smoothed_D_crits.append(median_chi)
@@ -191,4 +191,4 @@ for fit_pick in range(len(fit_pickles)):
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[1].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
-plt.savefig("KS_vs_crit.png", format='png', bbox_inches='tight', pad_inches=0.02)
+plt.savefig("KS_vs_crit_CF.png", format='png', bbox_inches='tight', pad_inches=0.02)

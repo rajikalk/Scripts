@@ -77,7 +77,7 @@ file_open.close()
 Perseus_log_sep = np.log10(np.sort(Perseus_sep))
 Perseus_frequency = np.cumsum(np.sort(Perseus_sep))/np.cumsum(np.sort(Perseus_sep))[-1]
 #Perseus_log_sep = bin_centers[2:]
-#Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
+Perseus_frequency_CF = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
 
 #=====================================================================================================
 
@@ -138,8 +138,10 @@ except:
 reduced_chi_square_tobin = []
 reduced_chi_square_selected = []
 reduced_chi_square_sim = []
-KS_test = []
-D_crits = []
+KS_test_sep = []
+D_crits_sep = []
+KS_test_CF = []
+D_crits_CF = []
 selected_bins = np.array([2, 4, 6, 7, 8, 9, 10, 11, 12])
 tobin_bins = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
 two_col_width = 7.20472 #inches
@@ -219,14 +221,25 @@ for CF_it in range(len(CF_Array_Full)):
         m = len(usable_seps)
         n = len(Perseus_frequency)
         D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
-        #frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
+        
+        
+        frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
+        KS_test_result_CF = np.max(abs(Perseus_frequency - frequency))
+        alpha = 0.99
+        m = len(CF_hist[2:])
+        n = len(CF_hist[2:])
+        D_crit_CF = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
         #log_sep = bin_centers[2:]
         #KS_test_result = np.max(abs(Perseus_frequency - frequency))
     else:
         KS_test_result = np.nan
         D_crit = np.nan
-    KS_test.append(KS_test_result)
-    D_crits.append(D_crit)
+        KS_test_result_CF = np.nan
+        D_crit_CF = np.nan
+    KS_test_sep.append(KS_test_result)
+    D_crits_sep.append(D_crit)
+    KS_test_CF.append(KS_test_result_CF)
+    D_crits_CF.append(D_crit_CF)
     if chi_red_tobin < 0.01:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
@@ -251,5 +264,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF), file)
 file.close()
