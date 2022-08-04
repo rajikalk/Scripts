@@ -218,7 +218,7 @@ for CF_it in range(len(CF_Array_Full)):
         alpha = 1-0.68
         m = len(usable_seps)
         n = len(Perseus_frequency)
-        D_crit = np.sqrt((np.log(alpha/2))*((1+(m/n))/(2*m)))
+        D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
         #frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
         #log_sep = bin_centers[2:]
         #KS_test_result = np.max(abs(Perseus_frequency - frequency))
@@ -251,5 +251,5 @@ plt.xlim([0.01, 0.05])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
-pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crit), file)
+pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits), file)
 file.close()
