@@ -182,6 +182,12 @@ for pick_it in range(len(Initial_Seps_all)):
         axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.5*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs[pick_it][0].text((1.1), np.max(core_sep_hist+core_delayed_sep_hist)-0.15*np.max(core_sep_hist+core_delayed_sep_hist), subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 3:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[-1], visible=False)
+    if pick_it == 5:
+        xticklabels =axs.flatten()[pick_it].get_xticklabels()
+        plt.setp(xticklabels[-1], visible=False)
     axs[pick_it][0].set_ylim(bottom=0)
     axs[pick_it][1].set_ylim(bottom=0)
     axs[pick_it][0].set_xlim([1,4])
