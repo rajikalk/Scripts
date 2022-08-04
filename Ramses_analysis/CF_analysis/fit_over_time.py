@@ -74,8 +74,10 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
-Perseus_log_sep = bin_centers[2:]
-Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
+Perseus_log_sep = np.log10(np.sort(Perseus_sep))
+Perseus_frequency = np.cumsum(np.sort(Perseus_sep))/np.cumsum(np.sort(Perseus_sep))[-1]
+#Perseus_log_sep = bin_centers[2:]
+#Perseus_frequency = np.cumsum(CF_per_bin_Tobin_Per[2:])/np.cumsum(CF_per_bin_Tobin_Per[2:])[-1]
 
 #=====================================================================================================
 
@@ -208,8 +210,11 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_selected.append(chi_red_selected)
     
     try:
-        frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
-        log_sep = bin_centers[2:]
+        usable_seps = np.where(All_separations[CF_it] >= 10**1.25)[0]
+        log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
+        frequency = np.cumsum(np.sort(All_separations[CF_it][usable_seps]))/np.cumsum(np.sort(All_separations[CF_it][usable_seps]))[-1]
+        #frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
+        #log_sep = bin_centers[2:]
         KS_test_result = np.max(abs(Perseus_frequency - frequency))
     except:
         KS_test_result = np.nan
