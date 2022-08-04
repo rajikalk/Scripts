@@ -215,7 +215,7 @@ for CF_it in range(len(CF_Array_Full)):
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         frequency = np.cumsum(np.sort(All_separations[CF_it][usable_seps]))/np.cumsum(np.sort(All_separations[CF_it][usable_seps]))[-1]
         KS_test_result = stats.ks_2samp(Perseus_frequency, frequency)[0]
-        alpha = 1-0.68
+        alpha = 0.95
         m = len(usable_seps)
         n = len(Perseus_frequency)
         D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
