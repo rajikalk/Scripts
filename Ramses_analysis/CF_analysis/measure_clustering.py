@@ -211,7 +211,7 @@ for time_it in time_it_range:
             plt.xscale("log")
             plt.yscale("log")
             plt.ylabel("$1+\\omega_(r)$")
-            plt.xlabel('Separation (log AU)')
+            plt.xlabel('Separation (Log$_{10}$(AU))')
             plt.xlim([10**sep_centers[0], 10**sep_centers[-1]])
             plt.savefig("movie_frame_" + ("%06d" % time_it) + ".jpg")
             print('made ' + "movie_frame_" + ("%06d" % time_it) + ".jpg" +" on rank", rank)
