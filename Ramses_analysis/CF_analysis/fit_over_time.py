@@ -139,6 +139,7 @@ reduced_chi_square_tobin = []
 reduced_chi_square_selected = []
 reduced_chi_square_sim = []
 KS_test = []
+D_crits = []
 selected_bins = np.array([2, 4, 6, 7, 8, 9, 10, 11, 12])
 tobin_bins = np.argwhere(CF_per_bin_Tobin_Per>0).T[0]
 two_col_width = 7.20472 #inches
@@ -223,7 +224,9 @@ for CF_it in range(len(CF_Array_Full)):
         #KS_test_result = np.max(abs(Perseus_frequency - frequency))
     except:
         KS_test_result = np.nan
+        D_crit = np.nan
     KS_test.append(KS_test_result)
+    D_crits.append(D_crit)
     if chi_red_tobin < 0.01:
         plt.clf()
         plt.bar(bin_centers, CF_hist, yerr=curr_errs, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
