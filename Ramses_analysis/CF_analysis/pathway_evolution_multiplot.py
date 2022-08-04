@@ -231,7 +231,7 @@ axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, 
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
 axs[1].text(6000, -2.25, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
-axs[0].legend(loc='upper center', fontsize=font_size)
+axs[0].legend(loc='upper right', fontsize=font_size)
 axs[1].set_xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('Log Inspiral rate (au/yr)', size=font_size)
 axs[1].set_ylabel('Log Inspiral rate (au/yr)', size=font_size)
