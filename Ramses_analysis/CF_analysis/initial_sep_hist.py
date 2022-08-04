@@ -36,8 +36,8 @@ def Skewed_Gaussian(x, scale, mean, sigma, skew):
 def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
 
-pickles = ['/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_1500.pkl', '/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_3000.pkl', '/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_3750.pkl', '/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_4500.pkl', '/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_6000.pkl',
-    '/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_12000.pkl']
+pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_1500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_3000.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_3750.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_4500.pkl', '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_6000.pkl',
+    '/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_sim/Formation_pathways_fractions/formation_pathway_12000.pkl']
 
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 label_height = [2.5, 16, 32, 40, 65, 135]
