@@ -173,8 +173,8 @@ for pick_it in range(len(Initial_Seps_all)):
     core_delayed_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][1], S_bins)
     capt_sep_hist, bins = np.histogram(Initial_Seps_all[pick_it][2], S_bins)
     
-    p1 = axs[pick_it][0].bar(bin_centers, core_sep_hist, width=0.25, color='b', label='Core fragmentation')#, hatch='+')
-    p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m', label='Delayed core frag.')#, hatch='x')
+    p1 = axs[pick_it][0].bar(bin_centers, core_sep_hist, width=0.25, color='b', label='Bound core frag.')#, hatch='+')
+    p2 = axs[pick_it][0].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m', label='Unbound core frag.')#, hatch='x')
     p3 = axs[pick_it][1].bar(bin_centers, capt_sep_hist, width=0.25, color='r', label='Dynamical capture')#, hatch='O')
     if pick_it == 0:
         axs[pick_it][0].legend(loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
@@ -237,8 +237,8 @@ for pick_it in range(len(Initial_Seps_all)):
     #fit_params.append([popt[1], median, err_lower, err_higher])
     fit_params.append(popt)
     if pick_it == len(Initial_Seps_all) - 1:
-        axs[pick_it][0].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
-        axs[pick_it][1].set_xlabel('log Separation (au)', labelpad=-0.5, fontsize=font_size)
+        axs[pick_it][0].set_xlabel('Separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
+        axs[pick_it][1].set_xlabel('Separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
     axs[pick_it][0].set_ylabel('# Systems', fontsize=font_size)
     axs[pick_it][0].tick_params(axis='both', which='major', labelsize=font_size)
     axs[pick_it][0].tick_params(axis='both', which='minor', labelsize=font_size)
