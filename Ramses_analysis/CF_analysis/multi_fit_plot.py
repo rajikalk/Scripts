@@ -135,10 +135,10 @@ for fit_pick in range(len(fit_pickles)):
     smoothed_low = []
     smooth_window = 0.0001
     for SFE_it in range(len(SFE)):
-        low_SFE = KS_test[SFE_it] - smooth_window
+        low_SFE = SFE[SFE_it] - smooth_window
         if low_SFE < 0:
             low_SFE = 0
-        high_SFE = KS_test[SFE_it] + smooth_window
+        high_SFE = SFE[SFE_it] + smooth_window
         if high_SFE > 0.05:
             high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
@@ -159,10 +159,10 @@ for fit_pick in range(len(fit_pickles)):
     smoothed_low = []
     smooth_window = 0.0001
     for SFE_it in range(len(SFE)):
-        low_SFE = D_crits[SFE_it] - smooth_window
+        low_SFE = SFE[SFE_it] - smooth_window
         if low_SFE < 0:
             low_SFE = 0
-        high_SFE = D_crits[SFE_it] + smooth_window
+        high_SFE = SFE[SFE_it] + smooth_window
         if high_SFE > 0.05:
             high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
