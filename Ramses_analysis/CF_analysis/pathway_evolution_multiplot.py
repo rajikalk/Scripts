@@ -96,10 +96,10 @@ for grad_it in range(len(grad_pickles)):
     grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_capt_norm[-1]])))
     grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
-    axs[grad_it].step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-    axs[grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-    axs[grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
-    axs[grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+    axs[grad_it].step(x_range, grad_hist_core_norm, where='post', label="Bound core frag.", linewidth=2, color='b', alpha=0.5, ls='-')
+    axs[grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Unbound core frag.", linewidth=2, color='purple', alpha=0.5, ls='--')
+    axs[grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+    #axs[grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
     axs[grad_it].set_ylabel('')
     
@@ -169,9 +169,9 @@ for grad_it in range(len(grad_pickles)):
     grad_hist_capt_norm = np.concatenate((grad_hist_capt_norm, np.array([grad_hist_capt_norm[-1]])))
     grad_hist_misc_norm = np.concatenate((grad_hist_misc_norm, np.array([grad_hist_misc_norm[-1]])))
 
-    axs[grad_it].step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", linewidth=2, color='b', alpha=0.5, ls='-')
-    axs[grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
-    axs[grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
+    axs[grad_it].step(x_range, grad_hist_core_norm, where='post', label="Bound core frag.", linewidth=2, color='b', alpha=0.5, ls='-')
+    axs[grad_it].step(x_range, grad_hist_core_delayed_norm, where='post', label="Unbound core frag.", linewidth=2, color='purple', alpha=0.5, ls='--')
+    axs[grad_it].step(x_range, grad_hist_capt_norm, where='post', label="Dynamical capture", linewidth=2, color='red', alpha=0.5, ls='-.')
     axs[grad_it].step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
     
     axs[grad_it].set_ylabel('')
@@ -213,13 +213,13 @@ iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-axs[0].errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, label='Core Fragmentation', color='b')
-axs[0].errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
-axs[0].errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+axs[0].errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, label='Bound core frag.', color='b')
+axs[0].errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
+axs[0].errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, label='Dynamical capture', color='r')
 
-axs[1].errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err, label='Core Fragmentation', color='b')
-axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err, label='Delayed Core Frag.', color='purple')
-axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, label='Dynamical Capture', color='r')
+axs[1].errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err, label='Bound core frag.', color='b')
+axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
+axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, label='Dynamical capture', color='r')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
