@@ -78,10 +78,16 @@ for pick_it in range(len(pickles)):
     p2 = axs.flatten()[pick_it].bar(bin_centers, core_delayed_sep_hist, width=0.25, bottom=core_sep_hist, color='m')#, hatch='x')
     p3 = axs.flatten()[pick_it].bar(bin_centers, capt_sep_hist, width=0.25, bottom=(np.array(core_sep_hist)+np.array(core_delayed_sep_hist)), color='r')#, hatch='O')
     if pick_it == 0:
-        axs.flatten()[pick_it].legend((p1[0], p2[0], p3[0]), ('Core fragmentation', 'Delayed core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
+        axs.flatten()[pick_it].legend((p1[0], p2[0], p3[0]), ('Bound core frag.', 'Unbound core frag.', 'Dynamical capture'), loc='upper left', fontsize=font_size, labelspacing=0.2, handletextpad=0.6, borderaxespad=0.3, borderpad=0.2)
         axs.flatten()[pick_it].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
     else:
         axs.flatten()[pick_it].text((1.1), label_height[pick_it], subplot_titles[pick_it], zorder=11, fontsize=font_size)
+    if pick_it == 3:
+        yticklabels =axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[-1], visible=False)
+    if pick_it == 5:
+        xticklabels =axs.flatten()[pick_it].get_xticklabels()
+        plt.setp(xticklabels[-1], visible=False)
     axs.flatten()[pick_it].set_ylim(bottom=0)
     axs.flatten()[pick_it].set_xlim([1,4])
     
