@@ -143,9 +143,9 @@ for fit_pick in range(len(fit_pickles)):
             high_SFE = 5
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
-        mean_chi = np.mean(KS_test[low_SFE_it:high_SFE_it])
-        median_chi = np.median(KS_test[low_SFE_it:high_SFE_it])
-        std_chi = np.std(KS_test[low_SFE_it:high_SFE_it])
+        mean_chi = np.nanmean(KS_test[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(KS_test[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(KS_test[low_SFE_it:high_SFE_it])
         err_upper = mean_chi+std_chi
         err_lower = mean_chi-std_chi
         smoothed_KS_test.append(median_chi)
@@ -167,9 +167,9 @@ for fit_pick in range(len(fit_pickles)):
             high_SFE = 5
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
-        mean_chi = np.mean(D_crits[low_SFE_it:high_SFE_it])
-        median_chi = np.median(D_crits[low_SFE_it:high_SFE_it])
-        std_chi = np.std(D_crits[low_SFE_it:high_SFE_it])
+        mean_chi = np.nanmean(D_crits[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(D_crits[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(D_crits[low_SFE_it:high_SFE_it])
         err_upper = mean_chi+std_chi
         err_lower = mean_chi-std_chi
         smoothed_D_crits.append(median_chi)
