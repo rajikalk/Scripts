@@ -213,9 +213,10 @@ for CF_it in range(len(CF_Array_Full)):
         usable_seps = np.where(All_separations[CF_it] >= 10**1.25)[0]
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         frequency = np.cumsum(np.sort(All_separations[CF_it][usable_seps]))/np.cumsum(np.sort(All_separations[CF_it][usable_seps]))[-1]
+        KS_test_result = stats.ks_2samp(Perseus_frequency, frequency)[0]
         #frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
         #log_sep = bin_centers[2:]
-        KS_test_result = np.max(abs(Perseus_frequency - frequency))
+        #KS_test_result = np.max(abs(Perseus_frequency - frequency))
     except:
         KS_test_result = np.nan
     KS_test.append(KS_test_result)
