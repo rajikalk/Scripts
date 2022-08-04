@@ -210,8 +210,8 @@ for CF_it in range(len(CF_Array_Full)):
     reduced_chi_square_tobin.append(chi_red_tobin)
     reduced_chi_square_selected.append(chi_red_selected)
     
-    try:
-        usable_seps = np.where(All_separations[CF_it] >= 10**1.25)[0]
+    usable_seps = np.where(All_separations[CF_it] >= 10**1.25)[0]
+    if len(usable_seps) > 0:
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         frequency = np.cumsum(np.sort(All_separations[CF_it][usable_seps]))/np.cumsum(np.sort(All_separations[CF_it][usable_seps]))[-1]
         KS_test_result = stats.ks_2samp(Perseus_frequency, frequency)[0]
@@ -222,7 +222,7 @@ for CF_it in range(len(CF_Array_Full)):
         #frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
         #log_sep = bin_centers[2:]
         #KS_test_result = np.max(abs(Perseus_frequency - frequency))
-    except:
+    else:
         KS_test_result = np.nan
         D_crit = np.nan
     KS_test.append(KS_test_result)
