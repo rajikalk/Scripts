@@ -44,7 +44,7 @@ plt.subplots_adjust(hspace=0.0)
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
-    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, p_values = pickle.load(file)
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits = pickle.load(file)
     file.close()
     
     smoothed_chi = []
@@ -120,3 +120,22 @@ plt.ylabel("KS Statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+
+fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,4.5*single_col_width), sharex=True, sharey=True)
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+for fit_pick in range(len(fit_pickles)):
+    file = open(fit_pickles[fit_pick], 'rb')
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits = pickle.load(file)
+    file.close()
+    
+    axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
+    axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
+    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.2, size=10)
+    axs[fit_pick].text((0.011), (np.min(KS_test)), "All bins", zorder=11, size=10)
+
+axs[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs[1].set_xlabel('SFE', size=10)
+axs[0].set_xlim([0.01, 0.05])
+plt.savefig("KS_vs_crit.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
