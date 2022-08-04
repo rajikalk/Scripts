@@ -140,7 +140,7 @@ for fit_pick in range(len(fit_pickles)):
             low_SFE = 0
         high_SFE = KS_test[SFE_it] + smooth_window
         if high_SFE > 0.05:
-            high_SFE = 5
+            high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
         mean_chi = np.nanmean(KS_test[low_SFE_it:high_SFE_it])
@@ -151,7 +151,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_KS_test.append(median_chi)
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
-    axs[fit_pick].semilogy(SFE, smoothed_KS_test, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
+    axs[fit_pick].semilogy(SFE, smoothed_KS_test)
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
     smoothed_D_crits = []
@@ -164,7 +164,7 @@ for fit_pick in range(len(fit_pickles)):
             low_SFE = 0
         high_SFE = D_crits[SFE_it] + smooth_window
         if high_SFE > 0.05:
-            high_SFE = 5
+            high_SFE = 0.05
         low_SFE_it = np.argmin(abs(SFE-low_SFE))
         high_SFE_it = np.argmin(abs(SFE-high_SFE))
         mean_chi = np.nanmean(D_crits[low_SFE_it:high_SFE_it])
@@ -176,7 +176,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
     
-    axs[fit_pick].semilogy(SFE, smoothed_D_crits, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
+    axs[fit_pick].semilogy(SFE, smoothed_D_crits)
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
