@@ -137,6 +137,7 @@ for fit_pick in range(len(fit_pickles)):
     axs[fit_pick].tick_params(which='both', direction='in')
     axs[fit_pick].tick_params(axis='both', which='major', labelsize=10)
     axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
+    axs[fit_pick].axhline(y=0.05)
 
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[1].set_xlabel('SFE', size=10)
