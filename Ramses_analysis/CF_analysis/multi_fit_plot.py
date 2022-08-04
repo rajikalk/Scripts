@@ -176,7 +176,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
     
-    axs[fit_pick].semilogy(SFE, smoothed_chi, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
+    axs[fit_pick].semilogy(SFE, smoothed_D_crits, label=subplot_titles[fit_pick], color=colors[fit_pick], ls=line_styles[fit_pick])
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
