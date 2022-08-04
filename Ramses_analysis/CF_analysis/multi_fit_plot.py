@@ -151,7 +151,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_KS_test.append(median_chi)
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
-    axs[fit_pick].semilogy(SFE, smoothed_KS_test)
+    axs[fit_pick].semilogy(SFE, smoothed_KS_test, label='KS statistic')
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
     smoothed_D_crits = []
@@ -176,7 +176,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_upp.append(err_upper)
         smoothed_low.append(err_lower)
     
-    axs[fit_pick].semilogy(SFE, smoothed_D_crits)
+    axs[fit_pick].semilogy(SFE, smoothed_D_crits, label='Critical value')
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
     
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
