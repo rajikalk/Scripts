@@ -442,6 +442,8 @@ if args.update_pickles == 'True':
     sys.stdout.flush()
     CW.Barrier()
 
+print("Gathering pickles together")
+
 #compile all the pickles:
 if rank == 0:
     pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
