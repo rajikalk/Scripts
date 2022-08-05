@@ -28,7 +28,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-subplot_titles = ["3D all sinks", "3D L limits", "2D L limits", "2D L limits + unbound"]
+subplot_titles = ["3D-Full", "3D-LLimits", "2D-Bound", "2D-Unbound"]
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
 plot_colours = ['tab:blue', 'tab:orange']
 
