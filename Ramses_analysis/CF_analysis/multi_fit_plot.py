@@ -127,7 +127,7 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
-fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.9*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.5*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
