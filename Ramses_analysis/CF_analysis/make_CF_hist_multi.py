@@ -93,7 +93,7 @@ plt.suptitle('SFE=4.0$\pm0.1$%', y=0.91)
     
 plt.savefig('CF_hist_paper.pdf', bbox_inches='tight', pad_inches=0.02)
 
-plot_pickles = [['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/3D_full/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/3D_L_lim/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/3D_L_lim/Tobin_limits/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/2D_obs_Bound/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/2D_obs_Bound/Tobin_limits/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/2D_obs_Unbound/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/2D_obs_Unbound/Tobin_limits/Closest_pairs/plot_cf_hist.pkl']]
+plot_pickles = [['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.2/3D_full/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/3D_L_lim/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/3D_L_lim/Tobin_limits/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/2D_obs_Bound/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/2D_obs_Bound/Tobin_limits/Closest_pairs/plot_cf_hist.pkl'], ['/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/2D_obs_Unbound/Closest_pairs/plot_cf_hist.pkl', '/groups/astro/rlk/rlk/Analysis_plots/CF_analysis_all/Paper_CF_Hist/SFE_4.1/2D_obs_Unbound/Tobin_limits/Closest_pairs/plot_cf_hist.pkl']]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -152,4 +152,4 @@ for pick_it_top in range(len(plot_pickles)):
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].text((1.03), (0.187), subplot_titles[pick_it_top], zorder=11, fontsize=font_size)
 plt.suptitle('SFE=4.2$\pm0.1$%', y=0.91)
     
-plt.savefig('CF_hist_paper_42.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('CF_hist_paper_41.pdf', bbox_inches='tight', pad_inches=0.02)
