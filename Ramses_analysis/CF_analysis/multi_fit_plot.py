@@ -127,6 +127,7 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
+plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -197,4 +198,5 @@ for fit_pick in range(len(fit_pickles)):
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
+axs[0].set_ylim(top=1.0)
 plt.savefig("KS_vs_crit_120.png", format='png', bbox_inches='tight', pad_inches=0.02)
