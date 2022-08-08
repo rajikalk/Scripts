@@ -319,7 +319,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_width, 2.5*single_col_width), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.02)
+plt.subplots_adjust(hspace=0.0)
 
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
 
