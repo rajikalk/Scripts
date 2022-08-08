@@ -294,8 +294,8 @@ for SFE_it in range(len(SFE)):
     smoothed_KS_test.append(median_chi)
     smoothed_upp.append(err_upper)
     smoothed_low.append(err_lower)
-plt.semilogy(SFE, smoothed_KS_test, label='KS statistic')
-plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+plt.semilogy(SFE[SFE_1_ind:], smoothed_KS_test, label='KS statistic')
+plt.fill_between(SFE[SFE_1_ind:], smoothed_low, smoothed_upp, alpha=0.2)
 
 smoothed_D_crits = []
 smoothed_upp = []
@@ -319,8 +319,8 @@ for SFE_it in range(len(SFE)):
     smoothed_upp.append(err_upper)
     smoothed_low.append(err_lower)
 
-plt.semilogy(SFE, smoothed_D_crits, label='Critical value')
-plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+plt.semilogy(SFE[SFE_1_ind:], smoothed_D_crits, label='Critical value')
+plt.fill_between(SFE[SFE_1_ind:], smoothed_low, smoothed_upp, alpha=0.2)
 
 plt.xlabel("SFE")
 plt.ylabel("KS statistic", labelpad=-0.2)
