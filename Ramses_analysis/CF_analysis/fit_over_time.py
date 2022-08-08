@@ -165,6 +165,7 @@ gauss_total = lower_gauss + upper_gauss
 
 SFE_1_ind = np.argmin(abs(SFE-0.01))
 CF_Array_Full = CF_Array_Full[SFE_1_ind:]
+alpha = 0.99
 
 for CF_it in range(len(CF_Array_Full)):
     time_val = Times[CF_it]
@@ -217,15 +218,12 @@ for CF_it in range(len(CF_Array_Full)):
         log_sep = np.log10(np.sort(All_separations[CF_it][usable_seps]))
         frequency = np.cumsum(np.sort(All_separations[CF_it][usable_seps]))/np.cumsum(np.sort(All_separations[CF_it][usable_seps]))[-1]
         KS_test_result = stats.ks_2samp(Perseus_frequency, frequency)[0]
-        alpha = 0.99
         m = len(usable_seps)
         n = len(Perseus_frequency)
         D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
         
-        
         frequency = np.cumsum(CF_hist[2:])/np.cumsum(CF_hist[2:])[-1]
         KS_test_result_CF = np.max(abs(Perseus_frequency_CF - frequency))
-        alpha = 0.99
         m = len(CF_hist[2:])
         n = len(CF_hist[2:])
         D_crit_CF = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
@@ -262,6 +260,17 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+
+plt.clf()
+plt.figure(figsize=(single_col_width,0.7*single_col_width))
+plt.semilogy(SFE[SFE_1_ind:], KS_test_sep, label="KS statistic")
+plt.semilogy(SFE[SFE_1_ind:], D_crits_sep, label="Critical Value ($\alpha="+str(alpha)+"$)")
+plt.xlabel("SFE")
+plt.ylabel("KS statistic", labelpad=-0.2)
+plt.xlim([0.01, 0.05])
+#plt.ylim(top=1000)
+#plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
+plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
 pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test_sep, D_crits_sep, KS_test_CF, D_crits_CF), file)
