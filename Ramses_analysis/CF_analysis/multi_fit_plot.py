@@ -28,7 +28,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-fit_pickles = ['/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G50/chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G100/chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G150/chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G200/chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G400/chi_squared_fit.pkl']
+fit_pickles = ['/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G50/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G100/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G150/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G200/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G400/chi_squared_fit_120.pkl']
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -108,7 +108,7 @@ axs[1].tick_params(which='both', direction='in')
 axs[1].tick_params(axis='both', which='major', labelsize=10)
 axs[1].tick_params(axis='both', which='minor', labelsize=10)
 axs[0].set_xlim([0.01, 0.05])
-plt.savefig("fit_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig("fit_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
@@ -125,7 +125,7 @@ plt.xlabel('SFE')
 plt.ylabel("KS Statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
-plt.savefig("KS_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig("KS_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
 fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
@@ -197,4 +197,4 @@ for fit_pick in range(len(fit_pickles)):
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
-plt.savefig("KS_vs_crit.png", format='png', bbox_inches='tight', pad_inches=0.02)
+plt.savefig("KS_vs_crit_120.png", format='png', bbox_inches='tight', pad_inches=0.02)
