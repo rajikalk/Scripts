@@ -127,7 +127,7 @@ plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
 
-fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.5*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -188,7 +188,7 @@ for fit_pick in range(len(fit_pickles)):
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
     #axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
     axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.2, size=10)
-    axs[fit_pick].text((0.011), (0.04), subplot_titles[fit_pick], zorder=11, size=10)
+    axs[fit_pick].text((0.011), (0.05), subplot_titles[fit_pick], zorder=11, size=10)
     axs[fit_pick].tick_params(which='both', direction='in')
     axs[fit_pick].tick_params(axis='both', which='major', labelsize=10)
     axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
