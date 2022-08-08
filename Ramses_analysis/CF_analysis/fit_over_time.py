@@ -272,6 +272,63 @@ plt.xlim([0.01, 0.05])
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
 plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
+plt.clf()
+smoothed_KS_test = []
+smoothed_upp = []
+smoothed_low = []
+smooth_window = 0.0001
+for SFE_it in range(len(SFE)):
+    low_SFE = SFE[SFE_it] - smooth_window
+    if low_SFE < 0:
+        low_SFE = 0
+    high_SFE = SFE[SFE_it] + smooth_window
+    if high_SFE > 0.05:
+        high_SFE = 0.05
+    low_SFE_it = np.argmin(abs(SFE-low_SFE))
+    high_SFE_it = np.argmin(abs(SFE-high_SFE))
+    mean_chi = np.nanmean(KS_test_sep[low_SFE_it:high_SFE_it])
+    median_chi = np.nanmedian(KS_test_sep[low_SFE_it:high_SFE_it])
+    std_chi = np.nanstd(KS_test_sep[low_SFE_it:high_SFE_it])
+    err_upper = mean_chi+std_chi
+    err_lower = mean_chi-std_chi
+    smoothed_KS_test.append(median_chi)
+    smoothed_upp.append(err_upper)
+    smoothed_low.append(err_lower)
+plt.semilogy(SFE, smoothed_KS_test, label='KS statistic')
+plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+
+smoothed_D_crits = []
+smoothed_upp = []
+smoothed_low = []
+smooth_window = 0.0001
+for SFE_it in range(len(SFE)):
+    low_SFE = SFE[SFE_it] - smooth_window
+    if low_SFE < 0:
+        low_SFE = 0
+    high_SFE = SFE[SFE_it] + smooth_window
+    if high_SFE > 0.05:
+        high_SFE = 0.05
+    low_SFE_it = np.argmin(abs(SFE-low_SFE))
+    high_SFE_it = np.argmin(abs(SFE-high_SFE))
+    mean_chi = np.nanmean(D_crits_sep[low_SFE_it:high_SFE_it])
+    median_chi = np.nanmedian(D_crits_sep[low_SFE_it:high_SFE_it])
+    std_chi = np.nanstd(D_crits_sep[low_SFE_it:high_SFE_it])
+    err_upper = mean_chi+std_chi
+    err_lower = mean_chi-std_chi
+    smoothed_D_crits.append(median_chi)
+    smoothed_upp.append(err_upper)
+    smoothed_low.append(err_lower)
+
+plt.semilogy(SFE, smoothed_D_crits, label='Critical value')
+plt.fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+
+plt.xlabel("SFE")
+plt.ylabel("KS statistic", labelpad=-0.2)
+plt.xlim([0.01, 0.05])
+#plt.ylim(top=1000)
+#plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
+plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+"_smoothed.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+
 file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
 pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test_sep, D_crits_sep, KS_test_CF, D_crits_CF), file)
 file.close()
