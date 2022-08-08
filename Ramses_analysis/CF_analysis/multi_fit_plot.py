@@ -188,7 +188,7 @@ for fit_pick in range(len(fit_pickles)):
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
     #axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
     axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.2, size=10)
-    axs[fit_pick].text((0.011), (0.03), subplot_titles[fit_pick], zorder=11, size=10)
+    axs[fit_pick].text((0.011), (0.04), subplot_titles[fit_pick], zorder=11, size=10)
     axs[fit_pick].tick_params(which='both', direction='in')
     axs[fit_pick].tick_params(axis='both', which='major', labelsize=10)
     axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
