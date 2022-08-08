@@ -131,6 +131,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
+y_low_lim = []
 
 for fit_pick in range(len(fit_pickles)):
     file = open(fit_pickles[fit_pick], 'rb')
@@ -160,6 +161,7 @@ for fit_pick in range(len(fit_pickles)):
         smoothed_low.append(err_lower)
     axs[fit_pick].semilogy(SFE, smoothed_KS_test, label='KS statistic')
     axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2)
+    y_low_lim.append(np.nanmin(smoothed_low))
     
     smoothed_D_crits = []
     smoothed_upp = []
@@ -198,5 +200,86 @@ for fit_pick in range(len(fit_pickles)):
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
-axs[0].set_ylim(top=1.0)
+axs[0].set_ylim([np.min(y_low_lim), 1.0])
 plt.savefig("KS_vs_crit_120.png", format='png', bbox_inches='tight', pad_inches=0.02)
+
+fit_pickles = ['/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/chi_squared_fit_120.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/chi_squared_fit.pkl']
+subplot_titles = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
+plot_colours = ['tab:blue', 'tab:orange']
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,1.5*single_col_width), sharex=True, sharey=True)
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+y_low_lim = []
+plt.minorticks_on()
+
+for fit_pick in range(len(fit_pickles)):
+    file = open(fit_pickles[fit_pick], 'rb')
+    SFE, reduced_chi_square_selected, reduced_chi_square_tobin, KS_test, D_crits, KS_test_CF, D_crits_CF = pickle.load(file)
+    file.close()
+    
+    smoothed_KS_test = []
+    smoothed_upp = []
+    smoothed_low = []
+    smooth_window = 0.0001
+    for SFE_it in range(len(SFE)):
+        low_SFE = SFE[SFE_it] - smooth_window
+        if low_SFE < 0:
+            low_SFE = 0
+        high_SFE = SFE[SFE_it] + smooth_window
+        if high_SFE > 0.05:
+            high_SFE = 0.05
+        low_SFE_it = np.argmin(abs(SFE-low_SFE))
+        high_SFE_it = np.argmin(abs(SFE-high_SFE))
+        mean_chi = np.nanmean(KS_test[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(KS_test[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(KS_test[low_SFE_it:high_SFE_it])
+        err_upper = mean_chi+std_chi
+        err_lower = mean_chi-std_chi
+        smoothed_KS_test.append(median_chi)
+        smoothed_upp.append(err_upper)
+        smoothed_low.append(err_lower)
+    axs[fit_pick].semilogy(SFE, smoothed_KS_test, color=plot_colours[fit_pick])
+    axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2, color=plot_colours[fit_pick])
+    y_low_lim.append(np.nanmin(smoothed_low))
+    
+    smoothed_D_crits = []
+    smoothed_upp = []
+    smoothed_low = []
+    smooth_window = 0.0001
+    for SFE_it in range(len(SFE)):
+        low_SFE = SFE[SFE_it] - smooth_window
+        if low_SFE < 0:
+            low_SFE = 0
+        high_SFE = SFE[SFE_it] + smooth_window
+        if high_SFE > 0.05:
+            high_SFE = 0.05
+        low_SFE_it = np.argmin(abs(SFE-low_SFE))
+        high_SFE_it = np.argmin(abs(SFE-high_SFE))
+        mean_chi = np.nanmean(D_crits[low_SFE_it:high_SFE_it])
+        median_chi = np.nanmedian(D_crits[low_SFE_it:high_SFE_it])
+        std_chi = np.nanstd(D_crits[low_SFE_it:high_SFE_it])
+        err_upper = mean_chi+std_chi
+        err_lower = mean_chi-std_chi
+        smoothed_D_crits.append(median_chi)
+        smoothed_upp.append(err_upper)
+        smoothed_low.append(err_lower)
+    
+    axs[fit_pick].semilogy(SFE, smoothed_D_crits, label='Critical value', color='k')
+    axs[fit_pick].fill_between(SFE, smoothed_low, smoothed_upp, alpha=0.2, color='k')
+    
+    #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
+    #axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
+    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.2, size=10)
+    axs[fit_pick].text((0.011), (0.06), subplot_titles[fit_pick], zorder=11, size=10)
+    axs[fit_pick].tick_params(which='both', direction='in')
+    axs[fit_pick].tick_params(axis='both', which='major', labelsize=10, )
+    axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
+    #axs[fit_pick].axhline(y=0.07)
+
+axs[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs[fit_pick].set_xlabel('SFE', size=10)
+axs[0].set_xlim([0.01, 0.05])
+axs[0].set_ylim([np.min(y_low_lim), 1.0])
+plt.savefig("KS_vs_crit_G125.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)

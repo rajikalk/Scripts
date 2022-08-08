@@ -352,5 +352,6 @@ for pick_it in iter_range:
 
     axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
     axs.flatten()[pick_it].set_xlim([0, 0.05])
+    axs.flatten()[fit_pick].tick_params(which='both', direction='in')
     plt.savefig('Vis_star_paper.pdf', bbox_inches='tight', pad_inches=0.02)
 
