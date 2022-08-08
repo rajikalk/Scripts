@@ -195,6 +195,6 @@ for fit_pick in range(len(fit_pickles)):
     #axs[fit_pick].axhline(y=0.07)
 
 axs[0].legend(loc='lower right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
-axs[1].set_xlabel('SFE', size=10)
+axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
 plt.savefig("KS_vs_crit.png", format='png', bbox_inches='tight', pad_inches=0.02)
