@@ -196,9 +196,10 @@ if rank == 0:
         n_systems_full = []
         Sink_Luminosities_full = {}
         Sink_Accretion_full = {}
+        All_separations_full = []
         for pick_file in pickle_files:
             file = open(pick_file, 'rb')
-            CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+            CF_arrays, N_sys_total, Times, SFE, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
             file.close()
             for L_key in Sink_Luminosities.keys():
                 if L_key not in Sink_Luminosities_full.keys():
@@ -211,6 +212,7 @@ if rank == 0:
             SFE_full = SFE_full + SFE
             CF_per_bin_full = CF_per_bin_full + CF_arrays
             n_systems_full = n_systems_full + N_sys_total
+            All_separations_full = All_separations_full + All_separations
         
         #Let's sort the data
         for L_key in Sink_Luminosities_full:
@@ -227,10 +229,11 @@ if rank == 0:
         SFE = np.array(SFE_full)[sorted_inds].tolist()
         CF_arrays = np.array(CF_per_bin_full)[sorted_inds].tolist()
         N_sys_total = np.array(n_systems_full)[sorted_inds].tolist()
+        All_separations = np.array(All_separations_full)[sorted_inds].tolist()
     else:
         try:
             file = open(pickle_file+'.pkl', 'rb')
-            Times, SFE, CF_arrays, N_sys_total, Sink_Luminosities_full, Sink_Accretion_full = pickle.load(file)
+            Times, SFE, CF_arrays, N_sys_total, Sink_Luminosities_full, Sink_Accretion_full, All_separations = pickle.load(file)
             file.close()
         except:
             print("No pickles seem to exist, so starting out fresh")
