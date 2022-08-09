@@ -841,20 +841,19 @@ if update == True and args.make_plots_only == 'False':
                                         else:
                                             pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                         #MAKE SURE 2D SEP IS BEING SAVED.
-                                        sep_value = np.sqrt(np.sum(pos_diff**2))
-                                        if sep_value > (scale_l.in_units('AU')/2):
+                                        if True in (abs(pos_diff) > (scale_l.in_units('AU')/2)):
                                             update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                             for ind in update_inds:
                                                 if pos_diff[ind] < 0:
                                                     pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
                                                 else:
                                                     pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
-                                            sep_value = np.sqrt(np.sum(pos_diff**2))
-                                            if sep_value > (scale_l.in_units('AU')/2):
-                                                print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
-                                                if args.debugging == "True":
-                                                    import pdb
-                                                    pdb.set_trace()
+                                        sep_value = np.sqrt(np.sum(pos_diff**2))
+                                        if sep_value > (scale_l.in_units('AU')/2):
+                                            print("FAILED ON time_it:", time_it, "SEPARATION=", sep_value)
+                                            if args.debugging == "True":
+                                                import pdb
+                                                pdb.set_trace()
                                         if sep_value < S_bins[bin_it-1]:
                                             #Reduce systems! Let's check if any of the components are visible
                                             vis_subs = set([ind_1, ind_2]).intersection(set(visible_stars))

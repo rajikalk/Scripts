@@ -320,6 +320,7 @@ fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(single_col_wi
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
+plt.minorticks_on()
 
 plot_label = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
 
@@ -352,6 +353,6 @@ for pick_it in iter_range:
 
     axs.flatten()[pick_it].set_xlabel('SFE', fontsize=font_size)
     axs.flatten()[pick_it].set_xlim([0, 0.05])
-    axs.flatten()[fit_pick].tick_params(which='both', direction='in')
+    axs.flatten()[pick_it].tick_params(which='both', direction='in')
     plt.savefig('Vis_star_paper.pdf', bbox_inches='tight', pad_inches=0.02)
 
