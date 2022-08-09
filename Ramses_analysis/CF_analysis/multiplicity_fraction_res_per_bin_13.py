@@ -841,6 +841,9 @@ if update == True and args.make_plots_only == 'False':
                                         else:
                                             pos_diff = res['abspos'][ind_1] - res['abspos'][ind_2]
                                         #MAKE SURE 2D SEP IS BEING SAVED.
+                                        if S_bins[bin_it] = S_bins[-1]:
+                                            import pdb
+                                            pdb.set_trace()
                                         if True in (abs(pos_diff) > (scale_l.in_units('AU')/2)):
                                             update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                             for ind in update_inds:
