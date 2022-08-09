@@ -642,10 +642,10 @@ if update == True and args.make_plots_only == 'False':
                             zero_ind = 1
                         else:
                             zero_ind = 2
-                        res['midpoint'].T[zero_ind] = 0
                         if S_bins[bin_it] == S_bins[-1]:
                             import pdb
                             pdb.set_trace()
+                        res['midpoint'].T[zero_ind] = 0
                         if len(np.where(res['midpointSep']>0)[0]) > 0:
                             update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
                             pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
