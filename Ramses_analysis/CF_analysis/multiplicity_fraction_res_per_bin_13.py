@@ -642,14 +642,21 @@ if update == True and args.make_plots_only == 'False':
                             zero_ind = 1
                         else:
                             zero_ind = 2
-                        if S_bins[bin_it] == S_bins[-1]:
-                            import pdb
-                            pdb.set_trace()
                         res['midpoint'].T[zero_ind] = 0
                         if len(np.where(res['midpointSep']>0)[0]) > 0:
                             update_midspoint_sep = np.where(res['midpointSep']>0)[0][0]
                             pos1 = res['midpoint'][res['index1'][update_midspoint_sep:]]
                             pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
+                            pos_diff = pos1 - pos2
+                            if True in (abs(pos_diff)>(scale_l.in_units('AU')/2)):
+                                import pdb
+                                pdb.set_trace()
+                                update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
+                                for ind in update_inds:
+                                    if pos_diff[ind] < 0:
+                                        pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
+                                    else:
+                                        pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
                         
