@@ -71,7 +71,7 @@ for pick_it_top in range(len(plot_pickles)):
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
     #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='--')
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_corr, yerr=CF_errs_Per, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='-')
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_corr, yerr=np.array(CF_errs_Per).T, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='-')
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', fill=None, ls='--')
     if pick_it_top == 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
