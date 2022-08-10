@@ -520,7 +520,6 @@ if update == True and args.make_plots_only == 'False':
             for vis_ind in vis_inds_tot:
                 dx = abspos[vis_ind][0] - abspos.T[0]
                 dy = abspos[vis_ind][1] - abspos.T[1]
-                dz = abspos[vis_ind][2] - abspos.T[2]
                 separation = np.sqrt(dx**2 + dy**2 + dz**2)
                 neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('AU')
                 area = 4*np.pi*(neighbour_11**2)
@@ -555,18 +554,19 @@ if rank == 0:
     SFE = np.array(SFE_full)[sorted_inds]
     All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
     
-    file = open('yso_dens_.pkl', 'wb')
+    file = open('yso_dens.pkl', 'wb')
     pickle.dump((Time, SFE, All_YSO_dens), file)
     file.close()
 
     sfe_42_ind = np.argmin(abs(SFE-0.042))
-    ysos_42 = All_YSO_dens[sfe_42_ind]
-    yso_CDF = np.cumsum(np.sort(ysos_42))/np.cumsum(np.sort(ysos_42))
+    ysos_42 = np.log10(np.sort(All_YSO_dens[sfe_42_ind]))
+    yso_CDF = abs(np.cumsum(ysos_42))/abs(np.cumsum(ysos_42))[-1]
     
     plt.clf()
     plt.step(np.sort(ysos_42), yso_CDF, label='YSO_density')
     plt.xlabel("YSO density per sq. au")
     plt.ylabel("Frequency")
+    plt.ylim([0,1])
     plt.savefig('yso_dens_42.png')
 #Make YSO CDFs
 
