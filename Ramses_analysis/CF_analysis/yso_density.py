@@ -173,6 +173,15 @@ for key in units_override.keys():
 
 #====================================================================================================================================================
 
+#What do I need to save?
+Times = []
+SFE = []
+N_sys_total = []
+CF_arrays = []
+Sink_Luminosities = {}
+Sink_Accretion = {}
+All_separations = []
+
 #Calculate variables
 luminosity_lower_limit = args.lower_L_limit# 0.04 #0.01
 #luminosity_upper_limit = args.upper_L_limit
@@ -507,5 +516,6 @@ if update == True and args.make_plots_only == 'False':
             
             #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (4pi*r^2), and the dnesity is 10/area.
             for vis_ind in vis_inds_tot:
+                
                 import pdb
                 pdb.set_trace()
