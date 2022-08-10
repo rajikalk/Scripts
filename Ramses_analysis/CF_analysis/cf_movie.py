@@ -42,6 +42,10 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 bin_centers, CF_per_bin_Tobin_Ori, CF_errs_Ori = pickle.load(file_open)
 file_open.close()
 
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/CF_corr.pkl", "rb")
+bin_centers, CF_per_bin_Tobin_Per, CF_corr, CF_errs_Per = pickle.load(file_open)
+file_open.close()
+
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
@@ -127,7 +131,8 @@ for time_it in range(start_time_it, end_time_it):
             except:
                 #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                 plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='--')
+            plt.bar(bin_centers, CF_corr, yerr=CF_errs_Per, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='-')
+            plt.bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             #plt.plot(x,gauss_total)
             plt.legend(loc='upper left')
