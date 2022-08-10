@@ -516,13 +516,13 @@ if update == True and args.make_plots_only == 'False':
             vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             YSO_densities = []
             
-            #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (4pi*r^2), and the dnesity is 10/area.
+            #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
             for vis_ind in vis_inds_tot:
                 dx = abspos[vis_ind][0] - abspos.T[0]
                 dy = abspos[vis_ind][1] - abspos.T[1]
                 separation = np.sqrt(dx**2 + dy**2)
                 neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('AU')
-                area = 4*np.pi*(neighbour_11**2)
+                area = np.pi*(neighbour_11**2)
                 yso_dens = 10/area
                 
                 YSO_densities.append(yso_dens)
