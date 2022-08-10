@@ -573,6 +573,7 @@ if rank == 0:
     plt.savefig('yso_dens_42.png')
     
     YSO_per = []
+    import csv
     with open('YSO_density.csv', 'r') as f:
         reader = csv.reader(f)
         for row in reader:
