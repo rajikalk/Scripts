@@ -106,10 +106,6 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data.pkl", "rb")
-bin_centers, CF_per_bin_Tobin_Per, CF_errs_Per = pickle.load(file_open)
-file_open.close()
-
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 
