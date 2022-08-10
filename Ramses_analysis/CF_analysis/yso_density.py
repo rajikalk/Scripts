@@ -536,7 +536,7 @@ if update == True and args.make_plots_only == 'False':
             print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
 
 if rank == 0:
-    pickle_files = sorted(glob.glob('yso_dens_*.pkl')
+    pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
     Times_full = []
     All_YSO_dens_full = []
     for pick_file in pickle_files:
