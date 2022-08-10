@@ -531,7 +531,7 @@ if update == True and args.make_plots_only == 'False':
             All_YSO_dens.append(YSO_densities)
 
             file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
-            pickle.dump((Time, All_YSO_dens), file)
+            pickle.dump((Times, All_YSO_dens), file)
             file.close()
             print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
 
