@@ -46,11 +46,11 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 bin_centers, CF_per_bin_Tobin_Per, CF_corr, CF_errs_Per = pickle.load(file_open)
 file_open.close()
 
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
 CF_per_bin_all, CF_errs, All_separations = pickle.load(file_open)
 file_open.close()
 
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
 CF_per_bin_66, CF_errs, All_separations = pickle.load(file_open)
 file_open.close()
 
