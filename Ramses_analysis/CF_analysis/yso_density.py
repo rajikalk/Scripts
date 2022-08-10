@@ -527,33 +527,46 @@ if update == True and args.make_plots_only == 'False':
                 yso_dens = 10/area
                 
                 YSO_densities.append(yso_dens)
+            SFE.append(sfe)
             Times.append(time)
             All_YSO_dens.append(YSO_densities)
 
             file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
-            pickle.dump((Times, All_YSO_dens), file)
+            pickle.dump((Times, SFE, All_YSO_dens), file)
             file.close()
             print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
 
 if rank == 0:
     pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
     Times_full = []
+    SFE_full = []
     All_YSO_dens_full = []
     for pick_file in pickle_files:
         file = open(pick_file, 'rb')
-        Time, All_YSO_dens = pickle.load(file)
+        Time, SFE, All_YSO_dens = pickle.load(file)
         file.close()
         Times_full = Times_full + Times
+        SFE_full = SFE_full + SFE
         All_YSO_dens_full = All_YSO_dens_full + All_YSO_dens
         os.remove(pick_file)
             
     sorted_inds = np.argsort(Times_full)
     Times = np.array(Times_full)[sorted_inds]
+    SFE = np.array(SFE_full)[sorted_inds]
     All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
     
     file = open('yso_dens_.pkl', 'wb')
-    pickle.dump((Time, All_YSO_dens), file)
+    pickle.dump((Time, SFE, All_YSO_dens), file)
     file.close()
+
+    sfe_42_ind = np.argmin(abs(SFE-0.042))
+    ysos_42 = All_YSO_dens[sfe_42_ind]
+    yso_CDF = np.cumsum(np.sort(ysos_42))/np.cumsum(np.sort(ysos_42))
     
+    plt.clf()
+    plt.step(np.sort(ysos_42), yso_CDF, label='YSO_density')
+    plt.xlabel("YSO density per sq. au")
+    plt.ylabel("Frequency")
+    plt.savefig('yso_dens_42.png')
 #Make YSO CDFs
 
