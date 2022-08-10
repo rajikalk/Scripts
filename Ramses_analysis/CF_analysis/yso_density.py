@@ -505,6 +505,7 @@ if update == True and args.make_plots_only == 'False':
             M_dot = accretion(sink_inds, time_it)
             vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
             
-            import pdb
-            pdb.set_trace()
-            
+            #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (4pi*r^2), and the dnesity is 10/area.
+            for vis_ind in vis_inds_tot:
+                import pdb
+                pdb.set_trace()
