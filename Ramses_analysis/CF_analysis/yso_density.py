@@ -521,7 +521,7 @@ if update == True and args.make_plots_only == 'False':
                 dx = abspos[vis_ind][0] - abspos.T[0]
                 dy = abspos[vis_ind][1] - abspos.T[1]
                 separation = np.sqrt(dx**2 + dy**2)
-                neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('AU')
+                neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
                 area = np.pi*(neighbour_11**2)
                 yso_dens = 10/area
                 
@@ -534,6 +534,9 @@ if update == True and args.make_plots_only == 'False':
             pickle.dump((Times, SFE, All_YSO_dens), file)
             file.close()
             print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
+
+sys.stdout.flush()
+CW.Barrier()
 
 if rank == 0:
     pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
