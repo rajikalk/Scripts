@@ -260,7 +260,7 @@ plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "reduced_chi_squared_tobin_120.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
@@ -271,7 +271,7 @@ plt.ylabel("KS statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+"_120.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 plt.clf()
 smoothed_KS_test = []
