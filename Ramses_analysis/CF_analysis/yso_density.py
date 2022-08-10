@@ -596,6 +596,7 @@ if rank == 0:
     plt.clf()
     plt.step(np.sort(ysos_42), yso_CDF, label='simulation')
     plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus')
+    plt.legend(loc='upper left')
     plt.xlabel("YSO density (pc$^{-2}$)")
     plt.ylabel("Frequency")
     plt.ylim([0,1])
