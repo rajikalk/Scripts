@@ -70,7 +70,8 @@ file_open.close()
 
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_CDF.pkl", "rb")
+#file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_CDF.pkl", "rb")
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_CDF_full.pkl", "rb")
 Perseus_sep = pickle.load(file_open)
 file_open.close()
 
