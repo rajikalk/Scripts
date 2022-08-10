@@ -520,7 +520,7 @@ if update == True and args.make_plots_only == 'False':
             for vis_ind in vis_inds_tot:
                 dx = abspos[vis_ind][0] - abspos.T[0]
                 dy = abspos[vis_ind][1] - abspos.T[1]
-                separation = np.sqrt(dx**2 + dy**2 + dz**2)
+                separation = np.sqrt(dx**2 + dy**2)
                 neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('AU')
                 area = 4*np.pi*(neighbour_11**2)
                 yso_dens = 10/area
