@@ -586,7 +586,7 @@ if rank == 0:
     
     from scipy import stats
     KS_test_result = stats.ks_2samp(yso_CDF_per, yso_CDF)[0]
-    alpha=0..99
+    alpha=0.99
     m = len(yso_CDF)
     n = len(yso_CDF_per)
     D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
