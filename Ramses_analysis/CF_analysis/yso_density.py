@@ -493,6 +493,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 time_its = range(start_time_ind, end_time_ind+1)
+All_YSO_dens = []
 
 if update == True and args.make_plots_only == 'False':
     rit = -1
@@ -513,9 +514,46 @@ if update == True and args.make_plots_only == 'False':
             L_tot = luminosity(global_data, sink_inds, time_it)
             M_dot = accretion(sink_inds, time_it)
             vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+            YSO_densities = []
             
             #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (4pi*r^2), and the dnesity is 10/area.
             for vis_ind in vis_inds_tot:
+                dx = abspos[vis_ind][0] - abspos.T[0]
+                dy = abspos[vis_ind][1] - abspos.T[1]
+                dz = abspos[vis_ind][2] - abspos.T[2]
+                separation = np.sqrt(dx**2 + dy**2 + dz**2)
+                neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('AU')
+                area = 4*np.pi*(neighbour_11**2)
+                yso_dens = 10/area
                 
-                import pdb
-                pdb.set_trace()
+                YSO_densities.append(yso_dens)
+            Times.append(time)
+            All_YSO_dens.append(YSO_densities)
+
+            file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
+            pickle.dump((Time, All_YSO_dens), file)
+            file.close()
+            print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
+
+if rank == 0:
+    pickle_files = sorted(glob.glob('yso_dens_*.pkl')
+    Times_full = []
+    All_YSO_dens_full = []
+    for pick_file in pickle_files:
+        file = open(pick_file, 'rb')
+        Time, All_YSO_dens = pickle.load(file)
+        file.close()
+        Times_full = Times_full + Times
+        All_YSO_dens_full = All_YSO_dens_full + All_YSO_dens
+        os.remove(pick_file)
+            
+    sorted_inds = np.argsort(Times_full)
+    Times = np.array(Times_full)[sorted_inds]
+    All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
+    
+    file = open('yso_dens_.pkl', 'wb')
+    pickle.dump((Time, All_YSO_dens), file)
+    file.close()
+    
+#Make YSO CDFs
+
