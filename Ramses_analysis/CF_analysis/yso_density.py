@@ -567,9 +567,38 @@ if rank == 0:
     
     plt.clf()
     plt.step(np.sort(ysos_42), yso_CDF, label='YSO_density')
-    plt.xlabel("YSO density per sq. au")
+    plt.xlabel("YSO density (pc$^{-2}$)")
     plt.ylabel("Frequency")
     plt.ylim([0,1])
     plt.savefig('yso_dens_42.png')
+    
+    YSO_per = []
+    with open('YSO_density.csv', 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            if row[1] == "0" or row[1] == "I":
+                YSO_per.append(float(row[2]))
+                
+    file.close()
+    
+    ysos_per = np.log10(np.sort(YSO_per))
+    yso_CDF_per = abs(np.cumsum(ysos_per))/abs(np.cumsum(ysos_per))[-1]
+    
+    from scipy import stats
+    KS_test_result = stats.ks_2samp(yso_CDF_per, yso_CDF)[0]
+    alpha=0..99
+    m = len(yso_CDF)
+    n = len(yso_CDF_per)
+    D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
+    print("KS stat =", KS_test_result, "D_crit =", D_crit)
+    
+    plt.clf()
+    plt.step(np.sort(ysos_42), yso_CDF, label='simulation')
+    plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus')
+    plt.xlabel("YSO density (pc$^{-2}$)")
+    plt.ylabel("Frequency")
+    plt.ylim([0,1])
+    plt.savefig('yso_dens_comp.pdf', bbox_inches='tight', pad_inches=0.02)
+    
 #Make YSO CDFs
 
