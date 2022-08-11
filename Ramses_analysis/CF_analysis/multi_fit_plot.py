@@ -109,7 +109,7 @@ axs[1].tick_params(axis='both', which='major', labelsize=10)
 axs[1].tick_params(axis='both', which='minor', labelsize=10)
 axs[0].set_xlim([0.01, 0.05])
 plt.savefig("fit_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
-'''
+
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
@@ -126,7 +126,7 @@ plt.ylabel("KS Statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
-
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
