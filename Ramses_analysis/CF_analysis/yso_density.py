@@ -311,7 +311,8 @@ for SFE_it in range(len(SFE)):
     ysos_log = np.log10(np.sort(All_YSO_dens[SFE_it]))
     yso_CDF = abs(np.cumsum(ysos_log))/abs(np.cumsum(ysos_log))[-1]
     
-    plt.step(np.sort(ysos_log), yso_CDF, label=SFE_label[SFE_it], color=colors[SFE_it])
+    #plt.step(np.sort(ysos_log), yso_CDF, label=SFE_label[SFE_it], color=colors[SFE_it])
+    plt.step(10**(np.sort(ysos_log)), yso_CDF, label=SFE_label[SFE_it], color=colors[SFE_it])
     
     KS_test_result = stats.ks_2samp(yso_CDF_per, yso_CDF)[0]
     alpha=0.99
@@ -321,7 +322,8 @@ for SFE_it in range(len(SFE)):
     print("KS stat =", KS_test_result, "D_crit =", D_crit)
 
 
-plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
+#plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
+plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
 plt.xscale('log')
 plt.legend(loc='upper left')
 plt.xlabel("YSO density (pc$^{-2}$)")
