@@ -310,7 +310,7 @@ ysos_per = np.log10(np.sort(YSO_per))
 yso_CDF_per = abs(np.cumsum(ysos_per))/abs(np.cumsum(ysos_per))[-1]
 
 plt.clf()
-#fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
+plt.figure(figsize=(single_col_width, 0.8*single_col_width))
 from scipy import stats
 for SFE_it in range(len(SFE)):
     ysos_log = np.log10(np.sort(All_YSO_dens[SFE_it]))
