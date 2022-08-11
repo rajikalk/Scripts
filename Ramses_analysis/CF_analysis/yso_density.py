@@ -215,13 +215,13 @@ dt = yt.YTQuantity(args.time_spread, 'yr')
 
 
 SFE_times = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
+SFE_array = np.sum(global_data['m'], axis=1)
 time_bounds = []
 for SFE in SFE_times:
-    import pdb
-    pdb.set_trace()
-    time_bounds = [global_data['time'].T[0][0]*units['time_unit'].in_units('yr'), global_data['time'].T[0][-1]*units['time_unit'].in_units('yr')]
+    sfe_ind = np.argmin(abs(SFE_array-SFE))
+    time_val = global_data['time'].T[0][sfe_ind]*units['time_unit'].in_units('yr')
+    time_bounds.append(time_val)
     
-
 try:
     start_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[0]))
     end_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[1]))
@@ -257,118 +257,111 @@ elif args.update_pickle == 'False':
     
 #============================================================================================
 #Now we enter the actual multiplicity analysis
-sys.stdout.flush()
-CW.Barrier()
 
 time_its = range(start_time_ind, end_time_ind+1)
 All_YSO_dens = []
 
-if update == True and args.make_plots_only == 'False':
-    rit = -1
-    for time_it in time_its:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == rit:
-            #"""
-            n_stars = np.where(global_data['m'][time_it]>0)[0]
-            abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-            absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-            mass = np.array(global_data['m'][time_it][n_stars])
-            time = global_data['time'][time_it][n_stars][0]
-            sfe = np.sum(mass)
+for time_it in time_its:
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        #"""
+        n_stars = np.where(global_data['m'][time_it]>0)[0]
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][n_stars])
+        time = global_data['time'][time_it][n_stars][0]
+        sfe = np.sum(mass)
+        
+        sink_inds = np.where(global_data['m'][time_it]>0)[0]
+        L_tot = luminosity(global_data, sink_inds, time_it)
+        M_dot = accretion(sink_inds, time_it)
+        vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+        YSO_densities = []
+        
+        #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
+        for vis_ind in vis_inds_tot:
+            dx = abspos[vis_ind][0] - abspos.T[0]
+            dy = abspos[vis_ind][1] - abspos.T[1]
+            separation = np.sqrt(dx**2 + dy**2)
+            neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
+            area = np.pi*(neighbour_11**2)
+            yso_dens = 10/area
             
-            sink_inds = np.where(global_data['m'][time_it]>0)[0]
-            L_tot = luminosity(global_data, sink_inds, time_it)
-            M_dot = accretion(sink_inds, time_it)
-            vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-            YSO_densities = []
-            
-            #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
-            for vis_ind in vis_inds_tot:
-                dx = abspos[vis_ind][0] - abspos.T[0]
-                dy = abspos[vis_ind][1] - abspos.T[1]
-                separation = np.sqrt(dx**2 + dy**2)
-                neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
-                area = np.pi*(neighbour_11**2)
-                yso_dens = 10/area
-                
-                YSO_densities.append(yso_dens)
-            SFE.append(sfe)
-            Times.append(time)
-            All_YSO_dens.append(YSO_densities)
+            YSO_densities.append(yso_dens)
+        SFE.append(sfe)
+        Times.append(time)
+        All_YSO_dens.append(YSO_densities)
 
-            file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
-            pickle.dump((Times, SFE, All_YSO_dens), file)
-            file.close()
-            print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
-
-sys.stdout.flush()
-CW.Barrier()
-
-if rank == 0:
-    pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
-    Times_full = []
-    SFE_full = []
-    All_YSO_dens_full = []
-    for pick_file in pickle_files:
-        file = open(pick_file, 'rb')
-        Time, SFE, All_YSO_dens = pickle.load(file)
+        file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
+        pickle.dump((Times, SFE, All_YSO_dens), file)
         file.close()
-        Times_full = Times_full + Times
-        SFE_full = SFE_full + SFE
-        All_YSO_dens_full = All_YSO_dens_full + All_YSO_dens
-        os.remove(pick_file)
-            
-    sorted_inds = np.argsort(Times_full)
-    Times = np.array(Times_full)[sorted_inds]
-    SFE = np.array(SFE_full)[sorted_inds]
-    All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
-    
-    file = open('yso_dens.pkl', 'wb')
-    pickle.dump((Time, SFE, All_YSO_dens), file)
-    file.close()
+        print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
 
-    sfe_42_ind = np.argmin(abs(SFE-0.042))
-    ysos_42 = np.log10(np.sort(All_YSO_dens[sfe_42_ind]))
-    yso_CDF = abs(np.cumsum(ysos_42))/abs(np.cumsum(ysos_42))[-1]
-    
-    plt.clf()
-    plt.step(np.sort(ysos_42), yso_CDF, label='YSO_density')
-    plt.xlabel("YSO density (pc$^{-2}$)")
-    plt.ylabel("Frequency")
-    plt.ylim([0,1])
-    plt.savefig('yso_dens_42.png')
-    
-    YSO_per = []
-    import csv
-    with open('YSO_density.csv', 'r') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            if row[1] == "0" or row[1] == "I":
-                YSO_per.append(float(row[2]))
-                
+
+pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
+Times_full = []
+SFE_full = []
+All_YSO_dens_full = []
+for pick_file in pickle_files:
+    file = open(pick_file, 'rb')
+    Time, SFE, All_YSO_dens = pickle.load(file)
     file.close()
-    
-    ysos_per = np.log10(np.sort(YSO_per))
-    yso_CDF_per = abs(np.cumsum(ysos_per))/abs(np.cumsum(ysos_per))[-1]
-    
-    from scipy import stats
-    KS_test_result = stats.ks_2samp(yso_CDF_per, yso_CDF)[0]
-    alpha=0.99
-    m = len(yso_CDF)
-    n = len(yso_CDF_per)
-    D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
-    print("KS stat =", KS_test_result, "D_crit =", D_crit)
-    
-    plt.clf()
-    plt.step(np.sort(ysos_42), yso_CDF, label='simulation')
-    plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus')
-    plt.legend(loc='upper left')
-    plt.xlabel("YSO density (pc$^{-2}$)")
-    plt.ylabel("Frequency")
-    plt.ylim([0,1])
-    plt.savefig('yso_dens_comp.pdf', bbox_inches='tight', pad_inches=0.02)
+    Times_full = Times_full + Times
+    SFE_full = SFE_full + SFE
+    All_YSO_dens_full = All_YSO_dens_full + All_YSO_dens
+    os.remove(pick_file)
+        
+sorted_inds = np.argsort(Times_full)
+Times = np.array(Times_full)[sorted_inds]
+SFE = np.array(SFE_full)[sorted_inds]
+All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
+
+file = open('yso_dens.pkl', 'wb')
+pickle.dump((Time, SFE, All_YSO_dens), file)
+file.close()
+
+sfe_42_ind = np.argmin(abs(SFE-0.042))
+ysos_42 = np.log10(np.sort(All_YSO_dens[sfe_42_ind]))
+yso_CDF = abs(np.cumsum(ysos_42))/abs(np.cumsum(ysos_42))[-1]
+
+plt.clf()
+plt.step(np.sort(ysos_42), yso_CDF, label='YSO_density')
+plt.xlabel("YSO density (pc$^{-2}$)")
+plt.ylabel("Frequency")
+plt.ylim([0,1])
+plt.savefig('yso_dens_42.png')
+
+YSO_per = []
+import csv
+with open('YSO_density.csv', 'r') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        if row[1] == "0" or row[1] == "I":
+            YSO_per.append(float(row[2]))
+            
+file.close()
+
+ysos_per = np.log10(np.sort(YSO_per))
+yso_CDF_per = abs(np.cumsum(ysos_per))/abs(np.cumsum(ysos_per))[-1]
+
+from scipy import stats
+KS_test_result = stats.ks_2samp(yso_CDF_per, yso_CDF)[0]
+alpha=0.99
+m = len(yso_CDF)
+n = len(yso_CDF_per)
+D_crit = np.sqrt((-1*np.log(alpha/2))*((1+(m/n))/(2*m)))
+print("KS stat =", KS_test_result, "D_crit =", D_crit)
+
+plt.clf()
+plt.step(np.sort(ysos_42), yso_CDF, label='simulation')
+plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus')
+plt.legend(loc='upper left')
+plt.xlabel("YSO density (pc$^{-2}$)")
+plt.ylabel("Frequency")
+plt.ylim([0,1])
+plt.savefig('yso_dens_comp.pdf', bbox_inches='tight', pad_inches=0.02)
     
 #Make YSO CDFs
 
