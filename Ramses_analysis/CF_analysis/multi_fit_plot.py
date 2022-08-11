@@ -271,13 +271,14 @@ for fit_pick in range(len(fit_pickles)):
     
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
     #axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
-    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.3, size=10)
+    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.5, size=10)
     axs[fit_pick].text((0.011), (0.06), subplot_titles[fit_pick], zorder=11, size=10)
     axs[fit_pick].tick_params(which='both', direction='in')
     axs[fit_pick].tick_params(axis='both', which='major', labelsize=10, )
     axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
     #axs[fit_pick].axhline(y=0.07)
 
+axs[0].text((0.02), (0.8), "2D-Bound", zorder=11, size=10)
 axs[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
@@ -352,13 +353,14 @@ for fit_pick in range(len(fit_pickles)):
     
     #axs[fit_pick].semilogy(SFE, KS_test, label='KS statistic')
     #axs[fit_pick].semilogy(SFE, D_crits, label='Critical value')
-    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.3, size=10)
-    axs[fit_pick].text((0.011), (0.06), subplot_titles[fit_pick], zorder=11, size=10)
+    axs[fit_pick].set_ylabel("KS statistic", labelpad=-0.5, size=10)
+    axs[fit_pick].text((0.011), (0.075), subplot_titles[fit_pick], zorder=11, size=10)
     axs[fit_pick].tick_params(which='both', direction='in')
     axs[fit_pick].tick_params(axis='both', which='major', labelsize=10, )
     axs[fit_pick].tick_params(axis='both', which='minor', labelsize=10)
     #axs[fit_pick].axhline(y=0.07)
 
+axs[0].text((0.02), (0.8), "2D-Unbound", zorder=11, size=10)
 axs[0].legend(loc='upper right', fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
