@@ -217,8 +217,8 @@ dt = yt.YTQuantity(args.time_spread, 'yr')
 SFE_times = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
 SFE_array = np.sum(global_data['m'], axis=1)
 time_bounds = []
-for SFE in SFE_times:
-    sfe_ind = np.argmin(abs(SFE_array-SFE))
+for SFE_time in SFE_times:
+    sfe_ind = np.argmin(abs(SFE_array-SFE_time))
     time_val = global_data['time'].T[0][sfe_ind]*units['time_unit'].in_units('yr')
     time_bounds.append(time_val)
     
