@@ -355,4 +355,4 @@ plt.legend(loc='upper left')
 plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))")
 plt.ylabel("CDF")
 plt.ylim([0,1])
-plt.savefig('yso_dens_comp.png', format='png', pad_inches=0.02)#, bbox_inches='tight'
+plt.savefig("yso_dens_comp.pdf", format='pdf', pad_inches=0.02, bbox_inches='tight')
