@@ -216,7 +216,7 @@ dt = yt.YTQuantity(args.time_spread, 'yr')
 
 SFE_times = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
 time_bounds = []
-for SFE in SFE_times
+for SFE in SFE_times:
     import pdb
     pdb.set_trace()
     time_bounds = [global_data['time'].T[0][0]*units['time_unit'].in_units('yr'), global_data['time'].T[0][-1]*units['time_unit'].in_units('yr')]
