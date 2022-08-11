@@ -217,24 +217,12 @@ dt = yt.YTQuantity(args.time_spread, 'yr')
 SFE_times = [0.005, 0.01, 0.02, 0.03, 0.04, 0.05]
 SFE_array = np.sum(global_data['m'], axis=1)
 time_bounds = []
+time_its = []
 for SFE_time in SFE_times:
     sfe_ind = np.argmin(abs(SFE_array-SFE_time))
+    time_its.append(sfe_ind)
     time_val = global_data['time'].T[0][sfe_ind]*units['time_unit'].in_units('yr')
     time_bounds.append(time_val)
-    
-try:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[1]))
-except:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
-
-if rank == 0:
-    print("tstart, tend", time_bounds[0].in_units('kyr'), time_bounds[1].in_units('kyr'))
-    print("SFE_start, SFE_end", (np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value)/units['mass_unit'].value, (np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)/units['mass_unit'].value)
-    print("nstars_start, nstars_end", len(np.where(global_data['m'][start_time_ind]>0)[0]), len(np.where(global_data['m'][end_time_ind]>0)[0]))
-    print("mstars_start, mstars_end", np.sum(global_data['m'][start_time_ind])*units['mass_unit'].value, np.sum(global_data['m'][end_time_ind])*units['mass_unit'].value)
-    print("number of records", end_time_ind-start_time_ind)
 
 radius = yt.YTQuantity(2.0, 'rsun')
 temperature = yt.YTQuantity(3000, 'K')
@@ -258,7 +246,6 @@ elif args.update_pickle == 'False':
 #============================================================================================
 #Now we enter the actual multiplicity analysis
 
-time_its = range(start_time_ind, end_time_ind+1)
 All_YSO_dens = []
 
 for time_it in time_its:
