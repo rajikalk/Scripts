@@ -262,44 +262,39 @@ time_its = range(start_time_ind, end_time_ind+1)
 All_YSO_dens = []
 
 for time_it in time_its:
-    rit = rit + 1
-    if rit == size:
-        rit = 0
-    if rank == rit:
-        #"""
-        n_stars = np.where(global_data['m'][time_it]>0)[0]
-        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-        mass = np.array(global_data['m'][time_it][n_stars])
-        time = global_data['time'][time_it][n_stars][0]
-        sfe = np.sum(mass)
+    n_stars = np.where(global_data['m'][time_it]>0)[0]
+    abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+    absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+    mass = np.array(global_data['m'][time_it][n_stars])
+    time = global_data['time'][time_it][n_stars][0]
+    sfe = np.sum(mass)
+    
+    sink_inds = np.where(global_data['m'][time_it]>0)[0]
+    L_tot = luminosity(global_data, sink_inds, time_it)
+    M_dot = accretion(sink_inds, time_it)
+    vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+    YSO_densities = []
+    
+    #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
+    for vis_ind in vis_inds_tot:
+        dx = abspos[vis_ind][0] - abspos.T[0]
+        dy = abspos[vis_ind][1] - abspos.T[1]
+        separation = np.sqrt(dx**2 + dy**2)
+        neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
+        area = np.pi*(neighbour_11**2)
+        yso_dens = 10/area
         
-        sink_inds = np.where(global_data['m'][time_it]>0)[0]
-        L_tot = luminosity(global_data, sink_inds, time_it)
-        M_dot = accretion(sink_inds, time_it)
-        vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-        YSO_densities = []
-        
-        #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
-        for vis_ind in vis_inds_tot:
-            dx = abspos[vis_ind][0] - abspos.T[0]
-            dy = abspos[vis_ind][1] - abspos.T[1]
-            separation = np.sqrt(dx**2 + dy**2)
-            neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
-            area = np.pi*(neighbour_11**2)
-            yso_dens = 10/area
-            
-            YSO_densities.append(yso_dens)
-        SFE.append(sfe)
-        Times.append(time)
-        All_YSO_dens.append(YSO_densities)
+        YSO_densities.append(yso_dens)
+    SFE.append(sfe)
+    Times.append(time)
+    All_YSO_dens.append(YSO_densities)
 
-        file = open('yso_dens_'+str(rank)+'.pkl', 'wb')
-        pickle.dump((Times, SFE, All_YSO_dens), file)
-        file.close()
-        print("calculated YSO dens for time_it", time_it, "of", time_its[-1], ". Wrote file", 'yso_dens_'+str(rank)+'.pkl')
+    file = open('yso_dens.pkl', 'wb')
+    pickle.dump((Times, SFE, All_YSO_dens), file)
+    file.close()
+    print("calculated YSO dens for time_it", time_it, "of", time_its[-1])
 
-
+'''
 pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
 Times_full = []
 SFE_full = []
@@ -321,7 +316,7 @@ All_YSO_dens = np.array(All_YSO_dens_full)[sorted_inds]
 file = open('yso_dens.pkl', 'wb')
 pickle.dump((Time, SFE, All_YSO_dens), file)
 file.close()
-
+'''
 sfe_42_ind = np.argmin(abs(SFE-0.042))
 ysos_42 = np.log10(np.sort(All_YSO_dens[sfe_42_ind]))
 yso_CDF = abs(np.cumsum(ysos_42))/abs(np.cumsum(ysos_42))[-1]
