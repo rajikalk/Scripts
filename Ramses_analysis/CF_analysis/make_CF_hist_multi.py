@@ -42,15 +42,15 @@ font_size = 10
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
 CF_per_bin_all, CF_errs_all, Perseus_sep = pickle.load(file_open)
 file_open.close()
-CF_errs_all.T[0] = (0, 0)
-CF_errs_all.T[2] = (0, 0)
+CF_errs_all[0][np.array([0, 2])] = 0
+CF_errs_all[1][np.array([0, 2])] = 0
 
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
 CF_per_bin_66, CF_errs_66, Perseus_sep = pickle.load(file_open)
 file_open.close()
 
-CF_errs_66.T[0] = (0, 0)
-CF_errs_66.T[2] = (0, 0)
+CF_errs_66[0][np.array([0, 2])] = 0
+CF_errs_66[1][np.array([0, 2])] = 0
 
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
