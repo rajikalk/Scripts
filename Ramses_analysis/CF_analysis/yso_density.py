@@ -33,6 +33,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
+matplotlib.rcParams['text.usetex']=False
 
 #Define globals
 f_acc= 0.5
