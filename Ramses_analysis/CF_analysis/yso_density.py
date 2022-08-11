@@ -348,6 +348,9 @@ for SFE_it in range(len(SFE)):
     print("KS stat =", KS_test_result, "D_crit =", D_crit)
 
 
+plt.tick_params(which='both', direction='in')
+plt.tick_params(axis='both', which='major', labelsize=10, )
+plt.tick_params(axis='both', which='minor', labelsize=10)
 plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.xscale('log')
