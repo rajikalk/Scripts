@@ -310,7 +310,7 @@ ysos_per = np.log10(np.sort(YSO_per))
 yso_CDF_per = abs(np.cumsum(ysos_per))/abs(np.cumsum(ysos_per))[-1]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
+#fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width), sharex=True)
 from scipy import stats
 for SFE_it in range(len(SFE)):
     ysos_log = np.log10(np.sort(All_YSO_dens[SFE_it]))
@@ -336,6 +336,3 @@ plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))")
 plt.ylabel("CDF")
 plt.ylim([0,1])
 plt.savefig('yso_dens_comp.pdf', bbox_inches='tight', pad_inches=0.02)
-    
-#Make YSO CDFs
-
