@@ -49,7 +49,7 @@ def parse_inputs():
     parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=None)
     parser.add_argument("-SFE_spread", "--SFE_spread_val", help="how much SFE around the central SFE do you want to intergrate over?", type=float, default=0.001)
     parser.add_argument("-unbound", "--use_unbound", help="Do you want to compare to the unbound distribution?", type=str, default='False')
-    parser.add_argument("-save_preffix", "--savefile_preffix" help="what do you want to save the output as?", type=str, default="")
+    parser.add_argument("-save_preffix", "--savefile_preffix", help="what do you want to save the output as?", type=str, default="")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
