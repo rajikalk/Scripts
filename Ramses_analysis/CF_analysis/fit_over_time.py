@@ -48,6 +48,8 @@ def parse_inputs():
     parser.add_argument("-savedir", "--save_directory", help="Where do you want to save the figures?", type=str, default="./")
     parser.add_argument("-t_spread", "--time_spread", help="how much time around the central time do you want to intergrate over?", type=float, default=None)
     parser.add_argument("-SFE_spread", "--SFE_spread_val", help="how much SFE around the central SFE do you want to intergrate over?", type=float, default=0.001)
+    parser.add_argument("-unbound", "--use_unbound", help="Do you want to compare to the unbound distribution?", type=str, default='False')
+    parser.add_argument("-save_preffix", "--savefile_preffix" help="what do you want to save the output as?", type=str, default="")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -71,9 +73,12 @@ file_open.close()
 S_bins = np.logspace(0.75,4,14)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 #file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_CDF.pkl", "rb")
-#file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
-file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
-CF_per_bin_66, CF_errs, Perseus_sep = pickle.load(file_open)
+
+if args.use_unbound == 'False':
+    file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
+else:
+    file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
+CF_per_bin, CF_errs, Perseus_sep = pickle.load(file_open)
 file_open.close()
 
 Perseus_log_sep = np.log10(np.sort(Perseus_sep))
@@ -261,7 +266,7 @@ plt.ylabel("Fit (<$\chi^2$>)", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+plt.savefig(args.save_directory + args.savefile_preffix + "reduced_chi_squared_tobin.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
@@ -272,7 +277,7 @@ plt.ylabel("KS statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+plt.savefig(args.save_directory + args.savefile_preffix + "KS_test_alpha_"+str(alpha)+".pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
 plt.clf()
 smoothed_KS_test = []
@@ -329,8 +334,8 @@ plt.ylabel("KS statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=1000)
 #plt.ylim([np.argmin(reduced_chi_square_tobin), np.argmax(reduced_chi_square_tobin)])
-plt.savefig(args.save_directory + "KS_test_alpha_"+str(alpha)+"_smoothed.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
+plt.savefig(args.save_directory + args.savefile_preffix + "KS_test_alpha_"+str(alpha)+"_smoothed.pdf", format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
-file = open(args.save_directory + 'chi_squared_fit.pkl', 'wb')
+file = open(args.save_directory + args.savefile_preffix + 'chi_squared_fit.pkl', 'wb')
 pickle.dump((SFE[SFE_1_ind:], reduced_chi_square_selected, reduced_chi_square_tobin, KS_test_sep, D_crits_sep, KS_test_CF, D_crits_CF), file)
 file.close()
