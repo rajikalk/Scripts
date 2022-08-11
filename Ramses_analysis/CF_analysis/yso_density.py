@@ -114,6 +114,10 @@ size = CW.Get_size()
 datadir = sys.argv[1]
 savedir = sys.argv[2]
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
 #=====================================================================================================
 #Tobin data
 L_bins = np.logspace(-1.25,3.5,20)
