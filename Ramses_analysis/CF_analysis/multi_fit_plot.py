@@ -37,7 +37,7 @@ font_size = 10
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
-
+'''
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width,1.5*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -109,7 +109,7 @@ axs[1].tick_params(axis='both', which='major', labelsize=10)
 axs[1].tick_params(axis='both', which='minor', labelsize=10)
 axs[0].set_xlim([0.01, 0.05])
 plt.savefig("fit_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
-
+'''
 plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
 
