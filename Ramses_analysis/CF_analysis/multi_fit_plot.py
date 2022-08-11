@@ -126,7 +126,7 @@ plt.ylabel("KS Statistic", labelpad=-0.2)
 plt.xlim([0.01, 0.05])
 #plt.ylim(top=100)
 plt.savefig("KS_multi_120.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
-'''
+
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(fit_pickles), figsize=(single_col_width,3.4*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
@@ -202,7 +202,7 @@ axs[fit_pick].set_xlabel('SFE', size=10)
 axs[0].set_xlim([0.01, 0.05])
 axs[0].set_ylim([np.min(y_low_lim), 1.0])
 plt.savefig("KS_vs_crit_120.png", format='png', bbox_inches='tight', pad_inches=0.02)
-
+'''
 fit_pickles = ['/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/120_Bound_chi_squared_fit.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Fit_over_time/Obs_bound/G125/55_Bound_chi_squared_fit.pkl']
 subplot_titles = ['$L_{max}=120$L$_\odot$', '$L_{max}=55$L$_\odot$']
 plot_colours = ['tab:blue', 'tab:orange']
