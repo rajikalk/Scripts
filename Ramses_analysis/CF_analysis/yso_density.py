@@ -329,7 +329,7 @@ for SFE_it in range(len(SFE)):
 
 plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
-plt.xscale('log')
+#plt.xscale('log')
 plt.legend(loc='upper left')
 #plt.xlabel("YSO density (pc$^{-2}$)")
 plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))")
