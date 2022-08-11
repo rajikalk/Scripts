@@ -347,12 +347,12 @@ for SFE_it in range(len(SFE)):
     print("KS stat =", KS_test_result, "D_crit =", D_crit)
 
 
-plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
+#plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.xscale('log')
 plt.legend(loc='upper left')
 #plt.xlabel("YSO density (pc$^{-2}$)")
 #plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))")
-plt.ylabel("CDF")
+#plt.ylabel("CDF")
 plt.ylim([0,1])
 plt.savefig('yso_dens_comp.pdf', bbox_inches='tight', pad_inches=0.02)
