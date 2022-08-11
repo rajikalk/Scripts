@@ -290,7 +290,7 @@ file.close()
 '''
 SFE_label = ['0.5\%', '1\%', '2\%', '3\%', '4\%', '5\%']
 import matplotlib.pylab as pl
-colors = pl.cm.viridis(np.linspace(0,1,6))
+colors = pl.cm.cool(np.linspace(0,1,6))
 
 YSO_per = []
 import csv
@@ -322,6 +322,7 @@ for SFE_it in range(len(SFE)):
 
 
 plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
+plt.xscale('log')
 plt.legend(loc='upper left')
 plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))")
 plt.ylabel("CDF")
