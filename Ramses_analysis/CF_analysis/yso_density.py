@@ -311,7 +311,7 @@ file = open('yso_dens.pkl', 'wb')
 pickle.dump((Time, SFE, All_YSO_dens), file)
 file.close()
 '''
-SFE_label = ['0.5%', '1%', '2%', '3%', '4%', '5%']
+SFE_label = ['0.005', '0.01', '0.02', '0.03', '0.04', '0.05']
 import matplotlib.pylab as pl
 colors = pl.cm.cool(np.linspace(0,1,6))
 
