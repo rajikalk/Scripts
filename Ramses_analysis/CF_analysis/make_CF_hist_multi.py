@@ -42,10 +42,15 @@ font_size = 10
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
 CF_per_bin_all, CF_errs_all, Perseus_sep = pickle.load(file_open)
 file_open.close()
+CF_errs_all.T[0] = (0, 0)
+CF_errs_all.T[2] = (0, 0)
 
 file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
 CF_per_bin_66, CF_errs_66, Perseus_sep = pickle.load(file_open)
 file_open.close()
+
+CF_errs_66.T[0] = (0, 0)
+CF_errs_66.T[2] = (0, 0)
 
 S_bins = np.logspace(1,4,13)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
@@ -72,7 +77,7 @@ for pick_it_top in range(len(plot_pickles)):
         
     #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='--')
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='-')
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='--')
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
     #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, width=0.25, edgecolor='black', fill=None, ls='--')
     if pick_it_top == 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
@@ -132,7 +137,7 @@ for pick_it_top in range(len(plot_pickles)):
         
     #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs_Per, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='--')
     axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='-')
-    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', label="Perseus (Tobin et al.)", fill=None, ls='--')
+    axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
     if pick_it_top == 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].legend(loc='upper right', fontsize=font_size)
     if pick_it_top == 2:
