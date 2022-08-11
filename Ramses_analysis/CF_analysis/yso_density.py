@@ -226,22 +226,6 @@ for SFE_time in SFE_times:
 
 radius = yt.YTQuantity(2.0, 'rsun')
 temperature = yt.YTQuantity(3000, 'K')
-
-if args.starting_ind != None:
-    update = True
-    start_time_ind = args.starting_ind
-elif args.make_plots_only != 'False':
-    update = False
-elif len(Times) == (end_time_ind-start_time_ind+1):
-    update = False
-else:
-    update = True
-    start_time_ind = start_time_ind + len(Times)
-
-if args.update_pickle == 'True':
-    update = True
-elif args.update_pickle == 'False':
-    update = False
     
 #============================================================================================
 #Now we enter the actual multiplicity analysis
