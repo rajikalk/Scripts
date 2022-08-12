@@ -580,9 +580,9 @@ if plot_truncated_super_mult == True:
         axs.flatten()[pick_it].set_xlabel('Star formation efficiency ($M_\star/M_{gas}$)', size=args.text_font)
     if args.add_histograms == "True":
         axs.flatten()[pick_it+1].set_xlabel('% of systems', size=args.text_font)
-    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.png', format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     #plt.savefig('superplot_multi_truncated'+args.figure_suffix+'.pdf', format='pdf', bbox_inches='tight', pad_inches=0.02)
-    print('Created superplot_multi_truncated'+args.figure_suffix+'.jpg')
+    print('Created superplot_multi_truncated'+args.figure_suffix+'.png')
 
 #plot quantities VS cloud mass at SFE=0.05
 plt.clf()
