@@ -146,6 +146,8 @@ for pick_it_top in range(len(plot_pickles)):
     if pick_it_top == 3:
         xticklabels = axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].get_xticklabels()
         plt.setp(xticklabels[0], visible=False)
+        import pdb
+        pdb.set_trace()
     if pick_it_top > 1:
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
         axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].set_xlim([1, 4])
