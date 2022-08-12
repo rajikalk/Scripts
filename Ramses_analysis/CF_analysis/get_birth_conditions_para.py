@@ -104,6 +104,8 @@ CW.Barrier()
 
 if rank == 0:
     #print("Memory_useage:", virtual_memory().percent, "on line", getframeinfo(currentframe()).lineno)
+    print("Loading global data", flush=True)
+    sys.stdout.flush()
     file_open = open(global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open)
     file_open.close()
