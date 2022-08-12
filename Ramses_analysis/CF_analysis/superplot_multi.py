@@ -66,7 +66,7 @@ pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_s
 
 birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/Incomplete_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]#"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
-#birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
 
 plt.clf()
@@ -360,10 +360,26 @@ if plot_truncated_super_mult == True:
                                     #    marker_shape = '^'
                                     
                                 else:
+                                    #use low cadence data
+                                    file = open(low_cadence_birth_con_pickles[file_it], 'rb')
+                                    Sink_birth_all_low_cad = pickle.load(file)
+                                    file.close()
+                                    if str(np.max(sub_sys)) in Sink_birth_all_low_cad.keys():
+                                        other_sys = np.min(sub_sys)
+                                        if Sink_birth_all_low_cad[str(np.max(sub_sys))][0] == True and str(other_sys) == Sink_birth_all_low_cad[str(np.max(sub_sys))][2]:
+                                            marker_color = 'b'
+                                            marker_shape = 's'
+                                            #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                            #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                        elif Sink_birth_all_low_cad[str(np.max(sub_sys))][0] == False and Sink_birth_all_low_cad[str(np.max(sub_sys))][1] == Sink_birth_all_low_cad[str(np.max(sub_sys))][2] == str(other_sys):
+                                            marker_color = 'm'
+                                            marker_shape = '^'
+                                            #elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                        else:
+                                            marker_color = 'r'
+                                            marker_shape = 'o'
+                                    del Sink_birth_all_low_cad
                                     #print("sink", np.max(sub_sys), "Not found in birth conditions")
-                                    Not_plotted_sinks[pick_it].append(np.max(sub_sys))
-                                    marker_color = 'k'
-                                    marker_shape = 'x'
                                 if set(sub_sys).issubset(set(plotted_sinks)) == False:
                                     plotted_sinks = plotted_sinks + sub_sys
                                     #print('plotted sinks', sub_sys)
@@ -454,9 +470,24 @@ if plot_truncated_super_mult == True:
                                         #    marker_shape = '^'
                                     else:
                                         #print("sink", np.max(real_sinks), "Not found in birth conditions")
-                                        Not_plotted_sinks[pick_it].append(np.max(real_sinks))
-                                        marker_color = 'k'
-                                        marker_shape = 'x'
+                                        file = open(low_cadence_birth_con_pickles[file_it], 'rb')
+                                        Sink_birth_all_low_cad = pickle.load(file)
+                                        file.close()
+                                        if str(np.max(sub_sys)) in Sink_birth_all_low_cad.keys():
+                                            other_sys = np.min(sub_sys)
+                                            if Sink_birth_all_low_cad[str(np.max(sub_sys))][0] == True and str(other_sys) == Sink_birth_all_low_cad[str(np.max(sub_sys))][2]:
+                                                marker_color = 'b'
+                                                marker_shape = 's'
+                                                #elif Sink_birth_all[str(np.max(sub_sys))][1] in flatten(eval(Sink_birth_all[str(np.max(sub_sys))][2])):
+                                                #elif other_sys in flatten(eval(str(Sink_birth_all[str(np.max(sub_sys))][1]))):
+                                            elif Sink_birth_all_low_cad[str(np.max(sub_sys))][0] == False and Sink_birth_all_low_cad[str(np.max(sub_sys))][1] == Sink_birth_all_low_cad[str(np.max(sub_sys))][2] == str(other_sys):
+                                                marker_color = 'm'
+                                                marker_shape = '^'
+                                                #elif str(other_sys) != str(Sink_birth_all[str(np.max(sub_sys))][1]):
+                                            else:
+                                                marker_color = 'r'
+                                                marker_shape = 'o'
+                                        del Sink_birth_all_low_cad
                                     if set(real_sinks).issubset(set(plotted_sinks)) == False:
                                         plotted_sinks = plotted_sinks + real_sinks.tolist()
                                         #print('plotted sinks', real_sinks.tolist())
