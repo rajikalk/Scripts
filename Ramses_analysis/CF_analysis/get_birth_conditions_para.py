@@ -39,6 +39,10 @@ del Initial_Seps
 del Final_seps
 gc.collect()
 
+if rank == 0:
+    print("loaded means pickle", flush=True)
+    sys.stdout.flush()
+
 sys_times = {}
 for key in superplot_dict['System_times'].keys():
     sys_times.update({key:np.min(superplot_dict['System_times'][key][0])})
