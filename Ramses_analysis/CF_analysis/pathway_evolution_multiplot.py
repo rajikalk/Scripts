@@ -17,7 +17,7 @@ def Skewed_Gaussian(x, scale, mean, sigma, skew):
 def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
 
-grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/1000_yr/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G50/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G100/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G125/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G150/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G200/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G400/1000_yr/grad_pickle.pkl']
 
 Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
@@ -113,7 +113,7 @@ for grad_it in range(len(grad_pickles)):
 
 fig.savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
 
-grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G400/grad_pickle.pkl']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
