@@ -54,6 +54,19 @@ file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_
 CF_per_bin_66, CF_errs, All_separations = pickle.load(file_open)
 file_open.close()
 
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_all.pkl", "rb")
+CF_per_bin_all, CF_errs_all, Perseus_sep = pickle.load(file_open)
+file_open.close()
+CF_errs_all[0][np.array([1, 3])] = 0
+CF_errs_all[1][np.array([1, 3])] = 0
+
+file_open = open("/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/Perseus_data_66.pkl", "rb")
+CF_per_bin_66, CF_errs_66, Perseus_sep = pickle.load(file_open)
+file_open.close()
+
+CF_errs_66[0][np.array([1, 3])] = 0
+CF_errs_66[1][np.array([1, 3])] = 0
+
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
@@ -170,7 +183,8 @@ for time_it in range(start_time_it, end_time_it):
                     #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label="L$_max$ = 120L$_\odot$", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label="L$_max$ = 55L$_\odot$", width=0.25, alpha=0.5)
-            plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='-')
+            plt.bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='-')
+            plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             #plt.plot(x,gauss_total)
