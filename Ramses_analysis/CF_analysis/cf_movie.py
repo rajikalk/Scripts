@@ -82,14 +82,29 @@ pickle_file = datadir + args.pickled_file
 if pickle_file[-4:] != '.pkl':
     pickle_file = pickle_file + '.pkl'
 
-file = open(pickle_file, 'rb')
-try:
-    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
-    file.close
-except:
+files = glob.glob("pickle_file")
+if len(files) == 0:
     file = open(pickle_file, 'rb')
-    Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
-    file.close()
+    try:
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+        file.close
+    except:
+        file = open(pickle_file, 'rb')
+        Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
+        file.close()
+else:
+    for pickle_file in files:
+        file = open(pickle_file, 'rb')
+        suffix = pickle_file.split('.pkl')[0].split('_')[-1]
+        try:
+            Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion = pickle.load(file)
+            file.close
+        except:
+            file = open(pickle_file, 'rb')
+            Times, SFE, CF_Array_Full, N_sys_total, Sink_Luminosities, Sink_Accretion, All_separations = pickle.load(file)
+            file.close()
+        exec("CF_Array_Full_"+suffix+" = CF_Array_Full")
+    
 
 if args.starting_ind == 0:
     if args.time_spread != None:
@@ -126,20 +141,35 @@ for time_it in range(start_time_it, end_time_it):
                 start_integration_it = np.argmin(abs(SFE - start_SFE))
                 end_integration_it = np.argmin(abs(SFE - end_SFE))
                 
-            N_stars = np.sum(N_sys_total[time_it]*np.array([1, 2, 3, 4, 5, 6, 7]))
-            
-            CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-            CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-            CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-            CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
-            
-            plt.clf()
-            try:
-                #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                plt.bar(bin_centers, CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-            except:
-                #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+            if len(files)==0:
+                CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+                
+                plt.clf()
+                try:
+                    #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers, CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                except:
+                    #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+            else:
+                CF_median_120 = np.median(CF_Array_Full_120[start_integration_it:end_integration_it], axis=0)
+                CF_median_55 = np.median(CF_Array_Full_55[start_integration_it:end_integration_it], axis=0)
+                #CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                #CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                #CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+                
+                plt.clf()
+                try:
+                    #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers, CF_median_120, edgecolor='tab:blue', label="L$_max$ = 120L$_\odot$", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers, CF_median_55, edgecolor='tab:orange', label="L$_max$ = 55L$_\odot$", width=0.25, alpha=0.5)
+                except:
+                    #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label="L$_max$ = 120L$_\odot$", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label="L$_max$ = 55L$_\odot$", width=0.25, alpha=0.5)
             plt.bar(bin_centers, CF_per_bin_Tobin_Per, yerr=CF_errs, width=0.25, edgecolor='black', alpha=0.5, label="Perseus", fill=None, ls='-')
             #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
@@ -151,9 +181,9 @@ for time_it in range(start_time_it, end_time_it):
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
             if args.time_spread != None:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr, N_stars:" + str(N_stars))
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
             else:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val*100) + "% SFE, Nstars:" + str(N_stars))
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val*100) + "% SFE")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
