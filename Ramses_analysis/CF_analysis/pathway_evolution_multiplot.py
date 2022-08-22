@@ -17,7 +17,7 @@ def Skewed_Gaussian(x, scale, mean, sigma, skew):
 def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
 
-grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/1000_yr/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G50/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G100/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G125/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G150/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G200/1000_yr/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G400/1000_yr/grad_pickle.pkl']
 
 Sim_ids = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 #Defining gradient bins and getting tick labels
@@ -113,7 +113,7 @@ for grad_it in range(len(grad_pickles)):
 
 fig.savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
 
-grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Pathway_evolution/G400/grad_pickle.pkl']
+grad_pickles = ['/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G50/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G100/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G125/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G150/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G200/grad_pickle.pkl', '/lustre/astro/rlk/Analysis_plots/Inspiral_rates/G400/grad_pickle.pkl']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(grad_pickles), figsize=(single_col_width*1.5, single_col_width*3), sharex=True, sharey=True)#, hspace=0.0)
@@ -208,7 +208,7 @@ Capt_err = [np.array(Median_grads[2]) - Capt_bounds[0], Capt_bounds[1] - np.arra
 Other_err = [np.array(Median_grads[3]) - Other_bounds[0], Other_bounds[1] - np.array(Median_grads[3])]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True)#, hspace=0.0)
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)#, hspace=0.0)
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -224,14 +224,14 @@ axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err, labe
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[0].text(6000, -1.75, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+axs[0].text(6500, -0.1, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[1].tick_params(which='both', direction='in')
 axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[1].text(6000, -2.25, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
-axs[0].legend(loc='upper right', fontsize=font_size)
+axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Intial Gas Mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('Log Inspiral rate (au/yr)', size=font_size)
 axs[1].set_ylabel('Log Inspiral rate (au/yr)', size=font_size)

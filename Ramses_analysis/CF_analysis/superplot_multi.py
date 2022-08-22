@@ -64,7 +64,7 @@ args = parse_inputs()
 #Server pickles
 pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Max_iter_100/means_superplot.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/Incomplete_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]#"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]#"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
 low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
@@ -532,44 +532,89 @@ if plot_truncated_super_mult == True:
                                         elif args.x_field == 'SFE':
                                             #axs.flatten()[pick_it].scatter(SFE_arr[0], superplot_dict[args.plot_key][time_key][:sep_end_ind+1][0][sep_ind], color=marker_color, marker=marker_shape)
                                             if marker_color == 'b':
-                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
-                                                    core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                    Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
-                                                    print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                    print("-------------------------------------------------------")
-                                                    if Sink_birth_all[str(np.max(real_sinks))][3] < 100:
-                                                        import pdb
-                                                        pdb.set_trace()
-                                                else:
-                                                    core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
-                                                    if Sep_arr[0][-1*sub_sys_counter] < 100:
-                                                        import pdb
-                                                        pdb.set_trace()
-                                                    Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
+                                                try:
+                                                    if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[0].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                        print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                        if Sink_birth_all[str(np.max(real_sinks))][3] < 100:
+                                                            import pdb
+                                                            pdb.set_trace()
+                                                    else:
+                                                        core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        if Sep_arr[0][-1*sub_sys_counter] < 100:
+                                                            import pdb
+                                                            pdb.set_trace()
+                                                        Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
+                                                except:
+                                                    file = open(low_cadence_birth_con_pickles[file_it], 'rb')
+                                                    Sink_birth_all_low_cad = pickle.load(file)
+                                                    file.close()
+                                                    if Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        core_frag_marker_pos.append([Sink_birth_all_low_cad[str(np.max(real_sinks))][-1], Sink_birth_all_low_cad[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[0].append(Sink_birth_all_low_cad[str(np.max(real_sinks))][3])
+                                                        print("Core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all_low_cad[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                        if Sink_birth_all_low_cad[str(np.max(real_sinks))][3] < 100:
+                                                            import pdb
+                                                            pdb.set_trace()
+                                                    else:
+                                                        core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        if Sep_arr[0][-1*sub_sys_counter] < 100:
+                                                            import pdb
+                                                            pdb.set_trace()
+                                                        Initial_Seps[0].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[0].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[0] = pathway_counters[0] + 1
                                             elif marker_color == 'm':
-                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
-                                                    delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                    Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
-                                                    print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                    print("-------------------------------------------------------")
-                                                else:
-                                                    delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
-                                                    Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
+                                                try:
+                                                    if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        delayed_core_frag_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[1].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                        print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                    else:
+                                                        delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
+                                                except:
+                                                    file = open(low_cadence_birth_con_pickles[file_it], 'rb')
+                                                    Sink_birth_all_low_cad = pickle.load(file)
+                                                    file.close()
+                                                    if Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        delayed_core_frag_marker_pos.append([Sink_birth_all_low_cad[str(np.max(real_sinks))][-1], Sink_birth_all_low_cad[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[1].append(Sink_birth_all_low_cad[str(np.max(real_sinks))][3])
+                                                        print("Delayed_core_frag | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all_low_cad[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                    else:
+                                                        delayed_core_frag_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        Initial_Seps[1].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[1].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[1] = pathway_counters[1] + 1
                                             elif marker_color == 'r':
-                                                if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
-                                                    dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
-                                                    Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
-                                                    print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
-                                                    print("-------------------------------------------------------")
-                                                else:
-                                                    dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
-                                                    Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
+                                                try:
+                                                    if Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        dynamical_capture_marker_pos.append([Sink_birth_all[str(np.max(real_sinks))][-1], Sink_birth_all[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[2].append(Sink_birth_all[str(np.max(real_sinks))][3])
+                                                        print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                    else:
+                                                        dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
+                                                except:
+                                                    file = open(low_cadence_birth_con_pickles[file_it], 'rb')
+                                                    Sink_birth_all_low_cad = pickle.load(file)
+                                                    file.close()
+                                                    if Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[0] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[1] and Sink_birth_all_low_cad[str(np.max(real_sinks))][3] not in Initial_Seps[2]:
+                                                        dynamical_capture_marker_pos.append([Sink_birth_all_low_cad[str(np.max(real_sinks))][-1], Sink_birth_all_low_cad[str(np.max(real_sinks))][3]])
+                                                        Initial_Seps[2].append(Sink_birth_all_low_cad[str(np.max(real_sinks))][3])
+                                                        print("Dynamical_capt | The birth conditions for", np.max(real_sinks), "is", Sink_birth_all_low_cad[str(np.max(real_sinks))], "| full system:", time_key, "sub_sys:", sub_sys)
+                                                        print("-------------------------------------------------------")
+                                                    else:
+                                                        dynamical_capture_marker_pos.append([SFE_arr[0], Sep_arr[0][-1*sub_sys_counter]])
+                                                        Initial_Seps[2].append(Sep_arr[0][-1*sub_sys_counter])
                                                 if Lifetimes_sys[time_key]>100000:
                                                     Initial_Seps_100000[2].append(Sep_arr[0][sep_ind])
                                                 pathway_counters[2] = pathway_counters[2] + 1
