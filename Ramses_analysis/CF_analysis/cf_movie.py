@@ -220,15 +220,15 @@ for time_it in range(start_time_it, end_time_it):
             plt.xlim([1,4])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
-            '''
+            
             if args.time_spread != None:
                 plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.time_spread) + 'yr')
             else:
                 plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.SFE_spread_val*100) + '% SFE')
-            '''
+            
             if size > 1:
                 try:
-                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                    plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
                     print("created "+file_name)
                 except:
                     error_type = sys.exc_info()[0]
@@ -238,7 +238,7 @@ for time_it in range(start_time_it, end_time_it):
                             lock_file = str(error_str).split('\n')[1][4:]
                             os.remove(lock_file)
                             print("removed lock-file and trying to save again")
-                            plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                            plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
                             print("created "+file_name)
                         except:
                             print("not a lock file problem")
@@ -252,7 +252,7 @@ for time_it in range(start_time_it, end_time_it):
                 print("created "+file_name)
                 '''
                 try:
-                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                    plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
                     print("created "+file_name)
                 except:
                     error_type = sys.exc_info()[0]
@@ -262,8 +262,8 @@ for time_it in range(start_time_it, end_time_it):
                         os.remove(pngfile)
                         print("removed png file on rank "+ str(rank)+ ", trying to save again")
                         try:
-                            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                            print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
+                            plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                            print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.png')
                         except:
                             error_type = sys.exc_info()[0]
                             error_str = sys.exc_info()[1]
@@ -274,8 +274,8 @@ for time_it in range(start_time_it, end_time_it):
                                     print("removed lock-file on rank "+ str(rank)+ ",and trying save again")
                                 except:
                                     print("lock_file already removed. Trying to save again on rank "+ str(rank))
-                                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                                print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
+                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.png')
 
                 
                 
