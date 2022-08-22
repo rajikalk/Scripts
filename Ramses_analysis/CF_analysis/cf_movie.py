@@ -195,9 +195,9 @@ for time_it in range(start_time_it, end_time_it):
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
             if args.time_spread != None:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.time_spread) + "yr")
             else:
-                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val*100) + "% SFE")
+                plt.title("SFE:"+str(np.round(SFE[time_it]*100, decimals=1))+"\% ("+str(int((time_val - Times[0])/1000))+"kyr), Integration window:" + str(args.SFE_spread_val*100) + "% SFE")
             if size > 1:
                 try:
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
