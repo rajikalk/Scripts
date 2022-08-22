@@ -1,20 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pyramses as pr
-from pyramses import rsink
-import multiplicity as m
-import yt
 import glob
 import sys
-import collections
-import matplotlib as mpl
 import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
-import matplotlib.gridspec as gridspec
-from scipy.stats import norm
-from scipy.optimize import curve_fit
-import subprocess
+import matplotlib
+
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 def parse_inputs():
     import argparse
@@ -71,11 +80,6 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
-scale_t = scale_l/scale_v
 
 import scipy.stats as stats
 

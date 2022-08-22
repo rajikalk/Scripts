@@ -2,13 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
 import pickle
-import collections
-
-def flatten(x):
-    if isinstance(x, collections.Iterable):
-        return [a for i in x for a in flatten(i)]
-    else:
-        return [x]
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
