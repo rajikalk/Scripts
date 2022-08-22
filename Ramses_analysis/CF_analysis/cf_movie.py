@@ -17,6 +17,7 @@ from scipy.optimize import curve_fit
 import subprocess
 import matplotlib
 
+'''
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -34,6 +35,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
+'''
 
 def parse_inputs():
     import argparse
@@ -228,7 +230,7 @@ for time_it in range(start_time_it, end_time_it):
             
             if size > 1:
                 try:
-                    plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
+                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
                     print("created "+file_name)
                 except:
                     error_type = sys.exc_info()[0]
@@ -238,32 +240,34 @@ for time_it in range(start_time_it, end_time_it):
                             lock_file = str(error_str).split('\n')[1][4:]
                             os.remove(lock_file)
                             print("removed lock-file and trying to save again")
-                            plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
+                            plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
                             print("created "+file_name)
                         except:
                             print("not a lock file problem")
                     else:
                         print("FAILED ON TIME_IT", time_it)
             else:
-                #/groups/astro/rlk/.cache/matplotlib/tex.cache/bb5fd47356022d30aa7fc0dd54e28e5c.png
+                #/groups/astro/rlk/.cache/matplotlib/tex.cache/bb5fd47356022d30aa7fc0dd54e28e5c.jpg
                 #OSError
                 '''
                 plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
                 print("created "+file_name)
                 '''
                 try:
-                    plt.savefig(file_name+'.png', format='png', bbox_inches='tight')
+                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
                     print("created "+file_name)
                 except:
+                    import pdb
+                    pdb.set_trace()
                     error_type = sys.exc_info()[0]
                     error_str = sys.exc_info()[1]
-                    if str(error_str)[:20] == 'error with pngfile: ':
-                        pngfile = str(error_str).split(": ")[1].split('.png')[0] + '.png'
-                        os.remove(pngfile)
-                        print("removed png file on rank "+ str(rank)+ ", trying to save again")
+                    if str(error_str)[:20] == 'error with jpgfile: ':
+                        jpgfile = str(error_str).split(": ")[1].split('.jpg')[0] + '.jpg'
+                        os.remove(jpgfile)
+                        print("removed jpg file on rank "+ str(rank)+ ", trying to save again")
                         try:
-                            plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                            print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.png')
+                            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                            print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
                         except:
                             error_type = sys.exc_info()[0]
                             error_str = sys.exc_info()[1]
@@ -274,8 +278,8 @@ for time_it in range(start_time_it, end_time_it):
                                     print("removed lock-file on rank "+ str(rank)+ ",and trying save again")
                                 except:
                                     print("lock_file already removed. Trying to save again on rank "+ str(rank))
-                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.png')
+                                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                                print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
 
                 
                 
