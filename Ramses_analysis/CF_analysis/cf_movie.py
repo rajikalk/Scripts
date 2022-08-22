@@ -15,9 +15,9 @@ import matplotlib.gridspec as gridspec
 from scipy.stats import norm
 from scipy.optimize import curve_fit
 import subprocess
+"""
 import matplotlib
 
-"""
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
