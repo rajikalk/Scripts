@@ -82,7 +82,7 @@ pickle_file = datadir + args.pickled_file
 if pickle_file[-4:] != '.pkl':
     pickle_file = pickle_file + '.pkl'
 
-files = glob.glob("pickle_file")
+files = glob.glob(pickle_file)
 if len(files) == 0:
     file = open(pickle_file, 'rb')
     try:
