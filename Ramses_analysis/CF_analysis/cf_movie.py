@@ -191,7 +191,7 @@ for time_it in range(start_time_it, end_time_it):
             plt.legend(loc='upper left')
             plt.xlabel('Log Separation (AU)')
             plt.ylabel('Companion Frequency')
-            plt.xlim([bin_centers[0]-0.25,bin_centers[-1]+0.25])
+            plt.xlim([1,4])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
             if args.time_spread != None:
