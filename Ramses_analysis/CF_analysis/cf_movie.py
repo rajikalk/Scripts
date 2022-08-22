@@ -194,7 +194,7 @@ for time_it in range(start_time_it, end_time_it):
                     #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label='$L_{max}=55$L$_\odot$', width=0.25, alpha=0.5)
-                plt.text((1.05), (0.187), "2D-Bound", zorder=11, fontsize=font_size)
+                plt.text((1.1), (0.187), "2D-Bound", zorder=11, fontsize=font_size)
             plt.bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='-')
             plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
