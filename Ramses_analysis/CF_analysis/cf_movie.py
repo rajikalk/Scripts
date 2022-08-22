@@ -181,6 +181,7 @@ for time_it in range(start_time_it, end_time_it):
                 #CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
                 
                 plt.clf()
+                plt.figure(figsize=(single_col_width, 0.4*two_col_width))
                 try:
                     #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers, CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
