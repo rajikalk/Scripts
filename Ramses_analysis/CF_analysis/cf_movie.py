@@ -16,6 +16,24 @@ from scipy.stats import norm
 from scipy.optimize import curve_fit
 import subprocess
 
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -67,6 +85,7 @@ file_open.close()
 CF_errs_66[0][np.array([1, 3])] = 0
 CF_errs_66[1][np.array([1, 3])] = 0
 
+font_size = 10
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
@@ -190,9 +209,13 @@ for time_it in range(start_time_it, end_time_it):
             #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
             #plt.plot(x,gauss_total)
-            plt.legend(loc='upper left')
-            plt.xlabel('Log Separation (AU)')
-            plt.ylabel('Companion Frequency')
+            plt.legend(loc='upper right', fontsize=font_size)
+            plt.xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
+            plt.ylabel('Companion Frequency', fontsize=font_size)
+            plt.tick_params(axis='both', which='major', labelsize=font_size)
+            plt.tick_params(axis='both', which='minor', labelsize=font_size)
+            plt.tick_params(axis='x', direction='in')
+            plt.tick_params(axis='y', direction='in', right=True)
             plt.xlim([1,4])
             plt.ylim([0, args.y_limit])
             plt.ylim(bottom=0.0)
