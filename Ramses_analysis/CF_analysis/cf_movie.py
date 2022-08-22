@@ -80,7 +80,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-
+'''
 import scipy.stats as stats
 
 #first peak
@@ -94,7 +94,7 @@ x = np.linspace(1,4,100)
 lower_gauss = lower_amp*stats.norm.pdf(x, lower_mean, lower_std)
 upper_gauss = upper_amp*stats.norm.pdf(x, upper_mean, upper_std)
 gauss_total = lower_gauss + upper_gauss
-
+'''
 datadir = sys.argv[1]
 savedir = sys.argv[2]
 
