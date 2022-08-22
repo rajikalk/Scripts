@@ -238,7 +238,7 @@ for time_it in range(start_time_it, end_time_it):
                 print("created "+file_name)
                 '''
                 try:
-                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
                     print("created "+file_name)
                 except:
                     import pdb
@@ -250,7 +250,7 @@ for time_it in range(start_time_it, end_time_it):
                         os.remove(jpgfile)
                         print("removed jpg file on rank "+ str(rank)+ ", trying to save again")
                         try:
-                            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', pad_inches=0.02)
                             print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
                         except:
                             error_type = sys.exc_info()[0]
@@ -262,7 +262,7 @@ for time_it in range(start_time_it, end_time_it):
                                     print("removed lock-file on rank "+ str(rank)+ ",and trying save again")
                                 except:
                                     print("lock_file already removed. Trying to save again on rank "+ str(rank))
-                                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+                                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', pad_inches=0.02)
                                 print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
 
                 
