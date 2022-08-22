@@ -651,10 +651,12 @@ if update == True and args.make_plots_only == 'False':
                             if np.sum((abs(pos_diff)>(scale_l.in_units('AU')/2))) > 0:
                                 update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                 for ind in update_inds:
-                                    if pos_diff[ind] < 0:
-                                        pos_diff[ind] = pos_diff[ind] + scale_l.in_units('AU').value
-                                    else:
-                                        pos_diff[ind] = pos_diff[ind] - scale_l.in_units('AU').value
+                                    update_sub_ind = np.where(abs(pos_diff[ind])>scale_l.in_units('AU')/2)[0]
+                                    for sub_ind in update_sub_ind:
+                                        if pos_diff[ind][sub_ind] < 0:
+                                            pos_diff[ind][sub_ind] = pos_diff[ind][sub_ind] + scale_l.in_units('AU').value
+                                        else:
+                                            pos_diff[ind][sub_ind] = pos_diff[ind][sub_ind] - scale_l.in_units('AU').value
                             mid_sep = np.sqrt(np.sum(np.square(pos1 - pos2), axis=1))
                             res['midpointSep'][update_midspoint_sep:] = mid_sep
                         
