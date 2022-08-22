@@ -167,6 +167,7 @@ for time_it in range(start_time_it, end_time_it):
                 except:
                     #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
+                plt.text((1.03), (0.187), "3D-Full", zorder=11, fontsize=font_size)
             else:
                 CF_median_120 = np.median(CF_Array_Full_120[start_integration_it:end_integration_it], axis=0)
                 CF_median_55 = np.median(CF_Array_Full_55[start_integration_it:end_integration_it], axis=0)
@@ -183,6 +184,7 @@ for time_it in range(start_time_it, end_time_it):
                     #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label="L$_{max}$ = 120L$_\odot$", width=0.25, alpha=0.5)
                     plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label="L$_{max}$ = 55L$_\odot$", width=0.25, alpha=0.5)
+                plt.text((1.03), (0.187), "2D-Bound", zorder=11, fontsize=font_size)
             plt.bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='-')
             plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
             #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
