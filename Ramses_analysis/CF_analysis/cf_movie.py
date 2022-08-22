@@ -163,10 +163,10 @@ for time_it in range(start_time_it, end_time_it):
                 plt.clf()
                 try:
                     #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers, CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers, CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
                 except:
                     #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                    plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
             else:
                 CF_median_120 = np.median(CF_Array_Full_120[start_integration_it:end_integration_it], axis=0)
                 CF_median_55 = np.median(CF_Array_Full_55[start_integration_it:end_integration_it], axis=0)
