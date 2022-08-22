@@ -154,7 +154,7 @@ for time_it in range(start_time_it, end_time_it):
                 start_integration_it = np.argmin(abs(SFE - start_SFE))
                 end_integration_it = np.argmin(abs(SFE - end_SFE))
                 
-            if len(files)==0:
+            if len(files)==1:
                 CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
                 CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
                 CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
