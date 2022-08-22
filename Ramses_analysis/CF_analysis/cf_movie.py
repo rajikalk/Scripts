@@ -169,7 +169,7 @@ for time_it in range(start_time_it, end_time_it):
                 CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
                 
                 plt.clf()
-                plt.figure(figsize=(single_col_width, 0.4*two_col_width))
+                plt.figure(figsize=(1.5*single_col_width, 1.5*0.4*two_col_width))
                 try:
                     #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers, CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
@@ -212,7 +212,7 @@ for time_it in range(start_time_it, end_time_it):
             plt.ylim(bottom=0.0)
             
             if args.time_spread != None:
-                plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.time_spread) + 'yr')
+                plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(int(args.time_spread)) + 'yr')
             else:
                 plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.SFE_spread_val*100) + '% SFE')
             
