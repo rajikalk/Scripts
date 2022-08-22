@@ -67,6 +67,9 @@ file_open.close()
 CF_errs_66[0][np.array([1, 3])] = 0
 CF_errs_66[1][np.array([1, 3])] = 0
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
 font_size = 10
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
@@ -162,6 +165,7 @@ for time_it in range(start_time_it, end_time_it):
                 CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
                 
                 plt.clf()
+                plt.figure(figsize=(single_col_width, 0.4*two_col_width))
                 try:
                     #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
                     plt.bar(bin_centers, CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
