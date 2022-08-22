@@ -15,27 +15,6 @@ import matplotlib.gridspec as gridspec
 from scipy.stats import norm
 from scipy.optimize import curve_fit
 import subprocess
-"""
-import matplotlib
-
-matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.sf'] = 'Arial'
-matplotlib.rcParams['mathtext.default'] = 'regular'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
-matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = [
-       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
-       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-       r'\usepackage{helvet}',    # set the normal font here
-       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
-       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
-]
-"""
 
 def parse_inputs():
     import argparse
