@@ -649,8 +649,6 @@ if update == True and args.make_plots_only == 'False':
                             pos2 = res['midpoint'][res['index2'][update_midspoint_sep:]]
                             pos_diff = pos1 - pos2
                             if np.sum((abs(pos_diff)>(scale_l.in_units('AU')/2))) > 0:
-                                import pdb
-                                pdb.set_trace()
                                 update_inds = np.where(abs(pos_diff)>scale_l.in_units('AU')/2)[0]
                                 for ind in update_inds:
                                     if pos_diff[ind] < 0:
