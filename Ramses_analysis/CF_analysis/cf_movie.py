@@ -148,129 +148,130 @@ for time_it in range(start_time_it, end_time_it):
         file_name = savedir + "movie_frame_" + ("%06d" % time_it)
         if os.path.isfile(file_name+'.jpg') == False:
             time_val = Times[time_it]
-            if args.time_spread != None:
-                start_time = Times[time_it] - args.time_spread/2.
-                end_time = Times[time_it] + args.time_spread/2.
-            
-                start_integration_it = np.argmin(abs(Times - start_time))
-                end_integration_it = np.argmin(abs(Times - end_time))
-            else:
-                SFE_val = SFE[time_it]
-                start_SFE = SFE[time_it] - args.SFE_spread_val
-                end_SFE = SFE[time_it] + args.SFE_spread_val
+            if SFE[time_it] <= 0.05:
+                if args.time_spread != None:
+                    start_time = Times[time_it] - args.time_spread/2.
+                    end_time = Times[time_it] + args.time_spread/2.
                 
-                start_integration_it = np.argmin(abs(SFE - start_SFE))
-                end_integration_it = np.argmin(abs(SFE - end_SFE))
+                    start_integration_it = np.argmin(abs(Times - start_time))
+                    end_integration_it = np.argmin(abs(Times - end_time))
+                else:
+                    SFE_val = SFE[time_it]
+                    start_SFE = SFE[time_it] - args.SFE_spread_val
+                    end_SFE = SFE[time_it] + args.SFE_spread_val
+                    
+                    start_integration_it = np.argmin(abs(SFE - start_SFE))
+                    end_integration_it = np.argmin(abs(SFE - end_SFE))
+                    
+                if len(files)==1:
+                    CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                    CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                    CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                    CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+                    
+                    plt.clf()
+                    plt.figure(figsize=(1.5*single_col_width, 1.5*0.4*two_col_width))
+                    try:
+                        #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                        plt.bar(bin_centers, CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
+                    except:
+                        #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                        plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
+                    plt.text((1.03), (0.187), "3D-Full", zorder=11, fontsize=font_size)
+                else:
+                    CF_median_120 = np.median(CF_Array_Full_120[start_integration_it:end_integration_it], axis=0)
+                    CF_median_55 = np.median(CF_Array_Full_55[start_integration_it:end_integration_it], axis=0)
+                    #CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                    #CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
+                    #CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+                    
+                    plt.clf()
+                    plt.figure(figsize=(1.5*single_col_width, 1.5*0.4*two_col_width))
+                    try:
+                        #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                        plt.bar(bin_centers, CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
+                        plt.bar(bin_centers, CF_median_55, edgecolor='tab:orange', label='$L_{max}=55$L$_\odot$', width=0.25, alpha=0.5)
+                    except:
+                        #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
+                        plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
+                        plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label='$L_{max}=55$L$_\odot$', width=0.25, alpha=0.5)
+                    plt.text((1.1), (0.187), "2D-Unbound", zorder=11, fontsize=font_size)
+                plt.bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='-')
+                plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
+                #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
+                #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
+                #plt.plot(x,gauss_total)
+                plt.legend(loc='upper right', fontsize=font_size)
+                plt.xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
+                plt.ylabel('Companion Frequency', fontsize=font_size)
+                plt.tick_params(axis='both', which='major', labelsize=font_size)
+                plt.tick_params(axis='both', which='minor', labelsize=font_size)
+                plt.tick_params(axis='x', direction='in')
+                plt.tick_params(axis='y', direction='in', right=True)
+                plt.xlim([1,4])
+                plt.ylim([0, args.y_limit])
+                plt.ylim(bottom=0.0)
                 
-            if len(files)==1:
-                CF_median = np.median(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-                CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-                CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-                CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
+                if args.time_spread != None:
+                    plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(int(args.time_spread)) + 'yr')
+                else:
+                    plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.SFE_spread_val*100) + '% SFE')
                 
-                plt.clf()
-                plt.figure(figsize=(1.5*single_col_width, 1.5*0.4*two_col_width))
-                try:
-                    #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers, CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
-                except:
-                    #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers[1:], CF_median, edgecolor='k', label="Simulation", width=0.25, alpha=0.5)
-                plt.text((1.03), (0.187), "3D-Full", zorder=11, fontsize=font_size)
-            else:
-                CF_median_120 = np.median(CF_Array_Full_120[start_integration_it:end_integration_it], axis=0)
-                CF_median_55 = np.median(CF_Array_Full_55[start_integration_it:end_integration_it], axis=0)
-                #CF_mean = np.mean(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-                #CF_std = np.std(CF_Array_Full[start_integration_it:end_integration_it], axis=0)
-                #CF_err = [CF_median-(CF_mean-CF_std), (CF_mean+CF_std)-CF_median]
-                
-                plt.clf()
-                plt.figure(figsize=(1.5*single_col_width, 1.5*0.4*two_col_width))
-                try:
-                    #plt.bar(bin_centers, CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers, CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
-                    plt.bar(bin_centers, CF_median_55, edgecolor='tab:orange', label='$L_{max}=55$L$_\odot$', width=0.25, alpha=0.5)
-                except:
-                    #plt.bar(bin_centers[1:], CF_median, yerr=CF_err, edgecolor='k', label="CF Simulations", width=0.25, alpha=0.5)
-                    plt.bar(bin_centers[1:], CF_median_120, edgecolor='tab:blue', label='$L_{max}=120$L$_\odot$', width=0.25, alpha=0.5)
-                    plt.bar(bin_centers[1:], CF_median_55, edgecolor='tab:orange', label='$L_{max}=55$L$_\odot$', width=0.25, alpha=0.5)
-                plt.text((1.1), (0.187), "2D-Unbound", zorder=11, fontsize=font_size)
-            plt.bar(bin_centers, CF_per_bin_66, yerr=CF_errs_66, width=0.25, edgecolor='black', label="Perseus", fill=None, ls='-')
-            plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', fill=None, ls='--')
-            #plt.bar(bin_centers, CF_per_bin_all, width=0.25, edgecolor='black', alpha=0.5, fill=None, ls='--')
-            #plt.bar(bin_centers, CF_per_bin_Tobin_Ori, width=0.25, edgecolor='black', alpha=0.5, label="Orion", fill=None, ls='-.')
-            #plt.plot(x,gauss_total)
-            plt.legend(loc='upper right', fontsize=font_size)
-            plt.xlabel('Separation (Log$_{10}$(AU))', fontsize=font_size)
-            plt.ylabel('Companion Frequency', fontsize=font_size)
-            plt.tick_params(axis='both', which='major', labelsize=font_size)
-            plt.tick_params(axis='both', which='minor', labelsize=font_size)
-            plt.tick_params(axis='x', direction='in')
-            plt.tick_params(axis='y', direction='in', right=True)
-            plt.xlim([1,4])
-            plt.ylim([0, args.y_limit])
-            plt.ylim(bottom=0.0)
-            
-            if args.time_spread != None:
-                plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(int(args.time_spread)) + 'yr')
-            else:
-                plt.title('SFE:'+str(np.round(SFE[time_it]*100, decimals=1))+'% ('+str(int((time_val - Times[0])/1000))+'kyr), Integration window:' + str(args.SFE_spread_val*100) + '% SFE')
-            
-            if size > 1:
-                try:
+                if size > 1:
+                    try:
+                        plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                        print("created "+file_name)
+                    except:
+                        error_type = sys.exc_info()[0]
+                        error_str = sys.exc_info()[1]
+                        if str(error_type).split("'")[1] == 'TimeoutError':
+                            try:
+                                lock_file = str(error_str).split('\n')[1][4:]
+                                os.remove(lock_file)
+                                print("removed lock-file and trying to save again")
+                                plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
+                                print("created "+file_name)
+                            except:
+                                print("not a lock file problem")
+                        else:
+                            print("FAILED ON TIME_IT", time_it)
+                else:
+                    #/groups/astro/rlk/.cache/matplotlib/tex.cache/bb5fd47356022d30aa7fc0dd54e28e5c.jpg
+                    #OSError
+                    '''
                     plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
                     print("created "+file_name)
-                except:
-                    error_type = sys.exc_info()[0]
-                    error_str = sys.exc_info()[1]
-                    if str(error_type).split("'")[1] == 'TimeoutError':
-                        try:
-                            lock_file = str(error_str).split('\n')[1][4:]
-                            os.remove(lock_file)
-                            print("removed lock-file and trying to save again")
-                            plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
-                            print("created "+file_name)
-                        except:
-                            print("not a lock file problem")
-                    else:
-                        print("FAILED ON TIME_IT", time_it)
-            else:
-                #/groups/astro/rlk/.cache/matplotlib/tex.cache/bb5fd47356022d30aa7fc0dd54e28e5c.jpg
-                #OSError
-                '''
-                plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight')
-                print("created "+file_name)
-                '''
-                try:
-                    plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
-                    print("created "+file_name)
-                except:
-                    import pdb
-                    pdb.set_trace()
-                    error_type = sys.exc_info()[0]
-                    error_str = sys.exc_info()[1]
-                    if str(error_str)[:20] == 'error with jpgfile: ':
-                        jpgfile = str(error_str).split(": ")[1].split('.jpg')[0] + '.jpg'
-                        os.remove(jpgfile)
-                        print("removed jpg file on rank "+ str(rank)+ ", trying to save again")
-                        try:
-                            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', pad_inches=0.02)
-                            print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
-                        except:
-                            error_type = sys.exc_info()[0]
-                            error_str = sys.exc_info()[1]
-                            if str(error_type).split("'")[1] == 'TimeoutError':
-                                lock_file = str(error_str).split('\n')[1][4:]
-                                try:
-                                    os.remove(lock_file)
-                                    print("removed lock-file on rank "+ str(rank)+ ",and trying save again")
-                                except:
-                                    print("lock_file already removed. Trying to save again on rank "+ str(rank))
+                    '''
+                    try:
+                        plt.savefig(file_name+'.jpg', format='jpg', bbox_inches='tight', pad_inches=0.02)
+                        print("created "+file_name)
+                    except:
+                        import pdb
+                        pdb.set_trace()
+                        error_type = sys.exc_info()[0]
+                        error_str = sys.exc_info()[1]
+                        if str(error_str)[:20] == 'error with jpgfile: ':
+                            jpgfile = str(error_str).split(": ")[1].split('.jpg')[0] + '.jpg'
+                            os.remove(jpgfile)
+                            print("removed jpg file on rank "+ str(rank)+ ", trying to save again")
+                            try:
                                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', pad_inches=0.02)
                                 print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
+                            except:
+                                error_type = sys.exc_info()[0]
+                                error_str = sys.exc_info()[1]
+                                if str(error_type).split("'")[1] == 'TimeoutError':
+                                    lock_file = str(error_str).split('\n')[1][4:]
+                                    try:
+                                        os.remove(lock_file)
+                                        print("removed lock-file on rank "+ str(rank)+ ",and trying save again")
+                                    except:
+                                        print("lock_file already removed. Trying to save again on rank "+ str(rank))
+                                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', pad_inches=0.02)
+                                    print('Created frame of projection', fs, 'on rank', rank, 'at time of', str(int(args_dict['time_val'])), 'to save_dir:', file_name + '.jpg')
 
-                
-                
+                    
+                    
         else:
             print(file_name + " already exists, so skipping it.")
 
