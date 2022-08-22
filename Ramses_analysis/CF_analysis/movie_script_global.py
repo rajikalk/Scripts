@@ -453,21 +453,21 @@ for pick_it in range(len(proj_pickles)):
             
             SFE_val = np.sum(particle_masses)/units['mass_unit']
             SFE_percent = np.round(SFE_val*100, decimals=1)
-            
-            ax.scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+            if SFE_percent<=5:
+                ax.scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
+                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
 
-            time_string = "$SFE$="+str(SFE_percent)+"\%"
-            time_string_raw = r"{}".format(time_string)
-            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
-            
-            file = open(proj_pickles[pick_it].split('_proj')[0]+'.pkl', 'wb')
-            pickle.dump((X, Y, image, particle_x_pos, particle_y_pos), file)
-            file.close()
-            
-            plt.savefig(save_name + ".jpg", format='jpg', bbox_inches='tight')
-            plt.savefig(save_name + ".pdf", format='pdf', bbox_inches='tight')
-            print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
+                time_string = "$SFE$="+str(SFE_percent)+"\%"
+                time_string_raw = r"{}".format(time_string)
+                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+                
+                file = open(proj_pickles[pick_it].split('_proj')[0]+'.pkl', 'wb')
+                pickle.dump((X, Y, image, particle_x_pos, particle_y_pos), file)
+                file.close()
+                
+                plt.savefig(save_name + ".jpg", format='jpg', bbox_inches='tight')
+                plt.savefig(save_name + ".pdf", format='pdf', bbox_inches='tight')
+                print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
             
 sys.stdout.flush()
 CW.Barrier()
