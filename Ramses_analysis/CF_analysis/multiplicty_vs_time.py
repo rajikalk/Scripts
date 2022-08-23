@@ -156,7 +156,7 @@ SFE_window = 0.001
 time_its = []
 for SFE_val in SFE_vals:
     start_SFE = SFE_val - SFE_window
-    end_SFE = end_SFE + SFE_window
+    end_SFE = SFE_val + SFE_window
     start_time_it = np.argmin(abs(SFE-start_SFE))
     end_time_it = np.argmin(abs(SFE-start_SFE))
     time_its = np.arange(start_time_it, end_time_it)
