@@ -55,6 +55,12 @@ def losi(i, res):
         i2 = losi(res['index2'][i],res)
         return [i1,i2]
 
+def flatten(x):
+    if isinstance(x, collections.Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
+
 args = parse_inputs()
 
 rank = CW.Get_rank()
@@ -194,6 +200,6 @@ for SFE_val in SFE_vals:
         IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
         primary_masses = []
         for top_ind in top_inds:
-            top_sys_ids = sorted(losi(top_ind, res))
+            top_sys_ids = flatten(losi(top_ind, res))
             import pdb
             pdb.set_trace()
