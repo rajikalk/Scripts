@@ -232,7 +232,7 @@ if rank == 0:
     file.close()
 
     import matplotlib
-
+    '''
     matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
     matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
     matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -250,7 +250,7 @@ if rank == 0:
            r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
            r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
     ]
-
+    '''
     import matplotlib.pylab as pl
     colors = pl.cm.cool(np.linspace(0,1,len(SFE_vals)))
     
@@ -262,10 +262,10 @@ if rank == 0:
     plt.clf()
     plt.figure(figsize=(single_col_width, single_col_width))
     for SFE_it in range(len(SFE_vals)):
-        plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), color=colors[SFE_it]) #label='SFE='+str(SFE_vals[SFE_it])
+        plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), color=colors[SFE_it], label='SFE='+str(SFE_vals[SFE_it])
     plt.legend(loc='upper left')
-    #plt.xlabel('Log Mass')
-    #plt.ylabel('Multiplicity Fraction')
+    plt.xlabel('Log$_{10}$ Mass')
+    plt.ylabel('Multiplicity Fraction')
     plt.ylim(bottom=0.0)
     plt.tick_params(which='both', direction='in')
     plt.tick_params(axis='both', which='major', labelsize=10)
