@@ -177,7 +177,7 @@ if args.make_plots_only == 'False':
             rit = rit + 1
             if rit == size:
                 rit = 0
-            if rank == 0:
+            if rank == rit:
                 n_stars = np.where(global_data['m'][time_it]>0)[0]
                 abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
                 absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
