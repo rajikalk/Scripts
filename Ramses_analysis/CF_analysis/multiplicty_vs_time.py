@@ -158,7 +158,7 @@ for SFE_val in SFE_vals:
     start_SFE = SFE_val - SFE_window
     end_SFE = SFE_val + SFE_window
     start_time_it = np.argmin(abs(SFE-start_SFE))
-    end_time_it = np.argmin(abs(SFE-start_SFE))
+    end_time_it = np.argmin(abs(SFE-end_time_it))
     time_its = np.arange(start_time_it, end_time_it)
     for time_it in time_its:
         abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
