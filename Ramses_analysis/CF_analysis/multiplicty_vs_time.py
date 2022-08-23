@@ -232,7 +232,7 @@ if rank == 0:
     file.close()
 
     import matplotlib
-    '''
+    """
     matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
     matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
     matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -250,7 +250,7 @@ if rank == 0:
            r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
            r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
     ]
-    '''
+    """
     import matplotlib.pylab as pl
     colors = pl.cm.cool(np.linspace(0,1,len(SFE_vals)))
     
