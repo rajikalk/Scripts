@@ -47,6 +47,14 @@ def luminosity(global_data, sink_inds, global_ind):
     L_tot = L_acc.in_units('Lsun')
     return L_tot
 
+def losi(i, res):
+    if (res['n'][i]==1) or (res['n'][i]==0):
+        return i
+    else:
+        i1 = losi(res['index1'][i],res)
+        i2 = losi(res['index2'][i],res)
+        return [i1,i2]
+
 args = parse_inputs()
 
 rank = CW.Get_rank()
@@ -154,6 +162,7 @@ SFE = np.sum(global_data['m'], axis=1)
 SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
 SFE_window = 0.001
 time_its = []
+mass_bins = np.logspace(-1.5, 1.5, 10)
 for SFE_val in SFE_vals:
     start_SFE = SFE_val - SFE_window
     end_SFE = SFE_val + SFE_window
@@ -180,6 +189,11 @@ for SFE_val in SFE_vals:
         S._mass = yt.YTArray(mass, '')
         
         res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-         
-        import pdb
-        pdb.set_trace()
+        top_inds = np.where(res['topSystem'])[0]
+        
+        IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
+        primary_masses = []
+        for top_ind in top_inds:
+            top_sys_ids = sorted(losi(top_ind, res))
+            import pdb
+            pdb.set_trace()
