@@ -221,7 +221,7 @@ for SFE_val in SFE_vals:
     CW.Barrier()
     
     file = open('MF_'+str(rank)+'.pkl', 'wb')
-    pickle.dump((MF), file)
+    pickle.dump((MF_arrays), file)
     file.close()
     
     sys.stdout.flush()
