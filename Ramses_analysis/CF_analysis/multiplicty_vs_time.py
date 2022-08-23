@@ -10,6 +10,25 @@ import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import collections
+import matplotlib
+
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 f_acc= 0.5
 
@@ -115,128 +134,136 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 #====================================================================================================================================================
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+
 
 sys.stdout.flush()
 CW.Barrier()
 
-#What do I need to save?
-Times = []
-SFE = []
-MF_true = []
-MF_acc_lim = []
-MF_acc_L_lower = []
-MF_acc_L_upper = []
-Single_L_min = []
-Single_L_max = []
-Single_M_dot_min = []
-Single_M_dot_max = []
-
-file_open = open(args.global_data_pickle_file, 'rb')
-try:
-    global_data = pickle.load(file_open,encoding="latin1")
-except:
-    file_open.close()
-    import pickle5 as pickle
+if args.make_plots_only == 'False':
     file_open = open(args.global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open,encoding="latin1")
-file_open.close()
-dm = global_data['dm']*units['mass_unit'].in_units('Msun')
-dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
-Accretion_array = dm/dt
-print('Loaded global pickle data')
-
-#dt == integration window, if you don't want to integrate over the entire simulation
-time_bounds = [global_data['time'].T[0][0]*units['time_unit'].in_units('yr'), global_data['time'].T[0][-1]*units['time_unit'].in_units('yr')]
-try:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]*units['time_unit'].in_units('yr')-time_bounds[1]))
-except:
-    start_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[0]))
-    end_time_ind = np.argmin(abs(global_data['time'].T[0]-time_bounds[1]))
-
-if args.starting_ind != None:
-    update = True
-    start_time_ind = args.starting_ind
-elif args.make_plots_only != 'False':
-    update = False
-elif len(Times) == (end_time_ind-start_time_ind+1):
-    update = False
-else:
-    update = True
-    start_time_ind = start_time_ind + len(Times)
-    
-SFE = np.sum(global_data['m'], axis=1)
-SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
-SFE_window = 0.00002#0.001
-time_its = []
-mass_bins = np.logspace(-1.5, 1.5, 10)
-for SFE_val in SFE_vals:
-    start_SFE = SFE_val - SFE_window
-    end_SFE = SFE_val + SFE_window
-    start_time_it = np.argmin(abs(SFE-start_SFE))
-    end_time_it = np.argmin(abs(SFE-end_SFE))
-    time_its = np.arange(start_time_it, end_time_it)
-    
-    sys.stdout.flush()
-    CW.Barrier()
-    
-    MF_arrays = []
-    rit = -1
-    for time_it in time_its:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == 0:
-            n_stars = np.where(global_data['m'][time_it]>0)[0]
-            abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-            absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-            mass = np.array(global_data['m'][time_it][n_stars])
-            time = global_data['time'][time_it][n_stars][0]
-            
-            #True multiplicity
-            S = pr.Sink()
-            S._jet_factor = 1.
-            S._scale_l = scale_l.value
-            S._scale_v = scale_v.value
-            S._scale_t = scale_t.value
-            S._scale_d = scale_d.value
-            S._time = yt.YTArray(time, '')
-            S._abspos = yt.YTArray(abspos, '')
-            S._absvel = yt.YTArray(absvel, '')
-            S._mass = yt.YTArray(mass, '')
-            
-            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-            top_inds = np.where(res['topSystem'])[0]
-            
-            IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
-            primary_masses = []
-            for top_ind in top_inds:
-                top_sys_ids = flatten(losi(top_ind, res))
-                primary_masses.append(np.max(res['mass'][top_sys_ids]))
-            primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
-            MF_arrays.append((primary_hist/IMF))
-            print('found MF for time_it', time_it-time_its[0], 'of', time_its[-1]-time_its[0], 'on rank', rank)
-            
-    sys.stdout.flush()
-    CW.Barrier()
-    
-    file = open('MF_'+str(rank)+'.pkl', 'wb')
-    pickle.dump((MF_arrays), file)
-    file.close()
-    
-    sys.stdout.flush()
-    CW.Barrier()
-    
-    if rank == 0:
-        MF_pickles = glob.glob('MF_*.pkl')
-        MF_all = []
-        for MF_pickle in MF_pickles:
-            file = open(MF_pickle, 'rb')
-            MF = pickle.load(file)
-            file.close()
-            MF_all = MF_all + MF
-            #os.remove(MF_pickle)
+    try:
+        global_data = pickle.load(file_open,encoding="latin1")
+    except:
+        file_open.close()
+        import pickle5 as pickle
+        file_open = open(args.global_data_pickle_file, 'rb')
+        global_data = pickle.load(file_open,encoding="latin1")
+    file_open.close()
+    print('Loaded global pickle data')
         
-        #MF_median = np.nanmedian(MF_all, axis=)
-        import pdb
-        pdb.set_trace()
+    SFE = np.sum(global_data['m'], axis=1)
+    SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
+    MF_plot = []
+    MF_plot_err = []
+    SFE_window = 0.00002#0.001
+    time_its = []
+    mass_bins = np.logspace(-1.5, 1.5, 10)
+    for SFE_val in SFE_vals:
+        start_SFE = SFE_val - SFE_window
+        end_SFE = SFE_val + SFE_window
+        start_time_it = np.argmin(abs(SFE-start_SFE))
+        end_time_it = np.argmin(abs(SFE-end_SFE))
+        time_its = np.arange(start_time_it, end_time_it)
+        
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        MF_arrays = []
+        rit = -1
+        for time_it in time_its:
+            rit = rit + 1
+            if rit == size:
+                rit = 0
+            if rank == 0:
+                n_stars = np.where(global_data['m'][time_it]>0)[0]
+                abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+                absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+                mass = np.array(global_data['m'][time_it][n_stars])
+                time = global_data['time'][time_it][n_stars][0]
+                
+                #True multiplicity
+                S = pr.Sink()
+                S._jet_factor = 1.
+                S._scale_l = scale_l.value
+                S._scale_v = scale_v.value
+                S._scale_t = scale_t.value
+                S._scale_d = scale_d.value
+                S._time = yt.YTArray(time, '')
+                S._abspos = yt.YTArray(abspos, '')
+                S._absvel = yt.YTArray(absvel, '')
+                S._mass = yt.YTArray(mass, '')
+                
+                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+                top_inds = np.where(res['topSystem'])[0]
+                
+                IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
+                primary_masses = []
+                for top_ind in top_inds:
+                    top_sys_ids = flatten(losi(top_ind, res))
+                    primary_masses.append(np.max(res['mass'][top_sys_ids]))
+                primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
+                MF_arrays.append((primary_hist/IMF))
+                print('found MF for time_it', time_it-time_its[0], 'of', time_its[-1]-time_its[0], 'on rank', rank)
+                
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        file = open('MF_'+str(rank)+'.pkl', 'wb')
+        pickle.dump((MF_arrays), file)
+        file.close()
+        
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        if rank == 0:
+            MF_pickles = glob.glob('MF_*.pkl')
+            MF_all = []
+            for MF_pickle in MF_pickles:
+                file = open(MF_pickle, 'rb')
+                MF = pickle.load(file)
+                file.close()
+                MF_all = MF_all + MF
+                os.remove(MF_pickle)
+            
+            MF_median = np.nanmedian(MF_all, axis=0)
+            MF_mean = np.nanmean(MF_all, axis=0)
+            MF_std = np.nanstd(MF_all, axis=0)
+            MF_err = [MF_median-(MF_mean-MF_std), (MF_mean+MF_std)-MF_median]
+            MF_plot.append(MF_median)
+            MF_plot_err.append(MF_err)
+        
+        sys.stdout.flush()
+        CW.Barrier()
+
+    if rank == 0:
+        file = open('MF_plot.pkl', 'wb')
+        pickle.dump((SFE_vals, MF_plot, MF_plot_err), file)
+        file.close()
+    
+sys.stdout.flush()
+CW.Barrier()
+
+if rank == 0:
+    file = open('MF_plot.pkl', 'rb')
+    SFE_vals, MF_plot, MF_plot_err = pickle.load(file)
+    file.close()
+
+    import matplotlib.pylab as pl
+    colors = pl.cm.cool(np.linspace(0,1,len(SFE_vals)))
+
+    mass_bins = np.logspace(-1.5, 1.5, 10)
+    bin_centres = np.log10((mass_bins[1:] + mass_bins[:-1])/2)
+
+    plf.clf()
+    for SFE_it in range(len(SFE_vals)):
+        plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), label="SFE="+str(SFE_vals[SFE_it]), color=colors[SFE_it])
+    plt.legend(loc='upper left')
+    plt.xlabel('Log$_{10}$ Mass')
+    plt.ylabel('Multiplicity Fraction')
+    plt.ylim(bottom=0.0)
+    plt.savefig('MF_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
+    print('made MF_evolution.pdf')
