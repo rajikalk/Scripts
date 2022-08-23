@@ -139,7 +139,6 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
-
 sys.stdout.flush()
 CW.Barrier()
 
@@ -159,7 +158,7 @@ if args.make_plots_only == 'False':
     SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
     MF_plot = []
     MF_plot_err = []
-    SFE_window = 0.00002#0.001
+    SFE_window = 0.00001#0.001
     time_its = []
     mass_bins = np.logspace(-1.5, 1.5, 10)
     for SFE_val in SFE_vals:
