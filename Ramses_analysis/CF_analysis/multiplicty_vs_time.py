@@ -263,10 +263,10 @@ if rank == 0:
     plt.figure(figsize=(single_col_width, single_col_width))
     for SFE_it in range(len(SFE_vals)):
         plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), color=colors[SFE_it], label='SFE='+str(SFE_vals[SFE_it]))
-    plt.legend(loc='upper left')
+    plt.legend(loc='best')
     plt.xlabel('Log$_{10}$ Mass')
     plt.ylabel('Multiplicity Fraction')
-    plt.ylim(bottom=0.0)
+    #plt.ylim(bottom=0.0)
     plt.tick_params(which='both', direction='in')
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.tick_params(axis='both', which='minor', labelsize=10)
