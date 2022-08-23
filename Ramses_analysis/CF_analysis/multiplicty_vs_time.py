@@ -176,6 +176,7 @@ for SFE_val in SFE_vals:
     start_time_it = np.argmin(abs(SFE-start_SFE))
     end_time_it = np.argmin(abs(SFE-end_SFE))
     time_its = np.arange(start_time_it, end_time_it)
+    MF_arrays = []
     for time_it in time_its:
         n_stars = np.where(global_data['m'][time_it]>0)[0]
         abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
@@ -203,5 +204,7 @@ for SFE_val in SFE_vals:
         for top_ind in top_inds:
             top_sys_ids = flatten(losi(top_ind, res))
             primary_masses.append(np.max(res['mass'][top_sys_ids]))
-        import pdb
-        pdb.set_trace()
+        primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
+        MF_arrays.append((primary_hist/IMF))
+    import pdb
+    pdb.set_trace()
