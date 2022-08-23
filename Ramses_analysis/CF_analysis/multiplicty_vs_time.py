@@ -262,7 +262,7 @@ if rank == 0:
     plt.clf()
     plt.figure(figsize=(single_col_width, single_col_width))
     for SFE_it in range(len(SFE_vals)):
-        plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), color=colors[SFE_it], label='SFE='+str(SFE_vals[SFE_it])
+        plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), color=colors[SFE_it], label='SFE='+str(SFE_vals[SFE_it]))
     plt.legend(loc='upper left')
     plt.xlabel('Log$_{10}$ Mass')
     plt.ylabel('Multiplicity Fraction')
