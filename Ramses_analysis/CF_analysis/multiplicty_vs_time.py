@@ -267,7 +267,7 @@ if rank == 0:
     plt.legend(loc='best')
     plt.xlabel('Log$_{10}$ Mass')
     plt.ylabel('Multiplicity Fraction')
-    #plt.ylim(bottom=0.0)
+    plt.ylim([0,1])
     plt.tick_params(which='both', direction='in')
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.tick_params(axis='both', which='minor', labelsize=10)
