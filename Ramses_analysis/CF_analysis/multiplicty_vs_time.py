@@ -167,7 +167,7 @@ else:
     
 SFE = np.sum(global_data['m'], axis=1)
 SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
-SFE_window = 0.001
+SFE_window = 0.0001#0.001
 time_its = []
 mass_bins = np.logspace(-1.5, 1.5, 10)
 for SFE_val in SFE_vals:
@@ -236,5 +236,6 @@ for SFE_val in SFE_vals:
             MF_all = MF_all + MF
             #os.remove(MF_pickle)
         
+        MF_median = np.nanmedian(MF_all, axis=)
         import pdb
         pdb.set_trace()
