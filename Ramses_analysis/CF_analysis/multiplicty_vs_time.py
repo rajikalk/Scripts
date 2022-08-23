@@ -202,5 +202,6 @@ for SFE_val in SFE_vals:
         primary_masses = []
         for top_ind in top_inds:
             top_sys_ids = flatten(losi(top_ind, res))
-            import pdb
-            pdb.set_trace()
+            primary_masses.append(np.max(res['mass'][top_sys_ids]))
+        import pdb
+        pdb.set_trace()
