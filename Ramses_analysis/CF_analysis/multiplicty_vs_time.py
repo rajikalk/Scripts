@@ -236,6 +236,6 @@ for SFE_val in SFE_vals:
             MF_all = MF_all + MF
             #os.remove(MF_pickle)
         
-        MF_median = np.nanmedian(MF_all, axis=)
+        #MF_median = np.nanmedian(MF_all, axis=)
         import pdb
         pdb.set_trace()
