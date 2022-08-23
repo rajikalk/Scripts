@@ -268,6 +268,7 @@ if rank == 0:
     plt.xlabel('Log$_{10}$ Mass')
     plt.ylabel('Multiplicity Fraction')
     plt.ylim([0,1])
+    plt.xlim([bin_centres[0], bin_centres[-1]])
     plt.tick_params(which='both', direction='in')
     plt.tick_params(axis='both', which='major', labelsize=10)
     plt.tick_params(axis='both', which='minor', labelsize=10)
