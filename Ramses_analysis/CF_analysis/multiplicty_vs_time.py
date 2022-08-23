@@ -176,35 +176,65 @@ for SFE_val in SFE_vals:
     start_time_it = np.argmin(abs(SFE-start_SFE))
     end_time_it = np.argmin(abs(SFE-end_SFE))
     time_its = np.arange(start_time_it, end_time_it)
+    
+    sys.stdout.flush()
+    CW.Barrier()
+    
     MF_arrays = []
+    rit = -1
     for time_it in time_its:
-        n_stars = np.where(global_data['m'][time_it]>0)[0]
-        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-        mass = np.array(global_data['m'][time_it][n_stars])
-        time = global_data['time'][time_it][n_stars][0]
+        rit = rit + 1
+        if rit == size:
+            rit = 0
+        if rank = 0:
+            n_stars = np.where(global_data['m'][time_it]>0)[0]
+            abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+            absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+            mass = np.array(global_data['m'][time_it][n_stars])
+            time = global_data['time'][time_it][n_stars][0]
+            
+            #True multiplicity
+            S = pr.Sink()
+            S._jet_factor = 1.
+            S._scale_l = scale_l.value
+            S._scale_v = scale_v.value
+            S._scale_t = scale_t.value
+            S._scale_d = scale_d.value
+            S._time = yt.YTArray(time, '')
+            S._abspos = yt.YTArray(abspos, '')
+            S._absvel = yt.YTArray(absvel, '')
+            S._mass = yt.YTArray(mass, '')
+            
+            res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+            top_inds = np.where(res['topSystem'])[0]
+            
+            IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
+            primary_masses = []
+            for top_ind in top_inds:
+                top_sys_ids = flatten(losi(top_ind, res))
+                primary_masses.append(np.max(res['mass'][top_sys_ids]))
+            primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
+            MF_arrays.append((primary_hist/IMF))
+            
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    file = open('MF_'+str(rank)+'.pkl', 'wb')
+    pickle.dump((MF), file)
+    file.close()
+    
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    if rank == 0:
+        MF_pickles = glob.glob('MF_*.pkl')
+        MF_all = []
+        for MF_pickle in MF_pickles:
+            file = open(MF_pickle, 'rb')
+            MF = pickle.load(file)
+            file.close()
+            MF_all = MF_all + MF
+            #os.remove(MF_pickle)
         
-        #True multiplicity
-        S = pr.Sink()
-        S._jet_factor = 1.
-        S._scale_l = scale_l.value
-        S._scale_v = scale_v.value
-        S._scale_t = scale_t.value
-        S._scale_d = scale_d.value
-        S._time = yt.YTArray(time, '')
-        S._abspos = yt.YTArray(abspos, '')
-        S._absvel = yt.YTArray(absvel, '')
-        S._mass = yt.YTArray(mass, '')
-        
-        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-        top_inds = np.where(res['topSystem'])[0]
-        
-        IMF = np.histogram(units_override['mass_unit'][0]*mass, bins=np.logspace(-1.5, 1.5, 10))[0]
-        primary_masses = []
-        for top_ind in top_inds:
-            top_sys_ids = flatten(losi(top_ind, res))
-            primary_masses.append(np.max(res['mass'][top_sys_ids]))
-        primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
-        MF_arrays.append((primary_hist/IMF))
-    import pdb
-    pdb.set_trace()
+        import pdb
+        pdb.set_trace()
