@@ -257,7 +257,7 @@ if rank == 0:
     mass_bins = np.logspace(-1.5, 1.5, 10)
     bin_centres = np.log10((mass_bins[1:] + mass_bins[:-1])/2)
 
-    plf.clf()
+    plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width), sharex=True)
     for SFE_it in range(len(SFE_vals)):
         plt.errorbar(bin_centres, MF_plot[SFE_it], np.array(MF_plot_err[SFE_it]), label="SFE="+str(SFE_vals[SFE_it]), color=colors[SFE_it])
