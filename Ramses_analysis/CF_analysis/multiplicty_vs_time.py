@@ -211,7 +211,7 @@ if args.make_plots_only == 'False':
         sys.stdout.flush()
         CW.Barrier()
         
-        file = open('MF_'+str(rank)+'.pkl', 'wb')
+        file = open('MF_rank_'+str(rank)+'.pkl', 'wb')
         pickle.dump((MF_arrays), file)
         file.close()
         
@@ -219,7 +219,7 @@ if args.make_plots_only == 'False':
         CW.Barrier()
         
         if rank == 0:
-            MF_pickles = glob.glob('MF_*.pkl')
+            MF_pickles = glob.glob('MF_rank_*.pkl')
             MF_all = []
             for MF_pickle in MF_pickles:
                 file = open(MF_pickle, 'rb')
