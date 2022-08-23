@@ -161,6 +161,7 @@ for SFE_val in SFE_vals:
     end_time_it = np.argmin(abs(SFE-end_SFE))
     time_its = np.arange(start_time_it, end_time_it)
     for time_it in time_its:
+        n_stars = np.where(global_data['m'][time_it]>0)[0]
         abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
         absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
         mass = np.array(global_data['m'][time_it][n_stars])
