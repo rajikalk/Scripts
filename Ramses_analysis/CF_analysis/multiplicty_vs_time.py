@@ -273,3 +273,6 @@ if rank == 0:
     plt.tick_params(axis='both', which='minor', labelsize=10)
     plt.savefig('MF_evolution.pdf', format='pdf', bbox_inches='tight', pad_inches=0.02)
     print('made MF_evolution.pdf')
+
+sys.stdout.flush()
+CW.Barrier()
