@@ -16,7 +16,6 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
-    parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-sim_G", "--simulation_G", type=str, default='')
     parser.add_argument("-plot_only", "--make_plots_only", help="Do you just want to make plots? Not calculate the CF", type=str, default='False')
     parser.add_argument("-start_ind", "--starting_ind", help="Do you want to start the analysis at a particular starting ind?", type=int, default=None)
@@ -55,7 +54,6 @@ size = CW.Get_size()
 
 datadir = sys.argv[1]
 savedir = sys.argv[2]
-pickle_file = savedir + args.pickled_file
 #=====================================================================================================
 #Create units override
 
