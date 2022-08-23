@@ -9,6 +9,7 @@ import sys
 import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
+import collections
 
 f_acc= 0.5
 
