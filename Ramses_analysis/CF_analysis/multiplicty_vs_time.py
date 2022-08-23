@@ -215,6 +215,7 @@ for SFE_val in SFE_vals:
                 primary_masses.append(np.max(res['mass'][top_sys_ids]))
             primary_hist = np.histogram(primary_masses, bins=np.logspace(-1.5, 1.5, 10))[0]
             MF_arrays.append((primary_hist/IMF))
+            print('found MF for time_it', time_it-time_its[0], 'of', time_its[-1]-time_its[0], 'on rank', rank)
             
     sys.stdout.flush()
     CW.Barrier()
