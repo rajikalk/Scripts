@@ -152,195 +152,35 @@ else:
     update = True
     start_time_ind = start_time_ind + len(Times)
     
-time_its = range(start_time_ind, end_time_ind+1)
-
-if update == True and args.make_plots_only == 'False':
-    rit = -1
+SFE = np.sum(global_data['m'], axis=1)
+SFE_vals = [0.01, 0.02, 0.03, 0.04, 0.05]
+SFE_window = 0.001
+time_its = []
+for SFE_val in SFE_vals:
+    start_SFE = SFE_val - SFE_window
+    end_SFE = end_SFE + SFE_window
+    start_time_it = np.argmin(abs(SFE-start_SFE))
+    end_time_it = np.argmin(abs(SFE-start_SFE))
+    time_its = np.arange(start_time_it, end_time_it)
     for time_it in time_its:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == rit:
-            #"""
-            n_stars = np.where(global_data['m'][time_it]>0)[0]
-            if len(n_stars) > 1:
-                abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-                absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-                mass = np.array(global_data['m'][time_it][n_stars])
-                time = global_data['time'][time_it][n_stars][0]
-                sfe = np.sum(mass)
-                
-                time_yt = yt.YTArray(time*scale_t, 's')
-                Times.append(int(time_yt.in_units('yr').value))
-                SFE.append(sfe)
-                
-                #True multiplicity
-                S = pr.Sink()
-                S._jet_factor = 1.
-                S._scale_l = scale_l.value
-                S._scale_v = scale_v.value
-                S._scale_t = scale_t.value
-                S._scale_d = scale_d.value
-                S._time = yt.YTArray(time, '')
-                S._abspos = yt.YTArray(abspos, '')
-                S._absvel = yt.YTArray(absvel, '')
-                S._mass = yt.YTArray(mass, '')
-                
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                
-                L_tot = luminosity(global_data, n_stars, time_it)
-                M_dot = accretion(n_stars, time_it)
-                Single_L_min.append(np.min(L_tot[s_true]))
-                Single_L_max.append(np.max(L_tot[s_true]))
-                Single_M_dot_min.append(np.min(M_dot[s_true]))
-                Single_M_dot_max.append(np.max(M_dot[s_true]))
-                
-                total_systems = len(s_true) + len(multi_inds)
-                MF_value = len(multi_inds)/total_systems
-                MF_true.append(MF_value)
-                
-                #Multiplicity with accretion limit
-                vis_inds_tot = np.where((M_dot>args.accretion_limit))[0]
-                
-                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
-                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
-                S._mass = yt.YTArray(mass[vis_inds_tot], '')
-                
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                
-                total_systems = len(s_true) + len(multi_inds)
-                MF_value = len(multi_inds)/total_systems
-                MF_acc_lim.append(MF_value)
-                
-                #Multiplicity with accretion and lower luminosity limit
-                vis_inds_tot = np.where((L_tot>=args.lower_L_limit)&(M_dot>args.accretion_limit))[0]
-                
-                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
-                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
-                S._mass = yt.YTArray(mass[vis_inds_tot], '')
-                
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                
-                total_systems = len(s_true) + len(multi_inds)
-                MF_value = len(multi_inds)/total_systems
-                MF_acc_L_lower.append(MF_value)
-                
-                #Multiplicity with accretion and lower and upper luminosity limit
-                vis_inds_tot = np.where((L_tot>=args.lower_L_limit)&(M_dot>args.accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-                
-                S._abspos = yt.YTArray(abspos[vis_inds_tot], '')
-                S._absvel = yt.YTArray(absvel[vis_inds_tot], '')
-                S._mass = yt.YTArray(mass[vis_inds_tot], '')
-                
-                res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
-                s_true = np.where((res['n']==1) & (res['topSystem']==True))[0]
-                multi_inds = np.where((res['n']>1) & (res['topSystem']==True))[0]
-                
-                total_systems = len(s_true) + len(multi_inds)
-                MF_value = len(multi_inds)/total_systems
-                MF_acc_L_upper.append(MF_value)
-                
-                pickle_file_rank = pickle_file.split('.pkl')[0] + "_" +str(rank) + ".pkl"
-                file = open(pickle_file_rank, 'wb')
-                pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_min, Single_L_max, Single_M_dot_min, Single_M_dot_max),file)
-                file.close()
-                print('updated pickle', pickle_file_rank, "for time_it", time_it, "of", end_time_ind+1)
-            
-sys.stdout.flush()
-CW.Barrier()
-print("FINISHED GOING THROUGH TIMES ON RANK", rank)
-    
-if rank == 0:
-    #compile together data
-    try:
-        file = open(pickle_file+'.pkl', 'rb')
-        Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_min, Single_L_max, Single_M_dot_min, Single_M_dot_max = pickle.load(file)
-        file.close()
-    except:
-        pickle_files = sorted(glob.glob(pickle_file.split('.pkl')[0] + "_*.pkl"))
-        Times_full = []
-        SFE_full = []
-        MF_true_full = []
-        MF_acc_lim_full = []
-        MF_acc_L_lower_full = []
-        MF_acc_L_upper_full = []
-        Single_L_min_full = []
-        Single_L_max_full = []
-        Single_M_dot_min_full = []
-        Single_M_dot_max_full = []
-        for pick_file in pickle_files:
-            file = open(pick_file, 'rb')
-            Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_min, Single_L_max, Single_M_dot_min, Single_M_dot_max = pickle.load(file)
-            file.close()
-            Times_full = Times_full + Times
-            SFE_full = SFE_full + SFE
-            MF_true_full = MF_true_full + MF_true
-            MF_acc_lim_full = MF_acc_lim_full + MF_acc_lim
-            MF_acc_L_lower_full = MF_acc_L_lower_full + MF_acc_L_lower
-            MF_acc_L_upper_full = MF_acc_L_upper_full + MF_acc_L_upper
-            Single_L_min_full = Single_L_min_full + Single_L_min
-            Single_L_max_full = Single_L_max_full + Single_L_max
-            Single_M_dot_min_full = Single_M_dot_min_full + Single_M_dot_min
-            Single_M_dot_max_full = Single_M_dot_max_full + Single_M_dot_max
-            os.remove(pick_file)
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][n_stars])
+        time = global_data['time'][time_it][n_stars][0]
         
-        #Let's sort the data
-        sorted_inds = np.argsort(Times_full)
-        Times = np.array(Times_full)[sorted_inds]
-        SFE = np.array(SFE_full)[sorted_inds]
-        MF_true = np.array(MF_true_full)[sorted_inds]
-        MF_acc_lim = np.array(MF_acc_lim_full)[sorted_inds]
-        MF_acc_L_lower = np.array(MF_acc_L_lower_full)[sorted_inds]
-        MF_acc_L_upper = np.array(MF_acc_L_upper_full)[sorted_inds]
-        Single_L_min = np.array(Single_L_min_full)[sorted_inds]
-        Single_L_max = np.array(Single_L_max_full)[sorted_inds]
-        Single_M_dot_min = np.array(Single_M_dot_min_full)[sorted_inds]
-        Single_M_dot_max = np.array(Single_M_dot_max_full)[sorted_inds]
+        #True multiplicity
+        S = pr.Sink()
+        S._jet_factor = 1.
+        S._scale_l = scale_l.value
+        S._scale_v = scale_v.value
+        S._scale_t = scale_t.value
+        S._scale_d = scale_d.value
+        S._time = yt.YTArray(time, '')
+        S._abspos = yt.YTArray(abspos, '')
+        S._absvel = yt.YTArray(absvel, '')
+        S._mass = yt.YTArray(mass, '')
         
-        file = open(pickle_file+'.pkl', 'wb')
-        pickle.dump((Times, SFE, MF_true, MF_acc_lim, MF_acc_L_lower, MF_acc_L_upper, Single_L_min, Single_L_max, Single_M_dot_min, Single_M_dot_max),file)
-        file.close()
-        
-        plt.clf()
-        plt.plot(SFE, MF_true, alpha=0.5, label="True")
-        plt.plot(SFE, MF_acc_lim, alpha=0.5, label="Accretion limit")
-        plt.plot(SFE, MF_acc_L_lower, alpha=0.5, label="Accretion + lower Luminosity limit")
-        plt.plot(SFE, MF_acc_L_upper, alpha=0.5, label="Accretion + lower + upper Luminosity limit")
-        plt.legend(loc='best')
-        plt.xlabel('SFE')
-        plt.xlim(left=0)
-        plt.ylim(bottom=0)
-        plt.ylabel('MF')
-        plt.savefig('MF_v_SFE.png')
-        print('made figure MF_v_SFE.png')
-        
-        plt.clf()
-        plt.fill_between(SFE, Single_L_min, Single_L_max, alpha=0.2)
-        plt.yscale('log')
-        plt.axhline(y=0.07)
-        plt.axhline(y=55.29)
-        plt.xlim(left=0)
-        plt.ylim(bottom=0)
-        plt.xlabel('SFE')
-        plt.ylabel('Luminosity')
-        plt.savefig('L_vs_SFE.png')
-        
-        plt.clf()
-        plt.fill_between(SFE, Single_M_dot_min, Single_M_dot_max, alpha=0.2)
-        plt.yscale('log')
-        plt.axhline(y=1.e-7)
-        plt.xlim(left=0)
-        plt.ylim(bottom=0)
-        plt.xlabel('SFE')
-        plt.ylabel('Accretion')
-        plt.savefig('M_dot_vs_SFE.png')
-        
-sys.stdout.flush()
-CW.Barrier()
-#=====================================================
+        res = m.multipleAnalysis(S,cutoff=10000, bound_check=True, nmax=6, Grho=Grho, max_iter=100)
+         
+        import pdb
+        pdb.set_trace()
