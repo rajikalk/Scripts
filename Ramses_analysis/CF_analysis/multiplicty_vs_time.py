@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pyramses as pr
 from pyramses import rsink
 import multiplicity as m
@@ -10,25 +9,6 @@ import pickle
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import collections
-import matplotlib
-
-matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.sf'] = 'Arial'
-matplotlib.rcParams['mathtext.default'] = 'regular'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
-matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = [
-       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
-       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-       r'\usepackage{helvet}',    # set the normal font here
-       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
-       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
-]
 
 f_acc= 0.5
 
@@ -251,8 +231,30 @@ if rank == 0:
     SFE_vals, MF_plot, MF_plot_err = pickle.load(file)
     file.close()
 
+    import matplotlib
+
+    matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+    matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+    matplotlib.rcParams['mathtext.rm'] = 'Arial'
+    matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+    matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+    matplotlib.rcParams['mathtext.rm'] = 'Arial'
+    matplotlib.rcParams['mathtext.sf'] = 'Arial'
+    matplotlib.rcParams['mathtext.default'] = 'regular'
+    matplotlib.rcParams['font.sans-serif'] = 'Arial'
+    matplotlib.rcParams['font.family'] = 'sans-serif'
+    matplotlib.rcParams['text.latex.preamble'] = [
+           r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+           r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+           r'\usepackage{helvet}',    # set the normal font here
+           r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+           r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+    ]
+
     import matplotlib.pylab as pl
     colors = pl.cm.cool(np.linspace(0,1,len(SFE_vals)))
+    
+    import matplotlib.pyplot as plt
 
     mass_bins = np.logspace(-1.5, 1.5, 10)
     bin_centres = np.log10((mass_bins[1:] + mass_bins[:-1])/2)
