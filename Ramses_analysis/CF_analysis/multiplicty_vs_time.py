@@ -232,7 +232,7 @@ if rank == 0:
     file.close()
 
     import matplotlib
-    """
+    
     matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
     matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
     matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -243,14 +243,14 @@ if rank == 0:
     matplotlib.rcParams['mathtext.default'] = 'regular'
     matplotlib.rcParams['font.sans-serif'] = 'Arial'
     matplotlib.rcParams['font.family'] = 'sans-serif'
-    matplotlib.rcParams['text.latex.preamble'] = [
-           r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
-           r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-           r'\usepackage{helvet}',    # set the normal font here
-           r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
-           r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
-    ]
-    """
+    #matplotlib.rcParams['text.latex.preamble'] = [
+    #       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+    #       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+    #       r'\usepackage{helvet}',    # set the normal font here
+    #       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+    #       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+    #]
+    
     import matplotlib.pylab as pl
     colors = pl.cm.cool(np.linspace(0,1,len(SFE_vals)))
     
