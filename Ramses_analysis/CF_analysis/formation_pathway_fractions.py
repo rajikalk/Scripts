@@ -132,7 +132,7 @@ ax.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 ax.tick_params(axis='both', which='minor', labelsize=font_size, left=True, right=True, top=False, bottom=False)
 plt.xticks(ind, ("1500", "3000", "3750", "4500", "6000", "12000"))
 ax.tick_params(which='both', direction='in')
-plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
+plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
 
 plt.legend((p3[0], p2[0], p1[0]), ('Dynamical capture', 'Unbound core frag.', 'Bound core frag.'), loc='upper right', fontsize=font_size)
 plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
@@ -269,7 +269,7 @@ y_upper_err = y_upper - y_lin
 #plt.errorbar(x_val, 10**y_mean, )
 
 plt.errorbar(x_val, y_mean, y_std)
-plt.xlabel('Initial Gas Mass (M$_\odot$)', fontsize=font_size)
+plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
 plt.ylabel('Core fragmentation scale (log au)', fontsize=font_size)
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)

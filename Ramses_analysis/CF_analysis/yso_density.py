@@ -254,40 +254,41 @@ temperature = yt.YTQuantity(3000, 'K')
 #============================================================================================
 #Now we enter the actual multiplicity analysis
 
-All_YSO_dens = []
+if args.make_plots_only == 'False':
+    All_YSO_dens = []
 
-for time_it in time_its:
-    n_stars = np.where(global_data['m'][time_it]>0)[0]
-    abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
-    absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
-    mass = np.array(global_data['m'][time_it][n_stars])
-    time = global_data['time'][time_it][n_stars][0]
-    sfe = np.sum(mass)
-    
-    sink_inds = np.where(global_data['m'][time_it]>0)[0]
-    L_tot = luminosity(global_data, sink_inds, time_it)
-    M_dot = accretion(sink_inds, time_it)
-    vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-    YSO_densities = []
-    
-    #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
-    for vis_ind in vis_inds_tot:
-        dx = abspos[vis_ind][0] - abspos.T[0]
-        dy = abspos[vis_ind][1] - abspos.T[1]
-        separation = np.sqrt(dx**2 + dy**2)
-        neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
-        area = np.pi*(neighbour_11**2)
-        yso_dens = 10/area
+    for time_it in time_its:
+        n_stars = np.where(global_data['m'][time_it]>0)[0]
+        abspos = np.array([global_data['x'][time_it][n_stars], global_data['y'][time_it][n_stars], global_data['z'][time_it][n_stars]]).T#*scale_l
+        absvel = np.array([global_data['ux'][time_it][n_stars], global_data['uy'][time_it][n_stars], global_data['uz'][time_it][n_stars]]).T#*scale_v
+        mass = np.array(global_data['m'][time_it][n_stars])
+        time = global_data['time'][time_it][n_stars][0]
+        sfe = np.sum(mass)
         
-        YSO_densities.append(yso_dens)
-    SFE.append(sfe)
-    Times.append(time)
-    All_YSO_dens.append(YSO_densities)
+        sink_inds = np.where(global_data['m'][time_it]>0)[0]
+        L_tot = luminosity(global_data, sink_inds, time_it)
+        M_dot = accretion(sink_inds, time_it)
+        vis_inds_tot = np.where((L_tot>=luminosity_lower_limit)&(M_dot>accretion_limit)&(L_tot<=args.upper_L_limit))[0]
+        YSO_densities = []
+        
+        #For each visible star, find the distance to the 11th neighbour, then calculate the circular area (pi*r^2), and the dnesity is 10/area.
+        for vis_ind in vis_inds_tot:
+            dx = abspos[vis_ind][0] - abspos.T[0]
+            dy = abspos[vis_ind][1] - abspos.T[1]
+            separation = np.sqrt(dx**2 + dy**2)
+            neighbour_11 = np.sort(separation)[11]*units['length_unit'].in_units('pc')
+            area = np.pi*(neighbour_11**2)
+            yso_dens = 10/area
+            
+            YSO_densities.append(yso_dens)
+        SFE.append(sfe)
+        Times.append(time)
+        All_YSO_dens.append(YSO_densities)
 
-    file = open('yso_dens.pkl', 'wb')
-    pickle.dump((Times, SFE, All_YSO_dens), file)
-    file.close()
-    print("calculated YSO dens for time_it", time_it, "of", time_its[-1])
+        file = open('yso_dens.pkl', 'wb')
+        pickle.dump((Times, SFE, All_YSO_dens), file)
+        file.close()
+        print("calculated YSO dens for time_it", time_it, "of", time_its[-1])
 
 '''
 pickle_files = sorted(glob.glob('yso_dens_*.pkl'))
@@ -312,6 +313,10 @@ file = open('yso_dens.pkl', 'wb')
 pickle.dump((Time, SFE, All_YSO_dens), file)
 file.close()
 '''
+file = open('yso_dens.pkl', 'rb')
+Times, SFE, All_YSO_dens = pickle.load(file)
+file.close()
+
 SFE_label = ['0.5%', '1%', '2%', '3%', '4%', '5%']
 import matplotlib.pylab as pl
 colors = pl.cm.cool(np.linspace(0,1,6))
@@ -351,6 +356,7 @@ for SFE_it in range(len(SFE)):
 plt.tick_params(which='both', direction='in')
 plt.tick_params(axis='both', which='major', labelsize=10)
 plt.tick_params(axis='both', which='minor', labelsize=10)
+plt.xticks([-1, 0, 1, 2, 3, 4, 5])
 plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.xscale('log')
