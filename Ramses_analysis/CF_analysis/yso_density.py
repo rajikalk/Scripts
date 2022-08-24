@@ -349,7 +349,7 @@ for SFE_it in range(len(SFE)):
 
 
 plt.tick_params(which='both', direction='in')
-plt.tick_params(axis='both', which='major', labelsize=10, )
+plt.tick_params(axis='both', which='major', labelsize=10)
 plt.tick_params(axis='both', which='minor', labelsize=10)
 plt.step(np.sort(ysos_per), yso_CDF_per, label='Perseus', color='k', ls="--")
 #plt.step(10**(np.sort(ysos_per)), yso_CDF_per, label='Perseus', color='k', ls="--")
@@ -359,5 +359,5 @@ plt.legend(loc='upper left')
 plt.xlabel("YSO density (Log$_{10}$(pc$^{-2}$))", labelpad=-0.2)
 plt.ylabel("CDF", labelpad=-0.2)
 plt.ylim([0,1])
-plt.xlim(left=-1)
+plt.xlim(left=-1.5)
 plt.savefig("yso_dens_comp.pdf", format='pdf', pad_inches=0.02, bbox_inches='tight')
