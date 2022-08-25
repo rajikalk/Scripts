@@ -57,7 +57,7 @@ try:
     time = reduced_systems_data['time']
     print("Finished reading in reduced systems data")
 except:
-    print("reduced_system_data.pkl doesn't exist. Genrate it first using binary_evolution_plot.py")
+    print("reduced_system_data.pkl doesn't exist. Generate it first using binary_evolution_plot.py")
     
 #Create loop and load binary data:
 system_tag_int = 65

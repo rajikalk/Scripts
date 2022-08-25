@@ -268,7 +268,7 @@ y_upper_err = y_upper - y_lin
 #pdb.set_trace()
 #plt.errorbar(x_val, 10**y_mean, )
 
-plt.errorbar(x_val, y_mean, y_std)
+plt.errorbar(x_val, 10**(y_mean), 10**(y_std))
 plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
 plt.ylabel('Core fragmentation scale (log au)', fontsize=font_size)
 
