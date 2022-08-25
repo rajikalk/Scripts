@@ -275,7 +275,7 @@ y_err = np.array([y_std_linear_lower, y_std_linear_upper])
 plt.errorbar(x_val, y_mean, y_std)
 #plt.yscale('log')
 plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
-plt.ylabel('Core fragmentation scale (Log$_{10}$AU)', fontsize=font_size)
+plt.ylabel('Core fragmentation scale (Log$_{10}$(AU))', fontsize=font_size)
 #plt.ylabel('Core fragmentation scale (AU)', fontsize=font_size)
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
