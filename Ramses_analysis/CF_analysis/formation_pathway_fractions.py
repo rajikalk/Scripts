@@ -272,7 +272,7 @@ y_err = np.array([y_std_linear_lower, y_std_linear_upper])
 #plt.errorbar(x_val, 10**y_mean, )
 
 plt.errorbar(x_val, 10**(y_mean), y_err)
-plt.yscale('log')
+#plt.yscale('log')
 plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
 plt.ylabel('Core fragmentation scale (log au)', fontsize=font_size)
 
