@@ -263,12 +263,16 @@ y_lower = 10**(y_mean-y_std)
 y_upper = 10**(y_mean+y_std)
 y_lower_err = y_lin - y_lower
 y_upper_err = y_upper - y_lin
+y_std_linear_upper = 10**(y_mean+y_std)
+y_std_linear_lower = 10**(y_mean-y_std)
+y_err = np.array([y_std_linear_lower, y_std_linear_upper])
 
 #import pdb
 #pdb.set_trace()
 #plt.errorbar(x_val, 10**y_mean, )
 
-plt.errorbar(x_val, 10**(y_mean), 10**(y_std))
+plt.errorbar(x_val, 10**(y_mean), y_err)
+plt.yscale('log')
 plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
 plt.ylabel('Core fragmentation scale (log au)', fontsize=font_size)
 
