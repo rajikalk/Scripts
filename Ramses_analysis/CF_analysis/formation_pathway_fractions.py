@@ -222,7 +222,7 @@ for pick_it in range(len(Initial_Seps_all)):
     scale_guess = np.max(core_sep_hist+core_delayed_sep_hist)
     guess_params.append([mean_guess, median_guess, std_guess])
     #popt, pcov = curve_fit(Skewed_Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess, skew_guess], sigma=poisson_err*np.ones(np.shape(bin_centers)), absolute_sigma=True)#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
-    popt, pcov = curve_fit(Gaussian, bin_centers, (core_sep_hist+core_delayed_sep_hist), [scale_guess, mean_guess, std_guess])#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
+    popt, pcov = curve_fit(Gaussian, bin_centers[6:], (core_sep_hist+core_delayed_sep_hist)[6:], [scale_guess, mean_guess, std_guess])#, bounds=((0, , 0, 0), (1, np.inf, 1, 1))))
     fit_core = Gaussian(x_fit, *popt)
     #fit_core = Skewed_Gaussian(x_fit, *popt)
     axs[pick_it][0].plot(x_fit, fit_core, 'k-')
