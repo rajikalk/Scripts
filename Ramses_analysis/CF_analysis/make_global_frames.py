@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default='1.e-22')
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-19)
+    parser.add_argument("-G_mass", "--Gas_mass", type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -100,7 +101,7 @@ for pick_it in range(len(proj_pickles)):
             ax.scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
 
-            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string = "$SFE$="+str(int(time_val))+"%"
             time_string_raw = r"{}".format(time_string)
             time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
             
