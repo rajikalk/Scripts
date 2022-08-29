@@ -102,7 +102,7 @@ for pick_it in range(len(proj_pickles)):
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
 
             SFE_val = np.round(100*(np.sum(particle_mass).value/args.Gas_mass), decimals=1)
-            time_string = "$SFE$="+str(int(time_val))+"%"
+            time_string = "$SFE$="+str(SFE_val)+"%"
             time_string_raw = r"{}".format(time_string)
             time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
             
