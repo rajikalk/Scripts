@@ -94,7 +94,7 @@ for pick_it in range(len(proj_pickles)):
             cbar = plt.colorbar(plot, pad=0.0)
             
             file = open(part_pickles[pick_it], 'rb')
-            particle_x_pos, particle_y_pos = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_mass = pickle.load(file)
             file.close()
             
             ax.scatter((particle_x_pos.value - 2), (particle_y_pos.value - 2), color='c', s=0.5)
