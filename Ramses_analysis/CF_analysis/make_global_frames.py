@@ -84,8 +84,8 @@ for pick_it in range(len(proj_pickles)):
             
             plt.clf()
             fig, ax = plt.subplots()
-            ax.set_xlabel("$x$ (AU)", labelpad=-1, fontsize=args.text_font)
-            ax.set_ylabel("$y$ (AU)", fontsize=args.text_font) #, labelpad=-20
+            ax.set_xlabel("$x$ (pc)", labelpad=-1, fontsize=args.text_font)
+            ax.set_ylabel("$y$ (pc)", fontsize=args.text_font) #, labelpad=-20
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             
