@@ -273,6 +273,7 @@ y_err = np.array([y_std_linear_lower, y_std_linear_upper])
 
 plt.plot(x_val, 10**(y_mean))
 mass_arr = np.linspace(1500, 12000, 1000)
+frag_fit = np.log10(1200*100/np.sqrt(mass_arr))
 obs_rel = mass_arr**(-0.5)
 #plt.errorbar(x_val, y_mean, y_std)
 plt.plot(mass_arr, obs_rel, 'k--')
