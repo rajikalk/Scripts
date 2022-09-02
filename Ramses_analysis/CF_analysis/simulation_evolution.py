@@ -63,6 +63,8 @@ for pick_it in iter_range:
     axs.flatten()[2].plot(Time_arr, superplot_dict['SFE'])
     
     SFE_5_ind = np.argmin(abs(np.array(superplot_dict['SFE'])-0.05))
+    import pdb
+    pdb.set_trace()
     
     axs.flatten()[0].scatter(Time_arr[SFE_5_ind], superplot_dict['M_tot'][SFE_5_ind], marker='o')
     axs.flatten()[1].scatter(Time_arr[SFE_5_ind], superplot_dict['N_stars'][SFE_5_ind], marker='o')
