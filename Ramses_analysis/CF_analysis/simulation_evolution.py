@@ -53,7 +53,7 @@ plt.subplots_adjust(hspace=0.0)
 for pick_it in iter_range:
     file_it = pick_it
     file = open(pickle_files[file_it], 'rb')
-    superplot_dict, Sink_bound_birth, Sink_E_tot, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
     Time_arr = (np.array(superplot_dict['Times'])-superplot_dict['Times'][0])/1.e6
