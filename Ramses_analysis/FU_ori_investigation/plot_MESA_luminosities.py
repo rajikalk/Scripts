@@ -41,6 +41,8 @@ def plot_luminosity(sink=5, max_age=150000):
     ax[1].set_yscale('log')
 
 sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
+if rank == 0:
+    print('sink_files:', sink_files)
 max_age=150000
 rit = -1
 for sink_file in sink_files:
@@ -66,4 +68,6 @@ for sink_file in sink_files:
         plt.xlim([0, 150000])
         plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
         plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
-        print("plotted", plot_name)
+        print("plotted", plot_name, "on rank", rank)
+
+print("finished plotting on rank", rank)
