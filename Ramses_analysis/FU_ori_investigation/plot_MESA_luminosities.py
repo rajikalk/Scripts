@@ -50,24 +50,27 @@ for sink_file in sink_files:
     if rit == size:
         rit = 0
     if rank == rit:
-        m.log_fold=sink_file
-        m.loadHistory()
-        mass = m.hist.star_mass
-        age = m.hist.star_age
-        idx = np.where(age <= max_age)
-        age = age[idx]
-        lum = 10.**m.hist.log_L
-        lacc = m.hist.extra_lum / lsun
-        ltot = lum + lacc
-        
-        plt.clf()
-        plt.semilogy(age, lum[idx], label='L$_{star}$')
-        plt.semilogy(age, lacc[idx], label='L$_{acc}$')
-        plt.semilogy(age, ltot[idx], label='L$_{tot}$')
-        plt.legend()
-        plt.xlim([0, 150000])
-        plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
-        plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
-        print("plotted", plot_name, "on rank", rank)
+        try:
+            m.log_fold=sink_file
+            m.loadHistory()
+            mass = m.hist.star_mass
+            age = m.hist.star_age
+            idx = np.where(age <= max_age)
+            age = age[idx]
+            lum = 10.**m.hist.log_L
+            lacc = m.hist.extra_lum / lsun
+            ltot = lum + lacc
+            
+            plt.clf()
+            plt.semilogy(age, lum[idx], label='L$_{star}$')
+            plt.semilogy(age, lacc[idx], label='L$_{acc}$')
+            plt.semilogy(age, ltot[idx], label='L$_{tot}$')
+            plt.legend()
+            plt.xlim([0, 150000])
+            plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
+            plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
+            print("plotted", plot_name, "on rank", rank)
+        except:
+            print("can't read file")
 
 print("finished plotting on rank", rank)
