@@ -5,9 +5,13 @@ import numpy as np
 import mesaPlot
 import os
 import glob
+from mpi4py.MPI import COMM_WORLD as CW
 m=mesaPlot.MESA()
 p=mesaPlot.plot()
 lsun = 3.828e26*1e7 # solar luminosity in erg
+
+rank = CW.Get_rank()
+size = CW.Get_size()
 
 def plot_luminosity(sink=5, max_age=150000):
     m.log_fold='/scratch/troels/IMF_512/mesa/sink_{:04d}/LOGS'.format(sink)
@@ -38,23 +42,28 @@ def plot_luminosity(sink=5, max_age=150000):
 
 sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
 max_age=150000
+rit = -1
 for sink_file in sink_files:
-    m.log_fold=sink_file
-    m.loadHistory()
-    mass = m.hist.star_mass
-    age = m.hist.star_age
-    idx = np.where(age <= max_age)
-    age = age[idx]
-    lum = 10.**m.hist.log_L
-    lacc = m.hist.extra_lum / lsun
-    ltot = lum + lacc
-    
-    plt.clf()
-    plt.semilogy(age, lum[idx], label='L$_{star}$')
-    plt.semilogy(age, lacc[idx], label='L$_{acc}$')
-    plt.semilogy(age, ltot[idx], label='L$_{tot}$')
-    plt.legend()
-    plt.xlim([0, 150000])
-    plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
-    plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
-    print("plotted", plot_name)
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        m.log_fold=sink_file
+        m.loadHistory()
+        mass = m.hist.star_mass
+        age = m.hist.star_age
+        idx = np.where(age <= max_age)
+        age = age[idx]
+        lum = 10.**m.hist.log_L
+        lacc = m.hist.extra_lum / lsun
+        ltot = lum + lacc
+        
+        plt.clf()
+        plt.semilogy(age, lum[idx], label='L$_{star}$')
+        plt.semilogy(age, lacc[idx], label='L$_{acc}$')
+        plt.semilogy(age, ltot[idx], label='L$_{tot}$')
+        plt.legend()
+        plt.xlim([0, 150000])
+        plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
+        plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
+        print("plotted", plot_name)
