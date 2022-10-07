@@ -6,20 +6,20 @@ import mesaPlot
 import os
 import glob
 from mpi4py.MPI import COMM_WORLD as CW
-from scipy.interpolate import interp1d
+import scipy.interpolate as interp
 m=mesaPlot.MESA()
 p=mesaPlot.plot()
 lsun = 3.828e26*1e7 # solar luminosity in erg
 FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
 time_window = 100
-window_linspace = np.linspace(1, time_window,num=100,endpoint=True)
+window_linspace = np.linspace(0, time_window, 101)
 
 rank = CW.Get_rank()
 size = CW.Get_size()
 
 sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
-if rank == 0:
-    print('sink_files:', sink_files)
+#if rank == 0:
+#    print('sink_files:', sink_files)
 max_age=150000
 rit = -1
 for sink_file in sink_files:
@@ -40,10 +40,20 @@ for sink_file in sink_files:
             
             #have moving window:
             for time_it in range(len(age)):
-                end_time = age + time_window
+                end_time = age[time_it] + time_window
                 end_it = np.argmin(abs(age - end_time))
-                import pdb
-                pdb.set_trace()
+                useable_times = age[time_it:end_it]
+                useable_L = ltot[time_it:end_it]
+                scaled_T = useable_times - useable_times[0]
+                scaled_L = useable_L - np.min(useable_L)
+                scaled_L = scaled_L/np.max(scaled_L)
+                if len(scaled_T) > len(window_linspace):
+                    fit_T = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_T)
+                    fit_L = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_L) #CHECK THIS!!!
+                else:
+                    
+                
+                    
                 
         except:
             print("can't read file")
