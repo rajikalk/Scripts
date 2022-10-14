@@ -147,8 +147,8 @@ for pickle_file in pickle_files:
         fig, ax = plt.subplots()
         ax.set_xlabel('AU', labelpad=-1, fontsize=10)
         ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
-        xlim = [np.min(X_image), np.max(X_image)]
-        ylim = [np.min(Y_image), np.max(Y_image)]
+        xlim = [np.min(X_image).value, np.max(X_image).value]
+        ylim = [np.min(Y_image).value, np.max(Y_image).value]
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         
@@ -164,7 +164,7 @@ for pickle_file in pickle_files:
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None)
 
         if len(part_info.keys())>0:
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim.value, ylim.value], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
 
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
         plt.tick_params(axis='both', which='major')# labelsize=16)
