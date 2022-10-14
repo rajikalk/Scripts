@@ -124,7 +124,7 @@ import matplotlib.pyplot as plt
 #plt.rcParams['figure.dpi'] = 300
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
-import my_ramses_module as mym
+import my_flash_module as mym
 
 #Let's get the pickle files
 pickle_files = sorted(glob.glob(output_dir+"movie_frame_*.pkl"))
