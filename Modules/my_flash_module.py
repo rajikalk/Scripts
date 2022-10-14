@@ -5,8 +5,34 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 import matplotlib.patheffects as path_effects
+from matplotlib import transforms
 
 fontsize_global=12
+
+def rainbow_text(x,y,ls,lc,**kw):
+    t = plt.gca().transData
+    figlocal = plt.gcf()
+    space_size = 1.45*kw['size']
+            
+    #horizontal version
+    for string,c in zip(ls,lc):
+        string_raw = r'{}'.format(string)
+        #string = str_text[1:-1]
+        #string = string.encode('unicode_escape')
+        text = plt.text(x,y,string_raw,color=c, transform=t, **kw)
+        text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'), path_effects.Normal()])
+        text.draw(figlocal.canvas.get_renderer())
+        ex = text.get_window_extent(renderer=figlocal.canvas.get_renderer())
+        if "odot" in string:
+            #import pdb
+            #pdb.set_trace()
+            #t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+        else:
+            #import pdb
+            #pdb.set_trace()
+            #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
+            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
     global fontsize_global
