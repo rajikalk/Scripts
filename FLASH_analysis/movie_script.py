@@ -30,8 +30,8 @@ movie_files = sorted(glob.glob(input_dir + '*_plt_cnt*'))
 
 #Now let's iterate over the files and get the images we want to plot
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
-    part_file = 'part'.join(movie_file.split('plt_cnt'))
-    ds = yt.load(movie_file, particle_filename=part_file)
+    part_file = 'part'.join(fn.split('plt_cnt'))
+    ds = yt.load(fn, particle_filename=part_file)
     
     #make list of projection fields: density, velocity, magnetic field
     proj_fields = [('flash', 'dens')] + \
