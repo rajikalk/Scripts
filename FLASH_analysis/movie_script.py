@@ -128,6 +128,7 @@ import my_flash_module as mym
 
 #Let's get the pickle files
 pickle_files = sorted(glob.glob(output_dir+"movie_frame_*.pkl"))
+no_frames = len(pickle_files)
 
 rit = -1
 for pickle_file in pickle_files:
