@@ -143,8 +143,8 @@ for pickle_file in pickle_files:
         file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
         plt.clf()
         fig, ax = plt.subplots()
-        ax.set_xlabel('AU', labelpad=-1, fontsize=args.text_font)
-        ax.set_ylabel('AU', fontsize=args.text_font) #, labelpad=-20
+        ax.set_xlabel('AU', labelpad=-1, fontsize=10)
+        ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
         xlim = [np.min(X), np.max(X)]
         ylim = [np.min(Y), np.max(Y)]
         ax.set_xlim(xlim)
@@ -164,7 +164,7 @@ for pickle_file in pickle_files:
         if len(part_info.keys())>0:
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
 
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
         plt.tick_params(axis='both', which='major')# labelsize=16)
         for line in ax.xaxis.get_ticklines():
             line.set_color('white')
@@ -175,7 +175,7 @@ for pickle_file in pickle_files:
 
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
-        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
         if size > 1:
