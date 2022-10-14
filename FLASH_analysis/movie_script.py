@@ -171,9 +171,7 @@ for pickle_file in pickle_files:
             line.set_color('white')
         for line in ax.yaxis.get_ticklines():
             line.set_color('white')
-        if args.debug_plotting != 'False':
-            plt.savefig("Test_826.jpg", format='jpg', bbox_inches='tight')
-
+            
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
         time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
