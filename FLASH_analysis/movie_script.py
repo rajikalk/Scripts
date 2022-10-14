@@ -35,7 +35,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
     ds = yt.load(fn, particle_filename=part_file)
     
     #make list of projection fields: density, velocity, magnetic field
-    proj_fields = [('flash', 'dens')] + \
+    proj_field_list = [('flash', 'dens')] + \
         [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
         [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
     
