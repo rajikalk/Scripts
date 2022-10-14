@@ -45,7 +45,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
         proj_dict.update({field[1]:[]})
     
     for field in yt.parallel_objects(proj_field_list):
-        proj = yt.ProjectionPlot(ds, args.axis, , method='integrate')
+        proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
         thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
         proj_array = proj.frb.data[field].in_cgs()/thickness
         import pdb
