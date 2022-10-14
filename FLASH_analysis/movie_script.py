@@ -160,7 +160,7 @@ for pickle_file in pickle_files:
         else:
             plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
         cbar = plt.colorbar(plot, pad=0.0)
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=yt.YTQuantity(5,'km/s').value, Z_val=None)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=yt.YTQuantity(5,'km/s'), Z_val=None)
 
         if len(part_info.keys())>0:
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
