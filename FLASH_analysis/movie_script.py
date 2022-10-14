@@ -106,7 +106,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
             positions = np.array([part_pos_x,part_pos_y])
             part_info = {'particle_mass':part_mass,
                      'particle_position':positions,
-                     'accretion_rad':2.5*np.min(dd['dx'].in_units(au)),
+                     'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                      'particle_tag':dd['particle_tag']}
         else:
             has_particles = False
