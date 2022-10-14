@@ -6,6 +6,7 @@ import glob
 import sys
 import argparse
 from mpi4py.MPI import COMM_WORLD as CW
+import numpy as np
 
 #------------------------------------------------------
 #get mpi size and ranks
@@ -29,8 +30,30 @@ args = parse_inputs()
 #Get movie files
 movie_files = sorted(glob.glob(input_dir + '*_plt_cnt*'))
 
+#Calculate image grid:
+fn = movie_files[-1]
+part_file = 'part'.join(fn.split('plt_cnt'))
+ds = yt.load(fn, particle_filename=part_file)
+x_image_min = -1*ds.domain_width.in_units('au')[0]/2
+x_image_max = ds.domain_width.in_units('au')[0]/2
+x_range = np.linspace(x_image_min, x_image_max, 800)
+X_image, Y_image = np.meshgrid(x_range, x_range)
+annotate_space = (x_image_min - x_image_max)/32.
+x_ind = []
+y_ind = []
+counter = 0
+while counter < 32:
+    val = annotate_space*counter + annotate_space/2. + x_image_min
+    x_ind.append(int(val))
+    y_ind.append(int(val))
+    counter = counter + 1
+X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+
 #Now let's iterate over the files and get the images we want to plot
+file_counter = -1
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
+    file_counter = file_counter + 1
+    pickle_file = save_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
     proj_root_rank = int(rank/5)*5
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
@@ -67,5 +90,20 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
             os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
 
     #Get particle data:
-    import pdb
-    pdb.set_trace()
+    dd = ds.all_data()
+    if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
+        has_particles = True
+        part_mass = dd['particle_mass'].in_units('msun')
+        part_pos_fields = [field for field in ds.field_list if ('particle_pos' in field[1])&(field[0]=='all')&(field[1]!='particle_pos'+args.axis)]
+        part_pos_x = dd[part_pos_fields[0]].in_units('au')
+        part_pos_y = dd[part_pos_fields[1]].in_units('au')
+        positions = np.array([part_pos_x,part_pos_y])
+        part_info = {'particle_mass':part_mass,
+                 'particle_position':positions}
+    else:
+        has_particles = False
+        part_info = {}
+        
+    file = open(pickle_file, 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[proj_field_list[0][1]], proj_dict[proj_field_list[3][1]], proj_dict[proj_field_list[4][1]], X_image_vel, Y_image_vel, proj_dict[proj_field_list[1][1]], proj_dict[proj_field_list[2][1]], part_info), file)
+    file.close()
