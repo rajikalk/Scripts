@@ -161,7 +161,7 @@ for pickle_file in pickle_files:
         cbar = plt.colorbar(plot, pad=0.0)
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=5, Z_val=None)
 
-        if len(part_info.keys())>0
+        if len(part_info.keys())>0:
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
 
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
