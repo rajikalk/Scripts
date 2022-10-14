@@ -21,9 +21,10 @@ def parse_inputs():
     return args
 
 #-------------------------------------------------------
-#get input and output directory
+#get input and output directory and arguments
 input_dir = sys.argv[1]
 output_dir = sys.argv[2]
+args = parse_inputs()
 
 #Get movie files
 movie_files = sorted(glob.glob(input_dir + '*_plt_cnt*'))
