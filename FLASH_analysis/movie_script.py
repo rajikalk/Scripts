@@ -7,12 +7,12 @@ import sys
 import argparse
 from mpi4py.MPI import COMM_WORLD as CW
 
-______________________________________________________
+#------------------------------------------------------
 #get mpi size and ranks
 rank = CW.Get_rank()
 size = CW.Get_size()
 
-------------------------------------------------------
+#------------------------------------------------------
 def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
@@ -20,7 +20,7 @@ def parse_inputs():
     args = parser.parse_args()
     return args
 
--------------------------------------------------------
+#-------------------------------------------------------
 #get input and output directory
 input_dir = sys.argv[1]
 output_dir = sys.argv[2]
