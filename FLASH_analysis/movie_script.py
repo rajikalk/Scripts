@@ -151,7 +151,7 @@ for pickle_file in pickle_files:
         ax.set_ylim(ylim)
         
         cmap=plt.cm.gist_heat
-        plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+        plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
         plt.gca().set_aspect('equal')
 
         if frame_no > 0 or time_val > -1.0:
