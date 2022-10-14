@@ -48,7 +48,7 @@ while counter < 32:
     x_ind.append(int(val))
     y_ind.append(int(val))
     counter = counter + 1
-X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 
 #Now let's iterate over the files and get the images we want to plot
 file_counter = -1
