@@ -107,7 +107,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
             part_info = {'particle_mass':part_mass,
                      'particle_position':positions,
                      'accretion_rad':2.5*np.min(dd['dx'].in_units(au)),
-                     'particle_tag':dd['particle_tag'}
+                     'particle_tag':dd['particle_tag']}
 }
         else:
             has_particles = False
