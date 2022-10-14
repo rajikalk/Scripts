@@ -4,7 +4,7 @@ yt.enable_parallelism()
 import matplotlib.pyplot as plt
 import glob
 import sys
-import argparse
+import
 from mpi4py.MPI import COMM_WORLD as CW
 
 #------------------------------------------------------
