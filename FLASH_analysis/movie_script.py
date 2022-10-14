@@ -140,7 +140,7 @@ for pickle_file in pickle_files:
         X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
         file.close()
 
-        file_name = save_dir + "movie_frame_" + ("%06d" % frame_no)
+        file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
         plt.clf()
         fig, ax = plt.subplots()
         ax.set_xlabel('AU', labelpad=-1, fontsize=args.text_font)
