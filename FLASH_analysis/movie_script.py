@@ -155,9 +155,9 @@ for pickle_file in pickle_files:
         plt.gca().set_aspect('equal')
 
         if frame_no > 0 or time_val > -1.0:
-            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
         else:
-            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+            plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
         cbar = plt.colorbar(plot, pad=0.0)
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=5, Z_val=None)
 
