@@ -6,6 +6,8 @@ import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 import matplotlib.patheffects as path_effects
 
+fontsize_global=12
+
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
     global fontsize_global
     if plot_velocity_legend == 'False' or plot_velocity_legend == False:
