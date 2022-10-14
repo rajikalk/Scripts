@@ -31,6 +31,7 @@ movie_files = sorted(glob.glob(input_dir + '*_plt_cnt*'))
 
 #Now let's iterate over the files and get the images we want to plot
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
+    proj_root_rank = int(rank/5)*5
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
     
@@ -44,9 +45,27 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
     for field in proj_field_list:
         proj_dict.update({field[1]:[]})
     
+    #Make projections of each field
     for field in yt.parallel_objects(proj_field_list):
         proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
         thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
         proj_array = proj.frb.data[field].in_cgs()/thickness
-        import pdb
-        pdb.set_trace()
+        if rank == proj_root_rank:
+            proj_dict[field[1]] = proj_array
+        else:
+            file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
+            pickle.dump((field[1], proj_array), file)
+            file.close()
+        
+    #gather projection arrays
+    if rank == proj_root_rank and size > 1:
+        for kit in range(1,len(proj_dict_keys)):
+            file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
+            key, proj_array = pickle.load(file)
+            file.close()
+            proj_dict[key] = proj_array
+            os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+
+    #Get particle data:
+    import pdb
+    pdb.set_trace()
