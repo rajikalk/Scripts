@@ -53,7 +53,7 @@ X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
 file_counter = -1
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
     file_counter = file_counter + 1
-    pickle_file = save_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
+    pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
     proj_root_rank = int(rank/5)*5
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
