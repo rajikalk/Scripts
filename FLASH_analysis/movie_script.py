@@ -145,8 +145,8 @@ for pickle_file in pickle_files:
         fig, ax = plt.subplots()
         ax.set_xlabel('AU', labelpad=-1, fontsize=10)
         ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
-        xlim = [np.min(X), np.max(X)]
-        ylim = [np.min(Y), np.max(Y)]
+        xlim = [np.min(X_image), np.max(X_image)]
+        ylim = [np.min(Y_image), np.max(Y_image)]
         ax.set_xlim(xlim)
         ax.set_ylim(ylim)
         
