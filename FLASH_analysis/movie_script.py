@@ -39,7 +39,14 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
         [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
         [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
     
+    #This is the dictionary where the projected arrays will be saved:
+    proj_dict = {}
+    for field in proj_field_list:
+        proj_dict.update({field[1]:[]})
+    
     for field in yt.parallel_objects(proj_field_list):
-        proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
+        proj = yt.ProjectionPlot(ds, args.axis, , method='integrate')
+        thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
+        proj_array = proj.frb.data[field].in_cgs()/thickness
         import pdb
         pdb.set_trace()
