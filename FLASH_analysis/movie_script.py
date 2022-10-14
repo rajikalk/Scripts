@@ -40,6 +40,6 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
         [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
     
     for field in yt.parallel_objects(proj_field_list):
-        proj = yt.ProjectionPlot(ds, axis_ind, field, method='integrate')
+        proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
         import pdb
         pdb.set_trace()
