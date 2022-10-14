@@ -16,7 +16,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
         else:
             legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
-    standard_vel = yt.units.km.in_units('cm').value * standard_vel
+    standard_vel = yt.YTQuantity(1, 'km').in_units('cm').value * standard_vel
     if limits is None:
         xmin = np.min(X_pos)
         xmax = np.max(X_pos)
