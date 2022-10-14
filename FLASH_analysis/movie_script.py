@@ -136,10 +136,10 @@ for pickle_file in pickle_files:
     if rit == size:
         rit = 0
     if rank == rit:
-        print('making frame from', pickle_file, 'on rank', rank)
         frame_no = int(pickle_file.split('_')[-1].split('.')[0])
         file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
         if os.path.isfile(file_name+'.jpg') == False:
+            print('making frame from', pickle_file, 'on rank', rank)
             file = open(pickle_file, 'rb')
             X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
