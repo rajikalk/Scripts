@@ -82,7 +82,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
             if rank == proj_root_rank:
                 proj_dict[field[1]] = proj_array
             else:
-                file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict.index(field[1])) + '.pkl', 'wb')
+                file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict.keys().index(field[1])) + '.pkl', 'wb')
                 pickle.dump((field[1], proj_array), file)
                 file.close()
             
