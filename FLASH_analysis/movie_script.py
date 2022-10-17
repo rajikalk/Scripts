@@ -116,6 +116,9 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
         pickle.dump((X_image, Y_image, proj_dict[proj_field_list[0][1]], proj_dict[proj_field_list[3][1]], proj_dict[proj_field_list[4][1]], X_image_vel, Y_image_vel, proj_dict[proj_field_list[1][1]], proj_dict[proj_field_list[2][1]], part_info, time_val), file)
         file.close()
 
+sys.stdout.flush()
+CW.Barrier()
+
 #Make frames.
 import matplotlib as mpl
 #mpl.rcParams['pdf.fonttype'] = 42
