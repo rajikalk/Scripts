@@ -88,7 +88,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
             
         #gather projection arrays
         if rank == proj_root_rank and size > 1:
-            for kit in range(1,len(proj_dict_keys)):
+            for kit in range(1,len(list(proj_dict.keys()))):
                 file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                 key, proj_array = pickle.load(file)
                 file.close()
