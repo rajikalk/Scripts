@@ -58,7 +58,7 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
     pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
     make_pickle = True
     #if os.path.isfile(pickle_file) == True:
-    if len(glob.glob(pickle_file)) == 1
+    if len(glob.glob(pickle_file)) == 1:
         make_pickle = False
     if make_pickle:
         proj_root_rank = int(rank/5)*5
