@@ -88,6 +88,8 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
                 pickle.dump((field[1], proj_array), file)
                 file.close()
             
+        sys.stdout.flush()
+        CW.Barrier()
         #gather projection arrays
         if rank == proj_root_rank and size > 1:
             for kit in range(1,len(list(proj_dict.keys()))):
