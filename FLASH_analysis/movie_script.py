@@ -53,12 +53,12 @@ while counter < 32:
 X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 
 #Now let's iterate over the files and get the images we want to plot
-file_counter = -1
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
-    file_counter = file_counter + 1
+    file_counter = movie_files.index(fn)
     pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
     make_pickle = True
-    if os.path.isfile(pickle_file) == True:
+    #if os.path.isfile(pickle_file) == True:
+    if len(glob.glob(pickle_file)) == 1
         make_pickle = False
     if make_pickle:
         proj_root_rank = int(rank/5)*5
