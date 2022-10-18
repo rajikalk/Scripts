@@ -18,6 +18,8 @@ size = CW.Get_size()
 def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
+    parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
+    parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
