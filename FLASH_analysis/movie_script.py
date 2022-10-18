@@ -29,7 +29,7 @@ output_dir = sys.argv[2]
 args = parse_inputs()
 
 #Get movie files
-movie_files = sorted(glob.glob(input_dir + '*_plt_cnt*'))
+movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 if rank == 1:
     print("Movie files=", movie_files)
 
