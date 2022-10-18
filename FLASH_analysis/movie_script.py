@@ -123,78 +123,79 @@ for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
 print("finished making movie frame pickles on rank", rank)
 sys.stdout.flush()
 CW.Barrier()
-if size == 1:
-    #Make frames.
-    import matplotlib as mpl
-    #mpl.rcParams['pdf.fonttype'] = 42
-    #mpl.rcParams['ps.fonttype'] = 42
-    import matplotlib.pyplot as plt
-    #plt.rcParams['figure.dpi'] = 300
-    from matplotlib.colors import LogNorm
-    import matplotlib.patheffects as path_effects
-    import my_flash_module as mym
 
-    #Let's get the pickle files
-    pickle_files = sorted(glob.glob(output_dir+"movie_frame_*.pkl"))
-    no_frames = len(pickle_files)
+#if size == 1:
+#Make frames.
+import matplotlib as mpl
+#mpl.rcParams['pdf.fonttype'] = 42
+#mpl.rcParams['ps.fonttype'] = 42
+import matplotlib.pyplot as plt
+#plt.rcParams['figure.dpi'] = 300
+from matplotlib.colors import LogNorm
+import matplotlib.patheffects as path_effects
+import my_flash_module as mym
 
-    rit = -1
-    for pickle_file in pickle_files:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == rit:
-            frame_no = int(pickle_file.split('_')[-1].split('.')[0])
-            file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
-            if os.path.isfile(file_name+'.jpg') == False:
-                print('making frame from', pickle_file, 'on rank', rank)
-                file = open(pickle_file, 'rb')
-                X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
-                file.close()
+#Let's get the pickle files
+pickle_files = sorted(glob.glob(output_dir+"movie_frame_*.pkl"))
+no_frames = len(pickle_files)
 
-                plt.clf()
-                fig, ax = plt.subplots()
-                ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-                ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
-                xlim = [np.min(X_image).value, np.max(X_image).value]
-                ylim = [np.min(Y_image).value, np.max(Y_image).value]
-                ax.set_xlim(xlim)
-                ax.set_ylim(ylim)
+rit = -1
+for pickle_file in pickle_files:
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        frame_no = int(pickle_file.split('_')[-1].split('.')[0])
+        file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
+        if os.path.isfile(file_name+'.jpg') == False:
+            print('making frame from', pickle_file, 'on rank', rank)
+            file = open(pickle_file, 'rb')
+            X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+            file.close()
+
+            plt.clf()
+            fig, ax = plt.subplots()
+            ax.set_xlabel('AU', labelpad=-1, fontsize=10)
+            ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+            xlim = [np.min(X_image).value, np.max(X_image).value]
+            ylim = [np.min(Y_image).value, np.max(Y_image).value]
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
+            
+            cmap=plt.cm.gist_heat
+            plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+            plt.gca().set_aspect('equal')
+
+            if frame_no > 0 or time_val > -1.0:
+                plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            else:
+                plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+            cbar = plt.colorbar(plot, pad=0.0)
+            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None)
+
+            if len(part_info.keys())>0:
+                mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+            plt.tick_params(axis='both', which='major')# labelsize=16)
+            for line in ax.xaxis.get_ticklines():
+                line.set_color('white')
+            for line in ax.yaxis.get_ticklines():
+                line.set_color('white')
                 
-                cmap=plt.cm.gist_heat
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
-                plt.gca().set_aspect('equal')
+            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-                if frame_no > 0 or time_val > -1.0:
-                    plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-                else:
-                    plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-                cbar = plt.colorbar(plot, pad=0.0)
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None)
-
-                if len(part_info.keys())>0:
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
-
-                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
-                plt.tick_params(axis='both', which='major')# labelsize=16)
-                for line in ax.xaxis.get_ticklines():
-                    line.set_color('white')
-                for line in ax.yaxis.get_ticklines():
-                    line.set_color('white')
-                    
-                time_string = "$t$="+str(int(time_val))+"yr"
-                time_string_raw = r"{}".format(time_string)
-                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
-                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-
-                if size > 1:
-                    try:
-                        plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
-                        #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-                        print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
-                    except:
-                        print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
-                else:
+            if size > 1:
+                try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
                     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+                except:
+                    print("couldn't save for the dviread.py problem. Make frame " + str(frame_no) + " on ipython")
+            else:
+                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+                #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
