@@ -126,7 +126,10 @@ if args.make_movie_pickles == 'True':
     print("finished making movie frame pickles on rank", rank)
 
 if rank == 0:
-    os.remove(output_dir+"*proj_data*")
+    try:
+        os.remove(output_dir+"*proj_data*")
+    except:
+        pass
 
 sys.stdout.flush()
 CW.Barrier()
