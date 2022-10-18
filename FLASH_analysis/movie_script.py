@@ -55,9 +55,9 @@ file_counter = -1
 for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
     file_counter = file_counter + 1
     pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
-    make_pickle = False
-    if os.path.isfile(pickle_file) == False:
-        make_pickle = True
+    make_pickle = True
+    if os.path.isfile(pickle_file) == True:
+        make_pickle = False
     if make_pickle:
         proj_root_rank = int(rank/5)*5
         part_file = 'part'.join(fn.split('plt_cnt'))
