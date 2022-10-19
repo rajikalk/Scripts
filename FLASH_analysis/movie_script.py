@@ -70,6 +70,23 @@ if args.make_movie_pickles == 'True':
             ds = yt.load(fn, particle_filename=part_file)
             time_val = ds.current_time.in_units('yr')
             
+                        #Get particle data:
+            dd = ds.all_data()
+            if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
+                has_particles = True
+                part_mass = dd['particle_mass'].in_units('msun')
+                part_pos_fields = [field for field in ds.field_list if ('particle_pos' in field[1])&(field[0]=='all')&(field[1]!='particle_pos'+args.axis)]
+                part_pos_x = dd[part_pos_fields[0]].in_units('au')
+                part_pos_y = dd[part_pos_fields[1]].in_units('au')
+                positions = np.array([part_pos_x,part_pos_y])
+                part_info = {'particle_mass':part_mass,
+                         'particle_position':positions,
+                         'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
+                         'particle_tag':dd['particle_tag']}
+            else:
+                has_particles = False
+                part_info = {}
+            
             #make list of projection fields: density, velocity, magnetic field
             proj_field_list = [('flash', 'dens')] + \
                 [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
@@ -103,50 +120,12 @@ if args.make_movie_pickles == 'True':
             if rank == proj_root_rank and size > 1:
                 for key, vals in sorted(my_storage.items()):
                     proj_dict[key] = vals
-                print("proj_dict=", proj_dict)
-            '''
-            #gather projection arrays
-            if rank == proj_root_rank and size > 1:
-                for kit in range(1,len(proj_field_list)):
-                    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
-                    key, proj_array = pickle.load(file)
-                    file.close()
-                    proj_dict[key] = proj_array
-                    os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
-            '''
-            sys.stdout.flush()
-            CW.Barrier()
-
-            #Get particle data:
-            dd = ds.all_data()
-            if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
-                has_particles = True
-                part_mass = dd['particle_mass'].in_units('msun')
-                part_pos_fields = [field for field in ds.field_list if ('particle_pos' in field[1])&(field[0]=='all')&(field[1]!='particle_pos'+args.axis)]
-                part_pos_x = dd[part_pos_fields[0]].in_units('au')
-                part_pos_y = dd[part_pos_fields[1]].in_units('au')
-                positions = np.array([part_pos_x,part_pos_y])
-                part_info = {'particle_mass':part_mass,
-                         'particle_position':positions,
-                         'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
-                         'particle_tag':dd['particle_tag']}
-            else:
-                has_particles = False
-                part_info = {}
-            
-            if rank == proj_root_rank:
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, proj_dict[proj_field_list[0][1]], proj_dict[proj_field_list[3][1]], proj_dict[proj_field_list[4][1]], X_image_vel, Y_image_vel, proj_dict[proj_field_list[1][1]], proj_dict[proj_field_list[2][1]], part_info, time_val), file)
+                pickle.dump((X_image, Y_image, proj_dict['dens'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, proj_dict['velx'], proj_dict['vely'], part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_counter)
 
     print("finished making movie frame pickles on rank", rank)
-
-if rank == 0:
-    try:
-        os.remove(output_dir+"*proj_data*")
-    except:
-        pass
 
 sys.stdout.flush()
 CW.Barrier()
