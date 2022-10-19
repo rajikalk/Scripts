@@ -29,7 +29,7 @@ pickle_files = sorted(glob.glob('*.pkl'))
 
 line_styles = ['--', '-.', '-']
 #label = ['L_{ref}=10', 'L_{ref}=11', 'L_{ref}=12']
-label = ['\Omega\times t_{ff}=0.25, \alpha=0.75, \mathcal(M)=0.1', '\Omega\times t_{ff}=0.2, \alpha=0.50, \mathcal(M)=0.0', '\Omega\times t_{ff}=0.2, \alpha=0.75, \mathcal(M)=0.1']
+label = ['\Omega\\times t_{ff}=0.25, \\alpha=0.75, \mathcal(M)=0.1', '\Omega\\times t_{ff}=0.2, \\alpha=0.50, \mathcal(M)=0.0', '\Omega\\times t_{ff}=0.2, \\alpha=0.75, \mathcal(M)=0.1']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -55,7 +55,7 @@ for pickle_file in pickle_files:
     time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
     time = yt.YTArray(time, 's')
     
-    plt.plot(time.in_units('yr'), separation.in_units('au'), label=label[pick_it])
+    plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=label[pick_it])
 
 plt.xlabel('Time (yr)')
 plt.ylabel('Separation (au)')
