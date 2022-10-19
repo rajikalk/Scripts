@@ -81,20 +81,27 @@ if args.make_movie_pickles == 'True':
                 proj_dict.update({field[1]:[]})
             
             #Make projections of each field
-            for field in yt.parallel_objects(proj_field_list):
+            for field in yt.parallel_objects(proj_field_list, storage=my_storage):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
-                if rank == proj_root_rank:
-                    proj_dict[field[1]] = proj_array
-                else:
-                    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
-                    pickle.dump((field[1], proj_array), file)
-                    file.close()
+                sto.result_id = field[1]
+                sto.result = proj_array
+                #if rank == proj_root_rank:
+                #    proj_dict[field[1]] = proj_array
+                #else:
+                #    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
+                #    pickle.dump((field[1], proj_array), file)
+                #    file.close()
                 
             sys.stdout.flush()
             CW.Barrier()
+            
+            if rank == proj_root_rank and size > 1:
+                for key, vals in sorted(my_storage.items()):
+                    proj_dict[key] = vals
+            '''
             #gather projection arrays
             if rank == proj_root_rank and size > 1:
                 for kit in range(1,len(proj_field_list)):
@@ -103,7 +110,7 @@ if args.make_movie_pickles == 'True':
                     file.close()
                     proj_dict[key] = proj_array
                     os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
-
+            '''
             sys.stdout.flush()
             CW.Barrier()
 
