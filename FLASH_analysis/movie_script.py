@@ -87,6 +87,7 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
+                print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
                 #if rank == proj_root_rank:
