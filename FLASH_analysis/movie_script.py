@@ -57,6 +57,7 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
+        print(fn, "is going to rank", rank)
         file_counter = movie_files.index(fn)
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
@@ -81,6 +82,7 @@ if args.make_movie_pickles == 'True':
             
             #Make projections of each field
             for field in yt.parallel_objects(proj_field_list):
+                print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
