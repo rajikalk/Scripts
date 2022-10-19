@@ -53,6 +53,7 @@ for pickle_file in pickle_files:
 
     separation = yt.YTArray(np.sqrt(dx**2 + dy**2 + dz**2), 'cm')
     time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
+    time = yt.YTArray(time, 's')
     
     plt.plot(time.in_units('yr'), separation.in_units('au'), label=label[pick_it])
 
