@@ -102,8 +102,8 @@ if args.make_movie_pickles == 'True':
             
             if rank == proj_root_rank and size > 1:
                 for key, vals in sorted(my_storage.items()):
-                    print(key, vals)
                     proj_dict[key] = vals
+                print("proj_dict=", proj_dict)
             '''
             #gather projection arrays
             if rank == proj_root_rank and size > 1:
