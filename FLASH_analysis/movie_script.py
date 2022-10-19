@@ -81,7 +81,7 @@ if args.make_movie_pickles == 'True':
                 proj_dict.update({field[1]:[]})
             
             #Make projections of each field
-            for field in yt.parallel_objects(proj_field_list, njobs=len(proj_field_list)):
+            for field in yt.parallel_objects(proj_field_list):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
@@ -97,7 +97,7 @@ if args.make_movie_pickles == 'True':
             CW.Barrier()
             #gather projection arrays
             if rank == proj_root_rank and size > 1:
-                for kit in range(1,len(list(proj_dict.keys()))):
+                for kit in range(1,len(proj_field_list)):
                     file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                     key, proj_array = pickle.load(file)
                     file.close()
