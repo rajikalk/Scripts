@@ -32,7 +32,7 @@ args = parse_inputs()
 
 if args.make_movie_pickles == 'True':
     #Get movie files
-    movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))[:10]
+    movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     #if rank == 1:
     #    print("Movie files=", movie_files)
 
@@ -207,4 +207,4 @@ if args.make_movie_frames == 'True':
                     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
-print("Finished plotting frames on rank", rank)
+    print("Finished plotting frames on rank", rank)
