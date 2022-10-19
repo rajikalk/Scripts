@@ -81,6 +81,7 @@ if args.make_movie_pickles == 'True':
                 proj_dict.update({field[1]:[]})
             
             #Make projections of each field
+            my_storage = {}
             for field in yt.parallel_objects(proj_field_list, storage=my_storage):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
