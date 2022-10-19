@@ -33,8 +33,8 @@ args = parse_inputs()
 if args.make_movie_pickles == 'True':
     #Get movie files
     movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))[:10]
-    if rank == 1:
-        print("Movie files=", movie_files)
+    #if rank == 1:
+    #    print("Movie files=", movie_files)
 
     #Calculate image grid:
     fn = movie_files[-1]
@@ -64,7 +64,7 @@ if args.make_movie_pickles == 'True':
         if len(glob.glob(pickle_file)) == 1:
             make_pickle = False
         if make_pickle:
-            print(fn, "is going to rank", rank)
+            #print(fn, "is going to rank", rank)
             proj_root_rank = int(rank/5)*5
             part_file = 'part'.join(fn.split('plt_cnt'))
             ds = yt.load(fn, particle_filename=part_file)
@@ -83,11 +83,11 @@ if args.make_movie_pickles == 'True':
             #Make projections of each field
             my_storage = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=my_storage):
-                print("Projecting field", field, "on rank", rank)
+                #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
-                print(field, "projection =", proj_array)
+                #print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
                 #if rank == proj_root_rank:
@@ -102,6 +102,7 @@ if args.make_movie_pickles == 'True':
             
             if rank == proj_root_rank and size > 1:
                 for key, vals in sorted(my_storage.items()):
+                    print(key, vals)
                     proj_dict[key] = vals
             '''
             #gather projection arrays
