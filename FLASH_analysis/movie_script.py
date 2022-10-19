@@ -219,3 +219,5 @@ if args.make_movie_frames == 'True':
                         plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
                         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                         print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+
+print("Finished plotting frames on rank", rank)
