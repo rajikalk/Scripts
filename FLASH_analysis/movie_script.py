@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import yt
-#yt.enable_parallelism()
+yt.enable_parallelism()
 import glob
 import sys
 import argparse
