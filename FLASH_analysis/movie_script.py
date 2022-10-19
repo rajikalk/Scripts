@@ -57,7 +57,6 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
-        print(fn, "is going to rank", rank)
         file_counter = movie_files.index(fn)
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
@@ -65,6 +64,7 @@ if args.make_movie_pickles == 'True':
         if len(glob.glob(pickle_file)) == 1:
             make_pickle = False
         if make_pickle:
+            print(fn, "is going to rank", rank)
             proj_root_rank = int(rank/5)*5
             part_file = 'part'.join(fn.split('plt_cnt'))
             ds = yt.load(fn, particle_filename=part_file)
@@ -81,7 +81,7 @@ if args.make_movie_pickles == 'True':
                 proj_dict.update({field[1]:[]})
             
             #Make projections of each field
-            for field in yt.parallel_objects(proj_field_list):
+            for field in yt.parallel_objects(proj_field_list, njobs=len(proj_field_list)):
                 print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
