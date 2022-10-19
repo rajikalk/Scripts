@@ -82,7 +82,7 @@ if args.make_movie_pickles == 'True':
             
             #Make projections of each field
             my_storage = {}
-            for field in yt.parallel_objects(proj_field_list, storage=my_storage):
+            for sto, field in yt.parallel_objects(proj_field_list, storage=my_storage):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
