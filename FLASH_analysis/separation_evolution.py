@@ -25,8 +25,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-input_dir = sys.argv[1]
-pickle_files = sorted(glob.glob(input_dir+'*/Lref_11.pkl'))
+pickle_files = sorted(glob.glob('*.pkl'))
 
 line_styles = ['--', '-.', '-']
 #label = ['L_{ref}=10', 'L_{ref}=11', 'L_{ref}=12']
