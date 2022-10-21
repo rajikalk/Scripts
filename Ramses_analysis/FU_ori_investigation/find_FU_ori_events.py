@@ -66,4 +66,4 @@ for sink_file in sink_files:
         plt.xlabel('age (yr)')
         plt.ylabel('max L diff over 100 yr (log)')
         plt.savefig('L_diff_Sink_'+sink_file.split('sink_')[-1].split('/')[0]+'.png')
-        print("plotted L dif history for sink", sink_file.split('sink_')[-1].split('/')[0])
+        print("plotted L diff history for sink", sink_file.split('sink_')[-1].split('/')[0], "on rank", rank)
