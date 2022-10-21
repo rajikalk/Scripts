@@ -50,7 +50,7 @@ for sink_file in sink_files:
                     scaled_L = useable_L - np.min(useable_L)
                     scaled_L = scaled_L/np.max(scaled_L)
                     cor = np.correlate(scaled_L,FU_temp,'same')
-                    if np.max(cor)>0.5 and L_diff>1:
+                    if L_diff>1: # and np.max(cor)>0.5
                         plt.clf()
                         plt.plot(useable_times, scaled_L, label="scaled Luminosity")
                         plt.plot(useable_times, cor, label="correlation")
