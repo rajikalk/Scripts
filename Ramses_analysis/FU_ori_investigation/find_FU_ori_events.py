@@ -37,6 +37,7 @@ for sink_file in sink_files:
             lum = 10.**m.hist.log_L
             lacc = m.hist.extra_lum / lsun
             ltot = lum + lacc
+            L_diff_arr = []
             
             #have moving window:
             for time_it in range(len(age)):
@@ -46,6 +47,7 @@ for sink_file in sink_files:
                 useable_L = ltot[time_it:end_it]
                 if len(useable_L) > 0:
                     L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
+                    L_diff_arr.append(L_diff)
                     #L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
                     scaled_T = useable_times - useable_times[0]
                     scaled_L = useable_L - np.min(useable_L)
@@ -60,5 +62,10 @@ for sink_file in sink_files:
                         plt.legend()
                         plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'png')
                         print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
+            plt.clf()
+            plt.plot(age, L_diff_arr)
+            plt.xlabel('age (yr)')
+            plt.ylabel('max L diff over 100 yr (log)')
+            plt.savefig('L_diff_Sink_'+sink_file.split('sink_')[-1].split('/')[0]+'.png')
         except:
             print("can't read file")
