@@ -62,7 +62,7 @@ for sink_file in sink_files:
                     plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'png')
                     print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
         plt.clf()
-        plt.plot(age, L_diff_arr)
+        plt.plot(age[:-1], L_diff_arr)
         plt.xlabel('age (yr)')
         plt.ylabel('max L diff over 100 yr (log)')
         plt.savefig('L_diff_Sink_'+sink_file.split('sink_')[-1].split('/')[0]+'.png')
