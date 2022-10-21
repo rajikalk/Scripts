@@ -20,6 +20,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
+    parser.add_argument("-width", "--plot_width", type=float, default=2000)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -29,6 +30,7 @@ def parse_inputs():
 input_dir = sys.argv[1]
 output_dir = sys.argv[2]
 args = parse_inputs()
+center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
     #Get movie files
@@ -97,11 +99,16 @@ if args.make_movie_pickles == 'True':
             for field in proj_field_list:
                 proj_dict.update({field[1]:[]})
             
+            left_corner = yt.YTArray([center_pos[0]-(0.75*(args.plot_width/2)), center_pos[1]-(0.75*(args.plot_width/2)), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
+            right_corner = yt.YTArray([center_pos[0]+(0.75*(args.plot_width/2)), center_pos[1]+(0.75*(args.plot_width/2)), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
+            region = ds.box(left_corner, right_corner)
+
+            
             #Make projections of each field
             my_storage = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=my_storage):
                 #print("Projecting field", field, "on rank", rank)
-                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate')
+                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=(args.plot_width,'au'))
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
                 #print(field, "projection =", proj_array)

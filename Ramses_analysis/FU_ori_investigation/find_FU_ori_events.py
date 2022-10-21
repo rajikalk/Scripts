@@ -48,16 +48,8 @@ for sink_file in sink_files:
                 scaled_T = useable_times - useable_times[0]
                 scaled_L = useable_L - np.min(useable_L)
                 scaled_L = scaled_L/np.max(scaled_L)
-                if len(scaled_T) > len(window_linspace):
-                    fit_T = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_T)
-                    fit_L = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_L) #CHECK THIS!!!
-                    import pdb
-                    pdb.set_trace()
-                else:
-                    import pdb
-                    pdb.set_trace()
-                
-                    
-                
+                import pdb
+                pdb.set_trace()
+                cor = np.correlate(scaled_L,FU_temp,'same')
         except:
             print("can't read file")
