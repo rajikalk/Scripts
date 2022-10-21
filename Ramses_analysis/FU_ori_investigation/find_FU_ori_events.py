@@ -44,7 +44,10 @@ for sink_file in sink_files:
             end_it = np.argmin(abs(age - end_time))
             useable_times = age[time_it:end_it]
             useable_L = ltot[time_it:end_it]
-            L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
+            if len(useable_L) > 0:
+                L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
+            else:
+                L_diff = 0
             scaled_T = useable_times - useable_times[0]
             scaled_L = useable_L - np.min(useable_L)
             scaled_L = scaled_L/np.max(scaled_L)
