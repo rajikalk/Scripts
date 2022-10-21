@@ -45,11 +45,19 @@ for sink_file in sink_files:
                 end_it = np.argmin(abs(age - end_time))
                 useable_times = age[time_it:end_it]
                 useable_L = ltot[time_it:end_it]
+                L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
                 scaled_T = useable_times - useable_times[0]
                 scaled_L = useable_L - np.min(useable_L)
                 scaled_L = scaled_L/np.max(scaled_L)
-                import pdb
-                pdb.set_trace()
                 cor = np.correlate(scaled_L,FU_temp,'same')
+                if np.max(cor)>0.9 and L_diff>1:
+                    plt.clf()
+                    plt.plot(useable_times, scaled_L, label="scaled Luminosity")
+                    plt.plot(useable_times, cor, label="correlation")
+                    plt.xlabel('Time (yr)')
+                    plt.ylabel('scaled L and correlation')
+                    plt.legend()
+                    plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'png')
+                    print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
         except:
             print("can't read file")
