@@ -57,7 +57,7 @@ for sink_file in sink_files:
                 if L_diff>1: # and np.max(cor)>0.5
                     plt.clf()
                     plt.plot(useable_times, scaled_L, label="scaled Luminosity")
-                    plt.plot(useable_times, cor, label="correlation")
+                    plt.plot(useable_times, cor[:len(useable_times)], label="correlation")
                     plt.xlabel('Time (yr)')
                     plt.ylabel('scaled L and correlation')
                     plt.legend()
