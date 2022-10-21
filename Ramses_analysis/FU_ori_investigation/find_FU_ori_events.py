@@ -46,20 +46,18 @@ for sink_file in sink_files:
             useable_L = ltot[time_it:end_it]
             if len(useable_L) > 0:
                 L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
-            else:
-                L_diff = 0
-            scaled_T = useable_times - useable_times[0]
-            scaled_L = useable_L - np.min(useable_L)
-            scaled_L = scaled_L/np.max(scaled_L)
-            cor = np.correlate(scaled_L,FU_temp,'same')
-            if np.max(cor)>0.8 and L_diff>1:
-                plt.clf()
-                plt.plot(useable_times, scaled_L, label="scaled Luminosity")
-                plt.plot(useable_times, cor, label="correlation")
-                plt.xlabel('Time (yr)')
-                plt.ylabel('scaled L and correlation')
-                plt.legend()
-                plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'png')
-                print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
+                scaled_T = useable_times - useable_times[0]
+                scaled_L = useable_L - np.min(useable_L)
+                scaled_L = scaled_L/np.max(scaled_L)
+                cor = np.correlate(scaled_L,FU_temp,'same')
+                if np.max(cor)>0.8 and L_diff>1:
+                    plt.clf()
+                    plt.plot(useable_times, scaled_L, label="scaled Luminosity")
+                    plt.plot(useable_times, cor, label="correlation")
+                    plt.xlabel('Time (yr)')
+                    plt.ylabel('scaled L and correlation')
+                    plt.legend()
+                    plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'png')
+                    print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
         #except:
         #    print("can't read file")
