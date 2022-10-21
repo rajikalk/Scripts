@@ -51,6 +51,8 @@ for sink_file in sink_files:
                 if len(scaled_T) > len(window_linspace):
                     fit_T = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_T)
                     fit_L = interp.interp1d(np.arange(window_linspace.size), window_linspace)(scaled_L) #CHECK THIS!!!
+                    import pdb
+                    pdb.set_trace()
                 else:
                     import pdb
                     pdb.set_trace()
