@@ -57,14 +57,13 @@ for sink_file in sink_files:
                         L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
                         L_diff_arr.append(L_diff)
                         time_arr.append(age[time_it])
+                        useable_L = np.log10(useable_L)
                         #L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
-                        import pdb
-                        pdb.set_trace()
                         scaled_T = useable_times - useable_times[0]
                         scaled_L = useable_L - np.min(useable_L)
                         scaled_L = scaled_L/np.max(scaled_L)
                         cor = np.correlate(scaled_L,FU_temp,'same')
-                        if L_diff>1 and np.max(cor)>80:
+                        if L_diff>1 and np.max(cor)>50:
                             plt.clf()
                             fig, ax1 = plt.subplots()
 
@@ -72,22 +71,16 @@ for sink_file in sink_files:
                             ax1.plot(useable_times, scaled_L, label="scaled Luminosity", color='b')
                             ax1.plot(useable_times, cor[:len(useable_times)]/100., label="correlation", color='r')
                             
-                            ax2.plot(useable_L, scaled_L, color='b')
+                            ax2.plot(useable_times, useable_L, color='b')
 
                             ax1.set_xlabel('Time (yr)')
                             ax1.set_ylabel('scaled L and correlation')
-                            ax2.set_ylabel('Total Luminosity')
+                            ax2.set_ylabel('Total log Luminosity')
                             
                             ax1.set_ylim([0, 1])
-                            ax2.set_ylim([])
+                            ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
                         
-                            plt.clf()
-                            plt.plot(useable_times, scaled_L, label="scaled Luminosity")
-                            plt.plot(useable_times, cor[:len(useable_times)]/100., label="correlation")
-                            plt.xlabel('Time (yr)')
-                            plt.ylim([0, 1])
-                            plt.ylabel('scaled L and correlation')
-                            plt.legend()
+                            ax1.legend()
                             plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'.png',  bbox_inches='tight')
                             print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
                 plt.clf()
