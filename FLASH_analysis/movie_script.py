@@ -95,12 +95,13 @@ if args.make_movie_pickles == 'True':
             proj_field_list = [('flash', 'dens')] + \
                 [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
                 [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
-            
+        
+            #define projection region
             left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
             right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
             region = ds.box(left_corner, right_corner)
             
-            #Make projections of each field
+            #Make projections of each field
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
@@ -108,8 +109,8 @@ if args.make_movie_pickles == 'True':
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
                 #print(field, "projection =", proj_array)
-                proj_dict.result_id = field[1]
-                proj_dict.result = proj_array
+                sto.result_id = field[1]
+                sto.result = proj_array
                 #if rank == proj_root_rank:
                 #    proj_dict[field[1]] = proj_array
                 #else:
