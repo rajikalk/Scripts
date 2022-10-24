@@ -8,6 +8,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
 import pickle5 as pickle
 import os
+import my_flash_fields as myf
 
 #------------------------------------------------------
 #get mpi size and ranks
@@ -105,18 +106,21 @@ if args.make_movie_pickles == 'True':
             right_corner = yt.YTArray([center_pos[0]+(0.75*(args.plot_width/2)), center_pos[1]+(0.75*(args.plot_width/2)), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
             region = ds.box(left_corner, right_corner)
             
+            #Calculate projection_depth
+            proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
+            
             #Make projections of each field
             my_storage = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=my_storage):
                 #print("Projecting field", field, "on rank", rank)
-                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=(args.plot_width,'au'))
+                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=(args.plot_width,'au'), weight_field=None, center=(center_pos, 'AU'))
+                import pdb
+                pdb.set_trace()
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
                 #print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
-                import pdb
-                pdb.set_trace()
                 #if rank == proj_root_rank:
                 #    proj_dict[field[1]] = proj_array
                 #else:
