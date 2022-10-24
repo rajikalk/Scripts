@@ -102,8 +102,8 @@ if args.make_movie_pickles == 'True':
             for field in proj_field_list:
                 proj_dict.update({field[1]:[]})
             
-            left_corner = yt.YTArray([center_pos[0]-(0.75*(args.plot_width/2)), center_pos[1]-(0.75*(args.plot_width/2)), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
-            right_corner = yt.YTArray([center_pos[0]+(0.75*(args.plot_width/2)), center_pos[1]+(0.75*(args.plot_width/2)), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
+            left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
+            right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
             region = ds.box(left_corner, right_corner)
             
             #Calculate projection_depth
