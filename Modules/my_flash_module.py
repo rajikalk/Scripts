@@ -85,7 +85,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        pos_start = [xmax - 0.1*(xmax-xmin), ymin + (fontsize_global/100)*0.75*(ymax-ymin)]
+        pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*0.75*(ymax-ymin)]
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
