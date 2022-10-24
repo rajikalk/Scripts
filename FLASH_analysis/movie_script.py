@@ -115,6 +115,8 @@ if args.make_movie_pickles == 'True':
                 #print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
+                import pdb
+                pdb.set_trace()
                 #if rank == proj_root_rank:
                 #    proj_dict[field[1]] = proj_array
                 #else:
