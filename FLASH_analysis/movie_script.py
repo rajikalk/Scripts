@@ -104,9 +104,6 @@ if args.make_movie_pickles == 'True':
             left_corner = yt.YTArray([center_pos[0]-(0.75*(args.plot_width/2)), center_pos[1]-(0.75*(args.plot_width/2)), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
             right_corner = yt.YTArray([center_pos[0]+(0.75*(args.plot_width/2)), center_pos[1]+(0.75*(args.plot_width/2)), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
             region = ds.box(left_corner, right_corner)
-            import pdb
-            pdb.set_trace()
-
             
             #Make projections of each field
             my_storage = {}
@@ -135,6 +132,13 @@ if args.make_movie_pickles == 'True':
                 pickle.dump((X_image, Y_image, proj_dict['dens'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, proj_dict['velx'], proj_dict['vely'], part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_counter)
+            else:
+                file = open(pickle_file, 'wb')
+                pickle.dump((X_image, Y_image, proj_dict['dens'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, proj_dict['velx'], proj_dict['vely'], part_info, time_val), file)
+                file.close()
+                print("created pickle for frame", file_counter)
+                import pdb
+                pdb.set_trace()
 
     print("finished making movie frame pickles on rank", rank)
 
