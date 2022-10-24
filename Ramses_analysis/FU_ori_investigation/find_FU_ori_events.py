@@ -63,7 +63,7 @@ for sink_file in sink_files:
                         scaled_L = useable_L - np.min(useable_L)
                         scaled_L = scaled_L/np.max(scaled_L)
                         cor = np.correlate(scaled_L,FU_temp,'same')
-                        if L_diff>1 and np.max(cor)>50:
+                        if L_diff>1:# and np.max(cor)>50:
                             plt.clf()
                             fig, ax1 = plt.subplots()
 
