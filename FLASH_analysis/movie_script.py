@@ -102,6 +102,8 @@ if args.make_movie_pickles == 'True':
             left_corner = yt.YTArray([center_pos[0]-(0.75*(args.plot_width/2)), center_pos[1]-(0.75*(args.plot_width/2)), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
             right_corner = yt.YTArray([center_pos[0]+(0.75*(args.plot_width/2)), center_pos[1]+(0.75*(args.plot_width/2)), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
             region = ds.box(left_corner, right_corner)
+            import pdb
+            pdb.set_trace()
 
             
             #Make projections of each field
