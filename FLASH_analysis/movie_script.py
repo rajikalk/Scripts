@@ -42,8 +42,10 @@ if args.make_movie_pickles == 'True':
     fn = movie_files[-1]
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
-    x_image_min = -1*ds.domain_width.in_units('au')[0]/2
-    x_image_max = ds.domain_width.in_units('au')[0]/2
+    x_image_min = yt.YTQuantity(-1*args.plot_width/2, 'au')
+    x_image_max = yt.YTQuantity(args.plot_width/2, 'au')
+    #x_image_min = -1*ds.domain_width.in_units('au')[0]/2
+    #x_image_max = ds.domain_width.in_units('au')[0]/2
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
     annotate_space = (x_image_min - x_image_max)/32.
