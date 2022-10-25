@@ -67,6 +67,9 @@ for sink_file in sink_files:
             plt.semilogy(age, ltot[idx], label='L$_{tot}$')
             plt.legend()
             plt.xlim([0, 150000])
+            plt.ylim([np.min([np.min(lum[idx]), np.min(lacc[idx])]), np.max(ltot[idx])])
+            plt.xlabel('time (yr)')
+            plt.ylabel('Luminosity')
             plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
             plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
             print("plotted", plot_name, "on rank", rank)
