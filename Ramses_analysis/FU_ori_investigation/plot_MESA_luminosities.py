@@ -53,6 +53,12 @@ for sink_file in sink_files:
         try:
             m.log_fold=sink_file
             m.loadHistory()
+            could_read_file = True
+        except:
+            print("can't read file")
+            could_read_file = False
+        
+        if could_read_file:
             mass = m.hist.star_mass
             age = m.hist.star_age
             idx = np.where(age <= max_age)
@@ -73,7 +79,5 @@ for sink_file in sink_files:
             plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
             plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
             print("plotted", plot_name, "on rank", rank)
-        except:
-            print("can't read file")
 
 print("finished plotting on rank", rank)
