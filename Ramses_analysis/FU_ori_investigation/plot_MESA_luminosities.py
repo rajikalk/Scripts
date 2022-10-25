@@ -74,6 +74,8 @@ for sink_file in sink_files:
             plt.legend()
             plt.xlim([0, 150000])
             plt.ylim([np.min([np.min(lum[idx]), np.min(lacc[idx])]), np.max(ltot[idx])])
+            import pdb
+            pdb.set_trace()
             plt.xlabel('time (yr)')
             plt.ylabel('Luminosity')
             plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
