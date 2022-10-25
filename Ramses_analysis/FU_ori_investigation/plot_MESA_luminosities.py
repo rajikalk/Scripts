@@ -73,13 +73,13 @@ for sink_file in sink_files:
             plt.semilogy(age, ltot[idx], label='L$_{tot}$')
             plt.legend()
             plt.xlim([0, 150000])
-            plt.ylim([np.min([np.min(lum[idx]), np.min(lacc[idx])]), np.max(ltot[idx])])
-            import pdb
-            pdb.set_trace()
+            lacc[np.where(lacc==0)] = np.nan
+            plt.ylim([np.min([np.min(lum[idx]), np.nanmin(lacc[idx])]), np.max(ltot[idx])])
+            lacc[idx][np.where(lacc[idx]==0)]=np.nan
             plt.xlabel('time (yr)')
             plt.ylabel('Luminosity')
             plot_name = "luminosity_" + sink_file.split("mesa/")[-1].split("/LOGS")[0]
-            plt.savefig(plot_name + ".pdf", format='pdf', bbox_inches='tight')
+            plt.savefig(plot_name + ".png", format='png', bbox_inches='tight')
             print("plotted", plot_name, "on rank", rank)
 
 print("finished plotting on rank", rank)
