@@ -11,8 +11,8 @@ import scipy.interpolate as interp
 m=mesaPlot.MESA()
 p=mesaPlot.plot()
 lsun = 3.828e26*1e7 # solar luminosity in erg
-FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
-time_window = 100
+FU_temp = np.concatenate((np.zeros(25), np.ones(75)))
+time_window = 80
 
 rank = CW.Get_rank()
 size = CW.Get_size()
