@@ -10,6 +10,34 @@ from matplotlib import transforms
 
 fontsize_global=12
 
+def find_sink_formation_time(files):
+    try:
+        file = files[-2]
+        part_file=file[:-12] + 'part' + file[-5:]
+        '''
+        ds = yt.load(file, particle_filename=part_file)
+        dd = ds.all_data()
+        if ('io', u'particle_creation_time') in ds.field_list:
+            sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
+        else:
+            sink_form = 0.0
+        '''
+        f = h5py.File(part_file, 'r')
+        if f[list(f.keys())[1]][-1][-1] > 0:
+            sink_form = np.min(f[list(f.keys())[11]][:,5])/yt.units.yr.in_units('s').value
+        else:
+            sink_form = 0.0
+    except:
+        sink_form = None
+        for source in range(len(files)):
+            f = h5py.File(files[source], 'r')
+            if 'particlemasses' in list(f.keys()):
+                sink_form = f['time'][0]/yt.units.yr.in_units('s').value
+                break
+        if sink_form is None:
+            sink_form = -1*f['time'][0]/yt.units.yr.in_units('s').value
+    return sink_form
+
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=None, form_time=None):
     if form_time != None:
         sink_form_time = form_time
