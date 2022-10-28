@@ -44,6 +44,7 @@ center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
     
+    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
@@ -71,15 +72,15 @@ if args.make_movie_pickles == 'True':
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     if args.image_center != 0 and args.yt_proj == False:
-        usable_sim_files = mym.find_files(m_times, sim_files)
+        usable_files = mym.find_files(m_times, sim_files)
 
     #Get movie files
-    movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+    #movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     #if rank == 1:
     #    print("Movie files=", movie_files)
 
     #Calculate image grid:
-    fn = movie_files[-1]
+    fn = usable_files[-1]
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
     x_image_min = yt.YTQuantity(-1*args.plot_width/2, 'au')
@@ -100,7 +101,7 @@ if args.make_movie_pickles == 'True':
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 
     #Now let's iterate over the files and get the images we want to plot
-    for fn in yt.parallel_objects(movie_files, njobs=int(size/5)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/5)):
         file_counter = movie_files.index(fn)
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
