@@ -49,6 +49,7 @@ if args.make_movie_pickles == 'True':
         m_times = [args.plot_time]
     else:
         m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+    print('generated frame times')
     sys.stdout.flush()
     CW.Barrier()
     
@@ -73,6 +74,7 @@ if args.make_movie_pickles == 'True':
         no_frames = len(usable_files)
     if args.image_center != 0 and args.yt_proj == False:
         usable_files = mym.find_files(m_times, sim_files)
+    print('found usable files for frames')
 
     #Get movie files
     #movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
