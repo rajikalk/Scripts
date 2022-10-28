@@ -72,8 +72,6 @@ if args.make_movie_pickles == 'True':
         usable_files = files[files.index(start_file[0]):]
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
-    if args.image_center != 0 and args.yt_proj == False:
-        usable_files = mym.find_files(m_times, sim_files)
     print('found usable files for frames')
 
     #Get movie files
