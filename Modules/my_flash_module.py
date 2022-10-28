@@ -11,31 +11,16 @@ from matplotlib import transforms
 fontsize_global=12
 
 def find_sink_formation_time(files):
-    try:
-        file = files[-2]
-        part_file=file[:-12] + 'part' + file[-5:]
-        '''
-        ds = yt.load(file, particle_filename=part_file)
-        dd = ds.all_data()
-        if ('io', u'particle_creation_time') in ds.field_list:
-            sink_form = float(np.min(dd['particle_creation_time']/yt.units.yr.in_units('s')).value)
-        else:
-            sink_form = 0.0
-        '''
-        f = h5py.File(part_file, 'r')
-        if f[list(f.keys())[1]][-1][-1] > 0:
-            sink_form = np.min(f[list(f.keys())[11]][:,5])/yt.units.yr.in_units('s').value
-        else:
-            sink_form = 0.0
-    except:
-        sink_form = None
-        for source in range(len(files)):
-            f = h5py.File(files[source], 'r')
-            if 'particlemasses' in list(f.keys()):
-                sink_form = f['time'][0]/yt.units.yr.in_units('s').value
-                break
-        if sink_form is None:
-            sink_form = -1*f['time'][0]/yt.units.yr.in_units('s').value
+    file = files[-2]
+    part_file=file[:-12] + 'part' + file[-5:]
+
+    f = h5py.File(part_file, 'r')
+    if f[list(f.keys())[1]][-1][-1] > 0:
+        sink_form = np.min(f[list(f.keys())[11]][:,5])*yt.units.s
+        sink_form = sink_form.in_units('yr').value
+    else:
+        sink_form = 0.0
+    f.close()
     return sink_form
 
 def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=None, form_time=None):
@@ -47,16 +32,10 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
     if end_time != None:
         max_time = end_time
     else:
-        try:
-            file = files[-1]
-            part_file=file[:-12] + 'part' + file[-5:]
-            f = h5py.File(part_file, 'r')
-            if end_time == None:
-                max_time = f[list(f.keys())[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
-        except:
-            f = h5py.File(files[-1], 'r')
-            if end_time == None:
-                max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
+        file = files[-1]
+        part_file=file[:-12] + 'part' + file[-5:]
+        f = h5py.File(part_file, 'r')
+        max_time = (f[list(f.keys())[7]][0][-1]*yt.units.s).in_units('yr').value - sink_form_time
         f.close()
 
     if presink_frames != 0:
@@ -88,14 +67,10 @@ def find_files(m_times, files):
     while mit < len(m_times):
         it = int(np.round(min + ((max - min)/2.)))
         #print 'search iterator =', it
-        try:
-            file = files[it]
-            part_file=file[:-12] + 'part' + file[-5:]
-            f = h5py.File(part_file, 'r')
-            time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-        except:
-            f = h5py.File(files[it], 'r')
-            time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+        file = files[it]
+        part_file=file[:-12] + 'part' + file[-5:]
+        f = h5py.File(part_file, 'r')
+        time = (f['real scalars'][0][1]*yt.units.s).in_units('yr').value-sink_form_time
         f.close()
         print("Current file time =", time, "for interator =", it)
         if pit == it or time == m_times[mit]:
@@ -107,13 +82,9 @@ def find_files(m_times, files):
                 pot_files = files[it-2:it+2]
             diff_arr = []
             for pfile in pot_files:
-                try:
-                    part_file=pfile[:-12] + 'part' + pfile[-5:]
-                    f = h5py.File(part_file, 'r')
-                    time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-                except:
-                    f = h5py.File(pfile, 'r')
-                    time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+                part_file=pfile[:-12] + 'part' + pfile[-5:]
+                f = h5py.File(part_file, 'r')
+                time = (f['real scalars'][0][1]*yt.units.s).in_units('yr').value-sink_form_time
                 f.close()
                 diff_val = abs(time - m_times[mit])
                 diff_arr.append(diff_val)
@@ -137,14 +108,11 @@ def find_files(m_times, files):
                     f = h5py.File(append_file, 'r')
                     if 'particlemasses' not in list(f.keys()):
                         append_file = pot_files[np.argmin(diff_arr)+1]
+                    f.close()
             usable_files.append(append_file)
-            try:
-                part_file=append_file[:-12] + 'part' + append_file[-5:]
-                f = h5py.File(part_file, 'r')
-                time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
-            except:
-                f = h5py.File(append_file, 'r')
-                time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+            part_file=append_file[:-12] + 'part' + append_file[-5:]
+            f = h5py.File(part_file, 'r')
+            time = (f['real scalars'][0][1]*yt.units.s).in_units('yr').value-sink_form_time
             f.close()
             print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
             #append_file = files[it]
