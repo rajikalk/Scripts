@@ -102,7 +102,7 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     for fn in yt.parallel_objects(usable_files, njobs=int(size/5)):
-        file_counter = movie_files.index(fn)
+        file_counter = usable_files.index(fn)
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
         #if os.path.isfile(pickle_file) == True:
