@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import yt
+import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -8,6 +9,130 @@ import matplotlib.patheffects as path_effects
 from matplotlib import transforms
 
 fontsize_global=12
+
+def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=None, form_time=None):
+    if form_time != None:
+        sink_form_time = form_time
+    else:
+        sink_form_time = find_sink_formation_time(files)
+        
+    if end_time != None:
+        max_time = end_time
+    else:
+        try:
+            file = files[-1]
+            part_file=file[:-12] + 'part' + file[-5:]
+            f = h5py.File(part_file, 'r')
+            if end_time == None:
+                max_time = f[list(f.keys())[7]][0][-1]/yt.units.yr.in_units('s').value - sink_form_time
+        except:
+            f = h5py.File(files[-1], 'r')
+            if end_time == None:
+                max_time = f['time'][0]/yt.units.yr.in_units('s').value - sink_form_time
+        f.close()
+
+    if presink_frames != 0:
+        m_times = np.logspace(0.0, np.log10(sink_form_time), presink_frames) - sink_form_time
+    else:
+        m_times = np.array([])
+    m_times = m_times.tolist()
+
+    postsink = 0.0
+    while postsink <= max_time:
+        if start_time is not None:
+            if postsink >= start_time:
+                m_times.append(postsink)
+        else:
+            m_times.append(postsink)
+        postsink = postsink + dt
+    return m_times
+
+def find_files(m_times, files):
+    sink_form_time = find_sink_formation_time(files)
+    if m_times[0] > 10e5:
+        m_times[0] = m_times[0]/yt.units.yr.in_units('s').value
+    usable_files = []
+    mit = 0
+    min = 0
+    max = len(files)-1
+    pit = 0
+    prev_diff = np.nan
+    while mit < len(m_times):
+        it = int(np.round(min + ((max - min)/2.)))
+        #print 'search iterator =', it
+        try:
+            file = files[it]
+            part_file=file[:-12] + 'part' + file[-5:]
+            f = h5py.File(part_file, 'r')
+            time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+        except:
+            f = h5py.File(files[it], 'r')
+            time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+        f.close()
+        print("Current file time =", time, "for interator =", it)
+        if pit == it or time == m_times[mit]:
+            if it == (len(files)-1):
+                pot_files = files[it-1:it]
+            elif it == 0:
+                pot_files = files[it:it+1]
+            else:
+                pot_files = files[it-2:it+2]
+            diff_arr = []
+            for pfile in pot_files:
+                try:
+                    part_file=pfile[:-12] + 'part' + pfile[-5:]
+                    f = h5py.File(part_file, 'r')
+                    time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+                except:
+                    f = h5py.File(pfile, 'r')
+                    time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+                f.close()
+                diff_val = abs(time - m_times[mit])
+                diff_arr.append(diff_val)
+            append_file = pot_files[np.argmin(diff_arr)]
+            if m_times[mit] == 0.0:
+                try:
+                    f = h5py.File(append_file, 'r')
+                    print("found file", append_file, ", checking if particles exist")
+                    if f[list(f.keys())[9]][-1][-1] == 0:
+                        found_first_particle_file = False
+                        app_ind = files.index(append_file) + 1
+                        while found_first_particle_file == False:
+                            append_file = files[app_ind]
+                            f = h5py.File(append_file, 'r')
+                            if f[list(f.keys())[9]][-1][-1] > 0:
+                                found_first_particle_file = True
+                                print("found particles in file", append_file)
+                            else:
+                                app_ind = app_ind + 1
+                except:
+                    f = h5py.File(append_file, 'r')
+                    if 'particlemasses' not in list(f.keys()):
+                        append_file = pot_files[np.argmin(diff_arr)+1]
+            usable_files.append(append_file)
+            try:
+                part_file=append_file[:-12] + 'part' + append_file[-5:]
+                f = h5py.File(part_file, 'r')
+                time = f['real scalars'][0][1]/yt.units.year.in_units('s').value-sink_form_time
+            except:
+                f = h5py.File(append_file, 'r')
+                time = f['time'][0]/yt.units.yr.in_units('s').value-sink_form_time
+            f.close()
+            print("found time", time, "for m_time", m_times[mit], "with file:", usable_files[-1])
+            #append_file = files[it]
+            #usable_files.append(append_file)
+            mit = mit + 1
+            min = it
+            max = len(files)-1
+            pit = it
+            prev_diff = np.nan
+        elif time > m_times[mit]:
+            max = it
+            pit = it
+        elif time < m_times[mit]:
+            min = it
+            pit = it
+    return usable_files
 
 def rainbow_text(x,y,ls,lc,**kw):
     t = plt.gca().transData

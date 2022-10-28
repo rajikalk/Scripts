@@ -21,6 +21,15 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
+    
+    parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
+    parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
+    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
+    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
+    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
+    
+    parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
+    
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -33,6 +42,36 @@ args = parse_inputs()
 center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
+    
+    if args.plot_time != None:
+        m_times = [args.plot_time]
+    else:
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    if args.use_all_files == 'False':
+        no_frames = len(m_times)
+        m_times = m_times[args.start_frame:]
+        usable_files = mym.find_files(m_times, files)
+        frames = list(range(args.start_frame, no_frames))
+    elif args.use_all_files != 'False' and args.plot_time != None:
+        usable_files = mym.find_files([args.plot_time], files)
+        start_index = files.index(usable_files[0])
+        args.plot_time = None
+        end_file = mym.find_files([args.end_time], files)
+        end_index = files.index(end_file[0])
+        usable_files = files[start_index:end_index]
+        frames = list(range(len(usable_files)))
+        no_frames = len(usable_files)
+    else:
+        start_file = mym.find_files([0], files)
+        usable_files = files[files.index(start_file[0]):]
+        frames = list(range(len(usable_files)))
+        no_frames = len(usable_files)
+    if args.image_center != 0 and args.yt_proj == False:
+        usable_sim_files = mym.find_files(m_times, sim_files)
+
     #Get movie files
     movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     #if rank == 1:
