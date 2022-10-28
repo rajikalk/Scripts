@@ -8,6 +8,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
 import pickle5 as pickle
 import os
+import my_flash_module as mym
 
 #------------------------------------------------------
 #get mpi size and ranks
