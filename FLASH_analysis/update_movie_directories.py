@@ -30,5 +30,5 @@ for sim_dir in sim_dirs:
             subprocess.run(proj_run_line, shell=True)
             
             #check all frames were made:
-            if len(glog.glob(save_dir + '*.pkl') != len(glog.glob(save_dir + '*.jpg'):
+            if len(glog.glob(save_dir + '*.pkl')) != len(glog.glob(save_dir + '*.jpg')):
                 subprocess.run(proj_run_line, shell=True)
