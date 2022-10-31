@@ -11,6 +11,9 @@ size = CW.Get_size()
 
 sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
 
+clean_pickles = True
+clean_images = True
+
 for sim_dir in sim_dirs:
     if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0:
         #check if movie directory exists
@@ -37,7 +40,15 @@ for sim_dir in sim_dirs:
         for proj_dir in proj_dirs:
             save_dir = movie_dir + proj_dir
             if os.path.exists(save_dir) == False:
-                os.makedirs(save_dir)
+                os.makedirs(ç)
+                
+            if clean_pickles:
+                for pickle_file in glob.glob(save_dir + '*.pkl'):
+                    os.remove(pickle_file)
+            
+            if clean_images:
+                for image_file in glob.glob(save_dir + '*.jpg'):
+                    os.remove(image_file)
             
             proj_run_line = run_line + save_dir
             if proj_dir == '/XZ/':
