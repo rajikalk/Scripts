@@ -154,6 +154,8 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=(args.plot_width,'au'), weight_field=None, center=(center_pos, 'AU'))
                 thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                 proj_array = proj.frb.data[field].in_cgs()/thickness
+                if args.axis == 'y':
+                    proj_array = proj_array.T
                 #print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
