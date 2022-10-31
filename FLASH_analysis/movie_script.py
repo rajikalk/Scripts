@@ -138,9 +138,14 @@ if args.make_movie_pickles == 'True':
                 [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
             #define projection region
-            left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
-            right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
-            region = ds.box(left_corner, right_corner)
+            if args.axis = 'z':
+                left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(args.plot_width/2))], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(args.plot_width/2))], 'AU')
+                region = ds.box(left_corner, right_corner)
+            else:
+                left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-(0.5*(args.plot_width/2)), center_pos[2]-((args.plot_width/2)+100)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+(0.5*(args.plot_width/2)), center_pos[2]+((args.plot_width/2)+100)], 'AU')
+                region = ds.box(left_corner, right_corner)
             
             #Make projections of each field
             proj_dict = {}
