@@ -20,7 +20,7 @@ for sim_dir in sim_dirs:
         proj_dirs = ['/XY/', '/XZ/']
         for proj_dir in proj_dirs:
             save_dir = movie_dir + proj_dir
-            if os.path.exists(ç) == False:
+            if os.path.exists(save_dir) == False:
                 os.makedirs(save_dir)
             
             proj_run_line = run_line + save_dir
