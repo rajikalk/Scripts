@@ -164,12 +164,12 @@ if args.make_movie_pickles == 'True':
             
             if rank == proj_root_rank and size > 1:
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, proj_dict['dens'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, proj_dict['velx'], proj_dict['vely'], part_info, time_val), file)
+                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_counter)
             elif size == 1:
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, proj_dict['dens'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, proj_dict['velx'], proj_dict['vely'], part_info, time_val), file)
+                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_counter)
 
