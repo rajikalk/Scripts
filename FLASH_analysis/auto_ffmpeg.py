@@ -10,7 +10,7 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 #size=sys.argv[1]
 
-sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
+sim_dirs = [x[0] for x in os.walk('/home/kuruwira/fast/Movie_frames')]
 
 rit = -1
 for sim_dir in sim_dirs:
