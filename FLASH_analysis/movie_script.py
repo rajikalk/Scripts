@@ -165,9 +165,6 @@ if args.make_movie_pickles == 'True':
                 #    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
-                
-            sys.stdout.flush()
-            CW.Barrier()
             
             if rank == proj_root_rank and size > 1:
                 file = open(pickle_file, 'wb')
