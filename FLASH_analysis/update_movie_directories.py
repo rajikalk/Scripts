@@ -43,7 +43,7 @@ for sim_dir in sim_dirs:
             if os.path.exists(save_dir) == False and rank == 0:
                 os.makedirs(save_dir)
                 
-            if clean_pickles and rank == 0:
+            if clean_pickles:# and rank == 0:
                 for pickle_file in glob.glob(save_dir + '*.pkl'):
                     os.remove(pickle_file)
             
