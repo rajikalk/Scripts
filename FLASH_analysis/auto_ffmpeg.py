@@ -12,6 +12,8 @@ size = CW.Get_size()
 
 sim_dirs = [x[0] for x in os.walk('/home/kuruwira/fast/Movie_frames')]
 
+update = False
+
 rit = -1
 for sim_dir in sim_dirs:
     if len(glob.glob(sim_dir + '/*.jpg')) > 0:
@@ -21,7 +23,14 @@ for sim_dir in sim_dirs:
         if rank == rit:
             #make movie!
             movie_name = "_".join(sim_dir.split('Movie_frames/')[-1].split('/')) + '.mp4'
-            tmp_list = 'jpgtmpfilelist_'+str(rank)+'.txt'
-            proj_run_line = 'python3 /home/kuruwira/Scripts/Automation_Scripts/make_movie.py -o /home/kuruwira/fast/Movies/Protostellar_spin/'+movie_name +' -tmp_list '+tmp_list +' '+sim_dir + '/*.jpg'
+            if update == False and os.path.exists(movie_name) == False:
+                tmp_list = 'jpgtmpfilelist_'+str(rank)+'.txt'
+                proj_run_line = 'python3 /home/kuruwira/Scripts/Automation_Scripts/make_movie.py -o /home/kuruwira/fast/Movies/Protostellar_spin/'+movie_name +' -tmp_list '+tmp_list +' '+sim_dir + '/*.jpg'
         
-            subprocess.run(proj_run_line, shell=True)
+                subprocess.run(proj_run_line, shell=True)
+            elif update == True:
+                tmp_list = 'jpgtmpfilelist_'+str(rank)+'.txt'
+                proj_run_line = 'python3 /home/kuruwira/Scripts/Automation_Scripts/make_movie.py -o /home/kuruwira/fast/Movies/Protostellar_spin/'+movie_name +' -tmp_list '+tmp_list +' '+sim_dir + '/*.jpg'
+        
+                subprocess.run(proj_run_line, shell=True)
+            
