@@ -22,7 +22,7 @@ for sim_dir in sim_dirs:
         sys.stdout.flush()
         CW.Barrier()
         
-        if os.path.exists(movie_dir) == False:
+        if os.path.exists(movie_dir) == False and rank == 0:
             #make movie directory
             os.makedirs(movie_dir)
         
@@ -42,13 +42,19 @@ for sim_dir in sim_dirs:
             if os.path.exists(save_dir) == False:
                 os.makedirs(ç)
                 
-            if clean_pickles:
+            if clean_pickles and rank == 0:
                 for pickle_file in glob.glob(save_dir + '*.pkl'):
                     os.remove(pickle_file)
             
-            if clean_images:
+            sys.stdout.flush()
+            CW.Barrier()
+            
+            if clean_images and rank == 0:
                 for image_file in glob.glob(save_dir + '*.jpg'):
                     os.remove(image_file)
+            
+            sys.stdout.flush()
+            CW.Barrier()
             
             proj_run_line = run_line + save_dir
             if proj_dir == '/XZ/':
