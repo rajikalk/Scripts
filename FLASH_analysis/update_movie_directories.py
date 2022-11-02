@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os
 import glob
-import subprocess
+from subprocess import Popen
+#import subprocess
 #from mpi4py.MPI import COMM_WORLD as CW
 import sys
 
@@ -65,4 +66,5 @@ for sim_dir in sim_dirs:
             
             #check all frames were made:
             if len(glob.glob(save_dir + '*.pkl')) != len(glob.glob(save_dir + '*.jpg')):
-                subprocess.run(proj_run_line, shell=True)
+                proc = Popen(proj_run_line.split(), shell=True)
+                #subprocess.run(proj_run_line, shell=True)
