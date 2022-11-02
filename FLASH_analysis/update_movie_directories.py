@@ -40,7 +40,7 @@ for sim_dir in sim_dirs:
         for proj_dir in proj_dirs:
             save_dir = movie_dir + proj_dir
             if os.path.exists(save_dir) == False:
-                os.makedirs(ç)
+                os.makedirs(save_dir)
                 
             if clean_pickles and rank == 0:
                 for pickle_file in glob.glob(save_dir + '*.pkl'):
