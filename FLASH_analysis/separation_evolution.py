@@ -61,7 +61,7 @@ for pickle_file in pickle_files:
     time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
     time = yt.YTArray(time, 's')
     
-    plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=pickle_file)
+    plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=pickle_file.split('/')[-1].split('.pkl')[0])
 
 plt.xlabel('Time (yr)')
 plt.ylabel('Separation (au)')
