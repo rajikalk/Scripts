@@ -20,8 +20,8 @@ for sim_dir in sim_dirs:
         #check if movie directory exists
         movie_dir = '/hits/fast/set/kuruwira/Movie_frames' + sim_dir.split('Protostellar_spin')[-1]
         
-        sys.stdout.flush()
-        CW.Barrier()
+        #sys.stdout.flush()
+        #CW.Barrier()
         
         if os.path.exists(movie_dir) == False:# and rank == 0:
             #make movie directory
