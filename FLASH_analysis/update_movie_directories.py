@@ -2,12 +2,13 @@
 import os
 import glob
 import subprocess
-from mpi4py.MPI import COMM_WORLD as CW
+#from mpi4py.MPI import COMM_WORLD as CW
 import sys
 
 #get mpi size and ranks
-rank = CW.Get_rank()
-size = CW.Get_size()
+#rank = CW.Get_rank()
+#size = CW.Get_size()
+size=sys.argv[1]
 
 sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
 
@@ -22,17 +23,17 @@ for sim_dir in sim_dirs:
         sys.stdout.flush()
         CW.Barrier()
         
-        if os.path.exists(movie_dir) == False and rank == 0:
+        if os.path.exists(movie_dir) == False:# and rank == 0:
             #make movie directory
             os.makedirs(movie_dir)
         
-        sys.stdout.flush()
-        CW.Barrier()
+        #sys.stdout.flush()
+        #CW.Barrier()
         
         #check if movie is up to date? How... I guess just run the movie line
-        if size > 1:
-            run_line = 'mpirun -np ' + str(size) + ' /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
-        else:
+        #if size > 1:
+        run_line = 'mpirun -np ' + str(size) + ' /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
+        #else:
             run_line = 'python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
             
         
@@ -46,15 +47,15 @@ for sim_dir in sim_dirs:
                 for pickle_file in glob.glob(save_dir + '*.pkl'):
                     os.remove(pickle_file)
             
-            sys.stdout.flush()
-            CW.Barrier()
+            #sys.stdout.flush()
+            #CW.Barrier()
             
-            if clean_images and rank == 0:
+            if clean_images:# and rank == 0:
                 for image_file in glob.glob(save_dir + '*.jpg'):
                     os.remove(image_file)
             
-            sys.stdout.flush()
-            CW.Barrier()
+            #sys.stdout.flush()
+            #CW.Barrier()
             
             proj_run_line = run_line + save_dir
             if proj_dir == '/XZ/':
