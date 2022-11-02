@@ -39,7 +39,7 @@ for sim_dir in sim_dirs:
         proj_dirs = ['/XY/', '/XZ/']
         for proj_dir in proj_dirs:
             save_dir = movie_dir + proj_dir
-            if os.path.exists(save_dir) == False:
+            if os.path.exists(save_dir) == False and rank == 0:
                 os.makedirs(save_dir)
                 
             if clean_pickles and rank == 0:
