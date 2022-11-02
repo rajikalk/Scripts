@@ -63,6 +63,10 @@ for sim_dir in sim_dirs:
                 proj_run_line = proj_run_line + " -ax 'y'"
              
             #proc = Popen(proj_run_line, shell=True)
+            subprocess.run('module list', shell=True)
+            subprocess.run('source ~/.bashrc', shell=True)
+            subprocess.run('module list', shell=True)
+            
             subprocess.run(proj_run_line, shell=True)
             
             #check all frames were made:
