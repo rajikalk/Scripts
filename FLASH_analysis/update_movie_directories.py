@@ -34,7 +34,7 @@ for sim_dir in sim_dirs:
         #if size > 1:
         run_line = 'mpirun -np ' + str(size) + ' /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
         #else:
-            run_line = 'python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
+        #    run_line = 'python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
             
         
         proj_dirs = ['/XY/', '/XZ/']
