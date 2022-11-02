@@ -61,8 +61,9 @@ for sim_dir in sim_dirs:
             proj_run_line = run_line + save_dir
             if proj_dir == '/XZ/':
                 proj_run_line = proj_run_line + " -ax 'y'"
-                
-            subprocess.run(proj_run_line, shell=True)
+             
+            proc = Popen(proj_run_line.split(), shell=True)
+            #subprocess.run(proj_run_line, shell=True)
             
             #check all frames were made:
             if len(glob.glob(save_dir + '*.pkl')) != len(glob.glob(save_dir + '*.jpg')):
