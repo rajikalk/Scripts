@@ -5,6 +5,7 @@ import glob
 import sys
 import matplotlib.pyplot as plt
 import matplotlib
+import argparse
 #from mpi4py.MPI import COMM_WORLD as CW
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
@@ -25,7 +26,13 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-search_line = sys.argv[1]
+
+parser = argparse.ArgumentParser(description='Make movie from a list of images.')
+parser.add_argument('inputfiles', type=str, help='image filenames', nargs='+')
+parser.add_argument('ffmpeg_args', nargs=argparse.REMAINDER)
+
+args = parser.parse_args()
+search_line = sorted(args.inputfiles)
 
 pickle_files = sorted(glob.glob(search_line))
 
