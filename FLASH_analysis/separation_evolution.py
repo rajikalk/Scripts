@@ -32,9 +32,7 @@ parser.add_argument('inputfiles', type=str, help='image filenames', nargs='+')
 parser.add_argument('ffmpeg_args', nargs=argparse.REMAINDER)
 
 args = parser.parse_args()
-search_line = sorted(args.inputfiles)
-
-pickle_files = sorted(glob.glob(search_line))
+pickle_files = sorted(args.inputfiles)
 
 line_styles = ['--', '-.', '-']
 #label = ['L_{ref}=10', 'L_{ref}=11', 'L_{ref}=12']
