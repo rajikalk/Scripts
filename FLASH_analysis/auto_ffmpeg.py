@@ -21,6 +21,7 @@ for sim_dir in sim_dirs:
         if rank == rit:
             #make movie!
             movie_name = "_".join(sim_dir.split('Movie_frames/')[-1].split('/')) + '.mp4'
-            proj_run_line = 'python3 /home/kuruwira/Scripts/Automation_Scripts/make_movie.py -o /home/kuruwira/fast/Movies/Protostellar_spin/'+movie_name +' '+sim_dir + '/*.jpg'
+            tmp_list = 'jpgtmpfilelist_'+str(rank)+'.txt'
+            proj_run_line = 'python3 /home/kuruwira/Scripts/Automation_Scripts/make_movie.py -o /home/kuruwira/fast/Movies/Protostellar_spin/'+movie_name +' -tmp_list '+tmp_list +' '+sim_dir + '/*.jpg'
         
             subprocess.run(proj_run_line, shell=True)

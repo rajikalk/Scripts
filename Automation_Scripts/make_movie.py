@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser(description='Make movie from a list of images.'
 parser.add_argument('inputfiles', type=str, help='image filenames', nargs='+')
 parser.add_argument('-o', dest='outputfile', default=None, type=str, help='movie output filename')
 parser.add_argument('-s', dest='step', default=1, type=int, help='step (default=1)')
+parser.add_argument('-tmp_list', '--jpgtmpfilelist', default='jpgtmpfilelist.txt', type=str)
 parser.add_argument('ffmpeg_args', nargs=argparse.REMAINDER)
 
 args = parser.parse_args()
@@ -35,7 +36,7 @@ else:
     outputfile = args.outputfile
 
 # get files in jpg tmp file list
-tmpfilelist = 'jpgtmpfilelist.txt'
+tmpfilelist = args.jpgtmpfilelist
 fileliststr = ""
 try:
     for i in range(0,len(inputfiles),args.step):
