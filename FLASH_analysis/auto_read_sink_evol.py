@@ -23,11 +23,11 @@ for sim_dir in sim_dirs:
         if rank == rit:
             pickle_name = "_".join(sim_dir.split('Protostellar_spin/')[-1].split('/')) + '.pkl'
             if update == False and os.path.exists(pickle_name) == False:
-                proj_run_line = 'python3 /home/kuruwira/Scripts/FLASH_analysis/read_sink_evol.py '+sim_dir+'/sinks_evol.dat /home/kuruwira/fast/Analysis/Sink_evol_pickles/.'
+                proj_run_line = 'python3 /home/kuruwira/Scripts/FLASH_analysis/read_sink_evol.py '+sim_dir+'/sinks_evol.dat /home/kuruwira/fast/Analysis/Sink_evol_pickles/'+pickle_name
         
                 subprocess.run(proj_run_line, shell=True)
             elif update == True:
-                proj_run_line = 'python3 /home/kuruwira/Scripts/FLASH_analysis/read_sink_evol.py '+sim_dir+'/sinks_evol.dat /home/kuruwira/fast/Analysis/Sink_evol_pickles/.'
+                proj_run_line = 'python3 /home/kuruwira/Scripts/FLASH_analysis/read_sink_evol.py '+sim_dir+'/sinks_evol.dat /home/kuruwira/fast/Analysis/Sink_evol_pickles/'+pickle_name
         
                 subprocess.run(proj_run_line, shell=True)
             
