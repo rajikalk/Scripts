@@ -13,8 +13,8 @@ size=sys.argv[1]
 
 sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
 
-clean_pickles = True
-clean_images = True
+clean_pickles = False
+clean_images = False
 
 for sim_dir in sim_dirs:
     if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0:
