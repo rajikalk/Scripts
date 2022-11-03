@@ -37,7 +37,7 @@ with open(sink_evol_file, 'r') as f:
             else:
                 if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
                     #find matching ind
-                    time_ind = np.where(np.array(sink_data[row_list[0]][col_tag[1].split(']')[-1]]) == float(row_list[1]))[0]
+                    time_ind = np.where(np.array(sink_data[row_list[0]][col_tag[1].split(']')[-1]]) == float(row_list[1]))[0][0]
                     
                     import pdb
                     pdb.set_trace()
