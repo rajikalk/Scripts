@@ -36,17 +36,18 @@ with open(sink_evol_file, 'r') as f:
                 sink_data[row_list[0]].update({col_tag[15].split(']')[-1]:[float(row_list[15])]})
             else:
                 if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
-                    import pdb
-                    pdb.set_trace()
+                    match_time = float(row_list[1])
+                    for sink_key in sink_data.keys():
+                        #if sink form time is after match time, remove sink
+                        if sink_data[sink_key]['time'][0] > match_time:
+                            del sink_data[sink_key]
+                            print('removed sink', sink_key)
+                            
                     #remove data after this time
                     for sink_key in sink_data.keys():
-                        import pdb
-                        pdb.set_trace()
-                        time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == float(row_list[1]))[0][0]
+                        time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
                         for field_key in sink_data[sink_key].keys():
                             sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
-                    import pdb
-                    pdb.set_trace()
                 sink_data[row_list[0]][col_tag[1].split(']')[-1]].append(float(row_list[1]))
                 sink_data[row_list[0]][col_tag[2].split(']')[-1]].append(float(row_list[2]))
                 sink_data[row_list[0]][col_tag[3].split(']')[-1]].append(float(row_list[3]))
