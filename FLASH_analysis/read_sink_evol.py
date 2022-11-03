@@ -40,14 +40,13 @@ with open(sink_evol_file, 'r') as f:
                     for sink_key in sink_data.keys():
                         #if sink form time is after match time, remove sink
                         if sink_data[sink_key]['time'][0] > match_time:
-                            del sink_data[sink_key]
+                            sink_data.pop(sink_key, None)
                             print('removed sink', sink_key)
-                            break
                             
                     #remove data after this time
                     for sink_key in sink_data.keys():
                         if len(np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0]) == 0:
-                            del sink_data[sink_key]
+                            sink_data.pop(sink_key, None)
                         else:
                             time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
                             for field_key in sink_data[sink_key].keys():
