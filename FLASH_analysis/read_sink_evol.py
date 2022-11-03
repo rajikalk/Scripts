@@ -35,8 +35,9 @@ with open(sink_evol_file, 'r') as f:
                 sink_data[row_list[0]].update({col_tag[14].split(']')[-1]:[float(row_list[14])]})
                 sink_data[row_list[0]].update({col_tag[15].split(']')[-1]:[float(row_list[15])]})
             else:
-                import pdb
-                pdb.set_trace()
+                if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
+                    import pdb
+                    pdb.set_trace()
                 sink_data[row_list[0]][col_tag[1].split(']')[-1]].append(float(row_list[1]))
                 sink_data[row_list[0]][col_tag[2].split(']')[-1]].append(float(row_list[2]))
                 sink_data[row_list[0]][col_tag[3].split(']')[-1]].append(float(row_list[3]))
