@@ -42,6 +42,7 @@ with open(sink_evol_file, 'r') as f:
                         if sink_data[sink_key]['time'][0] > match_time:
                             del sink_data[sink_key]
                             print('removed sink', sink_key)
+                            break
                             
                     #remove data after this time
                     for sink_key in sink_data.keys():
