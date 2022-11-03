@@ -40,7 +40,7 @@ with open(sink_evol_file, 'r') as f:
                     for sink_key in sink_data.keys():
                         import pdb
                         pdb.set_trace()
-                        time_ind = np.where(np.array(sink_data[row_list[0]][col_tag[1].split(']')[-1]]) == float(row_list[1]))[0][0]
+                        time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == float(row_list[1]))[0][0]
                         for field_key in sink_data[sink_key].keys():
                             sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
                     import pdb
