@@ -36,6 +36,8 @@ with open(sink_evol_file, 'r') as f:
                 sink_data[row_list[0]].update({col_tag[15].split(']')[-1]:[float(row_list[15])]})
             else:
                 if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
+                    import pdb
+                    pdb.set_trace()
                     #remove data after this time
                     for sink_key in sink_data.keys():
                         import pdb
