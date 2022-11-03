@@ -47,11 +47,11 @@ with open(sink_evol_file, 'r') as f:
                     #remove data after this time
                     for sink_key in sink_data.keys():
                         if len(np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0]) == 0:
-                            import pdb
-                            pdb.set_trace()
-                        time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
-                        for field_key in sink_data[sink_key].keys():
-                            sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
+                            del sink_data[sink_key]
+                        else:
+                            time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
+                            for field_key in sink_data[sink_key].keys():
+                                sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
                 sink_data[row_list[0]][col_tag[1].split(']')[-1]].append(float(row_list[1]))
                 sink_data[row_list[0]][col_tag[2].split(']')[-1]].append(float(row_list[2]))
                 sink_data[row_list[0]][col_tag[3].split(']')[-1]].append(float(row_list[3]))
