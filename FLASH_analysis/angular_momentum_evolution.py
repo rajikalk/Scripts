@@ -5,8 +5,15 @@ import glob
 import sys
 import matplotlib.pyplot as plt
 import matplotlib
-#from mpi4py.MPI import COMM_WORLD as CW
+from mpi4py.MPI import COMM_WORLD as CW
 
+#------------------------------------------------------
+#get mpi size and ranks
+rank = CW.Get_rank()
+size = CW.Get_size()
+
+#------------------------------------------------------
+#Ploting parameters
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -25,8 +32,6 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-pickle_file = sys.argv[1]
-
 line_styles = ['--', '-.', '-']
 label = ['Primary', 'Secondary', 'Orbit']
 two_col_width = 7.20472 #inches
@@ -34,35 +39,22 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
-plt.clf()
+#---------------------------------------------------
 
-file_open = open(pickle_file, 'rb')
-sink_data = pickle.load(file_open)
-file_open.close()
+#Get simulation files
+input_dir = sys.argv[1]
+files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+L_dict = {}
+L_primary = []
+L_secondary = []
+L_orbit = []
+L_gas = []
+for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
+    part_file = 'part'.join(fn.split('plt_cnt'))
+    ds = yt.load(fn, particle_filename=part_file)
 
-plot_counter = 0
-first_sink_formation = np.nan
-for sink_id in sink_data.keys():
-    if np.isnan(first_sink_formation):
-        first_sink_formation = sink_data[sink_id]['time'][0]
-    time_arr = yt.YTArray(sink_data[sink_id]['time']-first_sink_formation, 's')
-    Lx = yt.YTArray(sink_data[sink_id]['anglx'], 'g*cm**2/s')
-    Ly = yt.YTArray(sink_data[sink_id]['angly'], 'g*cm**2/s')
-    Lz = yt.YTArray(sink_data[sink_id]['anglz'], 'g*cm**2/s')
-    L_tot = np.sqrt(Lx**2 + Ly**2 + Lz**2)
-    L_tot[np.where(L_tot==0)[0]]=np.nan
+    import pdb
+    pdb.set_trace()
     
-    plt.semilogy(time_arr.in_units('yr'), L_tot, ls=line_styles[plot_counter], label=label[plot_counter])
+    #Calculate CoM
     
-    #axs.flatten()[plot_counter].set_ylabel('L$_{'+str(plot_counter+1)+'}$ (cm$^2$/s)')
-    plot_counter = plot_counter +1
-
-#Calculate orbital angular momentum
-import pdb
-pdb.set_trace()
-
-plt.set_xlabel('Time since Primary formation (yr)')
-plt.set_xlim(left=0)
-plt.set_ylim(bottom=1e40)
-    
-plt.savefig('spin_evolution_with_single.pdf', bbox_inches='tight', pad_inches=0.02)
