@@ -50,7 +50,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 part_file = 'part'.join(files[-1].split('plt_cnt'))
 ds = yt.load(files[-1], particle_filename=part_file)
 dd = ds.all_data()
-sink_form_time = yt.YTQuantity(np.min(dd['particle_creation_time'])value, 's')
+sink_form_time = yt.YTQuantity(np.min(dd['particle_creation_time']).value, 's')
 
 L_dict = {}
 L_primary = []
