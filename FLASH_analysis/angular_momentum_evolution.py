@@ -52,7 +52,7 @@ for sink_id in sink_data.keys():
     L_tot = np.sqrt(Lx**2 + Ly**2 + Lz**2)
     L_tot[np.where(L_tot==0)[0]]=np.nan
     
-    axs.flatten()[plot_counter].semilogy(time_arr.in_units('yr'), L_tot, ls=line_styles[plot_counter], label=label[plot_counter])
+    plt.semilogy(time_arr.in_units('yr'), L_tot, ls=line_styles[plot_counter], label=label[plot_counter])
     
     #axs.flatten()[plot_counter].set_ylabel('L$_{'+str(plot_counter+1)+'}$ (cm$^2$/s)')
     plot_counter = plot_counter +1
@@ -61,8 +61,8 @@ for sink_id in sink_data.keys():
 import pdb
 pdb.set_trace()
 
-axs.flatten()[plot_counter-1].set_xlabel('Time since Primary formation (yr)')
-axs.flatten()[plot_counter-1].set_xlim(left=0)
-axs.flatten()[plot_counter-1].set_ylim(bottom=1e40)
+plt.set_xlabel('Time since Primary formation (yr)')
+plt.set_xlim(left=0)
+plt.set_ylim(bottom=1e40)
     
 plt.savefig('spin_evolution_with_single.pdf', bbox_inches='tight', pad_inches=0.02)
