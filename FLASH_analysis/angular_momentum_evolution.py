@@ -53,9 +53,12 @@ L_gas = []
 for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     part_file = 'part'.join(fn[-1].split('plt_cnt'))
     ds = yt.load(fn[-1], particle_filename=part_file)
-
-    import pdb
-    pdb.set_trace()
     
-    #Calculate CoM
+    if ('all', 'particle_mass') in ds.field_list:
+        #Calculate CoM
+        dd = ds.all_data()
+        CoM = dd['CoM']
+        
+        import pdb
+        pdb.set_trace()
     

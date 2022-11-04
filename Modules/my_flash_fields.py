@@ -30,9 +30,9 @@ def _CoM(field, data):
     z_top = yt.YTArray(0.0, 'cm*g')
     if ('all', 'particle_mass') in data.ds.field_list:
         TM = TM + np.sum(data['particle_mass'].in_units('g'))
-        x_top = x_top + data['particle_mass'].in_units('g')*data['particle_posx'].in_units('cm')
-        y_top = y_top + data['particle_mass'].in_units('g')*data['particle_posy'].in_units('cm')
-        z_top = z_top + data['particle_mass'].in_units('g')*data['particle_posz'].in_units('cm')
+        x_top = x_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posx'].in_units('cm'))
+        y_top = y_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posy'].in_units('cm'))
+        z_top = z_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posz'].in_units('cm'))
     x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
     y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
     z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
