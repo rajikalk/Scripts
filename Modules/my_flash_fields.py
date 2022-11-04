@@ -71,7 +71,7 @@ def _Particle_Spin(field, data):
     Calcualtes spin of sink particles
     """
     if ('all', 'particle_mass') in data.ds.field_list:
-        spin_val = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 +dd['particle_z_ang']**2).value
+        spin_val = np.sqrt(data['particle_x_ang']**2 + data['particle_y_ang']**2 +data['particle_z_ang']**2).value
         return yt.YTArray(spin_val, 'g*cm**2/s')
     else:
         return yt.YTArray([], 'g*cm**2/s')
