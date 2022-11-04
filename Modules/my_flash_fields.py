@@ -2,6 +2,7 @@
 #Created by Rajika Kuruwita, 2019
 import yt
 yt.enable_parallelism()
+import numpy as np
 
 def _Neg_z(field, data):
     """
