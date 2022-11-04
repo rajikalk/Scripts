@@ -62,7 +62,6 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
 
     #Calculate CoM
     dd = ds.all_data()
-    CoM =
     
     particle_spin = dd['Particle_Spin']
     
