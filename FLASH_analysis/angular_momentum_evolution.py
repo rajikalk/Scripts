@@ -62,7 +62,18 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
 
     #Calculate CoM
     dd = ds.all_data()
-    CoM = dd['CoM']
+    CoM =
+    
+    particle_spin = dd['Particle_Spin']
+    
+    #Calculate orbital angular momentum around CoM
+    dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
+    dy = dd['particle_posy'].in_units('cm') - dd['CoM'][1]
+    dz = dd['particle_posz'].in_units('cm') - dd['CoM'][2]
+    
+    dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
+    dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
+    dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
     
     import pdb
     pdb.set_trace()
