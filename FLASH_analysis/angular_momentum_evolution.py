@@ -45,6 +45,13 @@ font_size = 10
 #Get simulation files
 input_dir = sys.argv[1]
 files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+
+#Get sink formation time
+part_file = 'part'.join(files[-1].split('plt_cnt'))
+ds = yt.load(files[-1], particle_filename=part_file)
+dd = ds.all_data()
+sink_form_time = np.min(dd['particle_creation_time']).in_units('yr')
+
 L_dict = {}
 L_primary = []
 L_secondary = []
@@ -53,8 +60,7 @@ L_gas = []
 for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     part_file = 'part'.join(fn[-1].split('plt_cnt'))
     ds = yt.load(fn[-1], particle_filename=part_file)
-    
-    if ('all', 'particle_mass') in ds.field_list:
+    if ds.current_time.in_units('yr') >= sink_form_time:
         #Calculate CoM
         dd = ds.all_data()
         CoM = dd['CoM']
