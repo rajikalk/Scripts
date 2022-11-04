@@ -6,6 +6,7 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib
 from mpi4py.MPI import COMM_WORLD as CW
+import my_flash_fields as myf
 
 #------------------------------------------------------
 #get mpi size and ranks
