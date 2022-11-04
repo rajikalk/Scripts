@@ -25,9 +25,9 @@ def _CoM(field, data):
     Returns center of mass using both the gas and the sink particles
     """
     TM = np.sum(data['cell_mass'].in_units('g'))
-    x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
-    y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
-    z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
+    x_top = np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
+    y_top = np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
+    z_top = np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
     if ('all', 'particle_mass') in data.ds.field_list:
         TM = TM + np.sum(data['particle_mass'].in_units('g'))
         x_top = x_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posx'].in_units('cm'))
@@ -48,9 +48,9 @@ def _CoM_Velocity(field, data):
     Calculates the velcoity fo the CoM
     """
     TM = np.sum(data['cell_mass'].in_units('g'))
-    x_top = x_top + np.sum(data['cell_mass'].in_units('g')*data['velx'].in_units('cm'))
-    y_top = y_top + np.sum(data['cell_mass'].in_units('g')*data['vely'].in_units('cm'))
-    z_top = z_top + np.sum(data['cell_mass'].in_units('g')*data['velz'].in_units('cm'))
+    x_top = np.sum(data['cell_mass'].in_units('g')*data['velx'].in_units('cm'))
+    y_top = np.sum(data['cell_mass'].in_units('g')*data['vely'].in_units('cm'))
+    z_top = np.sum(data['cell_mass'].in_units('g')*data['velz'].in_units('cm'))
     if ('all', 'particle_mass') in data.ds.field_list:
         TM = TM + np.sum(data['particle_mass'].in_units('g'))
         x_top = x_top + np.sum(data['particle_mass'].in_units('g')*data['particle_velx'].in_units('cm'))
