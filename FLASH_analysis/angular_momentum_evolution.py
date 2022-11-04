@@ -50,7 +50,7 @@ L_secondary = []
 L_orbit = []
 L_gas = []
 for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
-    part_file = 'part'.join(fn[=1].split('plt_cnt'))
+    part_file = 'part'.join(fn[-1].split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
 
     import pdb
