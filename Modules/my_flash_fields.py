@@ -64,7 +64,7 @@ def _CoM_Velocity(field, data):
     del TM
     return com
 
-yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s")
+yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
     
 def _Particle_Spin(field, data):
     """
