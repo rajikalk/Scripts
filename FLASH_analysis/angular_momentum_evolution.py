@@ -58,6 +58,10 @@ L_primary = []
 L_secondary = []
 L_orbit = []
 L_in_gas = []
+
+sys.stdout.flush()
+CW.Barrier()
+
 for sto, ds in ts.piter(storage=L_dict):
     Time_array.append(ds.current_time.in_units('yr'))
 
@@ -108,34 +112,41 @@ for sto, ds in ts.piter(storage=L_dict):
     sto.result_id = 'rank_'+str(rank)
     sto.result = rank_data
     
+sys.stdout.flush()
+CW.Barrier()
 
-#Compile together results
-Time_array = []
-L_primary = []
-L_secondary = []
-L_orbit = []
-L_in_gas = []
-for key in L_dict.keys():
-    Time_array = Time_array + L_dict[key]['Time_array']
-    L_primary = L_primary + L_dict[key]['L_primary']
-    L_secondary = L_secondary + L_dict[key]['L_secondary']
-    L_orbit = L_orbit + L_dict[key]['L_orbit']
-    L_in_gas = L_in_gas + L_dict[key]['L_in_gas']
+if rank == 0:
+    #Compile together results
+    Time_array = []
+    L_primary = []
+    L_secondary = []
+    L_orbit = []
+    L_in_gas = []
+    for key in L_dict.keys():
+        Time_array = Time_array + L_dict[key]['Time_array']
+        L_primary = L_primary + L_dict[key]['L_primary']
+        L_secondary = L_secondary + L_dict[key]['L_secondary']
+        L_orbit = L_orbit + L_dict[key]['L_orbit']
+        L_in_gas = L_in_gas + L_dict[key]['L_in_gas']
 
-#sort arrays
-sorted_inds = np.argsort(Time_array)
-Time_array = np.array(Time_array)[sorted_inds]
-L_primary = np.array(L_primary)[sorted_inds]
-L_secondary = np.array(L_secondary)[sorted_inds]
-L_orbit = np.array(L_orbit)[sorted_inds]
-L_in_gas = np.array(L_in_gas)[sorted_inds]
+    #sort arrays
+    sorted_inds = np.argsort(Time_array)
+    Time_array = np.array(Time_array)[sorted_inds]
+    L_primary = np.array(L_primary)[sorted_inds]
+    L_secondary = np.array(L_secondary)[sorted_inds]
+    L_orbit = np.array(L_orbit)[sorted_inds]
+    L_in_gas = np.array(L_in_gas)[sorted_inds]
 
-plt.clf()
-plt.semilogy(Time_array, L_primary, label='Primary spin')
-plt.semilogy(Time_array, L_secondary, label='Secondary spin')
-plt.semilogy(Time_array, L_orbit, label='Orbital L')
-plt.semilogy(Time_array, L_in_gas, label='L_in_gas')
-plt.xlabel('Time (yr)')
-plt.ylabel('Angular momentum (g cm$^2$/s)')
-plt.legend(loc='best')
-plt.savefig('L_evolution.png', bbox_inches='tight')
+    plt.clf()
+    plt.semilogy(Time_array, L_primary, label='Primary spin')
+    plt.semilogy(Time_array, L_secondary, label='Secondary spin')
+    plt.semilogy(Time_array, L_orbit, label='Orbital L')
+    plt.semilogy(Time_array, L_in_gas, label='L_in_gas')
+    plt.xlabel('Time (yr)')
+    plt.ylabel('Angular momentum (g cm$^2$/s)')
+    plt.legend(loc='best')
+    plt.savefig('L_evolution.png', bbox_inches='tight')
+    print('saved figure')
+    
+sys.stdout.flush()
+CW.Barrier()
