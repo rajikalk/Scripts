@@ -56,7 +56,7 @@ L_in_gas = []
 
 #get current progress
 if rank == 0:
-    pickle_files = sorted(glob.glob('ang_mom_*.pkl'))
+    pickle_files = glob.glob('ang_mom_*.pkl')
     if len(pickle_files) > 0:
         for pickle_file in pickle_files:
             file = open(pickle_file, 'rb')
@@ -91,13 +91,13 @@ sys.stdout.flush()
 CW.Barrier()
 
 #make time series
-files = files[files.index(start_file):] #files[files.index(start_file):]
+files = files[files.index(start_file):files.index(start_file)+100] #files[files.index(start_file):]
 ts = yt.DatasetSeries(files, parallel=True)
 
 sys.stdout.flush()
 CW.Barrier()
 
-for sto, ds in ts.piter(storage=L_dict):
+for ds in ts.piter():
     Time_array.append(ds.current_time.in_units('yr'))
 
     #Calculate CoM
@@ -144,45 +144,42 @@ for sto, ds in ts.piter(storage=L_dict):
     L_in_gas.append(L_gas_tot)
     
     rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas}
-    sto.result_id = 'rank_'+str(rank)
-    sto.result = rank_data
-    print('saved data on rank', rank)
     
     #write pickle
     file = open('ang_mom_'+str(rank)+'.pkl', 'wb')
-    pickle.dump((L_dict), file)
+    pickle.dump((rank_data), file)
     file.close()
+    print('saved data on rank', rank)
 
 sys.stdout.flush()
 CW.Barrier()
 
 if rank == 0:
-    file = open('ang_mom.pkl', 'wb')
-    pickle.dump((L_dict), file)
-    file.close()
-
-if rank == 0:
     #Compile together results
-    Time_array = []
-    L_primary = []
-    L_secondary = []
-    L_orbit = []
-    L_in_gas = []
-    for key in L_dict.keys():
-        print('reading data from', key)
-        Time_array = Time_array + L_dict[key]['Time_array']
-        L_primary = L_primary + L_dict[key]['L_primary']
-        L_secondary = L_secondary + L_dict[key]['L_secondary']
-        L_orbit = L_orbit + L_dict[key]['L_orbit']
-        L_in_gas = L_in_gas + L_dict[key]['L_in_gas']
-
-    #sort arrays
+    pickle_files = glob.glob('ang_mom_*.pkl')
+    for pickle_file in pickle_files:
+        file = open(pickle_file, 'rb')
+        rank_data = pickle.load(file)
+        file.close()
+        
+        for key in rank_data.keys():
+            Time_array = Time_array + rank_data['Time_array']
+            L_primary = L_primary + rank_data['L_primary']
+            L_secondary = L_secondary + rank_data['L_secondary']
+            L_orbit = L_orbit + rank_data['L_orbit']
+            L_in_gas = L_in_gas + rank_data['L_in_gas']
+    
     sorted_inds = np.argsort(Time_array)
     Time_array = np.array(Time_array)[sorted_inds]
     L_primary = np.array(L_primary)[sorted_inds]
     L_secondary = np.array(L_secondary)[sorted_inds]
     L_orbit = np.array(L_orbit)[sorted_inds]
     L_in_gas = np.array(L_in_gas)[sorted_inds]
+    
+    file = open('ang_mom_gathered.pkl', 'wb')
+    pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
+    file.close()
+    print('saved gathered data')
 
     plt.clf()
     plt.semilogy(Time_array, L_primary, label='Primary spin')
