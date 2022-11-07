@@ -9,6 +9,7 @@ import matplotlib
 from mpi4py.MPI import COMM_WORLD as CW
 import my_flash_fields as myf
 import my_flash_module as mym
+import pickle
 
 #------------------------------------------------------
 #get mpi size and ranks
@@ -35,8 +36,6 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-line_styles = ['--', '-.', '-']
-label = ['Primary', 'Secondary', 'Orbit']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -113,9 +112,19 @@ for sto, ds in ts.piter(storage=L_dict):
     sto.result_id = 'rank_'+str(rank)
     sto.result = rank_data
     print('saved data on rank', rank)
+    
+    #write pickle
+    file = open('ang_mom_'+str(rank)+'.pkl', 'wb')
+    pickle.dump((L_dict), file)
+    file.close()
 
 sys.stdout.flush()
 CW.Barrier()
+
+if rank == 0:
+    file = open('ang_mom.pkl', 'wb')
+    pickle.dump((L_dict), file)
+    file.close()
 
 if rank == 0:
     #Compile together results
