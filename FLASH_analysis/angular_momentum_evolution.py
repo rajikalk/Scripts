@@ -50,7 +50,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 #Get first file with sink:
 start_file = mym.find_files([0], files)[0]
-files = files[files.index(start_file):files.index(start_file)+40] #files[files.index(start_file):]
+files = files[files.index(start_file):files.index(start_file)+100] #files[files.index(start_file):]
 ts = yt.DatasetSeries(files, parallel=True)
 
 L_dict = {}
@@ -63,7 +63,7 @@ L_in_gas = []
 sys.stdout.flush()
 CW.Barrier()
 
-for sto, ds in ts.piter(storage=L_dict, ):
+for sto, ds in ts.piter(storage=L_dict):
     Time_array.append(ds.current_time.in_units('yr'))
 
     #Calculate CoM
@@ -112,6 +112,7 @@ for sto, ds in ts.piter(storage=L_dict, ):
     rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit:': L_orbit, 'L_in_gas': L_in_gas}
     sto.result_id = 'rank_'+str(rank)
     sto.result = rank_data
+    print('saved data on rank', rank)
     
 sys.stdout.flush()
 CW.Barrier()
