@@ -61,9 +61,7 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     part_file = 'part'.join(fn[-1].split('plt_cnt'))
     ds = yt.load(fn[-1], particle_filename=part_file)
     
-    import pdb
-    pdb.set_trace()
-    #SAVE TIME INTO TIME ARRAY
+    Time_array.append(ds.current_time.in_units('yr'))
 
     #Calculate CoM
     dd = ds.all_data()
@@ -103,3 +101,6 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     L_orbit.append(L_orb_tot)
     L_in_gas.append(L_gas_tot)
     
+
+import pdb
+pdb.set_trace()
