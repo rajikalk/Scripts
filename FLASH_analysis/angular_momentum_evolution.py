@@ -49,7 +49,8 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 #Get first file with sink:
 start_file = mym.find_files([0], files)[0]
-files = files[files.index(start_file):]
+files = files[files.index(start_file):files.index(start_file)+10] #files[files.index(start_file):]
+ts = yt.DatasetSeries(files, parallel=True)
 
 L_dict = {}
 Time_array = []
@@ -57,7 +58,7 @@ L_primary = []
 L_secondary = []
 L_orbit = []
 L_in_gas = []
-for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
+for sto, ds in ts.piter(storage=L_dict):
     part_file = 'part'.join(fn[-1].split('plt_cnt'))
     ds = yt.load(fn[-1], particle_filename=part_file)
     
@@ -66,6 +67,7 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     #Calculate CoM
     dd = ds.all_data()
     
+    #Calculate particle spin
     particle_spin = dd['Particle_Spin']
     
     #Calculate orbital angular momentum around CoM
@@ -96,6 +98,7 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     L_gas = dd['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
     L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
     
+    #Save values
     L_primary.append(particle_spin[0])
     if len(particle_spin) == 2:
         L_secondary.append(particle_spin[1])
@@ -104,6 +107,9 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     L_orbit.append(L_orb_tot)
     L_in_gas.append(L_gas_tot)
     
-
+    rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit:': L_orbit, 'L_in_gas': L_in_gas}
+    sto.result_id = 'rank_'+str(rank)
+    sto.result = rank_data
+    
 import pdb
 pdb.set_trace()
