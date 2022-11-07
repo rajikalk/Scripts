@@ -63,7 +63,7 @@ if rank == 0:
             L_dict = pickle.load(file)
             file.close()
             
-            for key in rank_data.keys():
+            for key in L_dict.keys():
                 Time_array = Time_array + L_dict[key]['Time_array']
                 L_primary = L_primary + L_dict[key]['L_primary']
                 L_secondary = L_secondary + L_dict[key]['L_secondary']
