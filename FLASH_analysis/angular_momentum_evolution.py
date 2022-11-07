@@ -59,9 +59,6 @@ L_secondary = []
 L_orbit = []
 L_in_gas = []
 for sto, ds in ts.piter(storage=L_dict):
-    part_file = 'part'.join(fn[-1].split('plt_cnt'))
-    ds = yt.load(fn[-1], particle_filename=part_file)
-    
     Time_array.append(ds.current_time.in_units('yr'))
 
     #Calculate CoM
