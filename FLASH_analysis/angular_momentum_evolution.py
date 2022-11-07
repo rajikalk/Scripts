@@ -64,11 +64,11 @@ if rank == 0:
             file.close()
             
             for key in L_dict.keys():
-                Time_array = Time_array + L_dict[key]['Time_array']
-                L_primary = L_primary + L_dict[key]['L_primary']
-                L_secondary = L_secondary + L_dict[key]['L_secondary']
-                L_orbit = L_orbit + L_dict[key]['L_orbit']
-                L_in_gas = L_in_gas + L_dict[key]['L_in_gas']
+                Time_array = Time_array + L_dict['Time_array']
+                L_primary = L_primary + L_dict['L_primary']
+                L_secondary = L_secondary + L_dict['L_secondary']
+                L_orbit = L_orbit + L_dict['L_orbit']
+                L_in_gas = L_in_gas + L_dict['L_in_gas']
         
         sorted_inds = np.argsort(Time_array)
         Time_array = list(np.array(Time_array)[sorted_inds])
