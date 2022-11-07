@@ -85,7 +85,7 @@ if rank == 0:
 sys.stdout.flush()
 CW.Barrier()
 
-CW.bcast(start_file, root=0)
+start_file = CW.bcast(start_file, root=0)
 
 sys.stdout.flush()
 CW.Barrier()
