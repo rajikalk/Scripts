@@ -49,7 +49,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 #Get first file with sink:
 start_file = mym.find_files([0], files)[0]
-files = files[files.index(start_file):files.index(start_file)+10] #files[files.index(start_file):]
+files = files[files.index(start_file):files.index(start_file)+40] #files[files.index(start_file):]
 ts = yt.DatasetSeries(files, parallel=True)
 
 L_dict = {}
