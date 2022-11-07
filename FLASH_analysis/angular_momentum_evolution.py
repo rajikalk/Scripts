@@ -47,17 +47,52 @@ font_size = 10
 input_dir = sys.argv[1]
 files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
-#Get first file with sink:
-start_file = mym.find_files([0], files)[0]
-files = files[files.index(start_file):] #files[files.index(start_file):]
-ts = yt.DatasetSeries(files, parallel=True)
-
 L_dict = {}
 Time_array = []
 L_primary = []
 L_secondary = []
 L_orbit = []
 L_in_gas = []
+
+#get current progress
+if rank == 0:
+    pickle_files = sorted(glob.glob('ang_mom_*.pkl'))
+    if len(pickle_files) > 0:
+        for pickle_file in pickle_files:
+            file = open(pickle_file, 'rb')
+            L_dict = pickle.load(file)
+            file.close()
+            
+            for key in rank_data.keys():
+                Time_array = Time_array + L_dict[key]['Time_array']
+                L_primary = L_primary + L_dict[key]['L_primary']
+                L_secondary = L_secondary + L_dict[key]['L_secondary']
+                L_orbit = L_orbit + L_dict[key]['L_orbit']
+                L_in_gas = L_in_gas + L_dict[key]['L_in_gas']
+        
+        sorted_inds = np.argsort(Time_array)
+        Time_array = list(np.array(Time_array)[sorted_inds])
+        L_primary = list(np.array(L_primary)[sorted_inds])
+        L_secondary = list(np.array(L_secondary)[sorted_inds])
+        L_orbit = list(np.array(L_orbit)[sorted_inds])
+        L_in_gas = list(np.array(L_in_gas)[sorted_inds])
+        
+        start_time = Time_array[-1] - mym.find_sink_formation_time(files)
+    else:
+        start_time = 0
+    start_file = mym.find_files([start_time], files)[0]
+    
+sys.stdout.flush()
+CW.Barrier()
+
+CW.bcast(start_file, root=0)
+
+sys.stdout.flush()
+CW.Barrier()
+
+#make time series
+files = files[files.index(start_file):] #files[files.index(start_file):]
+ts = yt.DatasetSeries(files, parallel=True)
 
 sys.stdout.flush()
 CW.Barrier()
