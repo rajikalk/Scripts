@@ -97,7 +97,10 @@ for fn in yt.parallel_objects(files, njobs=size, storage=L_dict):
     L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
     
     L_primary.append(particle_spin[0])
-    L_secondary.append(particle_spin[1])
+    if len(particle_spin) == 2:
+        L_secondary.append(particle_spin[1])
+    else:
+        L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
     L_orbit.append(L_orb_tot)
     L_in_gas.append(L_gas_tot)
     
