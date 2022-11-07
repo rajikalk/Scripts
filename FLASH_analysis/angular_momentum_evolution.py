@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import yt
+yt.enable_parallelism()
 import glob
 import sys
 import matplotlib.pyplot as plt
@@ -62,7 +63,7 @@ L_in_gas = []
 sys.stdout.flush()
 CW.Barrier()
 
-for sto, ds in ts.piter(storage=L_dict):
+for sto, ds in ts.piter(storage=L_dict, ):
     Time_array.append(ds.current_time.in_units('yr'))
 
     #Calculate CoM
