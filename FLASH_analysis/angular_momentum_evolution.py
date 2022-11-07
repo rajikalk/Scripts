@@ -125,6 +125,7 @@ if rank == 0:
     L_orbit = []
     L_in_gas = []
     for key in L_dict.keys():
+        print('reading data from', key)
         Time_array = Time_array + L_dict[key]['Time_array']
         L_primary = L_primary + L_dict[key]['L_primary']
         L_secondary = L_secondary + L_dict[key]['L_secondary']
