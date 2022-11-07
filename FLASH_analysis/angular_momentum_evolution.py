@@ -114,6 +114,12 @@ for sto, ds in ts.piter(storage=L_dict):
     sto.result = rank_data
     print('saved data on rank', rank)
     
+if rank == 0:
+    import pickle
+    file = open('ang_mom.pkl', 'wb')
+    pickle.dump((L_dict), file)
+    file.close()
+
 sys.stdout.flush()
 CW.Barrier()
 
