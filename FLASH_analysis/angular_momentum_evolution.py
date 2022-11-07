@@ -109,16 +109,10 @@ for sto, ds in ts.piter(storage=L_dict):
     L_orbit.append(L_orb_tot)
     L_in_gas.append(L_gas_tot)
     
-    rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit:': L_orbit, 'L_in_gas': L_in_gas}
+    rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas}
     sto.result_id = 'rank_'+str(rank)
     sto.result = rank_data
     print('saved data on rank', rank)
-    
-if rank == 0:
-    import pickle
-    file = open('ang_mom.pkl', 'wb')
-    pickle.dump((L_dict), file)
-    file.close()
 
 sys.stdout.flush()
 CW.Barrier()
