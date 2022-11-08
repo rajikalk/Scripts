@@ -178,7 +178,7 @@ if rank == 0:
     L_orbit = np.array(L_orbit)[sorted_inds]
     L_in_gas = np.array(L_in_gas)[sorted_inds]
     
-    file = open('ang_mom_gathered.pkl', 'wb')
+    file = open('gathered_ang_mom.pkl', 'wb')
     pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
     file.close()
     print('saved gathered data')
