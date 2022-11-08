@@ -93,7 +93,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #make time series
-files = files[files.index(start_file):files.index(start_file)] #files[files.index(start_file):]
+files = files[files.index(start_file):] #files[files.index(start_file):]
 ts = yt.DatasetSeries(files, parallel=True)
 
 sys.stdout.flush()
