@@ -81,7 +81,9 @@ if rank == 0:
     else:
         start_time = 0
     start_file = mym.find_files([start_time], files)[0]
-    
+else:
+    start_file = ''
+
 sys.stdout.flush()
 CW.Barrier()
 
