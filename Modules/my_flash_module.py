@@ -10,6 +10,15 @@ from matplotlib import transforms
 
 fontsize_global=12
 
+def set_global_font_size(x):
+    global fontsize_global
+    fontsize_global = x
+    return fontsize_global
+
+def get_global_font_size():
+    global fontsize_global
+    return fontsize_global
+
 def find_sink_formation_time(files):
     file = files[-2]
     part_file=file[:-12] + 'part' + file[-5:]
