@@ -41,7 +41,9 @@ with open(sink_evol_file, 'r') as f:
                     remove_keys = []
                     for sink_key in sink_data.keys():
                         #if sink form time is after match time, remove sink
-                        if sink_data[sink_key]['time'][0] > match_time:
+                        if len(sink_data[sink_key]['time']) == 0:
+                            remove_keys.append(sink_key)
+                        elif sink_data[sink_key]['time'][0] > match_time:
                             remove_keys.append(sink_key)
                     
                     for r_key in remove_keys:
