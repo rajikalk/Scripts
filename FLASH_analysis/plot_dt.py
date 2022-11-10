@@ -14,9 +14,12 @@ with open(shell_out_file, 'r') as f:
     reader = csv.reader(f)
     line_counter = 0
     found_start = False
+    line_counter = 0
     for row in reader:
-        import pdb
-        pdb.set_trace()
+        line_counter = line_counter + 1
+        if line_counter == 716:
+            import pdb
+            pdb.set_trace()
         if row[:7] == '      ' and row[7] != 'n':
             curr_step = int(row_list[0])
             curr_dt = float(row_list[2])
