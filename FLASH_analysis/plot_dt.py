@@ -16,6 +16,7 @@ with open(shell_out_file, 'r') as f:
     found_start = False
     line_counter = 0
     for row in reader:
+        line_counter = line_counter + 1
         if len(row) > 0:
             if row[0][:7] == '       ' and row[0][7] != 'n':
                 values = list(filter(None, row[0].split(' ')))
@@ -23,9 +24,10 @@ with open(shell_out_file, 'r') as f:
                 curr_dt = float(values[2])
                 step_number.append(curr_step)
                 dt.append(curr_dt)
-            if '*** Wrote checkpoint file to SPIN_hdf5_chk_' in row:
+            if line_counter == 1065:
                 import pdb
                 pdb.set_trace()
+            if '*** Wrote checkpoint file to SPIN_hdf5_chk_' in row:
                 curr_chk_number = int(row.split('*** Wrote checkpoint file to SPIN_hdf5_chk_')[-1].split('****')[0])
                 step_chk.append(curr_step)
                 chk_number.append(curr_chk_number)
