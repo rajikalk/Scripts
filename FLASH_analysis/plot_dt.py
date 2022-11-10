@@ -45,6 +45,7 @@ with open(shell_out_file, 'r') as f:
 
 import matplotlib.pyplot as plt
 
+plt.clf()
 plt.semilogy(step_number, dt)
 for chk_it in range(len(step_chk)):
     plt.axvline(step_chk[chk_it])
