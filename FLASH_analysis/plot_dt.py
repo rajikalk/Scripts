@@ -18,12 +18,14 @@ with open(shell_out_file, 'r') as f:
     for row in reader:
         line_counter = line_counter + 1
         if len(row) > 0:
-            if row[0][:7] == '       ' and row[0][7] != 'n':
+            if found_start:
                 values = list(filter(None, row[0].split(' ')))
                 curr_step = int(values[0])
                 curr_dt = float(values[2])
                 step_number.append(curr_step)
                 dt.append(curr_dt)
+            if row[0][:7] == '       ' and row[0][7] == 'n':
+                found_start = True
             if '*** Wrote checkpoint file to SPIN_hdf5_chk_' in row[0]:
                 curr_chk_number = int(row[0].split('*** Wrote checkpoint file to SPIN_hdf5_chk_')[-1].split('****')[0])
                 if len(step_number) > 0:
