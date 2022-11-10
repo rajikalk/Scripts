@@ -40,7 +40,7 @@ with open(shell_out_file, 'r') as f:
             if '*** Wrote checkpoint file to SPIN_hdf5_chk_' in row[0]:
                 curr_chk_number = int(row[0].split('*** Wrote checkpoint file to SPIN_hdf5_chk_')[-1].split('****')[0])
                 if len(step_number) > 0:
-                    step_chk.append(curr_step)
+                    step_chk.append(step_number[-1])
                     chk_number.append(curr_chk_number)
 
 import matplotlib.pyplot as plt
