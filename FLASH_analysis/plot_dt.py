@@ -20,10 +20,13 @@ with open(shell_out_file, 'r') as f:
         if len(row) > 0:
             if found_start == False and len(step_number) > 0:
                 values = list(filter(None, row[0].split(' ')))
-                if int(values[0]) == next_step:
-                    step_number.append(next_step)
-                    dt.append(float(values[2]))
-                    next_step = next_step + 1
+                try:
+                    if int(values[0]) == next_step:
+                        step_number.append(next_step)
+                        dt.append(float(values[2]))
+                        next_step = next_step + 1
+                except:
+                    pass
             if found_start:
                 values = list(filter(None, row[0].split(' ')))
                 curr_step = int(values[0])
