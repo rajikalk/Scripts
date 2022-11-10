@@ -81,7 +81,9 @@ if rank == 0:
     else:
         start_time = 0
     start_file = mym.find_files([start_time], files)[0]
-    
+else:
+    start_file = ''
+
 sys.stdout.flush()
 CW.Barrier()
 
@@ -91,7 +93,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #make time series
-files = files[files.index(start_file):files.index(start_file)+100] #files[files.index(start_file):]
+files = files[files.index(start_file):] #files[files.index(start_file):]
 ts = yt.DatasetSeries(files, parallel=True)
 
 sys.stdout.flush()
@@ -176,7 +178,7 @@ if rank == 0:
     L_orbit = np.array(L_orbit)[sorted_inds]
     L_in_gas = np.array(L_in_gas)[sorted_inds]
     
-    file = open('ang_mom_gathered.pkl', 'wb')
+    file = open('gathered_ang_mom.pkl', 'wb')
     pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
     file.close()
     print('saved gathered data')

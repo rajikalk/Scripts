@@ -9,6 +9,7 @@ sink_evol_pickle = sys.argv[2]
 sink_data = {}
 
 with open(sink_evol_file, 'r') as f:
+    print("reading ", sink_evol_file)
     reader = csv.reader(f, delimiter=' ')
     line_counter = 0
     for row in reader:
@@ -40,7 +41,9 @@ with open(sink_evol_file, 'r') as f:
                     remove_keys = []
                     for sink_key in sink_data.keys():
                         #if sink form time is after match time, remove sink
-                        if sink_data[sink_key]['time'][0] > match_time:
+                        if len(sink_data[sink_key]['time']) == 0:
+                            remove_keys.append(sink_key)
+                        elif sink_data[sink_key]['time'][0] > match_time:
                             remove_keys.append(sink_key)
                     
                     for r_key in remove_keys:
@@ -67,7 +70,7 @@ with open(sink_evol_file, 'r') as f:
                 sink_data[row_list[0]][col_tag[13].split(']')[-1]].append(float(row_list[11]))
                 sink_data[row_list[0]][col_tag[14].split(']')[-1]].append(float(row_list[11]))
                 sink_data[row_list[0]][col_tag[15].split(']')[-1]].append(float(row_list[11]))
-            if np.remainder(line_counter, 1000) == 0:
+            if np.remainder(line_counter, 5000) == 0:
                 print('Read up to line', line_counter)
 f.close()
 
