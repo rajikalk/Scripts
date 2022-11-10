@@ -15,7 +15,9 @@ with open(shell_out_file, 'r') as f:
     line_counter = 0
     found_start = False
     for row in reader:
-        if row[:7] == '       ' and row[7] != 'n':
+        import pdb
+        pdb.set_trace()
+        if row[:7] == '      ' and row[7] != 'n':
             curr_step = int(row_list[0])
             curr_dt = float(row_list[2])
             step_number.append(curr_step)
