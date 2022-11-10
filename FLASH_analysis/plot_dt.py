@@ -28,7 +28,7 @@ with open(shell_out_file, 'r') as f:
                 curr_dt = float(values[2])
                 step_number.append(curr_step)
                 dt.append(curr_dt)
-                found_start == False
+                found_start = False
             if row[0][:7] == '       ' and row[0][7] == 'n':
                 found_start = True
             if '*** Wrote checkpoint file to SPIN_hdf5_chk_' in row[0]:
