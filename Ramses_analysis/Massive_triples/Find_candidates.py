@@ -124,36 +124,6 @@ print('loaded global data')
 sys.stdout.flush()
 CW.Barrier()
 
-#Get birth conditions
-file_open = open(args.global_data_pickle_file, 'rb')
-#Sink_bound_birth.append([born_bound, most_bound_sink_id, rel_sep])
-
-sys.stdout.flush()
-CW.Barrier()
-
-if args.bound_check == 'True':
-    bound_check = True
-else:
-    bound_check = False
-
-sys.stdout.flush()
-CW.Barrier()
-
-#Find sink formation times
-Sink_formation_times = []
-time_it = 0
-sink_it = 0
-while time_it < np.shape(global_data['m'])[0]:
-     while sink_it < np.shape(global_data['m'])[1]:
-         if global_data['m'][time_it][sink_it]>0:
-             Sink_formation_times.append(global_data['time'][time_it][sink_it])
-             sink_it = sink_it + 1
-         elif global_data['m'][time_it][sink_it] == 0:
-             time_it = time_it + 1
-             break
-     if sink_it == np.shape(global_data['m'])[1]:
-         break
-
 #Iterate through systems from superplot pickle, and retrieve masses from global data. I guess I should have lifetime limits?
 
 #load superplot data
