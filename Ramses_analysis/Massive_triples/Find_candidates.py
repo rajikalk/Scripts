@@ -139,3 +139,5 @@ for sys_key in superplot_dict['System_times'].keys():
         if np.max(masses) > 8:
             import pdb
             pdb.set_trace()
+        else:
+            print("found a triple, but it's low mass")
