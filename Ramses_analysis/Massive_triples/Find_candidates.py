@@ -145,9 +145,13 @@ for sys_key in superplot_dict['System_times'].keys():
         if len(flatten(eval(sys_key))) == 3:
             inner_mass_max = np.max(masses)
         else:
-            last_seps = np.array(superplot_dict['System_seps'][sys_key])[non_nan_inds][-1]
-            import pdb
-            pdb.set_trace()
+            #check if inner trinary exists
+            #If n is odd, there is a trinary, but quadruples could be [[],[]]
+            #need to searhc for [[,],] or [,[,]]
+            structure = '.join([i for i in sys_key if not i.isdigit()])
+            if '[, [, ]]' in structure or '[[, ], ]':
+                import pdb
+                pdb.set_trace()
             inner_mass_max = 0
         if inner_mass_max > 8:
             if np.max(masses.value) > 8:
