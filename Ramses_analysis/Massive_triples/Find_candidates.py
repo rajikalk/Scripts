@@ -119,9 +119,6 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
-dm = global_data['dm']*units['mass_unit'].in_units('Msun')
-dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
-Accretion_array = dm/dt
 print('loaded global data')
 
 sys.stdout.flush()
