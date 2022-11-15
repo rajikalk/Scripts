@@ -148,7 +148,7 @@ for sys_key in superplot_dict['System_times'].keys():
             plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
             plt.xlabel('time (yr)')
             plt.ylabel('separation (au)')
-            plt.title('system = '+str(sys_key) +', final mass = ', str(masses.value))
+            plt.title('system = '+str(sys_key) +', final mass = '+ str(masses.value))
             plt.savefig('candidate_'+str(sys_key)+'.png')
             print('plotted a candidate')
         else:
