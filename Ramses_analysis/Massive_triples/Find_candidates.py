@@ -140,7 +140,7 @@ for sys_key in superplot_dict['System_times'].keys():
         last_sys_time = np.array(superplot_dict['System_times'][sys_key])[non_nan_inds][-1]
         t_ind = np.argmin(abs((global_data['time']*units['time_unit'].in_units('yr').value) - last_sys_time))
         masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
-        if np.max(masses) > 8:
+        if np.max(masses.value) > 8:
             candidate_systems.append(sys_key)
             final_masses.append(masses)
             
