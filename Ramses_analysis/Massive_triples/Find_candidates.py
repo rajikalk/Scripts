@@ -134,7 +134,7 @@ candidate_systems = []
 final_masses = []
 
 for sys_key in superplot_dict['System_times'].keys():
-    if len(flatten(eval(sys_key))) == 3:
+    if len(flatten(eval(sys_key))) > 2:
         sep_arr = np.array(superplot_dict['System_seps'][sys_key]).T[0]
         non_nan_inds = np.where(np.isnan(sep_arr)==False)[0]
         last_sys_time = np.array(superplot_dict['System_times'][sys_key])[non_nan_inds][-1]
@@ -152,4 +152,4 @@ for sys_key in superplot_dict['System_times'].keys():
             plt.savefig('candidate_'+str(sys_key)+'.png')
             print('plotted a candidate')
         else:
-            print("found a triple, but it's low mass")
+            print("found a multiple, but it's low mass")
