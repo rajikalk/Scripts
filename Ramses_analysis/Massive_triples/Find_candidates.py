@@ -132,5 +132,10 @@ superplot_dict, Sink_bound_birth, Sink_formation_times = pickle.load(file)
 file.close()
 
 for sys_key in superplot_dict['System_times'].keys():
-    import pdb
-    pdb.set_trace()
+    if len(flatten(eval(sys_key))) == 3:
+        last_sys_time = superplot_dict['System_times'][sys_key][-1]
+        t_ind = np.argmin(abs((global_data['time']*units['time_unit'].in_units('yr').value) - last_sys_time))
+        masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
+        if np.max(masses) > 8:
+            import pdb
+            pdb.set_trace()
