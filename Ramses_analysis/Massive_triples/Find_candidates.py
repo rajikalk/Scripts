@@ -130,14 +130,26 @@ CW.Barrier()
 file = open(args.superplot_pickle, 'rb')
 superplot_dict, Sink_bound_birth, Sink_formation_times = pickle.load(file)
 file.close()
+candidate_systems = []
+final_masses = []
 
 for sys_key in superplot_dict['System_times'].keys():
     if len(flatten(eval(sys_key))) == 3:
-        last_sys_time = superplot_dict['System_times'][sys_key][-1]
+        sep_arr = np.array(superplot_dict['System_seps'][sys_key]).T[0]
+        non_nan_inds = np.where(np.isnan(sep_arr)==False)[0]
+        last_sys_time = np.array(superplot_dict['System_times'][sys_key])[non_nan_inds][-1]
         t_ind = np.argmin(abs((global_data['time']*units['time_unit'].in_units('yr').value) - last_sys_time))
         masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
         if np.max(masses) > 8:
-            import pdb
-            pdb.set_trace()
+            candidate_systems.append(sys_key)
+            final_masses.append(masses)
+            
+            plt.clf()
+            plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
+            plt.xlabel('time (yr)')
+            plt.ylabel('separation (au)')
+            plt.title('system = '+str(sys_key) +', final mass = ', str(masses))
+            plt.savefig('candidate_'+str(sys_key)+'.png')
+            print('plotted a candidate')
         else:
             print("found a triple, but it's low mass")
