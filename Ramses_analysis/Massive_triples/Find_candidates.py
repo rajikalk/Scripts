@@ -142,9 +142,13 @@ for sys_key in superplot_dict['System_times'].keys():
         #lifetime = last_sys_time - np.array(superplot_dict['System_times'][sys_key])[non_nan_inds][0]
         #if lifetime > 10000:
         masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
-        import pdb
-        pdb.set_trace()
-        inner_mass_max = 0
+        if len(flatten(eval(sys_key))) == 3:
+            inner_mass_max = np.max(masses)
+        else:
+            last_seps = np.array(superplot_dict['System_seps'][sys_key])[non_nan_inds][-1]
+            import pdb
+            pdb.set_trace()
+            inner_mass_max = 0
         if inner_mass_max > 8:
             if np.max(masses.value) > 8:
                 candidate_systems.append(sys_key)
