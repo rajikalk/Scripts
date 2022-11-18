@@ -164,9 +164,7 @@ for sys_key in superplot_dict['System_times'].keys():
                         if stripped_string[:-1][-1*(char_it+1)]:
                             trun_ind = char_it
                             break
-                    stripped_string = stripped_string[:-1*(char_it+2)]
-                import pdb
-                pdb.set_trace()
+                    stripped_string = stripped_string[:-1*(char_it+1)]
             inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
         if np.max(inner_mass_max) > 1:
             if np.max(masses.value) > 8:
