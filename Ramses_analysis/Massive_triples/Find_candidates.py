@@ -151,20 +151,29 @@ for sys_key in superplot_dict['System_times'].keys():
             structure = ''.join([i for i in sys_key if not i.isdigit()])
             if '[, [, ]]' in structure or '[[, ], ]' in structure:
                 #strip down to inner triple
+                if '[, [, ]]' in structure:
+                    rm_bracket_structure = structure.split('[, [, ]]')
+                else:
+                    rm_bracket_structure = structure.split('[[, ], ]')
+                if len(rm_bracket_structure)>2:
+                    import pdb
+                    pdb.set_trace()
+                    
+                
                 stripped_string = sys_key
-                while len(flatten(eval(stripped_string))) > 3:
-                    #trim from beginning
-                    for char_it in range(len(stripped_string[1:])):
-                        if stripped_string[1:][char_it] == '[':
-                            trun_ind = char_it
-                            break
-                    stripped_string = stripped_string[trun_ind+1:]
+                for char_it in range(len(stripped_string)):
+                    sub_struct = ''.join([i for i in stripped_string[:char_it] if not i.isdigit()])
+                    if sub_struct == rm_bracket_structure[0]:
+                        trun_ind = char_it
+                        break
+                stripped_string = stripped_string[trun_ind:]
                     #trim from end
-                    for char_it in range(len(stripped_string[:-1])):
-                        if stripped_string[:-1][-1*(char_it+1)]:
-                            trun_ind = char_it
-                            break
-                    stripped_string = stripped_string[:-1*(char_it+1)]
+                for char_it in range(len(stripped_string)):
+                    sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
+                    if sub_struct == rm_bracket_structure[1]:
+                        trun_ind = char_it
+                        break
+                stripped_string = stripped_string[:-1*char_it]
             inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
         if np.max(inner_mass_max) > 1:
             if np.max(masses.value) > 8:
