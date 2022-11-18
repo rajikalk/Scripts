@@ -148,7 +148,7 @@ for sys_key in superplot_dict['System_times'].keys():
             #check if inner trinary exists
             #If n is odd, there is a trinary, but quadruples could be [[],[]]
             #need to searhc for [[,],] or [,[,]]
-            structure = '.join([i for i in sys_key if not i.isdigit()])
+            structure = ''.join([i for i in sys_key if not i.isdigit()])
             if '[, [, ]]' in structure or '[[, ], ]':
                 import pdb
                 pdb.set_trace()
