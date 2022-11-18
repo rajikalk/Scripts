@@ -149,11 +149,26 @@ for sys_key in superplot_dict['System_times'].keys():
             #If n is odd, there is a trinary, but quadruples could be [[],[]]
             #need to searhc for [[,],] or [,[,]]
             structure = ''.join([i for i in sys_key if not i.isdigit()])
-            if '[, [, ]]' in structure or '[[, ], ]':
+            if '[, [, ]]' in structure or '[[, ], ]' in structure:
+                #strip down to inner triple
+                stripped_string = sys_key
+                while len(flatten(eval(stripped_string))) > 3:
+                    #trim from beginning
+                    for char_it in range(len(stripped_string[1:])):
+                        if stripped_string[1:][char_it] == '[':
+                            trun_ind = char_it
+                            break
+                    stripped_string = stripped_string[trun_ind+1:]
+                    #trim from end
+                    for char_it in range(len(stripped_string[:-1])):
+                        if stripped_string[:-1][-1*(char_it+1)]:
+                            trun_ind = char_it
+                            break
+                    stripped_string = stripped_string[:-1*(char_it+2)]
                 import pdb
                 pdb.set_trace()
-            inner_mass_max = 0
-        if inner_mass_max > 8:
+            inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
+        if np.max(inner_mass_max) > 1:
             if np.max(masses.value) > 8:
                 candidate_systems.append(sys_key)
                 final_masses.append(masses)
