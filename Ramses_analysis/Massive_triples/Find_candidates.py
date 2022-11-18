@@ -195,12 +195,14 @@ for sys_key in superplot_dict['System_times'].keys():
                     mass_second = global_data['m'][t_ind][flatten(eval(second_sys))]*units['mass_unit'].in_units('msun')
                     if np.max(mass_first) > np.max(mass_second):
                         inner_mass_max = mass_first
+                        stripped_string = first_sys
                     else:
                         inner_mass_max = mass_second
+                        stripped_string = second_sys
                         
         if np.max(inner_mass_max) > 5:
             candidate_systems.append(sys_key)
-            final_masses.append(masses)
+            final_masses.append(inner_mass_max)
             
             if np.max(inner_mass_max) > 8:
                 savename = '8msun_candidate_'+sys_key.replace(' ', '')+'.png'
