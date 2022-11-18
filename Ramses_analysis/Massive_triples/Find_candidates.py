@@ -151,7 +151,7 @@ for sys_key in superplot_dict['System_times'].keys():
             structure = ''.join([i for i in sys_key if not i.isdigit()])
             if '[, [, ]]' in structure or '[[, ], ]' in structure:
                 #strip down to inner triple
-                if if '[, [, ]]' in structure and '[[, ], ]' in structure:
+                if '[, [, ]]' in structure and '[[, ], ]' in structure:
                     import pdb
                     pdb.set_trace()
                     
