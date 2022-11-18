@@ -201,12 +201,18 @@ for sys_key in superplot_dict['System_times'].keys():
             candidate_systems.append(sys_key)
             final_masses.append(masses)
             
+            if np.max(inner_mass_max) > 8:
+                savename = '8msun_candidate_'+str(sys_key)+'.png'
+                print('This is one over 8msun!')
+            else:
+                savename = 'candidate_'+str(sys_key)+'.png'
+            
             plt.clf()
             plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
             plt.xlabel('time (yr)')
             plt.ylabel('separation (au)')
-            plt.title('system = '+str(sys_key) +', final mass = '+ str(masses.value))
-            plt.savefig('candidate_'+str(sys_key)+'.png')
+            plt.title('system = '+str(stripped_string) +', final mass = '+ str(inner_mass_max.value))
+            plt.savefig(savename)
             print('plotted a candidate')
         else:
             print("found a multiple, but it's low mass")
