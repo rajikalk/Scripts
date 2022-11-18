@@ -197,7 +197,7 @@ for sys_key in superplot_dict['System_times'].keys():
                     else:
                         inner_mass_max = mass_second
                         
-        if np.max(inner_mass_max) > 1:
+        if np.max(inner_mass_max) > 5:
             candidate_systems.append(sys_key)
             final_masses.append(masses)
             
