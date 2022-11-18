@@ -183,7 +183,7 @@ for sys_key in superplot_dict['System_times'].keys():
                     stripped_string = sys_key
                     for char in stripped_string:
                         sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
-                        if sub_struct == rm_bracket_structure[0] + fitted_struct + rm_bracket_structure[0]:
+                        if sub_struct == rm_bracket_structure[0] + fitted_struct + rm_bracket_structure[1]:
                             trun_ind = char_it
                             break
                     first_sys = stripped_string[:trun_ind]
