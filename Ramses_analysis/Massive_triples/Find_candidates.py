@@ -142,6 +142,7 @@ for sys_key in superplot_dict['System_times'].keys():
         #lifetime = last_sys_time - np.array(superplot_dict['System_times'][sys_key])[non_nan_inds][0]
         #if lifetime > 10000:
         masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
+        inner_mass_max = np.array([0, 0])
         if len(flatten(eval(sys_key))) == 3:
             inner_mass_max = np.max(masses)
         else:
