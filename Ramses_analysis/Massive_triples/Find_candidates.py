@@ -182,7 +182,7 @@ for sys_key in superplot_dict['System_times'].keys():
                     #Find midpoint to split
                     stripped_string = sys_key
                     for char_it in range(len(stripped_string)):
-                        sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
+                        sub_struct = ''.join([i for i in stripped_string[:char_it] if not i.isdigit()])
                         if sub_struct == rm_bracket_structure[0] + fitted_struct + rm_bracket_structure[1]:
                             trun_ind = char_it
                             break
