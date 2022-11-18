@@ -151,29 +151,45 @@ for sys_key in superplot_dict['System_times'].keys():
             structure = ''.join([i for i in sys_key if not i.isdigit()])
             if '[, [, ]]' in structure or '[[, ], ]' in structure:
                 #strip down to inner triple
-                if '[, [, ]]' in structure:
-                    rm_bracket_structure = structure.split('[, [, ]]')
-                else:
-                    rm_bracket_structure = structure.split('[[, ], ]')
-                if len(rm_bracket_structure)>2:
+                if if '[, [, ]]' in structure and '[[, ], ]' in structure:
                     import pdb
                     pdb.set_trace()
                     
-                
-                stripped_string = sys_key
-                for char_it in range(len(stripped_string)):
-                    sub_struct = ''.join([i for i in stripped_string[:char_it] if not i.isdigit()])
-                    if sub_struct == rm_bracket_structure[0]:
-                        trun_ind = char_it
-                        break
-                stripped_string = stripped_string[trun_ind:]
-                    #trim from end
-                for char_it in range(len(stripped_string)):
-                    sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
-                    if sub_struct == rm_bracket_structure[1]:
-                        trun_ind = char_it
-                        break
-                stripped_string = stripped_string[:-1*char_it]
+                if '[, [, ]]' in structure:
+                    rm_bracket_structure = structure.split('[, [, ]]')
+                    fitted_struct = '[, [, ]]'
+                else:
+                    rm_bracket_structure = structure.split('[[, ], ]')
+                    fitted_struct = '[[, ], ]'
+
+                if len(rm_bracket_structure) == 2:
+                    stripped_string = sys_key
+                    for char_it in range(len(stripped_string)):
+                        sub_struct = ''.join([i for i in stripped_string[:char_it] if not i.isdigit()])
+                        if sub_struct == rm_bracket_structure[0]:
+                            trun_ind = char_it
+                            break
+                    stripped_string = stripped_string[trun_ind:]
+                        #trim from end
+                    for char_it in range(len(stripped_string)):
+                        sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
+                        if sub_struct == rm_bracket_structure[1]:
+                            trun_ind = char_it
+                            break
+                    stripped_string = stripped_string[:-1*char_it]
+                elif len(rm_bracket_structure)>2:
+                    #break down in the two trinaries
+                    #Find midpoint to split
+                    stripped_string = sys_key
+                    for char in stripped_string:
+                        sub_struct = ''.join([i for i in stripped_string[-1*char_it:] if not i.isdigit()])
+                        if sub_struct == rm_bracket_structure[0] + fitted_struct + rm_bracket_structure[0]:
+                            trun_ind = char_it
+                            break
+                    first_sys = stripped_string[:trun_ind]
+                    second_sys = stripped_string[trun_ind:]
+                    import pdb
+                    pdb.set_trace()
             inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
         if np.max(inner_mass_max) > 1:
             if np.max(masses.value) > 8:
