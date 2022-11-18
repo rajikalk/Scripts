@@ -177,6 +177,8 @@ for sys_key in superplot_dict['System_times'].keys():
                             trun_ind = char_it
                             break
                     stripped_string = stripped_string[:-1*char_it]
+                    
+                    inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
                 elif len(rm_bracket_structure)>2:
                     #break down in the two trinaries
                     #Find midpoint to split
@@ -186,22 +188,25 @@ for sys_key in superplot_dict['System_times'].keys():
                         if sub_struct == rm_bracket_structure[0] + fitted_struct + rm_bracket_structure[1]:
                             trun_ind = char_it
                             break
-                    first_sys = stripped_string[:trun_ind]
-                    second_sys = stripped_string[trun_ind:]
-                    import pdb
-                    pdb.set_trace()
-            inner_mass_max = global_data['m'][t_ind][flatten(eval(stripped_string))]*units['mass_unit'].in_units('msun')
+                    first_sys = stripped_string[:trun_ind][1:-2]
+                    second_sys = stripped_string[trun_ind:][:-1]
+                    mass_first = global_data['m'][t_ind][flatten(eval(first_sys))]*units['mass_unit'].in_units('msun')
+                    mass_second = global_data['m'][t_ind][flatten(eval(second_sys))]*units['mass_unit'].in_units('msun')
+                    if np.max(mass_first) > np.max(mass_second):
+                        inner_mass_max = mass_first
+                    else:
+                        inner_mass_max = mass_second
+                        
         if np.max(inner_mass_max) > 1:
-            if np.max(masses.value) > 8:
-                candidate_systems.append(sys_key)
-                final_masses.append(masses)
-                
-                plt.clf()
-                plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
-                plt.xlabel('time (yr)')
-                plt.ylabel('separation (au)')
-                plt.title('system = '+str(sys_key) +', final mass = '+ str(masses.value))
-                plt.savefig('candidate_'+str(sys_key)+'.png')
-                print('plotted a candidate')
-            else:
-                print("found a multiple, but it's low mass")
+            candidate_systems.append(sys_key)
+            final_masses.append(masses)
+            
+            plt.clf()
+            plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
+            plt.xlabel('time (yr)')
+            plt.ylabel('separation (au)')
+            plt.title('system = '+str(sys_key) +', final mass = '+ str(masses.value))
+            plt.savefig('candidate_'+str(sys_key)+'.png')
+            print('plotted a candidate')
+        else:
+            print("found a multiple, but it's low mass")
