@@ -143,6 +143,7 @@ for sys_key in superplot_dict['System_times'].keys():
         #if lifetime > 10000:
         masses = global_data['m'][t_ind][flatten(eval(sys_key))]*units['mass_unit'].in_units('msun')
         inner_mass_max = np.array([0, 0])
+        stripped_string = ''
         if len(flatten(eval(sys_key))) == 3:
             inner_mass_max = np.max(masses)
         else:
@@ -205,16 +206,16 @@ for sys_key in superplot_dict['System_times'].keys():
             final_masses.append(inner_mass_max)
             
             if np.max(inner_mass_max) > 8:
-                savename = '8msun_candidate_'+sys_key.replace(' ', '')+'.png'
+                savename = '8msun_candidate_'+stripped_string.replace(' ', '')+'.png'
                 print('This is one over 8msun!')
             else:
-                savename = 'candidate_'+sys_key.replace(' ', '')+'.png'
+                savename = 'candidate_'+stripped_string.replace(' ', '')+'.png'
             
             plt.clf()
             plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
             plt.xlabel('time (yr)')
             plt.ylabel('separation (au)')
-            plt.title('system = '+str(stripped_string) +', final mass = '+ str(inner_mass_max.value))
+            plt.title('system = '+stripped_string +', final mass = '+ str(inner_mass_max.value))
             plt.savefig(savename)
             print('plotted a candidate')
         else:
