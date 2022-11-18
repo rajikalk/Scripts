@@ -207,9 +207,15 @@ for sys_key in superplot_dict['System_times'].keys():
             
             if np.max(inner_mass_max) > 8:
                 savename = '8msun_candidate_'+stripped_string.replace(' ', '')+'.png'
+                if savename == '8msun_candidate_.png':
+                    import pdb
+                    pdb.set_trace()
                 print('This is one over 8msun!')
             else:
                 savename = 'candidate_'+stripped_string.replace(' ', '')+'.png'
+                if savename == 'msun_candidate_.png':
+                    import pdb
+                    pdb.set_trace()
             
             plt.clf()
             plt.semilogy(superplot_dict['System_times'][sys_key], superplot_dict['System_seps'][sys_key])
