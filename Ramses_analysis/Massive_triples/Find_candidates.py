@@ -145,7 +145,7 @@ for sys_key in superplot_dict['System_times'].keys():
         inner_mass_max = np.array([0, 0])
         stripped_string = ''
         if len(flatten(eval(sys_key))) == 3:
-            inner_mass_max = np.max(masses)
+            inner_mass_max = masses
             stripped_string = sys_key
         else:
             #check if inner trinary exists
