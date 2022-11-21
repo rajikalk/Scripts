@@ -417,8 +417,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    #part_color = ['cyan','magenta','r','b','y','w','k']
-    part_color = ['r','r','r','b','y','w','k']
+    part_color = ['cyan','magenta','r','b','y','w','k']
+    #part_color = ['r','r','r','b','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
     ymin = limits[1][0]
@@ -448,12 +448,12 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         particle_tags = np.arange(len(particle_position))
     for pos_it in np.argsort(particle_tags):
         axis.scatter(particle_position[0][pos_it], particle_position[1][pos_it], c=part_color[pos_it], s=1, zorder=zorder)
-        #axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw, c='k')
-        #axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
-        #axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw/2, c=part_color[pos_it])
-        #axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
-        #circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
-        #axis.add_patch(circle)
+        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw, c='k')
+        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
+        axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw/2, c=part_color[pos_it])
+        axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
+        circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
+        axis.add_patch(circle)
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
