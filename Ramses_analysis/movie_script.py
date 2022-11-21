@@ -836,7 +836,7 @@ for pickle_file in pickle_files:
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
             if has_particles:
-                if args.annotate_particles_mass == True:
+                if args.annotate_particles_mass == 'True':
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
                 else:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, zorder=7)
