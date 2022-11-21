@@ -64,7 +64,7 @@ def rainbow_text(x,y,ls,lc,**kw):
             #import pdb
             #pdb.set_trace()
             #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
-            t = transforms.offset_copy(text._transform, x=2*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=3*ex.width, units='dots')
         
 def set_global_font_size(x):
     global fontsize_global
