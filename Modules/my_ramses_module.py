@@ -404,11 +404,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        pos_start = [xmax - 0.2*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
+        pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.5*(fontsize_global/100)*(ymax-ymin)]
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
-        annotate_text = axis.text((xmax - 0.005*(xmax-xmin)), (ymin + 0.015*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
+        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.03*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
@@ -473,6 +473,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
+        import pdb
+        pdb.set_trace()
         if len(particle_tags) > 3:
             string_l = p_t[:68]
             string_2 = p_t[69:]
