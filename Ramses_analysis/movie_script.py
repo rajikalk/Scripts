@@ -355,8 +355,6 @@ if args.make_frames_only == 'False':
             
             if has_particles:
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
-                import pdb
-                pdb.set_trace()
             else:
                 part_info = {}
             
