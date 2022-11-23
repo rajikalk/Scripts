@@ -63,7 +63,7 @@ if args.update_pickle == 'True':
     
     if os.path.isfile('particle_data.pkl'):
         try:
-            file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
+            file_open = open(save_dir+'particle_data.pkl', 'rb')
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -72,8 +72,8 @@ if args.update_pickle == 'True':
                 updating = True
                 print('pickle data is not up to date! Updating')
         except:
-            os.system('cp '+save_dir+'particle_data_raw_tmp.pkl '+save_dir+'particle_data_raw.pkl ')
-            file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
+            os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
+            file_open = open(save_dir+'particle_data.pkl', 'rb')
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
