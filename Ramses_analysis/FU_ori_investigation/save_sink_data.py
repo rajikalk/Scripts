@@ -9,10 +9,6 @@ import matplotlib.cm as cm
 from pyramses import rsink
 import sys
 import os
-import yt
-import numpy.ma as ma
-import csv
-import re
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
@@ -26,21 +22,6 @@ def parse_inputs():
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
-    
-def boolean_indexing(v, fillval=np.nan):
-    """
-    function for squaring off array, so that they are rectangular arrays. It filled empty indexes with NaNs by default.
-    """
-    unit_string = v[0].units
-    lens = np.array([len(item) for item in v])
-    mask = lens[:,None] > np.arange(lens.max())
-    out = np.full(mask.shape,fillval)
-    out[mask] = np.concatenate(v)
-    out = yt.YTArray(out.T, unit_string)
-    return out
-    
-def find(s, ch):
-    return [i for i, ltr in enumerate(s) if ltr == ch]
     
 #================================================================================
 args = parse_inputs()
@@ -74,18 +55,31 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
-print("Reading particle data")
-loaded_sink_data = rsink(datadir=path, all=True)
-updating = False
-
 if args.update_pickle == 'True':
     print("Reading particle data")
     loaded_sink_data = rsink(datadir=path, all=True)
     updating = False
     
     if os.path.isfile('particle_data.pkl'):
-        import pdb
-        pdb.set_trace()
+        try:
+            file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
+            particle_data, counter, sink_ind = pickle.load(file_open)
+            file_open.close()
+            counter = int(counter)
+            loaded_sink_data = loaded_sink_data[counter:]
+            if counter < len(loaded_sink_data):
+                updating = True
+                print('pickle data is not up to date! Updating')
+        except:
+            os.system('cp '+save_dir+'particle_data_raw_tmp.pkl '+save_dir+'particle_data_raw.pkl ')
+            file_open = open(save_dir+'particle_data_raw.pkl', 'rb')
+            particle_data, counter, sink_ind = pickle.load(file_open)
+            file_open.close()
+            counter = int(counter)
+            loaded_sink_data = loaded_sink_data[counter:]
+            if counter < len(loaded_sink_data):
+                updating = True
+                print('pickle data is not up to date! Updating')
     else:
         updating = True
         if args.sink_number == None:
@@ -130,3 +124,11 @@ if args.update_pickle == 'True':
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
 
+
+
+plt.clf()
+plt.semilogy(particle_data['time'], particle_data['mdot'])
+plt.xlabel('Time (yr)')
+plt.ylabel('Accretion rate (Msun/yr)')
+plt.title('Sink no ' + str(sink_ind))
+plt.savefig('accretion_vs_time.png')
