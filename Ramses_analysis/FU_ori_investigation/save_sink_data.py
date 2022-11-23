@@ -9,6 +9,7 @@ import matplotlib.cm as cm
 from pyramses import rsink
 import sys
 import os
+import yt
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
