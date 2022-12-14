@@ -253,7 +253,6 @@ if args.update_pickles == 'True':
                 if len(close_seps) == 0:
                     close_frac = 0
                 else:
-                    import pdb
-                    pdb.set_trace()
+                    close_frac = len(close_seps)/len(multi_inds)
                     
                 Close_Fractions.append(close_frac)
