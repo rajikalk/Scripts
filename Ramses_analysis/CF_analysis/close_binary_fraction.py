@@ -203,7 +203,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 start_time_it = args.start_time_index
-
+Close_Fractions = []
 if args.update_pickles == 'True':
     rit = -1
     prev_n_stars = 1
@@ -248,5 +248,12 @@ if args.update_pickles == 'True':
                 
                 res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho, max_iter=args.max_iterations)
                 
-                import pdb
-                pdb.set_trace()
+                multi_inds = np.where(res['n']>1)[0]
+                close_seps = np.where(res['separation'][multi_inds] < 100)[0]
+                if len(close_seps) == 0:
+                    close_frac = 0
+                else:
+                    import pdb
+                    pdb.set_trace()
+                    
+                Close_Fractions.append(close_frac)
