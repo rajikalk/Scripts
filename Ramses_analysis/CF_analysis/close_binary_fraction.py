@@ -173,12 +173,6 @@ while time_it < np.shape(global_data['m'])[0]:
      if sink_it == np.shape(global_data['m'])[1]:
          break
 Sink_formation_times = (Sink_formation_times*scale_t).in_units('yr')
-
-sys.stdout.flush()
-CW.Barrier()
-
-#Define pickle name
-pickle_file = args.pickled_file
             
 sys.stdout.flush()
 CW.Barrier()
