@@ -123,23 +123,8 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Define arrays of quantities to be saved.
-Times = []
 SFE = []
-SFE_n = []
-M_tot = []
-M_tot_vis = []
-M_tot_multi = []
-N_stars = []
-N_vis_stars = []
-N_multi_stars = []
-Single_star_inds = []
-Sink_bound_birth = []
-System_seps = {}
-System_midpoint_seps = {}
-System_semimajor = {}
-System_times = {}
-System_ecc = {}
-System_energies = {}
+Close_Fractions = []
 
 sys.stdout.flush()
 CW.Barrier()
@@ -203,7 +188,6 @@ sys.stdout.flush()
 CW.Barrier()
 
 start_time_it = args.start_time_index
-Close_Fractions = []
 plt.clf()
 if args.update_pickles == 'True':
     rit = -1
@@ -234,18 +218,9 @@ if args.update_pickles == 'True':
                 S._absvel = yt.YTArray(absvel, '')
                 S._mass = yt.YTArray(mass, '')
                 
-                L_tot = luminosity(global_data, n_stars, time_it)
-                M_dot = accretion(n_stars, time_it)
-                vis_inds = np.where((L_tot>=args.lower_L_limit)&(M_dot>=args.accretion_limit)&(L_tot<=args.upper_L_limit))[0]
-                real_vis = np.where((L_tot>=0.07)&(M_dot>=1.e-7)&(L_tot<=55.29))[0]#Remember to update if you adjust criteria
-                N_vis_stars.append(len(real_vis))
-                
-                N_stars.append(len(n_stars))
                 M_tot_msun = np.sum(mass*units['mass_unit'].in_units('Msun'))
-                M_tot.append(M_tot_msun)
                 SFE_val = M_tot_msun/units['mass_unit'].in_units('Msun')
                 SFE.append(SFE_val)
-                SFE_n.append(SFE_val/time_yr)
                 
                 res = m.multipleAnalysis(S,cutoff=10000, bound_check=bound_check, nmax=6, cyclic=True, Grho=Grho, max_iter=args.max_iterations)
                 
@@ -257,7 +232,11 @@ if args.update_pickles == 'True':
                     close_frac = len(close_seps)/len(multi_inds)
                     
                 Close_Fractions.append(close_frac)
-        
+
+file = open('G'+simulation_density_id+'.pkl', 'wb')
+pickle.dump((SFE, Close_Fractions),file)
+file.close()
+
 plt.plot(SFE, Close_Fractions)
 plt.ylim([0, 1])
 plt.xlim([0, 0.05])
