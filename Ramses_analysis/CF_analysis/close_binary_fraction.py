@@ -204,6 +204,7 @@ CW.Barrier()
 
 start_time_it = args.start_time_index
 Close_Fractions = []
+plt.clf()
 if args.update_pickles == 'True':
     rit = -1
     prev_n_stars = 1
@@ -256,3 +257,10 @@ if args.update_pickles == 'True':
                     close_frac = len(close_seps)/len(multi_inds)
                     
                 Close_Fractions.append(close_frac)
+        
+plt.plot(SFE, Close_Fractions)
+plt.ylim([0, 1])
+plt.xlim([0, 0.05])
+plt.xlabel('SFE')
+plt.ylabel('Close binary fraction')
+plt.savefig('close_binary_fraction.png')
