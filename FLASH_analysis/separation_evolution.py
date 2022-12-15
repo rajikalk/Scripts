@@ -1,4 +1,4 @@
-import numpy as np
+:import numpy as np
 import pickle
 import yt
 import glob
@@ -50,18 +50,19 @@ for pickle_file in pickle_files:
     sink_data = pickle.load(file_open)
     file_open.close()
     
-    secondary_sink_form_time = sink_data[list(sink_data.keys())[1]]['time'][0]
-    primary_time_star_ind = np.argwhere(sink_data[list(sink_data.keys())[0]]['time']==secondary_sink_form_time)[0][0]
-    
-    dx = sink_data[list(sink_data.keys())[0]]['posx'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posx']
-    dy = sink_data[list(sink_data.keys())[0]]['posy'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posy']
-    dz = sink_data[list(sink_data.keys())[0]]['posz'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posz']
+    if len(sink_data.keys()) == 2:
+        secondary_sink_form_time = sink_data[list(sink_data.keys())[1]]['time'][0]
+        primary_time_star_ind = np.argwhere(sink_data[list(sink_data.keys())[0]]['time']==secondary_sink_form_time)[0][0]
+        
+        dx = sink_data[list(sink_data.keys())[0]]['posx'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posx']
+        dy = sink_data[list(sink_data.keys())[0]]['posy'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posy']
+        dz = sink_data[list(sink_data.keys())[0]]['posz'][primary_time_star_ind:] - sink_data[list(sink_data.keys())[1]]['posz']
 
-    separation = yt.YTArray(np.sqrt(dx**2 + dy**2 + dz**2), 'cm')
-    time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
-    time = yt.YTArray(time, 's')
-    
-    plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=pickle_file.split('/')[-1].split('.pkl')[0])
+        separation = yt.YTArray(np.sqrt(dx**2 + dy**2 + dz**2), 'cm')
+        time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
+        time = yt.YTArray(time, 's')
+        
+        plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=pickle_file.split('/')[-1].split('.pkl')[0])
 
 plt.xlabel('Time (yr)')
 plt.ylabel('Separation (au)')
