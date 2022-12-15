@@ -204,6 +204,33 @@ mym.set_units(units_override)
 
 #find sink particle to center on and formation time
 ds = yt.load(files[-1], units_override=units_override)
+try:
+    dd = ds.all_data()
+    if args.sink_number == None:
+        sink_id = np.argmin(dd['sink_particle_speed'])
+    else:
+        sink_id = args.sink_number
+    if rank == 0:
+        print("CENTERED SINK ID:", sink_id)
+    myf.set_centred_sink_id(sink_id)
+    sink_form_time = dd['sink_particle_form_time'][sink_id]
+    del dd
+except:
+    files = files[:-1]
+    ds = yt.load(files[-1], units_override=units_override)
+    dd = ds.all_data()
+    if args.sink_number == None:
+        sink_id = np.argmin(dd['sink_particle_speed'])
+    else:
+        sink_id = args.sink_number
+    if rank == 0:
+        print("CENTERED SINK ID:", sink_id)
+    myf.set_centred_sink_id(sink_id)
+    sink_form_time = dd['sink_particle_form_time'][sink_id]
+    del dd
+    
+sys.stdout.flush()
+CW.Barrier()
 
 #Get simulation information
 if rank == 0:
@@ -267,17 +294,6 @@ if args.plot_time != None:
 sys.stdout.flush()
 CW.Barrier()
 
-dd = ds.all_data()
-if args.sink_number == None:
-    sink_id = np.argmin(dd['sink_particle_speed'])
-else:
-    sink_id = args.sink_number
-if rank == 0:
-    print("CENTERED SINK ID:", sink_id)
-myf.set_centred_sink_id(sink_id)
-sink_form_time = dd['sink_particle_form_time'][sink_id]
-del dd
-
 if args.plot_time != None:
     m_times = [args.plot_time]
 else:
@@ -324,6 +340,7 @@ if args.make_frames_only == 'False':
         if usable_files[file_int] == usable_files[file_int-1]:
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
         if make_pickle == True:
+            
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
             has_particles = has_sinks(ds)
