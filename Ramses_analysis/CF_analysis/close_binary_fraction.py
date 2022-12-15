@@ -205,7 +205,6 @@ if args.update_pickles == 'True':
                 mass = np.array(global_data['m'][time_it][n_stars])
                 time = global_data['time'][time_it][n_stars][0]
                 time_yr = yt.YTQuantity(scale_t*time, 's').in_units('yr').value
-                Times.append(time_yr)
                 
                 S = pr.Sink()
                 S._jet_factor = 1.
