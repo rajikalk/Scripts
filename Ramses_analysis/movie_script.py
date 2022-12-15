@@ -204,17 +204,18 @@ mym.set_units(units_override)
 
 #find sink particle to center on and formation time
 ds = yt.load(files[-1], units_override=units_override)
-try:
-    dd = ds.all_data()
-    if args.sink_number == None:
-        sink_id = np.argmin(dd['sink_particle_speed'])
-    else:
-        sink_id = args.sink_number
-    if rank == 0:
-        print("CENTERED SINK ID:", sink_id)
-    myf.set_centred_sink_id(sink_id)
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
-    del dd
+#try:
+dd = ds.all_data()
+if args.sink_number == None:
+    sink_id = np.argmin(dd['sink_particle_speed'])
+else:
+    sink_id = args.sink_number
+if rank == 0:
+    print("CENTERED SINK ID:", sink_id)
+myf.set_centred_sink_id(sink_id)
+sink_form_time = dd['sink_particle_form_time'][sink_id]
+del dd
+"""
 except:
     files = files[:-1]
     ds = yt.load(files[-1], units_override=units_override)
@@ -228,6 +229,7 @@ except:
     myf.set_centred_sink_id(sink_id)
     sink_form_time = dd['sink_particle_form_time'][sink_id]
     del dd
+"""
     
 sys.stdout.flush()
 CW.Barrier()
