@@ -83,6 +83,7 @@ for output_txt in txt_files:
         for row in reader:
             time_val = float(row[0].split('   ')[-2])
             sim_file_times.append(time_val)
+            break
 
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
