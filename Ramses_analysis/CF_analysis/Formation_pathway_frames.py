@@ -73,6 +73,17 @@ mym.set_units(units_override)
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
 files = sorted(glob.glob(Sim_path+"*/info*.txt"))
+txt_files = sorted(glob.glob(Sim_path+"*/stars_output.snktxt"))
+sim_file_times = []
+
+for output_txt in txt_files:
+    with open(output_txt, 'rU') as txt_file:
+        reader = csv.reader(txt_files)
+        for row in reader:
+            import pdb
+            pdb.set_trace()
+
+
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
 
@@ -80,9 +91,9 @@ Other_sink = [4, [10, [5, 9]], [1, 3]]
 Primary_form_time = 1.0365265956563827
 Secondary_form_time = 1.0460617956407776
 
-m_times = np.array([Primary_form_time, Secondary_form_time])*scale_t.in_units('yr')
+m_times = [Secondary_form_time, Primary_form_time]
 
-usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+
 import pdb
 pdb.set_trace()
 
