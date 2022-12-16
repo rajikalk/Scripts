@@ -79,7 +79,7 @@ sim_file_times = []
 
 for output_txt in txt_files:
     with open(output_txt, 'rU') as txt_file:
-        reader = csv.reader(txt_files)
+        reader = csv.reader(txt_file)
         for row in reader:
             import pdb
             pdb.set_trace()
