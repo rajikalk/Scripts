@@ -72,6 +72,7 @@ mym.set_units(units_override)
 
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
+files = sorted(glob.glob(Sim_path+"*/info*.txt"))
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
 
