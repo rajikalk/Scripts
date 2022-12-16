@@ -230,25 +230,32 @@ if args.update_pickles == 'True':
                 pickle.dump((SFE, Close_Fractions),file)
                 file.close()
 
+sys.stdout.flush()
+CW.Barrier()
+
 #Compile pickles
-rank_pickles = glob.glob(pickle_file + '_*.pkl')
-SFE_all = []
-Close_Fractions_all = []
-for rank_pickle in rank_pickles:
-    file = open(rank_pickle, 'rb')
-    SFE, Close_Fractions = pickle.load(file)
+if rank == 0:
+    rank_pickles = glob.glob(pickle_file + '_*.pkl')
+    SFE_all = []
+    Close_Fractions_all = []
+    for rank_pickle in rank_pickles:
+        file = open(rank_pickle, 'rb')
+        SFE, Close_Fractions = pickle.load(file)
+        file.close()
+        
+        SFE_all = SFE_all + SFE
+        Close_Fractions_all = Close_Fractions_all + Close_Fractions
+        
+    sort_inds = np.argsort(SFE_all)
+    SFE = np.array(SFE_all)[sort_inds]
+    Close_Fractions = np.array(Close_Fractions)[sort_inds]
+        
+    file = open('G'+simulation_density_id+'.pkl', 'wb')
+    pickle.dump((SFE, Close_Fractions),file)
     file.close()
-    
-    SFE_all = SFE_all + SFE
-    Close_Fractions_all = Close_Fractions_all + Close_Fractions
-    
-sort_inds = np.argsort(SFE_all)
-SFE = np.array(SFE_all)[sort_inds]
-Close_Fractions = np.array(Close_Fractions)[sort_inds]
-    
-file = open('G'+simulation_density_id+'.pkl', 'wb')
-pickle.dump((SFE, Close_Fractions),file)
-file.close()
+
+sys.stdout.flush()
+CW.Barrier()
 
 plt.plot(SFE, Close_Fractions)
 plt.ylim([0, 1])
