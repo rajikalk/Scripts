@@ -93,7 +93,16 @@ Primary_form_time = 1.0365265956563827
 Secondary_form_time = 1.0460617956407776
 
 m_times = [Secondary_form_time, Primary_form_time]
+usuable_file_inds = []
 
+for m_time in m_times:
+    match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
+    if sim_file_times[match_time_ind] < m_time:
+        match_time_ind = match_time_ind + 1
+    usuable_file_inds.append(match_time_ind)
+
+usuable_file_inds.append(usuable_file_inds[-1]-1)
+    
 import pdb
 pdb.set_trace()
 
