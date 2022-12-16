@@ -179,6 +179,7 @@ CW.Barrier()
 
 start_time_it = args.start_time_index
 plt.clf()
+pickle_file = 'G'+simulation_density_id
 if args.update_pickles == 'True':
     rit = -1
     prev_n_stars = 1
@@ -223,7 +224,28 @@ if args.update_pickles == 'True':
                 Close_Fractions.append(close_frac)
                 
                 print('calculated fration for time it', time_it, 'of', len(global_data['time'].T[0]))
+                
+                pickle_file_rank = pickle_file + '_' + str(rank)
+                file = open(pickle_file_rank, 'wb')
+                pickle.dump((SFE, Close_Fractions),file)
+                file.close()
 
+#Compile pickles
+rank_pickles = glob.glob(pickle_file + '_*.pkl')
+SFE_all = []
+Close_Fractions_all = []
+for rank_pickle in rank_pickles:
+    file = open(pickle_file_rank, 'wb')
+    SFE, Close_Fractions = pickle.load(file)
+    file.close()
+    
+    SFE_all = SFE_all + SFE
+    Close_Fractions_all = Close_Fractions_all + Close_Fractions
+    
+sort_inds = np.argsort(SFE_all)
+SFE = np.array(SFE_all)[sort_inds]
+Close_Fractions = np.array(Close_Fractions)[sort_inds]
+    
 file = open('G'+simulation_density_id+'.pkl', 'wb')
 pickle.dump((SFE, Close_Fractions),file)
 file.close()
