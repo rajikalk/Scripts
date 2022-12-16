@@ -81,9 +81,8 @@ for output_txt in txt_files:
     with open(output_txt, 'rU') as txt_file:
         reader = csv.reader(txt_file)
         for row in reader:
-            import pdb
-            pdb.set_trace()
-
+            time_val = float(row[0].split('   ')[-2])
+            sim_file_times.append(time_val)
 
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
@@ -93,7 +92,6 @@ Primary_form_time = 1.0365265956563827
 Secondary_form_time = 1.0460617956407776
 
 m_times = [Secondary_form_time, Primary_form_time]
-
 
 import pdb
 pdb.set_trace()
