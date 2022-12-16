@@ -17,6 +17,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import my_ramses_fields as myf
+import csv
 
 def parse_inputs():
     import argparse
