@@ -71,12 +71,13 @@ for key in units_override.keys():
 mym.set_units(units_override)
 
 #------------------------------
-Interested_sinks = [10, 5, 6]
-Other_sink = [8, 4, [3, 9]]
+Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
+Interested_sinks = [36, 14, 2]
+Other_sink = [4, [10, [5, 9]], [1, 3]]
 
 #Bound core fragmentation pathway
-Primary_form_time = 1.0880111822574787
-Secondary_form_time = 1.0911019317015047
+Primary_form_time = 1.0365265956563827
+Secondary_form_time = 1.0460617956407776
 
 m_times = np.array([Primary_form_time, Secondary_form_time])*scale_t.in_units('yr')
 
@@ -86,14 +87,14 @@ pdb.set_trace()
 
 
 #Delay core frag pathway
-Primary_form_time = 1.0821092151794647
-Secondary_form_time = 1.083394503290905
-System_bound_time = 1.0843248950292361
+Primary_form_time = 1.0387929956526736
+Secondary_form_time = 1.040190745650386
+System_bound_time = 1.0405948456497247
 
 m_times = [Primary_form_time, Secondary_form_time, System_bound_time]
 
 #Dynamical capture
-Star_form_time = 1.0863474233686798
-Capture_time = 1.092208857287293
+Star_form_time = 1.0358556956574807
+Capture_time = 1.036077995657117
 
 m_times = [Star_form_time, Capture_time]
