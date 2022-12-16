@@ -225,7 +225,7 @@ if args.update_pickles == 'True':
                 
                 print('calculated fration for time it', time_it, 'of', len(global_data['time'].T[0]))
                 
-                pickle_file_rank = pickle_file + '_' + str(rank)
+                pickle_file_rank = pickle_file + '_' + str(rank) + '.pkl'
                 file = open(pickle_file_rank, 'wb')
                 pickle.dump((SFE, Close_Fractions),file)
                 file.close()
@@ -235,7 +235,7 @@ rank_pickles = glob.glob(pickle_file + '_*.pkl')
 SFE_all = []
 Close_Fractions_all = []
 for rank_pickle in rank_pickles:
-    file = open(pickle_file_rank, 'wb')
+    file = open(rank_pickle, 'rb')
     SFE, Close_Fractions = pickle.load(file)
     file.close()
     
