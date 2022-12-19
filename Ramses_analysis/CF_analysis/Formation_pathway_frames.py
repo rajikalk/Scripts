@@ -31,6 +31,7 @@ def parse_inputs():
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-G_mass", "--Gas_mass", type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -119,6 +120,13 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
+if args.weight_field == 'None':
+    weight_field = None
+    pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+else:
+    weight_field = args.weight_field
+    pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+
 region_thickness = yt.YTQuantity(5000, 'au')
 prev_center = np.nan
 sink_creation_time = np.nan
@@ -150,7 +158,6 @@ for usuable_file in usuable_files:
         left_corner = yt.YTArray([center_pos[0]-(0.75*region_thickness), center_pos[1]-(0.5*region_thickness), center_pos[2]-(0.75*region_thickness)], 'AU')
         right_corner = yt.YTArray([center_pos[0]+(0.75*region_thickness), center_pos[1]+(0.5*region_thickness), center_pos[2]+(0.55*region_thickness)], 'AU')
         region = ds.box(left_corner, right_corner)
-
         del left_corner
         del right_corner
     elif args.axis == 'yz':
