@@ -300,10 +300,10 @@ for usuable_file in usuable_files:
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
 
-    sys.stdout.flush()
-    CW.Barrier()
-    import pdb
-    pdb.set_trace()
+sys.stdout.flush()
+CW.Barrier()
+import pdb
+pdb.set_trace()
    
 
 
