@@ -270,7 +270,6 @@ for usuable_file in usuable_files:
         args_dict.update({'time_val': time_val})
         args_dict.update({'cbar_min': cbar_min})
         args_dict.update({'cbar_max': cbar_max})
-        args_dict.update({'title': title})
         args_dict.update({'xabel': xabel})
         args_dict.update({'yabel': yabel})
         args_dict.update({'axlim':args.ax_lim})
