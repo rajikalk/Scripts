@@ -97,6 +97,7 @@ for output_txt in txt_files:
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
 
+#----------------------------------------------------------------------
 #Bound core fragmentation pathway
 Primary_form_time = 1.0365265956563827
 Secondary_form_time = 1.0460617956407776
@@ -133,6 +134,12 @@ xlim = [-2500, 2500]
 ylim = [-2500, 2500]
 x_width = (xlim[1] -xlim[0])
 y_width = (ylim[1] -ylim[0])
+
+cbar_max = args.colourbar_max
+try:
+    cbar_min = float(args.colourbar_min)
+except:
+    cbar_min = float(args.colourbar_min[1:])
 
 prev_center = np.nan
 sink_creation_time = np.nan
@@ -174,6 +181,13 @@ for usuable_file in usuable_files:
         del left_corner
         del right_corner
         
+    TM = np.sum(region['cell_mass'].in_units('g'))
+    x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
+    y_top = np.sum(region['cell_mass'].in_units('g')*region['y-velocity'].in_units('cm/s'))
+    z_top = np.sum(region['cell_mass'].in_units('g')*region['z-velocity'].in_units('cm/s'))
+    com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
+    center_vel = yt.YTArray(com_vel, 'cm')
+        
     X_image = X
     Y_image = Y
     X_image_vel = X_vel
@@ -197,7 +211,7 @@ for usuable_file in usuable_files:
     mag2_field = 'mag' + args.axis[1]
     proj_dict = {'density':[], vel1_field:[], vel2_field:[], mag1_field:[], mag2_field:[]}
     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-    proj_field_list =['density', ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
+    proj_field_list =[('gas', 'density'), ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
     proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
     
     for field in yt.parallel_objects(proj_field_list):
@@ -207,7 +221,7 @@ for usuable_file in usuable_files:
                 proj_array = np.array(proj.frb.data[field].T.in_units('cm*gauss')/thickness.in_units('cm'))
             else:
                 proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
-        elif args.field in str(field):
+        elif field == ('gas', 'density'):
             if args.axis == 'xz':
                 proj_array = np.array((proj.frb.data[field].T/thickness.in_units('cm')).in_units("g/cm**3"))
             else:
@@ -217,8 +231,6 @@ for usuable_file in usuable_files:
                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
             else:
                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
-        if str(args.field) in field and 'velocity' in str(args.field):
-            proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
         if rank == proj_root_rank:
             proj_dict[field[1]] = proj_array
         else:
@@ -238,21 +250,19 @@ for usuable_file in usuable_files:
         image = proj_dict[proj_dict_keys[0]]
         velx_full = proj_dict[proj_dict_keys[1]]
         vely_full = proj_dict[proj_dict_keys[2]]
-        velz_full = proj_dict[proj_dict_keys[3]]
-        magx = proj_dict[proj_dict_keys[4]]
-        magy = proj_dict[proj_dict_keys[5]]
+        magx = proj_dict[proj_dict_keys[3]]
+        magy = proj_dict[proj_dict_keys[4]]
     
     if rank == proj_root_rank:
-        velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
+        velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, axis=args.axis)
         del velx_full
         del vely_full
-        del velz_full
 
         args_dict = {}
         if args.annotate_time == "True":
             args_dict.update({'annotate_time': r"$t$="+str(int(time_val))+"yr"})
-        args_dict.update({'field':simfo['field']})
-        args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+        args_dict.update({'field':'density'})
+        args_dict.update({'annotate_velocity': True})
         args_dict.update({'time_val': time_val})
         args_dict.update({'cbar_min': cbar_min})
         args_dict.update({'cbar_max': cbar_max})
@@ -267,7 +277,7 @@ for usuable_file in usuable_files:
         if args.absolute_image != "False":
             image = abs(image)
         file = open(pickle_file, 'wb')
-        pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
+        pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, []), file)
         file.close()
         print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
         del image
@@ -275,7 +285,6 @@ for usuable_file in usuable_files:
         del magy
         del velx
         del vely
-        del velz
         del args_dict
     del has_particles
     del time_val
