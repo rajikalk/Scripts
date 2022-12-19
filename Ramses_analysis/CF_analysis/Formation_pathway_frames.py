@@ -105,7 +105,7 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 
 for usuable_file in usuable_files:
-    ds = yt.load(fn, units_override=units_override)
+    ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
     
     import pdb
