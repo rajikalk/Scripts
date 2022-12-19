@@ -25,6 +25,11 @@ def parse_inputs():
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default='1.e-22')
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-19)
+    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xy")
+    parser.add_argument("-update_ax", "--update_ax_lim", help="do you want to update the axis limits so they are relative to the chosen centre?", default='True')
+    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
+    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
+    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
     parser.add_argument("-G_mass", "--Gas_mass", type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -106,7 +111,7 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
-region_thickness = 5000
+region_thickness = yt.YTQuantity(5000, 'au')
 for usuable_file in usuable_files:
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
@@ -181,7 +186,6 @@ for usuable_file in usuable_files:
     
     for field in yt.parallel_objects(proj_field_list):
         proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
-        proj.set_buff_size([args.resolution, args.resolution])
         if 'mag' in str(field):
             if weight_field == None:
                 if args.axis == 'xz':
