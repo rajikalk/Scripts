@@ -102,9 +102,16 @@ for m_time in m_times:
     usuable_file_inds.append(match_time_ind)
 
 usuable_file_inds.append(usuable_file_inds[-1]-1)
+usuable_files = np.array(files)[usuable_file_inds]
+
+for usuable_file in usuable_files:
+    ds = yt.load(fn, units_override=units_override)
+    dd = ds.all_data()
     
-import pdb
-pdb.set_trace()
+    import pdb
+    pdb.set_trace()
+   
+
 
 
 #Delay core frag pathway
