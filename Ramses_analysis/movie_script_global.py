@@ -298,7 +298,7 @@ if args.make_frames_only == 'False':
                 time_val = m_times[file_int]
             except:
                 sink_creation_time = np.min(dd['particle_creation_time'].value)
-                time_real = yt.YTQuantity(ds.current_time.value - sink_creation_time, 's')
+                 = yt.YTQuantity(ds.current_time.value - sink_creation_time, 's')
                 time_val = np.round(time_real.in_units('yr'))
                 del sink_creation_time
                 del time_real
