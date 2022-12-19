@@ -143,7 +143,11 @@ except:
 
 prev_center = np.nan
 sink_creation_time = np.nan
+pickle_file_preffix = 'bound_core_frag_'
+pit = 4
 for usuable_file in usuable_files:
+    pit = pit -1
+    pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
 
