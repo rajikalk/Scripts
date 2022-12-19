@@ -127,7 +127,7 @@ for usuable_file in usuable_files:
     dd = ds.all_data()
     
     if np.isnan(sink_creation_time):
-        sink_creation_time = dd['particle_creation_time'][Interested_sinks].value)
+        sink_creation_time = dd['particle_creation_time'][Interested_sinks[0]].value
         time_real = yt.YTQuantity(ds.current_time.value - sink_creation_time, 's')
         time_val = np.round(time_real.in_units('yr'))
     
