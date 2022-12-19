@@ -72,7 +72,7 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/units_over
     
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
- = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
 
 units={}
