@@ -101,13 +101,19 @@ for m_time in m_times:
         match_time_ind = match_time_ind + 1
     usuable_file_inds.append(match_time_ind)
 
+usuable_file_inds = [16, 5, 4]
 usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
+center_sink = Other_sink[0]
 
+Separation = np.nan
 for usuable_file in usuable_files:
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
     
+    center_pos = np.array([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]])
+    if np.isnan(Separation):
+        other_pos = np.array([dd['sink_particle_posx'][Interested_sinks[0]], dd['sink_particle_posy'][Interested_sinks[0]], dd['sink_particle_posz'][Interested_sinks[0]]])
     import pdb
     pdb.set_trace()
    
