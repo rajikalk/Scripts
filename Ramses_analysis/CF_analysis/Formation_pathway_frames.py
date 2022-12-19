@@ -106,14 +106,147 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
-Separation = np.nan
+region_thickness = 5000
 for usuable_file in usuable_files:
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
     
-    center_pos = np.array([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]])
-    if np.isnan(Separation):
-        other_pos = np.array([dd['sink_particle_posx'][Interested_sinks[0]], dd['sink_particle_posy'][Interested_sinks[0]], dd['sink_particle_posz'][Interested_sinks[0]]])
+    center_pos = yt.YTArray([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]]).in_units('au')
+        
+    if args.axis == 'xy':
+        axis_ind = 2
+        left_corner = yt.YTArray([center_pos[0]-(0.75*region_thickness), center_pos[1]-(0.75*region_thickness), center_pos[2]-(0.5*region_thickness)], 'AU')
+        right_corner = yt.YTArray([center_pos[0]+(0.75*region_thickness), center_pos[1]+(0.75*region_thickness), center_pos[2]+(0.5*region_thickness)], 'AU')
+        region = ds.box(left_corner, right_corner)
+        del left_corner
+        del right_corner
+    elif args.axis == 'xz':
+        axis_ind = 1
+        left_corner = yt.YTArray([center_pos[0]-(0.75*region_thickness), center_pos[1]-(0.5*region_thickness), center_pos[2]-(0.75*region_thickness)], 'AU')
+        right_corner = yt.YTArray([center_pos[0]+(0.75*region_thickness), center_pos[1]+(0.5*region_thickness), center_pos[2]+(0.55*region_thickness)], 'AU')
+        region = ds.box(left_corner, right_corner)
+
+        del left_corner
+        del right_corner
+    elif args.axis == 'yz':
+        axis_ind = 0
+        left_corner = yt.YTArray([center_pos[0]-(0.5*region_thickness), center_pos[1]-(0.75*region_thickness), center_pos[2]-(0.75*region_thickness)], 'AU')
+        right_corner = yt.YTArray([center_pos[0]+(0.5*region_thickness), center_pos[1]+(0.75*region_thickness), center_pos[2]+(0.75*region_thickness)], 'AU')
+        region = ds.box(left_corner, right_corner)
+        del left_corner
+        del right_corner
+        
+    if args.update_ax_lim == 'True':
+        if args.axis == 'xy':
+            X_image = X + center_pos[0]
+            Y_image = Y + center_pos[1]
+            X_image_vel = X_vel + center_pos[0]
+            Y_image_vel = Y_vel + center_pos[1]
+        elif args.axis == 'xz':
+            X_image = X + center_pos[0]
+            Y_image = Y + center_pos[2]
+            X_image_vel = X_vel + center_pos[0]
+            Y_image_vel = Y_vel + center_pos[2]
+        elif args.axis == 'yz':
+            X_image = X + center_pos[1]
+            Y_image = Y + center_pos[2]
+            X_image_vel = X_vel + center_pos[1]
+            Y_image_vel = Y_vel + center_pos[2]
+    else:
+        X_image = X
+        Y_image = Y
+        X_image_vel = X_vel
+        Y_image_vel = Y_vel
+    
+    if args.update_ax_lim == 'False':
+        if args.axis == 'xy':
+            part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+            part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
+        elif args.axis == 'xz':
+            part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
+            part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+        elif args.axis == 'yz':
+            part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1]
+            part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+            
+    vel1_field = args.axis[0] + '-velocity'
+    vel2_field = args.axis[1] + '-velocity'
+    vel3_field = perp_vel + '-velocity'
+    mag1_field = 'mag' + args.axis[0]
+    mag2_field = 'mag' + args.axis[1]
+    proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
+    proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+    proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+    proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
+    
+    for field in yt.parallel_objects(proj_field_list):
+        proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
+        proj.set_buff_size([args.resolution, args.resolution])
+        if 'mag' in str(field):
+            if weight_field == None:
+                if args.axis == 'xz':
+                    proj_array = np.array(proj.frb.data[field].T.in_units('cm*gauss')/thickness.in_units('cm'))
+                else:
+                    proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
+            else:
+                if args.axis == 'xz':
+                    proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
+                else:
+                    proj_array = np.array(proj.frb.data[field].in_units('gauss'))
+        elif args.field in str(field):
+            if weight_field == None:
+                if args.axis == 'xz':
+                    if args.divide_by_proj_thickness == "True":
+                        proj_array = np.array((proj.frb.data[field].T/thickness.in_units('cm')).in_units(args.field_unit))
+                    else:
+                        proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit+"*cm"))
+                else:
+                    if args.divide_by_proj_thickness == "True":
+                        proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                    else:
+                        proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
+            else:
+                if args.axis == 'xz':
+                    proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
+                else:
+                    proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+        else:
+            if weight_field == None:
+                if args.axis == 'xz':
+                    proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
+                else:
+                    proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
+            else:
+                if args.axis == 'xz':
+                    proj_array = np.array(proj.frb.data[field].T.in_cgs())
+                else:
+                    proj_array = np.array(proj.frb.data[field].in_cgs())
+        if str(args.field) in field and 'velocity' in str(args.field):
+            proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
+        if rank == proj_root_rank:
+            proj_dict[field[1]] = proj_array
+        else:
+            file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
+            pickle.dump((field[1], proj_array), file)
+            file.close()
+        
+    if rank == proj_root_rank and size > 1:
+        for kit in range(1,len(proj_dict_keys)):
+            file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
+            key, proj_array = pickle.load(file)
+            file.close()
+            proj_dict[key] = proj_array
+            os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+            
+    if rank == proj_root_rank:
+        image = proj_dict[proj_dict_keys[0]]
+        velx_full = proj_dict[proj_dict_keys[1]]
+        vely_full = proj_dict[proj_dict_keys[2]]
+        velz_full = proj_dict[proj_dict_keys[3]]
+        magx = proj_dict[proj_dict_keys[4]]
+        magy = proj_dict[proj_dict_keys[5]]
+    
+    part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
     import pdb
     pdb.set_trace()
    
