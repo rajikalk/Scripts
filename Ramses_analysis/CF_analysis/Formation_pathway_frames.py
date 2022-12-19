@@ -30,12 +30,20 @@ def parse_inputs():
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Would you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
+    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-G_mass", "--Gas_mass", type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
 
 #=======MAIN=======
+rank = CW.Get_rank()
+size = CW.Get_size()
+if rank == 0:
+    print("size =", size)
+
+args = parse_inputs()
+
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 simulation_density_id = '100'
@@ -112,11 +120,23 @@ usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
 region_thickness = yt.YTQuantity(5000, 'au')
+prev_center = np.nan
+sink_creation_time = np.nan
 for usuable_file in usuable_files:
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
     
-    center_pos = yt.YTArray([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]]).in_units('au')
+    if np.isnan(sink_creation_time):
+        sink_creation_time = dd['particle_creation_time'][Interested_sinks].value)
+        time_real = yt.YTQuantity(ds.current_time.value - sink_creation_time, 's')
+        time_val = np.round(time_real.in_units('yr'))
+    
+    try:
+        center_pos = yt.YTArray([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]]).in_units('au')
+    except:
+        center_pos = prev_center
+    if np.isnan(prev_center):
+        prev_center = center_pos
         
     if args.axis == 'xy':
         axis_ind = 2
@@ -162,6 +182,8 @@ for usuable_file in usuable_files:
         Y_image = Y
         X_image_vel = X_vel
         Y_image_vel = Y_vel
+    
+    part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
     
     if args.update_ax_lim == 'False':
         if args.axis == 'xy':
@@ -250,7 +272,54 @@ for usuable_file in usuable_files:
         magx = proj_dict[proj_dict_keys[4]]
         magy = proj_dict[proj_dict_keys[5]]
     
-    part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
+    if rank == proj_root_rank:
+        velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
+        del velx_full
+        del vely_full
+        del velz_full
+
+        args_dict = {}
+        if args.annotate_time == "True":
+            args_dict.update({'annotate_time': r"$t$="+str(int(time_val))+"yr"})
+        args_dict.update({'field':simfo['field']})
+        args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+        args_dict.update({'time_val': time_val})
+        args_dict.update({'cbar_min': cbar_min})
+        args_dict.update({'cbar_max': cbar_max})
+        args_dict.update({'title': title})
+        args_dict.update({'xabel': xabel})
+        args_dict.update({'yabel': yabel})
+        args_dict.update({'axlim':args.ax_lim})
+        args_dict.update({'xlim':xlim})
+        args_dict.update({'ylim':ylim})
+        args_dict.update({'has_particles':has_particles})
+
+        if args.absolute_image != "False":
+            image = abs(image)
+        file = open(pickle_file, 'wb')
+        pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
+        file.close()
+        print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+        del image
+        del magx
+        del magy
+        del velx
+        del vely
+        del velz
+        del args_dict
+    del has_particles
+    del time_val
+    del center_vel
+    del part_info
+    del X_image
+    del Y_image
+    del X_image_vel
+    del Y_image_vel
+        
+    print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
+
+    sys.stdout.flush()
+    CW.Barrier()
     import pdb
     pdb.set_trace()
    
