@@ -26,7 +26,6 @@ def parse_inputs():
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default='1.e-22')
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-19)
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xy")
-    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-G_mass", "--Gas_mass", type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -117,30 +116,6 @@ usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
 thickness = yt.YTQuantity(5000, 'au')
-x = np.linspace(-1*thickness/2, thickness/2, 800)
-y = np.linspace(-1*thickness/2, thickness/2, 800)
-X, Y = np.meshgrid(x, y)
-annotate_space = (-1*thickness/2 - thickness/2)/31
-x_ind = []
-y_ind = []
-counter = 0
-while counter < 31:
-    val = annotate_space*counter + annotate_space/2. - thickness/2
-    x_ind.append(int(val))
-    y_ind.append(int(val))
-    counter = counter + 1
-X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-xlim = [-2500, 2500]
-ylim = [-2500, 2500]
-x_width = (xlim[1] -xlim[0])
-y_width = (ylim[1] -ylim[0])
-
-cbar_max = args.colourbar_max
-try:
-    cbar_min = float(args.colourbar_min)
-except:
-    cbar_min = float(args.colourbar_min[1:])
-
 prev_center = np.nan
 sink_creation_time = np.nan
 pickle_file_preffix = 'bound_core_frag_'
@@ -155,8 +130,11 @@ for usuable_file in usuable_files:
         center_pos = yt.YTArray([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]]).in_units('au')
     except:
         center_pos = prev_center
-    if np.isnan(prev_center):
-        prev_center = center_pos
+    try:
+        if np.isnan(prev_center):
+            prev_center = center_pos
+    except:
+        pass
         
     if np.isnan(sink_creation_time):
         sink_creation_time = dd['sink_particle_form_time'][Interested_sinks[0]]
@@ -191,11 +169,6 @@ for usuable_file in usuable_files:
     z_top = np.sum(region['cell_mass'].in_units('g')*region['z-velocity'].in_units('cm/s'))
     com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
     center_vel = yt.YTArray(com_vel, 'cm')
-        
-    X_image = X
-    Y_image = Y
-    X_image_vel = X_vel
-    Y_image_vel = Y_vel
     
     part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=center_sink, region=region)
     
@@ -262,25 +235,10 @@ for usuable_file in usuable_files:
         del velx_full
         del vely_full
 
-        args_dict = {}
-        if args.annotate_time == "True":
-            args_dict.update({'annotate_time': r"$t$="+str(int(time_val))+"yr"})
-        args_dict.update({'field':'density'})
-        args_dict.update({'annotate_velocity': True})
-        args_dict.update({'time_val': time_val})
-        args_dict.update({'cbar_min': cbar_min})
-        args_dict.update({'cbar_max': cbar_max})
-        args_dict.update({'xabel': "X (AU)"})
-        args_dict.update({'yabel': "Y (AU)"})
-        args_dict.update({'axlim':args.ax_lim})
-        args_dict.update({'xlim':xlim})
-        args_dict.update({'ylim':ylim})
-        args_dict.update({'has_particles':has_particles})
-
         if args.absolute_image != "False":
             image = abs(image)
         file = open(pickle_file, 'wb')
-        pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, part_info, args_dict, []), file)
+        pickle.dump((image, magx, magy, velx, vely, part_info, time_val), file)
         file.close()
         print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
         del image
@@ -288,15 +246,9 @@ for usuable_file in usuable_files:
         del magy
         del velx
         del vely
-        del args_dict
-    del has_particles
     del time_val
     del center_vel
     del part_info
-    del X_image
-    del Y_image
-    del X_image_vel
-    del Y_image_vel
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
 
@@ -305,8 +257,102 @@ CW.Barrier()
 import pdb
 pdb.set_trace()
    
+#Make frames
+pickle_files = sorted(glob.glob('bound_core_frag_*.pkl'))
+pit = -1
+for pickle_file in pickle_files:
+    pit = pit + 1
+    file = open(pickle_file, 'rb')
+    image, magx, magy, velx, vely, part_info, time_val = pickle.load(file)
+    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+    file.close()
+
+    file_name = save_dir + "movie_frame_" + ("%06d" % pit)
+    
+    xlim = [-2500, 2500]
+    ylim = [-2500, 2500]
+    x = np.linspace(xlim[0], xlim[1], 800)
+    y = np.linspace(ylim[0], ylim[1], 800)
+    X, Y = np.meshgrid(x, y)
+    annotate_space = (xlim[1] - xlim[0])/31
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < 31:
+        val = annotate_space*counter + annotate_space/2. + xlim[0]
+        x_ind.append(int(val))
+        y_ind.append(int(val))
+        counter = counter + 1
+    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+          
+    has_particles = True
+    xabel = "X (AU)"
+    yabel = "Y (AU)"
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+    ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+    
+    if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
+        plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+    else:
+        plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+    plt.gca().set_aspect('equal')
+    if frame_no > 0 or time_val > -1.0:
+        plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+    else:
+        plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
+    cbar = plt.colorbar(plot, pad=0.0)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+
+    if has_particles:
+        if args.annotate_particles_mass == True:
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+        else:
+            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+    
+    if 'Density' in simfo['field']:
+        if args.divide_by_proj_thickness == "True":
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+        else:
+            cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
+    else:
+        label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
+        cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
+
+    if len(title) > 0:
+        title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
+        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
 
+    plt.tick_params(axis='both', which='major')# labelsize=16)
+    for line in ax.xaxis.get_ticklines():
+        line.set_color('white')
+    for line in ax.yaxis.get_ticklines():
+        line.set_color('white')
+
+    
+    try:
+        plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+        time_string = "$t$="+str(int(time_val))+"yr"
+        time_string_raw = r"{}".format(time_string)
+        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+        try:
+            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        except:
+            print("Couldn't outline time string")
+    except:
+        print("Couldn't plot time string")
+                
+    
+
+    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+    print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
 #Delay core frag pathway
 Primary_form_time = 1.0387929956526736
