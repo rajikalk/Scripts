@@ -8,7 +8,7 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
-#import my_ramses_fields as myf
+import my_ramses_fields as myf
 import csv
 
 def parse_inputs():
