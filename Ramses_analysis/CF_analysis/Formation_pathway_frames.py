@@ -208,7 +208,7 @@ for pickle_file in pickle_files:
     ax.set_ylim(ylim)
 
     
-    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin='1.e-16', vmax='1.e-14'), rasterized=True)
     plt.gca().set_aspect('equal')
     #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     cbar = plt.colorbar(plot, pad=0.0)
