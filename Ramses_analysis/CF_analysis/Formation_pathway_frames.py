@@ -15,7 +15,7 @@ size = CW.Get_size()
 if rank == 0:
     print("size =", size)
 
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s", "mass_unit":(3000,"Msun")}
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(3000,"Msun")}
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
 
 units={}
