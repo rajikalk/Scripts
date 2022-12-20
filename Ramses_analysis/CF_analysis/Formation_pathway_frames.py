@@ -97,9 +97,9 @@ for fn_it in range(len(usable_files)):
     y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
     z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
     sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
-    particle_masses = loaded_sink_data['m'][sinks_in_box]*units['mass_unit']
-    particle_x_pos = loaded_sink_data['x'][sinks_in_box]*units['length_unit']
-    particle_y_pos = loaded_sink_data['y'][sinks_in_box]*units['length_unit']
+    particle_masses = loaded_sink_data['m'][sinks_in_box]*units['mass_unit'].in_units('Msun')
+    particle_x_pos = loaded_sink_data['x'][sinks_in_box]*units['length_unit'].in_units('au')
+    particle_y_pos = loaded_sink_data['y'][sinks_in_box]*units['length_unit'].in_units('au')
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
