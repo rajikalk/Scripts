@@ -106,10 +106,11 @@ CW.Barrier()
 from pyramses import rsink
 thickness = yt.YTQuantity(5000, 'au')
 center_positions = []
+pickle_file_preffix = 'bound_core_frag_'
 pit = 4
 for fn_it in range(len(usable_files)):
     pit = pit - 1
-    pickle_file = "movie_frame_" + ("%06d" % pit) + "_part.pkl"
+    pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
     fn = usable_files[fn_it]
     file_no = int(fn.split('output_')[-1].split('/')[0])
     datadir = fn.split('output_')[0]
@@ -147,7 +148,6 @@ for fn_it in range(len(usable_files)):
 
 del units
 gc.collect()
-pickle_file_preffix = 'bound_core_frag_'
 pit = 4
 
 sys.stdout.flush()
@@ -197,6 +197,11 @@ for pickle_file in pickle_files:
     pit = pit + 1
     file = open(pickle_file, 'rb')
     image, time_val = pickle.load(file)
+    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+    file.close()
+    
+    file = open(pickle_file.split('.')[0]+'_part.pkl', 'rb')
+    particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
 
