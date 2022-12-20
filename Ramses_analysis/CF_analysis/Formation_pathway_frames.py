@@ -300,7 +300,7 @@ pit = -1
 for pickle_file in pickle_files:
     pit = pit + 1
     file = open(pickle_file, 'rb')
-    image, magx, magy, velx, vely, part_info, time_val = pickle.load(file)
+    image, part_info, time_val = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
 
@@ -335,9 +335,9 @@ for pickle_file in pickle_files:
     
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
     plt.gca().set_aspect('equal')
-    plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+    #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     cbar = plt.colorbar(plot, pad=0.0)
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
 
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
     
@@ -365,7 +365,7 @@ for pickle_file in pickle_files:
     
 
     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+    #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
     print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
 #Delay core frag pathway
