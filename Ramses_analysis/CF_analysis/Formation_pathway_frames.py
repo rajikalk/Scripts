@@ -127,7 +127,7 @@ CW.Barrier()
 
 from pyramses import rsink
 pit = 4
-for fn_it in range(len(usable_files)):
+for fn_it in range(len(usuable_files)):
     pit = pit - 1
     pickle_file = save_dir + "movie_frame_" + ("%06d" % pit) + "_part.pkl"
     fn = usable_files[fn_it]
