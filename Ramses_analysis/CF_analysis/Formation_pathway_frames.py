@@ -158,8 +158,6 @@ for usuable_file in usable_files:
 
 sys.stdout.flush()
 CW.Barrier()
-import pdb
-pdb.set_trace()
    
 #Make frames
 import matplotlib.pyplot as plt
