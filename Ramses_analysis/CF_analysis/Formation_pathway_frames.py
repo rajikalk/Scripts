@@ -57,8 +57,6 @@ m_times = [Secondary_form_time, Primary_form_time]
 usuable_file_inds = []
 
 for m_time in m_times:
-    import pdb
-    pdb.set_trace()
     match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
     if sim_file_times[match_time_ind] < m_time:
         match_time_ind = match_time_ind + 2
@@ -68,6 +66,8 @@ for m_time in m_times:
 #usuable_file_inds.append(usuable_file_inds[-1]-1)
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
+import pdb
+pdb.set_trace()
 del usuable_file_inds
 del files
 del m_times
@@ -105,6 +105,8 @@ for fn_it in range(len(usable_files)):
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
+        import pdb
+        pdb.set_trace()
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
