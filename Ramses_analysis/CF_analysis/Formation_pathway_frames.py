@@ -126,6 +126,8 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
+thickness = yt.YTQuantity(5000, 'au')
+center_positions = []
 pit = 4
 for fn_it in range(len(usable_files)):
     pit = pit - 1
@@ -134,19 +136,20 @@ for fn_it in range(len(usable_files)):
     file_no = int(fn.split('output_')[-1].split('/')[0])
     datadir = fn.split('output_')[0]
     loaded_sink_data = rsink(file_no, datadir=datadir)
-    center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'], loaded_sink_data['y'][center_sink]*units['length_unit'], loaded_sink_data['z'][center_sink]*units['length_unit']], 'pc')
-    import pdb
-    pdb.set_trace()
-    particle_masses = loaded_sink_data['m']*units['mass_unit']
-    if args.perp_axis == "z":
-        particle_x_pos = loaded_sink_data['x']*units['length_unit']
-        particle_y_pos = loaded_sink_data['y']*units['length_unit']
-    elif args.perp_axis == "y":
-        particle_x_pos = loaded_sink_data['x']*units['length_unit']
-        particle_y_pos = loaded_sink_data['z']*units['length_unit']
-    else:
-        particle_x_pos = loaded_sink_data['y']*units['length_unit']
-        particle_y_pos = loaded_sink_data['z']*units['length_unit']
+    try:
+        center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+        sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+        center_positions.append(center_pos)
+    except:
+        center_pos = center_positions[-1]
+        center_positions.append(center_pos)
+    x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
+    y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
+    z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
+    sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
+    particle_masses = loaded_sink_data['m'][sinks_in_box]*units['mass_unit']
+    particle_x_pos = loaded_sink_data['x'][sinks_in_box]*units['length_unit']
+    particle_y_pos = loaded_sink_data['y'][sinks_in_box]*units['length_unit']
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -160,8 +163,6 @@ for fn_it in range(len(usable_files)):
     del particle_y_pos
     gc.collect()
 
-
-thickness = yt.YTQuantity(5000, 'au')
 prev_center = np.nan
 sink_creation_time = np.nan
 pickle_file_preffix = 'bound_core_frag_'
@@ -169,21 +170,15 @@ pit = 4
 
 sys.stdout.flush()
 CW.Barrier()
+cit = -1
 for usuable_file in usable_files:
     pit = pit - 1
+    cit = cit + 1
     ds = yt.load(usuable_file, units_override=units_override)
-    dd = ds.all_data()
+    #dd = ds.all_data()
 
-    try:
-        center_pos = yt.YTArray([dd['sink_particle_posx'][center_sink], dd['sink_particle_posy'][center_sink], dd['sink_particle_posz'][center_sink]]).in_units('au')
-    except:
-        center_pos = prev_center
-    try:
-        if np.isnan(prev_center):
-            prev_center = center_pos
-    except:
-        pass
-        
+    center_pos = center_positions[cit]
+    '''
     if np.isnan(sink_creation_time):
         sink_creation_time = dd['sink_particle_form_time'][Interested_sinks[0]]
         time_val = ds.current_time.value*scale_t.in_units('yr') - sink_creation_time
@@ -213,7 +208,7 @@ for usuable_file in usable_files:
         del left_corner
         del right_corner
     gc.collect()
-        
+    '''
     '''
     TM = np.sum(region['cell_mass'].in_units('g'))
     x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
@@ -228,7 +223,7 @@ for usuable_file in usable_files:
     del com_vel
     gc.collect()
     '''
-    
+    '''
     part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=center_sink, region=region)
     
     if args.axis == 'xy':
@@ -240,7 +235,7 @@ for usuable_file in usable_files:
     elif args.axis == 'yz':
         part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1].value
         part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
-        
+    '''
     proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=(thickness,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
     proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
     image = proj_array*units['density_unit'].in_units('g/cm**3')
