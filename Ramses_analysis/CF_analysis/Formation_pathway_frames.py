@@ -61,10 +61,10 @@ for m_time in m_times:
     pdb.set_trace()
     match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
     if sim_file_times[match_time_ind] < m_time:
-        match_time_ind = match_time_ind + 1
+        match_time_ind = match_time_ind + 2
     usuable_file_inds.append(match_time_ind)
 
-usuable_file_inds = [16, 5, 4]
+#usuable_file_inds = [16, 5, 4]
 #usuable_file_inds.append(usuable_file_inds[-1]-1)
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
