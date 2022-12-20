@@ -229,7 +229,7 @@ for pickle_file in pickle_files:
         if len(particle_masses) == 2:
             import pdb
             pdb.set_trace()
-        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]).T, 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
+        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
     except:
         pass
     
