@@ -145,7 +145,7 @@ for usuable_file in usable_files:
         gc.collect()
         
         proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-        proj_array = np.array(proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')
+        proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
         image = proj_array*units['density_unit'].in_units('g/cm**3')
         del proj
         del proj_array
