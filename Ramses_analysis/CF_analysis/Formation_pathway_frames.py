@@ -75,7 +75,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(3000, 'au')
+thickness = yt.YTQuantity(2000, 'au')
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
