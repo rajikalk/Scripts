@@ -94,15 +94,17 @@ for fn_it in range(len(usable_files)):
     except:
         center_pos = center_positions[-1]
         center_positions.append(center_pos)
-    import pdb
-    pdb.set_trace()
-    x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
-    y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
-    z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
-    sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
-    particle_masses = loaded_sink_data['m'][sinks_in_box]*units['mass_unit'].in_units('Msun')
-    particle_x_pos = loaded_sink_data['x'][sinks_in_box]*units['length_unit'].in_units('au')
-    particle_y_pos = loaded_sink_data['y'][sinks_in_box]*units['length_unit'].in_units('au')
+    #x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
+    #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
+    #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
+    #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
+    try:
+        particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+    except:
+        import pdb
+        pdb.set_trace()
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
