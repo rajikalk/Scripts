@@ -65,8 +65,6 @@ for m_time in m_times:
 usuable_file_inds = [16, 5, 4]
 #usuable_file_inds.append(usuable_file_inds[-1]-1)
 usable_files = np.array(files)[usuable_file_inds]
-import pdb
-pdb.set_trace()
 center_sink = Other_sink[0]
 del usuable_file_inds
 del files
