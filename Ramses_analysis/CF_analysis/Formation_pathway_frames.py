@@ -10,6 +10,7 @@ import pickle
 import my_ramses_module as mym
 import my_ramses_fields as myf
 import csv
+import gc
 
 def parse_inputs():
     import argparse
@@ -68,6 +69,7 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 del scale_l
 del scale_v
 del scale_d
+gc.collect()
 
 units={}
 for key in units_override.keys():
@@ -150,6 +152,7 @@ for usuable_file in usuable_files:
         time_val = ds.current_time.value*scale_t.in_units('yr') - sink_creation_time
         time_val = np.round(time_val)
     del dd
+    gc.collect()
         
     if args.axis == 'xy':
         axis_ind = 2
@@ -172,6 +175,7 @@ for usuable_file in usuable_files:
         region = ds.box(left_corner, right_corner)
         del left_corner
         del right_corner
+    gc.collect()
         
     TM = np.sum(region['cell_mass'].in_units('g'))
     x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
@@ -184,6 +188,7 @@ for usuable_file in usuable_files:
     del y_top
     del z_top
     del com_vel
+    gc.collect()
     
     part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=center_sink, region=region)
     
@@ -196,14 +201,28 @@ for usuable_file in usuable_files:
     elif args.axis == 'yz':
         part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1].value
         part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
+        
+    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
+    proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
+    image = proj_array*units['density_unit'].in_units('g/cm**3')
+    del proj
+    del proj_array
+    gc.collect()
+    
+    pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+    file = open(pickle_file, 'wb')
+    pickle.dump((image, part_info, time_val), file)
+    file.close()
+    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
             
+    """
     vel1_field = args.axis[0] + '-velocity'
     vel2_field = args.axis[1] + '-velocity'
     mag1_field = 'mag' + args.axis[0]
     mag2_field = 'mag' + args.axis[1]
-    proj_dict = {'density':[], vel1_field:[], vel2_field:[], mag1_field:[], mag2_field:[]}
+    proj_dict = {'Density':[], vel1_field:[], vel2_field:[], mag1_field:[], mag2_field:[]}
     proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-    proj_field_list =[('gas', 'density'), ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
+    proj_field_list =[("ramses", "Density"), ('ramses', vel1_field), ('ramses', vel2_field), ('gas', mag1_field), ('gas', mag2_field)]
     proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
     
     for field in yt.parallel_objects(proj_field_list):
@@ -266,6 +285,7 @@ for usuable_file in usuable_files:
     del time_val
     del center_vel
     del part_info
+    """
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
 
