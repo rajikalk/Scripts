@@ -125,6 +125,42 @@ gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
+from pyramses import rsink
+pit = 4
+for fn_it in range(len(usable_files)):
+    pit = pit - 1
+    pickle_file = save_dir + "movie_frame_" + ("%06d" % pit) + "_part.pkl"
+    fn = usable_files[fn_it]
+    file_no = int(fn.split('output_')[-1].split('/')[0])
+    datadir = fn.split('output_')[0]
+    loaded_sink_data = rsink(file_no, datadir=datadir)
+    center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'], loaded_sink_data['y'][center_sink]*units['length_unit'], loaded_sink_data['z'][center_sink]*units['length_unit']], 'pc')
+    import pdb
+    pdb.set_trace()
+    particle_masses = loaded_sink_data['m']*units['mass_unit']
+    if args.perp_axis == "z":
+        particle_x_pos = loaded_sink_data['x']*units['length_unit']
+        particle_y_pos = loaded_sink_data['y']*units['length_unit']
+    elif args.perp_axis == "y":
+        particle_x_pos = loaded_sink_data['x']*units['length_unit']
+        particle_y_pos = loaded_sink_data['z']*units['length_unit']
+    else:
+        particle_x_pos = loaded_sink_data['y']*units['length_unit']
+        particle_y_pos = loaded_sink_data['z']*units['length_unit']
+    gc.collect()
+    #particle_masses = dd['sink_particle_mass']
+
+    #if np.remainder(rank,48) == 0:
+    file = open(pickle_file, 'wb')
+    #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+    pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+    file.close()
+    print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+    del particle_x_pos
+    del particle_y_pos
+    gc.collect()
+
+
 thickness = yt.YTQuantity(5000, 'au')
 prev_center = np.nan
 sink_creation_time = np.nan
@@ -134,7 +170,7 @@ pit = 4
 sys.stdout.flush()
 CW.Barrier()
 for usuable_file in usuable_files:
-    pit = pit -1
+    pit = pit - 1
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
 
