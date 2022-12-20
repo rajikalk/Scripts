@@ -177,7 +177,7 @@ for pickle_file in pickle_files:
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
 
-    file_name = save_dir + "movie_frame_" + ("%06d" % pit)
+    file_name = pickle_file_preffix + '_' + ("%06d" % pit)
     
     xlim = [-2500, 2500]
     ylim = [-2500, 2500]
