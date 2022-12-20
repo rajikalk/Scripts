@@ -32,7 +32,7 @@ txt_files = sorted(glob.glob(Sim_path+"*/stars_output.snktxt"))
 sim_file_times = []
 
 for output_txt in txt_files:
-    with open(output_txt, 'rU') as txt_file:
+    with open(output_txt, 'r') as txt_file:
         reader = csv.reader(txt_file)
         for row in reader:
             time_val = float(row[0].split('   ')[-2])
@@ -117,7 +117,7 @@ for fn_it in range(len(usable_files)):
     del particle_y_pos
     gc.collect()
 
-del units
+#del units
 gc.collect()
 pit = 4
 
