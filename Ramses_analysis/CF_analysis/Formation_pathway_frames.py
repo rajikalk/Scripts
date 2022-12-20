@@ -4,7 +4,6 @@ yt.enable_parallelism()
 import glob
 import numpy as np
 import sys
-import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
@@ -94,6 +93,7 @@ for output_txt in txt_files:
             break
 
 del txt_files
+gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -120,6 +120,7 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 del usuable_file_inds
+gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -177,6 +178,7 @@ for usuable_file in usuable_files:
         del right_corner
     gc.collect()
         
+    '''
     TM = np.sum(region['cell_mass'].in_units('g'))
     x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
     y_top = np.sum(region['cell_mass'].in_units('g')*region['y-velocity'].in_units('cm/s'))
@@ -189,6 +191,7 @@ for usuable_file in usuable_files:
     del z_top
     del com_vel
     gc.collect()
+    '''
     
     part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=center_sink, region=region)
     
