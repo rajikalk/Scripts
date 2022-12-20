@@ -11,18 +11,6 @@ import my_ramses_fields as myf
 import csv
 import gc
 
-def parse_inputs():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=str, default='1.e-22')
-    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-19)
-    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xy")
-    parser.add_argument("-G_mass", "--Gas_mass", type=float)
-    parser.add_argument("files", nargs='*')
-    args = parser.parse_args()
-    return args
-
 #=======MAIN=======
 rank = CW.Get_rank()
 size = CW.Get_size()
