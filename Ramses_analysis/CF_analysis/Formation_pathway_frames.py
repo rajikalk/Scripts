@@ -213,7 +213,7 @@ for pickle_file in pickle_files:
     #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     cbar = plt.colorbar(plot, pad=0.0)
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
-    plt.scatter((particle_x_pos.value - center_pos[0]), (particle_y_pos.value - center_pos[1]), color='c', s=0.5)
+    plt.scatter((particle_x_pos - center_pos[0]), (particle_y_pos - center_pos[1]), color='c', s=0.5)
     #mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
     
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
