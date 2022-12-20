@@ -115,8 +115,6 @@ for fn_it in range(len(usable_files)):
     loaded_sink_data = rsink(file_no, datadir=datadir)
     try:
         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-        import pdb
-        pdb.set_trace()
         sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
         center_positions.append(center_pos)
     except:
@@ -146,8 +144,6 @@ for fn_it in range(len(usable_files)):
     del particle_y_pos
     gc.collect()
 
-prev_center = np.nan
-sink_creation_time = np.nan
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
 
