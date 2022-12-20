@@ -226,6 +226,9 @@ for pickle_file in pickle_files:
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
     ax.scatter((particle_x_pos - center_pos[0]).value, (particle_y_pos - center_pos[1]).value, color='c', s=1)
     try:
+        if len(particle_masses) == 2:
+            import pdb
+            pdb.set_trace()
         mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]).T, 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
     except:
         pass
