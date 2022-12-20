@@ -126,9 +126,9 @@ CW.Barrier()
 cit = -1
 import os
 for usuable_file in usable_files:
+    pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     if os.path.exists(pickle_file) == False:
-        pit = pit - 1
         cit = cit + 1
         ds = yt.load(usuable_file, units_override=units_override)
         #dd = ds.all_data()
@@ -162,17 +162,18 @@ import pdb
 pdb.set_trace()
    
 #Make frames
-pickle_files = sorted(glob.glob('bound_core_frag_*.pkl'))
+pickle_files = sorted(glob.glob('bound_core_frag_*_part.pkl'))
 pit = -1
 for pickle_file in pickle_files:
     pit = pit + 1
+    
     file = open(pickle_file, 'rb')
-    image, time_val = pickle.load(file)
+    particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
     
-    file = open(pickle_file.split('.')[0]+'_part.pkl', 'rb')
-    particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
+    file = open("".join(pickle_file.split('_part')), 'rb')
+    image, time_val = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
 
