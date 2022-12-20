@@ -114,9 +114,9 @@ for fn_it in range(len(usable_files)):
     pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
     file.close()
     print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
-    del x_lim
-    del y_lim
-    del z_lim
+    #del x_lim
+    #del y_lim
+    #del z_lim
     del particle_masses
     del particle_x_pos
     del particle_y_pos
