@@ -205,7 +205,7 @@ for usuable_file in usuable_files:
         part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1].value
         part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
         
-    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
+    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=(thickness,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
     proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
     image = proj_array*units['density_unit'].in_units('g/cm**3')
     del proj
