@@ -75,7 +75,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(5000, 'au')
+thickness = yt.YTQuantity(3000, 'au')
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
@@ -100,12 +100,12 @@ for fn_it in range(len(usable_files)):
     #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
     if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
-        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au') - center_pos[0]
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au') - center_pos[1]
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
-        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au') - center_pos[0]
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au') - center_pos[1]
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
@@ -224,7 +224,7 @@ for pickle_file in pickle_files:
     #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     cbar = plt.colorbar(plot, pad=0.0)
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
-    ax.scatter((particle_x_pos - center_pos[0]).value, (particle_y_pos - center_pos[1]).value, color='c', s=1)
+    #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
     try:
         mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
     except:
