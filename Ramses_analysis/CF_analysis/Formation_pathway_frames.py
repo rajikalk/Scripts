@@ -163,6 +163,7 @@ pdb.set_trace()
    
 #Make frames
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 pickle_files = sorted(glob.glob('bound_core_frag_*_part.pkl'))
 pit = -1
 for pickle_file in pickle_files:
