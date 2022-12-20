@@ -17,8 +17,6 @@ size = CW.Get_size()
 if rank == 0:
     print("size =", size)
 
-args = parse_inputs()
-
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
 simulation_density_id = '100'
