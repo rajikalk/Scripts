@@ -6,8 +6,6 @@ import numpy as np
 import sys
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import my_ramses_module as mym
-#import my_ramses_fields as myf
 import csv
 import gc
 
@@ -17,40 +15,12 @@ size = CW.Get_size()
 if rank == 0:
     print("size =", size)
 
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-
-simulation_density_id = '100'
-
-if simulation_density_id == '50':
-    Grho=50
-    units_override.update({"mass_unit":(1500,"Msun")})
-elif simulation_density_id == '100':
-    Grho=100
-    units_override.update({"mass_unit":(3000,"Msun")})
-elif simulation_density_id == '125':
-    Grho=125
-    units_override.update({"mass_unit":(3750,"Msun")})
-elif simulation_density_id == '150':
-    Grho=150
-    units_override.update({"mass_unit":(4500,"Msun")})
-elif simulation_density_id == '200':
-    Grho=200
-    units_override.update({"mass_unit":(6000,"Msun")})
-elif simulation_density_id == '400':
-    Grho=400
-    units_override.update({"mass_unit":(12000,"Msun")})
-else:
-    print("MASS UNIT NOT SET")
-    import pdb
-    pdb.set_trace()
-    
-
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s", "mass_unit":(3000,"Msun")}
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
 
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-mym.set_units(units_override)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -97,6 +67,7 @@ usuable_file_inds = [16, 5, 4]
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 del usuable_file_inds
+del files
 del m_times
 gc.collect()
 
