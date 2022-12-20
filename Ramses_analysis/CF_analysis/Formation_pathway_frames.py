@@ -241,7 +241,7 @@ for pickle_file in pickle_files:
 
     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-    print('Created frame', (frame_no), 'of', no_frames, 'on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
+    print('Created frame' file_name + '.jpg')
 
 #Delay core frag pathway
 Primary_form_time = 1.0387929956526736
