@@ -115,6 +115,8 @@ for fn_it in range(len(usable_files)):
     loaded_sink_data = rsink(file_no, datadir=datadir)
     try:
         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+        import pdb
+        pdb.set_trace()
         sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
         center_positions.append(center_pos)
     except:
@@ -159,6 +161,7 @@ for usuable_file in usable_files:
     #dd = ds.all_data()
 
     center_pos = center_positions[cit]
+    time_val = ds.current_time.in_units('yr') - sink_creation_time
     
     axis_ind = 2
     left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
@@ -177,7 +180,7 @@ for usuable_file in usable_files:
     
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     file = open(pickle_file, 'wb')
-    pickle.dump((image, part_info, time_val), file)
+    pickle.dump((image, time_val), file)
     file.close()
     print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
             
