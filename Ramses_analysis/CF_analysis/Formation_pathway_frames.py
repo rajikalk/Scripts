@@ -79,6 +79,7 @@ thickness = yt.YTQuantity(5000, 'au')
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
+Core_frag_sinks = [4, 36]
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -93,6 +94,8 @@ for fn_it in range(len(usable_files)):
     except:
         center_pos = center_positions[-1]
         center_positions.append(center_pos)
+    import pdb
+    pdb.set_trace()
     x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
     y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
     z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
