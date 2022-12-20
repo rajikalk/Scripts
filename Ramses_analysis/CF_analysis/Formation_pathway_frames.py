@@ -65,6 +65,9 @@ scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
+del scale_l
+del scale_v
+del scale_d
 
 units={}
 for key in units_override.keys():
@@ -114,6 +117,7 @@ usuable_file_inds = [16, 5, 4]
 usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
+del usuable_file_inds
 
 sys.stdout.flush()
 CW.Barrier()
@@ -128,7 +132,6 @@ sys.stdout.flush()
 CW.Barrier()
 for usuable_file in usuable_files:
     pit = pit -1
-    pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
 
@@ -250,6 +253,7 @@ for usuable_file in usuable_files:
 
         if args.absolute_image != "False":
             image = abs(image)
+        pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         file = open(pickle_file, 'wb')
         pickle.dump((image, magx, magy, velx, vely, part_info, time_val), file)
         file.close()
