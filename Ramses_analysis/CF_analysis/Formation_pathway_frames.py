@@ -103,8 +103,6 @@ for fn_it in range(len(usable_files)):
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
-        import pdb
-        pdb.set_trace()
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
