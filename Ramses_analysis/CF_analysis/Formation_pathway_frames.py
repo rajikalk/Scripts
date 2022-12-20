@@ -129,7 +129,7 @@ from pyramses import rsink
 pit = 4
 for fn_it in range(len(usuable_files)):
     pit = pit - 1
-    pickle_file = save_dir + "movie_frame_" + ("%06d" % pit) + "_part.pkl"
+    pickle_file = "movie_frame_" + ("%06d" % pit) + "_part.pkl"
     fn = usable_files[fn_it]
     file_no = int(fn.split('output_')[-1].split('/')[0])
     datadir = fn.split('output_')[0]
