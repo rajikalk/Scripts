@@ -71,6 +71,9 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 mym.set_units(units_override)
 
+sys.stdout.flush()
+CW.Barrier()
+
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
 files = sorted(glob.glob(Sim_path+"*/info*.txt"))
@@ -86,6 +89,9 @@ for output_txt in txt_files:
             break
 
 del txt_files
+
+sys.stdout.flush()
+CW.Barrier()
 
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
@@ -109,11 +115,17 @@ usuable_file_inds.append(usuable_file_inds[-1]-1)
 usuable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 
+sys.stdout.flush()
+CW.Barrier()
+
 thickness = yt.YTQuantity(5000, 'au')
 prev_center = np.nan
 sink_creation_time = np.nan
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
+
+sys.stdout.flush()
+CW.Barrier()
 for usuable_file in usuable_files:
     pit = pit -1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
@@ -297,37 +309,15 @@ for pickle_file in pickle_files:
     ax.set_ylim(ylim)
 
     
-    if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
-        plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
-    else:
-        plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
     plt.gca().set_aspect('equal')
-    if frame_no > 0 or time_val > -1.0:
-        plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-    else:
-        plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
+    plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
     cbar = plt.colorbar(plot, pad=0.0)
     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
 
-    if has_particles:
-        if args.annotate_particles_mass == True:
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-        else:
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
     
-    if 'Density' in simfo['field']:
-        if args.divide_by_proj_thickness == "True":
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
-        else:
-            cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
-    else:
-        label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
-        cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
-
-    if len(title) > 0:
-        title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
-        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-
+    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
 
     plt.tick_params(axis='both', which='major')# labelsize=16)
     for line in ax.xaxis.get_ticklines():
@@ -335,7 +325,6 @@ for pickle_file in pickle_files:
     for line in ax.yaxis.get_ticklines():
         line.set_color('white')
 
-    
     try:
         plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
         time_string = "$t$="+str(int(time_val))+"yr"
