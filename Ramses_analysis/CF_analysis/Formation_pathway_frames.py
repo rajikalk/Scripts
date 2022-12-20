@@ -7,7 +7,7 @@ import sys
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
-import my_ramses_fields as myf
+#import my_ramses_fields as myf
 import csv
 import gc
 
@@ -97,6 +97,7 @@ usuable_file_inds = [16, 5, 4]
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 del usuable_file_inds
+del m_times
 gc.collect()
 
 sys.stdout.flush()
@@ -144,43 +145,45 @@ for fn_it in range(len(usable_files)):
     del particle_y_pos
     gc.collect()
 
+del units
+gc.collect()
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
 
 sys.stdout.flush()
 CW.Barrier()
 cit = -1
+import os
 for usuable_file in usable_files:
-    pit = pit - 1
-    cit = cit + 1
-    ds = yt.load(usuable_file, units_override=units_override)
-    #dd = ds.all_data()
-
-    center_pos = center_positions[cit]
-    time_val = ds.current_time.in_units('yr') - sink_creation_time
-    
-    axis_ind = 2
-    left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
-    right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
-    region = ds.box(left_corner, right_corner)
-    del left_corner
-    del right_corner
-    gc.collect()
-    
-    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-    proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
-    image = proj_array*units['density_unit'].in_units('g/cm**3')
-    del proj
-    del proj_array
-    gc.collect()
-    
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
-    file = open(pickle_file, 'wb')
-    pickle.dump((image, time_val), file)
-    file.close()
-    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
-            
-    print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
+    if os.path.exists(pickle_file) == False:
+        pit = pit - 1
+        cit = cit + 1
+        ds = yt.load(usuable_file, units_override=units_override)
+        #dd = ds.all_data()
+
+        center_pos = center_positions[cit]
+        time_val = ds.current_time.in_units('yr') - sink_creation_time
+        
+        axis_ind = 2
+        left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
+        right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
+        region = ds.box(left_corner, right_corner)
+        del left_corner
+        del right_corner
+        gc.collect()
+        
+        proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+        proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
+        image = proj_array*units['density_unit'].in_units('g/cm**3')
+        del proj
+        del proj_array
+        gc.collect()
+        
+        file = open(pickle_file, 'wb')
+        pickle.dump((image, time_val), file)
+        file.close()
+        print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -193,7 +196,7 @@ pit = -1
 for pickle_file in pickle_files:
     pit = pit + 1
     file = open(pickle_file, 'rb')
-    image, part_info, time_val = pickle.load(file)
+    image, time_val = pickle.load(file)
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
 
@@ -232,7 +235,7 @@ for pickle_file in pickle_files:
     cbar = plt.colorbar(plot, pad=0.0)
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
 
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+    #mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
     
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
