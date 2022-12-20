@@ -226,7 +226,7 @@ for pickle_file in pickle_files:
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
     ax.scatter((particle_x_pos - center_pos[0]).value, (particle_y_pos - center_pos[1]).value, color='c', s=1)
     try:
-        mym.annotate_particles(ax, [particle_x_pos, particle_y_pos], 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
+        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]).T, 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
     except:
         pass
     
@@ -255,7 +255,7 @@ for pickle_file in pickle_files:
 
     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-    print('Created frame' + file_name + '.jpg')
+    print('Created frame ' + file_name + '.jpg')
 
 #Delay core frag pathway
 Primary_form_time = 1.0387929956526736
