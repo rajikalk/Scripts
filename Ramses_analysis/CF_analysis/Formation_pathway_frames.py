@@ -7,14 +7,6 @@ import sys
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-#mpl.rcParams['pdf.fonttype'] = 42
-#mpl.rcParams['ps.fonttype'] = 42
-import matplotlib.pyplot as plt
-#plt.rcParams['figure.dpi'] = 300
-from matplotlib.colors import LogNorm
-import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import my_ramses_fields as myf
 import csv
@@ -93,6 +85,8 @@ for output_txt in txt_files:
             sim_file_times.append(time_val)
             break
 
+del txt_files
+
 Interested_sinks = [36, 14, 2]
 Other_sink = [4, [10, [5, 9]], [1, 3]]
 
@@ -140,6 +134,7 @@ for usuable_file in usuable_files:
         sink_creation_time = dd['sink_particle_form_time'][Interested_sinks[0]]
         time_val = ds.current_time.value*scale_t.in_units('yr') - sink_creation_time
         time_val = np.round(time_val)
+    del dd
         
     if args.axis == 'xy':
         axis_ind = 2
@@ -169,6 +164,11 @@ for usuable_file in usuable_files:
     z_top = np.sum(region['cell_mass'].in_units('g')*region['z-velocity'].in_units('cm/s'))
     com_vel = [(x_top/TM), (y_top/TM), (z_top/TM)]
     center_vel = yt.YTArray(com_vel, 'cm')
+    del TM
+    del x_top
+    del y_top
+    del z_top
+    del com_vel
     
     part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=center_sink, region=region)
     
@@ -234,6 +234,7 @@ for usuable_file in usuable_files:
         velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, axis=args.axis)
         del velx_full
         del vely_full
+        del velzßßßßß
 
         if args.absolute_image != "False":
             image = abs(image)
