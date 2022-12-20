@@ -62,7 +62,7 @@ for m_time in m_times:
         match_time_ind = match_time_ind + 1
     usuable_file_inds.append(match_time_ind)
 
-usuable_file_inds = [16, 5, 4]
+#usuable_file_inds = [16, 5, 4]
 #usuable_file_inds.append(usuable_file_inds[-1]-1)
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
@@ -98,13 +98,18 @@ for fn_it in range(len(usable_files)):
     #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
     #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
     #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
-    try:
+    if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-    except:
-        import pdb
-        pdb.set_trace()
+    elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
+        particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+    else:
+        particle_masses = yt.YTArray([], 'Msun')
+        particle_x_pos = yt.YTArray([], 'au')
+        particle_y_pos = yt.YTArray([], 'au')
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
