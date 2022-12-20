@@ -185,7 +185,7 @@ for usuable_file in usable_files:
         time_val = np.round(time_val)
     del dd
     gc.collect()
-        
+    '''
     if args.axis == 'xy':
         axis_ind = 2
         left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
@@ -208,7 +208,7 @@ for usuable_file in usable_files:
         del left_corner
         del right_corner
     gc.collect()
-    '''
+    
     '''
     TM = np.sum(region['cell_mass'].in_units('g'))
     x_top = np.sum(region['cell_mass'].in_units('g')*region['x-velocity'].in_units('cm/s'))
@@ -236,7 +236,7 @@ for usuable_file in usable_files:
         part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1].value
         part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
     '''
-    proj = yt.ProjectionPlot(ds, "z", ("ramses", "Density"), width=(thickness,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
+    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=(thickness,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
     proj_array = np.array(proj.frb.data[("ramses", "Density")]/units['length_unit'].in_units('cm'))
     image = proj_array*units['density_unit'].in_units('g/cm**3')
     del proj
