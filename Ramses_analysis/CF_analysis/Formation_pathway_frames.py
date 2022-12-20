@@ -117,7 +117,7 @@ for m_time in m_times:
 
 usuable_file_inds = [16, 5, 4]
 usuable_file_inds.append(usuable_file_inds[-1]-1)
-usuable_files = np.array(files)[usuable_file_inds]
+usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 del usuable_file_inds
 gc.collect()
@@ -127,7 +127,7 @@ CW.Barrier()
 
 from pyramses import rsink
 pit = 4
-for fn_it in range(len(usuable_files)):
+for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = "movie_frame_" + ("%06d" % pit) + "_part.pkl"
     fn = usable_files[fn_it]
@@ -169,7 +169,7 @@ pit = 4
 
 sys.stdout.flush()
 CW.Barrier()
-for usuable_file in usuable_files:
+for usuable_file in usable_files:
     pit = pit - 1
     ds = yt.load(usuable_file, units_override=units_override)
     dd = ds.all_data()
