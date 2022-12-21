@@ -293,6 +293,8 @@ pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
 Core_frag_sinks = [4, 36]
 for fn_it in range(len(usable_files)):
+    import pdb
+    pdb.set_trace()
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
     fn = usable_files[fn_it]
