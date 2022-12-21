@@ -133,7 +133,7 @@ pit = 4
 
 sys.stdout.flush()
 CW.Barrier()
-cit = 0
+cit = -1
 import os
 for usuable_file in usable_files:
     pit = pit - 1
@@ -143,7 +143,7 @@ for usuable_file in usable_files:
         ds = yt.load(usuable_file, units_override=units_override)
         #dd = ds.all_data()
 
-        center_pos = center_positions[-1*cit]
+        center_pos = center_positions[cit]
         time_val = ds.current_time.in_units('yr') - sink_creation_time
         
         axis_ind = 2
@@ -176,9 +176,11 @@ import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 pickle_files = sorted(glob.glob('bound_core_frag_*_part.pkl'))
 pit = -1
+cit = 0
 for pickle_file in pickle_files:
     pit = pit + 1
-    center_pos = center_positions[pit]
+    cit = cit + 1
+    center_pos = center_positions[-1*cit]
     
     file = open(pickle_file, 'rb')
     particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
