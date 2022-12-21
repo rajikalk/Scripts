@@ -274,9 +274,9 @@ System_bound_time = 1.0405948456497247
 
 Unbound_core_frag_sinks = [5, 9, 10, 14]
 
-Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/stars_output.snktxt'
-Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/stars_output.snktxt'
-System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/stars_output.snktxt'
+Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/info_00065.txt'
+Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/info_00067.txt'
+System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/info_00068.txt'
 
 usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
 
