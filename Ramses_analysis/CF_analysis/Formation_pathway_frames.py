@@ -133,7 +133,7 @@ pit = 4
 
 sys.stdout.flush()
 CW.Barrier()
-cit = -1
+cit = 0
 import os
 for usuable_file in usable_files:
     pit = pit - 1
@@ -143,7 +143,7 @@ for usuable_file in usable_files:
         ds = yt.load(usuable_file, units_override=units_override)
         #dd = ds.all_data()
 
-        center_pos = center_positions[cit]
+        center_pos = center_positions[-1*cit]
         time_val = ds.current_time.in_units('yr') - sink_creation_time
         
         axis_ind = 2
