@@ -198,8 +198,8 @@ for pickle_file in pickle_files:
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
     
-    X = X + center_pos[0]
-    Y = Y + center_pos[1]
+    X = X + center_pos[0].value
+    Y = Y + center_pos[1].value
     
     annotate_space = (xlim[1] - xlim[0])/31
     x_ind = []
