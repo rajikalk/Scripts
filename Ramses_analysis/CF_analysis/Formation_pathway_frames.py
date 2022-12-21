@@ -350,8 +350,6 @@ import os
 for usuable_file in usable_files:
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
-    import pdb
-    pdb.set_trace()
     if os.path.exists(pickle_file) == False:
         cit = cit + 1
         ds = yt.load(usuable_file, units_override=units_override)
