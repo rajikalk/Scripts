@@ -109,12 +109,15 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-    if dx > dy:
-        max_seps.append(dx)
-    else:
-        max_seps.append(dy)
+    try:
+        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+        if dx > dy:
+            max_seps.append(dx)
+        else:
+            max_seps.append(dy)
+    except:
+        pass
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -333,12 +336,15 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-    if dx > dy:
-        max_seps.append(dx)
-    else:
-        max_seps.append(dy)
+    try:
+        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+        if dx > dy:
+            max_seps.append(dx)
+        else:
+            max_seps.append(dy)
+    except:
+        pass
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -553,12 +559,15 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-    if dx > dy:
-        max_seps.append(dx)
-    else:
-        max_seps.append(dy)
+    try:
+        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+        if dx > dy:
+            max_seps.append(dx)
+        else:
+            max_seps.append(dy)
+    except:
+        pass
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
