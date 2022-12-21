@@ -480,19 +480,21 @@ for pickle_file in pickle_files:
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
     print('Created frame ' + file_name + '.jpg')
 
+#-------------------------------------------------------------------------------------------------------------------------------------------
+
 #Dynamical capture
-Star_form_time = 1.0358556956574807
-Capture_time = 1.036077995657117
+Star_form_time = 1.0365265956563827
+Capture_time = 1.0451215956423163
 
-Unbound_core_frag_sinks = [5, 9, 10, 14]
+Unbound_core_frag_sinks = [1, 4, 12, 20]
 
-Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/info_00065.txt'
-Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/info_00067.txt'
-System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/info_00068.txt'
+Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00062/info_00062.txt'
+Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00063/info_00063.txt'
+System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00072/info_00072.txt'
 
 usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
 
-center_sink = 5
+center_sink = 4
 gc.collect()
 
 sys.stdout.flush()
@@ -503,7 +505,7 @@ thickness = yt.YTQuantity(2000, 'au')
 center_positions = []
 pickle_file_preffix = 'dynamical_capture_'
 pit = 4
-Core_frag_sinks = [4, 36]
+Core_frag_sinks = [1, 4, 12, 20]
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -554,6 +556,9 @@ for fn_it in range(len(usable_files)):
 #del units
 gc.collect()
 pit = 4
+
+import pdb
+pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
