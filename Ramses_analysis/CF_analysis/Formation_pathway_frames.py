@@ -200,6 +200,8 @@ for pickle_file in pickle_files:
     
     X = X + center_pos[0].value
     Y = Y + center_pos[1].value
+    xlim = [np.min(X), np.max(X)]
+    ylim = [np.min(Y), np.max(Y)]
     
     annotate_space = (xlim[1] - xlim[0])/31
     x_ind = []
@@ -219,8 +221,8 @@ for pickle_file in pickle_files:
     fig, ax = plt.subplots()
     ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
     ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
-    ax.set_xlim([np.min(X), np.max(X)])
-    ax.set_ylim([np.min(Y), np.max(Y)])
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
 
     
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=np.min(image), vmax=np.max(image)), rasterized=True)
