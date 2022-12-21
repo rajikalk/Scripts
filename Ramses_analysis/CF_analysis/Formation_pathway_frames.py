@@ -199,8 +199,8 @@ for pickle_file in pickle_files:
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
     
-    X = X + center_pos[0].value
-    Y = Y + center_pos[1].value
+    X = X + center_pos[0]
+    Y = Y + center_pos[1]
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
@@ -414,8 +414,8 @@ for pickle_file in pickle_files:
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
     
-    X = X + center_pos[0].value
-    Y = Y + center_pos[1].value
+    X = X + center_pos[0]
+    Y = Y + center_pos[1]
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
@@ -629,8 +629,8 @@ for pickle_file in pickle_files:
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
     
-    X = X + center_pos[0].value
-    Y = Y + center_pos[1].value
+    X = X + center_pos[0]
+    Y = Y + center_pos[1]
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
