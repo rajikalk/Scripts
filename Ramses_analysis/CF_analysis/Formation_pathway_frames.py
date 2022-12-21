@@ -219,8 +219,8 @@ for pickle_file in pickle_files:
     fig, ax = plt.subplots()
     ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
     ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    ax.set_xlim([np.min(X), np.max(X)])
+    ax.set_ylim([np.min(Y), np.max(Y)])
 
     
     plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=np.min(image), vmax=np.max(image)), rasterized=True)
