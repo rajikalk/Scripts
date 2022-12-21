@@ -600,7 +600,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
-pickle_files = sorted(glob.glob('bound_core_frag_*_part.pkl'))
+pickle_files = sorted(glob.glob('unbound_core_frag_*_part.pkl'))
 pit = -1
 cit = 0
 for pickle_file in pickle_files:
