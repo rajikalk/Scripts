@@ -74,11 +74,11 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(1500, 'au')
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
 Core_frag_sinks = [4, 36]
+max_seps = []
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -109,6 +109,12 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+    if dx > dy:
+        max_seps.append(dx)
+    else:
+        max_seps.append(dy)
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -125,6 +131,9 @@ for fn_it in range(len(usable_files)):
     del particle_x_pos
     del particle_y_pos
     gc.collect()
+
+max_sep = np.max(max_seps.value)
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
 
 #del units
 gc.collect()
@@ -274,7 +283,8 @@ Primary_form_time = 1.0387929956526736
 Secondary_form_time = 1.040190745650386
 System_bound_time = 1.0405948456497247
 
-Unbound_core_frag_sinks = [5, 9, 10, 14]
+Core_frag_sinks = [2, 3]
+#Core_frag_sinks = [7, 12, 20]
 
 Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/info_00065.txt'
 Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/info_00067.txt'
@@ -289,11 +299,10 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(2200, 'au')
+max_seps = []
 center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
-Core_frag_sinks = [5, 9, 10, 14]
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -324,6 +333,12 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+    if dx > dy:
+        max_seps.append(dx)
+    else:
+        max_seps.append(dy)
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -340,6 +355,9 @@ for fn_it in range(len(usable_files)):
     del particle_x_pos
     del particle_y_pos
     gc.collect()
+
+max_sep = np.max(max_seps.value)
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
 
 #del units
 gc.collect()
@@ -486,7 +504,7 @@ for pickle_file in pickle_files:
 Star_form_time = 1.0365265956563827
 Capture_time = 1.0451215956423163
 
-Unbound_core_frag_sinks = [1, 4, 12, 20]
+Core_frag_sinks = [1, 4, 12, 20]
 
 Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00062/info_00062.txt'
 Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00063/info_00063.txt'
@@ -501,11 +519,10 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(2000, 'au')
+max_seps = []
 center_positions = []
 pickle_file_preffix = 'dynamical_capture_'
 pit = 4
-Core_frag_sinks = [1, 4, 12, 20]
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -536,6 +553,12 @@ for fn_it in range(len(usable_files)):
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+    if dx > dy:
+        max_seps.append(dx)
+    else:
+        max_seps.append(dy)
     gc.collect()
     #particle_masses = dd['sink_particle_mass']
 
@@ -552,6 +575,9 @@ for fn_it in range(len(usable_files)):
     del particle_x_pos
     del particle_y_pos
     gc.collect()
+
+max_sep = np.max(max_seps.value)
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
 
 #del units
 gc.collect()
