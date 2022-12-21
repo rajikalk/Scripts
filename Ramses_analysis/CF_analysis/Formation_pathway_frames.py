@@ -273,7 +273,216 @@ Primary_form_time = 1.0387929956526736
 Secondary_form_time = 1.040190745650386
 System_bound_time = 1.0405948456497247
 
-m_times = [Primary_form_time, Secondary_form_time, System_bound_time]
+Unbound_core_frag_sinks = [5, 9, 10, 14]
+
+Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/stars_output.snktxt'
+Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/stars_output.snktxt'
+System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/stars_output.snktxt'
+
+usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
+
+center_sink = 5
+del usuable_file_inds
+del files
+del m_times
+gc.collect()
+
+sys.stdout.flush()
+CW.Barrier()
+
+from pyramses import rsink
+thickness = yt.YTQuantity(2000, 'au')
+center_positions = []
+pickle_file_preffix = 'unbound_core_frag_'
+pit = 4
+Core_frag_sinks = [4, 36]
+for fn_it in range(len(usable_files)):
+    pit = pit - 1
+    pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
+    fn = usable_files[fn_it]
+    file_no = int(fn.split('output_')[-1].split('/')[0])
+    datadir = fn.split('output_')[0]
+    loaded_sink_data = rsink(file_no, datadir=datadir)
+    try:
+        center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+        sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+        center_positions.append(center_pos)
+    except:
+        center_pos = center_positions[-1]
+        center_positions.append(center_pos)
+    #x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
+    #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
+    #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
+    #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
+    if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
+        particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+    elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
+        particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
+        particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+    else:
+        particle_masses = yt.YTArray([], 'Msun')
+        particle_x_pos = yt.YTArray([], 'au')
+        particle_y_pos = yt.YTArray([], 'au')
+    gc.collect()
+    #particle_masses = dd['sink_particle_mass']
+
+    #if np.remainder(rank,48) == 0:
+    file = open(pickle_file, 'wb')
+    #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+    pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+    file.close()
+    print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+    #del x_lim
+    #del y_lim
+    #del z_lim
+    del particle_masses
+    del particle_x_pos
+    del particle_y_pos
+    gc.collect()
+
+#del units
+gc.collect()
+pit = 4
+
+sys.stdout.flush()
+CW.Barrier()
+cit = -1
+import os
+for usuable_file in usable_files:
+    pit = pit - 1
+    pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+    if os.path.exists(pickle_file) == False:
+        cit = cit + 1
+        ds = yt.load(usuable_file, units_override=units_override)
+        #dd = ds.all_data()
+
+        center_pos = center_positions[cit]
+        time_val = ds.current_time.in_units('yr') - sink_creation_time
+        
+        axis_ind = 2
+        left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
+        right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
+        region = ds.box(left_corner, right_corner)
+        del left_corner
+        del right_corner
+        gc.collect()
+        
+        proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+        proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
+        image = proj_array*units['density_unit'].in_units('g/cm**3')
+        del proj
+        del proj_array
+        gc.collect()
+        
+        file = open(pickle_file, 'wb')
+        pickle.dump((image, time_val), file)
+        file.close()
+        print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+
+sys.stdout.flush()
+CW.Barrier()
+   
+#Make frames
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+import matplotlib.patheffects as path_effects
+import my_ramses_module as mym
+pickle_files = sorted(glob.glob('bound_core_frag_*_part.pkl'))
+pit = -1
+cit = 0
+for pickle_file in pickle_files:
+    pit = pit + 1
+    cit = cit + 1
+    center_pos = center_positions[-1*cit]
+    
+    file = open(pickle_file, 'rb')
+    particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
+    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+    file.close()
+    
+    file = open("".join(pickle_file.split('_part')), 'rb')
+    image, time_val = pickle.load(file)
+    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+    file.close()
+
+    file_name = pickle_file_preffix + '_' + ("%06d" % pit)
+    
+    xlim = [-2500, 2500]
+    ylim = [-2500, 2500]
+    x = np.linspace(xlim[0], xlim[1], 800)
+    y = np.linspace(ylim[0], ylim[1], 800)
+    X, Y = np.meshgrid(x, y)
+    
+    X = X + center_pos[0].value
+    Y = Y + center_pos[1].value
+    xlim = [np.min(X), np.max(X)]
+    ylim = [np.min(Y), np.max(Y)]
+    
+    annotate_space = (xlim[1] - xlim[0])/31
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < 31:
+        val = annotate_space*counter + annotate_space/2. + xlim[0]
+        x_ind.append(int(val))
+        y_ind.append(int(val))
+        counter = counter + 1
+    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+          
+    has_particles = True
+    xabel = "X (AU)"
+    yabel = "Y (AU)"
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
+    ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+    
+    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=np.min(image), vmax=np.max(image)), rasterized=True)
+    plt.gca().set_aspect('equal')
+    #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+    cbar = plt.colorbar(plot, pad=0.0)
+    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+    #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+    try:
+        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
+    except:
+        try:
+            mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses], particle_tags=Core_frag_sinks)
+        except:
+            pass
+    
+    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+
+    plt.tick_params(axis='both', which='major')# labelsize=16)
+    for line in ax.xaxis.get_ticklines():
+        line.set_color('white')
+    for line in ax.yaxis.get_ticklines():
+        line.set_color('white')
+
+    try:
+        plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+        time_string = "$t$="+str(int(time_val))+"yr"
+        time_string_raw = r"{}".format(time_string)
+        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+        try:
+            plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        except:
+            print("Couldn't outline time string")
+    except:
+        print("Couldn't plot time string")
+                
+    
+
+    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
+    #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+    print('Created frame ' + file_name + '.jpg')
 
 #Dynamical capture
 Star_form_time = 1.0358556956574807
