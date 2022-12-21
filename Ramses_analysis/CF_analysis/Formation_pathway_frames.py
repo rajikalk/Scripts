@@ -67,7 +67,6 @@ usuable_file_inds = [16, 6, 5]
 usable_files = np.array(files)[usuable_file_inds]
 center_sink = Other_sink[0]
 del usuable_file_inds
-del files
 del m_times
 gc.collect()
 
@@ -282,9 +281,6 @@ System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/sta
 usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
 
 center_sink = 5
-del usuable_file_inds
-del files
-del m_times
 gc.collect()
 
 sys.stdout.flush()
