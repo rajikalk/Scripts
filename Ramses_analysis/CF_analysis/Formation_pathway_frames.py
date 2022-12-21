@@ -291,10 +291,8 @@ thickness = yt.YTQuantity(2000, 'au')
 center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
-Core_frag_sinks = [4, 36]
+Core_frag_sinks = [5, 9, 10, 14]
 for fn_it in range(len(usable_files)):
-    import pdb
-    pdb.set_trace()
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
     fn = usable_files[fn_it]
@@ -352,6 +350,8 @@ import os
 for usuable_file in usable_files:
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+    import pdb
+    pdb.set_trace()
     if os.path.exists(pickle_file) == False:
         cit = cit + 1
         ds = yt.load(usuable_file, units_override=units_override)
