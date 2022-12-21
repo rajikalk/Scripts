@@ -428,6 +428,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         line_rad = 0.005*box_size
     else:
         line_rad = accretion_rad
+    '''
     try:
         units = str(annotate_field.unit_quantity).split(' ')[-1]
         s1 = units.split('**')
@@ -439,7 +440,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 unit_string = unit_string + "$^" + s[0] + "$" + s[1:]
 
     except:
-        unit_string = "$\,$M$_\odot$"
+    '''
+    unit_string = "$\,$M$_\odot$"
     field_symbol = "$" + field_symbol + "_"
     p_t = ""
     rainbow_text_colors = []
@@ -455,8 +457,6 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
         if annotate_field is not None:
-            import pdb
-            pdb.set_trace()
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
             if unit_string == "$\,$M$_\odot$":
