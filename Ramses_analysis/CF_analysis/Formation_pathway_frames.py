@@ -74,7 +74,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(2000, 'au')
+thickness = yt.YTQuantity(1500, 'au')
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
@@ -267,6 +267,8 @@ for pickle_file in pickle_files:
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
     print('Created frame ' + file_name + '.jpg')
 
+#------------------------------------------------------------------------------------------------------------------------------------------------
+
 #Delay core frag pathway
 Primary_form_time = 1.0387929956526736
 Secondary_form_time = 1.040190745650386
@@ -287,7 +289,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 from pyramses import rsink
-thickness = yt.YTQuantity(2000, 'au')
+thickness = yt.YTQuantity(2200, 'au')
 center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
@@ -474,8 +476,6 @@ for pickle_file in pickle_files:
     except:
         print("Couldn't plot time string")
                 
-    
-
     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
     print('Created frame ' + file_name + '.jpg')
@@ -501,7 +501,7 @@ CW.Barrier()
 from pyramses import rsink
 thickness = yt.YTQuantity(2000, 'au')
 center_positions = []
-pickle_file_preffix = 'unbound_core_frag_'
+pickle_file_preffix = 'dynamical_capture_'
 pit = 4
 Core_frag_sinks = [4, 36]
 for fn_it in range(len(usable_files)):
@@ -598,7 +598,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
-pickle_files = sorted(glob.glob('unbound_core_frag_*_part.pkl'))
+pickle_files = sorted(glob.glob('dynamical_capture_*_part.pkl'))
 pit = -1
 cit = 0
 for pickle_file in pickle_files:
