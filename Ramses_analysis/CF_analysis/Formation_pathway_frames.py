@@ -193,8 +193,8 @@ for pickle_file in pickle_files:
 
     file_name = pickle_file_preffix + '_' + ("%06d" % pit)
     
-    xlim = [-1*thickness/2, thickness/2]
-    ylim = [-1*thickness/2, thickness/2]
+    xlim = [-1*thickness, thickness]
+    ylim = [-1*thickness, thickness]
     x = np.linspace(xlim[0], xlim[1], 800)
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
@@ -408,8 +408,8 @@ for pickle_file in pickle_files:
 
     file_name = pickle_file_preffix + '_' + ("%06d" % pit)
     
-    xlim = [-1*thickness/2, thickness/2]
-    ylim = [-1*thickness/2, thickness/2]
+    xlim = [-1*thickness, thickness]
+    ylim = [-1*thickness, thickness]
     x = np.linspace(xlim[0], xlim[1], 800)
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
@@ -623,8 +623,8 @@ for pickle_file in pickle_files:
 
     file_name = pickle_file_preffix + '_' + ("%06d" % pit)
     
-    xlim = [-1*thickness/2, thickness/2]
-    ylim = [-1*thickness/2, thickness/2]
+    xlim = [-1*thickness, thickness]
+    ylim = [-1*thickness, thickness]
     x = np.linspace(xlim[0], xlim[1], 800)
     y = np.linspace(ylim[0], ylim[1], 800)
     X, Y = np.meshgrid(x, y)
