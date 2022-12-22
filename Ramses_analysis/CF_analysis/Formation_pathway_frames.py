@@ -9,6 +9,12 @@ import pickle
 import csv
 import gc
 
+def flatten(x):
+    if isinstance(x, collections.Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
+
 #=======MAIN=======
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -46,7 +52,7 @@ while sink_id < len(Sink_birth_all.keys())-1:
     else:
         if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2]:
             Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-        else:
+        elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])):
             Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
 del Sink_birth_all
@@ -56,6 +62,19 @@ global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
 file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
+
+rm_pair = []
+for pair in Unbound_core_frag_candidates:
+    center_sink = pair[0]
+    unbound_sink = pair[1][0]
+    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+    form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
+    unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
+    d_pos = abs(form_pos-unbound_sink_pos)
+    if True in (d_pos>10000):
+        rm_pair.append(pair)
+
+Unbound_core_frag_candidates = list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
 rm_pair = []
 for pair in Dynamical_capture_candidates:
@@ -68,6 +87,8 @@ for pair in Dynamical_capture_candidates:
     if True in (d_pos>10000):
         rm_pair.append(pair)
         
+Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
+
 del global_data
 gc.collect()
 import pdb
