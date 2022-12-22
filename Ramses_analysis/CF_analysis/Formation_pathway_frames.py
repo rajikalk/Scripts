@@ -39,7 +39,7 @@ Unbound_core_frag_candidates = []
 Dynamical_capture_candidates = []
 
 sink_id = 0
-while sink_id < len(Sink_birth_all.keys()):
+while sink_id < len(Sink_birth_all.keys())-1:
     sink_id = sink_id + 1
     if Sink_birth_all[str(sink_id)][0] == True:
         Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
