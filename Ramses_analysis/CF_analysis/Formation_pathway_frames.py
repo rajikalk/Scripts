@@ -57,9 +57,22 @@ file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
 
+rm_pair = []
 for pair in Dynamical_capture_candidates:
-    import pdb
-    pdb.set_trace()
+    center_sink = pair[0]
+    unbound_sink = pair[1][0]
+    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+    form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
+    unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
+    d_pos = abs(form_pos-unbound_sink_pos)
+    if True in (d_pos>10000):
+        rm_pair.append(pair)
+        
+del global_data
+gc.collect()
+import pdb
+pdb.set_trace()
+        
     
             
 
