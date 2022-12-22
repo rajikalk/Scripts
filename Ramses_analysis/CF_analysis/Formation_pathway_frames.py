@@ -8,6 +8,8 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import csv
 import gc
+import collections
+
 
 def flatten(x):
     if isinstance(x, collections.Iterable):
