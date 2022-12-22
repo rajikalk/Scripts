@@ -49,13 +49,14 @@ Dynamical_capture_candidates = []
 sink_id = 0
 while sink_id < len(Sink_birth_all.keys())-1:
     sink_id = sink_id + 1
-    if Sink_birth_all[str(sink_id)][0] == True:
-        Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-    else:
-        if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2]:
-            Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-        elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])):
-            Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
+    if Sink_birth_all[str(sink_id)][2] != 'nan':
+        if Sink_birth_all[str(sink_id)][0] == True:
+            Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+        else:
+            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2]:
+                Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])):
+                Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
 del Sink_birth_all
 gc.collect
