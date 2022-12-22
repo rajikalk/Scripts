@@ -59,9 +59,6 @@ while sink_id < len(Sink_birth_all.keys())-1:
             elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])):
                 Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
-del Sink_birth_all
-gc.collect
-
 global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
 file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
@@ -101,9 +98,20 @@ Bound_core_frag_system = Bound_core_frag_candidates[0]
 Unbound_core_frag_system = Unbound_core_frag_candidates[0]
 Dynamical_capture_system = Dynamical_capture_candidates[0]
 
-import pdb
-pdb.set_trace()
+#Bound core fragmentation
+Bound_primary_form_time = global_data['time'].T[Bound_core_frag_system[1]][np.where(global_data['m'].T[Bound_core_frag_system[1]]>0)[0][0]]
+Bound_secondary_form_time = global_data['time'].T[Bound_core_frag_system[0]][np.where(global_data['m'].T[Bound_core_frag_system[0]]>0)[0][0]]
+Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
 
+Unbound_secondary_form_time = global_data['time'].T[Unbound_core_frag_system[0]][np.where(global_data['m'].T[Unbound_core_frag_system[0]]>0)[0][0]]
+Unbound_bound_time = (Unbound_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Unbound_core_frag_system[0])][-2])/units['time_unit'].in_units('yr').value
+Unbound_m_times = [Unbound_bound_time, Unbound_secondary_form_time]
+
+Dynamical_secondary_form_time = global_data['time'].T[Dynamical_capture_system[0]][np.where(global_data['m'].T[Dynamical_capture_system[0]]>0)[0][0]]
+Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Dynamical_capture_system[0])][-2])/units['time_unit'].in_units('yr').value
+Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
+
+del Sink_birth_all
 del global_data
 gc.collect()
 #------------------------------
@@ -120,14 +128,14 @@ for output_txt in txt_files:
             sim_file_times.append(time_val)
             break
 
+import pdb
+pdb.set_trace()
+
 del txt_files
 gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
-
-Interested_sinks = [36, 14, 2]
-Other_sink = [4, [10, [5, 9]], [1, 3]]
 
 #----------------------------------------------------------------------
 #Bound core fragmentation pathway
