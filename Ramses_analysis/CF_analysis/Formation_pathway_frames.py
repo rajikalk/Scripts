@@ -57,7 +57,7 @@ file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
 
-for pair in Unbound_core_frag_candidates:
+for pair in Dynamical_capture_candidates:
     import pdb
     pdb.set_trace()
     
