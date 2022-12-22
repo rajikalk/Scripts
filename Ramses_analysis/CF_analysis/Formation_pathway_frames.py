@@ -73,7 +73,7 @@ for pair in Unbound_core_frag_candidates:
     if '[' in pair[1]:
         import pdb
         pdb.set_trace()
-    else
+    else:
         unbound_sink = int(pair[1])
     form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
     unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
