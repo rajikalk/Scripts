@@ -96,9 +96,16 @@ for pair in Dynamical_capture_candidates:
         
 Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
 
+#Set systems to use:
+Bound_core_frag_system = Bound_core_frag_candidates[0]
+Unbound_core_frag_system = Unbound_core_frag_candidates[0]
+Dynamical_capture_system = Dynamical_capture_candidates[0]
+
+import pdb
+pdb.set_trace()
+
 del global_data
 gc.collect()
-
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
 files = sorted(glob.glob(Sim_path+"*/info*.txt"))
