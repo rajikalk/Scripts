@@ -69,7 +69,7 @@ file.close()
 rm_pair = []
 for pair in Unbound_core_frag_candidates:
     center_sink = pair[0]
-    unbound_sink = pair[1][0]
+    unbound_sink = int(pair[1])
     form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
     form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
     unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
