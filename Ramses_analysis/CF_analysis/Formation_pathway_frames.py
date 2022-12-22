@@ -51,7 +51,8 @@ while sink_id < len(Sink_birth_all.keys())-1:
     sink_id = sink_id + 1
     if Sink_birth_all[str(sink_id)][2] != 'nan':
         if Sink_birth_all[str(sink_id)][0] == True:
-            Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+            if '[' not in Sink_birth_all[str(sink_id)][1]:
+                Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
         else:
             if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2]:
                 Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
@@ -97,13 +98,6 @@ Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_
 
 del global_data
 gc.collect()
-import pdb
-pdb.set_trace()
-        
-    
-            
-
-    
 
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
