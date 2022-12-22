@@ -130,6 +130,7 @@ if args.update_pickle == 'True':
 plt.clf()
 plt.semilogy(particle_data['time'], particle_data['mdot'])
 plt.xlabel('Time (yr)')
+plt.xlim()
 plt.ylabel('Accretion rate (Msun/yr)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')

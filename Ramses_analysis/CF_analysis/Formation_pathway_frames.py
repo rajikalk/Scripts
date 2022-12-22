@@ -25,6 +25,46 @@ for key in units_override.keys():
 sys.stdout.flush()
 CW.Barrier()
 
+#-------------------------------------
+#Find system candidates:
+
+birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"
+
+file = open(birth_con_pickle, 'rb')
+Sink_birth_all = pickle.load(file)
+file.close()
+
+Bound_core_frag_candidates = []
+Unbound_core_frag_candidates = []
+Dynamical_capture_candidates = []
+
+sink_id = 0
+while sink_id < len(Sink_birth_all.keys()):
+    sink_id = sink_id + 1
+    if Sink_birth_all[str(sink_id)][0] == True:
+        Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+    else:
+        if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2]:
+            Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+        else:
+            Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
+
+del Sink_birth_all
+gc.collect
+
+global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
+file = open(global_pickle, 'rb')
+global_data = pickle.load(file)
+file.close()
+
+for pair in Unbound_core_frag_candidates:
+    import pdb
+    pdb.set_trace()
+    
+            
+
+    
+
 #------------------------------
 Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
 files = sorted(glob.glob(Sim_path+"*/info*.txt"))
@@ -510,7 +550,7 @@ for pickle_file in pickle_files:
 Star_form_time = 1.0365265956563827
 Capture_time = 1.0451215956423163
 
-Core_frag_sinks = [1, 4, 12, 20]
+Core_frag_sinks = [4, 5, 10]
 
 Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00062/info_00062.txt'
 Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00063/info_00063.txt'
@@ -591,9 +631,6 @@ thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
 #del units
 gc.collect()
 pit = 4
-
-import pdb
-pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
