@@ -94,7 +94,7 @@ for pair in Bound_core_frag_candidates:
     primary_form_time = global_data['time'].T[unbound_sink][form_ind]
     dt = secondary_form_time - primary_form_time
     if dt < dt_min:
-        rm_pair.append(dt)
+        rm_pair.append(pair)
 
 Bound_core_frag_candidates = list(set(Bound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
