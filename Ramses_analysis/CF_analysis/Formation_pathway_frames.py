@@ -240,11 +240,10 @@ for fn_it in range(len(usable_files)):
     #del x_lim
     #del y_lim
     #del z_lim
-    del particle_masses
-    del particle_x_pos
-    del particle_y_pos
-    del particle_z_pos
     gc.collect()
+
+import pdb
+pdb.set_trace()
 
 max_sep = np.max(max_seps)
 thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
