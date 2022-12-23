@@ -233,7 +233,7 @@ for fn_it in range(len(usable_files)):
     gc.collect()
 
 max_sep = np.max(max_seps)
-thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+400, 'au')
 
 #del units
 gc.collect()
@@ -463,7 +463,7 @@ for fn_it in range(len(usable_files)):
     gc.collect()
 
 max_sep = np.max(max_seps)
-thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+400, 'au')
 
 #del units
 gc.collect()
@@ -694,7 +694,7 @@ for fn_it in range(len(usable_files)):
     gc.collect()
 
 max_sep = np.max(max_seps)
-thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
+thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+400, 'au')
 
 #del units
 gc.collect()
