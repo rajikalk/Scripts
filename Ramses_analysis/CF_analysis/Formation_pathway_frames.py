@@ -33,6 +33,25 @@ for key in units_override.keys():
 sys.stdout.flush()
 CW.Barrier()
 
+#-------------------------------------------------------
+Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
+txt_files = sorted(glob.glob(Sim_path+"*/stars_output.snktxt"))
+sim_file_times = []
+
+for output_txt in txt_files:
+    with open(output_txt, 'r') as txt_file:
+        reader = csv.reader(txt_file)
+        for row in reader:
+            time_val = float(row[0].split('   ')[-2])
+            sim_file_times.append(time_val)
+            break
+
+gc.collect()
+
+sys.stdout.flush()
+CW.Barrier()
+
+
 #-------------------------------------
 #Find system candidates:
 
@@ -41,6 +60,9 @@ birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entir
 file = open(birth_con_pickle, 'rb')
 Sink_birth_all = pickle.load(file)
 file.close()
+
+import pdb
+pdb.set_trace()
 
 Bound_core_frag_candidates = []
 Unbound_core_frag_candidates = []
@@ -114,34 +136,18 @@ Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
 del Sink_birth_all
 del global_data
 gc.collect()
-#------------------------------
-Sim_path = '/lustre/astro/troels/IMF_256_fixed_dt/data/'
-files = sorted(glob.glob(Sim_path+"*/info*.txt"))
-txt_files = sorted(glob.glob(Sim_path+"*/stars_output.snktxt"))
-sim_file_times = []
-
-for output_txt in txt_files:
-    with open(output_txt, 'r') as txt_file:
-        reader = csv.reader(txt_file)
-        for row in reader:
-            time_val = float(row[0].split('   ')[-2])
-            sim_file_times.append(time_val)
-            break
-
-del txt_files
-gc.collect()
-
-sys.stdout.flush()
-CW.Barrier()
-
 #----------------------------------------------------------------------
 #Bound core fragmentation pathway
-
-m_times = [Secondary_form_time, Primary_form_time]
 usable_files = []
 
-for m_time in m_times:
+for m_time in Bound_m_times:
     match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
+    if sim_file_times[match_time_ind] < m_time:
+        match_time_ind = match_time_ind + 1
+    #use string manipulation to get the relative info file
+    star_file = txt_files[match_time_ind]
+    info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+    usable_files.append(glob.glob(info_file)[0])
     import pdb
     pdb.set_trace()
     
