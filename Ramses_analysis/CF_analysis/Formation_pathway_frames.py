@@ -128,9 +128,6 @@ for output_txt in txt_files:
             sim_file_times.append(time_val)
             break
 
-import pdb
-pdb.set_trace()
-
 del txt_files
 gc.collect()
 
@@ -139,21 +136,16 @@ CW.Barrier()
 
 #----------------------------------------------------------------------
 #Bound core fragmentation pathway
-Primary_form_time = 1.0365265956563827
-Secondary_form_time = 1.0460617956407776
 
 m_times = [Secondary_form_time, Primary_form_time]
-usuable_file_inds = []
+usable_files = []
 
 for m_time in m_times:
     match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
-    if sim_file_times[match_time_ind] < m_time:
-        match_time_ind = match_time_ind + 2
-    usuable_file_inds.append(match_time_ind)
-
-usuable_file_inds = [16, 6, 5]
-#usuable_file_inds.append(usuable_file_inds[-1]-1)
-usable_files = np.array(files)[usuable_file_inds]
+    import pdb
+    pdb.set_trace()
+    
+    
 center_sink = Other_sink[0]
 del usuable_file_inds
 del m_times
