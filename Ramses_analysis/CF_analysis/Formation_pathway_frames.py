@@ -128,7 +128,7 @@ for pair in Dynamical_capture_candidates:
 Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
 
 #Set systems to use:
-Bound_core_frag_system = Bound_core_frag_candidates[1]
+Bound_core_frag_system = Bound_core_frag_candidates[2]
 Unbound_core_frag_system = Unbound_core_frag_candidates[0]
 Dynamical_capture_system = Dynamical_capture_candidates[0]
 
