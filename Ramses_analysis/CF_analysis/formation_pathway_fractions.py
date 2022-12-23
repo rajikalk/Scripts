@@ -139,6 +139,37 @@ plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
 plt.ylim([0,1])
 plt.savefig('formation_pathway.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
 
+#------------------------------------------------------------------------------------------------
+x_labels = ['Unbound core frag.', 'Dynamical capture']
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+fig, ax = plt.subplots(1, 1, figsize=(single_col_width, 0.8*single_col_width))
+
+ind = np.arange(len(subplot_titles))
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472
+font_size = 10
+
+p1 = plt.bar(ind, Delayed_core_frag_fracs, 0.95, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p2 = plt.bar(ind, Dynamical_capt_fracs, 0.95, bottom=np.array(Delayed_core_frag_fracs), color='r', linewidth=1, edgecolor='k')#, hatch='O'
+
+plt.xlim([-0.6, 5.6])
+plt.minorticks_on()
+ax.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+ax.tick_params(axis='both', which='minor', labelsize=font_size, left=True, right=True, top=False, bottom=False)
+plt.xticks(ind, ("1500", "3000", "3750", "4500", "6000", "12000"))
+ax.tick_params(which='both', direction='in')
+plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size, labelpad=-0.5)
+
+plt.legend((p3[0], p2[0]), ('Dynamical capture', 'Unbound core frag.'), loc='upper right', fontsize=font_size)
+plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
+plt.ylim([0,1])
+plt.savefig('formation_pathway_unbound.pdf', format='pdf', bbox_inches='tight', pad_inches = 0.02)
+
+
 ### Make histograms
 import scipy.stats as stats
 from scipy.optimize import curve_fit
