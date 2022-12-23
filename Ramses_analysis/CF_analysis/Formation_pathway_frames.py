@@ -460,7 +460,6 @@ for fn_it in range(len(usable_files)):
     del particle_masses
     del particle_x_pos
     del particle_y_pos
-    del particle_z_pos
     gc.collect()
 
 max_sep = np.max(max_seps)
@@ -692,7 +691,6 @@ for fn_it in range(len(usable_files)):
     del particle_masses
     del particle_x_pos
     del particle_y_pos
-    del particle_z_pos
     gc.collect()
 
 max_sep = np.max(max_seps)
