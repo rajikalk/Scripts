@@ -39,6 +39,8 @@ birth_con_pickles = ['/lustre/astro/rlk/Analysis_plots/Superplot_pickles_entire_
 Core_frag_fracs = []
 Delayed_core_frag_fracs = []
 Dynamical_capt_fracs = []
+Unbound_core_fracs = []
+Unbound_dynamical_fracs = []
 '''
 for pathway_numbers in Formation_pathway:
     Total_sys_no = np.sum(pathway_numbers)
@@ -56,8 +58,12 @@ for birth_con_pickle in birth_con_pickles:
     pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
     file.close()
     
-    import pdb
-    pdb.set_trace()
+    Unbound_tot = pathway_counters[1:3]
+    unbound_core_frac = pathway_counters[1]/Unbound_tot
+    unbound_dynamical_fracs = pathway_counters[2]/Unbound_tot
+    Unbound_core_fracs.append(unbound_core_frac)
+    Unbound_dynamical_fracs.append(unbound_dynamical_fracs)
+    
     Total_sys_no = np.sum(pathway_counters[:3])
     Core_frag_frac = pathway_counters[0]/Total_sys_no
     Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
@@ -155,8 +161,8 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472
 font_size = 10
 
-p1 = plt.bar(ind, Delayed_core_frag_fracs, 0.95, color='m', linewidth=1, edgecolor='k')#, hatch='x'
-p2 = plt.bar(ind, Dynamical_capt_fracs, 0.95, bottom=np.array(Delayed_core_frag_fracs), color='r', linewidth=1, edgecolor='k')#, hatch='O'
+p1 = plt.bar(ind, Unbound_core_fracs, 0.95, color='m', linewidth=1, edgecolor='k')#, hatch='x'
+p2 = plt.bar(ind, Unbound_dynamical_fracs, 0.95, bottom=np.array(Unbound_core_fracs), color='r', linewidth=1, edgecolor='k')#, hatch='O'
 
 plt.xlim([-0.6, 5.6])
 plt.minorticks_on()
