@@ -56,6 +56,8 @@ for birth_con_pickle in birth_con_pickles:
     pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
     file.close()
     
+    import pdb
+    pdb.set_trace()
     Total_sys_no = np.sum(pathway_counters[:3])
     Core_frag_frac = pathway_counters[0]/Total_sys_no
     Delayed_core_frag_frac = pathway_counters[1]/Total_sys_no
