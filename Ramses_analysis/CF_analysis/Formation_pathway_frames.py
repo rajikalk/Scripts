@@ -85,6 +85,15 @@ global_data = pickle.load(file)
 file.close()
 
 rm_pair = []
+for pair in Bound_core_frag_candidates:
+    center_sink = pair[0]
+    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+    secondary_form_time = global_data['time'].T[center_sink][form_ind]
+    unbound_sink = int(pair[1])
+    import pdb
+    pdb.set_trace()
+
+rm_pair = []
 for pair in Unbound_core_frag_candidates:
     center_sink = pair[0]
     form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
