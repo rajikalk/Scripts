@@ -90,8 +90,13 @@ for pair in Bound_core_frag_candidates:
     form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
     secondary_form_time = global_data['time'].T[center_sink][form_ind]
     unbound_sink = int(pair[1])
-    import pdb
-    pdb.set_trace()
+    form_ind = np.where(global_data['m'].T[unbound_sink]>0)[0][0]
+    primary_form_time = global_data['time'].T[unbound_sink][form_ind]
+    dt = secondary_form_time - primary_form_time
+    if dt < dt_min:
+        rm_pair.append(dt)
+
+Bound_core_frag_candidates = list(set(Bound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
 rm_pair = []
 for pair in Unbound_core_frag_candidates:
