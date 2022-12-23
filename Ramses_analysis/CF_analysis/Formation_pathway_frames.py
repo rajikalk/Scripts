@@ -219,6 +219,7 @@ for fn_it in range(len(usable_files)):
         if dz > dx and dz > dy:
             axis_ind = 1
             max_seps.append(dz)
+            particle_y_pos = particle_z_pos
         else:
             axis_ind = 2
             if dx > dy:
@@ -461,6 +462,7 @@ for fn_it in range(len(usable_files)):
         if dz > dx and dz > dy:
             axis_ind = 1
             max_seps.append(dz)
+            particle_y_pos = particle_z_pos
         else:
             axis_ind = 2
             if dx > dy:
@@ -701,6 +703,7 @@ for fn_it in range(len(usable_files)):
         if dz > dx and dz > dy:
             axis_ind = 1
             max_seps.append(dz)
+            particle_y_pos = particle_z_pos
         else:
             axis_ind = 2
             if dx > dy:
