@@ -129,7 +129,7 @@ Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_
 
 #Set systems to use:
 Bound_core_frag_system = Bound_core_frag_candidates[2]
-Unbound_core_frag_system = Unbound_core_frag_candidates[1]
+Unbound_core_frag_system = Unbound_core_frag_candidates[2]
 Dynamical_capture_system = Dynamical_capture_candidates[0]
 
 #Bound core fragmentation
