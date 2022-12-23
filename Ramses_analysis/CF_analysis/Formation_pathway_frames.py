@@ -160,13 +160,14 @@ for m_time in Bound_m_times:
     star_file = txt_files[match_time_ind]
     info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
     usable_files.append(glob.glob(info_file)[0])
-    import pdb
-    pdb.set_trace()
     
+#Add presink frame
+match_time_ind = match_time_ind - 1
+star_file = txt_files[match_time_ind]
+info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+usable_files.append(glob.glob(info_file)[0])
     
-center_sink = Other_sink[0]
-del usuable_file_inds
-del m_times
+center_sink = Bound_core_frag_system[1]
 gc.collect()
 
 sys.stdout.flush()
@@ -176,7 +177,7 @@ from pyramses import rsink
 center_positions = []
 pickle_file_preffix = 'bound_core_frag_'
 pit = 4
-Core_frag_sinks = [4, 36]
+Core_frag_sinks = sorted(flatten(Bound_core_frag_system))
 max_seps = []
 for fn_it in range(len(usable_files)):
     pit = pit - 1
@@ -379,22 +380,25 @@ for pickle_file in pickle_files:
     print('Created frame ' + file_name + '.png')
 
 #------------------------------------------------------------------------------------------------------------------------------------------------
+#Unbound core frag
+usable_files = []
 
-#Delay core frag pathway
-Primary_form_time = 1.0387929956526736
-Secondary_form_time = 1.040190745650386
-System_bound_time = 1.0405948456497247
-
-Core_frag_sinks = [2, 3]
-#Core_frag_sinks = [7, 12, 20]
-
-Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00065/info_00065.txt'
-Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00067/info_00067.txt'
-System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00068/info_00068.txt'
-
-usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
-
-center_sink = 5
+for m_time in Unbound_m_times:
+    match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
+    if sim_file_times[match_time_ind] < m_time:
+        match_time_ind = match_time_ind + 1
+    #use string manipulation to get the relative info file
+    star_file = txt_files[match_time_ind]
+    info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+    usable_files.append(glob.glob(info_file)[0])
+    
+#Add presink frame
+match_time_ind = match_time_ind - 1
+star_file = txt_files[match_time_ind]
+info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+usable_files.append(glob.glob(info_file)[0])
+    
+center_sink = Unbound_core_frag_system[1]
 gc.collect()
 
 sys.stdout.flush()
@@ -405,6 +409,7 @@ max_seps = []
 center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
+Core_frag_sinks = sorted(flatten(Unbound_core_frag_system))
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -606,18 +611,25 @@ for pickle_file in pickle_files:
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 #Dynamical capture
-Star_form_time = 1.0365265956563827
-Capture_time = 1.0451215956423163
+usable_files = []
 
-Core_frag_sinks = [4, 5, 10]
 
-Primary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00062/info_00062.txt'
-Secondary_form_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00063/info_00063.txt'
-System_bound_file = '/lustre/astro/troels/IMF_256_fixed_dt/data/output_00072/info_00072.txt'
-
-usable_files = [System_bound_file,Secondary_form_file, Primary_form_file]
-
-center_sink = 4
+for m_time in Dynamical_m_times:
+    match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
+    if sim_file_times[match_time_ind] < m_time:
+        match_time_ind = match_time_ind + 1
+    #use string manipulation to get the relative info file
+    star_file = txt_files[match_time_ind]
+    info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+    usable_files.append(glob.glob(info_file)[0])
+    
+#Add presink frame
+match_time_ind = match_time_ind - 1
+star_file = txt_files[match_time_ind]
+info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
+usable_files.append(glob.glob(info_file)[0])
+    
+center_sink = Dynamical_capture_system[1]
 gc.collect()
 
 sys.stdout.flush()
@@ -628,6 +640,7 @@ max_seps = []
 center_positions = []
 pickle_file_preffix = 'dynamical_capture_'
 pit = 4
+Core_frag_sinks = sorted(flatten(Dynamical_capture_system))
 for fn_it in range(len(usable_files)):
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
