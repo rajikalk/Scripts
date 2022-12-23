@@ -201,21 +201,30 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        if dx > dy:
-            max_seps.append(dx)
+        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
+        if dz > dx and dz > dy:
+            axis_ind = 1
+            max_seps.append(dz)
         else:
-            max_seps.append(dy)
+            axis_ind = 2
+            if dx > dy:
+                max_seps.append(dx)
+            else:
+                max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -233,6 +242,7 @@ for fn_it in range(len(usable_files)):
     del particle_masses
     del particle_x_pos
     del particle_y_pos
+    del particle_z_pos
     gc.collect()
 
 max_sep = np.max(max_seps)
@@ -257,7 +267,6 @@ for usuable_file in usable_files:
         center_pos = center_positions[cit]
         time_val = ds.current_time.in_units('yr') - sink_creation_time
         
-        axis_ind = 2
         left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
         right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
         region = ds.box(left_corner, right_corner)
@@ -409,6 +418,8 @@ max_seps = []
 center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
+import pdb
+pdb.set_trace()
 Core_frag_sinks = sorted(flatten(Unbound_core_frag_system))
 for fn_it in range(len(usable_files)):
     pit = pit - 1
@@ -432,21 +443,30 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        if dx > dy:
-            max_seps.append(dx)
+        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
+        if dz > dx and dz > dy:
+            axis_ind = 1
+            max_seps.append(dz)
         else:
-            max_seps.append(dy)
+            axis_ind = 2
+            if dx > dy:
+                max_seps.append(dx)
+            else:
+                max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -464,6 +484,7 @@ for fn_it in range(len(usable_files)):
     del particle_masses
     del particle_x_pos
     del particle_y_pos
+    del particle_z_pos
     gc.collect()
 
 max_sep = np.max(max_seps)
@@ -488,7 +509,6 @@ for usuable_file in usable_files:
         center_pos = center_positions[cit]
         time_val = ds.current_time.in_units('yr') - sink_creation_time
         
-        axis_ind = 2
         left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
         right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
         region = ds.box(left_corner, right_corner)
@@ -629,7 +649,7 @@ star_file = txt_files[match_time_ind]
 info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
 usable_files.append(glob.glob(info_file)[0])
     
-center_sink = Dynamical_capture_system[1]
+center_sink = Dynamical_capture_system[0]
 gc.collect()
 
 sys.stdout.flush()
@@ -663,21 +683,30 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
+        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        if dx > dy:
-            max_seps.append(dx)
+        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
+        if dz > dx and dz > dy:
+            axis_ind = 1
+            max_seps.append(dz)
         else:
-            max_seps.append(dy)
+            axis_ind = 2
+            if dx > dy:
+                max_seps.append(dx)
+            else:
+                max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -695,6 +724,7 @@ for fn_it in range(len(usable_files)):
     del particle_masses
     del particle_x_pos
     del particle_y_pos
+    del particle_z_pos
     gc.collect()
 
 max_sep = np.max(max_seps)
@@ -719,7 +749,6 @@ for usuable_file in usable_files:
         center_pos = center_positions[cit]
         time_val = ds.current_time.in_units('yr') - sink_creation_time
         
-        axis_ind = 2
         left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
         right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
         region = ds.box(left_corner, right_corner)
