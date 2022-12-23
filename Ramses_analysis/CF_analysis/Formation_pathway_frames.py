@@ -393,7 +393,6 @@ star_file = txt_files[match_time_ind]
 info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
 usable_files.append(glob.glob(info_file)[0])
     
-center_sink = Unbound_core_frag_system[1]
 gc.collect()
 
 sys.stdout.flush()
@@ -405,6 +404,7 @@ center_positions = []
 pickle_file_preffix = 'unbound_core_frag_'
 pit = 4
 Unbound_core_frag_system = [Unbound_core_frag_system[0], eval(Unbound_core_frag_system[1])]
+center_sink = Unbound_core_frag_system[1]
 Core_frag_sinks = sorted(flatten(Unbound_core_frag_system))
 for fn_it in range(len(usable_files)):
     pit = pit - 1
