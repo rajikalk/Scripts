@@ -74,9 +74,9 @@ while sink_id < len(Sink_birth_all.keys())-1:
             if '[' not in Sink_birth_all[str(sink_id)][2]:
                 Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
         else:
-            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > dt_min:
+            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > 2*dt_min:
                 Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > dt_min:
+            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > 2*dt_min:
                 Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
 global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
@@ -129,7 +129,7 @@ Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_
 
 #Set systems to use:
 Bound_core_frag_system = Bound_core_frag_candidates[2]
-Unbound_core_frag_system = Unbound_core_frag_candidates[2]
+Unbound_core_frag_system = Unbound_core_frag_candidates[0]
 Dynamical_capture_system = Dynamical_capture_candidates[0]
 
 #Bound core fragmentation
