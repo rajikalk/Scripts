@@ -128,7 +128,7 @@ for pair in Dynamical_capture_candidates:
 Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
 
 #Set systems to use:
-Bound_core_frag_system = Bound_core_frag_candidates[0]
+Bound_core_frag_system = Bound_core_frag_candidates[1]
 Unbound_core_frag_system = Unbound_core_frag_candidates[0]
 Dynamical_capture_system = Dynamical_capture_candidates[0]
 
@@ -201,31 +201,21 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
-        if dz > dx and dz > dy:
-            axis_ind = 1
-            max_seps.append(dz)
-            particle_y_pos = particle_z_pos
+        if dx > dy:
+            max_seps.append(dx)
         else:
-            axis_ind = 2
-            if dx > dy:
-                max_seps.append(dx)
-            else:
-                max_seps.append(dy)
+            max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -241,9 +231,6 @@ for fn_it in range(len(usable_files)):
     #del y_lim
     #del z_lim
     gc.collect()
-
-import pdb
-pdb.set_trace()
 
 max_sep = np.max(max_seps)
 thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+200, 'au')
@@ -274,6 +261,7 @@ for usuable_file in usable_files:
         del right_corner
         gc.collect()
         
+        axis_ind = 2
         proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
         proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
         image = proj_array*units['density_unit'].in_units('g/cm**3')
@@ -381,8 +369,6 @@ for pickle_file in pickle_files:
             print("Couldn't outline time string")
     except:
         print("Couldn't plot time string")
-                
-    
 
     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -442,31 +428,21 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
-        if dz > dx and dz > dy:
-            axis_ind = 1
-            max_seps.append(dz)
-            particle_y_pos = particle_z_pos
+        if dx > dy:
+            max_seps.append(dx)
         else:
-            axis_ind = 2
-            if dx > dy:
-                max_seps.append(dx)
-            else:
-                max_seps.append(dy)
+            max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -516,6 +492,7 @@ for usuable_file in usable_files:
         del right_corner
         gc.collect()
         
+        axis_ind = 2
         proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
         proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
         image = proj_array*units['density_unit'].in_units('g/cm**3')
@@ -683,31 +660,21 @@ for fn_it in range(len(usable_files)):
         particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks]*units['length_unit'].in_units('au')
     elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
         particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
         particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
         particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-        particle_z_pos = loaded_sink_data['z'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
     else:
         particle_masses = yt.YTArray([], 'Msun')
         particle_x_pos = yt.YTArray([], 'au')
         particle_y_pos = yt.YTArray([], 'au')
-        particle_z_pos = yt.YTArray([], 'au')
     try:
         dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
         dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-        dz = np.max(abs(particle_z_pos-particle_z_pos[0]))
-        if dz > dx and dz > dy:
-            axis_ind = 1
-            max_seps.append(dz)
-            particle_y_pos = particle_z_pos
+        if dx > dy:
+            max_seps.append(dx)
         else:
-            axis_ind = 2
-            if dx > dy:
-                max_seps.append(dx)
-            else:
-                max_seps.append(dy)
+            max_seps.append(dy)
     except:
         pass
     gc.collect()
@@ -757,6 +724,7 @@ for usuable_file in usable_files:
         del right_corner
         gc.collect()
         
+        axis_ind = 2
         proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
         proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
         image = proj_array*units['density_unit'].in_units('g/cm**3')
