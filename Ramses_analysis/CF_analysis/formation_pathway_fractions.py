@@ -58,7 +58,7 @@ for birth_con_pickle in birth_con_pickles:
     pathway_counters, Initial_Seps, Initial_Seps_100000 = pickle.load(file)
     file.close()
     
-    Unbound_tot = pathway_counters[1:3]
+    Unbound_tot = np.sum(pathway_counters[1:3])
     unbound_core_frac = pathway_counters[1]/Unbound_tot
     unbound_dynamical_fracs = pathway_counters[2]/Unbound_tot
     Unbound_core_fracs.append(unbound_core_frac)
