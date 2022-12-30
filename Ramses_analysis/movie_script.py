@@ -568,6 +568,9 @@ if args.make_frames_only == 'False':
                         file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
                         pickle.dump((field[1], proj_array), file)
                         file.close()
+                
+                sys.stdout.flush()
+                CW.Barrier()
                     
                 if rank == proj_root_rank and size > 1:
                     for kit in range(1,len(proj_dict_keys)):
@@ -611,9 +614,6 @@ if args.make_frames_only == 'False':
                         file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
                         pickle.dump((field[1], proj_array), file)
                         file.close()
-                
-                import pdb
-                pdb.set_trace()
             
                 if rank == proj_root_rank and size > 1:
                     for kit in range(1,len(proj_dict_keys)):
@@ -622,9 +622,6 @@ if args.make_frames_only == 'False':
                         file.close()
                         proj_dict[key] = proj_array
                         os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
-
-                import pdb
-                pdb.set_trace()
                 
                 #Figure out vectors projections onto axes
                 y_axis_vector = proj.data_source.orienter.north_vector
@@ -663,8 +660,6 @@ if args.make_frames_only == 'False':
                 proj_y_pos_mag = np.sqrt(proj_y_pos[0]**2 + proj_y_pos[1]**2 + proj_y_pos[2]**2)
                 positions = np.array([proj_x_pos_mag.value,proj_y_pos_mag.value])
                 part_info['particle_position'] = positions
-                import pdb
-                pdb.set_trace()
                 
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
