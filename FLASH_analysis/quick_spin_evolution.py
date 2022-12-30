@@ -60,7 +60,7 @@ B_25_total_spin_1 = np.sqrt(sink_data['65730']['anglx']**2 + sink_data['65730'][
 B_25_total_spin_2 = np.sqrt(sink_data['65776']['anglx']**2 + sink_data['65776']['angly']**2 + sink_data['65776']['anglz']**2)
 
 plt.clf()
-plt.figure(figsize=(4, 3))
+plt.figure(figsize=(5, 3))
 plt.semilogy(S_2_time/31557600.0, S_2_total_spin, 'b-', label='Single Low L$_{init}$')
 plt.semilogy(S_25_time/31557600.0, S_25_total_spin, 'r-', label='Single High L$_{init}$')
 plt.semilogy(B_2_time_1/31557600.0, B_2_total_spin_1, 'b--', label='Primary Low L$_{init}$', alpha=0.5)
