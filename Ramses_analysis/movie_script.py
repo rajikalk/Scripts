@@ -518,7 +518,8 @@ if args.make_frames_only == 'False':
                 proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
-                for field in yt.parallel_objects(proj_field_list):
+                proj_dict = {}
+                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
@@ -562,16 +563,17 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
+                    sto.result_id = field[1]
+                    sto.result = proj_array
+                    '''
                     if rank == proj_root_rank:
                         proj_dict[field[1]] = proj_array
                     else:
                         file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
                         pickle.dump((field[1], proj_array), file)
                         file.close()
-                
-                sys.stdout.flush()
-                CW.Barrier()
-                    
+                    '''
+                '''
                 if rank == proj_root_rank and size > 1:
                     for kit in range(1,len(proj_dict_keys)):
                         file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
@@ -579,7 +581,7 @@ if args.make_frames_only == 'False':
                         file.close()
                         proj_dict[key] = proj_array
                         os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
-                        
+                '''
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
                     velx_full = proj_dict[proj_dict_keys[1]]
