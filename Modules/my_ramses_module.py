@@ -14,6 +14,7 @@ import matplotlib.patheffects as path_effects
 from matplotlib import transforms
 import csv
 import math
+from matplotlib.transforms import Affine2D, offset_copy
 
 fontsize_global=12
 
@@ -41,6 +42,55 @@ def set_units(input_units):
     time_unit = yt.YTQuantity(units["time_unit"][0],units["time_unit"][1])
     density_unit = yt.YTQuantity(units["density_unit"][0],units["density_unit"][1])
 
+def rainbow_text(x, y, strings, colors, orientation='horizontal',
+                 ax=None, **kwargs):
+    """
+    Take a list of *strings* and *colors* and place them next to each
+    other, with text strings[i] being shown in colors[i].
+
+    Parameters
+    ----------
+    x, y : float
+        Text position in data coordinates.
+    strings : list of str
+        The strings to draw.
+    colors : list of color
+        The colors to use.
+    orientation : {'horizontal', 'vertical'}
+    ax : Axes, optional
+        The Axes to draw into. If None, the current axes will be used.
+    **kwargs
+        All other keyword arguments are passed to plt.text(), so you can
+        set the font size, family, etc.
+    """
+    if ax is None:
+        ax = plt.gca()
+    t = ax.transData
+    fig = ax.figure
+    canvas = fig.canvas
+
+    assert orientation in ['horizontal', 'vertical']
+    if orientation == 'vertical':
+        kwargs.update(rotation=90, verticalalignment='bottom')
+
+    for s, c in zip(strings, colors):
+        text = ax.text(x, y, s + " ", color=c, transform=t, **kwargs)
+
+        # Need to draw to update the text position.
+        text.draw(canvas.get_renderer())
+        ex = text.get_window_extent()
+        # Convert window extent from pixels to inches
+        # to avoid issues displaying at different dpi
+        ex = fig.dpi_scale_trans.inverted().transform_bbox(ex)
+
+        if orientation == 'horizontal':
+            t = text.get_transform() + \
+                offset_copy(Affine2D(), fig=fig, x=ex.width, y=0)
+        else:
+            t = text.get_transform() + \
+                offset_copy(Affine2D(), fig=fig, x=0, y=ex.height)
+
+'''
 def rainbow_text(x,y,ls,lc,**kw):
     t = plt.gca().transData
     figlocal = plt.gcf()
@@ -61,7 +111,8 @@ def rainbow_text(x,y,ls,lc,**kw):
         else:
             #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
             t = transforms.offset_copy(text._transform, x=(3*ex.width), units='dots')
-        
+'''
+
 def set_global_font_size(x):
     global fontsize_global
     fontsize_global = x
