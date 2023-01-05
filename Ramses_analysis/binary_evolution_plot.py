@@ -244,8 +244,8 @@ if args.update_pickle == 'True':
                     epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
                     
                     #Calculate orbital energy
-                    m_x_r = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                    L = particle_data['mass'][-1].in_units('g').T*m_x_r
+                    r_x_v = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
+                    L = particle_data['mass'][-1].in_units('g').T*r_x_v
                     L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
                     
                     #h_val is the specific angular momentum
@@ -537,10 +537,10 @@ if systems_hierarchy != None:
                 epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
                 
                 #Calculate orbital energy
-                m_x_r_1 = yt.YTArray(np.cross(pos_rel_to_com_1.T.in_units('cm'), vel_rel_to_com_1.T.in_units('cm/s')), 'cm**2/s')
-                m_x_r_2 = yt.YTArray(np.cross(pos_rel_to_com_2.T.in_units('cm'), vel_rel_to_com_2.T.in_units('cm/s')), 'cm**2/s')
-                L_1 = m_x_r_1.T*binary_masses[0].in_units('g')
-                L_2 = m_x_r_2.T*binary_masses[1].in_units('g')
+                r_x_v_1 = yt.YTArray(np.cross(pos_rel_to_com_1.T.in_units('cm'), vel_rel_to_com_1.T.in_units('cm/s')), 'cm**2/s')
+                r_x_v_2 = yt.YTArray(np.cross(pos_rel_to_com_2.T.in_units('cm'), vel_rel_to_com_2.T.in_units('cm/s')), 'cm**2/s')
+                L_1 = r_x_v_1.T*binary_masses[0].in_units('g')
+                L_2 = r_x_v_2.T*binary_masses[1].in_units('g')
                 L_tot = np.sqrt(np.sum(L_1**2, axis=0)) + np.sqrt(np.sum(L_2**2, axis=0))
                 
                 #h_val is the specific angular momentum
@@ -550,6 +550,12 @@ if systems_hierarchy != None:
                 
                 semimajor_a = ((h_val**2)/(yt.units.G*np.sum(binary_data['mass'].in_units('g'),axis=0)*(1-e**2))).in_units('AU')
                 period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.G*np.sum(binary_data['mass'].in_units('g'),axis=0)))).in_units('yr')
+                
+                towards_apastron = np.argwhere(attractor>0)
+                attractor = np.sign(separation[1:] - separation[:-1])
+                away_from_apastron = np.argwhere(attractor<0)
+                phase = np.arccos(((((semimajor_a*(1-e**2))/separation) - 1)/e))/np.pi/2
+                phase[away_from_apastron] = 1- phase[away_from_apastron]
                 
                 if 'last_periastron' not in particle_data.keys():
                     particle_data.update({'last_periastron':[]})
