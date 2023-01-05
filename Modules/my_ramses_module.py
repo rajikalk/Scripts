@@ -57,10 +57,10 @@ def rainbow_text(x,y,ls,lc,**kw):
         ex = text.get_window_extent(renderer=figlocal.canvas.get_renderer())
         if "odot" in string:
             #t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
-            t = transforms.offset_copy(text._transform, x=(ex.width+10), units='dots')
+            t = transforms.offset_copy(text._transform, x=(3*ex.width), units='dots')
         else:
             #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
-            t = transforms.offset_copy(text._transform, x=(ex.width+10), units='dots')
+            t = transforms.offset_copy(text._transform, x=(3*ex.width), units='dots')
         
 def set_global_font_size(x):
     global fontsize_global
