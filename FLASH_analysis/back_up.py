@@ -16,10 +16,9 @@ update = True
 
 rit = -1
 for sim_dir in run_line:
-    if os.path.exists(sim_dir+'/sinks_evol.dat') == True:
-        rit = rit + 1
-        if rit == size:
-            rit = 0
-        if rank == rit:
-            subprocess.run(run_line, shell=True)
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        subprocess.run(run_line, shell=True)
             
