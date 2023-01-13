@@ -68,7 +68,7 @@ plt.semilogy(B_2_time_2/31557600.0, B_2_total_spin_2, 'b-.', label='Secondary Lo
 plt.semilogy(B_25_time_1/31557600.0, B_25_total_spin_1, 'r--', label='Primary High L$_{init}$', alpha=0.5)
 plt.semilogy(B_25_time_2/31557600.0, B_25_total_spin_2, 'r-.', label='Secondary High L$_{init}$', alpha=0.5)
 plt.xlabel('Time since formation (yr)')
-plt.ylabel('Sink particle spin (g cm/s)')
+plt.ylabel('Sink particle spin (g cm$^2$/s)')
 plt.xlim(left=0)
 plt.legend(ncol=2)
 plt.savefig('protostellar_spin.pdf', bbox_inches='tight', pad_inches=0.02)
