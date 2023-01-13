@@ -70,5 +70,5 @@ plt.semilogy(B_25_time_2/31557600.0, B_25_total_spin_2, 'r-.', label='Secondary 
 plt.xlabel('Time since formation (yr)')
 plt.ylabel('Sink particle spin (g cm/s)')
 plt.xlim(left=0)
-plt.legend()
-plt.savefig('protostellar_spin.png', bbox_inches='tight', pad_inches=0.02)
+plt.legend(ncol=2)
+plt.savefig('protostellar_spin.pdf', bbox_inches='tight', pad_inches=0.02)

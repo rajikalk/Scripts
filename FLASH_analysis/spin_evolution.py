@@ -30,7 +30,7 @@ pickle_files = sorted(glob.glob(input_dir+'*/Lref_11.pkl'))
 
 line_styles = ['--', '-.', '-']
 #label = ['L_{ref}=10', 'L_{ref}=11', 'L_{ref}=12']
-label = ['Mach 0.1', 'Mach 0.2', 'Single']
+label = ['Mach 0.2', 'Single']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
