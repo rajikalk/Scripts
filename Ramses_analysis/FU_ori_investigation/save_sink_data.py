@@ -24,6 +24,7 @@ def parse_inputs():
     args = parser.parse_args()
     return args
     
+    
 #================================================================================
 args = parse_inputs()
 
@@ -124,6 +125,16 @@ if args.update_pickle == 'True':
                 d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
+                
+
+import pdb
+pdb.set_trace()
+#f_acc = 0.5
+#radius = yt.YTQuantity(2.0, 'rsun')
+#M_dot = accretion(sink_inds, global_ind)
+#M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
+#L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
+#L_tot = L_acc.in_units('Lsun')
 
 
 
