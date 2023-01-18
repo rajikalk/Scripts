@@ -98,9 +98,7 @@ for sink_id in range(len(global_data['ux'].T)):
             curr_mass = global_data['m'].T[sink_id][time_it]*units['mass_unit']
             Sink_masses[str(sink_id)].append(curr_mass)
         
-            import pdb
-            pdb.set_trace()
-            curr_time = global_data['time'][time_it][0]*scale_t.in_units('yr')
+            curr_time = global_data['time'].T[sink_id][time_it]*scale_t.in_units('yr')
             start_time = curr_time - window/2
             end_time = curr_time + window/2
             
@@ -119,14 +117,21 @@ for sink_id in range(len(global_data['ux'].T)):
                 print('Calculate v_spread of sink', sink_id, 'for time_it', time_it, 'out of', len(global_data['time']))
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         plt.clf()
-        plt.plot()
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v['0'], label='Delta V')
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v['0'], label='Sigma V')
+        plt.xlabel('Time (Myr)')
+        plt.ylabel('V spread (km/s)')
+        plt.legend()
+        plt.xlim(left=0)
+        plt.ylim(bottom=0)
+        plt.savefig('v_spread_vs_time_'+str(sink_id)+'.png')
         
 #save pickle of v_spread over time for each sink
 pickle_file_rank = 'V_spread_'+str(rank)+'.pkl'
 file = open(pickle_file_rank, 'wb')
 pickle.dump((Sink_masses, Sink_sigma_v, Sink_delta_v),file)
 file.close()
-
+'''
 #compile pickles
 if rank == 0:
     pickle_files = glob.glob('V_spread_*.pkl')
@@ -140,3 +145,4 @@ if rank == 0:
         import pdb
         pdb.set_trace()
         #for key in
+'''
