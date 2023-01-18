@@ -5,6 +5,7 @@ import yt
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
 import glob
+import sys
 
 def parse_inputs():
     import argparse
@@ -90,6 +91,7 @@ for sink_id in range(len(global_data['ux'].T)):
     if rank == rit:
         Sink_masses.update({str(sink_id):[]})
         Sink_sigma_v.update({str(sink_id):[]})
+        print('Doing sink', sink_id, 'on rank', rank)
         for time_it in range(len(global_data['time'])):
             curr_mass = global_data['m'].T[sink_id][time_it]*units['mass_unit']
             Sink_masses[str(sink_id)].append(curr_mass)
