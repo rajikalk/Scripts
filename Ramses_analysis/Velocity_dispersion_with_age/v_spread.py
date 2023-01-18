@@ -70,11 +70,16 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
+Cluster_age = []
 V_spread_array = []
 for time_it in range(len(global_data['ux'])):
     #get indices fo stars that exist
     usable_inds = np.argwhere(global_data['m'][time_it]>0)[0]
-    velocity_std = np.std(global_data['ux'][time_it][usable_inds])
+    velocity_std = np.std(global_data['ux'][time_it][usable_inds]*scale_v.in_units('km/s'))
+    age = (global_data['time'][0][0] - global_data['time'][time_it][0])*scale_t.in_units('Myr')
     
-    import pdb
-    pdb.set_trace()
+    V_spread_array.append(velocity_std)
+    Cluster_age.append(age)
+    
+    if np.remainder(time_it, 1000) == 0:
+        print('calculated v_spread for time_it', time_it, 'of', len(global_data['ux']))
