@@ -80,7 +80,7 @@ file_open.close()
 sys.stdout.flush()
 CW.Barrier()
 
-window = yt.YTQuantity(10, 'yr')
+window = yt.YTQuantity(100, 'yr')
 Sink_masses = {}
 Sink_sigma_v = {}
 Sink_delta_v = {}
