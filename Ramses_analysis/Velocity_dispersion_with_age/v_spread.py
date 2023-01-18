@@ -110,7 +110,7 @@ for sink_id in range(len(global_data['ux'].T)):
                 dv = yt.YTQuantity(np.nan, 'km/s')
             else:
                 std = np.std(global_data['ux'].T[sink_id][start_ind:end_ind+1]*scale_v.in_units('km/s'))
-                dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s'))
+                dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s')
             Sink_sigma_v[str(sink_id)].append(std)
             Sink_delta_v[str(sink_id)].append(dv)
             if np.remainder(time_it, 1000) == 0:
