@@ -83,6 +83,7 @@ CW.Barrier()
 window = yt.YTQuantity(9.5, 'yr')
 Sink_masses = {}
 Sink_sigma_v = {}
+Sink_delta_v = {}
 rit = -1
 for sink_id in range(len(global_data['ux'].T)):
     rit = rit + 1
@@ -91,6 +92,7 @@ for sink_id in range(len(global_data['ux'].T)):
     if rank == rit:
         Sink_masses.update({str(sink_id):[]})
         Sink_sigma_v.update({str(sink_id):[]})
+        Sink_delta_v.update({str(sink_id):[]})
         print('Doing sink', sink_id, 'on rank', rank)
         for time_it in range(len(global_data['time'])):
             curr_mass = global_data['m'].T[sink_id][time_it]*units['mass_unit']
@@ -105,15 +107,18 @@ for sink_id in range(len(global_data['ux'].T)):
             
             if end_ind == start_ind:
                 std = yt.YTQuantity(np.nan, 'km/s')
+                dv = yt.YTQuantity(np.nan, 'km/s')
             else:
                 std = np.std(global_data['ux'].T[sink_id][start_ind:end_ind+1]*scale_v.in_units('km/s'))
+                dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s'))
             Sink_sigma_v[str(sink_id)].append(std)
+            Sink_delta_v[str(sink_id)].append(dv)
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         
 #save pickle of v_spread over time for each sink
 pickle_file_rank = 'V_spread_'+str(rank)+'.pkl'
 file = open(pickle_file_rank, 'wb')
-pickle.dump((Sink_masses, Sink_sigma_v),file)
+pickle.dump((Sink_masses, Sink_sigma_v, Sink_delta_v),file)
 file.close()
 '''
 #compile pickles
