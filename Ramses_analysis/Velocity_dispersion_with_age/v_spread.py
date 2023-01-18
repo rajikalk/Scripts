@@ -23,7 +23,7 @@ size = CW.Get_size()
 #Set units
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
+simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('.')[0][1:]
 try:
     simulation_density_id_int = int(simulation_density_id)
 except:
@@ -58,7 +58,7 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/(units_ove
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')
 
 units={}
 for key in units_override.keys():
