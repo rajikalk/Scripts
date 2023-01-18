@@ -74,7 +74,7 @@ Cluster_age = []
 V_spread_array = []
 for time_it in range(len(global_data['ux'])):
     #get indices fo stars that exist
-    usable_inds = np.argwhere(global_data['m'][time_it]>0)[0]
+    usable_inds = np.argwhere(global_data['m'][time_it]>0).T[0]
     velocity_std = np.std(global_data['ux'][time_it][usable_inds]*scale_v.in_units('km/s'))
     age = (global_data['time'][time_it][0] - global_data['time'][0][0])*scale_t.in_units('Myr')
     
