@@ -102,8 +102,8 @@ for sink_id in range(len(global_data['ux'].T)):
             start_time = curr_time - window/2
             end_time = curr_time + window/2
             
-            start_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - start_time))
-            end_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - end_time))
+            start_ind = np.argmin(abs(global_data['time']*scale_t.in_units('yr') - start_time))
+            end_ind = np.argmin(abs(global_data['time']*scale_t.in_units('yr') - end_time))
             
             if end_ind == start_ind == 0:
                 std = yt.YTQuantity(np.nan, 'km/s')
@@ -127,7 +127,7 @@ for sink_id in range(len(global_data['ux'].T)):
         plt.ylabel('V spread (km/s)')
         plt.legend()
         #plt.xlim(left=0)
-        plt.ylim(bottom=0)
+        #plt.ylim(bottom=0)
         plt.savefig('v_spread_vs_time_'+str(sink_id)+'.png')
         
 #save pickle of v_spread over time for each sink
