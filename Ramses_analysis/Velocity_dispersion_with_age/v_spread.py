@@ -71,6 +71,14 @@ except:
 file_open.close()
 
 window = yt.YTQuantity(9.5, 'yr')
-import pdb
-pdb.set_trace()
-
+for sink_id in range(len(global_data['ux'].T)):
+    for time_it in range(len(global_data['ux'].T[sink_id])):
+        curr_time = global_data['time'].T[sink_id][time_it]*scale_t.in_units('yr')
+        start_time = curr_time - window/2
+        end_time = curr_time + window/2
+        
+        start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
+        end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
+        
+        import pdb
+        pdb.set_trace()
