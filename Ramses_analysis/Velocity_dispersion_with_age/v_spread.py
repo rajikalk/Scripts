@@ -17,7 +17,7 @@ args = parse_inputs()
 #Set units
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('.')[0][1:]
+simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
 try:
     simulation_density_id_int = int(simulation_density_id)
 except:
@@ -72,13 +72,16 @@ file_open.close()
 
 window = yt.YTQuantity(9.5, 'yr')
 for sink_id in range(len(global_data['ux'].T)):
-    for time_it in range(len(global_data['ux'].T[sink_id])):
-        curr_time = global_data['time'].T[sink_id][time_it]*scale_t.in_units('yr')
+    for time_it in range(len(global_data['time'])):
+        curr_time = global_data['time'][time_it]*scale_t.in_units('yr')
         start_time = curr_time - window/2
         end_time = curr_time + window/2
         
-        start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
-        end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
+        start_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - start_time))
+        end_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - end_time))
         
-        import pdb
-        pdb.set_trace()
+        if end_ind == start_ind:
+            pass
+        else:
+            import pdb
+            pdb.set_trace()
