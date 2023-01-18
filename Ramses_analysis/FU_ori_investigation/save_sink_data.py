@@ -127,15 +127,22 @@ if args.update_pickle == 'True':
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
                 
 
-import pdb
-pdb.set_trace()
-#f_acc = 0.5
-#radius = yt.YTQuantity(2.0, 'rsun')
+f_acc = 0.5
+radius = yt.YTQuantity(2.0, 'rsun')
 #M_dot = accretion(sink_inds, global_ind)
 #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-#L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
-#L_tot = L_acc.in_units('Lsun')
+m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
+mass = yt.YTArray(particle_data['mass']).in_units('g')
+L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
+L_tot = L_acc.in_units('Lsun')
 
+plt.clf()
+plt.semilogy(particle_data['time'], L_tot)
+plt.xlabel('Time (yr)')
+plt.xlim()
+plt.ylabel('Luminosity (Lsun)')
+plt.title('Sink no ' + str(sink_ind))
+plt.savefig('luminosity_vs_time_sink_'+str(sink_ind)+'.png')
 
 
 plt.clf()
@@ -145,3 +152,11 @@ plt.xlim()
 plt.ylabel('Accretion rate (Msun/yr)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')
+
+plt.clf()
+plt.semilogy(particle_data['time'], particle_data['mass'])
+plt.xlabel('Time (yr)')
+plt.xlim()
+plt.ylabel('Mass (Msun)')
+plt.title('Sink no ' + str(sink_ind))
+plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
