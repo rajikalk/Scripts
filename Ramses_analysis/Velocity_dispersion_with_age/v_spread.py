@@ -98,12 +98,12 @@ for sink_id in range(len(global_data['ux'].T)):
             curr_mass = global_data['m'].T[sink_id][time_it]*units['mass_unit']
             Sink_masses[str(sink_id)].append(curr_mass)
         
-            curr_time = global_data['time'].T[sink_id][time_it]*scale_t.in_units('yr')
+            curr_time = global_data['time'][time_it]*scale_t.in_units('yr')
             start_time = curr_time - window/2
             end_time = curr_time + window/2
             
-            start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
-            end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
+            start_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - start_time))
+            end_ind = np.argmin(abs(global_data['time'][time_it]*scale_t.in_units('yr') - end_time))
             
             if end_ind == start_ind == 0:
                 std = yt.YTQuantity(np.nan, 'km/s')
@@ -121,8 +121,8 @@ for sink_id in range(len(global_data['ux'].T)):
                 print('Calculate v_spread of sink', sink_id, 'for time_it', time_it, 'out of', len(global_data['time']))
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         plt.clf()
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v[str(sink_id)], 'b-', label='Delta V')
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v[str(sink_id)], 'r-', label='Sigma V')
+        plt.plot((global_data['time']-global_data['time'][0])*scale_t.in_units('Myr'), Sink_delta_v[str(sink_id)], 'b-', label='Delta V')
+        plt.plot((global_data['time']-global_data['time'][0])*scale_t.in_units('Myr'), Sink_sigma_v[str(sink_id)], 'r-', label='Sigma V')
         plt.xlabel('Time (Myr)')
         plt.ylabel('V spread (km/s)')
         plt.legend()
