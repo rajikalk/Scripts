@@ -71,7 +71,7 @@ except:
 file_open.close()
 
 V_spread_array = []
-for time_it in range(len(np.std(global_data['ux'][time_it][usable_inds])['ux'])):
+for time_it in range(len(global_data['ux'])):
     #get indices fo stars that exist
     usable_inds = np.argwhere(global_data['m'][time_it]>0)[0]
     velocity_std = np.std(global_data['ux'][time_it][usable_inds])
