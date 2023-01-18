@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import yt
+import gc
 
 def parse_inputs():
     import argparse
