@@ -113,6 +113,8 @@ for sink_id in range(len(global_data['ux'].T)):
                 dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s'))
             Sink_sigma_v[str(sink_id)].append(std)
             Sink_delta_v[str(sink_id)].append(dv)
+            if np.remainder(time_it, 1000) == 0:
+                print('Calculate v_spread of sink', sink_id, 'for time_it', time_it, 'out of', len(global_data['time']))
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         
 #save pickle of v_spread over time for each sink
