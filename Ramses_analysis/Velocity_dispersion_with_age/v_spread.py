@@ -80,7 +80,7 @@ file_open.close()
 sys.stdout.flush()
 CW.Barrier()
 
-window = yt.YTQuantity(9.5, 'yr')
+window = yt.YTQuantity(10, 'yr')
 Sink_masses = {}
 Sink_sigma_v = {}
 Sink_delta_v = {}
@@ -105,9 +105,13 @@ for sink_id in range(len(global_data['ux'].T)):
             start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
             end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
             
-            if end_ind == start_ind:
+            if end_ind == start_ind == 0:
                 std = yt.YTQuantity(np.nan, 'km/s')
                 dv = yt.YTQuantity(np.nan, 'km/s')
+            elif end_ind == start_ind:
+                start_ind = start_ind -1
+                std = np.std(global_data['ux'].T[sink_id][start_ind:end_ind+1]*scale_v.in_units('km/s'))
+                dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s')
             else:
                 std = np.std(global_data['ux'].T[sink_id][start_ind:end_ind+1]*scale_v.in_units('km/s'))
                 dv = (np.max(global_data['ux'].T[sink_id][start_ind:end_ind+1]) - np.min(global_data['ux'].T[sink_id][start_ind:end_ind+1]))*scale_v.in_units('km/s')
@@ -117,12 +121,12 @@ for sink_id in range(len(global_data['ux'].T)):
                 print('Calculate v_spread of sink', sink_id, 'for time_it', time_it, 'out of', len(global_data['time']))
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         plt.clf()
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v[str(sink_id)], label='Delta V')
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v[str(sink_id)], label='Sigma V')
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v[str(sink_id)], label='Delta V', 'b-')
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v[str(sink_id)], label='Sigma V', 'r-')
         plt.xlabel('Time (Myr)')
         plt.ylabel('V spread (km/s)')
         plt.legend()
-        plt.xlim(left=0)
+        #plt.xlim(left=0)
         plt.ylim(bottom=0)
         plt.savefig('v_spread_vs_time_'+str(sink_id)+'.png')
         
