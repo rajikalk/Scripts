@@ -117,8 +117,8 @@ for sink_id in range(len(global_data['ux'].T)):
                 print('Calculate v_spread of sink', sink_id, 'for time_it', time_it, 'out of', len(global_data['time']))
         print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         plt.clf()
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v['0'], label='Delta V')
-        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v['0'], label='Sigma V')
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_delta_v[str(sink_id)], label='Delta V')
+        plt.plot((global_data['time'].T[sink_id]-global_data['time'].T[sink_id][0])*scale_t.in_units('Myr'), Sink_sigma_v[str(sink_id)], label='Sigma V')
         plt.xlabel('Time (Myr)')
         plt.ylabel('V spread (km/s)')
         plt.legend()
@@ -131,18 +131,23 @@ pickle_file_rank = 'V_spread_'+str(rank)+'.pkl'
 file = open(pickle_file_rank, 'wb')
 pickle.dump((Sink_masses, Sink_sigma_v, Sink_delta_v),file)
 file.close()
-'''
+
 #compile pickles
 if rank == 0:
     pickle_files = glob.glob('V_spread_*.pkl')
     Sink_masses_all = {}
     Sink_sigma_v_all = {}
+    Sink_delta_v_all = {}
     for pickle_file in pickle_files:
         file = open(pickle_file, 'rb')
         Sink_masses, Sink_sigma_v, Sink_delta_v = pickle.load(file)
         file.close()
         
-        import pdb
-        pdb.set_trace()
-        #for key in
-'''
+        for key in Sink_masses.keys()
+            Sink_masses_all.update({key:Sink_masses[key]})
+            Sink_sigma_v_all.update({key:Sink_sigma_v[key]})
+            Sink_delta_v_all.update({key:Sink_delta_v[key]})
+        
+    file = open('V_spread.pkl', 'wb')
+    pickle.dump((Sink_masses_all, Sink_sigma_v_all, Sink_delta_v_all),file)
+    file.close()
