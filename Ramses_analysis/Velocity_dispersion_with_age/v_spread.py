@@ -143,7 +143,7 @@ if rank == 0:
         Sink_masses, Sink_sigma_v, Sink_delta_v = pickle.load(file)
         file.close()
         
-        for key in Sink_masses.keys()
+        for key in Sink_masses.keys():
             Sink_masses_all.update({key:Sink_masses[key]})
             Sink_sigma_v_all.update({key:Sink_sigma_v[key]})
             Sink_delta_v_all.update({key:Sink_delta_v[key]})
