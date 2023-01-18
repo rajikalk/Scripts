@@ -70,45 +70,7 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
-Cluster_age = []
-V_spread_all = []
-V_spread_1 = []
-V_spread_5 = []
-V_spread_8 = []
-for time_it in range(len(global_data['ux'])):
-    #get indices fo stars that exist
-    all_stars = np.argwhere(global_data['m'][time_it]*units['mass_unit']>0).T[0]
-    v_std_all_stars = np.std(global_data['ux'][time_it][all_stars]*scale_v.in_units('km/s'))
-    V_spread_all.append(v_std_all_stars)
-    
-    M_1_stars = np.argwhere(global_data['m'][time_it]*units['mass_unit']>1).T[0]
-    v_std_1 = np.std(global_data['ux'][time_it][M_1_stars]*scale_v.in_units('km/s'))
-    V_spread_1.append(v_std_1)
-    
-    M_5_stars = np.argwhere(global_data['m'][time_it]*units['mass_unit']>5).T[0]
-    v_std_5 = np.std(global_data['ux'][time_it][M_5_stars]*scale_v.in_units('km/s'))
-    V_spread_5.append(v_std_5)
-    
-    M_8_stars = np.argwhere(global_data['m'][time_it]*units['mass_unit']>8).T[0]
-    v_std_8 = np.std(global_data['ux'][time_it][M_8_stars]*scale_v.in_units('km/s'))
-    V_spread_8.append(v_std_8)
-    
-    age = (global_data['time'][time_it][0] - global_data['time'][0][0])*scale_t.in_units('Myr')
-    Cluster_age.append(age)
-    
-    if np.remainder(time_it, 1000) == 0:
-        print('calculated v_spread for time_it', time_it, 'of', len(global_data['ux']))
-        
-
-plt.clf()
-plt.plot(Cluster_age, V_spread_all, label='all stars', alpha=0.5)
-plt.plot(Cluster_age, V_spread_1, label='> 1Msun', alpha=0.5)
-plt.plot(Cluster_age, V_spread_5, label='> 5Msun', alpha=0.5)
-plt.plot(Cluster_age, V_spread_8, label='> 8Msun', alpha=0.5)
-plt.legend()
-plt.xlabel('Time since first star formation (Myr)')
-plt.ylabel('Velocity spread (km/s)')
-plt.xlim(left=0)
-plt.ylim(bottom=0)
-plt.savefig('v_spread_vs_time_'+simulation_density_id+'.png')
+window = yt.YTQuantity(9.5, 'yr')
+import pdb
+pdb.set_trace()
 
