@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import yt
 import gc
+from mpi4py.MPI import COMM_WORLD as CW
+import glob
 
 def parse_inputs():
     import argparse
@@ -13,6 +15,9 @@ def parse_inputs():
     return args
 
 args = parse_inputs()
+
+rank = CW.Get_rank()
+size = CW.Get_size()
 
 #Set units
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
@@ -70,18 +75,55 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
+
+sys.stdout.flush()
+CW.Barrier()
+
 window = yt.YTQuantity(9.5, 'yr')
+Sink_masses = {}
+Sink_sigma_v = {}
+rit = -1
 for sink_id in range(len(global_data['ux'].T)):
-    for time_it in range(len(global_data['time'])):
-        curr_time = global_data['time'][time_it][0]*scale_t.in_units('yr')
-        start_time = curr_time - window/2
-        end_time = curr_time + window/2
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        Sink_masses.update({str(sink_id):[]})
+        Sink_sigma_v.update({str(sink_id):[]})
+        for time_it in range(len(global_data['time'])):
+            curr_mass = global_data['m'].T[sink_id][time_it]*units['mass_unit']
+            Sink_masses[str(sink_id)].append(curr_mass)
         
-        start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
-        end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
+            curr_time = global_data['time'][time_it][0]*scale_t.in_units('yr')
+            start_time = curr_time - window/2
+            end_time = curr_time + window/2
+            
+            start_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - start_time))
+            end_ind = np.argmin(abs(global_data['time'].T[sink_id]*scale_t.in_units('yr') - end_time))
+            
+            if end_ind == start_ind:
+                std = yt.YTQuantity(np.nan, 'km/s')
+            else:
+                std = np.std(global_data['ux'].T[sink_id][start_ind:end_ind+1]*scale_v.in_units('km/s'))
+            Sink_sigma_v[str(sink_id)].append(std)
+        print('Calculated sigma_v evolution for sink', sink_id, 'on rank', rank)
         
-        if end_ind == start_ind:
-            pass
-        else:
-            import pdb
-            pdb.set_trace()
+#save pickle of v_spread over time for each sink
+pickle_file_rank = 'V_spread_'+str(rank)+'.pkl'
+file = open(pickle_file_rank, 'wb')
+pickle.dump((Sink_masses, Sink_sigma_v),file)
+file.close()
+'''
+#compile pickles
+if rank == 0:
+    pickle_files = glob.glob('V_spread_*.pkl')
+    Sink_masses_all = {}
+    Sink_sigma_v_all = {}
+    for pickle_file in pickle_files:
+        file = open(pickle_file, 'rb')
+        Sink_masses, Sink_sigma_v = pickle.load(file)
+        file.close()
+        
+        import pdb
+        pdb.set_trace()
+'''
