@@ -73,8 +73,23 @@ if rank == 0:
     file_open.close()
 
     print('read in global data')
-    import pdb
-    pdb.set_trace()
+    del global_data['x']
+    del global_data['y']
+    del global_data['z']
+    del global_data['uy']
+    del global_data['uz']
+    gc.collect()
+    
+    file = open('global_data_reduced.pkl', 'wb')
+    pickle.dump((global_data))
+    file.close()
+
+sys.stdout.flush()
+CW.Barrier()
+
+file = open('global_data_reduced.pkl', 'rb')
+global_data = pickle.load(file)
+file.close()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -85,11 +100,6 @@ high_mass = 8
 
 window = yt.YTQuantity(100, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
-del global_data['x']
-del global_data['y']
-del global_data['z']
-del global_data['uy']
-del global_data['uz']
 del global_data['time']
 gc.collect()
 V_std_all = []
