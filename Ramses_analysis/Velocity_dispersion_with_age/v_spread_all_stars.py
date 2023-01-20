@@ -61,29 +61,25 @@ del units_override
 gc.collect()
 print('Created units')
 
-file_open = open(args.global_data_pickle_file, 'rb')
-print('opened global data')
-try:
-    global_data = pickle.load(file_open,encoding="latin1")
-    print('read in global data')
-except:
-    file_open.close()
-    import pickle5 as pickle
-    print('imported pickle 5')
+if rank == 0:
     file_open = open(args.global_data_pickle_file, 'rb')
-    print('opened global data again')
-    global_data = pickle.load(file_open,encoding="latin1")
-    print('read in global data again')
-file_open.close()
+    try:
+        global_data = pickle.load(file_open,encoding="latin1")
+    except:
+        file_open.close()
+        import pickle5 as pickle
+        file_open = open(args.global_data_pickle_file, 'rb')
+        global_data = pickle.load(file_open,encoding="latin1")
+    file_open.close()
 
-print('read in global data')
+    print('read in global data')
+
+sys.stdout.flush()
+CW.Barrier()
 
 convective_boundary = 0.2
 intermediate_mass = 5
 high_mass = 8
-
-sys.stdout.flush()
-CW.Barrier()
 
 window = yt.YTQuantity(100, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
