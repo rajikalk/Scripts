@@ -141,7 +141,40 @@ for time_it in range(len(Time_arr)):
         file.close()
         print('Calculated v_spread for time_it', time_it, 'of', len(Time_arr), 'on rank', rank)
         
-import pdb
-pdb.set_trace()
+sys.stdout.flush()
+CW.Barrier()
 
+#Compile together pickles
+pickle_files = glob.glob('v_spread_*.pkl')
+All_V_spread = []
+for pickle_file in pickle_files:
+    file = open(pickle_file, 'rb')
+    V_std_all = pickle.load(file)
+    file.close()
+    
+    if len(All_V_spread) == 0:
+        All_V_spread = V_std_all
+    else:
+        All_V_spread = All_V_spread + V_std_all
+    
+sort_inds = np.argsort(np.array(All_V_spread).T[0])
+All_V_spread = np.array(All_V_spread)[sort_inds]
+
+file = open('v_spread.pkl', 'wb')
+pickle.dump((V_std_all), file)
+file.close()
+
+#Let's try plotting these!
+T_arr = All_V_spread.T[0] - All_V_spread.T[0][0]
+plt.clf()
+plt.plot(T_arr, All_V_spread.T[1], label='all stars')
+plt.plot(T_arr, All_V_spread.T[2], label='>0.2Msun')
+plt.plot(T_arr, All_V_spread.T[3], label='>5Msun')
+plt.plot(T_arr, All_V_spread.T[4], label='>8Msun')
+plt.legend()
+plt.xlim(left=0)
+plt.ylim(bottom=0)
+plt.xlabel('Time since first sink formation (yr)')
+plt.ylabel('Sigma V (km/s)')
+plt.savefig('sigma_v_vs_time.png')
 
