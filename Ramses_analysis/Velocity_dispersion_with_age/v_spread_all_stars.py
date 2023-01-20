@@ -73,6 +73,8 @@ if rank == 0:
     file_open.close()
 
     print('read in global data')
+    import pdb
+    pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
