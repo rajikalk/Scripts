@@ -76,11 +76,63 @@ except:
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
 
+convective_boundary = 0.2
+intermediate_mass = 5
+high_mass = 8
 
 sys.stdout.flush()
 CW.Barrier()
 
 window = yt.YTQuantity(100, 'yr')
+Time_arr = global_data['time']*units['time_unit'].in_units('yr')
+V_std_all = []
+for time_it in range(len(Time_arr)):
+    #get indexes of integration window
+    curr_time = Time_arr[time_it]
+    start_time = curr_time - window/2
+    end_time = curr_time + window/2
+    
+    start_it = np.argmin(abs(Time_arr - start_time))
+    end_it = np.argmin(abs(Time_arr - end_time))
+    
+    #iterate over the stars to measure RV dispersion over window
+    
+    #First find usable stars
+    exisitng_stars = np.argwhere(global_data['m'][time_it]>0).T[0]
+    V_spread_arr = []
+    for star_it in exisitng_stars:
+        vx_vals = global_data['ux'].T[star_it][start_it:end_it]*units['velocity_unit'].in_units('km/s')
+        dv = np.max(vx_vals) - np.min(vx_vals)
+        V_spread_arr.append(dv)
+        
+    #now that you have the Delta v, lets calculate the spread. Is the spread jsut the standard deviation?
+    dv_std_all = np.std(V_spread_arr)
+    #I can also filter by mass
+    Mass_arr = global_data['m'][time_it]*units['mass_unit'].in_units('Msun')
+    Mass_convective_inds = np.argwhere(Mass_arr > convective_boundary)
+    if len(Mass_convective_inds) == 0:
+        dv_std_conv = np.nan
+    else:
+        import pdb
+        pdb.set_trace()
+        
+    Mass_intermediate_inds = np.argwhere(Mass_arr > intermediate_mass)
+    if len(Mass_intermediate_inds) == 0:
+        dv_std_inter = np.nan
+    else:
+        import pdb
+        pdb.set_trace()
+        
+    Mass_high_inds = np.argwhere(Mass_arr > high_mass)
+    if len(Mass_high_inds) == 0:
+        dv_std_high = np.nan
+    else:
+        import pdb
+        pdb.set_trace()
+        
+    #let's save all these spreads
+    V_std_all.append([dv_std_all, dv_std_conv, dv_std_inter, dv_std_high])
+        
 import pdb
 pdb.set_trace()
 
