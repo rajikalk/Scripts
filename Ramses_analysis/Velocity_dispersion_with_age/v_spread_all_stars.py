@@ -61,17 +61,19 @@ del units_override
 gc.collect()
 print('Created units')
 
-import psutil
-print(psutil.virtual_memory())
-
 file_open = open(args.global_data_pickle_file, 'rb')
+print('opened global data')
 try:
     global_data = pickle.load(file_open,encoding="latin1")
+    print('read in global data')
 except:
     file_open.close()
     import pickle5 as pickle
+    print('imported pickle 5')
     file_open = open(args.global_data_pickle_file, 'rb')
+    print('opened global data again')
     global_data = pickle.load(file_open,encoding="latin1")
+    print('read in global data again')
 file_open.close()
 
 print('read in global data')
