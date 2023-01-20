@@ -128,26 +128,26 @@ for time_it in range(len(Time_arr)):
             V_spread_arr.append(dv)
             
         #now that you have the Delta v, lets calculate the spread. Is the spread jsut the standard deviation?
-        dv_std_all = np.std(V_spread_arr)
+        dv_std_all = np.mean(V_spread_arr)
         #I can also filter by mass
         Mass_arr = global_data['m'][time_it]*units['mass_unit'].in_units('Msun')
         Mass_convective_inds = np.argwhere(Mass_arr > convective_boundary)
         if len(Mass_convective_inds) == 0:
             dv_std_conv = np.nan
         else:
-            dv_std_conv = np.std(np.array(V_spread_arr)[Mass_convective_inds.T[0]])
+            dv_std_conv = np.mean(np.array(V_spread_arr)[Mass_convective_inds.T[0]])
             
         Mass_intermediate_inds = np.argwhere(Mass_arr > intermediate_mass)
         if len(Mass_intermediate_inds) == 0:
             dv_std_inter = np.nan
         else:
-            dv_std_inter = np.std(np.array(V_spread_arr)[Mass_intermediate_inds.T[0]])
+            dv_std_inter = np.mean(np.array(V_spread_arr)[Mass_intermediate_inds.T[0]])
             
         Mass_high_inds = np.argwhere(Mass_arr > high_mass)
         if len(Mass_high_inds) == 0:
             dv_std_high = np.nan
         else:
-            dv_std_high = np.std(np.array(V_spread_arr)[Mass_high_inds.T[0]])
+            dv_std_high = np.mean(np.array(V_spread_arr)[Mass_high_inds.T[0]])
             
         #let's save all these spreads
         V_std_all.append([curr_time, dv_std_all, dv_std_conv, dv_std_inter, dv_std_high])
