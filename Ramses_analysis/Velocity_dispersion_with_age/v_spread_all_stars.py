@@ -113,8 +113,7 @@ for time_it in range(len(Time_arr)):
     if len(Mass_convective_inds) == 0:
         dv_std_conv = np.nan
     else:
-        import pdb
-        pdb.set_trace()
+        dv_std_conv = np.std(V_spread_arr[Mass_convective_inds.T[0]])
         
     Mass_intermediate_inds = np.argwhere(Mass_arr > intermediate_mass)
     if len(Mass_intermediate_inds) == 0:
