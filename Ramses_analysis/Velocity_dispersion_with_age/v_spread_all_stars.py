@@ -1,6 +1,5 @@
 import pickle
 import numpy as np
-import matplotlib.pyplot as plt
 import yt
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
@@ -85,6 +84,13 @@ CW.Barrier()
 
 window = yt.YTQuantity(100, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
+del global_data['x']
+del global_data['y']
+del global_data['z']
+del global_data['uy']
+del global_data['uz']
+del global_data['time']
+gc.collect()
 V_std_all = []
 rit = -1
 for time_it in range(len(Time_arr)):
@@ -164,6 +170,7 @@ file = open('v_spread.pkl', 'wb')
 pickle.dump((V_std_all), file)
 file.close()
 
+import matplotlib.pyplot as plt
 #Let's try plotting these!
 T_arr = All_V_spread.T[0] - All_V_spread.T[0][0]
 plt.clf()
