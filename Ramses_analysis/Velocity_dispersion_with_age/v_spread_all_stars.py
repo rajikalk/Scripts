@@ -159,6 +159,9 @@ for time_it in range(len(Time_arr)):
         file.close()
         print('Calculated v_spread for time_it', time_it, 'of', len(Time_arr), 'on rank', rank)
         
+print('Finished calculateing RV dispersion on rank', rank)
+del global_data
+gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
