@@ -59,7 +59,6 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
 gc.collect()
-print('Created units')
 
 if rank == 0:
     file_open = open(args.global_data_pickle_file, 'rb')
@@ -81,7 +80,7 @@ if rank == 0:
     gc.collect()
     
     file = open('global_data_reduced.pkl', 'wb')
-    pickle.dump((global_data))
+    pickle.dump((global_data), file)
     file.close()
 
 sys.stdout.flush()
