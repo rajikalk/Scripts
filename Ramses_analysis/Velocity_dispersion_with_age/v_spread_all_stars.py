@@ -64,6 +64,7 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
 gc.collect()
+print('Created units')
 
 file_open = open(args.global_data_pickle_file, 'rb')
 try:
@@ -74,6 +75,8 @@ except:
     file_open = open(args.global_data_pickle_file, 'rb')
     global_data = pickle.load(file_open,encoding="latin1")
 file_open.close()
+
+print('read in global data')
 
 convective_boundary = 0.2
 intermediate_mass = 5
@@ -92,6 +95,7 @@ del global_data['uz']
 del global_data['time']
 gc.collect()
 V_std_all = []
+print('About to start calcualting RV spread')
 rit = -1
 for time_it in range(len(Time_arr)):
     rit = rit + 1
