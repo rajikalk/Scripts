@@ -10,6 +10,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
+    parser.add_argument("-window", "--intergration_window", default=100, type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -97,7 +98,7 @@ convective_boundary = 0.2
 intermediate_mass = 5
 high_mass = 8
 
-window = yt.YTQuantity(100, 'yr')
+window = yt.YTQuantity(args.intergration_window, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
 del global_data['time']
 gc.collect()
@@ -162,7 +163,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Compile together pickles
-print('collectiong pickles')
+print('collecting pickles')
 pickle_files = glob.glob('v_spread_*.pkl')
 All_V_spread = []
 for pickle_file in pickle_files:
