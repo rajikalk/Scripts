@@ -162,6 +162,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Compile together pickles
+print('collectiong pickles')
 pickle_files = glob.glob('v_spread_*.pkl')
 All_V_spread = []
 for pickle_file in pickle_files:
@@ -193,6 +194,7 @@ plt.legend()
 plt.xlim(left=0)
 plt.ylim(bottom=0)
 plt.xlabel('Time since first sink formation (yr)')
-plt.ylabel('Sigma V (km/s)')
+plt.ylabel('Mean Delta RV (km/s)')
 plt.savefig('sigma_v_vs_time.png')
+print('created plot')
 
