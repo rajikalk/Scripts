@@ -86,51 +86,60 @@ CW.Barrier()
 window = yt.YTQuantity(100, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
 V_std_all = []
+rit = -1
 for time_it in range(len(Time_arr)):
-    #get indexes of integration window
-    curr_time = Time_arr[time_it]
-    start_time = curr_time - window/2
-    end_time = curr_time + window/2
-    
-    start_it = np.argmin(abs(Time_arr - start_time))
-    end_it = np.argmin(abs(Time_arr - end_time))
-    
-    #iterate over the stars to measure RV dispersion over window
-    
-    #First find usable stars
-    exisitng_stars = np.argwhere(global_data['m'][time_it]>0).T[0]
-    V_spread_arr = []
-    for star_it in exisitng_stars:
-        vx_vals = global_data['ux'].T[star_it][start_it:end_it+1]*units['velocity_unit'].in_units('km/s')
-        dv = np.max(vx_vals) - np.min(vx_vals)
-        V_spread_arr.append(dv)
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        #get indexes of integration window
+        curr_time = Time_arr[time_it]
+        start_time = curr_time - window/2
+        end_time = curr_time + window/2
         
-    #now that you have the Delta v, lets calculate the spread. Is the spread jsut the standard deviation?
-    dv_std_all = np.std(V_spread_arr)
-    #I can also filter by mass
-    Mass_arr = global_data['m'][time_it]*units['mass_unit'].in_units('Msun')
-    Mass_convective_inds = np.argwhere(Mass_arr > convective_boundary)
-    if len(Mass_convective_inds) == 0:
-        dv_std_conv = np.nan
-    else:
-        dv_std_conv = np.std(np.array(V_spread_arr)[Mass_convective_inds.T[0]])
+        start_it = np.argmin(abs(Time_arr - start_time))
+        end_it = np.argmin(abs(Time_arr - end_time))
         
-    Mass_intermediate_inds = np.argwhere(Mass_arr > intermediate_mass)
-    if len(Mass_intermediate_inds) == 0:
-        dv_std_inter = np.nan
-    else:
-        import pdb
-        pdb.set_trace()
+        #iterate over the stars to measure RV dispersion over window
         
-    Mass_high_inds = np.argwhere(Mass_arr > high_mass)
-    if len(Mass_high_inds) == 0:
-        dv_std_high = np.nan
-    else:
-        import pdb
-        pdb.set_trace()
+        #First find usable stars
+        exisitng_stars = np.argwhere(global_data['m'][time_it]>0).T[0]
+        V_spread_arr = []
+        for star_it in exisitng_stars:
+            vx_vals = global_data['ux'].T[star_it][start_it:end_it+1]*units['velocity_unit'].in_units('km/s')
+            dv = np.max(vx_vals) - np.min(vx_vals)
+            V_spread_arr.append(dv)
+            
+        #now that you have the Delta v, lets calculate the spread. Is the spread jsut the standard deviation?
+        dv_std_all = np.std(V_spread_arr)
+        #I can also filter by mass
+        Mass_arr = global_data['m'][time_it]*units['mass_unit'].in_units('Msun')
+        Mass_convective_inds = np.argwhere(Mass_arr > convective_boundary)
+        if len(Mass_convective_inds) == 0:
+            dv_std_conv = np.nan
+        else:
+            dv_std_conv = np.std(np.array(V_spread_arr)[Mass_convective_inds.T[0]])
+            
+        Mass_intermediate_inds = np.argwhere(Mass_arr > intermediate_mass)
+        if len(Mass_intermediate_inds) == 0:
+            dv_std_inter = np.nan
+        else:
+            dv_std_inter = np.std(np.array(V_spread_arr)[Mass_intermediate_inds.T[0]])
+            
+        Mass_high_inds = np.argwhere(Mass_arr > high_mass)
+        if len(Mass_high_inds) == 0:
+            dv_std_high = np.nan
+        else:
+            dv_std_high = np.std(np.array(V_spread_arr)[Mass_high_inds.T[0]])
+            
+        #let's save all these spreads
+        V_std_all.append([curr_time, dv_std_all, dv_std_conv, dv_std_inter, dv_std_high])
         
-    #let's save all these spreads
-    V_std_all.append([dv_std_all, dv_std_conv, dv_std_inter, dv_std_high])
+        pickle_file = 'v_spread_'+str(rank)+'.pkl'
+        file = open(pickle_file, 'wb')
+        pickle.dump((V_std_all), file)
+        file.close()
+        print('Calculated v_spread for time_it', time_it, 'of', len(Time_arr), 'on rank', rank)
         
 import pdb
 pdb.set_trace()
