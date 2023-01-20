@@ -101,7 +101,7 @@ for time_it in range(len(Time_arr)):
     exisitng_stars = np.argwhere(global_data['m'][time_it]>0).T[0]
     V_spread_arr = []
     for star_it in exisitng_stars:
-        vx_vals = global_data['ux'].T[star_it][start_it:end_it]*units['velocity_unit'].in_units('km/s')
+        vx_vals = global_data['ux'].T[star_it][start_it:end_it+1]*units['velocity_unit'].in_units('km/s')
         dv = np.max(vx_vals) - np.min(vx_vals)
         V_spread_arr.append(dv)
         
