@@ -94,7 +94,7 @@ file.close()
 sys.stdout.flush()
 CW.Barrier()
 
-convective_boundary = 0.2
+convective_boundary = 1
 intermediate_mass = 5
 high_mass = 8
 
