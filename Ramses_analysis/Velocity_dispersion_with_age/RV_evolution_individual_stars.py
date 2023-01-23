@@ -101,6 +101,7 @@ high_mass = 8
 
 window = yt.YTQuantity(args.intergration_window, 'yr')
 Time_arr = global_data['time']*units['time_unit'].in_units('yr')
+Time_arr = Time_arr-Time_arr[0]
 del global_data['time']
 gc.collect()
 V_std_all = []
