@@ -121,7 +121,6 @@ for sink_id in range(len(global_data['m'].T)):
     
     axs[1].plot(Time_arr, global_data['ux'].T[sink_id]*units['velocity_unit'].in_units('km/s'))
     axs[1].set_xlim(left=0)
-    axs[1].set_ylim(bottom=0)
     axs[1].set_xlabel('Time (yr)')
     axs[1].set_ylabel('V_x (km/s)')
     plt.savefig('Sink_'+str(sink_id)+'_v_x_evol.png')
