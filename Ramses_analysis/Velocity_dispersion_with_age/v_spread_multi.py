@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G50/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G100/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G125/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G150/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G200/v_spread.pkl']#, '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G400/v_spread.pkl']
+pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G50/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G100/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G125/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G150/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G200/v_spread.pkl', '/groups/astro/rlk/rlk/Analysis_plots/V_spread_vs_age/G400/v_spread.pkl']
 
 label = ['G50', 'G100', 'G125', 'G150', 'G200', 'G400']
 
