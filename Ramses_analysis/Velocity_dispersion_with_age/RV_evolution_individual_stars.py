@@ -5,6 +5,7 @@ import gc
 from mpi4py.MPI import COMM_WORLD as CW
 import glob
 import sys
+import matplotlib.pyplot as plt
 
 def parse_inputs():
     import argparse
@@ -105,6 +106,25 @@ gc.collect()
 V_std_all = []
 print('About to start calcualting RV spread')
 rit = -1
-import pdb
-pdb.set_trace()
+for sink_id in range(len(global_data['m'].T)):
+    plt.clf()
+    fig, axs = plt.subplots(ncols=1, nrows=2)#, figsize=(two_col_width,page_height))
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.07)
+    
+    axs[0].plot(Time_arr, global_data['m'].T[sink_id]*units['mass_unit'].in_units('msun'))
+    axs[0].set_xlim(left=0)
+    axs[0].set_ylim(bottom=0)
+    axs[0].set_ylabel('Mass (Msun)')
+    axs[0].axhline(y=5)
+    
+    axs[1].plot(Time_arr, global_data['ux'].T[sink_id]*units['velocity_unit'].in_units('km/s'))
+    axs[1].set_xlim(left=0)
+    axs[1].set_ylim(bottom=0)
+    axs[1].set_xlabel('Time (yr)')
+    axs[1].set_ylabel('V_x (km/s)')
+    plt.savefig('Sink_'+str(sink_id)_'v_x_evol.png')
+    print('plotted sink', sink_id)
+    
+    
 
