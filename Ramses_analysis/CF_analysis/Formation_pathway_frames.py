@@ -159,6 +159,9 @@ del Sink_birth_all
 del global_data
 gc.collect()
 #----------------------------------------------------------------------
+import pdb
+pdb.set_trace()
+rit = -1
 #Bound core fragmentation pathway
 usable_files = []
 
