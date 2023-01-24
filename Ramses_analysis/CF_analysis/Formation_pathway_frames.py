@@ -119,8 +119,6 @@ for pair in Unbound_core_frag_candidates:
 Unbound_core_frag_candidates = list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
 print('removed all unbound core fragmentation candidates with initial separation > 10000 au')
-import pdb
-pdb.set_trace()
 
 rm_pair = []
 for pair in Dynamical_capture_candidates:
@@ -131,8 +129,11 @@ for pair in Dynamical_capture_candidates:
     unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
     d_pos = abs(form_pos-unbound_sink_pos)
     if True in (d_pos>10000):
+        print('removing', pair, 'because d_min=', np.min(d_pos))
         rm_pair.append(pair)
         
+import pdb
+pdb.set_trace()
 Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
 
 #Set systems to use:
