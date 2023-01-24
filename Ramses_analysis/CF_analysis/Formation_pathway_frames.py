@@ -79,6 +79,8 @@ while sink_id < len(Sink_birth_all.keys())-1:
             elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > dt_min:
                 Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
+print("sorted all systems into formation pathways")
+
 global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
 file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
@@ -98,6 +100,8 @@ for pair in Bound_core_frag_candidates:
 
 Bound_core_frag_candidates = list(set(Bound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
+print('removed all bound core fragmentation candidates with formation times separated by < dt_min')
+
 rm_pair = []
 for pair in Unbound_core_frag_candidates:
     center_sink = pair[0]
@@ -113,6 +117,10 @@ for pair in Unbound_core_frag_candidates:
         rm_pair.append(pair)
 
 Unbound_core_frag_candidates = list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
+
+print('removed all unbound core fragmentation candidates with initial separation > 10000 au')
+import pdb
+pdb.set_trace()
 
 rm_pair = []
 for pair in Dynamical_capture_candidates:
