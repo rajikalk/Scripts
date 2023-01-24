@@ -92,7 +92,7 @@ for pair in Bound_core_frag_candidates:
     unbound_sink = int(pair[1])
     form_ind = np.where(global_data['m'].T[unbound_sink]>0)[0][0]
     primary_form_time = global_data['time'].T[unbound_sink][form_ind]
-    dt = secondary_form_time - primary_form_time
+    dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
     if dt < dt_min:
         rm_pair.append(pair)
 
