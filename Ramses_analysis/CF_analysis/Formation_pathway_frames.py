@@ -142,7 +142,7 @@ print('removed dynamical capture candidates that had birth separations >20000 au
 #Unbound_core_frag_system = Unbound_core_frag_candidates[0]
 #Dynamical_capture_system = Dynamical_capture_candidates[0]
 
-for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)))# Bound_core_frag_candidates: #3 projections
+for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
     Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
     Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
@@ -377,7 +377,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         print('Created frame ' + file_name + '.png')
 
 
-for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3)))# Bound_core_frag_candidates: #3 projections
+for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
     Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
     Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
@@ -612,7 +612,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         print('Created frame ' + file_name + '.png')
 
 
-for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3)))# Bound_core_frag_candidates: #3 projections
+for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
     Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
     Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
