@@ -56,7 +56,7 @@ CW.Barrier()
 #-------------------------------------
 #Find system candidates:
 
-birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"
+birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"
 
 file = open(birth_con_pickle, 'rb')
 Sink_birth_all = pickle.load(file)
@@ -70,6 +70,8 @@ sink_id = 0
 while sink_id < len(Sink_birth_all.keys())-1:
     sink_id = sink_id + 1
     if Sink_birth_all[str(sink_id)][2] != 'nan':
+        import pdb
+        pdb.set_trace()
         if Sink_birth_all[str(sink_id)][0] == True:
             if '[' not in Sink_birth_all[str(sink_id)][2]:
                 Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
@@ -79,7 +81,7 @@ while sink_id < len(Sink_birth_all.keys())-1:
             elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > 2*dt_min:
                 Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
-global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G50_full.pkl'
+global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
 file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
