@@ -84,6 +84,8 @@ file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
 
+import pdb
+pdb.set_trace()
 rm_pair = []
 for pair in Bound_core_frag_candidates:
     center_sink = pair[0]
