@@ -153,9 +153,7 @@ Dynamical_secondary_form_time = global_data['time'].T[Dynamical_capture_system[0
 Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Dynamical_capture_system[0])][-2])/units['time_unit'].in_units('yr').value
 Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
 
-print('found sim file times for the plotting candidates')
-import pdb
-pdb.set_trace()
+print('found times for the plotting candidates')
 
 del Sink_birth_all
 del global_data
@@ -178,7 +176,9 @@ match_time_ind = match_time_ind - 1
 star_file = txt_files[match_time_ind]
 info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
 usable_files.append(glob.glob(info_file)[0])
-    
+
+print("usable files for Bound core fragmentation are", usable_files)
+
 center_sink = Bound_core_frag_system[1]
 gc.collect()
 
