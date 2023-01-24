@@ -47,7 +47,7 @@ for output_txt in txt_files:
             break
 
 gc.collect()
-dt_min = np.min((np.array(sim_file_times[1:]) - np.array(sim_file_times[:-1])))
+dt_min = np.min((np.array(sim_file_times[1:]) - np.array(sim_file_times[:-1])))*units['time_unit'].in_units('yr')
 
 sys.stdout.flush()
 CW.Barrier()
@@ -70,15 +70,13 @@ sink_id = 0
 while sink_id < len(Sink_birth_all.keys())-1:
     sink_id = sink_id + 1
     if Sink_birth_all[str(sink_id)][2] != 'nan':
-        import pdb
-        pdb.set_trace()
         if Sink_birth_all[str(sink_id)][0] == True:
             if '[' not in Sink_birth_all[str(sink_id)][2]:
                 Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
         else:
-            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > 2*dt_min:
+            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > dt_min:
                 Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > 2*dt_min:
+            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > dt_min:
                 Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
 global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
@@ -86,8 +84,6 @@ file = open(global_pickle, 'rb')
 global_data = pickle.load(file)
 file.close()
 
-import pdb
-pdb.set_trace()
 rm_pair = []
 for pair in Bound_core_frag_candidates:
     center_sink = pair[0]
@@ -100,6 +96,8 @@ for pair in Bound_core_frag_candidates:
     if dt < dt_min:
         rm_pair.append(pair)
 
+import pdb
+pdb.set_trace()
 Bound_core_frag_candidates = list(set(Bound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
 rm_pair = []
