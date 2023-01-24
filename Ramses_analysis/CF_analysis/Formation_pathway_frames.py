@@ -621,7 +621,6 @@ for pickle_file in pickle_files:
 #Dynamical capture
 usable_files = []
 
-
 for m_time in Dynamical_m_times:
     match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
     if sim_file_times[match_time_ind] < m_time:
