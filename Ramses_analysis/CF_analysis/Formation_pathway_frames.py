@@ -128,13 +128,12 @@ for pair in Dynamical_capture_candidates:
     form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
     unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
     d_pos = np.sqrt(np.sum((form_pos-unbound_sink_pos)**2))
-    if d_pos>10000:
+    if d_pos>20000:
         print('removing', pair, 'because d_min=', d_pos)
         rm_pair.append(pair)
         
-import pdb
-pdb.set_trace()
 Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
+print('removed dynamical capture candidates that had birth separations >20000 au')
 
 #Set systems to use:
 Bound_core_frag_system = Bound_core_frag_candidates[0]
@@ -153,6 +152,10 @@ Unbound_m_times = [Unbound_bound_time, Unbound_secondary_form_time]
 Dynamical_secondary_form_time = global_data['time'].T[Dynamical_capture_system[0]][np.where(global_data['m'].T[Dynamical_capture_system[0]]>0)[0][0]]
 Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Dynamical_capture_system[0])][-2])/units['time_unit'].in_units('yr').value
 Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
+
+print('found sim file times for the plotting candidates')
+import pdb
+pdb.set_trace()
 
 del Sink_birth_all
 del global_data
