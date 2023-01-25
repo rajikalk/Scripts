@@ -317,7 +317,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     sys.stdout.flush()
     CW.Barrier()
     cit = -1
-    for usable in yt.parallel_objects(usable_files, njobs=int(3)):
+    for usable in yt.parallel_objects(usable_files):
         print('making projection of', usable, 'on rank', rank)
         #for usable in usable_files:
         pit = pit - 1
@@ -365,6 +365,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     #cit = 0
     #for pickle_file in pickle_files:
     for pickle_file in yt.parallel_objects(pickle_files, njobs=int(3)):
+        print('making frame for pickle', pickle_file, 'on rank', rank)
         pit = pickle_files.index(pickle_file)
         #cit = cit + 1
         center_pos = center_positions[::-1][pit]
