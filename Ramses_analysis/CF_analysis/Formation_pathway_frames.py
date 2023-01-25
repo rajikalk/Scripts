@@ -285,7 +285,6 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
-                all_max_seps = all_max_seps + max_seps
                 if np.isnan(sink_creation_time_pick) == False:
                     sink_creation_time = sink_creation_time_pick
                 file = open(pickle_file, 'wb')
