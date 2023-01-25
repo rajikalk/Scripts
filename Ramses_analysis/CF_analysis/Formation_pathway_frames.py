@@ -246,6 +246,8 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         loaded_sink_data = rsink(file_no, datadir=datadir)
         #try:
         print('center_sink = ', center_sink)
+        import pdb
+        pdb.set_trace()
         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
         sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
         center_positions.append(center_pos)
