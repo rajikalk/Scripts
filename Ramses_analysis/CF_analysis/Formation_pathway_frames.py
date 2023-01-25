@@ -228,10 +228,15 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
     try:
-        system[0][1] = int(system[0][1])
+        try:
+            system[0][1] = int(system[0][1])
+        except:
+            system[0][1] = flatten(eval(system[0][1]))
+        Core_frag_sinks = [system[0][0]] + [system[0][1]]
     except:
-        system[0][1] = flatten(eval(system[0][1]))
-    Core_frag_sinks = [system[0][0]] + [system[0][1]]
+        print('FAILED TO PROCESS SYSTEM', system[0])
+        import pdb
+        pdb.set_trace()
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         print('Getting sink positions from', fn, 'on rank', rank)
