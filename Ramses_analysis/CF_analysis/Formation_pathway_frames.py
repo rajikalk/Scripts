@@ -285,7 +285,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
-                all_max_seps.append(max_seps)
+                all_max_seps = all_max_seps + max_seps
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
                 pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps), file)
@@ -299,9 +299,9 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             file = open(pickle_file, 'rb')
             particle_x_pos, particle_y_pos, particle_masses, max_seps = pickle.load(file)
             file.close()
-            all_max_seps.append(max_seps)
+            all_max_seps = all_max_seps + max_seps
             
-    max_sep = np.max(all_max_seps)
+    max_sep = np.max(flatten(all_max_seps))
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
     #del units
