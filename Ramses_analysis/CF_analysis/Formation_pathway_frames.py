@@ -234,9 +234,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             system[0][1] = flatten(eval(system[0][1]))
         Core_frag_sinks = [system[0][0]] + [system[0][1]]
     except:
-        print('FAILED TO PROCESS SYSTEM', system[0])
-        import pdb
-        pdb.set_trace()
+        Core_frag_sinks = list(system[0])
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         print('Getting sink positions from', fn, 'on rank', rank)
