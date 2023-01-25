@@ -338,11 +338,14 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             gc.collect()
             
             axis_ind = 2
-            proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-            proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
-            image = proj_array*units['density_unit'].in_units('g/cm**3')
-            del proj
-            del proj_array
+            try:
+                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
+                image = proj_array*units['density_unit'].in_units('g/cm**3')
+                del proj
+                del proj_array
+            except:
+                image = np.ones((800, 800))*np.nan
             gc.collect()
             
             file = open(pickle_file, 'wb')
