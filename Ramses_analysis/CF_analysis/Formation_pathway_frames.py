@@ -244,16 +244,18 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         file_no = int(fn.split('output_')[-1].split('/')[0])
         datadir = fn.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
-        #try:
-        print('center_sink = ', center_sink)
-        import pdb
-        pdb.set_trace()
-        center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-        sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
-        center_positions.append(center_pos)
-        #except:
-        #    center_pos = center_positions[-1]
-        #    center_positions.append(center_pos)
+        try:
+            try:
+                center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                center_positions.append(center_pos)
+            except:
+                center_pos = center_positions[-1]
+                center_positions.append(center_pos)
+        except:
+            print("COULDN'T GET POSITIONS FOR CENTER_SINK", center_sink, "BECAUSE ARRAY LENGTH =", len(loaded_sink_data['x']))
+            import pdb
+            pdb.set_trace()
         #get sink ids that exist in this file
         existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
         if len(existing_sinks)>0:
