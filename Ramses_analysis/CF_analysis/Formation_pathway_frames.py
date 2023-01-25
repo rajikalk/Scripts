@@ -100,7 +100,7 @@ if rank == 0:
         dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
         if dt > dt_min:
             #Save times formation
-            Bound_primary_form_time = global_data['time'].T[str(pair[1])][np.where(global_data['m'].T[str(pair[1])]>0)[0][0]]
+            Bound_primary_form_time = global_data['time'].T[int(pair[1])][np.where(global_data['m'].T[int(pair[1])]>0)[0][0]]
             Bound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
             Bound_core_frag_candidates_reduced.append([pair, Bound_m_times])
@@ -122,7 +122,7 @@ if rank == 0:
         unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
         d_pos = abs(form_pos-unbound_sink_pos)
         if False in (d_pos<10000):
-            Unbound_primary_form_time = global_data['time'].T[str(pair[1])][np.where(global_data['m'].T[str(pair[1])]>0)[0][0]]
+            Unbound_primary_form_time = global_data['time'].T[int(pair[1])][np.where(global_data['m'].T[int(pair[1])]>0)[0][0]]
             Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
             Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
