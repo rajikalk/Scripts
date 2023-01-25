@@ -227,12 +227,11 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     center_positions = []
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
-    try:
-        Core_frag_sinks = [system[0][0]] + flatten(eval(system[0][1]))
-    except:
-        print('FAILED TO FLATTEN', system[0])
-        import pdb
-        pdb.set_trace()
+    if '[' in system[0][1]:
+        system[0][1] = flatten(eval(system[0][1]))
+        Core_frag_sinks = [system[0][0]] + system[0][1]
+    else:
+        Core_frag_sinks = [system[0][0]] + [system[0][1]]
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         print('Getting sink positions from', fn, 'on rank', rank)
