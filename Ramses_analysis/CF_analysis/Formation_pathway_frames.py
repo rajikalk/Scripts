@@ -228,7 +228,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
     try:
-        Core_frag_sinks = flatten(list(system[0]))
+        Core_frag_sinks = [system[0][0]] + flatten(eval(system[0][1]))
     except:
         print('FAILED TO FLATTEN', system[0])
         import pdb
