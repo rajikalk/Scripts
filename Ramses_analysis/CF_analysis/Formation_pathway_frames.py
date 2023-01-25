@@ -99,10 +99,10 @@ if rank == 0:
         primary_form_time = global_data['time'].T[unbound_sink][form_ind]
         dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
         if dt > dt_min:
-            if '[' in pair[1]:
-                other_ind = np.max(flatten(eval(pair[1])))
-            else:
-                other_ind = int(pair[1])
+            #if '[' in pair[1]:
+            #    other_ind = np.max(flatten(eval(pair[1])))
+            #else:
+            #    other_ind = int(pair[1])
             #Save times formation
             Bound_primary_form_time = global_data['time'].T[other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
             Bound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
