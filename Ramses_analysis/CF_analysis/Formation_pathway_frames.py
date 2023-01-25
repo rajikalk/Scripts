@@ -259,9 +259,9 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
                 sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
                 center_positions.append(center_pos)
             except:
-                sink_creation_time_pick = np.nan
                 center_pos = center_positions[-1]
                 center_positions.append(center_pos)
+                sink_creation_time_pick = np.nan
             existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
             if len(existing_sinks)>0:
                 particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
@@ -282,11 +282,12 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
                 pass
             gc.collect()
             #particle_masses = dd['sink_particle_mass']
+            
+            if np.isnan(sink_creation_time_pick) == False:
+                sink_creation_time = sink_creation_time_pick
 
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
-                if np.isnan(sink_creation_time_pick) == False:
-                    sink_creation_time = sink_creation_time_pick
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
                 pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos), file)
