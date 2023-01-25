@@ -231,68 +231,73 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     CW.Barrier()
 
     #Find Sink positions
-    from pyramses import rsink
-    center_positions = []
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
-    pit = 4
-    try:
+    pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
+    if os.path.exists(pickle_file) == False:
+        from pyramses import rsink
+        center_positions = []
+        pit = 4
         try:
-            system[0][1] = int(system[0][1])
+            try:
+                system[0][1] = int(system[0][1])
+            except:
+                system[0][1] = flatten(eval(system[0][1]))
+            Core_frag_sinks = [system[0][0]] + [system[0][1]]
         except:
-            system[0][1] = flatten(eval(system[0][1]))
-        Core_frag_sinks = [system[0][0]] + [system[0][1]]
-    except:
-        Core_frag_sinks = list(system[0])
-    max_seps = []
-    for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
-        print('Getting sink positions from', fn, 'on rank', rank)
-        pit = pit - 1
-        pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
-        #fn = usable_files[fn_it]
-        file_no = int(fn.split('output_')[-1].split('/')[0])
-        datadir = fn.split('output_')[0]
-        loaded_sink_data = rsink(file_no, datadir=datadir)
-        try:
-            center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-            sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
-            center_positions.append(center_pos)
-        except:
-            center_pos = center_positions[-1]
-            center_positions.append(center_pos)
-        existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
-        if len(existing_sinks)>0:
-            particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
-        else:
-            particle_masses = yt.YTArray([], 'Msun')
-            particle_x_pos = yt.YTArray([], 'au')
-            particle_y_pos = yt.YTArray([], 'au')
-        try:
-            dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-            dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-            if dx > dy:
-                max_seps.append(dx)
+            Core_frag_sinks = list(system[0])
+        max_seps = []
+        for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+            print('Getting sink positions from', fn, 'on rank', rank)
+            pit = pit - 1
+            #fn = usable_files[fn_it]
+            file_no = int(fn.split('output_')[-1].split('/')[0])
+            datadir = fn.split('output_')[0]
+            loaded_sink_data = rsink(file_no, datadir=datadir)
+            try:
+                center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                center_positions.append(center_pos)
+            except:
+                center_pos = center_positions[-1]
+                center_positions.append(center_pos)
+            existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+            if len(existing_sinks)>0:
+                particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+                particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+                particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
             else:
-                max_seps.append(dy)
-        except:
-            pass
-        gc.collect()
-        #particle_masses = dd['sink_particle_mass']
+                particle_masses = yt.YTArray([], 'Msun')
+                particle_x_pos = yt.YTArray([], 'au')
+                particle_y_pos = yt.YTArray([], 'au')
+            try:
+                dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+                dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                if dx > dy:
+                    max_seps.append(dx)
+                else:
+                    max_seps.append(dy)
+            except:
+                pass
+            gc.collect()
+            #particle_masses = dd['sink_particle_mass']
 
-        if np.remainder(rank, 3) == 0:
-            #if np.remainder(rank,48) == 0:
-            file = open(pickle_file, 'wb')
-            #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-            pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
-            file.close()
-            print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
-        #del x_lim
-        #del y_lim
-        #del z_lim
-        gc.collect()
+            if np.remainder(rank, 3) == 0:
+                #if np.remainder(rank,48) == 0:
+                max_sep = np.max(max_seps)
+                file = open(pickle_file, 'wb')
+                #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_sep), file)
+                file.close()
+                print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+            #del x_lim
+            #del y_lim
+            #del z_lim
+            gc.collect()
+    else:
+        file = open(pickle_file, 'rb')
+        particle_x_pos, particle_y_pos, particle_masses, max_sep = pickle.load(file)
+        file.close()
 
-    max_sep = np.max(max_seps)
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
     #del units
@@ -464,19 +469,36 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     print("usable files for Unbound core fragmentation are", usable_files)
 
-    center_sink = system[0][1]
+    if type(system[0][1]) == str:
+        if '[' in system[0][1]:
+            import pdb
+            pdb.set_trace()
+        else:
+            center_sink = int(system[0][1])
+    else:
+        center_sink = system[0][1]
+    gc.collect()
     gc.collect()
 
     sys.stdout.flush()
     CW.Barrier()
 
+    #Find Sink positions
     from pyramses import rsink
     center_positions = []
     pickle_file_preffix = 'unbound_core_frag_'+str(system[0]) + '_'
     pit = 4
-    Core_frag_sinks = sorted(flatten(system[0]))
+    try:
+        try:
+            system[0][1] = int(system[0][1])
+        except:
+            system[0][1] = flatten(eval(system[0][1]))
+        Core_frag_sinks = [system[0][0]] + [system[0][1]]
+    except:
+        Core_frag_sinks = list(system[0])
     max_seps = []
-    for fn in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+    for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        print('Getting sink positions from', fn, 'on rank', rank)
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         #fn = usable_files[fn_it]
@@ -490,18 +512,11 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         except:
             center_pos = center_positions[-1]
             center_positions.append(center_pos)
-        #x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
-        #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
-        #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
-        #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
-        if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+        if len(existing_sinks)>0:
+            particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+            particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+            particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
         else:
             particle_masses = yt.YTArray([], 'Msun')
             particle_x_pos = yt.YTArray([], 'au')
@@ -518,12 +533,13 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         gc.collect()
         #particle_masses = dd['sink_particle_mass']
 
-        #if np.remainder(rank,48) == 0:
-        file = open(pickle_file, 'wb')
-        #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-        pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
-        file.close()
-        print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+        if np.remainder(rank, 3) == 0:
+            #if np.remainder(rank,48) == 0:
+            file = open(pickle_file, 'wb')
+            #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+            pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+            file.close()
+            print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
         #del x_lim
         #del y_lim
         #del z_lim
@@ -702,19 +718,35 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
 
     print("usable files for Bound core fragmentation are", usable_files)
 
-    center_sink = system[0][1]
+    if type(system[0][1]) == str:
+        if '[' in system[0][1]:
+            import pdb
+            pdb.set_trace()
+        else:
+            center_sink = int(system[0][1])
+    else:
+        center_sink = system[0][1]
     gc.collect()
 
     sys.stdout.flush()
     CW.Barrier()
 
+    #Find Sink positions
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
+    pickle_file_preffix = 'dynamical_capt_'+str(system[0]) + '_'
     pit = 4
-    Core_frag_sinks = sorted(flatten(system[0]))
+    try:
+        try:
+            system[0][1] = int(system[0][1])
+        except:
+            system[0][1] = flatten(eval(system[0][1]))
+        Core_frag_sinks = [system[0][0]] + [system[0][1]]
+    except:
+        Core_frag_sinks = list(system[0])
     max_seps = []
-    for fn in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+    for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        print('Getting sink positions from', fn, 'on rank', rank)
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         #fn = usable_files[fn_it]
@@ -728,18 +760,11 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
         except:
             center_pos = center_positions[-1]
             center_positions.append(center_pos)
-        #x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
-        #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
-        #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
-        #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
-        if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+        if len(existing_sinks)>0:
+            particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+            particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+            particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
         else:
             particle_masses = yt.YTArray([], 'Msun')
             particle_x_pos = yt.YTArray([], 'au')
@@ -756,12 +781,13 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
         gc.collect()
         #particle_masses = dd['sink_particle_mass']
 
-        #if np.remainder(rank,48) == 0:
-        file = open(pickle_file, 'wb')
-        #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-        pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
-        file.close()
-        print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+        if np.remainder(rank, 3) == 0:
+            #if np.remainder(rank,48) == 0:
+            file = open(pickle_file, 'wb')
+            #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+            pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+            file.close()
+            print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
         #del x_lim
         #del y_lim
         #del z_lim
