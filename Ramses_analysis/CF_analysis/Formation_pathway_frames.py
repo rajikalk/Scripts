@@ -185,10 +185,7 @@ file.close()
 
 sys.stdout.flush()
 CW.Barrier()
-#Set systems to use:
-#Bound_core_frag_system = Bound_core_frag_candidates[0]
-#Unbound_core_frag_system = Unbound_core_frag_candidates[0]
-#Dynamical_capture_system = Dynamical_capture_candidates[0]
+
 
 for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     print('Processing system', system)
@@ -423,6 +420,8 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
         print('Created frame ' + file_name + '.png')
 
+sys.stdout.flush()
+CW.Barrier()
 
 for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
@@ -658,6 +657,9 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
         print('Created frame ' + file_name + '.png')
 
+
+sys.stdout.flush()
+CW.Barrier()
 
 for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
