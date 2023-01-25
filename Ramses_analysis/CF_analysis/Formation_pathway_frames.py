@@ -246,10 +246,10 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         Core_frag_sinks = list(system[0])
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         if os.path.exists(pickle_file) == False:
             print('Getting sink positions from', fn, 'on rank', rank)
-            pit = pit - 1
             #fn = usable_files[fn_it]
             file_no = int(fn.split('output_')[-1].split('/')[0])
             datadir = fn.split('output_')[0]
