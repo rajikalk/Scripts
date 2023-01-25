@@ -230,7 +230,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
     for fn in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
-        print('Getting sink positions from', fn, 'on rank', rank))
+        print('Getting sink positions from', fn, 'on rank', rank)
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         #fn = usable_files[fn_it]
