@@ -244,10 +244,9 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         Core_frag_sinks = [system[0][0]] + [system[0][1]]
     except:
         Core_frag_sinks = list(system[0])
-    all_max_seps = []
+    max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
-        max_seps = []
         if os.path.exists(pickle_file) == False:
             print('Getting sink positions from', fn, 'on rank', rank)
             pit = pit - 1
@@ -291,7 +290,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
                     sink_creation_time = sink_creation_time_pick
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos), file)
+                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
             #del x_lim
@@ -300,15 +299,15 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             gc.collect()
         else:
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos = pickle.load(file)
             file.close()
-            all_max_seps = all_max_seps + max_seps
+            max_seps.append(max_sep)
             center_positions.append(center_pos)
             if np.isnan(sink_creation_time_pick) == False:
                 sink_creation_time = sink_creation_time_pick
                 
             
-    max_sep = np.max(all_max_seps)
+    max_sep = np.max(max_seps)
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
     #del units
