@@ -135,7 +135,11 @@ if rank == 0:
             Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
             Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
-            #rm_pair.append(pair)
+            
+            Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Unbound_bound_time = (Unbound_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Unbound_core_frag_system[0])][-2])/units['time_unit'].in_units('yr').value
+    #Unbound_m_times = [Unbound_bound_time, Unbound_secondary_form_time]
+    #rm_pair.append(pair)
 
     Unbound_core_frag_candidates = Unbound_core_frag_candidates_reduced #list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
@@ -151,13 +155,13 @@ if rank == 0:
         unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
         d_pos = np.sqrt(np.sum((form_pos-unbound_sink_pos)**2))
         if d_pos<20000:
-            if '[' in pair[1]:
-                other_ind = np.max(flatten(eval(pair[1])))
+            if '[' in pair[1][1]:
+                other_ind = np.max(flatten(eval(pair[1][1])))
             else:
-                other_ind = int(pair[1])
+                other_ind = int(pair[1][1])
             #print('removing', pair, 'because d_min=', d_pos)
             #rm_pair.append(pair)
-            Dynamical_secondary_form_time = global_data['time'].T[other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
+            Dynamical_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(pair[0])][-2])/units['time_unit'].in_units('yr').value
             Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
             Dynamical_capture_candidates_reduced.append([pair, Dynamical_m_times])
