@@ -230,7 +230,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     try:
         Core_frag_sinks = flatten(list(system[0]))
     except:
-        print('FAILED TO FLATTEN', system[0][1])
+        print('FAILED TO FLATTEN', system[0])
         import pdb
         pdb.set_trace()
     max_seps = []
