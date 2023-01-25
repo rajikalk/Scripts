@@ -229,7 +229,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     pit = 4
     Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
-    for fn in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+    for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         print('Getting sink positions from', fn, 'on rank', rank)
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
@@ -272,12 +272,13 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         gc.collect()
         #particle_masses = dd['sink_particle_mass']
 
-        #if np.remainder(rank,48) == 0:
-        file = open(pickle_file, 'wb')
-        #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-        pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
-        file.close()
-        print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+        if np.remainder(rank, 3) == 0:
+            #if np.remainder(rank,48) == 0:
+            file = open(pickle_file, 'wb')
+            #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+            pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+            file.close()
+            print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
         #del x_lim
         #del y_lim
         #del z_lim
