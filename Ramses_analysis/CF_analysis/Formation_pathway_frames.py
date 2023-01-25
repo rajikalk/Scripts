@@ -183,7 +183,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 
-file = open(candidate_pickles, 'rb')
+file = open('candidates.pkl', 'rb')
 Bound_core_frag_candidates, Unbound_core_frag_candidates, Dynamical_capture_candidates = pickle.load(file)
 file.close()
 
