@@ -192,8 +192,8 @@ CW.Barrier()
 
 for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     print('Processing system', system)
-    import pdb
-    pdb.set_trace()
+    
+    Bound_m_times = system[1]
     
     #Bound core fragmentation pathway
     usable_files = []
@@ -215,7 +215,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     print("usable files for Bound core fragmentation are", usable_files)
 
-    center_sink = system[1]
+    center_sink = system[0][1]
     gc.collect()
 
     sys.stdout.flush()
@@ -223,9 +223,9 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'bound_core_frag_'+str(system)
+    pickle_file_preffix = 'bound_core_frag_'+str(system[0])
     pit = 4
-    Core_frag_sinks = sorted(flatten(system))
+    Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
     for fn_it in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         pit = pit - 1
@@ -427,14 +427,13 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
     print('Processing system', system)
-    Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
-    Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
-    Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
+    
+    Unbound_m_times = system[1]
     
     #Bound core fragmentation pathway
     usable_files = []
 
-    for m_time in Bound_m_times:
+    for m_time in Unbound_m_times:
         match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
         if sim_file_times[match_time_ind] < m_time:
             match_time_ind = match_time_ind + 1
@@ -451,7 +450,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     print("usable files for Unbound core fragmentation are", usable_files)
 
-    center_sink = system[1]
+    center_sink = system[0][1]
     gc.collect()
 
     sys.stdout.flush()
@@ -459,9 +458,9 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'unbound_core_frag_'+str(system)
+    pickle_file_preffix = 'unbound_core_frag_'+str(system[0])
     pit = 4
-    Core_frag_sinks = sorted(flatten(system))
+    Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
     for fn_it in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         pit = pit - 1
@@ -663,14 +662,13 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     #Bound core fragmentation
     print('Processing system', system)
-    Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
-    Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
-    Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
+
+    Dynamical_m_times = system[1]
     
     #Bound core fragmentation pathway
     usable_files = []
 
-    for m_time in Bound_m_times:
+    for m_time in Dynamical_m_times:
         match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
         if sim_file_times[match_time_ind] < m_time:
             match_time_ind = match_time_ind + 1
@@ -687,7 +685,7 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
 
     print("usable files for Bound core fragmentation are", usable_files)
 
-    center_sink = system[1]
+    center_sink = system[0][1]
     gc.collect()
 
     sys.stdout.flush()
@@ -695,9 +693,9 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
 
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'bound_core_frag_'+str(system)
+    pickle_file_preffix = 'bound_core_frag_'+str(system[0])
     pit = 4
-    Core_frag_sinks = sorted(flatten(system))
+    Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
     for fn_it in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         pit = pit - 1
