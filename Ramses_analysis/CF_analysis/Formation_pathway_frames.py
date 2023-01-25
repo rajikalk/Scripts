@@ -136,10 +136,6 @@ if rank == 0:
             Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
             Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
             
-            Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
-            Unbound_bound_time = (Unbound_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(Unbound_core_frag_system[0])][-2])/units['time_unit'].in_units('yr').value
-    #Unbound_m_times = [Unbound_bound_time, Unbound_secondary_form_time]
-    #rm_pair.append(pair)
 
     Unbound_core_frag_candidates = Unbound_core_frag_candidates_reduced #list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
 
