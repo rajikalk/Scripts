@@ -244,16 +244,12 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         except:
             center_pos = center_positions[-1]
             center_positions.append(center_pos)
-        import pdb
-        pdb.set_trace()
-        if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks]*units['length_unit'].in_units('au')
-        elif len(loaded_sink_data['m'])>Core_frag_sinks[0]:
-            particle_masses = loaded_sink_data['m'][Core_frag_sinks[0]]*units['mass_unit'].in_units('Msun')
-            particle_x_pos = loaded_sink_data['x'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
-            particle_y_pos = loaded_sink_data['y'][Core_frag_sinks[0]]*units['length_unit'].in_units('au')
+        #get sink ids that exist in this file
+        existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+        if len(existing_sinks)>0:
+            particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+            particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+            particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
         else:
             particle_masses = yt.YTArray([], 'Msun')
             particle_x_pos = yt.YTArray([], 'au')
