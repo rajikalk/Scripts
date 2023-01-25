@@ -9,7 +9,7 @@ import pickle
 import csv
 import gc
 import collections
-
+import os
 
 def flatten(x):
     if isinstance(x, collections.Iterable):
@@ -52,7 +52,7 @@ dt_min = np.min((np.array(sim_file_times[1:]) - np.array(sim_file_times[:-1])))*
 sys.stdout.flush()
 CW.Barrier()
 
-if rank == 0:
+if rank == 0 and os.path.exists('candidates.pkl') == False:
     #-------------------------------------
     #Find system candidates:
 
@@ -218,6 +218,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     sys.stdout.flush()
     CW.Barrier()
 
+    #Find Sink positions
     from pyramses import rsink
     center_positions = []
     pickle_file_preffix = 'bound_core_frag_'+str(system[0])
@@ -287,7 +288,6 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     sys.stdout.flush()
     CW.Barrier()
     cit = -1
-    import os
     for usuable_file in yt.parallel_objects(usable_files, njobs=int(3)):
         #for usuable_file in usable_files:
         pit = pit - 1
