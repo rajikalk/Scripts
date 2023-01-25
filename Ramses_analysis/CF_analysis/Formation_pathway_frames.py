@@ -81,7 +81,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
 
     print("sorted all systems into formation pathways")
 
-    global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
+    global_pickle = '/groups/astro/rlk/rlk/High_cadence/G100.pkl'
     file = open(global_pickle, 'rb')
     global_data = pickle.load(file)
     file.close()
@@ -111,6 +111,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
             Bound_core_frag_candidates_reduced.append([pair, Bound_m_times])
 
     Bound_core_frag_candidates = Bound_core_frag_candidates_reduced
+    del Bound_core_frag_candidates_reduced
 
     print('removed all bound core fragmentation candidates with formation times separated by < dt_min')
 
@@ -138,6 +139,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
             
 
     Unbound_core_frag_candidates = Unbound_core_frag_candidates_reduced #list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
+    del Unbound_core_frag_candidates_reduced
 
     print('removed all unbound core fragmentation candidates with initial separation > 10000 au')
 
@@ -163,6 +165,8 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
             Dynamical_capture_candidates_reduced.append([pair, Dynamical_m_times])
             
     Dynamical_capture_candidates = Dynamical_capture_candidates_reduced#list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
+    del Dynamical_capture_candidates_reduced
+    
     print('removed dynamical capture candidates that had birth separations >20000 au')
 
     del Sink_birth_all
