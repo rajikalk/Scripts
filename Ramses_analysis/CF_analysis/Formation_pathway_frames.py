@@ -301,7 +301,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             file.close()
             all_max_seps = all_max_seps + max_seps
             
-    max_sep = np.max(flatten(all_max_seps))
+    max_sep = np.max(all_max_seps)
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
     #del units
