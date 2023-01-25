@@ -192,7 +192,7 @@ CW.Barrier()
 
 
 for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
-    print('Processing system', system)
+    print('Processing system', system, 'on rank', rank)
     
     Bound_m_times = system[1]
     
@@ -225,11 +225,12 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     #Find Sink positions
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'bound_core_frag_'+str(system[0])
+    pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
     Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
     for fn in yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        print('Getting sink positions from', fn, 'on rank', rank))
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         #fn = usable_files[fn_it]
@@ -292,13 +293,14 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     sys.stdout.flush()
     CW.Barrier()
     cit = -1
-    for usuable_file in yt.parallel_objects(usable_files, njobs=int(3)):
-        #for usuable_file in usable_files:
+    for usable in yt.parallel_objects(usable_files, njobs=int(3)):
+        print('making projection of', usable, 'on rank', rank)
+        #for usable in usable_files:
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         if os.path.exists(pickle_file) == False:
             cit = cit + 1
-            ds = yt.load(usuable_file, units_override=units_override)
+            ds = yt.load(usable, units_override=units_override)
             #dd = ds.all_data()
 
             center_pos = center_positions[cit]
@@ -422,7 +424,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-        print('Created frame ' + file_name + '.png')
+        print('Created frame ' + file_name + '.png, on rank', rank)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -461,7 +463,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'unbound_core_frag_'+str(system[0])
+    pickle_file_preffix = 'unbound_core_frag_'+str(system[0]) + '_'
     pit = 4
     Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
@@ -529,13 +531,13 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     CW.Barrier()
     cit = -1
     import os
-    for usuable_file in yt.parallel_objects(usable_files, njobs=int(3)):
-        #for usuable_file in usable_files:
+    for usable in yt.parallel_objects(usable_files, njobs=int(3)):
+        #for usable in usable_files:
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         if os.path.exists(pickle_file) == False:
             cit = cit + 1
-            ds = yt.load(usuable_file, units_override=units_override)
+            ds = yt.load(usable, units_override=units_override)
             #dd = ds.all_data()
 
             center_pos = center_positions[cit]
@@ -699,7 +701,7 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
 
     from pyramses import rsink
     center_positions = []
-    pickle_file_preffix = 'bound_core_frag_'+str(system[0])
+    pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
     Core_frag_sinks = sorted(flatten(system[0]))
     max_seps = []
@@ -767,13 +769,13 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
     CW.Barrier()
     cit = -1
     import os
-    for usuable_file in yt.parallel_objects(usable_files, njobs=int(3)):
-        #for usuable_file in usable_files:
+    for usable in yt.parallel_objects(usable_files, njobs=int(3)):
+        #for usable in usable_files:
         pit = pit - 1
         pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         if os.path.exists(pickle_file) == False:
             cit = cit + 1
-            ds = yt.load(usuable_file, units_override=units_override)
+            ds = yt.load(usable, units_override=units_override)
             #dd = ds.all_data()
 
             center_pos = center_positions[cit]
@@ -1013,12 +1015,12 @@ sys.stdout.flush()
 CW.Barrier()
 cit = -1
 import os
-for usuable_file in usable_files:
+for usable in usable_files:
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     if os.path.exists(pickle_file) == False:
         cit = cit + 1
-        ds = yt.load(usuable_file, units_override=units_override)
+        ds = yt.load(usable, units_override=units_override)
         #dd = ds.all_data()
 
         center_pos = center_positions[cit]
@@ -1243,12 +1245,12 @@ sys.stdout.flush()
 CW.Barrier()
 cit = -1
 import os
-for usuable_file in usable_files:
+for usable in usable_files:
     pit = pit - 1
     pickle_file = pickle_file_preffix + str(pit) + '.pkl'
     if os.path.exists(pickle_file) == False:
         cit = cit + 1
-        ds = yt.load(usuable_file, units_override=units_override)
+        ds = yt.load(usable, units_override=units_override)
         #dd = ds.all_data()
 
         center_pos = center_positions[cit]
