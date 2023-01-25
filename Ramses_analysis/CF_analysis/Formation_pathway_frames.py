@@ -232,21 +232,23 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     #Find Sink positions
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
-    pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
-    if os.path.exists(pickle_file) == False:
-        from pyramses import rsink
-        center_positions = []
-        pit = 4
+    
+    from pyramses import rsink
+    center_positions = []
+    pit = 4
+    try:
         try:
-            try:
-                system[0][1] = int(system[0][1])
-            except:
-                system[0][1] = flatten(eval(system[0][1]))
-            Core_frag_sinks = [system[0][0]] + [system[0][1]]
+            system[0][1] = int(system[0][1])
         except:
-            Core_frag_sinks = list(system[0])
+            system[0][1] = flatten(eval(system[0][1]))
+        Core_frag_sinks = [system[0][0]] + [system[0][1]]
+    except:
+        Core_frag_sinks = list(system[0])
+    all_max_seps = []
+    for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         max_seps = []
-        for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+        if os.path.exists(pickle_file) == False:
             print('Getting sink positions from', fn, 'on rank', rank)
             pit = pit - 1
             #fn = usable_files[fn_it]
@@ -283,21 +285,23 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
-                max_sep = np.max(max_seps)
+                all_max_seps.append(max_seps)
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_sep), file)
+                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
             #del x_lim
             #del y_lim
             #del z_lim
             gc.collect()
-    else:
-        file = open(pickle_file, 'rb')
-        particle_x_pos, particle_y_pos, particle_masses, max_sep = pickle.load(file)
-        file.close()
-
+        else:
+            file = open(pickle_file, 'rb')
+            particle_x_pos, particle_y_pos, particle_masses, max_seps = pickle.load(file)
+            file.close()
+            all_max_seps.append(max_seps)
+            
+    max_sep = np.max(all_max_seps)
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
     #del units
