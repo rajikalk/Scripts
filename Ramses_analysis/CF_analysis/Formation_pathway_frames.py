@@ -257,9 +257,10 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             loaded_sink_data = rsink(file_no, datadir=datadir)
             try:
                 center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
                 center_positions.append(center_pos)
             except:
+                sink_creation_time_pick = np.nan
                 center_pos = center_positions[-1]
                 center_positions.append(center_pos)
             existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
@@ -286,9 +287,11 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
                 all_max_seps = all_max_seps + max_seps
+                if np.isnan(sink_creation_time_pick) == False:
+                    sink_creation_time = sink_creation_time_pick
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps), file)
+                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
             #del x_lim
@@ -297,9 +300,13 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             gc.collect()
         else:
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_seps = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
             file.close()
             all_max_seps = all_max_seps + max_seps
+            center_positions.append(center_pos)
+            if np.isnan(sink_creation_time_pick) == False:
+                sink_creation_time = sink_creation_time_pick
+                
             
     max_sep = np.max(all_max_seps)
     thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
