@@ -227,7 +227,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     center_positions = []
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
     pit = 4
-    Core_frag_sinks = sorted(flatten(system[0]))
+    Core_frag_sinks = [system[0][0]] + sorted(flatten(system[0][1]))
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         print('Getting sink positions from', fn, 'on rank', rank)
@@ -244,10 +244,8 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         except:
             center_pos = center_positions[-1]
             center_positions.append(center_pos)
-        #x_lim = [center_pos[0] - thickness/2, center_pos[0] + thickness/2]
-        #y_lim = [center_pos[1] - thickness/2, center_pos[1] + thickness/2]
-        #z_lim = [center_pos[2] - thickness/2, center_pos[2] + thickness/2]
-        #sinks_in_box = np.where((loaded_sink_data['x']*units['length_unit'].in_units('au')>x_lim[0])&(loaded_sink_data['x']*units['length_unit'].in_units('au')<x_lim[1])&(loaded_sink_data['y']*units['length_unit'].in_units('au')>y_lim[0])&(loaded_sink_data['y']*units['length_unit'].in_units('au')<y_lim[1])&(loaded_sink_data['z']*units['length_unit'].in_units('au')>z_lim[0])&(loaded_sink_data['z']*units['length_unit'].in_units('au')<z_lim[1]))[0]
+        import pdb
+        pdb.set_trace()
         if len(loaded_sink_data['m'])>Core_frag_sinks[-1]:
             particle_masses = loaded_sink_data['m'][Core_frag_sinks]*units['mass_unit'].in_units('Msun')
             particle_x_pos = loaded_sink_data['x'][Core_frag_sinks]*units['length_unit'].in_units('au')
