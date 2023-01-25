@@ -52,91 +52,126 @@ dt_min = np.min((np.array(sim_file_times[1:]) - np.array(sim_file_times[:-1])))*
 sys.stdout.flush()
 CW.Barrier()
 
+if rank == 0:
+    #-------------------------------------
+    #Find system candidates:
 
-#-------------------------------------
-#Find system candidates:
+    birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"
 
-birth_con_pickle = "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"
+    file = open(birth_con_pickle, 'rb')
+    Sink_birth_all = pickle.load(file)
+    file.close()
 
-file = open(birth_con_pickle, 'rb')
-Sink_birth_all = pickle.load(file)
-file.close()
+    Bound_core_frag_candidates = []
+    Unbound_core_frag_candidates = []
+    Dynamical_capture_candidates = []
 
-Bound_core_frag_candidates = []
-Unbound_core_frag_candidates = []
-Dynamical_capture_candidates = []
+    sink_id = 0
+    while sink_id < len(Sink_birth_all.keys())-1:
+        sink_id = sink_id + 1
+        if Sink_birth_all[str(sink_id)][2] != 'nan':
+            if Sink_birth_all[str(sink_id)][0] == True:
+                if '[' not in Sink_birth_all[str(sink_id)][2]:
+                    Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+            else:
+                if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > dt_min:
+                    Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
+                elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > dt_min:
+                    Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
 
-sink_id = 0
-while sink_id < len(Sink_birth_all.keys())-1:
-    sink_id = sink_id + 1
-    if Sink_birth_all[str(sink_id)][2] != 'nan':
-        if Sink_birth_all[str(sink_id)][0] == True:
-            if '[' not in Sink_birth_all[str(sink_id)][2]:
-                Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-        else:
-            if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > dt_min:
-                Unbound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
-            elif Sink_birth_all[str(sink_id)][1] not in flatten(eval(Sink_birth_all[str(sink_id)][2])) and Sink_birth_all[str(sink_id)][-2] > dt_min:
-                Dynamical_capture_candidates.append((sink_id, (Sink_birth_all[str(sink_id)][1], Sink_birth_all[str(sink_id)][2])))
+    print("sorted all systems into formation pathways")
 
-print("sorted all systems into formation pathways")
+    global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
+    file = open(global_pickle, 'rb')
+    global_data = pickle.load(file)
+    file.close()
+    
+    print("read in global data")
 
-global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/G100_full.pkl'
-file = open(global_pickle, 'rb')
-global_data = pickle.load(file)
-file.close()
-
-rm_pair = []
-for pair in Bound_core_frag_candidates:
-    center_sink = pair[0]
-    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
-    secondary_form_time = global_data['time'].T[center_sink][form_ind]
-    unbound_sink = int(pair[1])
-    form_ind = np.where(global_data['m'].T[unbound_sink]>0)[0][0]
-    primary_form_time = global_data['time'].T[unbound_sink][form_ind]
-    dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
-    if dt < dt_min:
-        rm_pair.append(pair)
-
-Bound_core_frag_candidates = list(set(Bound_core_frag_candidates).symmetric_difference(set(rm_pair)))
-
-print('removed all bound core fragmentation candidates with formation times separated by < dt_min')
-
-rm_pair = []
-for pair in Unbound_core_frag_candidates:
-    center_sink = pair[0]
-    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
-    if '[' in pair[1]:
-        unbound_sink = flatten(eval(pair[1]))[np.argmax(global_data['m'][form_ind][flatten(eval(pair[1]))])]
-    else:
+    #rm_pair = []
+    Bound_core_frag_candidates_reduced = []
+    for pair in Bound_core_frag_candidates:
+        center_sink = pair[0]
+        form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+        secondary_form_time = global_data['time'].T[center_sink][form_ind]
         unbound_sink = int(pair[1])
-    form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
-    unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
-    d_pos = abs(form_pos-unbound_sink_pos)
-    if True in (d_pos>10000):
-        rm_pair.append(pair)
+        form_ind = np.where(global_data['m'].T[unbound_sink]>0)[0][0]
+        primary_form_time = global_data['time'].T[unbound_sink][form_ind]
+        dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
+        if dt > dt_min:
+            #Save times formation
+            Bound_primary_form_time = global_data['time'].T[pair[1]][np.where(global_data['m'].T[pair[1]]>0)[0][0]]
+            Bound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
+            Bound_core_frag_candidates_reduced.append([pair, Bound_m_times])
 
-Unbound_core_frag_candidates = list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
+    Bound_core_frag_candidates = Bound_core_frag_candidates_reduced
 
-print('removed all unbound core fragmentation candidates with initial separation > 10000 au')
+    print('removed all bound core fragmentation candidates with formation times separated by < dt_min')
 
-rm_pair = []
-for pair in Dynamical_capture_candidates:
-    center_sink = pair[0]
-    unbound_sink = pair[1][0]
-    form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
-    form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
-    unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
-    d_pos = np.sqrt(np.sum((form_pos-unbound_sink_pos)**2))
-    if d_pos>20000:
-        print('removing', pair, 'because d_min=', d_pos)
-        rm_pair.append(pair)
-        
-Dynamical_capture_candidates = list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
-print('removed dynamical capture candidates that had birth separations >20000 au')
+    #rm_pair = []
+    Unbound_core_frag_candidates_reduced = []
+    for pair in Unbound_core_frag_candidates:
+        center_sink = pair[0]
+        form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+        if '[' in pair[1]:
+            unbound_sink = flatten(eval(pair[1]))[np.argmax(global_data['m'][form_ind][flatten(eval(pair[1]))])]
+        else:
+            unbound_sink = int(pair[1])
+        form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
+        unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
+        d_pos = abs(form_pos-unbound_sink_pos)
+        if False in (d_pos<10000):
+            Unbound_primary_form_time = global_data['time'].T[pair[1]][np.where(global_data['m'].T[pair[1]]>0)[0][0]]
+            Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
+            Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
+            #rm_pair.append(pair)
+
+    Unbound_core_frag_candidates = Unbound_core_frag_candidates_reduced #list(set(Unbound_core_frag_candidates).symmetric_difference(set(rm_pair)))
+
+    print('removed all unbound core fragmentation candidates with initial separation > 10000 au')
+
+    #rm_pair = []
+    Dynamical_capture_candidates_reduced = []
+    for pair in Dynamical_capture_candidates:
+        center_sink = pair[0]
+        unbound_sink = pair[1][0]
+        form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
+        form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
+        unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
+        d_pos = np.sqrt(np.sum((form_pos-unbound_sink_pos)**2))
+        if d_pos<20000:
+            #print('removing', pair, 'because d_min=', d_pos)
+            #rm_pair.append(pair)
+            Dynamical_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(pair[0])][-2])/units['time_unit'].in_units('yr').value
+            Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
+            Dynamical_capture_candidates_reduced.append([pair, Dynamical_m_times])
+            
+    Dynamical_capture_candidates = Dynamical_capture_candidates_reduced#list(set(Dynamical_capture_candidates).symmetric_difference(set(rm_pair)))
+    print('removed dynamical capture candidates that had birth separations >20000 au')
+
+    del Sink_birth_all
+    del global_data
+    gc.collect()
+    
+    #Save candidates in pickle
+    candidate_pickles = 'candidates.pkl'
+    file = open(candidate_pickles, 'wb')
+    pickle.dump((Bound_core_frag_candidates, Unbound_core_frag_candidates, Dynamical_capture_candidates), file)
+    file.close()
+
+sys.stdout.flush()
+CW.Barrier()
 
 
+file = open(candidate_pickles, 'rb')
+Bound_core_frag_candidates, Unbound_core_frag_candidates, Dynamical_capture_candidates = pickle.load(file)
+file.close()
 
+sys.stdout.flush()
+CW.Barrier()
 #Set systems to use:
 #Bound_core_frag_system = Bound_core_frag_candidates[0]
 #Unbound_core_frag_system = Unbound_core_frag_candidates[0]
@@ -144,10 +179,8 @@ print('removed dynamical capture candidates that had birth separations >20000 au
 
 for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3))):# Bound_core_frag_candidates: #3 projections
     print('Processing system', system)
-    #Bound core fragmentation
-    Bound_primary_form_time = global_data['time'].T[system[1]][np.where(global_data['m'].T[system[1]]>0)[0][0]]
-    Bound_secondary_form_time = global_data['time'].T[system[0]][np.where(global_data['m'].T[system[0]]>0)[0][0]]
-    Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
+    import pdb
+    pdb.set_trace()
     
     #Bound core fragmentation pathway
     usable_files = []
