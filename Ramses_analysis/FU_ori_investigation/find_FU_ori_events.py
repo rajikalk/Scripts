@@ -64,6 +64,8 @@ for sink_file in sink_files:
                         scaled_L = scaled_L/np.max(scaled_L)
                         cor = np.correlate(scaled_L,FU_temp,'same')
                         if L_diff>1 and np.median(cor)>66.6:
+                            import pdb
+                            pdb.set_trace()
                             plt.clf()
                             fig, ax1 = plt.subplots()
 
