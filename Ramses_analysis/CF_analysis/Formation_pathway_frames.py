@@ -450,8 +450,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             
         #Plot boundness lines
         if len(particle_x_pos) > 1:
-            import pdb
-            pdb.set_trace()
+            ax.plot(particle_x_pos, particle_y_pos, 'w-')
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
