@@ -285,10 +285,6 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             if np.isnan(sink_creation_time_pick) == False:
                 sink_creation_time = sink_creation_time_pick
 
-            if usable_files.index(fn) == 1:
-                import pdb
-                pdb.set_trace()
-
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
                 file = open(pickle_file, 'wb')
@@ -423,10 +419,10 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
         #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
         try:
-            mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
+            mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
         except:
             try:
-                mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses], particle_tags=Core_frag_sinks)
+                mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
             except:
                 pass
         
@@ -453,7 +449,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             
         #Plot boundness lines
         if len(particle_x_pos) > 1:
-            ax.plot(particle_x_pos, particle_y_pos, 'w-')
+            ax.plot(particle_x_pos, particle_y_pos, 'b-')
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
