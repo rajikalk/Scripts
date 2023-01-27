@@ -369,7 +369,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         center_pos = center_positions[::-1][pit]
         
         file = open(pickle_file, 'rb')
-        particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
+        particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         file.close()
         
