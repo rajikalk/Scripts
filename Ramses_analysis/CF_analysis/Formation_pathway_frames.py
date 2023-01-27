@@ -484,8 +484,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     if type(system[0][1]) == str:
         if '[' in system[0][1]:
-            import pdb
-            pdb.set_trace()
+            center_sink = flatten(eval(system[0][1]))
         else:
             center_sink = int(system[0][1])
     else:
