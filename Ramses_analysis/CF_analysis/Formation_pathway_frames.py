@@ -447,6 +447,11 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
                 print("Couldn't outline time string")
         except:
             print("Couldn't plot time string")
+            
+        #Plot boundness lines
+        if len(particle_x_pos) > 1:
+            import pdb
+            pdb.set_trace()
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
         #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
