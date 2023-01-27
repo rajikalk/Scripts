@@ -201,8 +201,6 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     for m_time in Bound_m_times:
         match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
-        import pdb
-        pdb.set_trace()
         if sim_file_times[match_time_ind] < m_time:
             match_time_ind = match_time_ind + 1
         #use string manipulation to get the relative info file
@@ -237,7 +235,6 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     
     from pyramses import rsink
     center_positions = []
-    pit = 4
     try:
         try:
             system[0][1] = int(system[0][1])
@@ -248,7 +245,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
         Core_frag_sinks = list(system[0])
     max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
-        pit = pit - 1
+        pit = 3 - usable_files.index(fn)
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
         if os.path.exists(pickle_file) == False:
             print('Getting sink positions from', fn, 'on rank', rank)
@@ -287,6 +284,10 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             
             if np.isnan(sink_creation_time_pick) == False:
                 sink_creation_time = sink_creation_time_pick
+
+            if usable_files.index(fn) == 1:
+                import pdb
+                pdb.set_trace()
 
             if np.remainder(rank, 3) == 0:
                 #if np.remainder(rank,48) == 0:
