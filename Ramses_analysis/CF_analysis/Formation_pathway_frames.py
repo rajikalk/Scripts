@@ -201,6 +201,8 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     for m_time in Bound_m_times:
         match_time_ind = np.argmin(abs(np.array(sim_file_times) - m_time))
+        import pdb
+        pdb.set_trace()
         if sim_file_times[match_time_ind] < m_time:
             match_time_ind = match_time_ind + 1
         #use string manipulation to get the relative info file
