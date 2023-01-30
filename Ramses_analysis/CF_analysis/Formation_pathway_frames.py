@@ -364,10 +364,10 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     #cit = 0
     #for pickle_file in pickle_files:
     for pickle_file in yt.parallel_objects(pickle_files):
-        print('making frame for pickle', pickle_file, 'on rank', rank)
         pit = pickle_files.index(pickle_file)
         file_name = pickle_file_preffix + ("%06d" % pit)
         if os.path.exists(file_name+ ".png") == False:
+            print('making frame for pickle', pickle_file, 'on rank', rank)
             file = open(pickle_file, 'rb')
             particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
             #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
