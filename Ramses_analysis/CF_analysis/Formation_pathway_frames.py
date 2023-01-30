@@ -488,7 +488,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
     if type(system[0][1]) == str:
         if '[' in system[0][1]:
-            center_sink = flatten(eval(system[0][1]))
+            center_sink = np.nan
         else:
             center_sink = int(system[0][1])
     else:
@@ -523,8 +523,12 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             datadir = fn.split('output_')[0]
             loaded_sink_data = rsink(file_no, datadir=datadir)
             try:
-                center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                if np.isnan(center_sink):
+                    import pdb
+                    pdb.set_trace()
+                else:
+                    center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                    sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
                 center_positions.append(center_pos)
             except:
                 center_pos = center_positions[-1]
