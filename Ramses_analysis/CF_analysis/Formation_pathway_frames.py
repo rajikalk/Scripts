@@ -640,6 +640,8 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     for pickle_file in yt.parallel_objects(pickle_files):
         pit = pickle_files.index(pickle_file)
         file_name = pickle_file_preffix + ("%06d" % pit)
+        import pdb
+        pdb.set_trace()
         if os.path.exists(file_name+ ".png") == False:
             #cit = cit + 1
             print('making frame for pickle', pickle_file, 'on rank', rank)
