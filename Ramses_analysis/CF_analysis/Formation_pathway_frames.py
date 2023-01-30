@@ -497,7 +497,11 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     CW.Barrier()
     
     #Find Sink positions
-    pickle_file_preffix = 'unbound_core_frag_'+str(system[0]) + '_'
+    try:
+        suffix = str(system[0][0]) + '_' + system[0][1]
+    except:
+        suffix = str(system[0][0]) + '_' + str(system[0][1])
+    pickle_file_preffix = 'unbound_core_frag_'+suffix + '_'
 
     #Find Sink positions
     from pyramses import rsink
