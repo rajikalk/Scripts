@@ -524,8 +524,14 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             loaded_sink_data = rsink(file_no, datadir=datadir)
             try:
                 if np.isnan(center_sink):
-                    import pdb
-                    pdb.set_trace()
+                    #Calculate center of mass
+                    sys_sinks = flatten(eval(system[0][1]))
+                    M_tot = np.sum(loaded_sink_data['m'][sys_sinks])
+                    x_pos = np.sum(loaded_sink_data['x'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
+                    y_pos = np.sum(loaded_sink_data['y'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
+                    z_pos = np.sum(loaded_sink_data['z'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
+                    center_pos = yt.YTArray([x_pos, y_pos, z_pos])/M_tot
+                    sink_creation_time = loaded_sink_data['tcreate'][np.max(sys_sinks)]*units['time_unit'].in_units('yr')
                 else:
                     center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
                     sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
@@ -721,6 +727,8 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
 
         #Plot boundness lines
         if len(particle_x_pos) > 1:
+            import pdb
+            pdb.set_trace()
             ax.plot(particle_x_pos, particle_y_pos, 'b-')
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
