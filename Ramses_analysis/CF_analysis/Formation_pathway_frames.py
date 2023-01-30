@@ -317,11 +317,11 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     sys.stdout.flush()
     CW.Barrier()
     for usable in yt.parallel_objects(usable_files):
-        print('making projection of', usable, 'on rank', rank)
         #for usable in usable_files:
         pit = 3 - usable_files.index(usable)
         pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         if os.path.exists(pickle_file) == False:
+            print('making projection of', usable, 'on rank', rank)
             cit = usable_files.index(usable)
             ds = yt.load(usable, units_override=units_override)
             #dd = ds.all_data()
@@ -591,11 +591,11 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     sys.stdout.flush()
     CW.Barrier()
     for usable in yt.parallel_objects(usable_files):
-        print('making projection of', usable, 'on rank', rank)
         #for usable in usable_files:
         pit = 3 - usable_files.index(usable)
         pickle_file = pickle_file_preffix + str(pit) + '.pkl'
         if os.path.exists(pickle_file) == False:
+            print('making projection of', usable, 'on rank', rank)
             cit = usable_files.index(usable)
             ds = yt.load(usable, units_override=units_override)
             #dd = ds.all_data()
