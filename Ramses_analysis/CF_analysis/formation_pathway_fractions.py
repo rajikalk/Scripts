@@ -318,7 +318,7 @@ plt.plot(mass_arr, frag_fit, 'k--')
 #plt.yscale('log')
 plt.xlabel('Molecular cloud mass (M$_\odot$)', fontsize=font_size)
 #plt.ylabel('Core fragmentation scale (Log$_{10}$(AU))', fontsize=font_size)
-plt.ylabel('Core fragmentation scale (log$_10$AU)', fontsize=font_size)
+plt.ylabel('Core fragmentation scale (log$_{10}$AU)', fontsize=font_size)
 
 axs.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 axs.tick_params(axis='both', which='minor', labelsize=font_size)
