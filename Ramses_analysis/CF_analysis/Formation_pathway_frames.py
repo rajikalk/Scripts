@@ -577,7 +577,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             gc.collect()
         else:
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks = pickle.load(file)
             file.close()
             max_seps.append(max_sep)
             center_positions.append(center_pos)
@@ -646,7 +646,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         center_pos = center_positions[::-1][pit]
         
         file = open(pickle_file, 'rb')
-        particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
+        particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         file.close()
         
@@ -729,6 +729,11 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         if len(particle_x_pos) > 1:
             import pdb
             pdb.set_trace()
+            #The second frame has the unbound connection
+            #if '2_part.pkl' in pickle_file:
+            #    #Need system hierarchy
+            #The last frame has the bound conntection
+            #I need to distinguish between
             ax.plot(particle_x_pos, particle_y_pos, 'b-')
 
         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
