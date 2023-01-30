@@ -635,13 +635,13 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     import matplotlib.patheffects as path_effects
     import my_ramses_module as mym
     pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+    import pdb
+    pdb.set_trace()
     #cit = 0
     #for pickle_file in pickle_files:
     for pickle_file in yt.parallel_objects(pickle_files):
         pit = pickle_files.index(pickle_file)
         file_name = pickle_file_preffix + ("%06d" % pit)
-        import pdb
-        pdb.set_trace()
         if os.path.exists(file_name+ ".png") == False:
             #cit = cit + 1
             print('making frame for pickle', pickle_file, 'on rank', rank)
