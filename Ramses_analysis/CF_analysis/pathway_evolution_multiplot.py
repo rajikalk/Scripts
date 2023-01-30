@@ -194,7 +194,7 @@ plt.errorbar(masses, Mean_grads[2], yerr=Std_grads[2], label='Dynamical Capture'
 plt.errorbar(masses, Mean_grads[3], yerr=Std_grads[3], label='Other', color='orange')
 plt.legend()
 plt.xlabel('Gas Mass')
-plt.ylabel('Log Inspiral rate (AU/yr)')
+plt.ylabel('Log Inspiral rate (Log$_{10}$(AU/yr))')
 plt.savefig('inspiral_rate_comparison_means')
 
 Core_bounds = [np.array(Mean_grads[0])-np.array(Std_grads[0]), np.array(Mean_grads[0])+np.array(Std_grads[0])]
@@ -233,7 +233,7 @@ axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
-axs[0].set_ylabel('Log Inspiral rate (AU/yr)', size=font_size)
-axs[1].set_ylabel('Log Inspiral rate (AU/yr)', size=font_size)
+axs[0].set_ylabel('Log Inspiral rate (Log$_10$(AU/yr))', size=font_size)
+axs[1].set_ylabel('Log Inspiral rate (Log$_10$(AU/yr))', size=font_size)
 #plt.ylim(top=1.5)
 plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inches=0.02)
