@@ -93,10 +93,10 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
     for pair in Bound_core_frag_candidates:
         center_sink = pair[0]
         form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
-        secondary_form_time = global_data['time'].T[center_sink][form_ind]
+        secondary_form_time = global_data['time'][form_ind]
         unbound_sink = int(pair[1])
         form_ind = np.where(global_data['m'].T[unbound_sink]>0)[0][0]
-        primary_form_time = global_data['time'].T[unbound_sink][form_ind]
+        primary_form_time = global_data['time'][form_ind]
         dt = (secondary_form_time - primary_form_time)*units['time_unit'].in_units('yr')
         if dt > dt_min:
             #if '[' in pair[1]:
