@@ -546,7 +546,11 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                 center_pos = center_positions[-1]
                 center_positions.append(center_pos)
                 sink_creation_time_pick = np.nan
-            existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+            try:
+                existing_sinks = list(set(flatten(Core_frag_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
+            except:
+                import pdb
+                pdb.set_trace()
             if len(existing_sinks)>0:
                 particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
                 particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
