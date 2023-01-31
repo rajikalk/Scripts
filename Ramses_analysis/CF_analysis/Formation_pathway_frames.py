@@ -528,7 +528,10 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             try:
                 if np.isnan(center_sink):
                     #Calculate center of mass
-                    sys_sinks = flatten(eval(system[0][1]))
+                    try:
+                        sys_sinks = flatten(system[0][1])
+                    except:
+                        sys_sinks = flatten(eval(system[0][1]))
                     M_tot = np.sum(loaded_sink_data['m'][sys_sinks])
                     x_pos = np.sum(loaded_sink_data['x'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
                     y_pos = np.sum(loaded_sink_data['y'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
