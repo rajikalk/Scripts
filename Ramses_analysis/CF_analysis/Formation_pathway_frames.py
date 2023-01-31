@@ -128,8 +128,6 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
         unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
         d_pos = abs(form_pos-unbound_sink_pos)
         if False in (d_pos<10000):
-            import pdb
-            pdb.set_trace()
             if '[' in pair[1]:
                 other_ind = np.max(flatten(eval(pair[1])))
             else:
