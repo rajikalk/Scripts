@@ -118,6 +118,8 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
     #rm_pair = []
     Unbound_core_frag_candidates_reduced = []
     for pair in Unbound_core_frag_candidates:
+        import pdb
+        pdb.set_trace()
         center_sink = pair[0]
         form_ind = np.where(global_data['m'].T[center_sink]>0)[0][0]
         if '[' in pair[1]:
