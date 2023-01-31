@@ -105,8 +105,8 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
             #    other_ind = int(pair[1])
             #Save times formation
             other_ind = int(pair[1])
-            Bound_primary_form_time = global_data['time'].T[other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
-            Bound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Bound_primary_form_time = global_data['time'][other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
+            Bound_secondary_form_time = global_data['time'][pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Bound_m_times = [Bound_secondary_form_time, Bound_primary_form_time]
             Bound_core_frag_candidates_reduced.append([pair, Bound_m_times])
 
@@ -134,8 +134,8 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
                 other_ind = np.max(flatten(eval(pair[1])))
             else:
                 other_ind = int(pair[1])
-            Unbound_primary_form_time = global_data['time'].T[other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
-            Unbound_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Unbound_primary_form_time = global_data['time'][other_ind][np.where(global_data['m'].T[other_ind]>0)[0][0]]
+            Unbound_secondary_form_time = global_data['time'][pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
             Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
             Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
             
@@ -161,7 +161,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
                 other_ind = int(pair[1][1])
             #print('removing', pair, 'because d_min=', d_pos)
             #rm_pair.append(pair)
-            Dynamical_secondary_form_time = global_data['time'].T[pair[0]][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            Dynamical_secondary_form_time = global_data['time'][pair[0]][np.where(global_data['m'][pair[0]]>0)[0][0]]
             Dynamical_bound_time = (Dynamical_secondary_form_time*units['time_unit'].in_units('yr').value + Sink_birth_all[str(pair[0])][-2])/units['time_unit'].in_units('yr').value
             Dynamical_m_times = [Dynamical_bound_time, Dynamical_secondary_form_time]
             Dynamical_capture_candidates_reduced.append([pair, Dynamical_m_times])
