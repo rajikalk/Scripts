@@ -458,6 +458,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
 sys.stdout.flush()
 CW.Barrier()
+print("Finished making bound core fragmentation plots")
 
 for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3))):# Unbound_core_frag_candidates: #3 projections
     print('Processing system', system, 'on rank', rank)
@@ -482,7 +483,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
     usable_files.append(glob.glob(info_file)[0])
 
-    print("usable files for Unbound core fragmentation are", usable_files)
+    print("usable files for system", system[0], " Unbound core fragmentation are", usable_files)
 
     if type(system[0][1]) == str:
         if '[' in system[0][1]:
