@@ -134,9 +134,9 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
                 other_ind = np.max(flatten(eval(pair[1])))
             else:
                 other_ind = int(pair[1])
-            Unbound_primary_form_time = global_data['time'][np.where(global_data['m'].T[other_ind]>0)[0][0]]
-            Unbound_secondary_form_time = global_data['time'][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
-            Unbound_m_times = [Unbound_secondary_form_time, Unbound_primary_form_time]
+            secondary_form_time = global_data['time'][np.where(global_data['m'].T[pair[0]]>0)[0][0]]
+            secondary_capture_time = secondary_form_time + Sink_birth_all[str(pair[0])][-2]/units['time_unit'].in_units('yr').value
+            Unbound_m_times = [secondary_capture_time, secondary_form_time]
             Unbound_core_frag_candidates_reduced.append([pair, Unbound_m_times])
             
 
