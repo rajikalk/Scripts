@@ -737,7 +737,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                 elif '2_part.pkl' in pickle_file:
                     linestyle = 'b:'
                 ax.plot(particle_x_pos, particle_y_pos, linestyle)
-            else len(particle_x_pos) > 2:
+            elif len(particle_x_pos) > 2:
                 import pdb
                 pdb.set_trace()
                 #The second frame has the unbound connection
