@@ -505,6 +505,8 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
         suffix = str(system[0][0]) + '_' + str(flatten(system[0][1]))
     pickle_file_preffix = 'unbound_core_frag_'+suffix + '_'
     pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
+    if '[' in pickle_file_preffix:
+        pickle_file_preffix = pickle_file_preffix.replace('[', '(').replace(']', ')')
 
     #Find Sink positions
     from pyramses import rsink
