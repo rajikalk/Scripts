@@ -582,7 +582,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                 #if np.remainder(rank,48) == 0:
                 file = open(pickle_file, 'wb')
                 #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks), file)
+                pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
             #del x_lim
@@ -591,7 +591,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             gc.collect()
         else:
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
             file.close()
             max_seps.append(max_sep)
             center_positions.append(center_pos)
@@ -651,8 +651,6 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     import matplotlib.patheffects as path_effects
     import my_ramses_module as mym
     pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
-    import pdb
-    pdb.set_trace()
     #cit = 0
     #for pickle_file in pickle_files:
     for pickle_file in yt.parallel_objects(pickle_files):
@@ -664,7 +662,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             center_pos = center_positions[::-1][pit]
             
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
             #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
             file.close()
             
@@ -751,6 +749,8 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                     linestyle = 'b:'
                 ax.plot(particle_x_pos, particle_y_pos, linestyle)
             elif len(particle_x_pos) > 2:
+                if '2_part.pkl' in pickle_file:
+                    #plot lines between
                 import pdb
                 pdb.set_trace()
                 #The second frame has the unbound connection
