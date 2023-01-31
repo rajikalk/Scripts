@@ -754,7 +754,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             elif len(particle_x_pos) > 2:
                 if '2_part.pkl' in pickle_file:
                     #plot lines between system:
-                    sys_string = str(system[0][0])
+                    sys_string = str(system[0][1])
                     reduced = False
                     while reduced == False:
                         open_bracket_pos = []
