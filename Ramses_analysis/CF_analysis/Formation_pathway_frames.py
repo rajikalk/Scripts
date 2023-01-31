@@ -508,9 +508,9 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     center_positions = []
     try:
         try:
-            system[0][1] = int(system[0][1])
+            system[0] = (system[0][0], int(system[0][1]))
         except:
-            system[0][1] = flatten(eval(system[0][1]))
+            system[0] = (system[0][0], eval(system[0][1]))
         Core_frag_sinks = [system[0][0]] + [system[0][1]]
     except:
         Core_frag_sinks = list(system[0])
@@ -639,8 +639,6 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     import matplotlib.patheffects as path_effects
     import my_ramses_module as mym
     pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
-    import pdb
-    pdb.set_trace()
     #cit = 0
     #for pickle_file in pickle_files:
     for pickle_file in yt.parallel_objects(pickle_files):
