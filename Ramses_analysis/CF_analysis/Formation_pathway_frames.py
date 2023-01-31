@@ -235,13 +235,12 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
     center_positions = []
     try:
         try:
-            system[0][1] = int(system[0][1])
+            system[0] = (system[0][0], int(system[0][1]))
         except:
-            system[0][1] = flatten(eval(system[0][1]))
+            system[0] = (system[0][0], eval(system[0][1]))
         Core_frag_sinks = [system[0][0]] + [system[0][1]]
     except:
         Core_frag_sinks = list(system[0])
-    max_seps = []
     for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
         pit = 3 - usable_files.index(fn)
         pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
