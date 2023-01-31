@@ -752,16 +752,37 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                     linestyle = 'b:'
                 ax.plot(particle_x_pos, particle_y_pos, linestyle)
             elif len(particle_x_pos) > 2:
-                #if '2_part.pkl' in pickle_file:
-                #    #plot lines between
-                import pdb
-                pdb.set_trace()
+                if '2_part.pkl' in pickle_file:
+                    #plot lines between system:
+                    sys_string = str(system[0][0])
+                    reduced = False
+                    while reduced == False:
+                        open_bracket_pos = []
+                        for char_it in range(len(sys_string)):
+                            if sys_string[char_it] == '[':
+                                open_bracket_pos.append(char_it)
+                            if sys_string[char_it] == ']':
+                                import pdb
+                                pdb.set_trace()
                 #The second frame has the unbound connection
                 #if '2_part.pkl' in pickle_file:
                 #    #Need system hierarchy
                 #The last frame has the bound conntection
                 #I need to distinguish between
                 ax.plot(particle_x_pos, particle_y_pos, 'b-')
+                
+            try:
+                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                time_string = "$t$="+str(int(time_val))+"yr"
+                time_string_raw = r"{}".format(time_string)
+                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+                try:
+                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                except:
+                    print("Couldn't outline time string")
+            except:
+                print("Couldn't plot time string")
 
             plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
             #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
