@@ -555,6 +555,9 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             except:
                 import pdb
                 pdb.set_trace()
+                if usable_files.index(fn) == 1 and system[0][0] not in existing_sinks:
+                    import pdb
+                    pdb.set_trace()
             if len(existing_sinks)>0:
                 particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
                 particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
