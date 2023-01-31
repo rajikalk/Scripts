@@ -81,7 +81,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
 
     print("sorted all systems into formation pathways")
 
-    global_pickle = '/groups/astro/rlk/rlk/High_cadence/G100.pkl'
+    global_pickle = '/groups/astro/rlk/rlk/Global_sink_pickles/High_cadence/G100.pkl'
     file = open(global_pickle, 'rb')
     global_data = pickle.load(file)
     file.close()
