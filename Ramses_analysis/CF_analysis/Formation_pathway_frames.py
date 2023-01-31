@@ -230,6 +230,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
 
     #Find Sink positions
     pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
+    pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
     
     from pyramses import rsink
     center_positions = []
@@ -501,8 +502,9 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
     try:
         suffix = str(system[0][0]) + '_' + system[0][1]
     except:
-        suffix = str(system[0][0]) + '_' + str(system[0][1])
+        suffix = str(system[0][0]) + '_' + str(flatten(system[0][1]))
     pickle_file_preffix = 'unbound_core_frag_'+suffix + '_'
+    pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
 
     #Find Sink positions
     from pyramses import rsink
@@ -798,6 +800,8 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
     from pyramses import rsink
     center_positions = []
     pickle_file_preffix = 'dynamical_capt_'+str(system[0]) + '_'
+    pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
+    
     pit = 4
     try:
         try:
