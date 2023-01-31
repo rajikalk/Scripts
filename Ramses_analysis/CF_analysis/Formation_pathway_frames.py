@@ -787,13 +787,7 @@ for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(
     print("usable files for Bound core fragmentation are", usable_files)
 
     if type(system[0][1]) == str:
-        if '[' in system[0][1]:
-            import pdb
-            pdb.set_trace()
-        else:
-            center_sink = int(system[0][1])
-    else:
-        center_sink = system[0][1]
+        center_sink = system[0][0]
     gc.collect()
 
     sys.stdout.flush()
