@@ -731,7 +731,13 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                 print("Couldn't plot time string")
 
             #Plot boundness lines
-            if len(particle_x_pos) > 1:
+            if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
+                if '3_part.pkl' in pickle_file:
+                    linestyle = 'b-'
+                elif '2_part.pkl' in pickle_file:
+                    linestyle = 'b:'
+                ax.plot(particle_x_pos, particle_y_pos, linestyle)
+            else len(particle_x_pos) > 2:
                 import pdb
                 pdb.set_trace()
                 #The second frame has the unbound connection
