@@ -940,7 +940,6 @@ if args.make_dynamical_frames == 'True':
                 if np.isnan(sink_creation_time_pick) == False:
                     sink_creation_time = sink_creation_time_pick
                     
-
         max_sep = np.max(max_seps)
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
@@ -1001,7 +1000,7 @@ if args.make_dynamical_frames == 'True':
             center_pos = center_positions[::-1][pit]
             
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
             #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
             file.close()
             
@@ -1052,14 +1051,18 @@ if args.make_dynamical_frames == 'True':
             #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
             #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
             try:
-                mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses, particle_tags=Core_frag_sinks)
+                mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
             except:
                 try:
-                    mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses], particle_tags=Core_frag_sinks)
+                    mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
                 except:
                     pass
             
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+            
+            import pdb
+            pdb.set_trace()
+            #PLot particles
 
             plt.tick_params(axis='both', which='major')# labelsize=16)
             for line in ax.xaxis.get_ticklines():
