@@ -257,7 +257,7 @@ for system in yt.parallel_objects(Bound_core_frag_candidates, njobs=int(size/(3)
             datadir = fn.split('output_')[0]
             loaded_sink_data = rsink(file_no, datadir=datadir)
             try:
-                if np.isnan(center_pos):
+                if np.isnan(center_sink):
                     import pdb
                     pdb.set_trace()
                 else:
