@@ -790,11 +790,17 @@ if args.make_unbound_frames == 'True':
                                     replace_string = str(replace_int)
                                     existing_sinks.append(replace_int)
                                     replace_int = replace_int - 1
-                                    import pdb
-                                    pdb.set_trace()
-                                    particle_masses.append(com_mass)
-                                    particle_x_pos.append(x_com)
-                                    particle_y_pos.append(y_com)
+
+                                    particle_masses = yt.YTArray(list(particle_masses.value)+[com_mass.value], 'Msun')
+                                    particle_x_pos = yt.YTArray(list(particle_x_pos.value)+[x_com.value], 'au')
+                                    particle_y_pos = yt.YTArray(list(particle_y_pos.value)+[y_com.value], 'au')
+                                    
+                                    sys_string = sys_string[:open_ind] + replace_string + sys_string[char_it+1:]
+                                    if '[' not in sys_string:
+                                        reduced = True
+                        elif '3_part.pkl' in pickle_file:
+                            import pdb
+                            pdb.set_trace()
                                     
 
                     #The second frame has the unbound connection
