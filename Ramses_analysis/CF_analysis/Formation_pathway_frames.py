@@ -790,12 +790,13 @@ if args.make_unbound_frames == 'True':
                                     replace_string = str(replace_int)
                                     existing_sinks.append(replace_int)
                                     replace_int = replace_int - 1
+                                    import pdb
+                                    pdb.set_trace()
                                     particle_masses.append(com_mass)
                                     particle_x_pos.append(x_com)
                                     particle_y_pos.append(y_com)
                                     
-                                    import pdb
-                                    pdb.set_trace()
+
                     #The second frame has the unbound connection
                     #if '2_part.pkl' in pickle_file:
                     #    #Need system hierarchy
