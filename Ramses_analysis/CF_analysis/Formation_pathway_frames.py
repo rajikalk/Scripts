@@ -631,6 +631,8 @@ if args.make_unbound_frames == 'True':
             pit = 3 - usable_files.index(usable)
             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
             if os.path.exists(pickle_file) == False:
+                import pdb
+                pdb.set_trace()
                 print('making projection of', usable, 'on rank', rank)
                 cit = usable_files.index(usable)
                 ds = yt.load(usable, units_override=units_override)
