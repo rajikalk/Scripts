@@ -766,7 +766,7 @@ if args.make_unbound_frames == 'True':
                         linestyle = 'b:'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle)
                 elif len(particle_x_pos) > 2:
-                    if '2_part.pkl' in pickle_file:
+                    if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
                         reduced = False
@@ -799,49 +799,13 @@ if args.make_unbound_frames == 'True':
                                     if '[' not in sys_string:
                                         reduced = True
                                     break
-                    elif '3_part.pkl' in pickle_file:
-                        sys_string = str(system[0][1])
-                        reduced = False
-                        replace_int = 999
-                        while reduced == False:
-                            open_bracket_pos = []
-                            for char_it in range(len(sys_string)):
-                                if sys_string[char_it] == '[':
-                                    open_bracket_pos.append(char_it)
-                                if sys_string[char_it] == ']':
-                                    open_ind = open_bracket_pos.pop()
-                                    sub_sys = sys_string[open_ind:char_it+1]
-                                    first_ind = existing_sinks.index(eval(sub_sys)[0])
-                                    second_ind = existing_sinks.index(eval(sub_sys)[1])
-                                    sub_inds = np.array([first_ind, second_ind])
-                                    ax.plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
-                                    
-                                    x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
-                                    y_com = np.sum(particle_y_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
-                                    com_mass = np.sum(particle_masses[sub_inds])
-                                    replace_string = str(replace_int)
-                                    existing_sinks.append(replace_int)
-                                    replace_int = replace_int - 1
-
-                                    particle_masses = yt.YTArray(list(particle_masses.value)+[com_mass.value], 'Msun')
-                                    particle_x_pos = yt.YTArray(list(particle_x_pos.value)+[x_com.value], 'au')
-                                    particle_y_pos = yt.YTArray(list(particle_y_pos.value)+[y_com.value], 'au')
-                                    
-                                    sys_string = sys_string[:open_ind] + replace_string + sys_string[char_it+1:]
-                                    if '[' not in sys_string:
-                                        reduced = True
-                                    break
-                        import pdb
-                        pdb.set_trace()
-                                    
-
-                    #The second frame has the unbound connection
-                    #if '2_part.pkl' in pickle_file:
-                    #    #Need system hierarchy
-                    #The last frame has the bound conntection
-                    #I need to distinguish between
-                    ax.plot(particle_x_pos, particle_y_pos, 'b-')
-                    
+                            target_sink_ind = existing_sinks.index(system[0][0])
+                            if '3_part.pkl' in pickle_file:
+                                linestyle = 'b-'
+                            elif '2_part.pkl' in pickle_file:
+                                linestyle = 'b:'
+                            ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
+                            
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                     time_string = "$t$="+str(int(time_val))+"yr"
