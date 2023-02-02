@@ -72,6 +72,10 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
         if Sink_birth_all[str(sink_id)][2] != 'nan':
             if Sink_birth_all[str(sink_id)][0] == True:
                 if '[' not in Sink_birth_all[str(sink_id)][2]:
+                    if isinstance(Sink_birth_all[str(sink_id)][1], str):
+                        other_sink = int(Sink_birth_all[str(sink_id)][1])
+                    else:
+                        other_sink = Sink_birth_all[str(sink_id)][1]
                     Bound_core_frag_candidates.append((sink_id, Sink_birth_all[str(sink_id)][1]))
             else:
                 if Sink_birth_all[str(sink_id)][1] == Sink_birth_all[str(sink_id)][2] and Sink_birth_all[str(sink_id)][-2] > dt_min:
@@ -665,7 +669,7 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
             center_pos = center_positions[::-1][pit]
             
             file = open(pickle_file, 'rb')
-            particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
+            particle_x_pos, particle_y_pos, particle_x_pos[sub_inds], max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
             #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
             file.close()
             
@@ -756,12 +760,30 @@ for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(
                     #plot lines between system:
                     sys_string = str(system[0][1])
                     reduced = False
+                    replace_int = 999
                     while reduced == False:
                         open_bracket_pos = []
                         for char_it in range(len(sys_string)):
                             if sys_string[char_it] == '[':
                                 open_bracket_pos.append(char_it)
                             if sys_string[char_it] == ']':
+                                open_ind = open_bracket_pos.pop()
+                                sub_sys = sys_string[open_ind:char_it+1]
+                                first_ind = existing_sinks.index(eval(sub_sys)[0])
+                                second_ind = existing_sinks.index(eval(sub_sys)[1])
+                                sub_inds = np.array([first_ind, second_ind])
+                                ax.plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
+                                
+                                x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
+                                y_com = np.sum(particle_y_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
+                                com_mass = np.sum(particle_masses[sub_inds])
+                                replace_string = str(replace_int)
+                                existing_sinks.append(replace_int)
+                                replace_int = replace_int - 1
+                                particle_masses.append(com_mass)
+                                particle_x_pos.append(x_com)
+                                particle_y_pos.append(y_com)
+                                
                                 import pdb
                                 pdb.set_trace()
                 #The second frame has the unbound connection
