@@ -558,10 +558,10 @@ if args.make_unbound_frames == 'True':
                         y_pos = np.sum(loaded_sink_data['y'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
                         z_pos = np.sum(loaded_sink_data['z'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
                         center_pos = yt.YTArray([x_pos, y_pos, z_pos])/M_tot
-                        sink_creation_time = loaded_sink_data['tcreate'][np.max(sys_sinks)]*units['time_unit'].in_units('yr')
+                        sink_creation_time_pick = loaded_sink_data['tcreate'][np.max(sys_sinks)]*units['time_unit'].in_units('yr')
                     else:
                         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                        sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                        sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
                     center_positions.append(center_pos)
                 except:
                     center_pos = center_positions[-1]
