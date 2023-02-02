@@ -602,7 +602,7 @@ if args.make_unbound_frames == 'True':
                     #if np.remainder(rank,48) == 0:
                     file = open(pickle_file, 'wb')
                     #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                    pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks), file)
+                    pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks), file)
                     file.close()
                     print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
                 #del x_lim
