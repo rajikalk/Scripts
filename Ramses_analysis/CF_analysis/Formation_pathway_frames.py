@@ -865,64 +865,81 @@ if args.make_dynamical_frames == 'True':
         pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
         
         pit = 4
-        try:
-            try:
-                system[0][1] = int(system[0][1])
-            except:
-                system[0][1] = flatten(eval(system[0][1]))
-            Core_frag_sinks = [system[0][0]] + [system[0][1]]
-        except:
-            Core_frag_sinks = list(system[0])
+        Born_system = system[0][1][0]
+        if '[' in system[0][1][1]:
+            Capt_system = flatten(eval(system[0][1][1]))
+        else:
+            Capt_system = [int(system[0][1][1])]
         max_seps = []
-        import pdb
-        pdb.set_trace()
         for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
-            print('Getting sink positions from', fn, 'on rank', rank)
-            pit = pit - 1
+            pit = 3 - usable_files.index(fn)
             pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
-            #fn = usable_files[fn_it]
-            file_no = int(fn.split('output_')[-1].split('/')[0])
-            datadir = fn.split('output_')[0]
-            loaded_sink_data = rsink(file_no, datadir=datadir)
-            try:
-                center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                sink_creation_time = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
-                center_positions.append(center_pos)
-            except:
-                center_pos = center_positions[-1]
-                center_positions.append(center_pos)
-            existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
-            if len(existing_sinks)>0:
-                particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
-                particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
-                particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
-            else:
-                particle_masses = yt.YTArray([], 'Msun')
-                particle_x_pos = yt.YTArray([], 'au')
-                particle_y_pos = yt.YTArray([], 'au')
-            try:
-                dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-                if dx > dy:
-                    max_seps.append(dx)
+            if os.path.exists(pickle_file) == False:
+                print('Getting sink positions from', fn, 'on rank', rank)
+                #fn = usable_files[fn_it]
+                file_no = int(fn.split('output_')[-1].split('/')[0])
+                datadir = fn.split('output_')[0]
+                loaded_sink_data = rsink(file_no, datadir=datadir)
+                try:
+                    center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                    sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                    center_positions.append(center_pos)
+                except:
+                    center_pos = center_positions[-1]
+                    center_positions.append(center_pos)
+                    sink_creation_time_pick = np.nan
+                try:
+                    check_sinks = [center_sink] + Capt_system
+                    existing_sinks = list(set(flatten(check_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
+                except:
+                    import pdb
+                    pdb.set_trace()
+                if usable_files.index(fn) == 1 and system[0][0] not in existing_sinks:
+                    import pdb
+                    pdb.set_trace()
+                if len(existing_sinks)>0:
+                    particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+                    particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+                    particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
                 else:
-                    max_seps.append(dy)
-            except:
-                pass
-            gc.collect()
-            #particle_masses = dd['sink_particle_mass']
+                    particle_masses = yt.YTArray([], 'Msun')
+                    particle_x_pos = yt.YTArray([], 'au')
+                    particle_y_pos = yt.YTArray([], 'au')
+                try:
+                    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+                    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                    if dx > dy:
+                        max_seps.append(dx)
+                    else:
+                        max_seps.append(dy)
+                except:
+                    pass
+                gc.collect()
+                #particle_masses = dd['sink_particle_mass']
 
-            if np.remainder(rank, 3) == 0:
-                #if np.remainder(rank,48) == 0:
-                file = open(pickle_file, 'wb')
-                #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                pickle.dump((particle_x_pos, particle_y_pos, particle_masses), file)
+                if np.isnan(sink_creation_time_pick) == False:
+                    sink_creation_time = sink_creation_time_pick
+
+                if np.remainder(rank, 3) == 0:
+                    #if np.remainder(rank,48) == 0:
+                    file = open(pickle_file, 'wb')
+                    #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+                    pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks), file)
+                    file.close()
+                    print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+                #del x_lim
+                #del y_lim
+                #del z_lim
+                gc.collect()
+            else:
+                file = open(pickle_file, 'rb')
+                particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
                 file.close()
-                print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
-            #del x_lim
-            #del y_lim
-            #del z_lim
-            gc.collect()
+                max_seps.append(max_sep)
+                center_positions.append(center_pos)
+                if np.isnan(sink_creation_time_pick) == False:
+                    sink_creation_time = sink_creation_time_pick
+                    
 
         max_sep = np.max(max_seps)
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
