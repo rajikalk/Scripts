@@ -874,6 +874,8 @@ if args.make_dynamical_frames == 'True':
         except:
             Core_frag_sinks = list(system[0])
         max_seps = []
+        import pdb
+        pdb.set_trace()
         for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
             print('Getting sink positions from', fn, 'on rank', rank)
             pit = pit - 1
