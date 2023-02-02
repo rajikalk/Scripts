@@ -682,7 +682,7 @@ if args.make_unbound_frames == 'True':
                 center_pos = center_positions[::-1][pit]
                 
                 file = open(pickle_file, 'rb')
-                particle_x_pos, particle_y_pos, particle_x_pos[sub_inds], max_seps, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
+                particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
                 #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                 file.close()
                 
