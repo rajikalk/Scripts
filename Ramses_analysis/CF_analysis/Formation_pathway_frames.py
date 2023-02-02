@@ -798,9 +798,9 @@ if args.make_unbound_frames == 'True':
                                     sys_string = sys_string[:open_ind] + replace_string + sys_string[char_it+1:]
                                     if '[' not in sys_string:
                                         reduced = True
-                        elif '3_part.pkl' in pickle_file:
-                            import pdb
-                            pdb.set_trace()
+                    elif '3_part.pkl' in pickle_file:
+                        import pdb
+                        pdb.set_trace()
                                     
 
                     #The second frame has the unbound connection
