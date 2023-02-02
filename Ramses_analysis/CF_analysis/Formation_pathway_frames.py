@@ -798,7 +798,7 @@ if args.make_unbound_frames == 'True':
                                     sys_string = sys_string[:open_ind] + replace_string + sys_string[char_it+1:]
                                     if '[' not in sys_string:
                                         reduced = True
-                                        break
+                                    break
                     elif '3_part.pkl' in pickle_file:
                         sys_string = str(system[0][1])
                         reduced = False
@@ -830,7 +830,7 @@ if args.make_unbound_frames == 'True':
                                     sys_string = sys_string[:open_ind] + replace_string + sys_string[char_it+1:]
                                     if '[' not in sys_string:
                                         reduced = True
-                                        break
+                                    break
                         import pdb
                         pdb.set_trace()
                                     
