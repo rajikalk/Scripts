@@ -824,7 +824,7 @@ if args.make_unbound_frames == 'True':
 sys.stdout.flush()
 CW.Barrier()
 
-if make_dynamical_frames == 'True':
+if args.make_dynamical_frames == 'True':
     for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3))):# Dynamical capture_candidates: #3 projections
         print('Processing system', system, 'on rank', rank)
 
