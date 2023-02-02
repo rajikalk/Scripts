@@ -631,8 +631,6 @@ if args.make_unbound_frames == 'True':
             pit = 3 - usable_files.index(usable)
             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
             if os.path.exists(pickle_file) == False:
-                import pdb
-                pdb.set_trace()
                 print('making projection of', usable, 'on rank', rank)
                 cit = usable_files.index(usable)
                 ds = yt.load(usable, units_override=units_override)
@@ -649,14 +647,11 @@ if args.make_unbound_frames == 'True':
                 gc.collect()
                 
                 axis_ind = 2
-                try:
-                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                    proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
-                    image = proj_array*units['density_unit'].in_units('g/cm**3')
-                    del proj
-                    del proj_array
-                except:
-                    image = np.ones((800, 800))*np.nan
+                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
+                image = proj_array*units['density_unit'].in_units('g/cm**3')
+                del proj
+                del proj_array
                 gc.collect()
                 
                 file = open(pickle_file, 'wb')
