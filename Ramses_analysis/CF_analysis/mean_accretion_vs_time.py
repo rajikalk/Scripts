@@ -138,8 +138,8 @@ Accretion_array = dm/dt
 print('loaded global data')
 
 #Plot mean TOTAL accretion rates over time
-Total_acc =  np.shape(np.sum(Accretion_array, axis=1))
-Mean_acc = np.shape(np.mean(Accretion_array, axis=1))
+Total_acc = np.sum(Accretion_array, axis=1)
+Mean_acc = np.mean(Accretion_array, axis=1)
 SFE_arr = np.sum(global_data['m'], axis=1)
 plt.clf()
 plt.plot(SFE_arr, Total_acc, label="total accretion rate")
