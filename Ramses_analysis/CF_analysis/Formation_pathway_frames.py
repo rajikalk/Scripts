@@ -451,8 +451,6 @@ if args.make_bound_frames == 'True':
                     except:
                         pass
                 '''
-                #part_color = ['cyan','magenta','r','b','y','w','k']
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
@@ -478,6 +476,9 @@ if args.make_bound_frames == 'True':
                 #Plot boundness lines
                 if len(particle_x_pos) > 1:
                     ax.plot(particle_x_pos, particle_y_pos, 'b-')
+                    
+                #part_color = ['cyan','magenta','r','b','y','w','k']
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -760,8 +761,6 @@ if args.make_unbound_frames == 'True':
                         pass
                 '''
                 
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
-                
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
@@ -830,7 +829,9 @@ if args.make_unbound_frames == 'True':
                             elif '2_part.pkl' in pickle_file:
                                 linestyle = 'b:'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
-                            
+                
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
+                
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                     time_string = "$t$="+str(int(time_val))+"yr"
@@ -1095,10 +1096,6 @@ if args.make_dynamical_frames == 'True':
                         pass
                 '''
                 
-                import pdb
-                pdb.set_trace()
-                other_ind = system[0][1][1]
-                
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
@@ -1168,6 +1165,10 @@ if args.make_dynamical_frames == 'True':
                                 linestyle = 'b:'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
                             
+                import pdb
+                pdb.set_trace()
+                other_ind = system[0][1][1]
+                
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                     time_string = "$t$="+str(int(time_val))+"yr"
