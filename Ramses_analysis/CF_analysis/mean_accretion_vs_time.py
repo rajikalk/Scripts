@@ -148,6 +148,6 @@ plt.legend(loc='best')
 plt.xlim([0, 0.05])
 plt.ylim(bottom=0)
 plt.xlabel('SFE')
-plt.label('Accretion rate (M$_\odot$/yr)')
+plt.ylabel('Accretion rate (M$_\odot$/yr)')
 savename = "mean_acc_G"+simulation_density_id+".png"
 plt.savefig(savename)
