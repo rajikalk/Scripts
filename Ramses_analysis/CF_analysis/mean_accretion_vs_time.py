@@ -146,7 +146,7 @@ plt.semilogy(SFE_arr, Total_acc, label="total accretion rate")
 plt.semilogy(SFE_arr, Mean_acc, label="mean accretion rate")
 plt.legend(loc='best')
 #plt.xlim([0, 0.05])
-plt.ylim(bottom=0)
+plt.ylim([1.e-7, 1.e-2])
 plt.xlabel('SFE')
 plt.ylabel('Accretion rate (M$_\odot$/yr)')
 savename = "mean_acc_G"+simulation_density_id+".png"
