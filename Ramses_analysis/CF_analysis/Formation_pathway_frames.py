@@ -246,6 +246,8 @@ if args.make_bound_frames == 'True':
         #Find Sink positions
         pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
         pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
+        if "'" in pickle_file_preffix:
+            pickle_file_preffix = pickle_file_preffix.replace("'", "")
         
         from pyramses import rsink
         center_positions = []
@@ -863,6 +865,8 @@ if args.make_dynamical_frames == 'True':
         center_positions = []
         pickle_file_preffix = 'dynamical_capt_'+str(system[0]) + '_'
         pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
+        if "'" in pickle_file_preffix:
+            pickle_file_preffix = pickle_file_preffix.replace("'", "")
         
         pit = 4
         Born_system = system[0][1][0]
