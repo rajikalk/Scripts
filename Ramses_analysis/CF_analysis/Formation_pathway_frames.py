@@ -282,8 +282,6 @@ if args.make_bound_frames == 'True':
                 except:
                     curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                     dt = curr_time - t_snap
-                    import pdb
-                    pdb.set_trace()
                     prev_center_pos = center_positions[-1]
                     center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
@@ -568,12 +566,22 @@ if args.make_unbound_frames == 'True':
                         z_pos = np.sum(loaded_sink_data['z'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
                         center_pos = yt.YTArray([x_pos, y_pos, z_pos])/M_tot
                         sink_creation_time_pick = loaded_sink_data['tcreate'][np.max(sys_sinks)]*units['time_unit'].in_units('yr')
+                        
+                        x_vel = np.sum(loaded_sink_data['ux'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
+                        y_vel = np.sum(loaded_sink_data['uy'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
+                        z_vel = np.sum(loaded_sink_data['uz'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
+                        center_vel = yt.YTArray([x_vel, y_vel, z_vel])/M_tot
                     else:
                         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                        center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
                         sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                        t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                     center_positions.append(center_pos)
                 except:
-                    center_pos = center_positions[-1]
+                    curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                    dt = curr_time - t_snap
+                    prev_center_pos = center_positions[-1]
+                    center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
                 try:
@@ -893,10 +901,15 @@ if args.make_dynamical_frames == 'True':
                 loaded_sink_data = rsink(file_no, datadir=datadir)
                 try:
                     center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                    center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
                     sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                    t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                     center_positions.append(center_pos)
                 except:
-                    center_pos = center_positions[-1]
+                    curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                    dt = curr_time - t_snap
+                    prev_center_pos = center_positions[-1]
+                    center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
                 if usable_files.index(fn) == 0:
