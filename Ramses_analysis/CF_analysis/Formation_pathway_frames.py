@@ -277,11 +277,15 @@ if args.make_bound_frames == 'True':
                         center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
                         center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
                         sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                        t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                     center_positions.append(center_pos)
                 except:
+                    curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                    dt = curr_time - t_snap
                     import pdb
                     pdb.set_trace()
-                    center_pos = center_positions[-1]
+                    prev_center_pos = center_positions[-1]
+                    center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
                 existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
