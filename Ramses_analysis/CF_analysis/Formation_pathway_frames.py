@@ -944,7 +944,9 @@ if args.make_dynamical_frames == 'True':
                 center_positions.append(center_pos)
                 if np.isnan(sink_creation_time_pick) == False:
                     sink_creation_time = sink_creation_time_pick
-                    
+        
+        import pdb
+        pdb.set_trace()
         max_sep = np.max(max_seps)
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
