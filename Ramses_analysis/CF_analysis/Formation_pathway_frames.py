@@ -945,8 +945,6 @@ if args.make_dynamical_frames == 'True':
                 if np.isnan(sink_creation_time_pick) == False:
                     sink_creation_time = sink_creation_time_pick
         
-        import pdb
-        pdb.set_trace()
         max_sep = np.max(max_seps)
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
@@ -956,14 +954,13 @@ if args.make_dynamical_frames == 'True':
 
         sys.stdout.flush()
         CW.Barrier()
-        cit = -1
-        import os
-        for usable in yt.parallel_objects(usable_files, njobs=int(3)):
+        for usable in yt.parallel_objects(usable_files):
             #for usable in usable_files:
-            pit = pit - 1
+            pit = 3 - usable_files.index(usable)
             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
             if os.path.exists(pickle_file) == False:
-                cit = cit + 1
+                print('making projection of', usable, 'on rank', rank)
+                cit = usable_files.index(usable)
                 ds = yt.load(usable, units_override=units_override)
                 #dd = ds.all_data()
 
