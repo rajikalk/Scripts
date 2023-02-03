@@ -452,7 +452,7 @@ if args.make_bound_frames == 'True':
                         pass
                 '''
                 #part_color = ['cyan','magenta','r','b','y','w','k']
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', s=5, markeredgewidth=1.5, markeredgecolor="k")
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=5, markeredgewidth=1.5, markeredgecolor="k")
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
@@ -760,7 +760,7 @@ if args.make_unbound_frames == 'True':
                         pass
                 '''
                 
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', s=5, markeredgewidth=1.5, markeredgecolor="k")
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=5, markeredgewidth=1.5, markeredgecolor="k")
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
