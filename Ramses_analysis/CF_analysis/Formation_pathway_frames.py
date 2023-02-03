@@ -478,7 +478,7 @@ if args.make_bound_frames == 'True':
                     ax.plot(particle_x_pos, particle_y_pos, linestyle='-', color='grey')
                     
                 #part_color = ['cyan','magenta','r','b','y','w','k']
-                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
+                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=10, linewidth=1.5, edgecolor="k")
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -830,7 +830,7 @@ if args.make_unbound_frames == 'True':
                                 linestyle = ':'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
                 
-                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
+                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=10, linewidth=1.5, edgecolor="k")
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
