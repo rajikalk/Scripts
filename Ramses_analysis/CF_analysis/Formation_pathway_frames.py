@@ -475,7 +475,7 @@ if args.make_bound_frames == 'True':
                     
                 #Plot boundness lines
                 if len(particle_x_pos) > 1:
-                    ax.plot(particle_x_pos, particle_y_pos, 'b-')
+                    ax.plot(particle_x_pos, particle_y_pos, linestyle='-', color='grey')
                     
                 #part_color = ['cyan','magenta','r','b','y','w','k']
                 ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
@@ -782,15 +782,15 @@ if args.make_unbound_frames == 'True':
                 except:
                     print("Couldn't plot time string")
                 
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k", zorder=10)
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
 
                 #Plot boundness lines
                 if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
                     if '3_part.pkl' in pickle_file:
-                        linestyle = 'b-'
+                        linestyle = '-'
                     elif '2_part.pkl' in pickle_file:
-                        linestyle = 'b:'
-                    ax.plot(particle_x_pos, particle_y_pos, linestyle)
+                        linestyle = ':'
+                    ax.plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
                 elif len(particle_x_pos) > 2:
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
@@ -827,10 +827,10 @@ if args.make_unbound_frames == 'True':
                                     break
                             target_sink_ind = existing_sinks.index(system[0][0])
                             if '3_part.pkl' in pickle_file:
-                                linestyle = 'b-'
+                                linestyle = '-'
                             elif '2_part.pkl' in pickle_file:
-                                linestyle = 'b:'
-                            ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
+                                linestyle = ':'
+                            ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
