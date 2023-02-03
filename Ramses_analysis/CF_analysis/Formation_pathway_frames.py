@@ -460,6 +460,13 @@ if args.make_bound_frames == 'True':
                 for line in ax.yaxis.get_ticklines():
                     line.set_color('white')
 
+                #Plot boundness lines
+                if len(particle_x_pos) > 1:
+                    ax.plot(particle_x_pos, particle_y_pos, linestyle='-', color='grey')
+                    
+                #part_color = ['cyan','magenta','r','b','y','w','k']
+                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                     time_string = "$t$="+str(int(time_val))+"yr"
@@ -473,12 +480,6 @@ if args.make_bound_frames == 'True':
                 except:
                     print("Couldn't plot time string")
                     
-                #Plot boundness lines
-                if len(particle_x_pos) > 1:
-                    ax.plot(particle_x_pos, particle_y_pos, linestyle='-', color='grey')
-                    
-                #part_color = ['cyan','magenta','r','b','y','w','k']
-                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=20, linewidth=1.5, edgecolor="k", zorder=11)
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -830,7 +831,7 @@ if args.make_unbound_frames == 'True':
                                 linestyle = ':'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
                 
-                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=20, linewidth=1.5, edgecolor="k", zorder=11)
+                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
