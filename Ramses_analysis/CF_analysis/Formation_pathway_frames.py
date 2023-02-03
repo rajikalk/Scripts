@@ -781,8 +781,6 @@ if args.make_unbound_frames == 'True':
                         print("Couldn't outline time string")
                 except:
                     print("Couldn't plot time string")
-                
-                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
 
                 #Plot boundness lines
                 if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
@@ -831,6 +829,8 @@ if args.make_unbound_frames == 'True':
                             elif '2_part.pkl' in pickle_file:
                                 linestyle = ':'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
+                
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', markersize=10, markeredgewidth=1.5, markeredgecolor="k")
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
