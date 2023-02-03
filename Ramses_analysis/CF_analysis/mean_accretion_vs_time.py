@@ -138,6 +138,16 @@ Accretion_array = dm/dt
 print('loaded global data')
 
 #Plot mean TOTAL accretion rates over time
-window = yt.YTQuantity(1000, 'yr')
-import pdb
-pdb.set_trace()
+Total_acc =  np.shape(np.sum(Accretion_array, axis=1))
+Mean_acc = np.shape(np.mean(Accretion_array, axis=1))
+SFE_arr = np.sum(global_data['m'], axis=1)
+plt.clf()
+plt.plot(SFE_arr, Total_acc, label="total accretion rate")
+plt.plot(SFE_arr, Mean_acc, label="mean accretion rate")
+plt.legend(lob='best')
+plt.xlim([0, 0.05])
+plt.ylim(bottom=0)
+plt.xlabel('SFE')
+plt.label('Accretion rate (M$_\odot$/yr)')
+savename = "mean_acc_G"+simulation_density_id+".png"
+plt.savefig(savename)

@@ -442,6 +442,7 @@ if args.make_bound_frames == 'True':
                 cbar = plt.colorbar(plot, pad=0.0)
                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
                 #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+                '''
                 try:
                     mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
                 except:
@@ -449,6 +450,9 @@ if args.make_bound_frames == 'True':
                         mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
                     except:
                         pass
+                '''
+                #part_color = ['cyan','magenta','r','b','y','w','k']
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', s=5, markeredgewidth=1.5, markeredgecolor="k")
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
@@ -746,6 +750,7 @@ if args.make_unbound_frames == 'True':
                 cbar = plt.colorbar(plot, pad=0.0)
                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
                 #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+                '''
                 try:
                     mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
                 except:
@@ -753,6 +758,9 @@ if args.make_unbound_frames == 'True':
                         mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
                     except:
                         pass
+                '''
+                
+                ax.plot(particle_x_pos, particle_y_pos, c='y', marker='*', s=5, markeredgewidth=1.5, markeredgecolor="k")
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
@@ -1077,6 +1085,7 @@ if args.make_dynamical_frames == 'True':
                 cbar = plt.colorbar(plot, pad=0.0)
                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
                 #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+                '''
                 try:
                     mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
                 except:
@@ -1084,6 +1093,11 @@ if args.make_dynamical_frames == 'True':
                         mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
                     except:
                         pass
+                '''
+                
+                import pdb
+                pdb.set_trace()
+                other_ind = system[0][1][1]
                 
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
