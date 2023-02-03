@@ -892,12 +892,13 @@ if args.make_dynamical_frames == 'True':
                     center_pos = center_positions[-1]
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
-                try:
+                if usable_files.index(fn) == 0:
+                    #If last plot time, we want to get the target sink and capture system
                     check_sinks = [center_sink] + Capt_system
-                    existing_sinks = list(set(flatten(check_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
-                except:
-                    import pdb
-                    pdb.set_trace()
+                else:
+                    #Else, we want to get the target sink and the system it was most bound to at birth
+                    check_sinks = [center_sink] + [Born_system]
+                existing_sinks = list(set(flatten(check_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
                 if usable_files.index(fn) == 1 and system[0][0] not in existing_sinks:
                     import pdb
                     pdb.set_trace()
