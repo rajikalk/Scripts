@@ -240,8 +240,8 @@ if args.make_bound_frames == 'True':
             center_sink = system[0][1]
         gc.collect()
 
-        sys.stdout.flush()
-        CW.Barrier()
+        #sys.stdout.flush()
+        #CW.Barrier()
 
         #Find Sink positions
         pickle_file_preffix = 'bound_core_frag_'+str(system[0]) + '_'
@@ -481,8 +481,8 @@ if args.make_bound_frames == 'True':
 
     print("Finished making bound core fragmentation plots")
     
-sys.stdout.flush()
-CW.Barrier()
+#sys.stdout.flush()
+#CW.Barrier()
 
 if args.make_unbound_frames == 'True':
     for system in yt.parallel_objects(Unbound_core_frag_candidates, njobs=int(size/(3))):# Unbound_core_frag_candidates: #3 projections
@@ -519,8 +519,8 @@ if args.make_unbound_frames == 'True':
             center_sink = system[0][1]
         gc.collect()
 
-        sys.stdout.flush()
-        CW.Barrier()
+        #sys.stdout.flush()
+        #CW.Barrier()
         
         #Find Sink positions
         try:
@@ -840,8 +840,8 @@ if args.make_unbound_frames == 'True':
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame ' + file_name + '.png, on rank', rank)
 
-sys.stdout.flush()
-CW.Barrier()
+#sys.stdout.flush()
+#CW.Barrier()
 
 if args.make_dynamical_frames == 'True':
     for system in yt.parallel_objects(Dynamical_capture_candidates, njobs=int(size/(3))):# Dynamical capture_candidates: #3 projections
@@ -872,8 +872,8 @@ if args.make_dynamical_frames == 'True':
         center_sink = system[0][0]
         gc.collect()
 
-        sys.stdout.flush()
-        CW.Barrier()
+        #sys.stdout.flush()
+        #CW.Barrier()
 
         #Find Sink positions
         from pyramses import rsink
