@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import yt
+import pickle
 import matplotlib
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
@@ -23,15 +23,6 @@ matplotlib.rcParams['text.latex.preamble'] = [
 
 f_acc= 0.5
 
-def losi(i, res):
-    if (res['n'][i]==1) or (res['n'][i]==0):
-        return i
-    else:
-        i1 = losi(res['index1'][i],res)
-        i2 = losi(res['index2'][i],res)
-        return [i1,i2]
-
-
 def accretion(sink_inds, time_ind):
     """
     Calculates the accretion of the given indeexes
@@ -39,18 +30,6 @@ def accretion(sink_inds, time_ind):
     global Accretion_array
     M_dot = Accretion_array[time_ind, sink_inds]
     return M_dot
-    
-def luminosity(global_data, sink_inds, global_ind):
-    """
-    Calculates the luminosity of the given indexes
-    """
-    global f_acc
-    radius = yt.YTQuantity(2.0, 'rsun')
-    M_dot = accretion(sink_inds, global_ind)
-    M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-    L_acc = f_acc * (yt.units.G * M.in_units('g') * M_dot.in_units('g/s'))/radius.in_units('cm')
-    L_tot = L_acc.in_units('Lsun')
-    return L_tot
 
 def parse_inputs():
     import argparse
