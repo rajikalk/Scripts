@@ -1166,9 +1166,9 @@ if args.make_dynamical_frames == 'True':
                                 linestyle = 'b:'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
                             
-                import pdb
-                pdb.set_trace()
-                other_ind = system[0][1][1]
+                    import pdb
+                    pdb.set_trace()
+                    other_ind = system[0][1][1]
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
