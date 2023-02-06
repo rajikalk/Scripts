@@ -179,6 +179,6 @@ for global_data_pickle_file in global_data_pickle_files:
 plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 plt.xlabel('SFE')
-plt.ylabel('Accretion rate (M$_\odot$/yr)')
+plt.ylabel("Accretion rate (M$_\odot$/yr)")
 savename = "mean_acc.png"
 plt.savefig(savename)
