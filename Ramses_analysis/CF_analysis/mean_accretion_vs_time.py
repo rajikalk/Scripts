@@ -92,7 +92,7 @@ size = CW.Get_size()
 
 global_data_pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G50/stars_imf_G50.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/256/stars_imf_G100.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G125/stars_imf_G125.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G150/stars_imf_G150.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G200/stars_imf_G200.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl"]
 
-labels = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
+#labels = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
 line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
@@ -175,7 +175,7 @@ for global_data_pickle_file in global_data_pickle_files:
     #Plot mean TOTAL accretion rates over time
     Mean_acc = np.nanmean(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
-    plt.semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    plt.semilogy(SFE_arr, Mean_acc, label=str(units["mass_unit"]), color=colors[pit], linestyle=line_styles[pit])
 plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 plt.xlabel('SFE')
