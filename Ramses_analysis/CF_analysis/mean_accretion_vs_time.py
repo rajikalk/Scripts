@@ -175,7 +175,7 @@ for global_data_pickle_file in global_data_pickle_files:
     #Plot mean TOTAL accretion rates over time
     Mean_acc = np.nanmean(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
-    plt.semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_style[pit])
+    plt.semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
 plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 plt.xlabel('SFE')
