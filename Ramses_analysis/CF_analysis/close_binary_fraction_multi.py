@@ -35,7 +35,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width))
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
 pit = -1
 for pickle_file in pickle_files:
     pit = pit + 1
@@ -45,7 +45,7 @@ for pickle_file in pickle_files:
     
     plt.plot(SFE, Close_Fractions, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     
-plt.legend(ncol=2)
+plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 plt.ylim([0, 1])
 plt.xlabel('SFE')
