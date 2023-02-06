@@ -1166,9 +1166,14 @@ if args.make_dynamical_frames == 'True':
                                 linestyle = 'b:'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
                             
-                import pdb
-                pdb.set_trace()
                 other_ind = system[0][1][1]
+                if '[' in other_ind:
+                    other_ind = flatten(eval(other_ind))
+                else:
+                    other_ind = [eval(other_ind)]
+                plot_other_inds = list(set(other_ind).intersection(existing_sinks))
+                if len(plot_other_inds) > 0:
+                    ax.scatter(particle_x_pos, particle_y_pos, c='r', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                 ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                 
                 try:
