@@ -183,7 +183,7 @@ pickle_file = 'G'+simulation_density_id
 if args.update_pickles == 'True':
     rit = -1
     prev_n_stars = 1
-    for time_it in range(start_time_it, len(global_data['time'].T[0]), 100):
+    for time_it in range(start_time_it, len(global_data['time'].T[0])):
         rit = rit + 1
         if rit == size:
             rit = 0
