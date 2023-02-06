@@ -11,6 +11,25 @@ import collections
 import os
 import pickle
 import gc
+import matplotlib
+
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
 
 f_acc= 0.5
 
@@ -51,7 +70,6 @@ def luminosity(global_data, sink_inds, global_ind):
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-global_data", "--global_data_pickle_file", help="Where is the directory of the global pickle data?", default='/groups/astro/rlk/Analysis_plots/Ramses/Global/G100/512/stars_red_512.pkl', type=str)
     parser.add_argument("-pickle", "--pickled_file", help="Define if you want to read this instead", type=str)
     parser.add_argument("-update", "--update_pickles", help="Do you want to remake the pickles?", type=str, default='True')
     parser.add_argument("-acc_lim", "--accretion_limit", help="What do you want to set the accretion limit to?", type=float, default=1.e-7)
@@ -72,82 +90,94 @@ args = parse_inputs()
 rank = CW.Get_rank()
 size = CW.Get_size()
 
+global_data_pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G50/stars_imf_G50.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/256/stars_imf_G100.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G125/stars_imf_G125.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G150/stars_imf_G150.pkl". "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G200/stars_imf_G200.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl"]
 
-#Set units
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+labels = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
+colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
+line_styles = [':', (0, (3, 1, 1, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1, 1, 1)), (0, (3, 1, 1, 1)), '--', '-']
 
-simulation_density_id = args.global_data_pickle_file.split('/')[-1].split('_')[0][1:]
-try:
-    simulation_density_id_int = int(simulation_density_id)
-except:
-    simulation_density_id = args.global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
-
-if simulation_density_id == '50':
-    Grho=50
-    units_override.update({"mass_unit":(1500,"Msun")})
-elif simulation_density_id == '100':
-    Grho=100
-    units_override.update({"mass_unit":(3000,"Msun")})
-elif simulation_density_id == '125':
-    Grho=125
-    units_override.update({"mass_unit":(3750,"Msun")})
-elif simulation_density_id == '150':
-    Grho=150
-    units_override.update({"mass_unit":(4500,"Msun")})
-elif simulation_density_id == '200':
-    Grho=200
-    units_override.update({"mass_unit":(6000,"Msun")})
-elif simulation_density_id == '400':
-    Grho=400
-    units_override.update({"mass_unit":(12000,"Msun")})
-else:
-    print("MASS UNIT NOT SET")
-    import pdb
-    pdb.set_trace()
-    
-
-units_override.update({"density_unit":(units_override['mass_unit'][0]/(units_override['length_unit'][0]**3), "Msun/pc**3")})
-    
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
-scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
-
-units={}
-for key in units_override.keys():
-    units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-del units_override
-gc.collect()
-
-sys.stdout.flush()
-CW.Barrier()
-
-#loading global data
-file_open = open(args.global_data_pickle_file, 'rb')
-try:
-    global_data = pickle.load(file_open,encoding="latin1")
-except:
-    file_open.close()
-    import pickle5 as pickle
-    file_open = open(args.global_data_pickle_file, 'rb')
-    global_data = pickle.load(file_open,encoding="latin1")
-file_open.close()
-dm = global_data['dm']*units['mass_unit'].in_units('Msun')
-dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
-Accretion_array = dm/dt
-print('loaded global data')
-
-#Plot mean TOTAL accretion rates over time
-Total_acc = np.nansum(Accretion_array, axis=1)
-Mean_acc = np.nanmean(Accretion_array, axis=1)
-SFE_arr = np.nansum(global_data['m'], axis=1)
 plt.clf()
-plt.semilogy(SFE_arr, Total_acc, label="total accretion rate")
-plt.semilogy(SFE_arr, Mean_acc, label="mean accretion rate")
-plt.legend(loc='best')
-#plt.xlim([0, 0.05])
-plt.ylim([1.e-7, 1.e-2])
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
+pit = -1
+for global_data_pickle_file in global_data_pickle_files:
+    pit = pit+1
+    #Set units
+    units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+
+    simulation_density_id = global_data_pickle_file.split('/')[-1].split('_')[0][1:]
+    try:
+        simulation_density_id_int = int(simulation_density_id)
+    except:
+        simulation_density_id = global_data_pickle_file.split('_G')[-1].split('.pkl')[0]
+
+    if simulation_density_id == '50':
+        Grho=50
+        units_override.update({"mass_unit":(1500,"Msun")})
+    elif simulation_density_id == '100':
+        Grho=100
+        units_override.update({"mass_unit":(3000,"Msun")})
+    elif simulation_density_id == '125':
+        Grho=125
+        units_override.update({"mass_unit":(3750,"Msun")})
+    elif simulation_density_id == '150':
+        Grho=150
+        units_override.update({"mass_unit":(4500,"Msun")})
+    elif simulation_density_id == '200':
+        Grho=200
+        units_override.update({"mass_unit":(6000,"Msun")})
+    elif simulation_density_id == '400':
+        Grho=400
+        units_override.update({"mass_unit":(12000,"Msun")})
+    else:
+        print("MASS UNIT NOT SET")
+        import pdb
+        pdb.set_trace()
+        
+
+    units_override.update({"density_unit":(units_override['mass_unit'][0]/(units_override['length_unit'][0]**3), "Msun/pc**3")})
+        
+    scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm') # 4 pc
+    scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
+    scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+    scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3')  # 2998 Msun / (4 pc)^3
+
+    units={}
+    for key in units_override.keys():
+        units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+    del units_override
+    gc.collect()
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    #loading global data
+    file_open = open(global_data_pickle_file, 'rb')
+    try:
+        global_data = pickle.load(file_open,encoding="latin1")
+    except:
+        file_open.close()
+        import pickle5 as pickle
+        file_open = open(global_data_pickle_file, 'rb')
+        global_data = pickle.load(file_open,encoding="latin1")
+    file_open.close()
+    dm = global_data['dm']*units['mass_unit'].in_units('Msun')
+    dt = (global_data['time'] - global_data['tflush'])*units['time_unit'].in_units('yr')
+    Accretion_array = dm/dt
+    print('loaded global data')
+
+    #Plot mean TOTAL accretion rates over time
+    Mean_acc = np.nanmean(Accretion_array, axis=1)
+    SFE_arr = np.nansum(global_data['m'], axis=1)
+    plt.semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_style[pit])
+plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+plt.xlim([0, 0.05])
 plt.xlabel('SFE')
 plt.ylabel('Accretion rate (M$_\odot$/yr)')
-savename = "mean_acc_G"+simulation_density_id+".png"
+savename = "mean_acc.png"
 plt.savefig(savename)
