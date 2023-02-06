@@ -181,4 +181,4 @@ plt.xlim([0, 0.05])
 plt.xlabel('SFE')
 plt.ylabel("Accretion rate (Msun/yr)")
 savename = "mean_acc.pdf"
-plt.savefig(savename)
+plt.savefig(savename, bbox_inches='tight', pad_inches=0.02)
