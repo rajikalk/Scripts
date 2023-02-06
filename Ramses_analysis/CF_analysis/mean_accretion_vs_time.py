@@ -106,6 +106,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
 pit = -1
 for global_data_pickle_file in global_data_pickle_files:
+    print("reading file", global_data_pickle_file)
     pit = pit+1
     #Set units
     units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
