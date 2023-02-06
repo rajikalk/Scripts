@@ -21,7 +21,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G50.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G100.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G125.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G150.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G200.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G400.pkl']
+pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G50/G50.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G100/G100.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G125/G125.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G150/G150.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G200/G200.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Close_binary_fraction/G400/G400.pkl']
 
 labels = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
