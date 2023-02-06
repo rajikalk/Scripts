@@ -139,5 +139,5 @@ plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, bord
 plt.xlim([0, 0.05])
 plt.xlabel("SFE")
 plt.ylabel("Accretion rate (M$_\odot$/yr)")
-savename = "mean_acc.png"
+savename = "mean_acc.pdf"
 plt.savefig(savename, bbox_inches='tight', pad_inches=0.02)
