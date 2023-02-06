@@ -167,7 +167,7 @@ if rank == 0 and os.path.exists('candidates.pkl') == False:
         form_pos = np.array([global_data['x'].T[center_sink][form_ind], global_data['y'].T[center_sink][form_ind], global_data['z'].T[center_sink][form_ind]])*units['length_unit'].in_units('au')
         unbound_sink_pos = np.array([global_data['x'].T[unbound_sink][form_ind], global_data['y'].T[unbound_sink][form_ind], global_data['z'].T[unbound_sink][form_ind]])*units['length_unit'].in_units('au')
         d_pos = np.sqrt(np.sum((form_pos-unbound_sink_pos)**2))
-        if d_pos<20000:
+        if d_pos<50000:
             if '[' in pair[1][1]:
                 other_ind = np.max(flatten(eval(pair[1][1])))
             else:
