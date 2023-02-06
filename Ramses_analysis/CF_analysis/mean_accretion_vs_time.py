@@ -1,16 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import pyramses as pr
-from pyramses import rsink
-import multiplicity as m
 import yt
-import glob
-from mpi4py.MPI import COMM_WORLD as CW
-import sys
-import collections
-import os
-import pickle
-import gc
 import matplotlib
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
@@ -41,11 +31,6 @@ def losi(i, res):
         i2 = losi(res['index2'][i],res)
         return [i1,i2]
 
-def flatten(x):
-    if isinstance(x, collections.Iterable):
-        return [a for i in x for a in flatten(i)]
-    else:
-        return [x]
 
 def accretion(sink_inds, time_ind):
     """
@@ -87,8 +72,6 @@ def parse_inputs():
 
 args = parse_inputs()
 
-rank = CW.Get_rank()
-size = CW.Get_size()
 
 global_data_pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G50/stars_imf_G50.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G100/256/stars_imf_G100.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G125/stars_imf_G125.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G150/stars_imf_G150.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G200/stars_imf_G200.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl"]
 
@@ -152,10 +135,6 @@ for global_data_pickle_file in global_data_pickle_files:
     for key in units_override.keys():
         units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
     del units_override
-    gc.collect()
-
-    sys.stdout.flush()
-    CW.Barrier()
 
     #loading global data
     file_open = open(global_data_pickle_file, 'rb')
