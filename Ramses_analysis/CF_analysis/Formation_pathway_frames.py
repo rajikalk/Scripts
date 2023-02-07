@@ -697,6 +697,8 @@ if args.make_unbound_frames == 'True':
             pit = pickle_files.index(pickle_file)
             file_name = pickle_file_preffix + ("%06d" % pit)
             if os.path.exists(file_name+ ".png") == False:
+                import pdb
+                pdb.set_trace()
                 #cit = cit + 1
                 print('making frame for pickle', pickle_file, 'on rank', rank)
                 center_pos = center_positions[::-1][pit]
@@ -877,7 +879,7 @@ if args.make_dynamical_frames == 'True':
         info_file = star_file.split('stars_output.snktxt')[0] + 'info*.txt'
         usable_files.append(glob.glob(info_file)[0])
 
-        print("usable files for Bound core fragmentation are", usable_files)
+        print("usable files for Dynamical Capture are", usable_files)
 
         center_sink = system[0][0]
         gc.collect()
