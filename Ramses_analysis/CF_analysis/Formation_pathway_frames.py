@@ -785,6 +785,8 @@ if args.make_unbound_frames == 'True':
                 except:
                     print("Couldn't plot time string")
 
+                import pdb
+                pdb.set_trace()
                 #Plot boundness lines
                 if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
                     if '3_part.pkl' in pickle_file:
