@@ -364,14 +364,13 @@ if args.make_bound_frames == 'True':
                     proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj_array = np.array(proj.frb.data[("ramses", "Density")])/thickness.in_units('cm')
                     image = proj_array*units['density_unit'].in_units('g/cm**3')
+                    if str(image.units) == 'g/cm**4':
+                        import pdb
+                        pdb.set_trace()
                     del proj
                     del proj_array
                 except:
                     image = np.ones((800, 800))*np.nan
-                
-                if str(image.units) == 'g/cm**4':
-                    import pdb
-                    pdb.set_trace()
                     
                 gc.collect()
                 
@@ -681,8 +680,8 @@ if args.make_unbound_frames == 'True':
                 if str(image.units) == 'g/cm**4':
                     import pdb
                     pdb.set_trace()
-                #del proj
-                #del proj_array
+                del proj
+                del proj_array
                 gc.collect()
                 
                 file = open(pickle_file, 'wb')
