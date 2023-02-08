@@ -37,11 +37,34 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
 pit = -1
+smooth_window = 0.05
 for pickle_file in pickle_files:
     pit = pit + 1
     file = open(pickle_file, 'rb')
     SFE, Close_Fractions = pickle.load(file)
     file.close()
+    
+    SFE = 100*SFE
+    frac_smoothed = []
+    frac_err_upp = []
+    frac_err_low = []
+    for SFE_it in range(len(SFE)):
+        low_SFE = SFE[SFE_it] - smooth_window
+        if low_SFE < 0:
+            low_SFE = 0
+        high_SFE = SFE[SFE_it] + smooth_window
+        if high_SFE > 5:
+            high_SFE = 5
+        low_SFE_it = np.argmin(abs(SFE-low_SFE))
+        high_SFE_it = np.argmin(abs(SFE-high_SFE))
+        mean_frac = np.mean(Close_Fractions[low_SFE_it:high_SFE_it])
+        median_frac = np.median(Close_Fractions[low_SFE_it:high_SFE_it])
+        std_frac = np.std(Close_Fractions[low_SFE_it:high_SFE_it])
+        err_upper = mean_frac+std_frac
+        err_lower = mean_frac-std_frac
+        frac_smoothed.append(median_frac)
+        frac_err_upp.append(err_upper)
+        frac_err_low.append(err_lower)
     
     plt.plot(SFE, Close_Fractions, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     

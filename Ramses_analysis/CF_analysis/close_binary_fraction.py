@@ -248,9 +248,9 @@ if rank == 0:
         
     sort_inds = np.argsort(SFE_all)
     SFE = np.array(SFE_all)[sort_inds]
-    Close_Fractions_all = np.array(Close_Fractions_all)[sort_inds]
+    Close_Fractions = np.array(Close_Fractions_all)[sort_inds]
         
-    file = open('G'+simulation_density_id+'.pkl', 'wb')
+    file = open(pickle_file+'.pkl', 'wb')
     pickle.dump((SFE, Close_Fractions),file)
     file.close()
 
