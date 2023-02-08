@@ -66,7 +66,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
+fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharey=True)
 pit = -1
 for global_data_pickle_file in global_data_pickle_files:
     print("reading file", global_data_pickle_file)
