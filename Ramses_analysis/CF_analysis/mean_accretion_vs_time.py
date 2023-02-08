@@ -66,7 +66,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
+fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
 pit = -1
 for global_data_pickle_file in global_data_pickle_files:
     print("reading file", global_data_pickle_file)
@@ -133,11 +133,14 @@ for global_data_pickle_file in global_data_pickle_files:
 
     #Plot mean TOTAL accretion rates over time
     Mean_acc = np.nanmean(Accretion_array, axis=1)
+    Median_acc = np.nanmedian(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
-    plt.semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
-plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+    axs[0].semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    axs[1].semilogy(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+axs[1].legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 plt.xlabel("SFE")
-plt.ylabel("Accretion rate (M$_\odot$/yr)")
+axs[0].set_ylabel("Mean (M$_\odot$/yr)")
+axs[1].set_ylabel("Median (M$_\odot$/yr)")
 savename = "mean_acc.pdf"
 plt.savefig(savename, bbox_inches='tight', pad_inches=0.02)
