@@ -66,7 +66,9 @@ for pickle_file in pickle_files:
         frac_err_upp.append(err_upper)
         frac_err_low.append(err_lower)
     
-    plt.plot(SFE, Close_Fractions, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    plt.plot(SFE/100, frac_smoothed, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    plt.fill_between(SFE/100, frac_err_low, frac_err_upp, alpha=0.2)
+    #plt.plot(SFE, Close_Fractions, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     
 plt.legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
