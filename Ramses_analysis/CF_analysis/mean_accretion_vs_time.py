@@ -135,13 +135,15 @@ for global_data_pickle_file in global_data_pickle_files:
     Mean_acc = np.nanmean(Accretion_array, axis=1)
     Median_acc = np.nanmedian(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
-    axs[0].semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
-    axs[1].semilogy(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    #axs[0].semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    #axs[1].semilogy(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    axs[0].plot(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    axs[1].plot(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     axs[0].set_xlabel("SFE")
     axs[1].set_xlabel("SFE")
 axs[0].legend(ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 plt.xlim([0, 0.05])
 axs[0].set_ylabel("Mean (M$_\odot$/yr)")
 axs[1].set_ylabel("Median (M$_\odot$/yr)")
-savename = "mean_acc.pdf"
+savename = "mean_acc_lin.png"
 plt.savefig(savename, bbox_inches='tight', pad_inches=0.02)
