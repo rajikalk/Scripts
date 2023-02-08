@@ -134,6 +134,7 @@ for global_data_pickle_file in global_data_pickle_files:
     #Plot mean TOTAL accretion rates over time
     import pdb
     pdb.set_trace()
+    Accreting_stars = np.sum(Accretion_array>0, axis=1)
     Mean_acc = np.nanmean(Accretion_array, axis=1)
     Median_acc = np.nanmedian(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
