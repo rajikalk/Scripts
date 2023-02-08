@@ -364,7 +364,6 @@ if args.make_bound_frames == 'True':
                     proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
                     image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
                     del proj
-                    del proj_array
                 except:
                     image = np.ones((800, 800))*np.nan
                     
@@ -673,7 +672,6 @@ if args.make_unbound_frames == 'True':
                 proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
                 image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
                 del proj
-                del proj_array
                 gc.collect()
                 
                 file = open(pickle_file, 'wb')
@@ -1014,7 +1012,6 @@ if args.make_dynamical_frames == 'True':
                     import pdb
                     pdb.set_trace()
                 del proj
-                del proj_array
                 gc.collect()
                 
                 file = open(pickle_file, 'wb')
