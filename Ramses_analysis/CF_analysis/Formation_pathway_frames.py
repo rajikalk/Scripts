@@ -681,8 +681,8 @@ if args.make_unbound_frames == 'True':
                 if str(image.units) == 'g/cm**4':
                     import pdb
                     pdb.set_trace()
-                del proj
-                del proj_array
+                #del proj
+                #del proj_array
                 gc.collect()
                 
                 file = open(pickle_file, 'wb')
