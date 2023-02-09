@@ -788,8 +788,7 @@ if args.make_unbound_frames == 'True':
                         linestyle = ':'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
                 elif len(particle_x_pos) > 2:
-                    import pdb
-                    pdb.set_trace()
+                    
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
@@ -806,6 +805,8 @@ if args.make_unbound_frames == 'True':
                                     first_ind = existing_sinks.index(eval(sub_sys)[0])
                                     second_ind = existing_sinks.index(eval(sub_sys)[1])
                                     sub_inds = np.array([first_ind, second_ind])
+                                    import pdb
+                                    pdb.set_trace()
                                     ax.plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
                                     
                                     x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
