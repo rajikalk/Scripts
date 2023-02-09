@@ -226,7 +226,7 @@ for time_it in time_it_range:
             if time_it == time_end_it:
                 SFE_5_pickle = 'SFE_5_TPCF.pkl'
                 file = open(SFE_5_pickle, 'wb')
-                pickle.dump((sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1, popt2), file)
+                pickle.dump((sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1), file)
                 file.close()
 
 #write pickle
