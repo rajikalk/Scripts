@@ -841,6 +841,12 @@ if args.make_unbound_frames == 'True':
                 
                 ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                 
+                if system[0][0] == 158:
+                    xlim = [center_pos[0]-500, center_pos[0]+500]
+                    ylim = [center_pos[1]-500, center_pos[1]+500]
+                    ax.set_xlim(xlim)
+                    ax.set_ylim(ylim)
+                
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                     time_string = "$t$="+str(int(time_val))+"yr"
