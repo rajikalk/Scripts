@@ -207,7 +207,7 @@ for time_it in time_it_range:
             popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]+1e-5), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/(TPCF_frac+1e-5))[:power_law_break_ind], absolute_sigma=True)
             plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
             #popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
-            plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
+            #plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
             exp_err.append(np.sqrt(np.diag(pcov1))[0])
             
             exp_fits.append(popt1[0])
