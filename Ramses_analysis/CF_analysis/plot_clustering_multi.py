@@ -51,6 +51,7 @@ for pit in range(len(dirs)):
     grad_err_upp = []
     grad_err_low = []
     fitting_error_smoothed = []
+    fitting_error_std = []
     for SFE_it in range(len(SFE)):
         low_SFE = SFE[SFE_it] - smooth_window
         if low_SFE < 0:
@@ -69,7 +70,13 @@ for pit in range(len(dirs)):
         grad_err_upp.append(err_upper)
         grad_err_low.append(err_lower)
         smoothed_fit_err = np.mean(exp_err[low_SFE_it:high_SFE_it])
+        smoothed_fit_std = np.std(exp_err[low_SFE_it:high_SFE_it])
+        
         fitting_error_smoothed.append(smoothed_fit_err)
+        fitting_error_std.append(smoothed_fit_std)
+        
+    import pdb
+    pdb.set_trace()
         
     plt.plot(SFE/100, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
     #plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
