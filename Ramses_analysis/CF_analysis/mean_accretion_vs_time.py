@@ -132,14 +132,12 @@ for global_data_pickle_file in global_data_pickle_files:
     print('loaded global data')
 
     #Plot mean TOTAL accretion rates over time
-    import pdb
-    pdb.set_trace()
     Accreting_stars = np.sum(Accretion_array>0, axis=1)
     Mean_acc = np.nanmean(Accretion_array, axis=1)
     Median_acc = np.nanmedian(Accretion_array, axis=1)
     SFE_arr = np.nansum(global_data['m'], axis=1)
-    axs[0].semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
-    axs[1].semilogy(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    axs[0].plot(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
+    axs[1].semilogy(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     #axs[0].plot(SFE_arr, Mean_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     #axs[1].plot(SFE_arr, Median_acc, label=labels[pit], color=colors[pit], linestyle=line_styles[pit])
     axs[0].set_xlabel("SFE")
