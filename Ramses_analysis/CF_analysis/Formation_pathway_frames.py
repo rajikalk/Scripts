@@ -813,8 +813,6 @@ if args.make_unbound_frames == 'True':
                                     first_ind = existing_sinks.index(eval(sub_sys)[0])
                                     second_ind = existing_sinks.index(eval(sub_sys)[1])
                                     sub_inds = np.array([first_ind, second_ind])
-                                    import pdb
-                                    pdb.set_trace()
                                     ax.plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
                                     
                                     x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
@@ -846,6 +844,8 @@ if args.make_unbound_frames == 'True':
                     ylim = [center_pos[1].value-500, center_pos[1].value+500]
                     ax.set_xlim(xlim)
                     ax.set_ylim(ylim)
+                    import pdb
+                    pdb.set_trace()
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
