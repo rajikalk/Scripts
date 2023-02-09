@@ -131,7 +131,7 @@ time_it_range = range(0, time_end_it+1)
 exp_fits = []
 exp_err = []#error on the powerlaw index
 saved_t_ind = []
-for time_it in time_it_range[-1]:
+for time_it in time_it_range[-2:-1]:
     rit = rit + 1
     if rit == size:
         rit = 0
