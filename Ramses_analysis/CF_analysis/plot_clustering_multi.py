@@ -72,8 +72,8 @@ for pit in range(len(dirs)):
     #plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
     plt.fill_between(SFE/100, grad_smoothed-exp_err, grad_smoothed+exp_err, alpha=0.2)
 
-plt.tick_params(axis='both', which='major', labelsize=font_size)
-plt.tick_params(axis='both', which='minor', labelsize=font_size)
+plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
 plt.tick_params(which='both', direction='in')
 plt.xlabel('SFE', labelpad=-0.4, fontsize=font_size)
 plt.ylabel('TPCF gradient', labelpad=0.0, fontsize=font_size)
