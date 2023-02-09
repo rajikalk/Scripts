@@ -43,7 +43,7 @@ plt.figure(figsize=(single_col_width,0.7*single_col_width))
 smooth_window = 0.05
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/TPCF.pkl', 'rb')
-    SFE, grad = pickle.load(file)
+    SFE, grad, exp_err = pickle.load(file)
     file.close()
     
     SFE = 100*SFE
@@ -69,7 +69,7 @@ for pit in range(len(dirs)):
         grad_err_low.append(err_lower)
         
     plt.plot(SFE/100, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
-    plt.fill_between(SFE/100, grad_err_low, grad_err_upp, alpha=0.2)
+    plt.fill_between(SFE/100, grad_err_low+exp_err, grad_err_upp+exp_err, alpha=0.2)
 
 plt.tick_params(axis='both', which='major', labelsize=font_size)
 plt.tick_params(axis='both', which='minor', labelsize=font_size)

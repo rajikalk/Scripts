@@ -131,7 +131,7 @@ time_it_range = range(0, time_end_it+1)
 exp_fits = []
 exp_err = []#error on the powerlaw index
 saved_t_ind = []
-for time_it in time_it_range[-2:-1]:
+for time_it in time_it_range:
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -208,8 +208,6 @@ for time_it in time_it_range[-2:-1]:
             plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
             popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
             plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
-            import pdb
-            pdb.set_trace()
             exp_err.append(np.sqrt(np.diag(pcov1))[0])
             
             exp_fits.append(popt1[0])
@@ -234,7 +232,7 @@ for time_it in time_it_range[-2:-1]:
 #write pickle
 pickle_name = 'TPCF_rank_' + ("%06d" % rank) + '.pkl'
 file = open(pickle_name, 'wb')
-pickle.dump((saved_t_ind, exp_fits), file)
+pickle.dump((saved_t_ind, exp_fits, exp_err), file)
 file.close()
 
 print('Finished on rank', rank)
@@ -245,18 +243,20 @@ CW.Barrier()
 if rank == 0:
     #compile pickles
     exp_fits_full = np.zeros(np.shape(time_it_range))
+    exp_err_full = np.zeros(np.shape(time_it_range))
     pickles = glob.glob('TPCF_rank_*.pkl')
     for pickle_file in pickles:
         file = open(pickle_file, 'rb')
-        saved_t_ind, exp_fits = pickle.load(file)
+        saved_t_ind, exp_fits, exp_err = pickle.load(file)
         file.close()
         
         exp_fits_full[saved_t_ind] = exp_fits
+        exp_err_full[saved_t_ind] = exp_err
         os.remove(pickle_file)
 
     pickle_name = 'TPCF.pkl'
     file = open(pickle_name, 'wb')
-    pickle.dump((SFE[:time_end_it+1], exp_fits_full), file)
+    pickle.dump((SFE[:time_end_it+1], exp_fits_full, exp_err_full), file)
     file.close()
     
 sys.stdout.flush()
