@@ -74,13 +74,11 @@ for pit in range(len(dirs)):
         
         fitting_error_smoothed.append(smoothed_fit_err)
         fitting_error_std.append(smoothed_fit_std)
-        
-    import pdb
-    pdb.set_trace()
+    
         
     plt.plot(SFE/100, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
     #plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
-    plt.fill_between(SFE/100, grad_err_low-np.array(exp_err), grad_err_upp+np.array(exp_err), alpha=0.2)
+    plt.fill_between(SFE/100, grad_err_low-np.array(fitting_error_std), grad_err_upp+np.array(fitting_error_std), alpha=0.2)
 
 plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
