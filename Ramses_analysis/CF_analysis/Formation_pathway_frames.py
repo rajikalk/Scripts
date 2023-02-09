@@ -619,8 +619,6 @@ if args.make_unbound_frames == 'True':
 
         max_sep = np.max(max_seps)
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
-        import pdb
-        pdb.set_trace()
 
         #del units
         gc.collect()
