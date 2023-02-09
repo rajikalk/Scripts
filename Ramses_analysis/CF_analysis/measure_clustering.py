@@ -197,7 +197,7 @@ for time_it in time_it_range[-2:-1]:
                 
             power_law_break_ind = 6
             if TPCF_frac[power_law_break_ind] == 0:
-                power_law_break_ind = 5
+                power_law_break_ind = 4
             dy = np.log10(TPCF_frac[:power_law_break_ind])[-1]-np.log10(TPCF_frac[:power_law_break_ind])[0]
             dx = sep_centers[:power_law_break_ind][-1] - sep_centers[:power_law_break_ind][0]
             grad_guess = dy/dx
