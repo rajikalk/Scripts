@@ -68,9 +68,9 @@ for pit in range(len(dirs)):
         grad_err_upp.append(err_upper)
         grad_err_low.append(err_lower)
         
-    plt.plot(SFE/100, grad, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
+    plt.plot(SFE/100, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
     #plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
-    plt.fill_between(SFE/100, grad-exp_err, grad+exp_err, alpha=0.2)
+    plt.fill_between(SFE/100, grad_err_upp-exp_err, grad_err_upp+exp_err, alpha=0.2)
 
 plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
