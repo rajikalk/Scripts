@@ -184,7 +184,7 @@ for time_it in time_it_range[-2:-1]:
             DD = P_DD/(N_D*(N_D-1))
             DD_err = P_DD_err/(N_D*(N_D-1))
             DD_rel_err = DD_err/DD
-            DD_rel_err = np.nan_to_num(DD_rel_err)
+            DD_rel_err = np.nan_to_num(DD_rel_err, nan=1e10)
             TPCF = DD/RR
             TPCF_rel_err = DD_rel_err + RR_rel_err
             TPCF_err = TPCF_rel_err * TPCF
