@@ -201,7 +201,7 @@ for time_it in time_it_range[-2:-1]:
             grad_guess = dy/dx
             y_intercept_guess = np.log10(TPCF_frac[:power_law_break_ind][0]) - (grad_guess * sep_centers[:power_law_break_ind][0])
         
-            popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/TCPF_frac)[:power_law_break_ind], absolute_sigma=True)
+            popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/TPCF_frac)[:power_law_break_ind], absolute_sigma=True)
             plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
             popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
             plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
