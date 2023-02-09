@@ -50,6 +50,7 @@ for pit in range(len(dirs)):
     grad_smoothed = []
     grad_err_upp = []
     grad_err_low = []
+    fitting_error_smoothed = []
     for SFE_it in range(len(SFE)):
         low_SFE = SFE[SFE_it] - smooth_window
         if low_SFE < 0:
@@ -67,10 +68,12 @@ for pit in range(len(dirs)):
         grad_smoothed.append(median_grad)
         grad_err_upp.append(err_upper)
         grad_err_low.append(err_lower)
+        smoothed_fit_err = np.mean(exp_err[low_SFE_it:high_SFE_it])
+        fitting_error_smoothed.append(smoothed_fit_err)
         
     plt.plot(SFE/100, grad_smoothed, label=labels[pit]+'M$_\odot$', linestyle=line_styles[pit])
     #plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
-    plt.fill_between(SFE/100, grad_err_low-exp_err, grad_err_upp+exp_err, alpha=0.2)
+    plt.fill_between(SFE/100, grad_err_low-npp.array(exp_err), grad_err_upp+np.array(exp_err), alpha=0.2)
 
 plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
