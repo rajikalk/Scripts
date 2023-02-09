@@ -613,12 +613,15 @@ if args.make_unbound_frames == 'True':
                     particle_x_pos = yt.YTArray([], 'au')
                     particle_y_pos = yt.YTArray([], 'au')
                 try:
-                    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-                    if dx > dy:
-                        max_seps.append(dx)
+                    if pit > 1:
+                        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+                        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                        if dx > dy:
+                            max_seps.append(dx)
+                        else:
+                            max_seps.append(dy)
                     else:
-                        max_seps.append(dy)
+                        max_seps.append(max_seps[-1])
                 except:
                     pass
                 gc.collect()
@@ -839,6 +842,7 @@ if args.make_unbound_frames == 'True':
                 
                 ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                 
+                '''
                 if system[0][0] == 158:
                     xlim = [center_pos[0].value-500, center_pos[0].value+500]
                     ylim = [center_pos[1].value-500, center_pos[1].value+500]
@@ -846,6 +850,7 @@ if args.make_unbound_frames == 'True':
                     ax.set_ylim(ylim)
                     import pdb
                     pdb.set_trace()
+                '''
                 
                 try:
                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
