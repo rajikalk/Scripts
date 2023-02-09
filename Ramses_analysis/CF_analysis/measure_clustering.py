@@ -192,26 +192,27 @@ for time_it in time_it_range[-2:-1]:
             
             plt.clf()
             plt.errorbar(10**sep_centers, TPCF_frac, yerr=TPCF_err, fmt = 'o')
-            try:
+            #try:
                 #power_law_break_ind = np.where(TPCF_frac>30)[0][-1] + 2
-                power_law_break_ind = 6
-                dy = np.log10(TPCF_frac[:power_law_break_ind])[-1]-np.log10(TPCF_frac[:power_law_break_ind])[0]
-                dx = sep_centers[:power_law_break_ind][-1] - sep_centers[:power_law_break_ind][0]
-                grad_guess = dy/dx
-                y_intercept_guess = np.log10(TPCF_frac[:power_law_break_ind][0]) - (grad_guess * sep_centers[:power_law_break_ind][0])
-            
-                popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/TCPF_frac)[:power_law_break_ind], absolute_sigma=True)
-                plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
-                popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
-                plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
-                import pdb
-                pdb.set_trace()
-                exp_err.append(np.sqrt(np.diag(pcov1))[0])
                 
-                exp_fits.append(popt1[0])
-                saved_t_ind.append(time_it)
-            except:
-                print("can't make powerlaw fit")
+            power_law_break_ind = 6
+            dy = np.log10(TPCF_frac[:power_law_break_ind])[-1]-np.log10(TPCF_frac[:power_law_break_ind])[0]
+            dx = sep_centers[:power_law_break_ind][-1] - sep_centers[:power_law_break_ind][0]
+            grad_guess = dy/dx
+            y_intercept_guess = np.log10(TPCF_frac[:power_law_break_ind][0]) - (grad_guess * sep_centers[:power_law_break_ind][0])
+        
+            popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/TCPF_frac)[:power_law_break_ind], absolute_sigma=True)
+            plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
+            popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
+            plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
+            import pdb
+            pdb.set_trace()
+            exp_err.append(np.sqrt(np.diag(pcov1))[0])
+            
+            exp_fits.append(popt1[0])
+            saved_t_ind.append(time_it)
+            #except:
+            #    print("can't make powerlaw fit")
             
             plt.xscale("log")
             plt.yscale("log")
