@@ -194,7 +194,7 @@ plt.errorbar(masses, Mean_grads[2], yerr=Std_grads[2], label='Dynamical Capture'
 plt.errorbar(masses, Mean_grads[3], yerr=Std_grads[3], label='Other', color='orange')
 plt.legend()
 plt.xlabel('Gas Mass')
-plt.ylabel('Log Inspiral rate (Log$_{10}$(AU/yr))')
+plt.ylabel('Inspiral rate (Log$_{10}$(AU/yr))')
 plt.savefig('inspiral_rate_comparison_means')
 
 Core_bounds = [np.array(Mean_grads[0])-np.array(Std_grads[0]), np.array(Mean_grads[0])+np.array(Std_grads[0])]
