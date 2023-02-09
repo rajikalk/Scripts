@@ -129,8 +129,9 @@ rit = -1
 time_it_range = range(0, time_end_it+1)
 #time_it_range = [time_end_it]
 exp_fits = []
+exp_err = []#error on the powerlaw index
 saved_t_ind = []
-for time_it in time_it_range:
+for time_it in time_it_range[-1]:
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -187,7 +188,7 @@ for time_it in time_it_range:
             TPCF = DD/RR
             TPCF_rel_err = DD_rel_err + RR_rel_err
             TPCF_err = TPCF_rel_err * TPCF
-            TPCF_frac = 1+TPCF
+            TPCF_frac = TPCF #+1
             
             plt.clf()
             plt.errorbar(10**sep_centers, TPCF_frac, yerr=TPCF_err, fmt = 'o')
@@ -199,10 +200,14 @@ for time_it in time_it_range:
                 grad_guess = dy/dx
                 y_intercept_guess = np.log10(TPCF_frac[:power_law_break_ind][0]) - (grad_guess * sep_centers[:power_law_break_ind][0])
             
-                popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess])
+                popt1, pcov1 = curve_fit(line, sep_centers[:power_law_break_ind], np.log10(TPCF_frac[:power_law_break_ind]), p0=[grad_guess, y_intercept_guess], sigma=np.log10(TPCF_err/TCPF_frac)[:power_law_break_ind], absolute_sigma=True)
                 plt.loglog(10**sep_centers[:power_law_break_ind+1], 10**line(sep_centers[:power_law_break_ind+1], popt1[0], popt1[1]), ls='--', color='k')
                 popt2, pcov2 = curve_fit(line, sep_centers[power_law_break_ind:], np.log10(TPCF_frac[power_law_break_ind:]))
                 plt.loglog(10**sep_centers[power_law_break_ind-1:], 10**line(sep_centers[power_law_break_ind-1:], popt2[0], popt2[1]), ls='--', color='k')
+                import pdb
+                pdb.set_trace()
+                exp_err.append(np.sqrt(np.diag(pcov1))[0])
+                
                 exp_fits.append(popt1[0])
                 saved_t_ind.append(time_it)
             except:
