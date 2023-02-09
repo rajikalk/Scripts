@@ -438,9 +438,9 @@ if args.make_bound_frames == 'True':
                 cmin = 10**(np.log10(np.mean(image))-1.5)
                 if np.isnan(cmin):
                     cmin = 1.e-19
+                cmax = 10**(np.log10(np.mean(image))+1.5)
                 if np.isnan(cmax):
                     cmax = 1.e-16
-                cmax = 10**(np.log10(np.mean(image))+1.5)
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
                 plt.gca().set_aspect('equal')
                 plt.gca().set_aspect('equal')
