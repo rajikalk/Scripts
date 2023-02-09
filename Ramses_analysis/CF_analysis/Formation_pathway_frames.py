@@ -435,7 +435,10 @@ if args.make_bound_frames == 'True':
                 ax.set_ylim(ylim)
 
                 
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-19, vmax=1.e-16), rasterized=True)
+                cmin = 10**(np.log10(np.mean(image))-1.5)
+                cmax = 10**(np.log10(np.mean(image))+1.5)
+                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
+                plt.gca().set_aspect('equal')
                 plt.gca().set_aspect('equal')
                 #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 cbar = plt.colorbar(plot, pad=0.0)
@@ -744,7 +747,7 @@ if args.make_unbound_frames == 'True':
 
                 cmin = 10**(np.log10(np.mean(image))-1.5)
                 cmax = 10**(np.log10(np.mean(image))+1.5)
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(cmin=1.e-19, cmax=1.e-16), rasterized=True)
+                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
                 plt.gca().set_aspect('equal')
                 #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 cbar = plt.colorbar(plot, pad=0.0)
@@ -1083,7 +1086,10 @@ if args.make_dynamical_frames == 'True':
                 ax.set_ylim(ylim)
 
                 
-                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=1.e-19, vmax=1.e-16), rasterized=True)
+                cmin = 10**(np.log10(np.mean(image))-1.5)
+                cmax = 10**(np.log10(np.mean(image))+1.5)
+                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
+                plt.gca().set_aspect('equal')
                 plt.gca().set_aspect('equal')
                 #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                 cbar = plt.colorbar(plot, pad=0.0)
