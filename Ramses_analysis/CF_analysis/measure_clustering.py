@@ -175,9 +175,9 @@ for time_it in time_it_range:
                     #print('updated dz')
                 
                 sep = np.sqrt(dx**2 + dy**2 + dz**2)
-                if np.sum(sep > 0.8660254037844386) > 0:
-                    import pdb
-                    pdb.set_trace()
+                #if np.sum(sep > 0.8660254037844386) > 0:
+                #    import pdb
+                #    pdb.set_trace()
                 separations = separations + sep.tolist()
             P_DD, bins = np.histogram(np.array(separations)*units['length_unit'].in_units('AU'), bins=sep_bins)
             P_DD_err = np.sqrt(P_DD)
@@ -252,7 +252,7 @@ if rank == 0:
         
         exp_fits_full[saved_t_ind] = exp_fits
         exp_err_full[saved_t_ind] = exp_err
-        os.remove(pickle_file)
+        #os.remove(pickle_file)
 
     pickle_name = 'TPCF.pkl'
     file = open(pickle_name, 'wb')
