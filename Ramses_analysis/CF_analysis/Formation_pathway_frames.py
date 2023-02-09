@@ -541,14 +541,11 @@ if args.make_unbound_frames == 'True':
         #Find Sink positions
         from pyramses import rsink
         center_positions = []
-        try:
-            try:
-                system[0] = (system[0][0], int(system[0][1]))
-            except:
-                system[0] = (system[0][0], eval(system[0][1]))
-            Core_frag_sinks = [system[0][0]] + [system[0][1]]
-        except:
-            Core_frag_sinks = list(system[0])
+        if '[' in system[0][1]:
+            Capt_system = flatten(eval(system[0][1]))
+        else:
+            Capt_system = [int(system[0][1])]
+        check_sinks = [system[0][0]]+Capt_system
         max_seps = []
         for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
             pit = 3 - usable_files.index(fn)
@@ -572,15 +569,8 @@ if args.make_unbound_frames == 'True':
                     center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
-                import pdb
-                pdb.set_trace()
                 #FIGURE OUT GETING POSITIONS FOR UNBOUND CORE FRAG
-                
-                try:
-                    existing_sinks = list(set(flatten(Core_frag_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
-                except:
-                    import pdb
-                    pdb.set_trace()
+                existing_sinks = list(set(flatten(check_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
                 if usable_files.index(fn) == 1 and system[0][0] not in existing_sinks:
                     import pdb
                     pdb.set_trace()
@@ -593,15 +583,12 @@ if args.make_unbound_frames == 'True':
                     particle_x_pos = yt.YTArray([], 'au')
                     particle_y_pos = yt.YTArray([], 'au')
                 try:
-                    if pit > 1:
-                        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-                        if dx > dy:
-                            max_seps.append(dx)
-                        else:
-                            max_seps.append(dy)
+                    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+                    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                    if dx > dy:
+                        max_seps.append(dx)
                     else:
-                        max_seps.append(max_seps[-1])
+                        max_seps.append(dy)
                 except:
                     pass
                 gc.collect()
