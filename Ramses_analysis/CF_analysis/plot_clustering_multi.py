@@ -86,7 +86,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width,0.7*single_col_width))
 for pit in range(len(dirs)):
     file = open(dirs[pit]+'/Power_law_break_30/SFE_5_TPCF.pkl', 'rb')
-    sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1, popt2 = pickle.load(file)
+    sep_centers, TPCF_frac, TPCF_err, power_law_break_ind, popt1 = pickle.load(file)
     file.close()
     
     if pit == 0:
