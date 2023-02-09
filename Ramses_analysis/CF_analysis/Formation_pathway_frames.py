@@ -522,13 +522,7 @@ if args.make_unbound_frames == 'True':
 
         print("usable files for system", system[0], " Unbound core fragmentation are", usable_files)
 
-        if type(system[0][1]) == str:
-            if '[' in system[0][1]:
-                center_sink = np.nan
-            else:
-                center_sink = int(system[0][1])
-        else:
-            center_sink = system[0][1]
+        center_sink = system[0][0]
         gc.collect()
 
         #sys.stdout.flush()
@@ -565,29 +559,11 @@ if args.make_unbound_frames == 'True':
                 file_no = int(fn.split('output_')[-1].split('/')[0])
                 datadir = fn.split('output_')[0]
                 loaded_sink_data = rsink(file_no, datadir=datadir)
-                try:
-                    if np.isnan(center_sink):
-                        #Calculate center of mass
-                        try:
-                            sys_sinks = flatten(system[0][1])
-                        except:
-                            sys_sinks = flatten(eval(system[0][1]))
-                        M_tot = np.sum(loaded_sink_data['m'][sys_sinks])
-                        x_pos = np.sum(loaded_sink_data['x'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
-                        y_pos = np.sum(loaded_sink_data['y'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
-                        z_pos = np.sum(loaded_sink_data['z'][sys_sinks]*units['length_unit'].in_units('au')*loaded_sink_data['m'][sys_sinks])
-                        center_pos = yt.YTArray([x_pos, y_pos, z_pos])/M_tot
-                        sink_creation_time_pick = loaded_sink_data['tcreate'][np.max(sys_sinks)]*units['time_unit'].in_units('yr')
-                        
-                        x_vel = np.sum(loaded_sink_data['ux'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
-                        y_vel = np.sum(loaded_sink_data['uy'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
-                        z_vel = np.sum(loaded_sink_data['uz'][sys_sinks]*units['velocity_unit'].in_units('au/yr')*loaded_sink_data['m'][sys_sinks])
-                        center_vel = yt.YTArray([x_vel, y_vel, z_vel])/M_tot
-                    else:
-                        center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                        center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
-                        sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
-                        t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                 try:
+                    center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                    center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
+                    sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                    t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                     center_positions.append(center_pos)
                 except:
                     curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
@@ -596,6 +572,10 @@ if args.make_unbound_frames == 'True':
                     center_pos = prev_center_pos + center_vel*dt
                     center_positions.append(center_pos)
                     sink_creation_time_pick = np.nan
+                import pdb
+                pdb.set_trace()
+                #FIGURE OUT GETING POSITIONS FOR UNBOUND CORE FRAG
+                
                 try:
                     existing_sinks = list(set(flatten(Core_frag_sinks)).intersection(np.arange(len(loaded_sink_data['m']))))
                 except:
