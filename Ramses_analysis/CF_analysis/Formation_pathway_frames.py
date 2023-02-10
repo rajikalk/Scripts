@@ -360,12 +360,9 @@ if args.make_bound_frames == 'True':
                 gc.collect()
                 
                 axis_ind = 2
-                try:
-                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                    del proj
-                except:
-                    image = np.ones((800, 800))*np.nan
+                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                del proj
                     
                 gc.collect()
                 
