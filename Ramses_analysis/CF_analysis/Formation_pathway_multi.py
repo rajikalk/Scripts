@@ -198,8 +198,8 @@ for pick_it in range(len(plot_pickles)):
         for birth_ind in birth_inds:
             axs.flatten()[pick_it].scatter(particle_x_pos[existing_sinks.index(birth_ind)], particle_y_pos[existing_sinks.index(birth_ind)], c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
         
-    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
+    plt.savefig("formation_pathways.pdf", format='pdf', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-    print('updated "formation_pathways.png')
+    print('updated "formation_pathways.pdf')
         
 
