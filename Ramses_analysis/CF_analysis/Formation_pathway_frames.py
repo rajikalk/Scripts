@@ -1014,11 +1014,10 @@ if args.make_dynamical_frames == 'True':
         import matplotlib.patheffects as path_effects
         import my_ramses_module as mym
         pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+        if len(pickle_files) == 0:
+            pickle_files = sorted(glob.glob(pickle_file_preffix.split('[')[0] + '*_part.pkl'))
         #cit = 0
         #for pickle_file in pickle_files:
-        if system[0][0] == 109 or system[0][0] == 78:
-            import pdb
-            pdb.set_trace()
         for pickle_file in yt.parallel_objects(pickle_files):
             pit = pickle_files.index(pickle_file)
             file_name = pickle_file_preffix + ("%06d" % pit)
