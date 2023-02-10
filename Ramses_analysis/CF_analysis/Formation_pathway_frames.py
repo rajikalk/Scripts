@@ -483,6 +483,11 @@ if args.make_bound_frames == 'True':
                 except:
                     print("Couldn't plot time string")
                     
+                
+                file = open(pickle_file.split('.pkl')+'_all.pkl', 'wb')
+                pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image), file)
+                file.close()
+                    
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -829,6 +834,10 @@ if args.make_unbound_frames == 'True':
                         print("Couldn't outline time string")
                 except:
                     print("Couldn't plot time string")
+                    
+                file = open(pickle_file.split('.pkl')+'_all.pkl', 'wb')
+                pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks), file)
+                file.close()
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
@@ -1182,6 +1191,10 @@ if args.make_dynamical_frames == 'True':
                         print("Couldn't outline time string")
                 except:
                     print("Couldn't plot time string")
+                    
+                file = open(pickle_file.split('.pkl')+'_all.pkl', 'wb')
+                pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks), file)
+                file.close()
 
                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')

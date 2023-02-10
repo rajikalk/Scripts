@@ -17,13 +17,18 @@ fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
 for pick_it in range(len(plot_pickles)):
     pickle_file = plot_pickles[pick_it]
     file = open(pickle_file, 'rb')
-    particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
+    try:
+        particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos, Core_frag_sinks, existing_sinks = pickle.load(file)
+    except:
+        file.close()
+        file = open(pickle_file, 'rb')
+        particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos = pickle.load(file)
     file.close()
     
     file = open("".join(pickle_file.split('_part')), 'rb')
     image, time_val = pickle.load(file)
     file.close()
     
-import pdb
-pdb.set_trace()
+    axs.flatten()
+    
 
