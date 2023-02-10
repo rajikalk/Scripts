@@ -34,6 +34,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
+plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
 
 for pick_it in range(len(plot_pickles)):
