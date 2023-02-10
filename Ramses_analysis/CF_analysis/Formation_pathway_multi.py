@@ -70,7 +70,7 @@ for pick_it in range(len(plot_pickles)):
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     
     cbar = plt.colorbar(plot, pad=0.0)
-    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+    #cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
     
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
 
