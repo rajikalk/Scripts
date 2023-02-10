@@ -66,7 +66,7 @@ for pick_it in range(len(plot_pickles)):
     #plt.savefig('formation_pathways.png', format='png', bbox_inches='tight')
     plt.gca().set_aspect('equal')
     
-    cbar = plt.colorbar(plot, pad=0.0)
+    #cbar = plt.colorbar(plot, pad=0.0)
     #cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
 
     plt.tick_params(axis='both', which='major')# labelsize=16)
@@ -90,14 +90,14 @@ for pick_it in range(len(plot_pickles)):
         #part_color = ['cyan','magenta','r','b','y','w','k']
         axs.flatten()[pick_it].scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
     elif '/unbound_' in pickle_file:
-        if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
-            if '3_part.pkl' in pickle_file:
+        if len(particle_x_pos) == 2 and '1_all.pkl' not in pickle_file:
+            if '3_all.pkl' in pickle_file:
                 linestyle = '-'
-            elif '2_part.pkl' in pickle_file:
+            elif '2_all.pkl' in pickle_file:
                 linestyle = ':'
             axs.flatten()[pick_it].plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
         elif len(particle_x_pos) > 2:
-            if '1_part.pkl' not in pickle_file:
+            if '1_all.pkl' not in pickle_file:
                 #plot lines between system:
                 sys_string = str(system[0][1])
                 reduced = False
@@ -131,22 +131,22 @@ for pick_it in range(len(plot_pickles)):
                                 reduced = True
                             break
                     target_sink_ind = existing_sinks.index(system[0][0])
-                    if '3_part.pkl' in pickle_file:
+                    if '3_all.pkl' in pickle_file:
                         linestyle = '-'
-                    elif '2_part.pkl' in pickle_file:
+                    elif '2_all.pkl' in pickle_file:
                         linestyle = ':'
                     axs.flatten()[pick_it].plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
         
         axs.flatten()[pick_it].scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
     else:
-        if len(particle_x_pos) == 2 and '1_part.pkl' not in pickle_file:
-            if '3_part.pkl' in pickle_file:
+        if len(particle_x_pos) == 2 and '1_all.pkl' not in pickle_file:
+            if '3_all.pkl' in pickle_file:
                 linestyle = 'b-'
-            elif '2_part.pkl' in pickle_file:
+            elif '2_all.pkl' in pickle_file:
                 linestyle = 'b:'
             axs.flatten()[pick_it].plot(particle_x_pos, particle_y_pos, linestyle)
         elif len(particle_x_pos) > 2:
-            if '1_part.pkl' not in pickle_file:
+            if '1_all.pkl' not in pickle_file:
                 #plot lines between system:
                 sys_string = str(system[0][1])
                 reduced = False
@@ -180,9 +180,9 @@ for pick_it in range(len(plot_pickles)):
                                 reduced = True
                             break
                     target_sink_ind = existing_sinks.index(system[0][0])
-                    if '3_part.pkl' in pickle_file:
+                    if '3_all.pkl' in pickle_file:
                         linestyle = 'b-'
-                    elif '2_part.pkl' in pickle_file:
+                    elif '2_all.pkl' in pickle_file:
                         linestyle = 'b:'
                     axs.flatten()[pick_it].plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
                     
