@@ -768,9 +768,6 @@ if args.make_unbound_frames == 'True':
                         linestyle = ':'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
                 elif len(particle_x_pos) > 2:
-                    if system[0][0] == 158:
-                        import pdb
-                        pdb.set_trace()
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
@@ -1120,6 +1117,8 @@ if args.make_dynamical_frames == 'True':
                         linestyle = 'b:'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle)
                 elif len(particle_x_pos) > 2:
+                    import pdb
+                    pdb.set_trace()
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
