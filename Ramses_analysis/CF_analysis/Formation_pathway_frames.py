@@ -1119,8 +1119,6 @@ if args.make_dynamical_frames == 'True':
                         linestyle = 'b:'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle)
                 elif len(particle_x_pos) > 2:
-                    import pdb
-                    pdb.set_trace()
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
@@ -1161,6 +1159,8 @@ if args.make_dynamical_frames == 'True':
                                 linestyle = 'b:'
                             ax.plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
                             
+                import pdb
+                pdb.set_trace()
                 other_ind = system[0][1][1]
                 if '[' in other_ind:
                     other_ind = flatten(eval(other_ind))
