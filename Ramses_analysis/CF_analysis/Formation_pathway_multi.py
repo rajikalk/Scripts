@@ -40,11 +40,11 @@ for pick_it in range(len(plot_pickles)):
     pickle_file = plot_pickles[pick_it]
     file = open(pickle_file, 'rb')
     try:
-        system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks = pickle.load(file)
+        system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks, time_val = pickle.load(file)
     except:
         file.close()
         file = open(pickle_file, 'rb')
-        system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image = pickle.load(file)
+        system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val = pickle.load(file)
     file.close()
     
     xlim = [-1*thickness, thickness]
