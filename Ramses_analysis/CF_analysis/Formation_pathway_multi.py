@@ -63,29 +63,24 @@ for pick_it in range(len(plot_pickles)):
     cmax = 10**(np.log10(np.mean(image))+1.5)
     
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-    plt.savefig('formation_pathways.png')
+    import pdb
+    pdb.set_trace()
     #plt.savefig('formation_pathways.png', format='png', bbox_inches='tight')
     plt.gca().set_aspect('equal')
     
     cbar = plt.colorbar(plot, pad=0.0)
     #cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
-    
-    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
 
     plt.tick_params(axis='both', which='major')# labelsize=16)
     for line in axs.flatten()[pick_it].xaxis.get_ticklines():
         line.set_color('white')
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
-        
-    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[pick_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-
-    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     
     #xabel = 'X (AU)'
     #yabel = 'Y (AU)'
