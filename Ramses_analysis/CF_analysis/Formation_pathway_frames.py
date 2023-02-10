@@ -618,6 +618,8 @@ if args.make_unbound_frames == 'True':
                     sink_creation_time = sink_creation_time_pick
 
         max_sep = np.max(max_seps)
+        if max_sep > 10000:
+            max_sep = 10000
         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
         #del units
@@ -766,7 +768,9 @@ if args.make_unbound_frames == 'True':
                         linestyle = ':'
                     ax.plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
                 elif len(particle_x_pos) > 2:
-                    
+                    if system[0][0] == 158:
+                        import pdb
+                        pdb.set_trace()
                     if '1_part.pkl' not in pickle_file:
                         #plot lines between system:
                         sys_string = str(system[0][1])
