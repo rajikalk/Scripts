@@ -65,9 +65,8 @@ for pick_it in range(len(plot_pickles)):
     cmin = 10**(np.log10(np.mean(image))-1.5)
     cmax = 10**(np.log10(np.mean(image))+1.5)
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-    plt.gca().set_aspect('equal')
-    
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
+    plt.gca().set_aspect('equal')
     
     cbar = plt.colorbar(plot, pad=0.0)
     #cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
