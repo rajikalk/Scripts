@@ -8,7 +8,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import matplotlib
-
+'''
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -26,7 +26,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
-
+'''
 plot_pickles = ['/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_3_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_3_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_3_all.pkl']
 
 two_col_width = 7.20472 #inches
@@ -63,8 +63,6 @@ for pick_it in range(len(plot_pickles)):
     cmax = 10**(np.log10(np.mean(image))+1.5)
     
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-    import pdb
-    pdb.set_trace()
     #plt.savefig('formation_pathways.png', format='png', bbox_inches='tight')
     plt.gca().set_aspect('equal')
     
