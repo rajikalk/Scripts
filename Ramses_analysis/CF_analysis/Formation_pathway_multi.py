@@ -58,10 +58,6 @@ for pick_it in range(len(plot_pickles)):
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
-    has_particles = True
-    xabel = "X (AU)"
-    yabel = "Y (AU)"
-    
     cmin = 10**(np.log10(np.mean(image))-1.5)
     cmax = 10**(np.log10(np.mean(image))+1.5)
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
@@ -87,6 +83,9 @@ for pick_it in range(len(plot_pickles)):
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
+    
+    #xabel = 'X (AU)'
+    #yabel = 'Y (AU)'
     
     if '/bound_' in pickle_file:
         if len(particle_x_pos) > 1:
