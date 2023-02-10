@@ -67,19 +67,27 @@ for pick_it in range(len(plot_pickles)):
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
     plt.gca().set_aspect('equal')
     
+    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
+    
     cbar = plt.colorbar(plot, pad=0.0)
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+    
+    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
 
     plt.tick_params(axis='both', which='major')# labelsize=16)
     for line in axs.flatten()[pick_it].xaxis.get_ticklines():
         line.set_color('white')
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
+        
+    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[pick_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     
     if '/bound_' in pickle_file:
         if len(particle_x_pos) > 1:
@@ -198,8 +206,8 @@ for pick_it in range(len(plot_pickles)):
         for birth_ind in birth_inds:
             axs.flatten()[pick_it].scatter(particle_x_pos[existing_sinks.index(birth_ind)], particle_y_pos[existing_sinks.index(birth_ind)], c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
         
-    plt.savefig("formation_pathways.pdf", format='pdf', bbox_inches='tight')
+    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-    print('updated "formation_pathways.pdf')
+    print('updated "formation_pathways.png')
         
 
