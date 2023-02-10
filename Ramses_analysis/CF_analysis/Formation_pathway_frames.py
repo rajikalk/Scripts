@@ -1016,6 +1016,9 @@ if args.make_dynamical_frames == 'True':
         pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
         #cit = 0
         #for pickle_file in pickle_files:
+        if system[0][0] == 109 or system[0][0] == 78:
+            import pdb
+            pdb.set_trace()
         for pickle_file in yt.parallel_objects(pickle_files):
             pit = pickle_files.index(pickle_file)
             file_name = pickle_file_preffix + ("%06d" % pit)
@@ -1047,16 +1050,16 @@ if args.make_dynamical_frames == 'True':
                 xlim = [np.min(X), np.max(X)]
                 ylim = [np.min(Y), np.max(Y)]
                 
-                annotate_space = (xlim[1] - xlim[0])/31
-                x_ind = []
-                y_ind = []
-                counter = 0
-                while counter < 31:
-                    val = annotate_space*counter + annotate_space/2. + xlim[0]
-                    x_ind.append(int(val))
-                    y_ind.append(int(val))
-                    counter = counter + 1
-                X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+                #annotate_space = (xlim[1] - xlim[0])/31
+                #x_ind = []
+                #y_ind = []
+                #counter = 0
+                #while counter < 31:
+                #    val = annotate_space*counter + annotate_space/2. + xlim[0]
+                #    x_ind.append(int(val))
+                #    y_ind.append(int(val))
+                #    counter = counter + 1
+                #X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
                       
                 has_particles = True
                 xabel = "X (AU)"
