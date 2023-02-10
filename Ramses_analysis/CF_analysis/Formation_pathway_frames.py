@@ -484,7 +484,7 @@ if args.make_bound_frames == 'True':
                     print("Couldn't plot time string")
                     
                 
-                file = open(pickle_file.split('.pkl')[0]+'_all.pkl', 'wb')
+                file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
                 pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
                 file.close()
                     
@@ -835,7 +835,7 @@ if args.make_unbound_frames == 'True':
                 except:
                     print("Couldn't plot time string")
                     
-                file = open(pickle_file.split('.pkl')[0]+'_all.pkl', 'wb')
+                file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
                 pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks, time_val), file)
                 file.close()
 
@@ -1191,7 +1191,7 @@ if args.make_dynamical_frames == 'True':
                 except:
                     print("Couldn't plot time string")
                     
-                file = open(pickle_file.split('.pkl')[0]+'_all.pkl', 'wb')
+                file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
                 pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, existing_sinks, time_val), file)
                 file.close()
 
