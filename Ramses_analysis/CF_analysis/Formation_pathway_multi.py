@@ -207,7 +207,7 @@ for pick_it in range(len(plot_pickles)):
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
-    axs.flatten()[pick_it].tacklabel_formal(axis='both', style='sci')
+    axs.flatten()[pick_it].ticklabel_formal(axis='both', style='sci')
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
