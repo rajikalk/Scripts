@@ -228,8 +228,8 @@ for pick_it in range(len(plot_pickles)):
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
     
-    xabel = "X (AU)"
-    yabel = "Y (AU)"
+    xabel = r"X (AU)"
+    yabel = r"Y (AU)"
     if np.remainder(pick_it,3)==0:
         axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
     if pick_it > 5:
