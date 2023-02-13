@@ -9,6 +9,13 @@ import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import matplotlib
 
+
+def flatten(x):
+    if isinstance(x, collections.Iterable):
+        return [a for i in x for a in flatten(i)]
+    else:
+        return [x]
+
 #matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 #matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 #matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -194,14 +201,14 @@ for pick_it in range(len(plot_pickles)):
         for birth_ind in birth_inds:
             axs.flatten()[pick_it].scatter(particle_x_pos[existing_sinks.index(birth_ind)], particle_y_pos[existing_sinks.index(birth_ind)], c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
         
-        plt.tick_params(axis='both', which='major')# labelsize=16)
-        for line in axs.flatten()[pick_it].xaxis.get_ticklines():
-            line.set_color('white')
-        for line in axs.flatten()[pick_it].yaxis.get_ticklines():
-            line.set_color('white')
-        axs.flatten()[pick_it].tick_params(direction='in', color='white')
-        import pdb
-        pdb.set_trace()
+    plt.tick_params(axis='both', which='major')# labelsize=16)
+    for line in axs.flatten()[pick_it].xaxis.get_ticklines():
+        line.set_color('white')
+    for line in axs.flatten()[pick_it].yaxis.get_ticklines():
+        line.set_color('white')
+    axs.flatten()[pick_it].tick_params(direction='in', color='white')
+    import pdb
+    pdb.set_trace()
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
