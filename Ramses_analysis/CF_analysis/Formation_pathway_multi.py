@@ -206,7 +206,6 @@ for pick_it in range(len(plot_pickles)):
         
     #if np.remainder(pick_it, 3) == 1:
     #    axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)])
-    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
@@ -217,6 +216,8 @@ for pick_it in range(len(plot_pickles)):
         axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
     if pick_it > 5:
         axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
+        
+    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     
     plt.gca().set_aspect('equal')
     
