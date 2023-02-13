@@ -208,7 +208,9 @@ for pick_it in range(len(plot_pickles)):
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
-    axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
+    import pdb
+    pdb.set_trace()
+    #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
