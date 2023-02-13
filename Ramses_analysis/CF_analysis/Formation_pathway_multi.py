@@ -203,7 +203,7 @@ for pick_it in range(len(plot_pickles)):
     if pick_it == 0:
         axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
     if pick_it == 8:
-        axs.flatten()[pick_it].text((xlim[1]-0.15*(xlim[1]-xlim[0])), ((ylim[0]-0.02*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+        axs.flatten()[pick_it].text((xlim[1]-0.02*(xlim[1]-xlim[0])), ((ylim[0]-0.05*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
         
     if np.remainder(pick_it, 3) == 1:
         axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)])
