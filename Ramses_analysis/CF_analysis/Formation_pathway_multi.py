@@ -57,19 +57,18 @@ for pick_it in range(len(plot_pickles)):
         system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val = pickle.load(file)
     file.close()
     
+    
+    X = X/10000.
+    Y = Y/10000.
+    thickness = thickness/10000.
+    
     xlim = [-1*thickness, thickness]
     ylim = [-1*thickness, thickness]
-    x = np.linspace(xlim[0], xlim[1], 800)
-    y = np.linspace(ylim[0], ylim[1], 800)
-    X, Y = np.meshgrid(x, y)
-    
     X = X + center_pos[0]
     Y = Y + center_pos[1]
     
     #X = X/100000.
     #Y = Y/100000.
-    xlim = [np.min(X), np.max(X)]
-    ylim = [np.min(Y), np.max(Y)]
     
     cmin = 10**(np.log10(np.mean(image))-1.5)
     cmax = 10**(np.log10(np.mean(image))+1.5)
@@ -217,6 +216,9 @@ for pick_it in range(len(plot_pickles)):
     #if pick_it == 8:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.max(X).value, np.min(Y).value-1))
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
+    
+    xlim = [np.min(X), np.max(X)]
+    ylim = [np.min(Y), np.max(Y)]
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
