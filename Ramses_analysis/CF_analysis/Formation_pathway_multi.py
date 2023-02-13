@@ -73,7 +73,7 @@ for pick_it in range(len(plot_pickles)):
     
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
-    time_text = axs.flatten()[pick_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+    time_text = axs.flatten()[pick_it].text((xlim[0]+0.02*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     
     if '/bound_' in pickle_file:
@@ -200,7 +200,7 @@ for pick_it in range(len(plot_pickles)):
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
     if pick_it == 0:
-        axs.flatten()[pick_it].text((xlim[0]-0.1*(xlim[1]-xlim[0])), (ylim[1]-(ylim[1]-ylim[0])), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+        axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
     axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     #if pick_it == 8:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.max(X).value, np.min(Y).value-1))
@@ -211,9 +211,9 @@ for pick_it in range(len(plot_pickles)):
     xabel = "X (AU)"
     yabel = "Y (AU)"
     if np.remainder(pick_it,3)==0:
-        axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
-    if pick_it > 5:
         axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
+    if pick_it > 5:
+        axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
     
     
         
