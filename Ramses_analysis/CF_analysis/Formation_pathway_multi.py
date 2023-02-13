@@ -61,8 +61,6 @@ for pick_it in range(len(plot_pickles)):
     X = X/10000.
     Y = Y/10000.
     thickness = thickness/10000.
-    import pdb
-    pdb.set_trace()
     
     xlim = [-1*thickness, thickness]
     ylim = [-1*thickness, thickness]
@@ -120,7 +118,7 @@ for pick_it in range(len(plot_pickles)):
                             first_ind = existing_sinks.index(eval(sub_sys)[0])
                             second_ind = existing_sinks.index(eval(sub_sys)[1])
                             sub_inds = np.array([first_ind, second_ind])
-                            axs.flatten()[pick_it].plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
+                            axs.flatten()[pick_it].plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], color='grey', alpha=0.5)
                             
                             x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
                             y_com = np.sum(particle_y_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
@@ -169,7 +167,7 @@ for pick_it in range(len(plot_pickles)):
                             first_ind = existing_sinks.index(eval(sub_sys)[0])
                             second_ind = existing_sinks.index(eval(sub_sys)[1])
                             sub_inds = np.array([first_ind, second_ind])
-                            axs.flatten()[pick_it].plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], 'b-', alpha=0.5)
+                            axs.flatten()[pick_it].plot(particle_x_pos[sub_inds], particle_y_pos[sub_inds], color='grey', alpha=0.5)
                             
                             x_com = np.sum(particle_x_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
                             y_com = np.sum(particle_y_pos[sub_inds] * particle_masses[sub_inds])/np.sum(particle_masses[sub_inds])
@@ -188,10 +186,10 @@ for pick_it in range(len(plot_pickles)):
                             break
                     target_sink_ind = existing_sinks.index(system[0][0])
                     if '3_all.pkl' in pickle_file:
-                        linestyle = 'b-'
+                        linestyle = '-'
                     elif '2_all.pkl' in pickle_file:
-                        linestyle = 'b:'
-                    axs.flatten()[pick_it].plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle)
+                        linestyle = ':'
+                    axs.flatten()[pick_it].plot(particle_x_pos[np.array([target_sink_ind, -1])], particle_y_pos[np.array([target_sink_ind, -1])], linestyle=linestyle, color='grey')
                     
         other_ind = system[0][1][1]
         if '[' in other_ind:
