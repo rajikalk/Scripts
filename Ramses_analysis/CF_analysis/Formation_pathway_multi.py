@@ -62,8 +62,8 @@ for pick_it in range(len(plot_pickles)):
     #Y = Y/10000.
     #thickness = thickness/10000.
     
-    xlim = [np.min(X), np.max(X)]
-    ylim = [np.min(Y), np.max(Y)]
+    xlim = [np.min(X).value, np.max(X).value]
+    ylim = [np.min(Y).value, np.max(Y).value]
     X = X + center_pos[0]
     Y = Y + center_pos[1]
     
