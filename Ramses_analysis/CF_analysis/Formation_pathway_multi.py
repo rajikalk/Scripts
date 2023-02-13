@@ -219,7 +219,7 @@ for pick_it in range(len(plot_pickles)):
     
     plt.gca().set_aspect('equal')
     
-    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
+    #axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
