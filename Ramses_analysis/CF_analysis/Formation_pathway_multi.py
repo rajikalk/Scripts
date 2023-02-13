@@ -57,6 +57,8 @@ for pick_it in range(len(plot_pickles)):
         system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val = pickle.load(file)
     file.close()
     
+    X = X/10000
+    Y = Y/10000
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
