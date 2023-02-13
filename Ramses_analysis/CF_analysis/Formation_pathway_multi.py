@@ -8,6 +8,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import matplotlib
+import collections
 
 
 def flatten(x):
