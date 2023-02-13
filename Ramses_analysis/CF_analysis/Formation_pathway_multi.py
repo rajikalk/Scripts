@@ -64,8 +64,6 @@ for pick_it in range(len(plot_pickles)):
     
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
-    axs.flatten()[pick_it].set_xlim(xlim)
-    axs.flatten()[pick_it].set_xlim(ylim)
     X = X + center_pos[0]
     Y = Y + center_pos[1]
     
@@ -213,6 +211,9 @@ for pick_it in range(len(plot_pickles)):
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
+    
+    axs.flatten()[pick_it].set_xlim(xlim)
+    axs.flatten()[pick_it].set_xlim(ylim)
     #if pick_it == 0:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.min(X).value-1, np.max(Y).value))
     #if pick_it == 8:
