@@ -73,7 +73,7 @@ for pick_it in range(len(plot_pickles)):
     
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
-    time_text = axs.flatten()[pick_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+    time_text = axs.flatten()[pick_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     
     if '/bound_' in pickle_file:
@@ -134,10 +134,10 @@ for pick_it in range(len(plot_pickles)):
     else:
         if len(particle_x_pos) == 2 and '1_all.pkl' not in pickle_file:
             if '3_all.pkl' in pickle_file:
-                linestyle = 'b-'
+                linestyle = '-'
             elif '2_all.pkl' in pickle_file:
-                linestyle = 'b:'
-            axs.flatten()[pick_it].plot(particle_x_pos, particle_y_pos, linestyle)
+                linestyle = ':'
+            axs.flatten()[pick_it].plot(particle_x_pos, particle_y_pos, linestyle=linestyle, color='grey')
         elif len(particle_x_pos) > 2:
             if '1_all.pkl' not in pickle_file:
                 #plot lines between system:
@@ -200,13 +200,22 @@ for pick_it in range(len(plot_pickles)):
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
     if pick_it == 0:
-        axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.min(X).value-0.5, np.max(Y).value))
+        axs.flatten()[pick_it].text((xlim[0]-0.1*(xlim[1]-xlim[0])), (ylim[1]-(ylim[1]-ylim[0])), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
     axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     #if pick_it == 8:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.max(X).value, np.min(Y).value-1))
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
+    
+    xabel = "X (AU)"
+    yabel = "Y (AU)"
+    if np.remainder(pick_it,3)==0:
+        axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
+    if pick_it > 5:
+        axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
+    
+    
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
