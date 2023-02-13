@@ -47,7 +47,7 @@ pathway_label = ['Bound Core Fragmentation', 'Unbound Core Fragmentation', 'Dyna
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
-plt.subplots_adjust(wspace=0.15, hspace=0.3)
+plt.subplots_adjust(wspace=0.12, hspace=0.3)
 for pick_it in range(len(plot_pickles)):
     pickle_file = plot_pickles[pick_it]
     file = open(pickle_file, 'rb')
@@ -70,7 +70,6 @@ for pick_it in range(len(plot_pickles)):
     cmax = 10**(np.log10(np.mean(image))+1.5)
     
     plot = axs.flatten()[pick_it].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-    plt.savefig('formation_pathways.png', format='png', bbox_inches='tight')
     plt.gca().set_aspect('equal')
     
     time_string = "$t$="+str(int(time_val))+"yr"
