@@ -66,8 +66,8 @@ for pick_it in range(len(plot_pickles)):
     X = X + center_pos[0]
     Y = Y + center_pos[1]
     
-    #X = X/100000.
-    #Y = Y/100000.
+    X = X/100000.
+    Y = Y/100000.
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
