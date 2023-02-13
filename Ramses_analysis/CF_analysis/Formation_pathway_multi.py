@@ -216,10 +216,10 @@ for pick_it in range(len(plot_pickles)):
         axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
     if pick_it > 5:
         axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
-        
-    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     
     plt.gca().set_aspect('equal')
+    
+    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
     
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
