@@ -45,8 +45,7 @@ font_size = 10
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
-fig.tight_layout()
-
+fig.tight_layout(pad=0.02)
 for pick_it in range(len(plot_pickles)):
     pickle_file = plot_pickles[pick_it]
     file = open(pickle_file, 'rb')
