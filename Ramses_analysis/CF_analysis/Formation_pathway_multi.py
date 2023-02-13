@@ -9,6 +9,7 @@ import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
 import matplotlib
 import collections
+import yt
 
 
 def flatten(x):
