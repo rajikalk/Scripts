@@ -58,9 +58,11 @@ for pick_it in range(len(plot_pickles)):
     file.close()
     
     
-    #X = X/10000.
-    #Y = Y/10000.
-    #thickness = thickness/10000.
+    X = X/10000.
+    Y = Y/10000.
+    thickness = thickness/10000.
+    import pdb
+    pdb.set_trace()
     
     xlim = [-1*thickness, thickness]
     ylim = [-1*thickness, thickness]
