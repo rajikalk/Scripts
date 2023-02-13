@@ -59,6 +59,8 @@ for pick_it in range(len(plot_pickles)):
     
     X = X/10000
     Y = Y/10000
+    particle_x_pos = particle_x_pos/10000
+    particle_y_pos = particle_y_pos/10000
     xlim = [np.min(X), np.max(X)]
     ylim = [np.min(Y), np.max(Y)]
     
