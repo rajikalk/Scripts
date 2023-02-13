@@ -45,6 +45,7 @@ font_size = 10
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
+fig.tight_layout()
 
 for pick_it in range(len(plot_pickles)):
     pickle_file = plot_pickles[pick_it]
@@ -201,9 +202,9 @@ for pick_it in range(len(plot_pickles)):
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
     if pick_it == 0:
         axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+    if pick_it == 8:
+        axs.flatten()[pick_it].text((xlim[1]), ((ylim[0]-0.015*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
     axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
-    #if pick_it == 8:
-    #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.max(X).value, np.min(Y).value-1))
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
