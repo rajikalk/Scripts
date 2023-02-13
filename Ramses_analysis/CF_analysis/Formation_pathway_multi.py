@@ -62,8 +62,8 @@ for pick_it in range(len(plot_pickles)):
     #Y = Y/10000.
     #thickness = thickness/10000.
     
-    xlim = [np.min(X).value, np.max(X).value]
-    ylim = [np.min(Y).value, np.max(Y).value]
+    xlim = [-1*thickness, thickness]
+    ylim = [-1*thickness, thickness]
     X = X + center_pos[0]
     Y = Y + center_pos[1]
     
@@ -211,14 +211,12 @@ for pick_it in range(len(plot_pickles)):
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
-    
-    axs.flatten()[pick_it].set_xlim(xlim)
-    axs.flatten()[pick_it].set_xlim(ylim)
     #if pick_it == 0:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.min(X).value-1, np.max(Y).value))
     #if pick_it == 8:
     #    axs.flatten()[pick_it].annotate(r'$\times$10$^5$', xy=(np.max(X).value, np.min(Y).value-1))
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
+
         
     plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
