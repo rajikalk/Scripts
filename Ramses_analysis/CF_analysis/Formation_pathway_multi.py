@@ -57,10 +57,13 @@ for pick_it in range(len(plot_pickles)):
         system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val = pickle.load(file)
     file.close()
     
-    xlim = [-1*thickness, thickness]
-    ylim = [-1*thickness, thickness]
+    import pdb
+    pdb.set_trace()
+    
     X = X + center_pos[0]
     Y = Y + center_pos[1]
+    xlim = [np.min(X), np.max(X)]
+    ylim = [np.min(Y), np.max(Y)]
     
     cmin = 10**(np.log10(np.mean(image))-1.5)
     cmax = 10**(np.log10(np.mean(image))+1.5)
