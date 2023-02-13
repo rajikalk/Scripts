@@ -43,7 +43,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
-pathway_label = ['Bound Core Fragmentation', 'Unbound Core Fragmentation', 'Dynamical Cpature']
+pathway_label = ['Bound Core Fragmentation', 'Unbound Core Fragmentation', 'Dynamical Capture']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width,two_col_width))
@@ -199,10 +199,10 @@ for pick_it in range(len(plot_pickles)):
     for line in axs.flatten()[pick_it].yaxis.get_ticklines():
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
-    if pick_it == 0:
-        axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
-    if pick_it == 8:
-        axs.flatten()[pick_it].text((xlim[1]-0.02*(xlim[1]-xlim[0])), ((ylim[0]-0.05*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+    #if pick_it == 0:
+    #    axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+    #if pick_it == 8:
+    #    axs.flatten()[pick_it].text((xlim[1]-0.02*(xlim[1]-xlim[0])), ((ylim[0]-0.05*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
         
     if np.remainder(pick_it, 3) == 1:
         axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)])
