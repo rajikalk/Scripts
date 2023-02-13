@@ -206,8 +206,8 @@ for pick_it in range(len(plot_pickles)):
         axs.flatten()[pick_it].text((xlim[1]-0.02*(xlim[1]-xlim[0])), ((ylim[0]-0.05*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
         
     if np.remainder(pick_it, 3) == 1:
-        axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)])
-    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
+        axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)], pad=0.02)
+    axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center", pad=0.02)
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
