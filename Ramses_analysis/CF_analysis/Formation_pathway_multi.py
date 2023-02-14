@@ -54,7 +54,7 @@ def flatten(x):
 #       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 #]
 
-plot_pickles = ['/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/bound_core_frag_(106_77)_3_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/unbound_core_frag_121_104_3_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_1_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_2_all.pkl', '/lustre/astro/rlk/Movie_frames/Ramses/Global/G100/256/XY/Formation_pathways/dynamical_capt_(101_(13_[77_106]))_3_all.pkl']
+plot_pickles = ['/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/bound_core_frag_(106_77)_1_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/bound_core_frag_(106_77)_2_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/bound_core_frag_(106_77)_3_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/unbound_core_frag_121_104_1_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/unbound_core_frag_121_104_2_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/unbound_core_frag_121_104_3_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/dynamical_capt_(101_(13_[77_106]))_1_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/dynamical_capt_(101_(13_[77_106]))_2_all.pkl', '/Users/reggie/Documents/Papers/Multiplicity_statistics/Formation_pathways/Plot_pickles/dynamical_capt_(101_(13_[77_106]))_3_all.pkl']
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -76,6 +76,13 @@ for pick_it in range(len(plot_pickles)):
         file = open(pickle_file, 'rb')
         system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val = pickle.load(file)
     file.close()
+    
+    #get values for scale bar
+    upper_x = np.max(X) - 0.05*(np.max(X) - np.min(X))
+    lower_x = upper_x - yt.YTQuantity(1000, 'au')
+    y_scale = np.min(Y) + 0.1*(np.max(Y) - np.min(Y))
+    x_scale = np.array([lower_x, upper_x])/10000
+    y_scale = y_scale/10000
     
     X = X/10000
     Y = Y/10000
@@ -218,29 +225,36 @@ for pick_it in range(len(plot_pickles)):
         line.set_color('white')
     axs.flatten()[pick_it].tick_params(direction='in', color='white')
     #if pick_it == 0:
-    #    axs.flatten()[pick_it].text((xlim[0]-0.15*(xlim[1]-xlim[0])), (ylim[1]), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+    #    axs.flatten()[pick_it].text((xlim[0]-0.16*(xlim[1]-xlim[0])), (ylim[1]+0.01*(ylim[1]-ylim[0])), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
     #if pick_it == 8:
-    #    axs.flatten()[pick_it].text((xlim[1]-0.02*(xlim[1]-xlim[0])), ((ylim[0]-0.05*(ylim[1]-ylim[0]))), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
+    #    axs.flatten()[pick_it].text((xlim[1]-0.04*(xlim[1]-xlim[0])), (ylim[0]-0.06*(ylim[1]-ylim[0])), r"$\times$10$^5$", va="center", ha="left", color='k', fontsize=10)
         
-    #if np.remainder(pick_it, 3) == 1:
-    #    axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)])
+    if np.remainder(pick_it, 3) == 1:
+        axs.flatten()[pick_it].set_title(pathway_label[int(pick_it/3)], pad=-2)
     #axs.flatten()[pick_it].ticklabel_format(axis='both', style='sci', scilimits=(4,4))
     axs.flatten()[pick_it].set_xlim(xlim)
     axs.flatten()[pick_it].set_ylim(ylim)
     
-    xabel = r"X (AU)"
-    yabel = r"Y (AU)"
+    xabel = r"X (10$^4$AU)"
+    yabel = r"Y (10$^4$AU)"
     if np.remainder(pick_it,3)==0:
         axs.flatten()[pick_it].set_ylabel(yabel, fontsize=10)
     if pick_it > 5:
-        axs.flatten()[pick_it].set_xlabel(xabel, labelpad=-1, fontsize=10)
+        axs.flatten()[pick_it].set_xlabel(xabel, fontsize=10)
+        
+    if pick_it == 2:
+        yticklabels = axs.flatten()[pick_it].get_yticklabels()
+        plt.setp(yticklabels[1], visible=False)
     
     plt.gca().set_aspect('equal')
     
-    #axs.flatten()[pick_it].set_yticklabels(axs.flatten()[pick_it].get_yticklabels(), rotation=90, va="center")
+    axs.flatten()[pick_it].tick_params(axis='y', rotation=90)
+    
+    axs.flatten()[pick_it].axhline(y=y_scale, xmin=x_scale[0], xmax=x_scale[1], color='grey', linewidth=2, zorder=11)
+    axs.flatten()[pick_it].plot(x_scale, np.array([y_scale, y_scale]), color='grey', linewidth=3, zorder=11)
     
         
-    plt.savefig("formation_pathways.png", format='png', bbox_inches='tight')
+    plt.savefig("formation_pathways.pdf", format='pdf', bbox_inches='tight', pad=0.02)
     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
     print('updated "formation_pathways.png')
         

@@ -59,6 +59,8 @@ for output_txt in txt_files:
 
 gc.collect()
 dt_min = np.min((np.array(sim_file_times[1:]) - np.array(sim_file_times[:-1])))*units['time_unit'].in_units('yr')
+import pdb
+pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
