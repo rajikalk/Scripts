@@ -86,6 +86,10 @@ if args.update_pickle == 'True':
         updating = True
         if args.sink_number == None:
             last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
+            stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
+            while os.path.exists(stars_output_file) == False:
+                last_n = last_n - 1
+                stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
             loaded_sink_data_last = rsink(last_n, datadir=path)
             sink_ind = np.argmin(loaded_sink_data_last['u'])
         else:
