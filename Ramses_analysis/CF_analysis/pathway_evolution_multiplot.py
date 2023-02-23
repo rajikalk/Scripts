@@ -250,10 +250,13 @@ plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inc
 
 #calculate characteristic inspiral rates
 print("For 1000 year:")
-print("Bound core frag:", np.mean(All_grads[0]), "+/-", np.std(All_grads[0]))
-print("Unbound core frag:", np.mean(All_grads[1]), "+/-", np.std(All_grads[1]))
-print("Dynamical cap:", np.mean(All_grads[2]), "+/-", np.std(All_grads[2]))
+#mean_val = np.mean(All_grads[0])
+#std_val =
+
+print("Bound core frag:", np.median(All_grads[0]), "+/-", np.std(All_grads[0]))
+print("Unbound core frag:", np.median(All_grads[1]), "+/-", np.std(All_grads[1]))
+print("Dynamical cap:", np.median(All_grads[2]), "+/-", np.std(All_grads[2]))
 print("For 10000 year:")
-print("Bound core frag:", np.mean(All_grads_10000[0]), "+/-", np.std(All_grads_10000[0]))
-print("Unbound core frag:", np.mean(All_grads_10000[1]), "+/-", np.std(All_grads_10000[1]))
-print("Dynamical cap:", np.mean(All_grads_10000[2]), "+/-", np.std(All_grads_10000[2]))
+print("Bound core frag:", np.median(All_grads_10000[0]), "+/-", np.std(All_grads_10000[0]))
+print("Unbound core frag:", np.median(All_grads_10000[1]), "+/-", np.std(All_grads_10000[1]))
+print("Dynamical cap:", np.median(All_grads_10000[2]), "+/-", np.std(All_grads_10000[2]))
