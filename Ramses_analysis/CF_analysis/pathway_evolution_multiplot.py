@@ -62,8 +62,8 @@ for grad_it in range(len(grad_pickles)):
     capt_inspiral_inds = np.where(np.array(Initial_gradients_10000[2]) < 0)[0]
     other_inspiral_inds = np.where(np.array(Initial_gradients_10000[3]) < 0)[0]
     All_grads[0] = All_grads[0] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds]).tolist()
-    All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][delayed_core_inspiral_inds]).tolist()
-    All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][capt_inspiral_inds]).tolist()
+    All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds]).tolist()
+    All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds]).tolist()
     
     Mean_grads[0].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
     Median_grads[0].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
