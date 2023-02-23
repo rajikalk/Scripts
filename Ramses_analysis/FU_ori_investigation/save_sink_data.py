@@ -158,7 +158,7 @@ plt.title('Sink no ' + str(sink_ind))
 plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')
 
 plt.clf()
-plt.semilogy(particle_data['time'], particle_data['mass'])
+plt.plot(particle_data['time'], particle_data['mass'])
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Mass (Msun)')
