@@ -61,6 +61,7 @@ for grad_it in range(len(grad_pickles)):
     delayed_core_inspiral_inds = np.where(np.array(Initial_gradients_10000[1]) < 0)[0]
     capt_inspiral_inds = np.where(np.array(Initial_gradients_10000[2]) < 0)[0]
     other_inspiral_inds = np.where(np.array(Initial_gradients_10000[3]) < 0)[0]
+    
     All_grads[0] = All_grads[0] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds]).tolist()
     All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds]).tolist()
     All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds]).tolist()
@@ -128,6 +129,7 @@ plt.subplots_adjust(hspace=0.0)
 Mean_grads_10000 = [[], [], [], []]
 Median_grads_10000 = [[], [], [], []]
 Std_grads_10000 = [[], [], [], []]
+All_grads_10000 = [[], [], []]
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
     Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
@@ -137,6 +139,10 @@ for grad_it in range(len(grad_pickles)):
     delayed_core_inspiral_inds = np.where(np.array(Initial_gradients_10000[1]) < 0)[0]
     capt_inspiral_inds = np.where(np.array(Initial_gradients_10000[2]) < 0)[0]
     other_inspiral_inds = np.where(np.array(Initial_gradients_10000[3]) < 0)[0]
+    
+    All_grads_10000[0] = All_grads_10000[0] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds]).tolist()
+    All_grads_10000[1] = All_grads_10000[1] + np.log10(-1*np.array(Initial_gradients_10000[1]).T[0][delayed_core_inspiral_inds]).tolist()
+    All_grads_10000[2] = All_grads_10000[2] + np.log10(-1*np.array(Initial_gradients_10000[2]).T[0][capt_inspiral_inds]).tolist()
     
     Mean_grads_10000[0].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
     Median_grads_10000[0].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
@@ -241,3 +247,13 @@ axs[0].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
 axs[1].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
 #plt.ylim(top=1.5)
 plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inches=0.02)
+
+#calculate characteristic inspiral rates
+print("For 1000 year:")
+print("Bound core frag:", np.mean(All_grads[0]), "+/-", np.std(All_grads[0]))
+print("Unbound core frag:", np.mean(All_grads[1]), "+/-", np.std(All_grads[1]))
+print("Dynamical cap:", np.mean(All_grads[2]), "+/-", np.std(All_grads[2]))
+print("For 10000 year:")
+print("Bound core frag:", np.mean(All_grads_10000[0]), "+/-", np.std(All_grads_10000[0]))
+print("Unbound core frag:", np.mean(All_grads_10000[1]), "+/-", np.std(All_grads_10000[1]))
+print("Dynamical cap:", np.mean(All_grads_10000[2]), "+/-", np.std(All_grads_10000[2]))
