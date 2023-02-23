@@ -51,6 +51,7 @@ plt.subplots_adjust(hspace=0.0)
 Mean_grads = [[], [], [], []]
 Median_grads = [[], [], [], []]
 Std_grads = [[], [], [], []]
+All_grads = [[], [], []]
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
     Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
@@ -60,6 +61,9 @@ for grad_it in range(len(grad_pickles)):
     delayed_core_inspiral_inds = np.where(np.array(Initial_gradients_10000[1]) < 0)[0]
     capt_inspiral_inds = np.where(np.array(Initial_gradients_10000[2]) < 0)[0]
     other_inspiral_inds = np.where(np.array(Initial_gradients_10000[3]) < 0)[0]
+    All_grads[0] = All_grads[0] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds]).tolist()
+    All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][delayed_core_inspiral_inds]).tolist()
+    All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][capt_inspiral_inds]).tolist()
     
     Mean_grads[0].append(np.mean(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
     Median_grads[0].append(np.median(np.log10(-1*np.array(Initial_gradients_10000[0]).T[0][core_inspiral_inds])))
