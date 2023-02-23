@@ -110,6 +110,9 @@ for grad_it in range(len(grad_pickles)):
     
     axs[grad_it].set_ylim([0, 0.8])
     axs[grad_it].set_xlim([x_range[0], x_range[-1]])
+    
+    import pdb
+    pdb.set_trace()
 
 fig.savefig('Initial_grad_hist.png', bbox_inches='tight', pad_inches=0.02)
 
@@ -233,7 +236,7 @@ axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
-axs[0].set_ylabel('Log Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
-axs[1].set_ylabel('Log Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
+axs[0].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
+axs[1].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
 #plt.ylim(top=1.5)
 plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inches=0.02)
