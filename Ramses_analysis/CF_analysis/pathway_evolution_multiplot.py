@@ -250,13 +250,75 @@ plt.savefig('inspiral_rate_comparison_medians.pdf', bbox_inches='tight', pad_inc
 
 #calculate characteristic inspiral rates
 print("For 1000 year:")
-#mean_val = np.mean(All_grads[0])
-#std_val =
+mean_val = np.mean((All_grads[0]+All_grads[1]+All_grads[2]))
+std_val = np.std((All_grads[0]+All_grads[1]+All_grads[2]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads[0]+All_grads[1]+All_grads[2]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("All:", median_val, "+/-", [upp_err, low_err])
 
-print("Bound core frag:", np.median(All_grads[0]), "+/-", np.std(All_grads[0]))
-print("Unbound core frag:", np.median(All_grads[1]), "+/-", np.std(All_grads[1]))
-print("Dynamical cap:", np.median(All_grads[2]), "+/-", np.std(All_grads[2]))
+mean_val = np.mean((All_grads[0]))
+std_val = np.std((All_grads[0]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads[0]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Bound core frag:", median_val, "+/-", [upp_err, low_err])
+
+mean_val = np.mean((All_grads[1]))
+std_val = np.std((All_grads[1]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads[1]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Unbound core frag:", median_val, "+/-", [upp_err, low_err])
+
+mean_val = np.mean((All_grads[2]))
+std_val = np.std((All_grads[2]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads[2]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Dynamical cap:", median_val, "+/-", [upp_err, low_err])
 print("For 10000 year:")
-print("Bound core frag:", np.median(All_grads_10000[0]), "+/-", np.std(All_grads_10000[0]))
-print("Unbound core frag:", np.median(All_grads_10000[1]), "+/-", np.std(All_grads_10000[1]))
-print("Dynamical cap:", np.median(All_grads_10000[2]), "+/-", np.std(All_grads_10000[2]))
+
+mean_val = np.mean((All_grads_10000[0]+All_grads_10000[1]+All_grads_10000[2]))
+std_val = np.std((All_grads_10000[0]+All_grads_10000[1]+All_grads_10000[2]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads_10000[0]+All_grads_10000[1]+All_grads_10000[2]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("All:", median_val, "+/-", [upp_err, low_err])
+
+mean_val = np.mean((All_grads_10000[0]))
+std_val = np.std((All_grads_10000[0]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads_10000[0]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Bound core frag:", median_val, "+/-", [upp_err, low_err])
+
+mean_val = np.mean((All_grads_10000[1]))
+std_val = np.std((All_grads_10000[1]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads_10000[1]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Unbound core frag:", median_val, "+/-", [upp_err, low_err])
+
+mean_val = np.mean((All_grads_10000[2]))
+std_val = np.std((All_grads_10000[2]))
+upp_val = mean_val + std_val
+low_val = mean_val - std_val
+median_val = np.median((All_grads_10000[2]))
+upp_err = upp_val - median_val
+low_err = median_val - low_val
+print("Dynamical cap:", median_val, "+/-", [upp_err, low_err])
