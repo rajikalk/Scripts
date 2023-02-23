@@ -257,7 +257,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads[0]+All_grads[1]+All_grads[2]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("All: median:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("All: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads[0]))
 std_val = np.std((All_grads[0]))
@@ -266,7 +266,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads[0]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Bound core frag:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Bound core frag: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads[1]))
 std_val = np.std((All_grads[1]))
@@ -275,7 +275,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads[1]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Unbound core frag:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Unbound core frag: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads[2]))
 std_val = np.std((All_grads[2]))
@@ -284,7 +284,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads[2]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Dynamical cap:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Dynamical cap: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 print("For 10000 year:")
 
 mean_val = np.mean((All_grads_10000[0]+All_grads_10000[1]+All_grads_10000[2]))
@@ -294,7 +294,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads_10000[0]+All_grads_10000[1]+All_grads_10000[2]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("All:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("All: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads_10000[0]))
 std_val = np.std((All_grads_10000[0]))
@@ -303,7 +303,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads_10000[0]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Bound core frag:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Bound core frag: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads_10000[1]))
 std_val = np.std((All_grads_10000[1]))
@@ -312,7 +312,7 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads_10000[1]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Unbound core frag:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Unbound core frag: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
 
 mean_val = np.mean((All_grads_10000[2]))
 std_val = np.std((All_grads_10000[2]))
@@ -321,4 +321,4 @@ low_val = mean_val - std_val
 median_val = np.median((All_grads_10000[2]))
 upp_err = upp_val - median_val
 low_err = median_val - low_val
-print("Dynamical cap:", np.round(median_val, decimals=2), ", mean", np.round(mean_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)])
+print("Dynamical cap: median:", np.round(median_val, decimals=2), "+/-", [np.round(upp_err, decimals=2), np.round(low_err, decimals=2)], " mean:", np.round(mean_val, decimals=2) + "+/-", np.round(std_val, decimals=2))
