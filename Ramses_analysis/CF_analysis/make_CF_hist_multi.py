@@ -121,10 +121,12 @@ for pick_it_top in range(len(plot_pickles)):
         
         if pick_it_top == 0:
             ecolor = 'grey'
+            fcolor = 'grey'
         else:
             ecolor = plot_colours[pick_it_bot]
+            fcolor = plot_colours[pick_it_bot]
         #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=ecolor, ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(3/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(3/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor, color=fcolor)
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
@@ -180,10 +182,12 @@ for pick_it_top in range(len(plot_pickles)):
         
         if pick_it_top == 0:
             ecolor = 'grey'
+            fcolor = 'grey'
         else:
             ecolor = plot_colours[pick_it_bot]
+            fcolor = plot_colours[pick_it_bot]
         #axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, yerr=CF_err, edgecolor=ecolor, ecolor=ecolor, color=ecolor, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(2-pick_it_bot)})
-        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(3/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor)
+        axs[int(pick_it_top/2)][np.remainder(pick_it_top, 2)].bar(bin_centers, CF_median, width=0.25, alpha=0.5, label=plot_label[pick_it_bot], error_kw = {'elinewidth':(3/(1+pick_it_bot))}, ecolor=ecolor, edgecolor=ecolor, color=fcolor)
         
         print('plotted', plot_pickles[pick_it_top][pick_it_bot])
         
