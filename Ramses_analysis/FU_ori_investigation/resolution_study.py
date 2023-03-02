@@ -56,7 +56,7 @@ for pick_file in pickle_files:
 
     axs.flatten()[0].semilogy(particle_data['time'], L_tot, label=label[pickle_files.index(pick_file)])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
-    axs.flatten()[0].title('Sink no ' + str(sink_ind))
+    axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].legend()
 
     axs.flatten()[1].semilogy(particle_data['time'], particle_data['mdot'])
