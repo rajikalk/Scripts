@@ -65,21 +65,21 @@ if args.update_pickle == 'True':
     if os.path.isfile('particle_data.pkl'):
         try:
             file_open = open(save_dir+'particle_data.pkl', 'rb')
-            particle_data, counter, sink_ind = pickle.load(file_open)
+            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
             if counter < len(loaded_sink_data):
                 updating = True
-                print('pickle data is not up to date! Updating')
+                print('pickle data is not up to date! Updating...')
         except:
             os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
             file_open = open(save_dir+'particle_data.pkl', 'rb')
-            particle_data, counter, sink_ind = pickle.load(file_open)
+            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
             if counter < len(loaded_sink_data):
                 updating = True
-                print('pickle data is not up to date! Updating')
+                print('pickle data is not up to date! Updating...')
     else:
         updating = True
         if args.sink_number == None:
@@ -112,7 +112,7 @@ if args.update_pickle == 'True':
                 except:
                     print("pickle files doesn't exist yet")
                 file = open(save_dir+'particle_data.pkl', 'wb')
-                pickle.dump((particle_data, counter, sink_ind), file)
+                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
                 file.close()
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
@@ -130,7 +130,7 @@ if args.update_pickle == 'True':
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
-        pickle.dump((particle_data, counter, sink_ind), file)
+        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
         file.close()
         os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
