@@ -65,5 +65,6 @@ for pick_file in pickle_files:
     axs.flatten()[2].plot(particle_data['time'], particle_data['mass'])
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[2].set_xlim([0,7000])
+    axs.flatten()[2].set_ylim(bottom=0)
     axs.flatten()[2].set_ylabel('Mass (Msun)')
-    plt.savefig('resolution_study_sink_'+str(sink_ind)+'.png')
+    plt.savefig('resolution_study_sink_'+str(sink_ind)+'.png', bbox_inches='tight', pad_inches=0.02)
