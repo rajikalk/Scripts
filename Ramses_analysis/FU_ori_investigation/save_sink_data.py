@@ -68,9 +68,6 @@ if args.update_pickle == 'True':
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
-            #loaded_sink_data = loaded_sink_data[counter:]
-            import pdb
-            pdb.set_trace()
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating')
@@ -80,9 +77,6 @@ if args.update_pickle == 'True':
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
-            import pdb
-            pdb.set_trace()
-            #loaded_sink_data = loaded_sink_data[counter:]
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating')
@@ -109,6 +103,7 @@ if args.update_pickle == 'True':
         sink_form_time = 0
         
     if updating == True:
+        loaded_sink_data = loaded_sink_data[counter:]
         for sink_data in loaded_sink_data:
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
@@ -133,6 +128,12 @@ if args.update_pickle == 'True':
                 d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
+        #write lastest pickle
+        file = open(save_dir+'particle_data.pkl', 'wb')
+        pickle.dump((particle_data, counter, sink_ind), file)
+        file.close()
+        os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+        print('read', counter, 'snapshots of sink particle data, and saved pickle')
                 
 
 f_acc = 0.5
