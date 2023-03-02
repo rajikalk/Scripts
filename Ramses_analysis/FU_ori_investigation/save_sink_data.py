@@ -68,7 +68,9 @@ if args.update_pickle == 'True':
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
-            loaded_sink_data = loaded_sink_data[counter:]
+            #loaded_sink_data = loaded_sink_data[counter:]
+            import pdb
+            pdb.set_trace()
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating')
@@ -78,7 +80,9 @@ if args.update_pickle == 'True':
             particle_data, counter, sink_ind = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
-            loaded_sink_data = loaded_sink_data[counter:]
+            import pdb
+            pdb.set_trace()
+            #loaded_sink_data = loaded_sink_data[counter:]
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating')
