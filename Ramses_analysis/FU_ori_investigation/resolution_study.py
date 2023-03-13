@@ -47,7 +47,7 @@ for pick_file in pickle_files:
 
     #find time bounds:
     t_start_yr = 3000
-    t_end_yr = 9000
+    t_end_yr = 8000
     t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
     t_end = np.argmin(abs(np.array(particle_data['time']) - t_end_yr))
 
