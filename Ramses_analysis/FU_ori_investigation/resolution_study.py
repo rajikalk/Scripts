@@ -45,8 +45,11 @@ for pick_file in pickle_files:
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
 
-    #find t=7000yr ind:
-    t_end = np.argmin(abs(np.array(particle_data['time']) - 7000))
+    #find time bounds:
+    t_start_yr = 3000
+    t_end_yr = 9000
+    t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
+    t_end = np.argmin(abs(np.array(particle_data['time']) - t_end_yr))
 
     f_acc = 0.5
     radius = yt.YTQuantity(2.0, 'rsun')
@@ -57,17 +60,17 @@ for pick_file in pickle_files:
     L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
 
-    axs.flatten()[0].semilogy(particle_data['time'][:t_end], L_tot[:t_end], label=label[pickle_files.index(pick_file)])
+    axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end], label=label[pickle_files.index(pick_file)])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
     axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].legend()
 
-    axs.flatten()[1].semilogy(particle_data['time'][:t_end], particle_data['mdot'][:t_end])
+    axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], particle_data['mdot'][t_start:t_end])
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
 
-    axs.flatten()[2].plot(particle_data['time'][:t_end], particle_data['mass'][:t_end])
+    axs.flatten()[2].plot(particle_data['time'][t_start:t_end], particle_data['mass'][t_start:t_end])
     axs.flatten()[2].set_xlabel('Time (yr)')
-    axs.flatten()[2].set_xlim([0,7000])
+    axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
     axs.flatten()[2].set_ylabel('Mass (Msun)')
     plt.savefig('resolution_study_sink_'+str(sink_ind)+'.png', bbox_inches='tight', pad_inches=0.02)

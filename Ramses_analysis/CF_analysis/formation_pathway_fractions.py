@@ -10,6 +10,7 @@ def flatten(x):
     else:
         return [x]
 
+import matplotlib
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'

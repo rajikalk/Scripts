@@ -169,3 +169,17 @@ plt.xlim()
 plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
+
+if sink_ind == 45:
+    start_time = 3500
+    start_ind = np.argmin(abs(np.array(particle_data['time']) - start_time))
+    plt.clf()
+    plt.semilogy(particle_data['time'][start_ind:], particle_data['mdot'][start_ind:])
+    plt.xlabel('Time (yr)')
+    plt.xlim()
+    plt.ylim(bottom=1.e-7)
+    plt.ylabel('Accretion rate (Msun/yr)')
+    plt.title('Sink no ' + str(sink_ind))
+    plt.tick_params(axis='both', which='major', right=True, direction='in')
+    plt.tick_params(axis='both', which='minor', right=True, direction='in')
+    plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'_trunc_3500.png')
