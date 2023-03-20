@@ -128,7 +128,9 @@ if mag_sig > 5:
         ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
     if np.nanmax(Mag_orb_bounds) > np.max(ylim):
         ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
-        
+    
+    import pdb
+    pdb.set_trace()
     Mag_orb = np.nan_to_num(Mag_orb)
     plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
     
