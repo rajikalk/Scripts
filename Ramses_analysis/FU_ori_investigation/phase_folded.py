@@ -79,7 +79,7 @@ ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
 apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 #Find pre-peri time
-pre_time = 50
+pre_time = 10
 pre_inds = []
 for peri_ind in periastron_inds:
     target_time = time[peri_ind] - pre_time
@@ -102,7 +102,7 @@ plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it+1))
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
 plt.gca().invert_yaxis()
-plt.xlim([-50, 100])
+plt.xlim([-1*pre_time, 100])
 plt.legend(loc='best')
 plt.savefig('burst_over_orbits.png')
     
