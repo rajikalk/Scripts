@@ -102,7 +102,7 @@ for orb_it in range(1, len(pre_inds)):
     mag_low = np.max(Mag_orb)
     mag_high = np.min(Mag_orb)
     d_mag = abs(mag_low - mag_high)
-    if d_mag > 8:
+    if d_mag > 10:
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
 Mag_orb = Mag[pre_inds[orb_it]:]
