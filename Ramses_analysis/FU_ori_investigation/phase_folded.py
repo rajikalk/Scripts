@@ -70,6 +70,7 @@ L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
 
 Mag = -2.5*np.log10(L_tot)
+Mag[np.where(Mag==np.inf)] = np.nan
 #Mag = np.nan_to_num(Mag)
 
 separation = np.array(particle_data['separation'])
