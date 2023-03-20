@@ -98,7 +98,7 @@ for peri_ind in periastron_inds:
 
 plt.clf()
 ylim = [0, 7]
-for orb_it in range(1, len(pre_inds)):
+for orb_it in range(3, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
     Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
     Mag_orb_bounds = Mag_orb
@@ -109,7 +109,7 @@ for orb_it in range(1, len(pre_inds)):
     mag_mean = np.nanmean(Mag_orb_bounds)
     mag_sig = (mag_low - mag_median)/mag_std
     mag_sig = (mag_low - mag_mean)/mag_std
-    if mag_sig > 6:
+    if mag_sig > 5:
         if np.nanmin(Mag_orb_bounds) < np.min(ylim):
             ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
         if np.nanmax(Mag_orb_bounds) > np.max(ylim):
@@ -127,7 +127,7 @@ mag_median = np.nanmedian(Mag_orb_bounds)
 mag_mean = np.nanmean(Mag_orb_bounds)
 mag_sig = (mag_low - mag_median)/mag_std
 mag_sig = (mag_low - mag_mean)/mag_std
-if mag_sig > 6:
+if mag_sig > 5:
     if np.nanmin(Mag_orb_bounds) < np.min(ylim):
         ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
     if np.nanmax(Mag_orb_bounds) > np.max(ylim):
