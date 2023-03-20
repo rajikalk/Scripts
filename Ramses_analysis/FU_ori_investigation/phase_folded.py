@@ -105,7 +105,7 @@ for orb_it in range(1, len(pre_inds)):
     mag_std = np.nanstd(Mag_orb)
     mag_median = np.nanmedian(Mag_orb)
     mag_sig = (mag_low - mag_median)/mag_std
-    if mag_sig > 6:
+    if mag_sig > 5:
         if np.nanmin(Mag_orb) < np.min(ylim):
             ylim = [np.nanmin(Mag_orb), ylim[1]]
         if np.nanmax(Mag_orb) > np.max(ylim):
