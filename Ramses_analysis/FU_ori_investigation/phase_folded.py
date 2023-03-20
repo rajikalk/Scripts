@@ -70,6 +70,7 @@ L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
 
 Mag = -2.5*np.log10(L_tot)
+Mag[np.where(Mag==np.inf)] = np.nan
 
 separation = np.array(particle_data['separation'])
 time = np.array(particle_data['time'])
@@ -102,6 +103,8 @@ for orb_it in range(1, len(pre_inds)):
     mag_low = np.max(Mag_orb)
     mag_high = np.min(Mag_orb)
     d_mag = abs(mag_low - mag_high)
+    import pdb
+    pdb.set_trace()
     if d_mag > 10:
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
