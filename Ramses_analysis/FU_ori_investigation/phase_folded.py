@@ -81,15 +81,19 @@ apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 #Find pre-peri time
 pre_time = 10
 pre_inds = []
+end_inds = []
 for peri_ind in periastron_inds:
-    target_time = time[peri_ind] - pre_time
-    pre_ind = np.argmin(abs(time - target_time))
+    target_time_start = time[peri_ind] - pre_time
+    target_time_end = time[peri_ind] + 100
+    pre_ind = np.argmin(abs(time - target_time_start))
+    end_ind = np.argmin(abs(time - target_time_end))
     pre_inds.append(pre_ind)
+    end_inds.append(end_ind)
 
 plt.clf()
 for orb_it in range(1, len(pre_inds)):
-    time_orb = time[pre_inds[orb_it-1]: pre_inds[orb_it]] - time[periastron_inds[orb_it-1]]
-    Mag_orb = Mag[pre_inds[orb_it-1]: pre_inds[orb_it]]
+    time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
+    Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
     mag_low = np.max(Mag_orb)
     mag_high = np.min(Mag_orb)
     d_mag = abs(mag_low - mag_high)
