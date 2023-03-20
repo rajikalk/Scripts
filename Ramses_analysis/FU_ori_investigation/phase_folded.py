@@ -82,7 +82,7 @@ apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 pre_time = 50
 pre_inds = []
 for peri_ind in periastron_inds:
-    target_time = time[peri_in] - pre_time
+    target_time = time[peri_ind] - pre_time
     pre_ind = np.argmin(abs(time - target_time))
     pre_inds.append(pre_ind)
 
