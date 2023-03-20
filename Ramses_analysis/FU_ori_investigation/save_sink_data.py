@@ -117,7 +117,7 @@ if args.update_pickle == 'True':
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
-                if sink_ind no in particle_data['particle_tag']:
+                if sink_ind not in particle_data['particle_tag']:
                     particle_data['particle_tag'].append(sink_ind)
                     import pdb
                     pdb.set_trace()
