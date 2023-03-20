@@ -70,7 +70,6 @@ L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
 
 Mag = -2.5*np.log10(L_tot)
-Mag[np.where(Mag==np.inf)] = np.nan
 #Mag = np.nan_to_num(Mag)
 
 separation = np.array(particle_data['separation'])
@@ -102,6 +101,7 @@ ylim = [0, 7]
 for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
     Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
+    Mag_orb[np.where(Mag_orb==np.inf)] = np.nan
     mag_low = np.nanmax(Mag_orb)
     mag_std = np.nanstd(Mag_orb)
     mag_median = np.nanmedian(Mag_orb)
@@ -111,6 +111,7 @@ for orb_it in range(1, len(pre_inds)):
             ylim = [np.nanmin(Mag_orb), ylim[1]]
         if np.nanmax(Mag_orb) > np.max(ylim):
             ylim = [ylim[0], np.nanmax(Mag_orb)]
+        
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
 Mag_orb = Mag[pre_inds[orb_it]:]
