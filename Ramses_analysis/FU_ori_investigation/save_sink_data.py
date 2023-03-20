@@ -149,6 +149,7 @@ Mag = -2.5*np.log10(L_tot)
 
 plt.clf()
 plt.plot(particle_data['time'], Mag)
+plt.gca().invert_yaxis()
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Magnitude (M$_{bol}$)')
