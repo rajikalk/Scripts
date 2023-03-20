@@ -117,7 +117,10 @@ if args.update_pickle == 'True':
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
-                particle_data['particle_tag'].append(sink_ind)
+                if sink_ind no in particle_data['particle_tag']:
+                    particle_data['particle_tag'].append(sink_ind)
+                    import pdb
+                    pdb.set_trace()
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
