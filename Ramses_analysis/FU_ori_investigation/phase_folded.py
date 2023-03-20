@@ -120,7 +120,6 @@ plt.ylabel("Magnitude")
 plt.ylim(ylim)
 plt.gca().invert_yaxis()
 plt.xlim([-1*pre_time, 100])
-plt.
 plt.legend(loc='best')
 plt.savefig('burst_over_orbits.png')
     
