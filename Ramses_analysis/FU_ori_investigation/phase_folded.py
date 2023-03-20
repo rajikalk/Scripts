@@ -85,6 +85,11 @@ end_inds = []
 for peri_ind in periastron_inds:
     target_time_start = time[peri_ind] - pre_time
     target_time_end = time[peri_ind] + 100
+    try:
+        if target_time_end > time[peri_ind + 1]:
+            target_time_end = time[peri_ind+1]
+    except:
+        pass
     pre_ind = np.argmin(abs(time - target_time_start))
     end_ind = np.argmin(abs(time - target_time_end))
     pre_inds.append(pre_ind)
