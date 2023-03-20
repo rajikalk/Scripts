@@ -100,12 +100,10 @@ plt.clf()
 for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
     Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
-    mag_low = np.max(Mag_orb)
-    mag_high = np.min(Mag_orb)
-    d_mag = abs(mag_low - mag_high)
-    import pdb
-    pdb.set_trace()
-    if d_mag > 10:
+    mag_low = np.nanmax(Mag_orb)
+    mag_median = np.nanmedian(Mag_orb)
+    d_mag = abs(mag_low - mag_median)
+    if d_mag > 6:
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
 Mag_orb = Mag[pre_inds[orb_it]:]
