@@ -129,7 +129,7 @@ if mag_sig > 5:
     if np.nanmax(Mag_orb_bounds) > np.max(ylim):
         ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
     
-    Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
+    Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.nanmax(Mag_orb_bounds)
     plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
     
 plt.xlabel("Time releative to periastron (yr)")
