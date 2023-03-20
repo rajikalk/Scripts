@@ -98,6 +98,7 @@ if args.update_pickle == 'True':
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
+        particle_data.update({'separation':[]})
         
         counter = 0
         sink_form_time = 0
@@ -119,8 +120,10 @@ if args.update_pickle == 'True':
             if len(sink_data['u']) > sink_ind:
                 if sink_ind not in particle_data['particle_tag']:
                     particle_data['particle_tag'].append(sink_ind)
-                    import pdb
-                    pdb.set_trace()
+                pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
+                pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
+                separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
+                particle_data['separation'].append(separation)
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
@@ -183,6 +186,14 @@ plt.xlim()
 plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
+
+plt.clf()
+plt.semilogy(particle_data['time'], particle_data['separation'])
+plt.xlabel('Time (yr)')
+plt.xlim()
+plt.ylabel('Separation (AU)')
+plt.title('Sink no ' + str(sink_ind))
+plt.savefig('separation_vs_time_sink_'+str(sink_ind)+'.png')
 
 if sink_ind == 45:
     start_time = 3500
