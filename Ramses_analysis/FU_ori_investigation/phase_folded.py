@@ -92,7 +92,7 @@ for orb_it in range(1, len(pre_inds)):
     Mag_orb = Mag[pre_inds[orb_it-1]: pre_inds[orb_it]]
     plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 
-plt.xlabel("Time since periastron (yr)")
+plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
 plt.gca().invert_yaxis()
 plt.xlim([0, 100])
