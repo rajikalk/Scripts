@@ -104,7 +104,7 @@ for orb_it in range(1, len(pre_inds)):
     mag_std = np.nanstd(Mag_orb)
     mag_median = np.nanmedian(Mag_orb)
     mag_sig = (mag_low - mag_median)/mag_std
-    if mag_sig > 5:
+    if mag_sig > 7:
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
 Mag_orb = Mag[pre_inds[orb_it]:]
