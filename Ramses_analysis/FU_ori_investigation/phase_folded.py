@@ -62,10 +62,32 @@ file_open = open(save_dir+'particle_data.pkl', 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
-separation = particle_data['separation']
-time = particle_data['time']
+f_acc = 0.5
+radius = yt.YTQuantity(2.0, 'rsun')
+m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
+mass = yt.YTArray(particle_data['mass']).in_units('g')
+L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
+L_tot = L_acc.in_units('Lsun')
+
+Mag = -2.5*np.log10(L_tot)
+
+separation = np.array(particle_data['separation'])
+time = np.array(particle_data['time'])
 
 ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
 apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
+
+plt.clf()
+for orb_it in range(1, len(periastron_inds)):
+    time_orb = time[periastron_inds[orb_it-1]: periastron_inds[orb_it]] - time[periastron_inds[orb_it-1]]
+    Mag_orb = Mag[periastron_inds[orb_it-1]: periastron_inds[orb_it]]
+    plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
+
+plt.xlabel("Time since periastron (yr)")
+plt.ylabel("Magnitude")
+plt.legend(loc='best')
+plt.xlim(left=0.0)
+plt.savefig('burst_over_orbits.png')
+    
