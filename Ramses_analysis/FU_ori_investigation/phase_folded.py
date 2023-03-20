@@ -87,7 +87,8 @@ for orb_it in range(1, len(periastron_inds)):
 
 plt.xlabel("Time since periastron (yr)")
 plt.ylabel("Magnitude")
+plt.gca().invert_yaxis()
+plt.xlim([0, 200])
 plt.legend(loc='best')
-plt.xlim(left=0.0)
 plt.savefig('burst_over_orbits.png')
     
