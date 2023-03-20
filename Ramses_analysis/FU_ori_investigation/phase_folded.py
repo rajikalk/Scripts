@@ -109,7 +109,7 @@ for orb_it in range(3, len(pre_inds)):
     mag_mean = np.nanmean(Mag_orb_bounds)
     mag_sig = (mag_low - mag_median)/mag_std
     mag_sig = (mag_low - mag_mean)/mag_std
-    if mag_sig > 5:
+    if mag_sig > 5.5:
         if np.nanmin(Mag_orb_bounds) < np.min(ylim):
             ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
         if np.nanmax(Mag_orb_bounds) > np.max(ylim):
@@ -127,7 +127,7 @@ mag_median = np.nanmedian(Mag_orb_bounds)
 mag_mean = np.nanmean(Mag_orb_bounds)
 mag_sig = (mag_low - mag_median)/mag_std
 mag_sig = (mag_low - mag_mean)/mag_std
-if mag_sig > 5:
+if mag_sig > 5.5:
     if np.nanmin(Mag_orb_bounds) < np.min(ylim):
         ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
     if np.nanmax(Mag_orb_bounds) > np.max(ylim):
