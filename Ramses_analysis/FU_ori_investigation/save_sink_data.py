@@ -145,6 +145,16 @@ mass = yt.YTArray(particle_data['mass']).in_units('g')
 L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
 
+Mag = -2.5*np.log10(L_tot)
+
+plt.clf()
+plt.plot(particle_data['time'], Mag)
+plt.xlabel('Time (yr)')
+plt.xlim()
+plt.ylabel('Magnitude (M$_{bol}$)')
+plt.title('Sink no ' + str(sink_ind))
+plt.savefig('magnitude_vs_time_sink_'+str(sink_ind)+'.png')
+
 plt.clf()
 plt.semilogy(particle_data['time'], L_tot)
 plt.xlabel('Time (yr)')
