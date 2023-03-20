@@ -101,30 +101,33 @@ ylim = [0, 7]
 for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
     Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
-    Mag_orb[np.where(Mag_orb==np.inf)] = np.nan
-    mag_low = np.nanmax(Mag_orb)
-    mag_std = np.nanstd(Mag_orb)
-    mag_median = np.nanmedian(Mag_orb)
+    Mag_orb_bounds = Mag_orb
+    Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
+    mag_low = np.nanmax(Mag_orb_bounds)
+    mag_std = np.nanstd(Mag_orb_bounds)
+    mag_median = np.nanmedian(Mag_orb_bounds)
     mag_sig = (mag_low - mag_median)/mag_std
     if mag_sig > 5:
-        if np.nanmin(Mag_orb) < np.min(ylim):
-            ylim = [np.nanmin(Mag_orb), ylim[1]]
-        if np.nanmax(Mag_orb) > np.max(ylim):
-            ylim = [ylim[0], np.nanmax(Mag_orb)]
+        if np.nanmin(Mag_orb_bounds) < np.min(ylim):
+            ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
+        if np.nanmax(Mag_orb_bounds) > np.max(ylim):
+            ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
         
         plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
 time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
 Mag_orb = Mag[pre_inds[orb_it]:]
-mag_low = np.nanmax(Mag_orb)
-mag_std = np.nanstd(Mag_orb)
-mag_median = np.nanmedian(Mag_orb)
+Mag_orb_bounds = Mag_orb
+Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
+mag_low = np.nanmax(Mag_orb_bounds)
+mag_std = np.nanstd(Mag_orb_bounds)
+mag_median = np.nanmedian(Mag_orb_bounds)
 mag_sig = (mag_low - mag_median)/mag_std
 if mag_sig > 5:
-    if np.nanmin(Mag_orb) < np.min(ylim):
-        ylim = [np.nanmin(Mag_orb), ylim[1]]
-    if np.nanmax(Mag_orb) > np.max(ylim):
-        ylim = [ylim[0], np.nanmax(Mag_orb)]
-    plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
+    if np.nanmin(Mag_orb_bounds) < np.min(ylim):
+        ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
+    if np.nanmax(Mag_orb_bounds) > np.max(ylim):
+        ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
+    plt.plot(time_orb, Mag_orb_bounds, label="Orbit "+str(orb_it))
     
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
