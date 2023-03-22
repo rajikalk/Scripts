@@ -12,6 +12,7 @@ with open(file_data, 'r') as data_file:
             if 'output' in row[11]:
                 import pdb
                 pdb.set_trace()
+                file_ind = [row for row in list if 'output' in row]
                 time_split = row[10].split(':')
                 time_dec = float(time_split[0] + str(int(time_split[1])/60)[1:])
                 if len(dump_time) == 0:
