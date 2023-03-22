@@ -1,5 +1,5 @@
 import csv
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 
 file_data = "file_data.txt"
