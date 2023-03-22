@@ -8,17 +8,15 @@ dump_time = []
 with open(file_data, 'r') as data_file:
     reader = csv.reader(data_file, delimiter=' ')
     for row in reader:
-        if len(row) > 11:
-            if 'output' in row[11]:
-                import pdb
-                pdb.set_trace()
-                file_ind = [row for row in list if 'output' in row]
-                time_split = row[10].split(':')
-                time_dec = float(time_split[0] + str(int(time_split[1])/60)[1:])
-                if len(dump_time) == 0:
-                    dump_time.append(time_dec)
-                if dump_time[-1] != time_dec:
-                    dump_time.append(time_dec)
+        file_match = [s for s in row if 'output' in s]
+        if len(file_match) > 0:
+            time_ind = row.index(file_match[0]) - 1
+            time_split = row[10].split(':')
+            time_dec = float(time_split[0] + str(int(time_split[1])/60)[1:])
+            if len(dump_time) == 0:
+                dump_time.append(time_dec)
+            if dump_time[-1] != time_dec:
+                dump_time.append(time_dec)
             
 data_file.close()
 
