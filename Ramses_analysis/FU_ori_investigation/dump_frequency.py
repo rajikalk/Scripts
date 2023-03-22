@@ -11,7 +11,7 @@ with open(file_data, 'r') as data_file:
         file_match = [s for s in row if 'output' in s]
         if len(file_match) > 0:
             time_ind = row.index(file_match[0]) - 1
-            time_split = row[10].split(':')
+            time_split = row[time_ind].split(':')
             time_dec = float(time_split[0] + str(int(time_split[1])/60)[1:])
             if len(dump_time) == 0:
                 dump_time.append(time_dec)
