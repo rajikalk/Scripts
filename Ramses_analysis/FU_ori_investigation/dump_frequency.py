@@ -20,7 +20,15 @@ with open(file_data, 'r') as data_file:
             
 data_file.close()
 
-dt = np.array(dump_time)[1:] - np.array(dump_time)[:-1]
+dt = []
+for time_it in rangel(1, len(dump_time)):
+    if dump_time[time_it] < dump_time[time_it-1]:
+        import pdb
+        pdb.set_trace()
+    else:
+        dt_val = dump_time[time_it] - dump_time[time_it-1]
+    dt.append(dt_val)
+
 plt.clf()
 plt.plot(dt)
 plt.ylabel("time between dumps")
