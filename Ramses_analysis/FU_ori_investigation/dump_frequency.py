@@ -21,7 +21,7 @@ with open(file_data, 'r') as data_file:
 data_file.close()
 
 dt = []
-for time_it in rangel(1, len(dump_time)):
+for time_it in range(1, len(dump_time)):
     if dump_time[time_it] < dump_time[time_it-1]:
         import pdb
         pdb.set_trace()
