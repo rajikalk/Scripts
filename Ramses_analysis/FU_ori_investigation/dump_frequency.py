@@ -17,7 +17,7 @@ with open(file_data, 'r') as data_file:
                 if dump_time[-1] != time_dec:
                     dump_time.append(time_dec)
             
-f.close()
+data_file.close()
 
 dt = np.array(dump_time)[1:] - np.array(dump_time)[:-1]
 plt.clf()
