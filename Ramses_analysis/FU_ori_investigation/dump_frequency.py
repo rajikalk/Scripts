@@ -23,8 +23,7 @@ data_file.close()
 dt = []
 for time_it in range(1, len(dump_time)):
     if dump_time[time_it] < dump_time[time_it-1]:
-        import pdb
-        pdb.set_trace()
+        dt_val = (24+dump_time[time_it]) - dump_time[time_it-1]
     else:
         dt_val = dump_time[time_it] - dump_time[time_it-1]
     dt.append(dt_val)
