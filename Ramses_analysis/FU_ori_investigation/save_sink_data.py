@@ -129,9 +129,11 @@ if args.update_pickle == 'True':
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 #if len(particle_tags) == 1:
                 particle_data['time'].append(time_val)
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind]*units['mass_unit'].in_units('msun'), 'msun'))
+                import pdb
+                pdb.set_trace()
+                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-2:]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
+                d_mass = sink_data['dm'][sink_ind-2:]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 if acc_val == 0:
