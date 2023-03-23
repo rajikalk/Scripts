@@ -133,7 +133,10 @@ if args.update_pickle == 'True':
                 
                 d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-                particle_data['mdot'].append(yt.YTArray(d_mass/d_time, 'msun/yr'))
+                acc_val = d_mass/d_time
+                if acc_val == 0:
+                    acc_val = 1.e-10
+                particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
