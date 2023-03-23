@@ -118,7 +118,7 @@ if args.update_pickle == 'True':
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
-                tags = np.arange(len(sink_data['u']))[sink_ind-1:]
+                tags = np.arange(len(sink_data['u']))[sink_ind-1:sink_ind+1]
                 for tag in tags:
                     if tag not in particle_data['particle_tag']:
                         particle_data['particle_tag'].append(tag)
@@ -131,9 +131,9 @@ if args.update_pickle == 'True':
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 #if len(particle_tags) == 1:
                 particle_data['time'].append(time_val)
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:]*units['mass_unit'].in_units('msun'), 'msun'))
+                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                d_mass = sink_data['dm'][sink_ind-1:]*units['mass_unit'].in_units('msun')
+                d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
