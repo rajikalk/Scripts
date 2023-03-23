@@ -192,8 +192,7 @@ curr_dir = os.getcwd()
 if 'Level' not in curr_dir:
     refinement = 18
 else:
-    import pdb
-    pdb.set_trace()
+    refinement = int(curr_dir.split('Level_')[-1][:2])
 d_min = L.in_units('au')/(2**refinement)
 plt.clf()
 plt.semilogy(particle_data['time'], particle_data['separation'])
