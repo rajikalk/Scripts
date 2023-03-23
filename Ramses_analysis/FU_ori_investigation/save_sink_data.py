@@ -157,38 +157,44 @@ L_tot = L_acc.in_units('Lsun')
 
 Mag = -2.5*np.log10(L_tot)
 
-import pdb
-pdb.set_trace()
 plt.clf()
-plt.plot(particle_data['time'], Mag)
+for part_it in range(len(particle_data['particle_tag'])):
+    plt.plot(particle_data['time'], Mag.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.gca().invert_yaxis()
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Magnitude (M$_{bol}$)')
+plt.legend()
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('magnitude_vs_time_sink_'+str(sink_ind)+'.png')
 
 plt.clf()
-plt.semilogy(particle_data['time'], L_tot)
+for part_it in range(len(particle_data['particle_tag'])):
+    plt.semilogy(particle_data['time'], L_tot.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.xlabel('Time (yr)')
 plt.xlim()
+plt.legend()
 plt.ylabel('Luminosity (Lsun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('luminosity_vs_time_sink_'+str(sink_ind)+'.png')
 
 
 plt.clf()
-plt.semilogy(particle_data['time'], particle_data['mdot'])
+for part_it in range(len(particle_data['particle_tag'])):
+    plt.semilogy(particle_data['time'], particle_data['mdot'].T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.xlabel('Time (yr)')
 plt.xlim()
+plt.legend()
 plt.ylabel('Accretion rate (Msun/yr)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')
 
 plt.clf()
-plt.plot(particle_data['time'], particle_data['mass'])
+for part_it in range(len(particle_data['particle_tag'])):
+    plt.plot(particle_data['time'], particle_data['mass'].T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.xlabel('Time (yr)')
 plt.xlim()
+plt.legend()
 plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
