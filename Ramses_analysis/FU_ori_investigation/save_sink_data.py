@@ -187,6 +187,8 @@ plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
 
+import pdb
+pdb.set_trace()
 plt.clf()
 plt.semilogy(particle_data['time'], particle_data['separation'])
 plt.xlabel('Time (yr)')
