@@ -181,7 +181,7 @@ plt.savefig('luminosity_vs_time_sink_'+str(sink_ind)+'.png')
 
 plt.clf()
 for part_it in range(len(particle_data['particle_tag'])):
-    plt.semilogy(particle_data['time'], particle_data['mdot'].T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
+    plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.legend()
@@ -191,7 +191,7 @@ plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')
 
 plt.clf()
 for part_it in range(len(particle_data['particle_tag'])):
-    plt.plot(particle_data['time'], particle_data['mass'].T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
+    plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]+1))
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.legend()
