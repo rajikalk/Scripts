@@ -187,10 +187,18 @@ plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
 plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
 
-import pdb
+L = yt.YTQuantity(4, 'pc')
+curr_dir = os.getcwd()
+if 'Level' not in curr_dir:
+    refinement = 18
+else:
+    import pdb
+    pdb.set_trace()
+d_min = L.in_units('au')/(2**refinement)
 pdb.set_trace()
 plt.clf()
 plt.semilogy(particle_data['time'], particle_data['separation'])
+plt.axhline(y=d_min)
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Separation (AU)')
