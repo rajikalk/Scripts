@@ -118,8 +118,10 @@ if args.update_pickle == 'True':
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
-                if sink_ind not in particle_data['particle_tag']:
-                    particle_data['particle_tag'].append(sink_ind)
+                tags = np.arange(len(sink_data['u']))[sink_ind-1:]
+                for tag in tags:
+                    if tag not in particle_data['particle_tag']:
+                        particle_data['particle_tag'].append(tag)
                 pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
                 pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
@@ -129,15 +131,12 @@ if args.update_pickle == 'True':
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 #if len(particle_tags) == 1:
                 particle_data['time'].append(time_val)
-                import pdb
-                pdb.set_trace()
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-2:]*units['mass_unit'].in_units('msun'), 'msun'))
+                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                d_mass = sink_data['dm'][sink_ind-2:]*units['mass_unit'].in_units('msun')
+                d_mass = sink_data['dm'][sink_ind-1:]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-                acc_val = d_mass/d_time
-                if acc_val == 0:
-                    acc_val = 1.e-10
+                
+                acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
@@ -158,6 +157,8 @@ L_tot = L_acc.in_units('Lsun')
 
 Mag = -2.5*np.log10(L_tot)
 
+import pdb
+pdb.set_trace()
 plt.clf()
 plt.plot(particle_data['time'], Mag)
 plt.gca().invert_yaxis()
