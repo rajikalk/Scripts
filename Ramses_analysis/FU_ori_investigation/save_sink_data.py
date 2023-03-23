@@ -195,7 +195,6 @@ else:
     import pdb
     pdb.set_trace()
 d_min = L.in_units('au')/(2**refinement)
-pdb.set_trace()
 plt.clf()
 plt.semilogy(particle_data['time'], particle_data['separation'])
 plt.axhline(y=d_min)
