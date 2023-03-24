@@ -26,6 +26,10 @@ def parse_inputs():
     
     
 #================================================================================
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472
+
 args = parse_inputs()
 
 path = sys.argv[1]
@@ -96,19 +100,26 @@ for sink_data in loaded_sink_data:
         if close_sink not in plotted_sinks:
             time_arr = []
             acc_arr = []
+            mass_arr = []
             for sink_data_acc in loaded_sink_data:
                 if len(sink_data['u']) > close_sink:
                     time_val = sink_data_acc['snapshot_time']*units['time_unit'].in_units('yr')
+                    mass_val = sink_data_acc['m'][close_sink]*units['mass_unit'].in_units('msun')
                     d_mass = sink_data_acc['dm'][close_sink]*units['mass_unit'].in_units('msun')
                     d_time = (sink_data_acc['snapshot_time'] - sink_data_acc['tflush'])*units['time_unit'].in_units('yr')
                     acc_val = d_mass/d_time
                     time_arr.append(time_val)
                     acc_arr.append(acc_val)
+                    mass_arr.append(mass_val)
+            time_arr = np.array(time_arr) - time_arr[0]
             plt.clf()
-            plt.semilogy(time_arr, acc_arr)
-            plt.title("Sink "+str(close_sink+1))
-            plt.xlabel("Simulation time")
-            plt.ylabel("Accretion rate (Msun/yr)")
+            fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True)
+            axs[0].semilogy(time_arr, mass_arr)
+            axs[1].semilogy(time_arr, acc_arr)
+            axs[0].title("Sink "+str(close_sink+1))
+            axs[1].xlabel("Simulation time")
+            axs[0].ylabel("Mass (Msun)")
+            axs[1].ylabel("Accretion rate (Msun/yr)")
             plt.savefig("Sink_"+str(close_sink+1)+".png")
             plotted_sinks.append(close_sink)
             print("plotted accretion history for sink", close_sink+1)
