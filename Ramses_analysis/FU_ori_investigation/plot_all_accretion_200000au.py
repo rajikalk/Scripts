@@ -96,11 +96,11 @@ for sink_data in loaded_sink_data:
         if close_sink not in plotted_sinks:
             time_arr = []
             acc_arr = []
-            for sink_data in loaded_sink_data:
+            for sink_data_acc in loaded_sink_data:
                 if len(sink_data['u']) > close_sink:
-                    time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr')
-                    d_mass = sink_data['dm'][close_sink]*units['mass_unit'].in_units('msun')
-                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                    time_val = sink_data_acc['snapshot_time']*units['time_unit'].in_units('yr')
+                    d_mass = sink_data_acc['dm'][close_sink]*units['mass_unit'].in_units('msun')
+                    d_time = (sink_data_acc['snapshot_time'] - sink_data_acc['tflush'])*units['time_unit'].in_units('yr')
                     acc_val = d_mass/d_time
                     time_arr.append(time_val)
                     acc_arr.append(acc_val)
@@ -109,6 +109,6 @@ for sink_data in loaded_sink_data:
             plt.title("Sink "+str(close_sink+1))
             plt.xlabel("Simulation time")
             plt.ylabel("Accretion rate (Msun/yr)")
-            plt.savefig("Sink "+str(close_sink+1)+".png")
+            plt.savefig("Sink_"+str(close_sink+1)+".png")
             plotted_sinks.append(close_sink)
             print("plotted accretion history for sink", close_sink+1)
