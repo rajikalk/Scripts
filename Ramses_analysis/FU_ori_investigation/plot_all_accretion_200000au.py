@@ -83,17 +83,17 @@ for sink_data in loaded_sink_data:
     
 plotted_sinks = []
 for sink_data in loaded_sink_data:
-    if len(sink_data['u']) < sink_ind+1:
-        dx = sink_data['x']*units['length_unit'].in_units('au') - target_sink_formation_location[0]
-        dy = sink_data['y']*units['length_unit'].in_units('au') - target_sink_formation_location[1]
-        dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_formation_location[2]
-        sep = np.sqrt(dx**2 + dy**2 + dz**2)
-        close_sinks = np.where(sep<20000)[0]
-    else:
+    if len(sink_data['u']) > sink_ind:
         target_sink_location = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
         dx = sink_data['x']*units['length_unit'].in_units('au') - target_sink_location[0]
         dy = sink_data['y']*units['length_unit'].in_units('au') - target_sink_location[1]
         dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_location[2]
+        sep = np.sqrt(dx**2 + dy**2 + dz**2)
+        close_sinks = np.where(sep<20000)[0]
+    else:
+        dx = sink_data['x']*units['length_unit'].in_units('au') - target_sink_formation_location[0]
+        dy = sink_data['y']*units['length_unit'].in_units('au') - target_sink_formation_location[1]
+        dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_formation_location[2]
         sep = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(sep<20000)[0]
     for close_sink in close_sinks:
@@ -102,7 +102,7 @@ for sink_data in loaded_sink_data:
             acc_arr = []
             mass_arr = []
             for sink_data_acc in loaded_sink_data:
-                if len(sink_data['u']) > close_sink+1:
+                if len(sink_data_acc['u']) > close_sink+1:
                     time_val = sink_data_acc['snapshot_time']*units['time_unit'].in_units('yr')
                     mass_val = sink_data_acc['m'][close_sink]*units['mass_unit'].in_units('msun')
                     d_mass = sink_data_acc['dm'][close_sink]*units['mass_unit'].in_units('msun')
@@ -120,6 +120,6 @@ for sink_data in loaded_sink_data:
             axs[1].set_xlabel("Simulation time")
             axs[0].set_ylabel("Mass (Msun)")
             axs[1].set_ylabel("Accretion rate (Msun/yr)")
-            plt.savefig("Sink_"+str(close_sink+1)+".png")
+            plt.savefig("Sink_"+str(close_sink+1)+".png", bbox_inches='tight')
             plotted_sinks.append(close_sink)
             print("plotted accretion history for sink", close_sink+1)
