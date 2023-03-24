@@ -102,7 +102,7 @@ for sink_data in loaded_sink_data:
             acc_arr = []
             mass_arr = []
             for sink_data_acc in loaded_sink_data:
-                if len(sink_data_acc['u']) > close_sink+1:
+                if len(sink_data_acc['u']) > close_sink:
                     time_val = sink_data_acc['snapshot_time']*units['time_unit'].in_units('yr')
                     mass_val = sink_data_acc['m'][close_sink]*units['mass_unit'].in_units('msun')
                     d_mass = sink_data_acc['dm'][close_sink]*units['mass_unit'].in_units('msun')
