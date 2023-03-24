@@ -108,7 +108,7 @@ for sink_data in loaded_sink_data:
             plt.semilogy(time_arr, acc_arr)
             plt.title("Sink "+str(close_sink+1))
             plt.xlabel("Simulation time")
-            plt.ylabe("Accretion rate (Msun/yr)")
+            plt.ylabel("Accretion rate (Msun/yr)")
             plt.savefig("Sink "+str(close_sink+1)+".png")
             plotted_sinks.append(close_sink)
             print("plotted accretion history for sink", close_sink+1)
