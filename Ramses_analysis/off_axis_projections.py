@@ -397,6 +397,7 @@ if args.make_frames_only == 'False':
             part_posz = dd['sink_particle_posz'][sink_id:].in_units('AU') - center_pos[2]
             
             pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
+            
             separation = pos_array[0] - pos_array[1]
             separation_magnitude = np.sqrt(separation[0]**2 + separation[1]**2 + separation[2]**2)
             sepration_unit = separation/separation_magnitude
@@ -499,7 +500,9 @@ if args.make_frames_only == 'False':
                     proj_vector_mag = np.sqrt(np.sum(projection_vectors[proj_it]**2))
                     proj_vector_unit = projection_vectors[proj_it]/proj_vector_mag
                     #east_unit_vector = np.cross(proj_vector_unit, north_unit)
-                    east_unit_vector = np.cross(north_unit, proj_vector_unit)
+                    east_vector = np.cross(north_unit, proj_vector_unit)
+                    east_vector_mag = np.sqrt(np.sum((east_vector**2)))
+                    east_unit_vector = east_vector/east_vector_mag
                     
                     projected_particle_posx = projected_vector(pos_array, east_unit_vector)
                     proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
