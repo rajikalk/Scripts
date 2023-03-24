@@ -85,34 +85,30 @@ for sink_data in loaded_sink_data:
         dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_formation_location[2]
         sep = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(sep<20000)[0]
-        for close_sink in close_sinks:
-            if close_sink not in plotted_sinks:
-                import pdb
-                pdb.set_trace()
-    if len(sink_data['u']) > sink_ind:
-        tags = np.arange(len(sink_data['u']))[sink_ind-1:sink_ind+1]
-        for tag in tags:
-            if tag not in nearby_accretion['particle_tag']:
-                nearby_accretion['particle_tag'].append(tag)
-        pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
-        pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
-        separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-        nearby_accretion['separation'].append(separation)
-        if sink_form_time == 0:
-            sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
-        time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-        #if len(particle_tags) == 1:
-        nearby_accretion['time'].append(time_val)
-        nearby_accretion['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
-        
-        d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
-        d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-        acc_val = d_mass/d_time
-        acc_val[np.where(acc_val == 0)[0]]=1.e-12
-        nearby_accretion['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
-#write lastest pickle
-file = open(save_dir+'nearby_accretion.pkl', 'wb')
-pickle.dump((nearby_accretion, counter, sink_ind, sink_form_time), file)
-file.close()
-os.system('cp '+save_dir+'nearby_accretion.pkl '+save_dir+'nearby_accretion_tmp.pkl ')
-print('read', counter, 'snapshots of sink particle data, and saved pickle')
+    else:
+        target_sink_location = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
+        dx = sink_data['x']*units['length_unit'].in_units('au') - target_sink_location[0]
+        dy = sink_data['y']*units['length_unit'].in_units('au') - target_sink_location[1]
+        dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_location[2]
+        sep = np.sqrt(dx**2 + dy**2 + dz**2)
+        close_sinks = np.where(sep<20000)[0]
+    for close_sink in close_sinks:
+        if close_sink not in plotted_sinks:
+            time_arr = []
+            acc_arr = []
+            for sink_data in loaded_sink_data:
+                if len(sink_data['u']) > close_sink:
+                    time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                    d_mass = sink_data['dm'][close_sink]*units['mass_unit'].in_units('msun')
+                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                    acc_val = d_mass/d_time
+                    time_arr.append(time_val)
+                    acc_arr.append(acc_val)
+            plt.clf()
+            plt.semilogy(time_arr, acc_arr)
+            plt.title("Sink "+str(close_sink+1))
+            plt.xlabel("Simulation time")
+            plt.ylabe("Accretion rate (Msun/yr)")
+            plt.savefig("Sink "+str(close_sink+1)+".png")
+            plotted_sinks.append(close_sink)
+            print("plotted accretion history for sink", close_sink+1)
