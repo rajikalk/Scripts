@@ -106,7 +106,7 @@ if args.update_pickle == 'True':
         if len(sink_data['u']) > sink_ind:
             import pdb
             pdb.set_trace()
-    target_sink_formation_location =
+    #target_sink_formation_location =
         
     if updating == True:
         import pdb
