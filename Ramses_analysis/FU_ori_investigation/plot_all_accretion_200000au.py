@@ -111,7 +111,7 @@ for sink_data in loaded_sink_data:
                     time_arr.append(time_val)
                     acc_arr.append(acc_val)
                     mass_arr.append(mass_val)
-            time_arr = np.array(time_arr) - time_arr[0]
+            time_arr = yt.YTArray(time_arr) - time_arr[0]
             plt.clf()
             fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True)
             axs[0].semilogy(time_arr, mass_arr)
