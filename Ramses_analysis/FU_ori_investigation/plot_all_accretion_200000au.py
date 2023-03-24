@@ -114,7 +114,7 @@ for sink_data in loaded_sink_data:
             time_arr = yt.YTArray(time_arr) - time_arr[0]
             plt.clf()
             fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True)
-            axs[0].semilogy(time_arr, mass_arr)
+            axs[0].plot(time_arr, mass_arr)
             axs[1].semilogy(time_arr, acc_arr)
             axs[0].set_title("Sink "+str(close_sink+1))
             axs[1].set_xlabel("Simulation time")
