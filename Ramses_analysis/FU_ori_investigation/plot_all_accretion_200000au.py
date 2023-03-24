@@ -83,7 +83,7 @@ for sink_data in loaded_sink_data:
     
 plotted_sinks = []
 for sink_data in loaded_sink_data:
-    if len(sink_data['u']) < sink_ind:
+    if len(sink_data['u']) < sink_ind+1:
         dx = sink_data['x']*units['length_unit'].in_units('au') - target_sink_formation_location[0]
         dy = sink_data['y']*units['length_unit'].in_units('au') - target_sink_formation_location[1]
         dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_formation_location[2]
