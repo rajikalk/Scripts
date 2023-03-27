@@ -326,7 +326,7 @@ for form_path_it in range(len(Initial_eccentricity)-1):
     if form_path_it < 3:
         for sys_it in range(len(Initial_eccentricity[form_path_it])):
             time_arr = Initial_eccentricity[form_path_it][sys_it][0]
-            ecc_arr = np.array(Initial_eccentricity[0][0][1])
+            ecc_arr = Initial_eccentricity[form_path_it][sys_it][1]
             axs[form_path_it].plot(time_arr, ecc_arr)
             '''
             for ecc in ecc_arr:
@@ -338,6 +338,8 @@ axs[0].set_ylabel('e B. Core Frag.')
 axs[1].set_ylabel('e U. Core Frag.')
 axs[2].set_ylabel('e Dynamical Capt.')
 axs[2].set_xlabel('Time since first peri. (yr)')
+axs[2].set_xlim([0, 10000])
+axs[2].set_ylim([0, 1])
 plt.savefig('ecc_vs_time.png', bbox_inches='tight')
 
 
