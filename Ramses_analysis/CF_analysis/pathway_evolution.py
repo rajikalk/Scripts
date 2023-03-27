@@ -192,11 +192,11 @@ if read_pickle == True:
                                                     mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                     Initial_gradients[axis_ind].append([mean_grad])
                                                     grad_over_a = mean_grad/initial_a
-                                                    Grad_over_init_sep.append([grad_over_a])
-                                                    Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                                    Grad_over_init_sep[axis_ind].append([grad_over_a])
+                                                    Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                                     ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                                     time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
-                                                    Initial_eccentricity.append([time_arr, ecc_arr])
+                                                    Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                     plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                             else:
@@ -210,11 +210,11 @@ if read_pickle == True:
                                                 mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                 Initial_gradients[axis_ind].append([mean_grad])
                                                 grad_over_a = mean_grad/initial_a
-                                                Grad_over_init_sep.append([grad_over_a])
-                                                Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                                Grad_over_init_sep[axis_ind].append([grad_over_a])
+                                                Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                                 ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                                 time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
-                                                Initial_eccentricity.append([time_arr, ecc_arr])
+                                                Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                                 plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                 plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         else:
@@ -228,11 +228,11 @@ if read_pickle == True:
                                             mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                             Initial_gradients[axis_ind].append([mean_grad])
                                             grad_over_a = mean_grad/initial_a
-                                            Grad_over_init_sep.append([grad_over_a])
-                                            Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                            Grad_over_init_sep[axis_ind].append([grad_over_a])
+                                            Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                             ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                             time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
-                                            Initial_eccentricity.append([time_arr, ecc_arr])
+                                            Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                             plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                             plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
  
@@ -348,6 +348,9 @@ ax.step(x_range, grad_hist_core_norm, where='post', label="Core Fragmentation", 
 ax.step(x_range, grad_hist_core_delayed_norm, where='post', label="Delayed Core Fragmentation", linewidth=2, color='purple', alpha=0.5, ls='--')
 ax.step(x_range, grad_hist_capt_norm, where='post', label="Dynamical Capture", linewidth=2, color='red', alpha=0.5, ls='-.')
 ax.step(x_range, grad_hist_misc_norm, where='post', label="Other", linewidth=2, color='orange', alpha=0.5, ls=':')
+
+
+
 '''
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core/np.sum(grad_hist_core), label="Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='b')
 ax.bar(np.arange(len(grad_hist_core))+0.5, grad_hist_core_delayed/np.sum(grad_hist_core_delayed), label="Delayed Core Fragmentation", width=1, color='None', linewidth=2, edgecolor='purple')
