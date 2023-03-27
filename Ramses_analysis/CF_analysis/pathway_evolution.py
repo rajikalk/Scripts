@@ -307,6 +307,27 @@ file = open(grad_pickle, 'rb')
 Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3 = pickle.load(file)
 file.close()
 
+#Plot the eccentricity evolution:
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(12, 9), sharey=True, sharex=True)
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.07)
+
+for form_path_it in Initial_eccentricity:
+    if form_path_it < 3:
+        for sys_it in Initial_eccentricity[form_path_it]:
+            time_arr = Initial_eccentricity[form_path_it][sys_it][0]
+            ecc_arr = np.array(Initial_eccentricity[0][0][1]).T
+            axs[form_path_it].plot(time_arr, ecc_arr)
+
+axes[0].set_ylabel('e B. Core Frag.')
+axes[1].set_ylabel('e U. Core Frag.')
+axes[2].set_ylabel('e Dynamical Capt.')
+axes[2].set_xlabel('Time since first peri. (yr)')
+plt.savefig('ecc_vs_time.png', bbox_inches='tight')
+
+
+
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(5,-6,12), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
