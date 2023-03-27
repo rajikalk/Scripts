@@ -315,7 +315,7 @@ plt.subplots_adjust(hspace=0.07)
 
 for form_path_it in range(len(Initial_eccentricity)-1):
     if form_path_it < 3:
-        for sys_it in Initial_eccentricity[form_path_it]:
+        for sys_it in range(len(Initial_eccentricity[form_path_it])):
             time_arr = Initial_eccentricity[form_path_it][sys_it][0]
             ecc_arr = np.array(Initial_eccentricity[0][0][1]).T
             axs[form_path_it].plot(time_arr, ecc_arr)
