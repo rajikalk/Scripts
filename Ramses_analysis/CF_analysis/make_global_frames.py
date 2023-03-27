@@ -62,8 +62,10 @@ part_pickles = sorted(glob.glob(save_dir + "movie_frame_*_part.pkl"))
 sys.stdout.flush()
 CW.Barrier()
 
-x = np.linspace(-2, 2, 800)
-y = np.linspace(-2, 2, 800)
+center_pos = yt.YTArray([698008.22819465, 630724.52709206, 100424.06375299], au)
+radius = yt.YTQuantity(20000, au)
+x = np.linspace(center_pos[0]-radius, center_pos[0]+radius, 800)
+y = np.linspace(center_pos[1]-radius, center_pos[1]+radius, 800)
 xlim = [x[0], x[-1]]
 ylim = [y[0], y[-1]]
 X, Y = np.meshgrid(x, y)

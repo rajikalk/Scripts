@@ -311,6 +311,7 @@ if args.update_pickles == 'True':
                         semimajor_arr = []
                         reduced = False
                         eccentricities_arr = []
+                        relative_velocities = []
                         system_etot_arr = []
                         while reduced == False:
                             open_braket_ind = []
@@ -368,6 +369,8 @@ if args.update_pickles == 'True':
                                         system_etot_arr.append(etot)
                                         semimajor_arr.append(res['semiMajorAxis'][replace_ind])
                                         eccentricities_arr.append(res['eccentricity'][replace_ind])
+                                        import pdb
+                                        pdb.set_trace()
                                         
                                         sep_arr.append(sep_value)
                                         midpoint_sep_arr.append(midpoint_sep_value)
