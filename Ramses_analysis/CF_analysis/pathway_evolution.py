@@ -87,10 +87,9 @@ if read_pickle == True:
         Grad_1e3 = []
         Grad_1e4 = []
         Initial_rel_vel = [[],[],[],[]]
+        Initial_eccentricity = [[],[],[],[]]
         Initial_gradients = [[],[],[],[]]
-        Initial_gradients_1000 = [[],[],[],[]]
-        Initial_gradients_10000 = [[],[],[],[]]
-        Initial_gradients_100000 = [[],[],[],[]]
+        Grad_over_init_sep = [[],[],[],[]]
         Used_sub_sys = []
         
         print('initialised gradient arrays')
@@ -191,8 +190,12 @@ if read_pickle == True:
                                                     end_a = Sep_arr[end_t_ind]
                                                     end_t_data = Time_arr[end_t_ind]
                                                     mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
-                                                    Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                    Initial_gradients[axis_ind].append([mean_grad])
+                                                    grad_over_a = mean_grad/initial_a
+                                                    Grad_over_init_sep.append([grad_over_a])
                                                     Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                                    import pdb
+                                                    pdb.set_trace()
                                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                     plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                             else:
@@ -204,8 +207,12 @@ if read_pickle == True:
                                                 end_a = Sep_arr[end_t_ind]
                                                 end_t_data = Time_arr[end_t_ind]
                                                 mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
-                                                Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                Initial_gradients[axis_ind].append([mean_grad])
+                                                grad_over_a = mean_grad/initial_a
+                                                Grad_over_init_sep.append([grad_over_a])
                                                 Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                                import pdb
+                                                pdb.set_trace()
                                                 plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                 plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         else:
@@ -217,90 +224,15 @@ if read_pickle == True:
                                             end_a = Sep_arr[end_t_ind]
                                             end_t_data = Time_arr[end_t_ind]
                                             mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
-                                            Initial_gradients_10000[axis_ind].append([mean_grad])
+                                            Initial_gradients[axis_ind].append([mean_grad])
+                                            grad_over_a = mean_grad/initial_a
+                                            Grad_over_init_sep.append([grad_over_a])
                                             Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
+                                            import pdb
+                                            pdb.set_trace()
                                             plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                             plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
  
-                                    '''
-                                    import pdb
-                                    pdb.set_trace()
-                                        
-                                    dsep = Sep_arr[1:] - Sep_arr[:-1]
-                                    dtime = Time_arr[1:] - Time_arr[:-1]
-                                    grad = dsep/dtime
-                                    mean_x = (Time_arr[1:] + Time_arr[:-1])/2
-                                    try:
-                                        sub_1000_inds = np.where(Time_arr<1000)[0]
-                                        dt = Time_arr[sub_1000_inds[-1]] - Time_arr[sub_1000_inds[0]]
-                                        ds = Sep_arr[sub_1000_inds[-1]] - Sep_arr[sub_1000_inds[0]]
-                                        mean_grad = ds/dt
-                                        if mean_grad in np.array(Initial_gradients_1000[axis_ind]):
-                                            import pdb
-                                            pdb.set_trace()
-                                        Initial_gradients_1000[axis_ind].append([mean_grad])
-                                    except:
-                                        print('system has not mean times < 1000yr')
-                                    try:
-                                        sub_10000_inds = np.where(Time_arr<10000)[0]
-                                        non_nan_ind = np.where(np.isnan(Sep_arr)==False)[0]
-                                        if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>10000 and np.max(sub_10000_inds[1:] - sub_10000_inds[:-1])==1:
-                                            dt = Time_arr[sub_10000_inds[-1]] - Time_arr[sub_10000_inds[0]]
-                                            ds = Sep_arr[sub_10000_inds[-1]] - Sep_arr[sub_10000_inds[0]]
-                                            mean_grad = ds/dt
-                                            if mean_grad in np.array(Initial_gradients_10000[axis_ind]):
-                                                import pdb
-                                                pdb.set_trace()
-                                            Initial_gradients_10000[axis_ind].append([mean_grad])
-                                            if mean_grad < -1e4:
-                                                Grad_1e4.append(time_key)
-                                            if mean_grad < -1e3:
-                                                Grad_1e3.append(time_key)
-                                            if mean_grad < -1e2:
-                                                plt.clf()
-                                                fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width), sharex=True)
-                                                plt.subplots_adjust(wspace=0.0)
-                                                plt.subplots_adjust(hspace=0.0)
-                                                axs[0].set_title('System:'+time_key+', form_path:'+form_path+', mean_grad:'+str(mean_grad))
-                                                axs[0].semilogy((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_semimajor'][time_key]).T[sep_ind], label='Semimajor axis')
-                                                axs[1].semilogy((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_seps'][time_key]).T[sep_ind], label='Separation')
-                                                axs[1].set_ylim([10, 10000])
-                                                axs[2].plot((np.array(superplot_dict['System_times'][time_key]) - superplot_dict['System_times'][time_key][0]), np.array(superplot_dict['System_ecc'][time_key]).T[sep_ind], label='Eccentricity')
-                                                axs[2].set_ylim([0.0, 1.1])
-                                                axs[0].set_ylabel('Semimajor Axis (au)')
-                                                axs[1].set_ylabel('Separation (au)')
-                                                axs[2].set_ylabel('Eccentricity')
-                                                axs[2].set_xlabel('Time (yr)')
-                                                plt.savefig('System:'+time_key+'.png')
-                                        else:
-                                            print('Not enough points to suggest system stays bound for first  10000yr')
-                                    except:
-                                        print('system has no mean times < 10000yr')
-                                    try:
-                                        sub_100000_inds = np.where(Time_arr<100000)[0]
-                                        non_nan_ind = np.where(np.isnan(Sep_arr)==False)[0]
-                                        if len(sub_10000_inds)>9 and Time_arr[non_nan_ind][-1]>100000 and np.max(sub_100000_inds[1:] - sub_100000_inds[:-1])==1:
-                                            dt = Time_arr[sub_100000_inds[-1]] - Time_arr[sub_100000_inds[0]]
-                                            ds = Sep_arr[sub_100000_inds[-1]] - Sep_arr[sub_100000_inds[0]]
-                                            mean_grad = ds/dt
-                                            if mean_grad in np.array(Initial_gradients_100000[axis_ind]):
-                                                import pdb
-                                                pdb.set_trace()
-                                            Initial_gradients_100000[axis_ind].append([mean_grad])
-                                        else:
-                                            print('Not enough points to suggest system stays bound for first  10000yr')
-                                    except:
-                                        print('system has not mean times < 100000yr')
-                                    if len(grad) > 0:
-                                        if grad[0] in np.array(Initial_gradients[axis_ind]):
-                                            import pdb
-                                            pdb.set_trace()
-                                        Initial_gradients[axis_ind].append(grad[0])
-                                    #lets trying smoothing over a 1000year window, but not centred
-                                    
-                                    Used_sub_sys.append(str(sub_sys))
-                                    
-                                    '''
                                 if plot_gradient == True:
                                     if 'ecc' in plot_key:
                                         axs.flatten()[axis_ind].plot(np.array(Time_arr), Sep_arr, alpha=0.2, color=color, rasterized=True, ls=line_style)
@@ -357,8 +289,8 @@ if read_pickle == True:
         else:
             grad_pickle = 'grad_pickle.pkl'
         file = open(grad_pickle, 'wb')
-        #pickle.dump((Initial_gradients, Initial_gradients_10000, Grad_1e4, Grad_1e3), file)
-        pickle.dump((Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3), file)
+        #pickle.dump((Initial_gradients, Initial_gradients, Grad_1e4, Grad_1e3), file)
+        pickle.dump((Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3), file)
         file.close()
         print('saved_gradients')
         
@@ -369,7 +301,7 @@ if read_pickle == True:
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
-Initial_gradients, Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000, Grad_1e4, Grad_1e3 = pickle.load(file)
+Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3 = pickle.load(file)
 file.close()
 
 #Defining gradient bins and getting tick labels
@@ -426,8 +358,8 @@ ax.set_ylabel('#')
 ax.set_ylim([0,0.4])
 ax.legend(loc='best')
 plt.savefig('Initial_grad_hist.png')
-
-mean_grads = [Initial_gradients_1000, Initial_gradients_10000, Initial_gradients_100000]
+"""
+mean_grads = [Initial_eccentricity, Initial_gradients, Grad_over_init_sep]
 
 #Plotting mean gradients
 #calculate means
@@ -512,8 +444,6 @@ for Initial_mean_grad in mean_grads:
     ax.legend(loc='best')
     plt.savefig('Initial_mean_grad_'+str(time_means[time_means_counter])+'.png')
     time_means_counter = time_means_counter + 1
-
-"""
 
 def Gaussian(x,scale,mean,sigma):
     return scale*stats.norm.pdf(x, mean, sigma)
