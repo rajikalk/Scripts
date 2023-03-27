@@ -403,10 +403,6 @@ if args.update_pickles == 'True':
                             System_energies[sys_comps_str].append(system_etot_arr)
                             System_rel_vel[sys_comps_str].append(relative_velocities)
                 for sys_key in System_times.keys():
-                    if sys_key =='[17, [21, 22]]' and time_yr < 24008180.37303233 and time_yr > 24005356.19873199:
-                        print("Failed on time_it", time_it)
-                        import pdb
-                        pdb.set_trace()
                     if sys_key not in updated_systems:
                         System_times[sys_key].append(time_yr)
                         System_seps[sys_key].append(np.ones(np.shape(System_seps[sys_key][-1]))*np.nan)
