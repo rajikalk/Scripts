@@ -140,6 +140,7 @@ System_semimajor = {}
 System_times = {}
 System_ecc = {}
 System_energies = {}
+System_rel_vel = {}
 
 sys.stdout.flush()
 CW.Barrier()
@@ -369,8 +370,7 @@ if args.update_pickles == 'True':
                                         system_etot_arr.append(etot)
                                         semimajor_arr.append(res['semiMajorAxis'][replace_ind])
                                         eccentricities_arr.append(res['eccentricity'][replace_ind])
-                                        import pdb
-                                        pdb.set_trace()
+                                        relative_velocities.append(res['semiMajorAxis'][replace_ind])
                                         
                                         sep_arr.append(sep_value)
                                         midpoint_sep_arr.append(midpoint_sep_value)
@@ -393,6 +393,7 @@ if args.update_pickles == 'True':
                             System_semimajor.update({sys_comps_str:[semimajor_arr]})
                             System_ecc.update({sys_comps_str:[eccentricities_arr]})
                             System_energies.update({sys_comps_str:[system_etot_arr]})
+                            System_rel_vel.update({sys_comps_str:[relative_velocities]})
                         else:
                             System_times[sys_comps_str].append(time_yr)
                             System_seps[sys_comps_str].append(sep_arr)
@@ -400,6 +401,7 @@ if args.update_pickles == 'True':
                             System_semimajor[sys_comps_str].append(semimajor_arr)
                             System_ecc[sys_comps_str].append(eccentricities_arr)
                             System_energies[sys_comps_str].append(system_etot_arr)
+                            System_rel_vel[sys_comps_str].append(relative_velocities)
                 for sys_key in System_times.keys():
                     if sys_key =='[17, [21, 22]]' and time_yr < 24008180.37303233 and time_yr > 24005356.19873199:
                         print("Failed on time_it", time_it)
@@ -412,6 +414,7 @@ if args.update_pickles == 'True':
                         System_semimajor[sys_key].append(np.ones(np.shape(System_semimajor[sys_key][-1]))*np.nan)
                         System_ecc[sys_key].append(np.ones(np.shape(System_ecc[sys_key][-1]))*np.nan)
                         System_energies[sys_key].append(np.ones(np.shape(System_energies[sys_key][-1]))*np.nan)
+                        System_rel_vel[sys_key].append(np.ones(np.shape(System_rel_vel[sys_key][-1]))*np.nan)
                 N_multi_stars.append(n_multi)
                 M_tot_multi.append(M_multi)
                 M_tot_vis.append(M_vis)
@@ -432,6 +435,7 @@ if args.update_pickles == 'True':
                     'System_times': System_times,
                     'System_ecc': System_ecc,
                     'System_energies': System_energies,
+                    'System_rel_vel':System_rel_vel,
                     'Single_star_inds': Single_star_inds}
                 
                 file = open(pickle_file_rank, 'wb')
@@ -545,6 +549,7 @@ if rank == 0:
         System_times = {}
         System_ecc = {}
         System_energies = {}
+        System_rel_vel = {}
         for sorted_key in Sorted_keys:
             try:
                 System_seps.update({sorted_key:superplot_dict['System_seps'][sorted_key]})
@@ -553,6 +558,7 @@ if rank == 0:
                 System_times.update({sorted_key:superplot_dict['System_times'][sorted_key]})
                 System_ecc.update({sorted_key:superplot_dict['System_ecc'][sorted_key]})
                 System_energies.update({sorted_key:superplot_dict['System_energies'][sorted_key]})
+                System_rel_vel.update({sorted_key:superplot_dict['System_rel_vel'][sorted_key]})
             except:
                 System_seps.update({sorted_key:superplot_dict[0]['System_seps'][sorted_key]})
                 System_midpoint_seps.update({sorted_key:superplot_dict[0]['System_midpoint_seps'][sorted_key]})
@@ -560,6 +566,7 @@ if rank == 0:
                 System_times.update({sorted_key:superplot_dict[0]['System_times'][sorted_key]})
                 System_ecc.update({sorted_key:superplot_dict[0]['System_ecc'][sorted_key]})
                 System_energies.update({sorted_key:superplot_dict[0]['System_energies'][sorted_key]})
+                System_rel_vel.update({sorted_key:superplot_dict[0]['System_rel_vel'][sorted_key]})
         del Sorted_keys
         try:
             superplot_dict['System_seps'] = System_seps
@@ -568,6 +575,7 @@ if rank == 0:
             superplot_dict['System_times'] = System_times
             superplot_dict['System_ecc'] = System_ecc
             superplot_dict['System_energies'] = System_energies
+            superplot_dict['System_rel_vel'] = System_rel_vel
             file = open(pickle_file+'.pkl', 'wb')
             pickle.dump((superplot_dict, Sink_bound_birth, Sink_formation_times),file)
             file.close()
@@ -578,6 +586,7 @@ if rank == 0:
             superplot_dict[0]['System_times'] = System_times
             superplot_dict[0]['System_ecc'] = System_ecc
             superplot_dict[0]['System_energies'] = System_energies
+            superplot_dict[0]['System_rel_vel'] = System_rel_vel
             file = open(pickle_file+'.pkl', 'wb')
             pickle.dump((superplot_dict[0], Sink_bound_birth, Sink_formation_times),file)
             file.close()
@@ -588,6 +597,7 @@ del System_midpoint_seps
 del System_semimajor
 del System_ecc
 del System_energies
+del System_rel_vel
 
 sys.stdout.flush()
 CW.Barrier()
