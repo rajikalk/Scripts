@@ -184,8 +184,6 @@ if read_pickle == True:
                                                 jump_time_end.append(np.array(superplot_dict['System_times'][time_key])[(jump_inds+1)])
                                                 jump_sys.append(sub_sys)
                                                 if np.sum(peri_inds < jump_inds[0]) > 2:
-                                                    import pdb
-                                                    pdb.set_trace()
                                                     initial_a = Sep_arr[1:][peri_inds[0]]
                                                     initial_t = Time_arr[1:][peri_inds[0]]
                                                     end_t = initial_t + baseline_yr
@@ -194,11 +192,10 @@ if read_pickle == True:
                                                     end_t_data = Time_arr[end_t_ind]
                                                     mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                     Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                    Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
                                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                     plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                             else:
-                                                import pdb
-                                                pdb.set_trace()
                                                 plt.semilogy(Time_arr_full, Sep_arr_true)
                                                 initial_a = Sep_arr[1:][peri_inds[0]]
                                                 initial_t = Time_arr[1:][peri_inds[0]]
@@ -208,11 +205,10 @@ if read_pickle == True:
                                                 end_t_data = Time_arr[end_t_ind]
                                                 mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                 Initial_gradients_10000[axis_ind].append([mean_grad])
+                                                Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
                                                 plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                 plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         else:
-                                            import pdb
-                                            pdb.set_trace()
                                             plt.semilogy(Time_arr_full, Sep_arr_true)
                                             initial_a = Sep_arr[1:][peri_inds[0]]
                                             initial_t = Time_arr[1:][peri_inds[0]]
@@ -222,6 +218,7 @@ if read_pickle == True:
                                             end_t_data = Time_arr[end_t_ind]
                                             mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                             Initial_gradients_10000[axis_ind].append([mean_grad])
+                                            Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
                                             plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                             plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
  
