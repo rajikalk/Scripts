@@ -319,7 +319,8 @@ for form_path_it in range(len(Initial_eccentricity)-1):
             time_arr = Initial_eccentricity[form_path_it][sys_it][0]
             ecc_arr = np.array(Initial_eccentricity[0][0][1]).T
             for ecc in ecc_arr:
-                axs[form_path_it].plot(time_arr, ecc)
+                if len(ecc) == len(time_arr):
+                    axs[form_path_it].plot(time_arr, ecc)
 
 axes[0].set_ylabel('e B. Core Frag.')
 axes[1].set_ylabel('e U. Core Frag.')
