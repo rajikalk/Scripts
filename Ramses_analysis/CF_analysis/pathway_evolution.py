@@ -313,7 +313,7 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(12, 9), sharey=True, sharex=T
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.07)
 
-for form_path_it in Initial_eccentricity:
+for form_path_it in range(len(Initial_eccentricity)-1):
     if form_path_it < 3:
         for sys_it in Initial_eccentricity[form_path_it]:
             time_arr = Initial_eccentricity[form_path_it][sys_it][0]
