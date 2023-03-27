@@ -196,6 +196,8 @@ if read_pickle == True:
                                                     Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                                     ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                                     time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                                    import pdb
+                                                    pdb.set_trace()
                                                     Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                     plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
@@ -214,6 +216,8 @@ if read_pickle == True:
                                                 Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                                 ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                                 time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                                import pdb
+                                                pdb.set_trace()
                                                 Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                                 plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                 plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
@@ -232,6 +236,8 @@ if read_pickle == True:
                                             Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
                                             ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
                                             time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                            import pdb
+                                            pdb.set_trace()
                                             Initial_eccentricity[axis_ind].append([time_arr, ecc_arr])
                                             plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                             plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
@@ -322,10 +328,10 @@ for form_path_it in range(len(Initial_eccentricity)-1):
                 if len(ecc) == len(time_arr):
                     axs[form_path_it].plot(time_arr, ecc)
 
-axes[0].set_ylabel('e B. Core Frag.')
-axes[1].set_ylabel('e U. Core Frag.')
-axes[2].set_ylabel('e Dynamical Capt.')
-axes[2].set_xlabel('Time since first peri. (yr)')
+axs[0].set_ylabel('e B. Core Frag.')
+axs[1].set_ylabel('e U. Core Frag.')
+axs[2].set_ylabel('e Dynamical Capt.')
+axs[2].set_xlabel('Time since first peri. (yr)')
 plt.savefig('ecc_vs_time.png', bbox_inches='tight')
 
 
