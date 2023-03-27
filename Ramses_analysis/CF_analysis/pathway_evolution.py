@@ -194,8 +194,9 @@ if read_pickle == True:
                                                     grad_over_a = mean_grad/initial_a
                                                     Grad_over_init_sep.append([grad_over_a])
                                                     Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
-                                                    import pdb
-                                                    pdb.set_trace()
+                                                    ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
+                                                    time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                                    Initial_eccentricity.append([time_arr, ecc_arr])
                                                     plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                     plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                             else:
@@ -211,8 +212,9 @@ if read_pickle == True:
                                                 grad_over_a = mean_grad/initial_a
                                                 Grad_over_init_sep.append([grad_over_a])
                                                 Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
-                                                import pdb
-                                                pdb.set_trace()
+                                                ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
+                                                time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                                Initial_eccentricity.append([time_arr, ecc_arr])
                                                 plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                                 plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
                                         else:
@@ -228,8 +230,9 @@ if read_pickle == True:
                                             grad_over_a = mean_grad/initial_a
                                             Grad_over_init_sep.append([grad_over_a])
                                             Initial_rel_vel.append(superplot_dict['System_rel_vel'][time_key][0])
-                                            import pdb
-                                            pdb.set_trace()
+                                            ecc_arr = superplot_dict['System_ecc'][time_key][peri_inds[0]:end_t_ind]
+                                            time_arr = np.array(superplot_dict['System_times'][time_key][peri_inds[0]:end_t_ind]) - superplot_dict['System_times'][time_key][peri_inds[0]]
+                                            Initial_eccentricity.append([time_arr, ecc_arr])
                                             plt.scatter(Time_arr_full[1:-1][peri_inds], Sep_arr_true[1:-1][peri_inds])
                                             plt.savefig('Peri_check_'+str(sub_sys).replace(' ', '')+'.png')
  
