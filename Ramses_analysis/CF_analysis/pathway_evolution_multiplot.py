@@ -340,10 +340,10 @@ Delayed_core_bounds_10000 = [np.array(Grad_over_sep_mean_10000[1])-np.array(Grad
 Capt_bounds_10000 = [np.array(Grad_over_sep_mean_10000[2])-np.array(Grad_over_sep_std_10000[2]), np.array(Grad_over_sep_mean_10000[2])+np.array(Grad_over_sep_std_10000[2])]
 Other_bounds_10000 = [np.array(Grad_over_sep_mean_10000[3])-np.array(Grad_over_sep_std_10000[3]), np.array(Grad_over_sep_mean_10000[3])+np.array(Grad_over_sep_std_10000[3])]
 
-Core_err_10000 = [np.array(Grad_over_sep_median_10000[0]) - Core_bounds[0], Core_bounds[1] - np.array(Grad_over_sep_median_10000[0])]
-Delayed_core_err_10000 = [np.array(Grad_over_sep_median_10000[1]) - Delayed_core_bounds[0], Delayed_core_bounds[1] - np.array(Grad_over_sep_median_10000[1])]
-Capt_err_10000 = [np.array(Grad_over_sep_median_10000[2]) - Capt_bounds[0], Capt_bounds[1] - np.array(Grad_over_sep_median_10000[2])]
-Other_err_10000 = [np.array(Grad_over_sep_median_10000[3]) - Other_bounds[0], Other_bounds[1] - np.array(Grad_over_sep_median_10000[3])]
+Core_err_10000 = [np.array(Grad_over_sep_median_10000[0]) - Core_bounds_10000[0], Core_bounds_10000[1] - np.array(Grad_over_sep_median_10000[0])]
+Delayed_core_err_10000 = [np.array(Grad_over_sep_median_10000[1]) - Delayed_core_bounds_10000[0], Delayed_core_bounds_10000[1] - np.array(Grad_over_sep_median_10000[1])]
+Capt_err_10000 = [np.array(Grad_over_sep_median_10000[2]) - Capt_bounds_10000[0], Capt_bounds_10000[1] - np.array(Grad_over_sep_median_10000[2])]
+Other_err_10000 = [np.array(Grad_over_sep_median_10000[3]) - Other_bounds_10000[0], Other_bounds_10000[1] - np.array(Grad_over_sep_median_10000[3])]
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)#, hspace=0.0)
@@ -362,12 +362,12 @@ axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_e
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[0].text(6500, -0.1, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+#axs[0].text(6500, -0.1, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[1].tick_params(which='both', direction='in')
 axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+#axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
