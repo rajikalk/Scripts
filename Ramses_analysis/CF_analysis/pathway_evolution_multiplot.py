@@ -355,9 +355,9 @@ axs[0].errorbar(np.array(masses)-130, Grad_over_sep_median[0], yerr=Core_err, la
 axs[0].errorbar(np.array(masses), Grad_over_sep_median[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
 axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2], yerr=Capt_err, label='Dynamical capture', color='r')
 
-axs[1].errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b')
-axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
-axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
+axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b')
+axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
+axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
