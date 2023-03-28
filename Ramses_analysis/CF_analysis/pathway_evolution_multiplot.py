@@ -191,25 +191,25 @@ for grad_it in range(len(grad_pickles)):
     Std_grads_10000[3].append(np.std(np.log10(-1*np.array(Initial_gradients[3]).T[0][other_inspiral_inds])))
     
     #======================================================================================================
-    Grad_over_sep_all_10000[0] = Grad_over_sep_all_10000[0] + np.log10(-1*np.array(Grad_over_init_sep_10000[0]).T[0][core_inspiral_inds]).tolist()
-    Grad_over_sep_all_10000[1] = Grad_over_sep_all_10000[1] + np.log10(-1*np.array(Grad_over_init_sep_10000[1]).T[0][delayed_core_inspiral_inds]).tolist()
-    Grad_over_sep_all_10000[2] = Grad_over_sep_all_10000[2] + np.log10(-1*np.array(Grad_over_init_sep_10000[2]).T[0][capt_inspiral_inds]).tolist()
+    Grad_over_sep_all_10000[0] = Grad_over_sep_all_10000[0] + np.log10(-1*np.array(Grad_over_init_sep[0]).T[0][core_inspiral_inds]).tolist()
+    Grad_over_sep_all_10000[1] = Grad_over_sep_all_10000[1] + np.log10(-1*np.array(Grad_over_init_sep[1]).T[0][delayed_core_inspiral_inds]).tolist()
+    Grad_over_sep_all_10000[2] = Grad_over_sep_all_10000[2] + np.log10(-1*np.array(Grad_over_init_sep[2]).T[0][capt_inspiral_inds]).tolist()
     
-    Grad_over_sep_mean_10000[0].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep_10000[0]).T[0][core_inspiral_inds])))
-    Grad_over_sep_median_10000[0].append(np.median(np.log10(-1*np.array(Grad_over_init_sep_10000[0]).T[0][core_inspiral_inds])))
-    Grad_over_sep_std_10000[0].append(np.std(np.log10(-1*np.array(Grad_over_init_sep_10000[0]).T[0][core_inspiral_inds])))
+    Grad_over_sep_mean_10000[0].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep[0]).T[0][core_inspiral_inds])))
+    Grad_over_sep_median_10000[0].append(np.median(np.log10(-1*np.array(Grad_over_init_sep[0]).T[0][core_inspiral_inds])))
+    Grad_over_sep_std_10000[0].append(np.std(np.log10(-1*np.array(Grad_over_init_sep[0]).T[0][core_inspiral_inds])))
     
-    Grad_over_sep_mean_10000[1].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep_10000[1]).T[0][delayed_core_inspiral_inds])))
-    Grad_over_sep_median_10000[1].append(np.median(np.log10(-1*np.array(Grad_over_init_sep_10000[1]).T[0][delayed_core_inspiral_inds])))
-    Grad_over_sep_std_10000[1].append(np.std(np.log10(-1*np.array(Grad_over_init_sep_10000[1]).T[0][delayed_core_inspiral_inds])))
+    Grad_over_sep_mean_10000[1].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep[1]).T[0][delayed_core_inspiral_inds])))
+    Grad_over_sep_median_10000[1].append(np.median(np.log10(-1*np.array(Grad_over_init_sep[1]).T[0][delayed_core_inspiral_inds])))
+    Grad_over_sep_std_10000[1].append(np.std(np.log10(-1*np.array(Grad_over_init_sep[1]).T[0][delayed_core_inspiral_inds])))
     
-    Grad_over_sep_mean_10000[2].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep_10000[2]).T[0][capt_inspiral_inds])))
-    Grad_over_sep_median_10000[2].append(np.median(np.log10(-1*np.array(Grad_over_init_sep_10000[2]).T[0][capt_inspiral_inds])))
-    Grad_over_sep_std_10000[2].append(np.std(np.log10(-1*np.array(Grad_over_init_sep_10000[2]).T[0][capt_inspiral_inds])))
+    Grad_over_sep_mean_10000[2].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep[2]).T[0][capt_inspiral_inds])))
+    Grad_over_sep_median_10000[2].append(np.median(np.log10(-1*np.array(Grad_over_init_sep[2]).T[0][capt_inspiral_inds])))
+    Grad_over_sep_std_10000[2].append(np.std(np.log10(-1*np.array(Grad_over_init_sep[2]).T[0][capt_inspiral_inds])))
     
-    Grad_over_sep_mean_10000[3].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep_10000[3]).T[0][other_inspiral_inds])))
-    Grad_over_sep_median_10000[3].append(np.median(np.log10(-1*np.array(Grad_over_init_sep_10000[3]).T[0][other_inspiral_inds])))
-    Grad_over_sep_std_10000[3].append(np.std(np.log10(-1*np.array(Grad_over_init_sep_10000[3]).T[0][other_inspiral_inds])))
+    Grad_over_sep_mean_10000[3].append(np.mean(np.log10(-1*np.array(Grad_over_init_sep[3]).T[0][other_inspiral_inds])))
+    Grad_over_sep_median_10000[3].append(np.median(np.log10(-1*np.array(Grad_over_init_sep[3]).T[0][other_inspiral_inds])))
+    Grad_over_sep_std_10000[3].append(np.std(np.log10(-1*np.array(Grad_over_init_sep[3]).T[0][other_inspiral_inds])))
     #======================================================================================================
     
     #Plotting initial gradients
