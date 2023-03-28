@@ -343,7 +343,6 @@ axs[2].set_ylim([0, 1])
 plt.savefig('ecc_vs_time.png', bbox_inches='tight')
 
 
-
 #Defining gradient bins and getting tick labels
 grad_bins = np.concatenate((-1*np.logspace(5,-6,12), np.array([0, 1.e10]))) #np.concatenate((-1*np.logspace(5,-3,9), np.array([0, 1.e10])))
 grad_bin_centers = (grad_bins[1:] + grad_bins[:-1])/2
