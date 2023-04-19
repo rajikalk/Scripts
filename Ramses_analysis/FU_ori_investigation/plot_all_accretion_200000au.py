@@ -96,6 +96,9 @@ for sink_data in loaded_sink_data:
         dz = sink_data['z']*units['length_unit'].in_units('au') - target_sink_formation_location[2]
         sep = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(sep<20000)[0]
+    import pdb
+    pdb.set_trace()
+    #Check that it's looking at any sinks within 20000 at any time.
     for close_sink in close_sinks:
         if close_sink not in plotted_sinks:
             time_arr = []
