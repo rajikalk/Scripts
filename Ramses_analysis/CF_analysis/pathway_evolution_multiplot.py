@@ -52,6 +52,9 @@ Mean_grads = [[], [], [], []]
 Median_grads = [[], [], [], []]
 Std_grads = [[], [], [], []]
 All_grads = [[], [], []]
+Alpha_medians = [[], [], []]
+Alpha_means = [[], [], []]
+Alpha_std = [[], [], []]
 Grad_over_sep_mean = [[], [], [], []]
 Grad_over_sep_median = [[], [], [], []]
 Grad_over_sep_std = [[], [], [], []]
@@ -69,6 +72,18 @@ for grad_it in range(len(grad_pickles)):
     All_grads[0] = All_grads[0] + np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds]).tolist()
     All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients[1]).T[0][delayed_core_inspiral_inds]).tolist()
     All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients[2]).T[0][capt_inspiral_inds]).tolist()
+    
+    Alpha_means[0].append(np.nanmean(np.array(Alphas[0]).T[0]))
+    Alpha_medians[0].append(np.nanmedian(np.array(Alphas[0]).T[0]))
+    Alpha_std[0].append(np.nanstd(np.array(Alphas[0]).T[0]))
+    
+    Alpha_means[1].append(np.nanmean(np.array(Alphas[1]).T[0]))
+    Alpha_medians[1].append(np.nanmedian(np.array(Alphas[1]).T[0]))
+    Alpha_std[1].append(np.nanstd(np.array(Alphas[1]).T[0]))
+    
+    Alpha_means[2].append(np.nanmean(np.array(Alphas[2]).T[0]))
+    Alpha_medians[2].append(np.nanmedian(np.array(Alphas[2]).T[0]))
+    Alpha_std[2].append(np.nanstd(np.array(Alphas[2]).T[0]))
     
     Mean_grads[0].append(np.mean(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
     Median_grads[0].append(np.median(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
@@ -156,6 +171,9 @@ Mean_grads_10000 = [[], [], [], []]
 Median_grads_10000 = [[], [], [], []]
 Std_grads_10000 = [[], [], [], []]
 All_grads_10000 = [[], [], []]
+Alpha_medians_10000 = [[], [], []]
+Alpha_means_10000 = [[], [], []]
+Alpha_std_10000 = [[], [], []]
 Grad_over_sep_mean_10000 = [[], [], [], []]
 Grad_over_sep_median_10000 = [[], [], [], []]
 Grad_over_sep_std_10000 = [[], [], [], []]
@@ -173,6 +191,18 @@ for grad_it in range(len(grad_pickles)):
     All_grads_10000[0] = All_grads_10000[0] + np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds]).tolist()
     All_grads_10000[1] = All_grads_10000[1] + np.log10(-1*np.array(Initial_gradients[1]).T[0][delayed_core_inspiral_inds]).tolist()
     All_grads_10000[2] = All_grads_10000[2] + np.log10(-1*np.array(Initial_gradients[2]).T[0][capt_inspiral_inds]).tolist()
+    
+    Alpha_means_10000[0].append(np.nanmean(np.array(Alphas[0]).T[0]))
+    Alpha_medians_10000[0].append(np.nanmedian(np.array(Alphas[0]).T[0]))
+    Alpha_std_10000[0].append(np.nanstd(np.array(Alphas[0]).T[0]))
+    
+    Alpha_means_10000[1].append(np.nanmean(np.array(Alphas[1]).T[0]))
+    Alpha_medians_10000[1].append(np.nanmedian(np.array(Alphas[1]).T[0]))
+    Alpha_std_10000[1].append(np.nanstd(np.array(Alphas[1]).T[0]))
+    
+    Alpha_means_10000[2].append(np.nanmean(np.array(Alphas[2]).T[0]))
+    Alpha_medians_10000[2].append(np.nanmedian(np.array(Alphas[2]).T[0]))
+    Alpha_std_10000[2].append(np.nanstd(np.array(Alphas[2]).T[0]))
     
     Mean_grads_10000[0].append(np.mean(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
     Median_grads_10000[0].append(np.median(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
@@ -345,22 +375,35 @@ Delayed_core_err_10000 = [np.array(Grad_over_sep_median_10000[1]) - Delayed_core
 Capt_err_10000 = [np.array(Grad_over_sep_median_10000[2]) - Capt_bounds_10000[0], Capt_bounds_10000[1] - np.array(Grad_over_sep_median_10000[2])]
 Other_err_10000 = [np.array(Grad_over_sep_median_10000[3]) - Other_bounds_10000[0], Other_bounds_10000[1] - np.array(Grad_over_sep_median_10000[3])]
 
+Alpha_bound_core = [np.array(Alpha_means[0])-np.array(Alpha_std[0]), np.array(Alpha_means[0])+np.array(Alpha_std[0])]
+Alpha_unbound_core = [np.array(Alpha_means[1])-np.array(Alpha_std[1]), np.array(Alpha_means[1])+np.array(Alpha_std[1])]
+Alpha_dyn_capt = [np.array(Alpha_means[2])-np.array(Alpha_std[2]), np.array(Alpha_means[2])+np.array(Alpha_std[2])]
+
+Core_err = [np.array(Alpha_medians[0]) - Alpha_bound_core[0], Alpha_bound_core[1] - np.array(Alpha_medians[0])]
+Delayed_core_err = [np.array(Alpha_medians[1]) - Alpha_unbound_core[0], Alpha_unbound_core[1] - np.array(Alpha_medians[1])]
+Capt_err = [np.array(Alpha_medians[2]) - Alpha_dyn_capt[0], Alpha_dyn_capt[1] - np.array(Alpha_medians[2])]
+
+Alpha_bound_core_10000 = [np.array(Alpha_means_10000[0])-np.array(Alpha_std_10000[0]), np.array(Alpha_means_10000[0])+np.array(Alpha_std_10000[0])]
+Alpha_unbound_core_10000 = [np.array(Alpha_means_10000[1])-np.array(Alpha_std_10000[1]), np.array(Alpha_means_10000[1])+np.array(Alpha_std_10000[1])]
+Alpha_dyn_capt_10000 = [np.array(Alpha_means_10000[2])-np.array(Alpha_std_10000[2]), np.array(Alpha_means_10000[2])+np.array(Alpha_std_10000[2])]
+
+Core_err_10000 = [np.array(Alpha_medians_10000[0]) - Alpha_bound_core_10000[0], Alpha_bound_core_10000[1] - np.array(Alpha_medians_10000[0])]
+Delayed_core_err_10000 = [np.array(Alpha_medians_10000[1]) - Alpha_unbound_core_10000[0], Alpha_unbound_core_10000[1] - np.array(Alpha_medians_10000[1])]
+Capt_err_10000 = [np.array(Alpha_medians_10000[2]) - Alpha_dyn_capt_10000[0], Alpha_dyn_capt_10000[1] - np.array(Alpha_medians_10000[2])]
+
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)#, hspace=0.0)
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-import pdb
-pdb.set_trace()
+axs[0].errorbar(np.array(masses)-130, Alpha_medians[0], yerr=Core_err, label='Bound core frag.', color='b')
+axs[0].errorbar(np.array(masses), Alpha_medians[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
+axs[0].errorbar(np.array(masses)+130, Alpha_medians[2], yerr=Capt_err, label='Dynamical capture', color='r')
 
-axs[0].errorbar(np.array(masses)-130, Grad_over_sep_median[0], yerr=Core_err, label='Bound core frag.', color='b')
-axs[0].errorbar(np.array(masses), Grad_over_sep_median[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
-axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2], yerr=Capt_err, label='Dynamical capture', color='r')
-
-axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b')
-axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
-axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
+axs[1].errorbar(np.array(masses)-130, Alpha_medians_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b')
+axs[1].errorbar(np.array(masses), Alpha_medians_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
+axs[1].errorbar(np.array(masses)+130, Alpha_medians_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
