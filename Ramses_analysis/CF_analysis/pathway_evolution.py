@@ -89,6 +89,7 @@ if read_pickle == True:
         Initial_rel_vel = [[],[],[],[]]
         Initial_eccentricity = [[],[],[],[]]
         Initial_gradients = [[],[],[],[]]
+        Alphas =[[],[],[],[]]
         Grad_over_init_sep = [[],[],[],[]]
         Used_sub_sys = []
         
@@ -190,7 +191,9 @@ if read_pickle == True:
                                                     end_a = Sep_arr[end_t_ind]
                                                     end_t_data = Time_arr[end_t_ind]
                                                     mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
+                                                    alpha = np.log((initial_a/end_a))/(end_t_data-initial_t)
                                                     Initial_gradients[axis_ind].append([mean_grad])
+                                                    Alphas[axis_ind].append([alpha])
                                                     grad_over_a = mean_grad/initial_a
                                                     Grad_over_init_sep[axis_ind].append([grad_over_a])
                                                     #Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
@@ -210,8 +213,10 @@ if read_pickle == True:
                                                 end_t_ind = np.argmin(abs(Time_arr - end_t))
                                                 end_a = Sep_arr[end_t_ind]
                                                 end_t_data = Time_arr[end_t_ind]
+                                                alpha = np.log((initial_a/end_a))/(end_t_data-initial_t)
                                                 mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
                                                 Initial_gradients[axis_ind].append([mean_grad])
+                                                Alphas[axis_ind].append([alpha])
                                                 grad_over_a = mean_grad/initial_a
                                                 Grad_over_init_sep[axis_ind].append([grad_over_a])
                                                 #Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
@@ -232,7 +237,9 @@ if read_pickle == True:
                                             end_a = Sep_arr[end_t_ind]
                                             end_t_data = Time_arr[end_t_ind]
                                             mean_grad = (end_a-initial_a)/(end_t_data-initial_t)
+                                            alpha = np.log((initial_a/end_a))/(end_t_data-initial_t)
                                             #Initial_gradients[axis_ind].append([mean_grad])
+                                            Alphas[axis_ind].append([alpha])
                                             grad_over_a = mean_grad/initial_a
                                             Grad_over_init_sep[axis_ind].append([grad_over_a])
                                             Initial_rel_vel[axis_ind].append(superplot_dict['System_rel_vel'][time_key][0])
@@ -302,7 +309,7 @@ if read_pickle == True:
             grad_pickle = 'grad_pickle.pkl'
         file = open(grad_pickle, 'wb')
         #pickle.dump((Initial_gradients, Initial_gradients, Grad_1e4, Grad_1e3), file)
-        pickle.dump((Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3), file)
+        pickle.dump((Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Alphas, Grad_1e4, Grad_1e3), file)
         file.close()
         print('saved_gradients')
         
@@ -313,7 +320,7 @@ if read_pickle == True:
 
 grad_pickle = 'grad_pickle.pkl'
 file = open(grad_pickle, 'rb')
-Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3 = pickle.load(file)
+Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Alphas, Grad_1e4, Grad_1e3 = pickle.load(file)
 file.close()
 
 #Plot the eccentricity evolution:
