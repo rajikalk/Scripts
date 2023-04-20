@@ -73,17 +73,17 @@ for grad_it in range(len(grad_pickles)):
     All_grads[1] = All_grads[1] + np.log10(-1*np.array(Initial_gradients[1]).T[0][delayed_core_inspiral_inds]).tolist()
     All_grads[2] = All_grads[2] + np.log10(-1*np.array(Initial_gradients[2]).T[0][capt_inspiral_inds]).tolist()
     
-    Alpha_means[0].append(np.nanmean(np.array(Alphas[0]).T[0]))
-    Alpha_medians[0].append(np.nanmedian(np.array(Alphas[0]).T[0]))
-    Alpha_std[0].append(np.nanstd(np.array(Alphas[0]).T[0]))
+    Alpha_means[0].append(np.nanmean(np.array(Alphas[0]).T[0][core_inspiral_inds]))
+    Alpha_medians[0].append(np.nanmedian(np.array(Alphas[0]).T[0][core_inspiral_inds]))
+    Alpha_std[0].append(np.nanstd(np.array(Alphas[0]).T[0][core_inspiral_inds]))
     
-    Alpha_means[1].append(np.nanmean(np.array(Alphas[1]).T[0]))
-    Alpha_medians[1].append(np.nanmedian(np.array(Alphas[1]).T[0]))
-    Alpha_std[1].append(np.nanstd(np.array(Alphas[1]).T[0]))
+    Alpha_means[1].append(np.nanmean(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
+    Alpha_medians[1].append(np.nanmedian(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
+    Alpha_std[1].append(np.nanstd(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
     
-    Alpha_means[2].append(np.nanmean(np.array(Alphas[2]).T[0]))
-    Alpha_medians[2].append(np.nanmedian(np.array(Alphas[2]).T[0]))
-    Alpha_std[2].append(np.nanstd(np.array(Alphas[2]).T[0]))
+    Alpha_means[2].append(np.nanmean(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
+    Alpha_medians[2].append(np.nanmedian(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
+    Alpha_std[2].append(np.nanstd(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
     
     Mean_grads[0].append(np.mean(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
     Median_grads[0].append(np.median(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
@@ -193,17 +193,17 @@ for grad_it in range(len(grad_pickles)):
     All_grads_10000[1] = All_grads_10000[1] + np.log10(-1*np.array(Initial_gradients[1]).T[0][delayed_core_inspiral_inds]).tolist()
     All_grads_10000[2] = All_grads_10000[2] + np.log10(-1*np.array(Initial_gradients[2]).T[0][capt_inspiral_inds]).tolist()
     
-    Alpha_means_10000[0].append(np.nanmean(np.array(Alphas[0]).T[0]))
-    Alpha_medians_10000[0].append(np.nanmedian(np.array(Alphas[0]).T[0]))
-    Alpha_std_10000[0].append(np.nanstd(np.array(Alphas[0]).T[0]))
+    Alpha_means_10000[0].append(np.nanmean(np.array(Alphas[0]).T[0][core_inspiral_inds]))
+    Alpha_medians_10000[0].append(np.nanmedian(np.array(Alphas[0]).T[0][core_inspiral_inds]))
+    Alpha_std_10000[0].append(np.nanstd(np.array(Alphas[0]).T[0][core_inspiral_inds]))
     
-    Alpha_means_10000[1].append(np.nanmean(np.array(Alphas[1]).T[0]))
-    Alpha_medians_10000[1].append(np.nanmedian(np.array(Alphas[1]).T[0]))
-    Alpha_std_10000[1].append(np.nanstd(np.array(Alphas[1]).T[0]))
+    Alpha_means_10000[1].append(np.nanmean(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
+    Alpha_medians_10000[1].append(np.nanmedian(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
+    Alpha_std_10000[1].append(np.nanstd(np.array(Alphas[1]).T[0][delayed_core_inspiral_inds]))
     
-    Alpha_means_10000[2].append(np.nanmean(np.array(Alphas[2]).T[0]))
-    Alpha_medians_10000[2].append(np.nanmedian(np.array(Alphas[2]).T[0]))
-    Alpha_std_10000[2].append(np.nanstd(np.array(Alphas[2]).T[0]))
+    Alpha_means_10000[2].append(np.nanmean(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
+    Alpha_medians_10000[2].append(np.nanmedian(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
+    Alpha_std_10000[2].append(np.nanstd(np.array(Alphas[2]).T[0][capt_inspiral_inds]))
     
     Mean_grads_10000[0].append(np.mean(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
     Median_grads_10000[0].append(np.median(np.log10(-1*np.array(Initial_gradients[0]).T[0][core_inspiral_inds])))
