@@ -58,7 +58,7 @@ Grad_over_sep_std = [[], [], [], []]
 Grad_over_sep_all = [[], [], [], []]
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
-    Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3 = pickle.load(file)
+    Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Alphas, Grad_1e4, Grad_1e3 = pickle.load(file)
     file.close()
 
     core_inspiral_inds = np.where(np.array(Initial_gradients[0]) < 0)[0]
@@ -162,7 +162,7 @@ Grad_over_sep_std_10000 = [[], [], [], []]
 Grad_over_sep_all_10000 = [[], [], [], []]
 for grad_it in range(len(grad_pickles)):
     file = open(grad_pickles[grad_it], 'rb')
-    Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Grad_1e4, Grad_1e3 = pickle.load(file)
+    Initial_rel_vel, Initial_eccentricity, Initial_gradients, Grad_over_init_sep, Alphas, Grad_1e4, Grad_1e3 = pickle.load(file)
     file.close()
 
     core_inspiral_inds = np.where(np.array(Initial_gradients[0]) < 0)[0]
@@ -351,6 +351,9 @@ iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
+import pdb
+pdb.set_trace()
+
 axs[0].errorbar(np.array(masses)-130, Grad_over_sep_median[0], yerr=Core_err, label='Bound core frag.', color='b')
 axs[0].errorbar(np.array(masses), Grad_over_sep_median[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple')
 axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2], yerr=Capt_err, label='Dynamical capture', color='r')
@@ -358,16 +361,6 @@ axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2], yerr=Capt_err, la
 axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b')
 axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
 axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
-
-ax2 = axs[0].twinx()
-ax2.errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, color='b')
-ax2.errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, color='purple')
-ax2.errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, color='r')
-
-ax3 = axs[0].twinx()
-ax3.errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err_10000, color='b')
-ax3.errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err_10000, color='purple')
-ax3.errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err_10000, color='r')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
@@ -381,13 +374,11 @@ axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
-ax2.set_ylabel('abs. Inspiral rate (Log$_{10}$($\dot{a}$))', size=font_size)
-ax3.set_ylabel('abs. Inspiral rate (Log$_{10}$($\dot{a}$))', size=font_size)
-axs[0].set_ylabel('rel. Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
-axs[1].set_ylabel('rel. Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
+axs[0].set_ylabel('$\alpha$', size=font_size)
+axs[1].set_ylabel('$\alpha$', size=font_size)
 
 #plt.ylim(top=1.5)
-plt.savefig('abs_and_rel_inspiral.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('alpha_inspiral.pdf', bbox_inches='tight', pad_inches=0.02)
 
 #=================================================================================================
 #make 3 panel plot
