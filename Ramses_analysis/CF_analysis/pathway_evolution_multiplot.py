@@ -397,13 +397,15 @@ iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-axs[0].errorbar(np.array(masses)-130, Grad_over_sep_median[0], yerr=Core_err, label='Bound core frag.', color='b', linestyle=':')
-axs[0].errorbar(np.array(masses), Grad_over_sep_median[1], yerr=Delayed_core_err, label='Unbound core frag.', color='purple', linestyle=':')
-axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2], yerr=Capt_err, label='Dynamical capture', color='r', linestyle=':')
 
-axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0], yerr=Core_err_10000, label='Bound core frag.', color='b', linestyle=':')
-axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple', linestyle=':')
-axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r', linestyle=':')
+
+axs[0].errorbar(np.array(masses)-130, Grad_over_sep_median[0]*1000, yerr=Core_err, label='Bound core frag.', color='b', linestyle=':')
+axs[0].errorbar(np.array(masses), Grad_over_sep_median[1]*1000, yerr=Delayed_core_err, label='Unbound core frag.', color='purple', linestyle=':')
+axs[0].errorbar(np.array(masses)+130, Grad_over_sep_median[2]*1000, yerr=Capt_err, label='Dynamical capture', color='r', linestyle=':')
+
+axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0]*10000, yerr=Core_err_10000, label='Bound core frag.', color='b', linestyle=':')
+axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1]*10000, yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple', linestyle=':')
+axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2]*10000, yerr=Capt_err_10000, label='Dynamical capture', color='r', linestyle=':')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
@@ -420,7 +422,7 @@ axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
 axs[1].set_ylabel('Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
 #plt.ylim(top=1.5)
-plt.savefig('inspiral_rate_over_sep_comparison_medians.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('inspiral_rate_over_sep_comparison_medians_norm.pdf', bbox_inches='tight', pad_inches=0.02)
 
 #=================================================================================================
 
