@@ -393,7 +393,7 @@ Delayed_core_err_10000 = [np.array(Alpha_medians_10000[1]) - Alpha_unbound_core_
 Capt_err_10000 = [np.array(Alpha_medians_10000[2]) - Alpha_dyn_capt_10000[0], Alpha_dyn_capt_10000[1] - np.array(Alpha_medians_10000[2])]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)#, hspace=0.0)
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True)#, sharey=True)#, hspace=0.0)
 iter_range = range(0, len(grad_pickles))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -416,7 +416,7 @@ axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, 
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
 #axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
-axs[0].set_ylim([-0.001, 0.0015])
+#axs[0].set_ylim([-0.001, 0.0015])
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('$\\alpha$', size=font_size)
