@@ -349,7 +349,6 @@ axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, 
 axs[1].text(6500, -0.1, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[0].legend(loc='lower right', fontsize=font_size)
-axs[0].set_ylim([-0.001, 0.0015])
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
 axs[1].set_ylabel('Inspiral rate (Log$_{10}$(AU/yr))', size=font_size)
@@ -417,6 +416,7 @@ axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, 
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
 #axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
+axs[0].set_ylim([-0.001, 0.0015])
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
 axs[0].set_ylabel('$\\alpha$', size=font_size)
