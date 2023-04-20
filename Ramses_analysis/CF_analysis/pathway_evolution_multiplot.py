@@ -408,12 +408,12 @@ axs[1].errorbar(np.array(masses)+130, Alpha_medians_10000[2], yerr=Capt_err_1000
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[0].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[0].text(6500, -4.25, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+#axs[0].text(6500, -4.25, "Baseline=$1\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[1].tick_params(which='both', direction='in')
 axs[1].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
 axs[1].tick_params(axis='both', which='minor', labelsize=font_size, right=True, top=True)
-axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
+#axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_size)
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
