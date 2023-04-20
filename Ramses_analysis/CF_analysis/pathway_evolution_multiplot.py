@@ -359,13 +359,15 @@ axs[1].errorbar(np.array(masses)-130, Grad_over_sep_median_10000[0], yerr=Core_e
 axs[1].errorbar(np.array(masses), Grad_over_sep_median_10000[1], yerr=Delayed_core_err_10000, label='Unbound core frag.', color='purple')
 axs[1].errorbar(np.array(masses)+130, Grad_over_sep_median_10000[2], yerr=Capt_err_10000, label='Dynamical capture', color='r')
 
-axs[0].errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, color='b')
-axs[0].errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, color='purple')
-axs[0].errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, color='r')
+ax2 = axs[0].twinx()
+ax2.errorbar(np.array(masses)-130, Median_grads[0], yerr=Core_err, color='b')
+ax2.errorbar(np.array(masses), Median_grads[1], yerr=Delayed_core_err, color='purple')
+ax2.errorbar(np.array(masses)+130, Median_grads[2], yerr=Capt_err, color='r')
 
-axs[1].errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err_10000, color='b')
-axs[1].errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err_10000, color='purple')
-axs[1].errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err_10000, color='r')
+ax3 = axs[0].twinx()
+ax3.errorbar(np.array(masses)-130, Median_grads_10000[0], yerr=Core_err_10000, color='b')
+ax3.errorbar(np.array(masses), Median_grads_10000[1], yerr=Delayed_core_err_10000, color='purple')
+ax3.errorbar(np.array(masses)+130, Median_grads_10000[2], yerr=Capt_err_10000, color='r')
 
 axs[0].tick_params(which='both', direction='in')
 axs[0].tick_params(axis='both', which='major', labelsize=font_size, right=True, top=True)
@@ -379,8 +381,11 @@ axs[1].text(6500, -3.5, "Baseline=$10\,000\,\mathrm{yr}$", zorder=11, size=font_
 
 axs[0].legend(loc='lower right', fontsize=font_size)
 axs[1].set_xlabel('Molecular cloud mass (M$_\odot$)', size=font_size)
-axs[0].set_ylabel('Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
-axs[1].set_ylabel('Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
+ax2.set_ylabel('abs. Inspiral rate (Log$_{10}$($\dot{a}$))', size=font_size)
+ax3.set_ylabel('abs. Inspiral rate (Log$_{10}$($\dot{a}$))', size=font_size)
+axs[0].set_ylabel('rel. Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
+axs[1].set_ylabel('rel. Inspiral rate (Log$_{10}$($\dot{a}/a$))', size=font_size)
+
 #plt.ylim(top=1.5)
 plt.savefig('abs_and_rel_inspiral.pdf', bbox_inches='tight', pad_inches=0.02)
 
