@@ -495,8 +495,8 @@ if args.make_frames_only == 'False':
                         projection_vectors.append(np.array([np.nan, np.nan, np.nan]))
                         north_vectors.append(np.array([np.nan, np.nan, np.nan]))
             else:
-                projection_vectors = [eval(args.projection_vector)]
-                north_vectors = [eval(args.north_vector)]
+                projection_vectors = [np.array(eval(args.projection_vector))]
+                north_vectors = [np.array(eval(args.north_vector))]
             
             #Now that projection and north vectors have been generated, lets create the projection
             for proj_it in yt.parallel_objects(range(len(projection_vectors)), njobs=int(8)):# range(len(projection_vectors)):
