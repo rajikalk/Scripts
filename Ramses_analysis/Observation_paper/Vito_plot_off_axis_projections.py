@@ -740,7 +740,7 @@ for pickle_file in pickle_files:
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
             plt.gca().set_aspect('equal')
             cbar = plt.colorbar(plot, pad=0.0)
-            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+            #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
             if has_particles:
                 if args.annotate_particles_mass == True:
