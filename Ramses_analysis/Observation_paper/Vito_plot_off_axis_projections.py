@@ -726,7 +726,10 @@ for pickle_file in pickle_files:
             ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
-            title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
+            try:
+                title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
+            except:
+                title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0]*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1]*100)/100) +"," +str(np.round(args_dict['proj_vector'][2]*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
             ax.set_title(title_str)
             
             if None in (cbar_min, cbar_max):
