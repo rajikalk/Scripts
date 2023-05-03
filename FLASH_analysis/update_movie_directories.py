@@ -36,7 +36,7 @@ for sim_dir in sim_dirs:
         
         #check if movie is up to date? How... I guess just run the movie line
         #if size > 1:
-        run_line = 'mpirun -np ' + str(size) + ' /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
+        run_line = 'mpirun -np ' + str(size) + 'python3 /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
         #else:
         #    run_line = 'python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
             
