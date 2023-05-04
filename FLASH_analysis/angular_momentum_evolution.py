@@ -102,7 +102,7 @@ CW.Barrier()
 for ds in ts.piter():
     Time_array.append(ds.current_time.in_units('yr'))
 
-    #Calculate CoM
+    #load all data
     dd = ds.all_data()
     
     #Calculate particle spin
@@ -184,10 +184,10 @@ if rank == 0:
     print('saved gathered data')
 
     plt.clf()
-    plt.semilogy(Time_array, L_primary, label='Primary spin')
-    plt.semilogy(Time_array, L_secondary, label='Secondary spin')
-    plt.semilogy(Time_array, L_orbit, label='Orbital L')
-    plt.semilogy(Time_array, L_in_gas, label='L_in_gas')
+    plt.semilogy(Time_array - Time_array[0], L_primary, label='Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
+    plt.semilogy(Time_array - Time_array[0], L_orbit, label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas, label='L_in_gas')
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
