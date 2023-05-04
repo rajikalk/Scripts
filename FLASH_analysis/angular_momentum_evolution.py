@@ -148,7 +148,7 @@ for ds in ts.piter():
     rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas}
     
     #write pickle
-    file = open('ang_mom_'+str(rank)+'.pkl', 'wb')
+    file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
     pickle.dump((rank_data), file)
     file.close()
     print('saved data on rank', rank)
@@ -158,7 +158,7 @@ CW.Barrier()
 
 if rank == 0:
     #Compile together results
-    pickle_files = glob.glob('ang_mom_*.pkl')
+    pickle_files = glob.glob('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl')
     for pickle_file in pickle_files:
         file = open(pickle_file, 'rb')
         rank_data = pickle.load(file)
@@ -178,7 +178,7 @@ if rank == 0:
     L_orbit = np.array(L_orbit)[sorted_inds]
     L_in_gas = np.array(L_in_gas)[sorted_inds]
     
-    file = open('gathered_ang_mom.pkl', 'wb')
+    file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
     pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
     file.close()
     print('saved gathered data')
@@ -191,7 +191,7 @@ if rank == 0:
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
-    plt.savefig('L_evolution.png', bbox_inches='tight')
+    plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
     print('saved figure')
     
 sys.stdout.flush()
