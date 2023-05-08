@@ -11,6 +11,9 @@ Setup = 'Binary'
 
 for Lref in Levels:
     for Spin_dir in Spins_dirs:
-        import pdb
-        pdb.set_trace()
+        spin_val = Spin_dir.split('/')[-1].split('_')[-1]
+        table_line = spin_val + '&' + Lref + '&'
+        for Mach_val in Mach_vals:
+            import pdb
+            pdb.set_trace()
         
