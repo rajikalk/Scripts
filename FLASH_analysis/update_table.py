@@ -29,7 +29,7 @@ for Lref in Levels:
         table_line = table_line + '\\'
         Write_lines.append(table_line)
 
-f = open('Table_1.tex', 'w')
+f = open(Setup+'.tex', 'w')
 
 f.write('\documentclass[useAMS,usenatbib]{mn2e}\n')
 f.write('\\usepackage{cleveref}\n')
