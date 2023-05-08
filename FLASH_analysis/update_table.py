@@ -3,7 +3,7 @@ import glob
 Spins_dirs = sorted(glob.glob('/home/kuruwira/fast/Protostellar_spin/Flash_2023/*'))
 Levels = ['Lref_9', 'Lref_10', 'Lref_11']
 Mach_vals = ['Mach_0.1', 'Mach_0.2']
-Setup = 'Single'
+Setup = 'Binary'
 
 header_line = 'Spin & Lref & Mach_0.1 & Mach_0.2\\'
 
