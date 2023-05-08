@@ -18,13 +18,13 @@ for Lref in Levels:
             f1 = open(sink_evol_file, "r")
             last_lines = f1.readlines()[-3:]
             f1.close()
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             last_time = last_lines[-1][12:].split('  ')[1]
             star_count = 0
             for line in last_lines[::-1]:
                 if ' ' in line[12:].split('  ')[1]:
-                    time_str = line[12:].split('  ')[1].split(' ')[1]
+                    time_str = line[12:].split('  ')[1].split(' ')[0]
                 else:
                     time_str = line[12:].split('  ')[1]
                 if time_str == last_time:
