@@ -20,5 +20,5 @@ for Lref in Levels:
                 reader = csv.reader(f, delimiter=' ')
                 for row in reader:
                     import pdb
-                    pdb.set_trace
+                    pdb.set_trace()
         
