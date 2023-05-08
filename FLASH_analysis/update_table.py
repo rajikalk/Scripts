@@ -14,20 +14,18 @@ for Lref in Levels:
         table_line = spin_val + '&' + Lref
         for Mach_val in Mach_vals:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref.split('_')[-1] + '/sinks_evol.dat'
-            try:
-                f1 = open(sink_evol_file, "r")
-                last_lines = f1.readlines()[-3:]
-                f1.close()
-                import pdb
-                pdb.set_trace()
-                last_time = last_lines[-1][12:].split('  ')[1]
-                star_count = 0
-                for line in last_lines[::-1]:
-                    if line[12:].split('  ')[1] == last_time:
-                        star_count = star_count + 1
-                table_line = table_line + '&' +str(star_count)
-            except:
-                table_line = table_line + '&' + 'N/A'
+            #try:
+            f1 = open(sink_evol_file, "r")
+            last_lines = f1.readlines()[-3:]
+            f1.close()
+            last_time = last_lines[-1][12:].split('  ')[1]
+            star_count = 0
+            for line in last_lines[::-1]:
+                if line[12:].split('  ')[1] == last_time:
+                    star_count = star_count + 1
+            table_line = table_line + '&' +str(star_count)
+            #except:
+            #    table_line = table_line + '&' + 'N/A'
         table_line = table_line + '\\'
         Write_lines.append(table_line)
 
