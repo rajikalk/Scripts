@@ -16,7 +16,7 @@ for Lref in Levels:
         for Mach_val in Mach_vals:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
             f1 = open(sink_evol_file, "r")
-            last_lines = f1.readlines()[-3]
+            last_lines = f1.readlines()[-3:]
             f1.close()
             import pdb
             pdb.set_trace()
