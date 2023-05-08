@@ -14,6 +14,11 @@ for Lref in Levels:
         spin_val = Spin_dir.split('/')[-1].split('_')[-1]
         table_line = spin_val + '&' + Lref + '&'
         for Mach_val in Mach_vals:
-            import pdb
-            pdb.set_trace()
+            sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
+            with open(sink_evol_file, 'r') as f:
+                print("reading ", sink_evol_file)
+                reader = csv.reader(f, delimiter='  ')
+                for row in reader:
+                    import pdb
+                    pdb.set_trace
         
