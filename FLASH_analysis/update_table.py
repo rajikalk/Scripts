@@ -14,29 +14,24 @@ for Lref in Levels:
         table_line = spin_val + '&' + Lref.split('_')[-1]
         for Mach_val in Mach_vals:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
-            #try:
-            f1 = open(sink_evol_file, "r")
-            last_lines = f1.readlines()[-3:]
-            f1.close()
-            #import pdb
-            #pdb.set_trace()
-            last_time = last_lines[-1][12:].split('  ')[1]
-            if ' ' in last_time:
-                last_time = last_time.split(' ')[0]
-            star_count = 0
-            for line in last_lines[::-1]:
-                if ' ' in line[12:].split('  ')[1]:
-                    time_str = line[12:].split('  ')[1].split(' ')[0]
-                else:
-                    time_str = line[12:].split('  ')[1]
-                if time_str == last_time:
-                    star_count = star_count + 1
-            if star_count == 0:
-                import pdb
-                pdb.set_trace()
-            table_line = table_line + '&' +str(star_count)
-            #except:
-            #    table_line = table_line + '&' + 'N/A'
+            try:
+                f1 = open(sink_evol_file, "r")
+                last_lines = f1.readlines()[-3:]
+                f1.close()
+                last_time = last_lines[-1][12:].split('  ')[1]
+                if ' ' in last_time:
+                    last_time = last_time.split(' ')[0]
+                star_count = 0
+                for line in last_lines[::-1]:
+                    if ' ' in line[12:].split('  ')[1]:
+                        time_str = line[12:].split('  ')[1].split(' ')[0]
+                    else:
+                        time_str = line[12:].split('  ')[1]
+                    if time_str == last_time:
+                        star_count = star_count + 1
+                table_line = table_line + '&' +str(star_count)
+            except:
+                table_line = table_line + '&' + 'N/A'
         table_line = table_line + '\\'
         Write_lines.append(table_line)
 
