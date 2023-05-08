@@ -22,7 +22,7 @@ for Lref in Levels:
             for line in last_lines[::-1]:
                 if line[12:].split('  ')[1] == last_time:
                     star_count = star_count + 1
-            table_line = table_line + '&' str(star_count)
+            table_line = table_line + '&' +str(star_count)
         table_line = table_line + '\\'
         Write_lines.append(table_line)
         
