@@ -29,6 +29,9 @@ for Lref in Levels:
                     time_str = line[12:].split('  ')[1]
                 if time_str == last_time:
                     star_count = star_count + 1
+            if star_count == 0:
+                import pdb
+                pdb.set_trace()
             table_line = table_line + '&' +str(star_count)
             #except:
             #    table_line = table_line + '&' + 'N/A'
