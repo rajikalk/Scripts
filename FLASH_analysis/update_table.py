@@ -17,7 +17,7 @@ for Lref in Levels:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
             with open(sink_evol_file, 'r') as f:
                 print("reading ", sink_evol_file)
-                reader = csv.reader(f, delimiter='  ')
+                reader = csv.reader(f, delimiter=' ')
                 for row in reader:
                     import pdb
                     pdb.set_trace
