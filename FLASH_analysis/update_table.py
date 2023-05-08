@@ -15,10 +15,9 @@ for Lref in Levels:
         table_line = spin_val + '&' + Lref + '&'
         for Mach_val in Mach_vals:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
-            with open(sink_evol_file, 'r') as f:
-                print("reading ", sink_evol_file)
-                reader = csv.reader(f, delimiter=' ')
-                for row in reader:
-                    import pdb
-                    pdb.set_trace()
+            f1 = open(sink_evol_file, "r")
+            last_lines = f1.readlines()[-3]
+            f1.close()
+            import pdb
+            pdb.set_trace()
         
