@@ -28,9 +28,6 @@ for Lref in Levels:
                 table_line = table_line + '&' + 'N/A'
         table_line = table_line + '\\'
         Write_lines.append(table_line)
-        
-        
-f.close()
 
 f = open('Table_1.tex', 'w')
 
