@@ -16,8 +16,10 @@ for Lref in Levels:
             sink_evol_file = Spin_dir + '/' + Setup + '/' + Mach_val + '/' + Lref + '/sinks_evol.dat'
             try:
                 f1 = open(sink_evol_file, "r")
-                last_lines = f1.readlines()[-3:]
+                last_lines = f1.readlines()[-10:]
                 f1.close()
+                import pdb
+                pdb.set_ttrace()
                 last_time = last_lines[-1][12:].split('  ')[1]
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
