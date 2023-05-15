@@ -18,9 +18,8 @@ for Lref in Levels:
                 f1 = open(sink_evol_file, "r")
                 last_lines = f1.readlines()[-10:]
                 f1.close()
-                if '[' in last_lines[-1]:
-                    import pdb
-                    pdb.set_trace()
+                while '[' in last_lines[-1]:
+                    last_lines = last_lines[:-1]
                 last_time = last_lines[-1][12:].split('  ')[1]
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
