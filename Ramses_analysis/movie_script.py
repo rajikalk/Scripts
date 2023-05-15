@@ -856,8 +856,7 @@ for pickle_file in pickle_files:
                 
             if has_particles:
                 if args.ax_lim > 5000:
-                    import pdb
-                    pdb.set_trace()
+                    ax.scatter((part_info['particle_position'][0]), (part_info['particle_position'][1]), color='c', s=0.5)
                 else:
                     if args.annotate_particles_mass == 'True':
                         mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
