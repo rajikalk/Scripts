@@ -19,7 +19,7 @@ for Lref in Levels:
                 last_lines = f1.readlines()[-10:]
                 f1.close()
                 import pdb
-                pdb.set_ttrace()
+                pdb.set_trace()
                 last_time = last_lines[-1][12:].split('  ')[1]
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
