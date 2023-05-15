@@ -21,7 +21,7 @@ for Lref in Levels:
                 last_time = last_lines[-1][12:].split('  ')[1]
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
-                    if last_time == '':
+                    if len(last_time) == 0:
                         import pdb
                         pdb.set_trace()
                 star_count = 0
