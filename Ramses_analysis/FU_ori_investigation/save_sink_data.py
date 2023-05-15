@@ -220,8 +220,10 @@ plt.savefig('separation_vs_time_sink_'+str(sink_ind)+'.png')
 if sink_ind == 45:
     start_time = 3500
     start_ind = np.argmin(abs(np.array(particle_data['time']) - start_time))
+    end_time = 8500
+    end_ind = np.argmin(abs(np.array(particle_data['time']) - end_time))
     plt.clf()
-    plt.semilogy(particle_data['time'][start_ind:], particle_data['mdot'][start_ind:])
+    plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
     plt.xlabel('Time (yr)')
     plt.xlim()
     plt.ylim(bottom=1.e-7)
