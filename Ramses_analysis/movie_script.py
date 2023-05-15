@@ -202,20 +202,29 @@ scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 mym.set_units(units_override)
 
+
+#find sink particle to center on and formation time
+ds = yt.load(files[-1], units_override=units_override)
+#try:
+dd = ds.all_data()
+if args.sink_number == None:
+    sink_id = np.argmin(dd['sink_particle_speed'])
+else:
+    sink_id = args.sink_number
+if rank == 0:
+    print("CENTERED SINK ID:", sink_id)
+myf.set_centred_sink_id(sink_id)
+sink_form_time = dd['sink_particle_form_time'][sink_id]
+del dd
+if args.plot_time != None:
+    m_times = [args.plot_time]
+else:
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
+    
+no_frames = len(m_times)
+m_times = m_times[args.start_frame:]
+
 if args.make_frames_only == 'False':
-    #find sink particle to center on and formation time
-    ds = yt.load(files[-1], units_override=units_override)
-    #try:
-    dd = ds.all_data()
-    if args.sink_number == None:
-        sink_id = np.argmin(dd['sink_particle_speed'])
-    else:
-        sink_id = args.sink_number
-    if rank == 0:
-        print("CENTERED SINK ID:", sink_id)
-    myf.set_centred_sink_id(sink_id)
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
-    del dd
     """
     except:
         files = files[:-1]
@@ -297,13 +306,6 @@ if args.make_frames_only == 'False':
     sys.stdout.flush()
     CW.Barrier()
 
-    if args.plot_time != None:
-        m_times = [args.plot_time]
-    else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
-        
-    no_frames = len(m_times)
-    m_times = m_times[args.start_frame:]
     frames = list(range(args.start_frame, no_frames))
         
     sys.stdout.flush()
