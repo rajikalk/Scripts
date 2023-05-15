@@ -202,23 +202,10 @@ scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 mym.set_units(units_override)
 
-#find sink particle to center on and formation time
-ds = yt.load(files[-1], units_override=units_override)
-#try:
-dd = ds.all_data()
-if args.sink_number == None:
-    sink_id = np.argmin(dd['sink_particle_speed'])
-else:
-    sink_id = args.sink_number
-if rank == 0:
-    print("CENTERED SINK ID:", sink_id)
-myf.set_centred_sink_id(sink_id)
-sink_form_time = dd['sink_particle_form_time'][sink_id]
-del dd
-"""
-except:
-    files = files[:-1]
+if args.make_frames_only == 'False':
+    #find sink particle to center on and formation time
     ds = yt.load(files[-1], units_override=units_override)
+    #try:
     dd = ds.all_data()
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
@@ -229,92 +216,106 @@ except:
     myf.set_centred_sink_id(sink_id)
     sink_form_time = dd['sink_particle_form_time'][sink_id]
     del dd
-"""
-    
-sys.stdout.flush()
-CW.Barrier()
+    """
+    except:
+        files = files[:-1]
+        ds = yt.load(files[-1], units_override=units_override)
+        dd = ds.all_data()
+        if args.sink_number == None:
+            sink_id = np.argmin(dd['sink_particle_speed'])
+        else:
+            sink_id = args.sink_number
+        if rank == 0:
+            print("CENTERED SINK ID:", sink_id)
+        myf.set_centred_sink_id(sink_id)
+        sink_form_time = dd['sink_particle_form_time'][sink_id]
+        del dd
+    """
+        
+    sys.stdout.flush()
+    CW.Barrier()
 
-#Get simulation information
-if rank == 0:
-    print("loading fields")
-simfo = sim_info(ds, args)
-x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
-y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
-X, Y = np.meshgrid(x, y)
-annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
-x_ind = []
-y_ind = []
-counter = 0
-while counter < args.velocity_annotation_frequency:
-    val = annotate_space*counter + annotate_space/2. + simfo['xmin']
-    x_ind.append(int(val))
-    y_ind.append(int(val))
-    counter = counter + 1
-X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-if args.projection_orientation != None:
-    y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-    L = [1.0, y_val, 0.0]
-else:
-    if args.axis == 'xy':
-        L = [0.0, 0.0, 1.0]
-    elif args.axis == 'xz':
-        L = [0.0, 1.0, 0.0]
-    elif args.axis == 'yz':
-        L = [1.0, 0.0, 0.0]
-myf.set_normal(L)
-xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
-if args.ax_lim != None:
-    xlim = [-1*args.ax_lim, args.ax_lim]
-    ylim = [-1*args.ax_lim, args.ax_lim]
-x_width = (xlim[1] -xlim[0])
-y_width = (ylim[1] -ylim[0])
-thickness = yt.YTQuantity(args.slice_thickness, 'AU')
-#Sets center for calculating center position and velocity
-myf.set_center_pos_ind(args.image_center)
-
-#Set to make sure that particles aren't used to calculate the center velocity
-myf.set_com_vel_use_part(False)
-
-if args.use_gas_center_calc == 'True':
-    myf.set_com_pos_use_gas(True)
-else:
-    myf.set_com_pos_use_gas(False)
-    
-#Make sure to only use gas when calculating the center velocity
-
-sys.stdout.flush()
-CW.Barrier()
-
-if args.plot_time != None:
-    if args.weight_field == 'None':
-        weight_field = None
-        pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
-    else:
-        weight_field = args.weight_field
-        pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
-       
-sys.stdout.flush()
-CW.Barrier()
-
-if args.plot_time != None:
-    m_times = [args.plot_time]
-else:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
-    
-no_frames = len(m_times)
-m_times = m_times[args.start_frame:]
-frames = list(range(args.start_frame, no_frames))
-    
-sys.stdout.flush()
-CW.Barrier()
-
-if args.make_frames_only == 'False':
-    verbatim = False
+    #Get simulation information
     if rank == 0:
-        verbatim = True
-    usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
-    del sink_form_time
-    del files
+        print("loading fields")
+    simfo = sim_info(ds, args)
+    x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
+    y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
+    X, Y = np.meshgrid(x, y)
+    annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < args.velocity_annotation_frequency:
+        val = annotate_space*counter + annotate_space/2. + simfo['xmin']
+        x_ind.append(int(val))
+        y_ind.append(int(val))
+        counter = counter + 1
+    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+    if args.projection_orientation != None:
+        y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
+        L = [1.0, y_val, 0.0]
+    else:
+        if args.axis == 'xy':
+            L = [0.0, 0.0, 1.0]
+        elif args.axis == 'xz':
+            L = [0.0, 1.0, 0.0]
+        elif args.axis == 'yz':
+            L = [1.0, 0.0, 0.0]
+    myf.set_normal(L)
+    xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
+    if args.ax_lim != None:
+        xlim = [-1*args.ax_lim, args.ax_lim]
+        ylim = [-1*args.ax_lim, args.ax_lim]
+    x_width = (xlim[1] -xlim[0])
+    y_width = (ylim[1] -ylim[0])
+    thickness = yt.YTQuantity(args.slice_thickness, 'AU')
+    #Sets center for calculating center position and velocity
+    myf.set_center_pos_ind(args.image_center)
+
+    #Set to make sure that particles aren't used to calculate the center velocity
+    myf.set_com_vel_use_part(False)
+
+    if args.use_gas_center_calc == 'True':
+        myf.set_com_pos_use_gas(True)
+    else:
+        myf.set_com_pos_use_gas(False)
+        
+    #Make sure to only use gas when calculating the center velocity
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    if args.plot_time != None:
+        if args.weight_field == 'None':
+            weight_field = None
+            pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
+        else:
+            weight_field = args.weight_field
+            pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
+           
+    sys.stdout.flush()
+    CW.Barrier()
+
+    if args.plot_time != None:
+        m_times = [args.plot_time]
+    else:
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
+        
+    no_frames = len(m_times)
+    m_times = m_times[args.start_frame:]
+    frames = list(range(args.start_frame, no_frames))
+        
+    sys.stdout.flush()
+    CW.Barrier()
+
+    if args.make_frames_only == 'False':
+        verbatim = False
+        if rank == 0:
+            verbatim = True
+        usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+        del sink_form_time
+        del files
     
 sys.stdout.flush()
 CW.Barrier()
