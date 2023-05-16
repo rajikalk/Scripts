@@ -12,4 +12,4 @@ if rank == 0:
 
     run_line = "python ~/Scripts/Automation_Scripts/prep_restart.py " + last_chk
     subprocess.run(run_line, shell=True)
-    subprocess.run("sb job.sh", shell=True)
+    subprocess.run("sbatch job.sh", shell=True)
