@@ -52,7 +52,6 @@ plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
 plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
 plt.tick_params(axis='x', direction='in')
 plt.tick_params(axis='y', direction='in')
-plt.ylim([1.e-6, 1])
 plt.savefig('spin_comp.png', bbox_inches='tight')
 
 plt.clf()
