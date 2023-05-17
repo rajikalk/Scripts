@@ -49,7 +49,7 @@ plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
 plt.tick_params(axis='x', direction='in')
 plt.tick_params(axis='y', direction='in')
 plt.ylim([1.e-6, 1])
-plt.savefig('_'.join('spin_comp.png', bbox_inches='tight')
+plt.savefig('spin_comp.png', bbox_inches='tight')
 
 plt.clf()
 labels = ['Binary', 'Single']
@@ -74,6 +74,6 @@ plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
 plt.tick_params(axis='x', direction='in')
 plt.tick_params(axis='y', direction='in')
 plt.ylim([1.e-6, 1])
-plt.savefig('_'.join('spin_comp_frac.png', bbox_inches='tight')
+plt.savefig('spin_comp_frac.png', bbox_inches='tight')
     
     
