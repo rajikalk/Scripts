@@ -218,6 +218,19 @@ if rank == 0:
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
+    
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    plt.clf()
+    plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
+    plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
+    plt.xlabel('Time (yr)')
+    plt.ylabel('Angular momentum fraction (%)')
+    plt.legend(loc='best')
+    plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution_frac.png', bbox_inches='tight')
+    
+    
     print('saved figure')
 
 sys.stdout.flush()
