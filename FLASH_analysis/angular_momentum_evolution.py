@@ -54,9 +54,10 @@ L_secondary = []
 L_orbit = []
 L_in_gas = []
 
+pickle_names = '_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl'
 #get current progress
 if rank == 0:
-    pickle_files = glob.glob('ang_mom_*.pkl')
+    pickle_files = glob.glob(pickle_names)
     if len(pickle_files) > 0:
         for pickle_file in pickle_files:
             file = open(pickle_file, 'rb')
@@ -151,6 +152,8 @@ for ds in ts.piter():
     file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
     pickle.dump((rank_data), file)
     file.close()
+    import pdb
+    pdb.set_trace()
     print('saved data on rank', rank)
 
 sys.stdout.flush()
