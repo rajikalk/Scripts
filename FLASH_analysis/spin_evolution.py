@@ -26,54 +26,54 @@ matplotlib.rcParams['text.latex.preamble'] = [
 ]
 
 input_dir = sys.argv[1]
-pickle_files = sorted(glob.glob(input_dir+'*/Lref_11.pkl'))
-
-line_styles = ['--', '-.', '-']
-#label = ['L_{ref}=10', 'L_{ref}=11', 'L_{ref}=12']
-label = ['Mach 0.2', 'Single']
-two_col_width = 7.20472 #inches
-single_col_width = 3.50394 #inches
-page_height = 10.62472 #inches
-font_size = 10
+pickle_files = sorted(glob.glob(input_dir))
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)
-iter_range = range(0, len(pickle_files))
-plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.0)
-
-pick_it = -1
+labels = ['Binary', 'Single']
+pit = -1
 for pickle_file in pickle_files:
-    pick_it = pick_it + 1
-    file_open = open(pickle_file, 'rb')
-    sink_data = pickle.load(file_open)
-    file_open.close()
+    pit = pit + 1
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
     
-    plot_counter = 0
-    first_sink_formation = np.nan
-    for sink_id in sink_data.keys():
-        if np.isnan(first_sink_formation):
-            first_sink_formation = sink_data[sink_id]['time'][0]
-        time_arr = yt.YTArray(sink_data[sink_id]['time']-first_sink_formation, 's')
-        Lx = yt.YTArray(sink_data[sink_id]['anglx'], 'g*cm**2/s')
-        Ly = yt.YTArray(sink_data[sink_id]['angly'], 'g*cm**2/s')
-        Lz = yt.YTArray(sink_data[sink_id]['anglz'], 'g*cm**2/s')
-        L_tot = np.sqrt(Lx**2 + Ly**2 + Lz**2)
-        L_tot[np.where(L_tot==0)[0]]=np.nan
-        
-        axs.flatten()[plot_counter].semilogy(time_arr.in_units('yr'), L_tot, ls=line_styles[pick_it], label=label[pick_it])
-        if label[pick_it] == 'Single':
-            axs.flatten()[plot_counter+1].semilogy(time_arr.in_units('yr'), L_tot, ls=line_styles[pick_it], label=label[pick_it])
-        
-        #axs.flatten()[plot_counter].set_ylabel('L$_{'+str(plot_counter+1)+'}$ (cm$^2$/s)')
-        plot_counter = plot_counter +1
+    plt.semilogy(Time_array - Time_array[0], L_primary, label=labels[pit] + ' Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary, label=labels[pit] + ' Secondary spin')
     
-    axs.flatten()[0].legend(loc='lower right')
-    axs.flatten()[0].set_ylabel('Primary spin (g$\,$cm$^2$/s)')
-    axs.flatten()[1].set_ylabel('Secondary spin (g$\,$cm$^2$/s)')
+plt.xlabel('Time (yr)')
+plt.ylabel('Angular momentum (g cm$^2$/s)')
+plt.legend(loc='best')
+plt.xlim(left=0)
+plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+plt.tick_params(axis='x', direction='in')
+plt.tick_params(axis='y', direction='in')
+plt.ylim([1.e-6, 1])
+plt.savefig('_'.join('spin_comp.png', bbox_inches='tight')
+
+plt.clf()
+labels = ['Binary', 'Single']
+pit = -1
+for pickle_file in pickle_files:
+    pit = pit + 1
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
     
-    axs.flatten()[plot_counter-1].set_xlabel('Time since Primary formation (yr)')
-    axs.flatten()[plot_counter-1].set_xlim(left=0)
-    axs.flatten()[plot_counter-1].set_ylim(bottom=1e40)
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
     
-plt.savefig('spin_evolution_with_single.pdf', bbox_inches='tight', pad_inches=0.02)
+    plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label=labels[pit] + ' Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label=labels[pit] + ' Secondary spin')
+    
+plt.xlabel('Time (yr)')
+plt.ylabel('Angular momentum fraction (%)')
+plt.legend(loc='best')
+plt.xlim(left=0)
+plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+plt.tick_params(axis='x', direction='in')
+plt.tick_params(axis='y', direction='in')
+plt.ylim([1.e-6, 1])
+plt.savefig('_'.join('spin_comp_frac.png', bbox_inches='tight')
+    
+    
