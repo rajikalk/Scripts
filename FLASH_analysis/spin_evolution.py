@@ -115,7 +115,7 @@ for pickle_file in sink_pickles:
     file.close()
     
     for sink_tag in sink_data.keys():
-        L_tot = sink_data[sink_tag]['anglz']
+        L_tot = abs(sink_data[sink_tag]['anglz'])
         plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
     
 plt.xlabel('Time (yr)')
