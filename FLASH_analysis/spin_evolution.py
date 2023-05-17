@@ -25,6 +25,11 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+
 input_dir = sys.argv[1]
 pickle_files = sorted(glob.glob(input_dir))
 
