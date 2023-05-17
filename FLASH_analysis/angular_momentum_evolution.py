@@ -11,6 +11,7 @@ import my_flash_fields as myf
 import my_flash_module as mym
 import pickle
 import argparse
+import os
 
 #------------------------------------------------------
 #get mpi size and ranks
@@ -194,6 +195,9 @@ if args.update_pickles == 'True':
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
         pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
         file.close()
+        
+        for pickle_file in pickle_files:
+            os.remove(pickle_file)
         print('saved gathered data')
 
 sys.stdout.flush()
