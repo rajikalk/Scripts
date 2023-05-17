@@ -217,6 +217,8 @@ if rank == 0:
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
+    plt.xlim(left=0)
+    plt.ylim([1.e-6, 1])
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
     
     L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
@@ -228,6 +230,8 @@ if rank == 0:
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum fraction (%)')
     plt.legend(loc='best')
+    plt.xlim(left=0)
+    plt.ylim([1.e-6, 1])
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution_frac.png', bbox_inches='tight')
     
     
