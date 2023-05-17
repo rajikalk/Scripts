@@ -205,7 +205,7 @@ CW.Barrier()
 
 if rank == 0:
     
-    file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
+    file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
     
