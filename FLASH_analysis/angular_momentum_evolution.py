@@ -152,9 +152,7 @@ for ds in ts.piter():
     file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
     pickle.dump((rank_data), file)
     file.close()
-    import pdb
-    pdb.set_trace()
-    print('saved data on rank', rank)
+    print('read file', files.index(ds.filename), 'of', len(files), 'files on rank', rank)
 
 sys.stdout.flush()
 CW.Barrier()
