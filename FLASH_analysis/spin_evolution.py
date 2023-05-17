@@ -82,17 +82,22 @@ plt.savefig('spin_comp_frac.png', bbox_inches='tight')
     
 sink_pickles = ['/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Single_Mach_0.2_Lref_9.pkl', '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Binary_Mach_0.2_Lref_9.pkl']
 labels = ['Single', 'Binary']
-pit = -1
 plt.clf()
-for pickle_file in sink_pickles:
-    pit = pit + 1
-    file = open(pickle_file, 'rb')
+for pit in range(len(sink_pickles)):
+    file = open(sink_pickles[pit], 'rb')
     sink_data = pickle.load(file)
     file.close()
     
     for sink_tag in sink_data.keys():
         L_tot = np.sqrt(sink_data[sink_tag]['anglx']**2 + sink_data[sink_tag]['angly']**2 + sink_data[sink_tag]['anglz']**2)
         plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+        
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt')
+    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt')
     
 plt.xlabel('Time (yr)')
 plt.ylabel('Sink spin')
@@ -108,15 +113,21 @@ sink_pickles = ['/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_
 labels = ['Single', 'Binary']
 pit = -1
 plt.clf()
-for pickle_file in sink_pickles:
-    pit = pit + 1
-    file = open(pickle_file, 'rb')
+for pit in range(len(sink_pickles)):
+    file = open(sink_pickles[pit], 'rb')
     sink_data = pickle.load(file)
     file.close()
     
     for sink_tag in sink_data.keys():
-        L_tot = abs(sink_data[sink_tag]['anglz'])
+        L_tot = sink_data[sink_tag]['anglz']
         plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+        
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt')
+    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt')
     
 plt.xlabel('Time (yr)')
 plt.ylabel('Sink L_z')
