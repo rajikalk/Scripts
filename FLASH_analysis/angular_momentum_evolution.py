@@ -218,6 +218,8 @@ if rank == 0:
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
     plt.xlim(left=0)
+    plt.tick_params(axis='x', direction='in')
+    plt.tick_params(axis='y', direction='in')
     plt.ylim([1.e-6, 1])
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
     
@@ -227,6 +229,8 @@ if rank == 0:
     plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
     plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
+    plt.tick_params(axis='x', direction='in')
+    plt.tick_params(axis='y', direction='in')
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum fraction (%)')
     plt.legend(loc='best')
