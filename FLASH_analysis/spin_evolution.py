@@ -96,8 +96,8 @@ for pit in range(len(sink_pickles)):
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
     
-    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt')
-    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt')
+    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt', linestyle=':')
+    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt', linestyle=':')
     
 plt.xlabel('Time (yr)')
 plt.ylabel('Sink spin')
@@ -126,8 +126,8 @@ for pit in range(len(sink_pickles)):
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
     
-    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt')
-    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt')
+    plt.semilogy(Time_array, L_primary, label=labels[pit]+'_yt', linestyle=':')
+    plt.semilogy(Time_array, L_secondary, label=labels[pit]+'_yt', linestyle=':')
     
 plt.xlabel('Time (yr)')
 plt.ylabel('Sink L_z')
