@@ -65,17 +65,3 @@ def _CoM_Velocity(field, data):
     return com
 
 yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
-    
-def _Particle_Spin(field, data):
-    """
-    Calcualtes spin of sink particles
-    """
-    if ('all', 'particle_mass') in data.ds.field_list:
-        import pdb
-        pdb.set_trace()
-        spin_val = np.sqrt(data['particle_x_ang']**2 + data['particle_y_ang']**2 +data['particle_z_ang']**2).value
-        return yt.YTArray(spin_val, 'g*cm**2/s')
-    else:
-        return yt.YTArray([], 'g*cm**2/s')
-
-yt.add_field("Particle_Spin", function=_Particle_Spin, units=r"g*cm**2/s", sampling_type="local")

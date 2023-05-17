@@ -120,7 +120,7 @@ if args.update_pickles == 'True':
         dd = ds.all_data()
         
         #Calculate particle spin
-        particle_spin = dd['Particle_Spin']
+        particle_spin = dd['particle_angular_momentum_magnitude']
         
         #Calculate orbital angular momentum around CoM
         dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
