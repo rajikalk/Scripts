@@ -83,11 +83,48 @@ plt.savefig('spin_comp_frac.png', bbox_inches='tight')
 sink_pickles = ['/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Single_Mach_0.2_Lref_9.pkl', '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Binary_Mach_0.2_Lref_9.pkl']
 labels = ['Single', 'Binary']
 pit = -1
+plt.clf()
 for pickle_file in sink_pickles:
     pit = pit + 1
     file = open(pickle_file, 'rb')
     sink_data = pickle.load(file)
     file.close()
     
-    import pdb
-    pdb.set_trace()
+    for sink_tag in sink_data.keys():
+        L_tot = np.sqrt(sink_data[sink_tag]['anglx']**2 + sink_data[sink_tag]['angly']**2 + sink_data[sink_tag]['anglz']**2)
+        plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+    
+plt.xlabel('Time (yr)')
+plt.ylabel('Sink spin')
+plt.legend(loc='best')
+plt.xlim(left=0)
+plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+plt.tick_params(axis='x', direction='in')
+plt.tick_params(axis='y', direction='in')
+plt.savefig('sink_spin.png', bbox_inches='tight')
+
+sink_pickles = ['/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Single_Mach_0.2_Lref_9.pkl', '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Binary_Mach_0.2_Lref_9.pkl']
+labels = ['Single', 'Binary']
+pit = -1
+plt.clf()
+for pickle_file in sink_pickles:
+    pit = pit + 1
+    file = open(pickle_file, 'rb')
+    sink_data = pickle.load(file)
+    file.close()
+    
+    for sink_tag in sink_data.keys():
+        L_tot = sink_data[sink_tag]['anglz']
+        plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+    
+plt.xlabel('Time (yr)')
+plt.ylabel('Sink L_z')
+plt.legend(loc='best')
+plt.xlim(left=0)
+plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+plt.tick_params(axis='x', direction='in')
+plt.tick_params(axis='y', direction='in')
+plt.savefig('sink_spin_z.png', bbox_inches='tight')
+
