@@ -30,8 +30,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
-input_dir = sys.argv[1]
-pickle_files = sorted(glob.glob(input_dir))
+pickle_files = ['/hits/fast/set/kuruwira/Analysis/L_evolution/Spin_0.35_Binary_Mach_0.2_Lref_9_gathered_ang_mom.pkl', '/hits/fast/set/kuruwira/Analysis/L_evolution/Spin_0.35_Single_Mach_0.2_Lref_9_gathered_ang_mom.pkl']
 
 plt.clf()
 labels = ['Binary', 'Single']
