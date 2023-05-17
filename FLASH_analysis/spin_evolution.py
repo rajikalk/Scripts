@@ -90,7 +90,7 @@ for pit in range(len(sink_pickles)):
     
     for sink_tag in sink_data.keys():
         L_tot = np.sqrt(sink_data[sink_tag]['anglx']**2 + sink_data[sink_tag]['angly']**2 + sink_data[sink_tag]['anglz']**2)
-        plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+        plt.semilogy(sink_data[sink_tag]['time']/31557600.0, L_tot, label=labels[pit]+'_'+sink_tag)
         
     file = open(pickle_file, 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
@@ -120,7 +120,7 @@ for pit in range(len(sink_pickles)):
     
     for sink_tag in sink_data.keys():
         L_tot = sink_data[sink_tag]['anglz']
-        plt.semilogy(sink_data[sink_tag]['time'], L_tot, label=labels[pit]+'_'+sink_tag)
+        plt.semilogy(sink_data[sink_tag]['time']/31557600.0, L_tot, label=labels[pit]+'_'+sink_tag)
         
     file = open(pickle_file, 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
