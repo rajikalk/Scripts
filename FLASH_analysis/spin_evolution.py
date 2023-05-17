@@ -80,3 +80,14 @@ plt.ylim([1.e-6, 1])
 plt.savefig('spin_comp_frac.png', bbox_inches='tight')
     
     
+sink_pickles = ['/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Single_Mach_0.2_Lref_9.pkl', '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.35_Binary_Mach_0.2_Lref_9.pkl']
+labels = ['Single', 'Binary']
+pit = -1
+for pickle_file in sink_pickles:
+    pit = pit + 1
+    file = open(pickle_file, 'rb')
+    sink_data = pickle.load(file)
+    file.close()
+    
+    import pdb
+    pdb.set_trace()
