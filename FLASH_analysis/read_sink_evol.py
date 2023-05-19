@@ -91,5 +91,4 @@ for sink_id in sink_data.keys():
     plt.semilogy(sink_data[sink_id]['time'], L_tot, label=sink_id)
 plt.xlabel('Time (s)')
 plt.ylabel('L (gcm$^2$/s')
-plt.xlim(left=0)
 plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
