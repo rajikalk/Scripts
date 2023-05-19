@@ -204,7 +204,6 @@ sys.stdout.flush()
 CW.Barrier()
 
 if rank == 0:
-    
     file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
@@ -222,7 +221,6 @@ if rank == 0:
     plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     plt.tick_params(axis='x', direction='in')
     plt.tick_params(axis='y', direction='in')
-    plt.ylim([1.e-6, 1])
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
     
     L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
@@ -239,7 +237,7 @@ if rank == 0:
     plt.ylabel('Angular momentum fraction (%)')
     plt.legend(loc='best')
     plt.xlim(left=0)
-    plt.ylim([1.e-6, 1])
+    plt.ylim(top=1)
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution_frac.png', bbox_inches='tight')
     
     
