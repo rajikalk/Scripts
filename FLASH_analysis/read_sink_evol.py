@@ -2,6 +2,7 @@ import csv
 import sys
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
 
 sink_evol_file = sys.argv[1]
 sink_evol_pickle = sys.argv[2]
