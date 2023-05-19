@@ -120,6 +120,8 @@ if args.update_pickles == 'True':
         dd = ds.all_data()
         
         #Calculate particle spin
+        import pdb
+        pdb.set_trace()
         particle_spin = dd['particle_angular_momentum_magnitude']
         
         #Calculate orbital angular momentum around CoM

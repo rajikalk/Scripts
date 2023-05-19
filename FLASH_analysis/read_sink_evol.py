@@ -90,5 +90,5 @@ for sink_id in sink_data.keys():
     L_tot = np.sqrt(sink_data[sink_id]['accelx']**2 + sink_data[sink_id]['accely']**2 + sink_data[sink_id]['accely']**2)
     plt.semilogy(sink_data[sink_id]['time'], L_tot, label=sink_id)
 plt.xlabel('Time (s)')
-plt.ylabel('L (gcm$^2$/s')
+plt.ylabel('L (gcm$^2$/s)')
 plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
