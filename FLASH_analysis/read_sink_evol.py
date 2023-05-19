@@ -82,3 +82,7 @@ for sink_id in sink_data.keys():
 pickle_file = open(sink_evol_pickle, 'wb')
 pickle.dump((sink_data), pickle_file)
 pickle_file.close()
+
+#plot spin evolution
+import pdb
+pdb.set_trace()
