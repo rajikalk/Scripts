@@ -58,10 +58,19 @@ def parse_inputs():
 args = parse_inputs()
 pickle_files = sorted(sys.argv[1:])
 
+plt.clf()
 for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
     file = open(pickle_file, 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
     
-    import pdb
-    pdb.set_trace()
+    plt.plot(Time_array - Time_array[0], L_primary, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_primary.png')
+
+
