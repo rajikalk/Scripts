@@ -54,13 +54,14 @@ def parse_inputs():
 
 #---------------------------------------------------
 #Get simulation files
-input_dir = sys.argv[1]
+#input_dir = sys.argv[1]
 args = parse_inputs()
-files = sorted(glob.glob(input_dir))
+pickle_files = sorted(sys.argv[1:])
 
-import pdb
-pdb.set_trace()
 for pickle_file in pickle_files:
     file = open(pickle_file, 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
+    
+    import pdb
+    pdb.set_trace()
