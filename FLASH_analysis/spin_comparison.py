@@ -74,3 +74,86 @@ plt.legend()
 plt.savefig('spin_comp_primary.png')
 
 
+plt.clf()
+for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    
+    plt.plot(Time_array - Time_array[0], L_primary/L_tot, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_primary_frac.png')
+
+plt.clf()
+for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    plt.plot(Time_array - Time_array[0], L_secondary, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_secondary.png')
+
+
+plt.clf()
+for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    
+    plt.plot(Time_array - Time_array[0], L_secondary/L_tot, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_secondary_frac.png')
+
+plt.clf()
+for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    plt.plot(Time_array - Time_array[0], L_orbit, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_orbit.png')
+
+
+plt.clf()
+for pickle_file in pickle_files:
+    Spin_label = " ".join(pickle_file.split('/')[-1].split('_')[:2])
+    file = open(pickle_file, 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    
+    plt.plot(Time_array - Time_array[0], L_secondary/L_tot, label=Spin_label)
+
+plt.xlabel('Time since formation')
+plt.ylabel('Angular momentum')
+plt.xlim(left=0)
+plt.legend()
+plt.savefig('spin_comp_orbit_frac.png')
+
