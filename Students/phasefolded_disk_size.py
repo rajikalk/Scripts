@@ -62,12 +62,21 @@ for peri_ind in range(1, len(periastron_inds)):
 plt.savefig('Disk_sec_phasefolded_all.png')
 
 plt.clf()
+t_bin = np.linspace(0, 1, 11)
+bin_vals = [[], [], [], [], [], [], [], [], [], []]
 for peri_ind in range(1, len(periastron_inds[:10])):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
     disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    plt.plot(t_scaled, disk_orb)
-    
+    for bin_it in range(1, len(t_bin)):
+        for t_val_it in range(len(t_scaled)):
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+                bin_vals[bin_it-1].append(disk_orb[t_val_it])
+                
+#plt.plot(t_scaled, disk_orb)
+
+import pdb
+pdb.set_trace()
 plt.savefig('Disk_sec_phasefolded_all_10.png')
 
 end_ind = 1200
