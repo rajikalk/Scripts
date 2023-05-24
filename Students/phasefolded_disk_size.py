@@ -53,8 +53,8 @@ periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
 apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 
 for peri_ind in range(1, len(periastron_inds)):
-    t_orb = time[peri_ind-1:peri_ind]
-    disk_secondary = disk_secondary[peri_ind-1:peri_ind]
+    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    disk_secondary = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     
     #scale time
     import pdb
