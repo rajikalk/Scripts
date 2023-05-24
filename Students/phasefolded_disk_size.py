@@ -61,6 +61,15 @@ for peri_ind in range(1, len(periastron_inds)):
     
 plt.savefig('Disk_sec_phasefolded_all.png')
 
+plt.clf()
+for peri_ind in range(1, len(periastron_inds[:10])):
+    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
+    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    plt.plot(t_scaled, disk_orb)
+    
+plt.savefig('Disk_sec_phasefolded_all_10.png')
+
 end_ind = 1200
 time = metadata['90'].age[:end_ind]
 separation = metadata['90'].separation[:end_ind]
@@ -78,3 +87,12 @@ for peri_ind in range(1, len(periastron_inds)):
     plt.plot(t_scaled, disk_orb)
     
 plt.savefig('Disk_primary_phasefolded_all.png')
+
+plt.clf()
+for peri_ind in range(1, len(periastron_inds[:10])):
+    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
+    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    plt.plot(t_scaled, disk_orb)
+    
+plt.savefig('Disk_primary_phasefolded_all_10.png')
