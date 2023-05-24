@@ -56,8 +56,8 @@ plt.clf()
 for peri_ind in range(1, len(periastron_inds)):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_secondary = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    plt.plot(t_scaled, disk_secondary)
+    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    plt.plot(t_scaled, disk_orb)
     
 plt.savefig('Disk_sec_phasefolded_all.png')
 
