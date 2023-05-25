@@ -115,9 +115,6 @@ for sim_dir in sim_dirs:
                 f.write(proj_run_line+ '1>frames.out00 2>&1\n')
                 f.close()
                 
-                import pdb
-                pdb.set_trace()
-                
                 os.chdir(save_dir)
                 subprocess.run('sbatch movie.sh', shell=True)
                 os.chdir('/hits/fast/set/kuruwira/Movie_frames')
