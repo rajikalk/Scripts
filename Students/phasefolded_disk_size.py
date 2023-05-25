@@ -56,9 +56,11 @@ plt.clf()
 t_bin = np.linspace(0, 1, 21)
 bin_mean_vals = []
 bin_median_vals = []
+bins_all = []
 for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
+    bins_all.append([])
 for peri_ind in range(1, len(periastron_inds)):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
@@ -68,16 +70,15 @@ for peri_ind in range(1, len(periastron_inds)):
         for t_val_it in range(len(t_scaled)):
             if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
-        if np.isnan(np.median(bin_sub_set)):
-            import pdb
-            pdb.set_trace()
-        bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
-        bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+        if np.isnan(np.median(bin_sub_set)) == False:
+            bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
+            bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+            bins_all.append(bin_sub_set)
     
 bin_medians = []
 bin_errs = []
 bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_median_vals:
+for bin_val in bins_all:
     median = np.median(bin_val)
     mean = np.mean(bin_val)
     std = np.std(bin_val)
@@ -100,9 +101,11 @@ apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 t_bin = np.linspace(0, 1, 21)
 bin_mean_vals = []
 bin_median_vals = []
+bins_all = []
 for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
+    bins_all.append([])
 for peri_ind in range(1, len(periastron_inds)):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
@@ -112,16 +115,15 @@ for peri_ind in range(1, len(periastron_inds)):
         for t_val_it in range(len(t_scaled)):
             if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
-        if np.isnan(np.median(bin_sub_set)):
-            import pdb
-            pdb.set_trace()
-        bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
-        bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+        if np.isnan(np.median(bin_sub_set)) == False:
+            bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
+            bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+            bins_all.append(bin_sub_set)
     
 bin_medians = []
 bin_errs = []
 bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_median_vals:
+for bin_val in bins_all:
     median = np.median(bin_val)
     mean = np.mean(bin_val)
     std = np.std(bin_val)
