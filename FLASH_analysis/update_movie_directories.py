@@ -74,6 +74,8 @@ for sim_dir in sim_dirs:
                 if clean_images:# and rank == 0:
                     for image_file in glob.glob(save_dir + '*.jpg'):
                         os.remove(image_file)
+                for pickle_file in glob.glob(save_dir + '1movie_frame*.jpg'):
+                    os.remove(pickle_file)
                 
                 #sys.stdout.flush()
                 #CW.Barrier()
