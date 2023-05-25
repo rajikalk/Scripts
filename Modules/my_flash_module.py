@@ -7,6 +7,7 @@ import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
 import matplotlib.patheffects as path_effects
 from matplotlib import transforms
+from matplotlib.transforms import Affine2D, offset_copy
 
 fontsize_global=12
 
