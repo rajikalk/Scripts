@@ -58,9 +58,9 @@ apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 plt.clf()
 plt.plot(time, separation)
 for peri_ind in periastron_inds:
-    plt.axhline(x=time[peri_ind], color='b')
+    plt.axvline(x=time[peri_ind], color='b')
 for ap_ind in apastron_inds:
-    plt.axhline(x=time[ap_ind], color='r')
+    plt.axvline(x=time[ap_ind], color='r')
 plt.savefig('separation.png')
 
 plt.clf()
