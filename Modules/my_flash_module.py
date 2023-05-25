@@ -139,6 +139,7 @@ def find_files(m_times, files):
             pit = it
     return usable_files
 
+"""
 def rainbow_text(x,y,ls,lc,**kw):
     t = plt.gca().transData
     figlocal = plt.gcf()
@@ -163,6 +164,54 @@ def rainbow_text(x,y,ls,lc,**kw):
             #pdb.set_trace()
             #t = transforms.offset_copy(text._transform, x=space_size, units='dots')
             t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+"""
+def rainbow_text(x, y, strings, colors, orientation='horizontal',
+                 ax=None, **kwargs):
+    """
+    Take a list of *strings* and *colors* and place them next to each
+    other, with text strings[i] being shown in colors[i].
+
+    Parameters
+    ----------
+    x, y : float
+        Text position in data coordinates.
+    strings : list of str
+        The strings to draw.
+    colors : list of color
+        The colors to use.
+    orientation : {'horizontal', 'vertical'}
+    ax : Axes, optional
+        The Axes to draw into. If None, the current axes will be used.
+    **kwargs
+        All other keyword arguments are passed to plt.text(), so you can
+        set the font size, family, etc.
+    """
+    if ax is None:
+        ax = plt.gca()
+    t = ax.transData
+    fig = ax.figure
+    canvas = fig.canvas
+
+    assert orientation in ['horizontal', 'vertical']
+    if orientation == 'vertical':
+        kwargs.update(rotation=90, verticalalignment='bottom')
+
+    for s, c in zip(strings, colors):
+        text = ax.text(x, y, s + " ", color=c, transform=t, **kwargs)
+
+        # Need to draw to update the text position.
+        text.draw(canvas.get_renderer())
+        ex = text.get_window_extent()
+        # Convert window extent from pixels to inches
+        # to avoid issues displaying at different dpi
+        ex = fig.dpi_scale_trans.inverted().transform_bbox(ex)
+
+        if orientation == 'horizontal':
+            t = text.get_transform() + \
+                offset_copy(Affine2D(), fig=fig, x=ex.width, y=0)
+        else:
+            t = text.get_transform() + \
+                offset_copy(Affine2D(), fig=fig, x=0, y=ex.height)
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
     global fontsize_global
