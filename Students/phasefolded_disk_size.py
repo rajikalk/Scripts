@@ -56,6 +56,14 @@ periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
 apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 
 plt.clf()
+plt.plot(time, separation)
+for peri_ind in periastron_inds:
+    plt.axhline(x=time[peri_ind], color='b')
+for ap_ind in apastron_inds:
+    plt.axhline(x=time[ap_ind], color='r')
+plt.savefig('separation.png')
+
+plt.clf()
 t_bin = np.linspace(0, 1, 21)
 bin_mean_vals = []
 bin_median_vals = []
@@ -137,121 +145,9 @@ for bin_val in bin_mean_vals:
 
 plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
 plt.ylim(bottom=0)
-plt.savefig('phasefolded_all_'+str(N_orb)+'.png')
-'''
-plt.clf()
-t_bin = np.linspace(0, 1, 11)
-bin_vals = [[], [], [], [], [], [], [], [], [], []]
-for peri_ind in range(1, len(periastron_inds[:10])):
-    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    for bin_it in range(1, len(t_bin)):
-        for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
-                bin_vals[bin_it-1].append(disk_orb[t_val_it])
-                
-#plt.plot(t_scaled, disk_orb)
+plt.savefig('phasefolded_all_'+str(N_orb)+ '_' + sink_inds[0] +'.png')
 
-bin_medians = []
-bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_vals:
-    bin_medians.append(np.median(bin_val))
-
-plt.plot(bin_centers, bin_medians)
-plt.savefig('Disk_sec_phasefolded_all_10.png')
-
-plt.clf()
-t_bin = np.linspace(0, 1, 11)
-bin_vals = [[], [], [], [], [], [], [], [], [], []]
-for peri_ind in range(1, len(periastron_inds[:20])):
-    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    for bin_it in range(1, len(t_bin)):
-        for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
-                bin_vals[bin_it-1].append(disk_orb[t_val_it])
-                
-#plt.plot(t_scaled, disk_orb)
-
-bin_medians = []
-bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_vals:
-    bin_medians.append(np.median(bin_val))
-
-plt.plot(bin_centers, bin_medians)
-plt.savefig('Disk_sec_phasefolded_all_20.png')
-
-end_ind = 1200
-time = metadata['90'].age[:end_ind]
-separation = metadata['90'].separation[:end_ind]
-disk_secondary = metadata['90'].disk_size[:end_ind]
-ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
-ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
-periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
-apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
-
-plt.clf()
-t_bin = np.linspace(0, 1, 11)
-bin_vals = [[], [], [], [], [], [], [], [], [], []]
-for peri_ind in range(1, len(periastron_inds)):
-    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    for bin_it in range(1, len(t_bin)):
-        for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
-                bin_vals[bin_it-1].append(disk_orb[t_val_it])
-    
-bin_medians = []
-bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_vals:
-    bin_medians.append(np.median(bin_val))
-
-plt.plot(bin_centers, bin_medians)
-plt.savefig('Disk_primary_phasefolded_all.png')
-
-plt.clf()
-t_bin = np.linspace(0, 1, 11)
-bin_vals = [[], [], [], [], [], [], [], [], [], []]
-for peri_ind in range(1, len(periastron_inds[:10])):
-    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    for bin_it in range(1, len(t_bin)):
-        for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
-                bin_vals[bin_it-1].append(disk_orb[t_val_it])
-    
-bin_medians = []
-bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_vals:
-    bin_medians.append(np.median(bin_val))
-
-plt.plot(bin_centers, bin_medians)
-plt.savefig('Disk_primary_phasefolded_all_10.png')
-
-plt.clf()
-t_bin = np.linspace(0, 1, 11)
-bin_vals = [[], [], [], [], [], [], [], [], [], []]
-for peri_ind in range(1, len(periastron_inds[:20])):
-    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
-    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
-    for bin_it in range(1, len(t_bin)):
-        for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
-                bin_vals[bin_it-1].append(disk_orb[t_val_it])
-    
-bin_medians = []
-bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_vals:
-    bin_medians.append(np.median(bin_val))
-
-plt.plot(bin_centers, bin_medians)
-plt.savefig('Disk_primary_phasefolded_all_20.png')
-'''
+#==================================================
 
 #Phasefold
 end_ind = np.argmin(abs(metadata[sink_inds[0]].age-yt.YTQuantity(120, 'kyr')))
@@ -345,5 +241,5 @@ for bin_val in bin_mean_vals:
 
 plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
 plt.ylim(bottom=0)
-plt.savefig('phasefolded_median_all_'+str(N_orb)+'.png')
+plt.savefig('phasefolded_median_all_'+str(N_orb)+ '_' + sink_inds[0] + '.png')
 
