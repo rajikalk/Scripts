@@ -78,7 +78,7 @@ for bin_val in bin_vals:
     pdb.set_trace()
     bin_medians.append(np.median(bin_val))
 
-plt..errorbar(bin_centers, bin_medians, yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
+plt.errorbar(bin_centers, bin_medians, yerr=np.array(yerr_1)*(1.e4), ls='steps-mid', alpha=0.5, label='Primary')
 plt.plot(bin_centers, bin_medians)
 plt.savefig('Disk_sec_phasefolded_all.png')
 
