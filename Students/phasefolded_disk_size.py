@@ -68,6 +68,9 @@ for peri_ind in range(1, len(periastron_inds)):
         for t_val_it in range(len(t_scaled)):
             if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
+        if np.isnan(np.median(bin_sub_set)):
+            import pdb
+            pdb.set_trace()
         bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
         bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
     
@@ -109,6 +112,9 @@ for peri_ind in range(1, len(periastron_inds)):
         for t_val_it in range(len(t_scaled)):
             if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
+        if np.isnan(np.median(bin_sub_set)):
+            import pdb
+            pdb.set_trace()
         bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
         bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
     
