@@ -112,7 +112,7 @@ for sim_dir in sim_dirs:
                 f.write('source ~/.bashrc\n')
                 f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py\n')
 
-                f.write(proj_run_line+ '1>frames.out00 2>&1\n')
+                f.write(proj_run_line+ ' 1>frames.out00 2>&1\n')
                 f.close()
                 
                 os.chdir(save_dir)
