@@ -81,7 +81,7 @@ for peri_ind in range(1, len(periastron_inds[:N_orb])):
     for bin_it in range(1, len(t_bin)):
         bin_sub_set = []
         for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] <= t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
@@ -126,7 +126,7 @@ for peri_ind in range(1, len(periastron_inds[:N_orb])):
     for bin_it in range(1, len(t_bin)):
         bin_sub_set = []
         for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] <= t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
@@ -177,7 +177,7 @@ for peri_ind in range(1, len(periastron_inds[:N_orb])):
     for bin_it in range(1, len(t_bin)):
         bin_sub_set = []
         for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] <= t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
@@ -222,7 +222,7 @@ for peri_ind in range(1, len(periastron_inds[:N_orb])):
     for bin_it in range(1, len(t_bin)):
         bin_sub_set = []
         for t_val_it in range(len(t_scaled)):
-            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] <= t_bin[bin_it]:
                 bin_sub_set.append(disk_orb[t_val_it])
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
