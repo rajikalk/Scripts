@@ -286,7 +286,7 @@ for peri_ind in range(1, len(periastron_inds)):
 bin_medians = []
 bin_errs = []
 bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_medians:
+for bin_val in bin_median_vals:
     median = np.median(bin_val)
     mean = np.mean(bin_val)
     std = np.std(bin_val)
@@ -331,7 +331,7 @@ for peri_ind in range(1, len(periastron_inds)):
 bin_medians = []
 bin_errs = []
 bin_centers = (t_bin[1:] + t_bin[:-1])/2
-for bin_val in bin_medians:
+for bin_val in bin_median_vals:
     median = np.median(bin_val)
     mean = np.mean(bin_val)
     std = np.std(bin_val)
