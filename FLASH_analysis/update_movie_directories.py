@@ -118,10 +118,11 @@ for sim_dir in sim_dirs:
 
                 f.write(proj_run_line+ ' 1>frames.out00 2>&1\n')
                 f.close()
-                
+                '''
                 os.chdir(save_dir)
                 subprocess.run('sbatch movie.sh', shell=True)
                 os.chdir('/hits/fast/set/kuruwira/Movie_frames')
+                '''
                 '''
                 #proc = Popen(proj_run_line, shell=True)
                 #subprocess.run('module list', shell=True)
