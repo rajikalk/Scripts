@@ -147,6 +147,7 @@ for bin_val in bin_mean_vals:
 
 plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
 plt.ylim(bottom=0)
+plt.legend()
 plt.savefig('phasefolded_all_'+str(N_orb)+ '_' + sink_inds[0] +'.png')
 
 #==================================================
@@ -243,5 +244,6 @@ for bin_val in bin_mean_vals:
 
 plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
 plt.ylim(bottom=0)
+plt.legend()
 plt.savefig('phasefolded_median_all_'+str(N_orb)+ '_' + sink_inds[0] + '.png')
 
