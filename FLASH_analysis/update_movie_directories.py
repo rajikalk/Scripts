@@ -9,7 +9,7 @@ import sys
 #get mpi size and ranks
 #rank = CW.Get_rank()
 #size = CW.Get_size()
-size=sys.argv[1]
+size=20
 
 sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
 
@@ -71,8 +71,43 @@ for sim_dir in sim_dirs:
                  
                 import pdb
                 pdb.set_trace()
-                #Write job script and submit
+                job_id = ''
+                if 'Single' in save_dir:
+                    job_id = job_id + 'S'
+                else:
+                    job_id = job_id + 'B'
+                job_id = job_id + save_dir.split('Spin_0.')[-1].split('/')[0]
+                job_id = job_id + save_dir.split('Mach_0.')[-1].split('/')[0]
+                job_id = job_id + proj_dir[2]
                 
+                job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
+                
+                job_id = job_id + zoom_dir[:-3]
+                
+                
+                f = open(save_dir+'movie.sh', 'w')
+                
+                f.write('#!/bin/bash')
+                f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue')
+                f.write('#SBATCH --partition=cascade.p   # specify the partition to run on')
+                f.write('#SBATCH --time=24:00:00         # specify the requested wall-time')
+                f.write('#SBATCH --nodes=1               # number of nodes allocated for this job')
+                f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node')
+                f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank')
+                f.write('#SBATCH --mail-type=ALL  # NONE, ALL, FAIL, END...')
+                f.write('#SBATCH --mail-user=rajika.kuruwita@h-its.org')
+                f.write('#SBATCH --gres=cpuonly')
+
+                f.write('source ~/.bashrc')
+                f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py')
+
+                f.write(proj_run_line+ '1>frames.out00 2>&1')
+                f.close()
+                
+                subprocess.run('cd '+save_dir, shell=True)
+                subprocess.run('sb movie.sh', shell=True)
+                subprocess.run('cd -', shell=True)
+                '''
                 #proc = Popen(proj_run_line, shell=True)
                 #subprocess.run('module list', shell=True)
                 subprocess.run('source ~/.bashrc', shell=True)
@@ -84,3 +119,4 @@ for sim_dir in sim_dirs:
                 if len(glob.glob(save_dir + '*.pkl')) != len(glob.glob(save_dir + '*.jpg')):
                     #proc = Popen(proj_run_lines, shell=True)
                     subprocess.run(proj_run_line, shell=True)
+                '''
