@@ -69,6 +69,10 @@ for sim_dir in sim_dirs:
                 if zoom_dir == '250AU/':
                     proj_run_line = proj_run_line + " -width 500"
                  
+                import pdb
+                pdb.set_trace()
+                #Write job script and submit
+                
                 #proc = Popen(proj_run_line, shell=True)
                 #subprocess.run('module list', shell=True)
                 subprocess.run('source ~/.bashrc', shell=True)
