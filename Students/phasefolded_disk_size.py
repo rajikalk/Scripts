@@ -61,7 +61,7 @@ for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
     bins_all.append([])
-for peri_ind in range(1, len(periastron_inds)):
+for peri_ind in range(1, len(periastron_inds[:20])):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
     disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
@@ -106,7 +106,7 @@ for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
     bins_all.append([])
-for peri_ind in range(1, len(periastron_inds)):
+for peri_ind in range(1, len(periastron_inds[:20])):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
     disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
@@ -269,7 +269,7 @@ for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
     bins_all.append([])
-for peri_ind in range(1, len(periastron_inds)):
+for peri_ind in range(1, len(periastron_inds[:20])):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
     disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
@@ -314,7 +314,7 @@ for bin_it in range(1, len(t_bin)):
     bin_mean_vals.append([])
     bin_median_vals.append([])
     bins_all.append([])
-for peri_ind in range(1, len(periastron_inds)):
+for peri_ind in range(1, len(periastron_inds[:20])):
     t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
     t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
     disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
