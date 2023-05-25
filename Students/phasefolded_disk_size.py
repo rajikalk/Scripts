@@ -43,12 +43,13 @@ print(len(metadata['91'].separation ))
 print(len(metadata['91'].disk_size ))
 
 N_orb = 10
+sink_inds = ['91', '90']
 
 #Phasefold
-end_ind = np.argmin(abs(metadata['91'].age-yt.YTQuantity(120, 'kyr')))
-time = metadata['91'].age[:end_ind]
-separation = metadata['91'].separation[:end_ind]
-disk_secondary = metadata['91'].disk_size[:end_ind]
+end_ind = np.argmin(abs(metadata[sink_inds[0]].age-yt.YTQuantity(120, 'kyr')))
+time = metadata[sink_inds[0]].age[:end_ind]
+separation = metadata[sink_inds[0]].separation[:end_ind]
+disk_secondary = metadata[sink_inds[0]].disk_size[:end_ind]
 ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
@@ -92,9 +93,9 @@ plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='ste
 #plt.plot(bin_centers, bin_medians)
 
 end_ind = 1200
-time = metadata['90'].age[:end_ind]
-separation = metadata['90'].separation[:end_ind]
-disk_secondary = metadata['90'].disk_size[:end_ind]
+time = metadata[sink_inds[1]].age[:end_ind]
+separation = metadata[sink_inds[1]].separation[:end_ind]
+disk_secondary = metadata[sink_inds[1]].disk_size[:end_ind]
 ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
@@ -253,10 +254,10 @@ plt.savefig('Disk_primary_phasefolded_all_20.png')
 '''
 
 #Phasefold
-end_ind = np.argmin(abs(metadata['91'].age-yt.YTQuantity(120, 'kyr')))
-time = metadata['91'].age[:end_ind]
-separation = metadata['91'].separation[:end_ind]
-disk_secondary = metadata['91'].disk_size[:end_ind]
+end_ind = np.argmin(abs(metadata[sink_inds[0]].age-yt.YTQuantity(120, 'kyr')))
+time = metadata[sink_inds[0]].age[:end_ind]
+separation = metadata[sink_inds[0]].separation[:end_ind]
+disk_secondary = metadata[sink_inds[0]].disk_size[:end_ind]
 ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
@@ -300,9 +301,9 @@ plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='ste
 #plt.plot(bin_centers, bin_medians)
 
 end_ind = 1200
-time = metadata['90'].age[:end_ind]
-separation = metadata['90'].separation[:end_ind]
-disk_secondary = metadata['90'].disk_size[:end_ind]
+time = metadata[sink_inds[1]].age[:end_ind]
+separation = metadata[sink_inds[1]].separation[:end_ind]
+disk_secondary = metadata[sink_inds[1]].disk_size[:end_ind]
 ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
