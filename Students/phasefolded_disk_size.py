@@ -61,7 +61,7 @@ for peri_ind in periastron_inds:
     plt.axvline(x=time[peri_ind], color='b')
 for ap_ind in apastron_inds:
     plt.axvline(x=time[ap_ind], color='r')
-plt.xlim(left=60)
+plt.xlim([60, 90)
 plt.ylim([0, 200])
 plt.savefig('separation.png')
 
