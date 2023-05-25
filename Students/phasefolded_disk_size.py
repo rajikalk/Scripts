@@ -82,7 +82,7 @@ for bin_val in bin_median_vals:
     bin_medians.append(median)
     bin_errs.append(err)
 
-plt.errorbar(bin_centers, bin_medians, yerr=bin_errs, ls='steps-mid', alpha=0.5, label='secondary')
+plt.errorbar(bin_centers, bin_medians, yerr=bin_errs, drawstyle='steps-mid', alpha=0.5, label='secondary')
 #plt.plot(bin_centers, bin_medians)
 
 end_ind = 1200
