@@ -133,6 +133,7 @@ for bin_val in bins_all:
 
 
 plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
+plt.ylim(bottom=0)
 plt.savefig('phasefolded_all.png')
 '''
 plt.clf()
@@ -248,3 +249,98 @@ for bin_val in bin_vals:
 plt.plot(bin_centers, bin_medians)
 plt.savefig('Disk_primary_phasefolded_all_20.png')
 '''
+
+#Phasefold
+end_ind = np.argmin(abs(metadata['91'].age-yt.YTQuantity(120, 'kyr')))
+time = metadata['91'].age[:end_ind]
+separation = metadata['91'].separation[:end_ind]
+disk_secondary = metadata['91'].disk_size[:end_ind]
+ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
+ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
+periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
+apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
+
+plt.clf()
+t_bin = np.linspace(0, 1, 21)
+bin_mean_vals = []
+bin_median_vals = []
+bins_all = []
+for bin_it in range(1, len(t_bin)):
+    bin_mean_vals.append([])
+    bin_median_vals.append([])
+    bins_all.append([])
+for peri_ind in range(1, len(periastron_inds)):
+    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
+    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    for bin_it in range(1, len(t_bin)):
+        bin_sub_set = []
+        for t_val_it in range(len(t_scaled)):
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+                bin_sub_set.append(disk_orb[t_val_it])
+        if np.isnan(np.median(bin_sub_set)) == False:
+            bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
+            bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+            bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
+    
+bin_medians = []
+bin_errs = []
+bin_centers = (t_bin[1:] + t_bin[:-1])/2
+for bin_val in bin_medians:
+    median = np.median(bin_val)
+    mean = np.mean(bin_val)
+    std = np.std(bin_val)
+    err = [median-(mean-std), (mean+std)-median]
+    bin_medians.append(median)
+    bin_errs.append(err)
+
+plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='secondary')
+#plt.plot(bin_centers, bin_medians)
+
+end_ind = 1200
+time = metadata['90'].age[:end_ind]
+separation = metadata['90'].separation[:end_ind]
+disk_secondary = metadata['90'].disk_size[:end_ind]
+ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
+ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
+periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
+apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
+
+t_bin = np.linspace(0, 1, 21)
+bin_mean_vals = []
+bin_median_vals = []
+bins_all = []
+for bin_it in range(1, len(t_bin)):
+    bin_mean_vals.append([])
+    bin_median_vals.append([])
+    bins_all.append([])
+for peri_ind in range(1, len(periastron_inds)):
+    t_orb = time[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    t_scaled = (t_orb - t_orb[0])/((t_orb - t_orb[0])[-1])
+    disk_orb = disk_secondary[periastron_inds[peri_ind-1]:periastron_inds[peri_ind]]
+    for bin_it in range(1, len(t_bin)):
+        bin_sub_set = []
+        for t_val_it in range(len(t_scaled)):
+            if t_scaled[t_val_it] >= t_bin[bin_it-1] and t_scaled[t_val_it] < t_bin[bin_it]:
+                bin_sub_set.append(disk_orb[t_val_it])
+        if np.isnan(np.median(bin_sub_set)) == False:
+            bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
+            bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+            bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
+    
+bin_medians = []
+bin_errs = []
+bin_centers = (t_bin[1:] + t_bin[:-1])/2
+for bin_val in bin_medians:
+    median = np.median(bin_val)
+    mean = np.mean(bin_val)
+    std = np.std(bin_val)
+    err = [median-(mean-std), (mean+std)-median]
+    bin_medians.append(median)
+    bin_errs.append(err)
+
+
+plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary')
+plt.ylim(bottom=0)
+plt.savefig('phasefolded_median_all.png')
+
