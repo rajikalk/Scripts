@@ -73,7 +73,7 @@ for peri_ind in range(1, len(periastron_inds)):
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
             bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
-            bins_all = bins_all + bin_sub_set
+            bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
     
 bin_medians = []
 bin_errs = []
@@ -118,7 +118,7 @@ for peri_ind in range(1, len(periastron_inds)):
         if np.isnan(np.median(bin_sub_set)) == False:
             bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
             bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
-            bins_all = bins_all + bin_sub_set
+            bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
     
 bin_medians = []
 bin_errs = []
