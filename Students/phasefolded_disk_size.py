@@ -86,7 +86,7 @@ for bin_val in bins_all:
     bin_medians.append(median)
     bin_errs.append(err)
 
-plt.errorbar(bin_centers, bin_medians, yerr=bin_errs, drawstyle='steps-mid', alpha=0.5, label='secondary')
+plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='secondary')
 #plt.plot(bin_centers, bin_medians)
 
 end_ind = 1200
@@ -132,7 +132,7 @@ for bin_val in bins_all:
     bin_errs.append(err)
 
 
-plt.errorbar(bin_centers, bin_medians, yerr=bin_errs, ls='steps-mid', alpha=0.5, label='primary')
+plt.errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, ls='steps-mid', alpha=0.5, label='primary')
 plt.savefig('phasefolded_all.png')
 '''
 plt.clf()
