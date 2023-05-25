@@ -82,8 +82,6 @@ for sim_dir in sim_dirs:
                 if zoom_dir == '250AU/':
                     proj_run_line = proj_run_line + " -width 500"
                  
-                import pdb
-                pdb.set_trace()
                 job_id = ''
                 if 'Single' in save_dir:
                     job_id = job_id + 'S'
