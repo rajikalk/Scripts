@@ -115,9 +115,12 @@ for sim_dir in sim_dirs:
                 f.write(proj_run_line+ '1>frames.out00 2>&1')
                 f.close()
                 
+                subprocess.run('source ~/.bashrc', shell=True)
                 subprocess.run('cd '+save_dir, shell=True)
+                subprocess.run('pwd', shell=True)
                 subprocess.run('sb movie.sh', shell=True)
                 subprocess.run('cd -', shell=True)
+                subprocess.run('pwd', shell=True)
                 '''
                 #proc = Popen(proj_run_line, shell=True)
                 #subprocess.run('module list', shell=True)
