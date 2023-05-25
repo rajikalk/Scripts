@@ -98,21 +98,21 @@ for sim_dir in sim_dirs:
                 
                 f = open(save_dir+'movie.sh', 'w')
                 
-                f.write('#!/bin/bash')
-                f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue')
-                f.write('#SBATCH --partition=cascade.p   # specify the partition to run on')
-                f.write('#SBATCH --time=24:00:00         # specify the requested wall-time')
-                f.write('#SBATCH --nodes=1               # number of nodes allocated for this job')
-                f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node')
-                f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank')
-                f.write('#SBATCH --mail-type=ALL  # NONE, ALL, FAIL, END...')
-                f.write('#SBATCH --mail-user=rajika.kuruwita@h-its.org')
-                f.write('#SBATCH --gres=cpuonly')
+                f.write('#!/bin/bash\n')
+                f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue\n')
+                f.write('#SBATCH --partition=cascade.p   # specify the partition to run on\n')
+                f.write('#SBATCH --time=24:00:00         # specify the requested wall-time\n')
+                f.write('#SBATCH --nodes=1               # number of nodes allocated for this job\n')
+                f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node\n')
+                f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank\n')
+                f.write('#SBATCH --mail-type=ALL  # NONE, ALL, FAIL, END...\n')
+                f.write('#SBATCH --mail-user=rajika.kuruwita@h-its.org\n')
+                f.write('#SBATCH --gres=cpuonly\n')
 
-                f.write('source ~/.bashrc')
-                f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py')
+                f.write('source ~/.bashrc\n')
+                f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py\n')
 
-                f.write(proj_run_line+ '1>frames.out00 2>&1')
+                f.write(proj_run_line+ '1>frames.out00 2>&1\n')
                 f.close()
                 
                 import pdb
