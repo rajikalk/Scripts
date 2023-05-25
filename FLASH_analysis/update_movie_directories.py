@@ -13,8 +13,20 @@ size=20
 
 sim_dirs = [x[0] for x in os.walk('/hits/fast/set/kuruwira/Protostellar_spin')]
 
-clean_pickles = False
-clean_images = False
+def parse_inputs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-make_pickles", "--make_pickles", help="do you want to delete the pickles?", default="False")
+    parser.add_argument("-del_images", "--delete_images", type=str, default='False')
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
+#-------------------------------------------------------
+#get input and output directory and arguments
+args = parse_inputs()
+
+clean_pickles = eval(args.make_pickles)
+clean_images = eval(args.delete_images)
 
 proj_dirs = ['/XY/', '/XZ/']
 zoom_dirs = ['1000AU/', '250AU/']
