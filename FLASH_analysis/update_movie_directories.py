@@ -6,6 +6,7 @@ import subprocess
 #from mpi4py.MPI import COMM_WORLD as CW
 import sys
 import argparse
+import shutil
 
 #get mpi size and ranks
 #rank = CW.Get_rank()
@@ -61,64 +62,67 @@ for sim_dir in sim_dirs:
                     save_dir = save_dir + zoom_dir
                 if os.path.exists(save_dir) == False:
                     os.makedirs(save_dir)
-                    
-                if clean_pickles:# and rank == 0:
-                    for pickle_file in glob.glob(save_dir + '*.pkl'):
+                elif len(glob.glob(sim_dirs + '*plt_cnt*') == 0:
+                    shutil.rmtree(save_dir)
+                
+                if len(glob.glob(sim_dirs + '*plt_cnt*') > 0:
+                    if clean_pickles:# and rank == 0:
+                        for pickle_file in glob.glob(save_dir + '*.pkl'):
+                            os.remove(pickle_file)
+                    for pickle_file in glob.glob(save_dir + '1movie_frame*.pkl'):
                         os.remove(pickle_file)
-                for pickle_file in glob.glob(save_dir + '1movie_frame*.pkl'):
-                    os.remove(pickle_file)
-                
-                #sys.stdout.flush()
-                #CW.Barrier()
-                
-                if clean_images:# and rank == 0:
-                    for image_file in glob.glob(save_dir + '*.jpg'):
-                        os.remove(image_file)
-                for pickle_file in glob.glob(save_dir + '1movie_frame*.jpg'):
-                    os.remove(pickle_file)
-                
-                #sys.stdout.flush()
-                #CW.Barrier()
-                
-                proj_run_line = run_line + save_dir
-                if proj_dir == '/XZ/':
-                    proj_run_line = proj_run_line + " -ax 'y'"
-                if zoom_dir == '250AU/':
-                    proj_run_line = proj_run_line + " -width 500"
-                 
-                job_id = ''
-                if 'Single' in save_dir:
-                    job_id = job_id + 'S'
-                else:
-                    job_id = job_id + 'B'
-                job_id = job_id + save_dir.split('Spin_0.')[-1].split('/')[0]
-                job_id = job_id + save_dir.split('Mach_0.')[-1].split('/')[0]
-                job_id = job_id + proj_dir[2]
-                
-                job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
-                
-                job_id = job_id + zoom_dir[:-3]
-                
-                
-                f = open(save_dir+'movie.sh', 'w')
-                
-                f.write('#!/bin/bash\n')
-                f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue\n')
-                f.write('#SBATCH --partition=cascade.p   # specify the partition to run on\n')
-                f.write('#SBATCH --time=24:00:00         # specify the requested wall-time\n')
-                f.write('#SBATCH --nodes=1               # number of nodes allocated for this job\n')
-                f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node\n')
-                f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank\n')
-                f.write('#SBATCH --mail-type=ALL  # NONE, ALL, FAIL, END...\n')
-                f.write('#SBATCH --mail-user=rajika.kuruwita@h-its.org\n')
-                f.write('#SBATCH --gres=cpuonly\n')
+                    
+                    #sys.stdout.flush()
+                    #CW.Barrier()
+                    
+                    if clean_images:# and rank == 0:
+                        for image_file in glob.glob(save_dir + '*.jpg'):
+                            os.remove(image_file)
+                    for pickle_file in glob.glob(save_dir + '1movie_frame*.jpg'):
+                        os.remove(pickle_file)
+                    
+                    #sys.stdout.flush()
+                    #CW.Barrier()
+                    
+                    proj_run_line = run_line + save_dir
+                    if proj_dir == '/XZ/':
+                        proj_run_line = proj_run_line + " -ax 'y'"
+                    if zoom_dir == '250AU/':
+                        proj_run_line = proj_run_line + " -width 500"
+                     
+                    job_id = ''
+                    if 'Single' in save_dir:
+                        job_id = job_id + 'S'
+                    else:
+                        job_id = job_id + 'B'
+                    job_id = job_id + save_dir.split('Spin_0.')[-1].split('/')[0]
+                    job_id = job_id + save_dir.split('Mach_0.')[-1].split('/')[0]
+                    job_id = job_id + proj_dir[2]
+                    
+                    job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
+                    
+                    job_id = job_id + zoom_dir[:-3]
+                    
+                    
+                    f = open(save_dir+'movie.sh', 'w')
+                    
+                    f.write('#!/bin/bash\n')
+                    f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue\n')
+                    f.write('#SBATCH --partition=cascade.p   # specify the partition to run on\n')
+                    f.write('#SBATCH --time=24:00:00         # specify the requested wall-time\n')
+                    f.write('#SBATCH --nodes=1               # number of nodes allocated for this job\n')
+                    f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node\n')
+                    f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank\n')
+                    f.write('#SBATCH --mail-type=BEGIN,END,FAIL  # NONE, ALL, FAIL, END...\n')
+                    f.write('#SBATCH --mail-user=rajika.kuruwita@h-its.org\n')
+                    f.write('#SBATCH --gres=cpuonly\n')
 
-                f.write('source ~/.bashrc\n')
-                f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py\n')
+                    f.write('source ~/.bashrc\n')
+                    f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py\n')
 
-                f.write(proj_run_line+ ' 1>frames.out00 2>&1\n')
-                f.close()
-                
-                os.chdir(save_dir)
-                subprocess.run('sbatch movie.sh', shell=True)
-                os.chdir('/hits/fast/set/kuruwira/Movie_frames')
+                    f.write(proj_run_line+ ' 1>frames.out00 2>&1\n')
+                    f.close()
+                    
+                    os.chdir(save_dir)
+                    subprocess.run('sbatch movie.sh', shell=True)
+                    os.chdir('/hits/fast/set/kuruwira/Movie_frames')
