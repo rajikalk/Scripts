@@ -81,5 +81,6 @@ for pickle_file in pickle_files:
     
         plt.xlabel('Time (yr)')
         plt.xlim(left=0)
+        plt.ylim(bottom=0)
         plt.legend()
         plt.savefig('mass_evolution.png')
