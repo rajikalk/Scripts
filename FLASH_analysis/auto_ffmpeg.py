@@ -21,7 +21,7 @@ for sim_dir in sim_dirs:
         if rit == size:
             rit = 0
         if rank == rit:
-            if len(glob.glob(sim_dir+'*.jpg')) > 0:
+            if len(glob.glob(sim_dir+'/*.jpg')) > 0:
                 #make movie!
                 movie_name = "_".join(sim_dir.split('Movie_frames/')[-1].split('/')) + '.mp4'
                 if update == False and os.path.exists(movie_name) == False:
