@@ -65,7 +65,7 @@ for sim_dir in sim_dirs:
                 elif len(glob.glob(sim_dirs + '*plt_cnt*')) == 0:
                     shutil.rmtree(save_dir)
                 
-                if len(glob.glob(sim_dirs + '*plt_cnt*') > 0:
+                if len(glob.glob(sim_dirs + '*plt_cnt*')) > 0:
                     if clean_pickles:# and rank == 0:
                         for pickle_file in glob.glob(save_dir + '*.pkl'):
                             os.remove(pickle_file)
