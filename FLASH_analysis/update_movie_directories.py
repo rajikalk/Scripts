@@ -65,8 +65,6 @@ for sim_dir in sim_dirs:
                 elif len(glob.glob(sim_dir + '/*plt_cnt*')) == 0:
                     shutil.rmtree(save_dir)
                 
-                import pdb
-                pdb.set_trace()
                 if len(glob.glob(sim_dir + '/*plt_cnt*')) > 0:
                     if clean_pickles:# and rank == 0:
                         for pickle_file in glob.glob(save_dir + '*.pkl'):
