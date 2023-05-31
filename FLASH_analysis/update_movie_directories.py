@@ -62,10 +62,12 @@ for sim_dir in sim_dirs:
                     save_dir = save_dir + zoom_dir
                 if os.path.exists(save_dir) == False:
                     os.makedirs(save_dir)
-                elif len(glob.glob(sim_dir + '*plt_cnt*')) == 0:
+                elif len(glob.glob(sim_dir + '/*plt_cnt*')) == 0:
                     shutil.rmtree(save_dir)
                 
-                if len(glob.glob(sim_dir + '*plt_cnt*')) > 0:
+                import pdb
+                pdb.set_trace()
+                if len(glob.glob(sim_dir + '/*plt_cnt*')) > 0:
                     if clean_pickles:# and rank == 0:
                         for pickle_file in glob.glob(save_dir + '*.pkl'):
                             os.remove(pickle_file)
