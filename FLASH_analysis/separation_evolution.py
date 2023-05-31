@@ -72,7 +72,7 @@ for pickle_file in pickle_files:
     elif len(sink_data.keys()) == 1:
     
         mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
-        time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
+        time = sink_data[list(sink_data.keys())[0]]['time'] - sink_data[list(sink_data.keys())[0]]['time'][0]
         time = yt.YTArray(time, 's')
         
         plt.semilogy(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
