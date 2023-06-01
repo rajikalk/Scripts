@@ -44,6 +44,7 @@ font_size = 10
 plt.clf()
 
 pick_it = -1
+x_max = 0
 for pickle_file in pickle_files:
     pick_it = pick_it + 1
     file_open = open(pickle_file, 'rb')
@@ -62,10 +63,13 @@ for pickle_file in pickle_files:
         time = sink_data[list(sink_data.keys())[1]]['time'] - sink_data[list(sink_data.keys())[1]]['time'][0]
         time = yt.YTArray(time, 's')
         
+        if time.in_units('yr')[-1].value > x_max:
+            x_max = time.in_units('yr')[-1].value
+        
         plt.semilogy(time.in_units('yr'), separation.in_units('au'), label=pickle_file.split('/')[-1].split('.pkl')[0])
         plt.ylabel('Separation (au)')
         plt.xlabel('Time (yr)')
-        plt.xlim(left=0)
+        plt.xlim([0, x_max])
         plt.legend()
         plt.savefig('separation_evolution.png')
 
@@ -75,11 +79,14 @@ for pickle_file in pickle_files:
         time = sink_data[list(sink_data.keys())[0]]['time'] - sink_data[list(sink_data.keys())[0]]['time'][0]
         time = yt.YTArray(time, 's')
         
+        if time.in_units('yr')[-1].value > x_max:
+            x_max = time.in_units('yr')[-1].value
+        
         plt.plot(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
         plt.ylabel('Mass (Msun)')
         
         plt.xlabel('Time (yr)')
-        plt.xlim(left=0)
+        plt.xlim([0, x_max])
         plt.ylim(bottom=0)
         plt.legend()
         plt.savefig('mass_evolution.png')
