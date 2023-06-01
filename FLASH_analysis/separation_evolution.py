@@ -78,7 +78,6 @@ for pickle_file in pickle_files:
         plt.plot(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
         plt.ylabel('Mass (Msun)')
         
-    
         plt.xlabel('Time (yr)')
         plt.xlim(left=0)
         plt.ylim(bottom=0)
