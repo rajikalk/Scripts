@@ -83,6 +83,7 @@ for pickle_file in pickle_files:
             x_max = time.in_units('yr')[-1].value
         
         plt.plot(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
+        plt.yscale('linear')
         plt.ylabel('Mass (Msun)')
         
         plt.xlabel('Time (yr)')
