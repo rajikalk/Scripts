@@ -86,7 +86,7 @@ for pickle_file in pickle_files:
         plt.yscale('linear')
         plt.ylabel('Mass (Msun)')
         
-        print("for pickle:" pickle_file, "end time is", time.in_units('yr')[-1], "and final mass is", mass.in_units('Msun')[-1])
+        print("for pickle:", pickle_file, "end time is", time.in_units('yr')[-1], "and final mass is", mass.in_units('Msun')[-1])
         
         plt.xlabel('Time (yr)')
         plt.xlim([0, x_max])
