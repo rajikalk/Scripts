@@ -4,6 +4,8 @@ import yt
 import glob
 import sys
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
 #import matplotlib
 import argparse
 
