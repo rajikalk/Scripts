@@ -58,6 +58,7 @@ def parse_inputs():
 args = parse_inputs()
 pickle_files = sorted(sys.argv[1:])
 
+'''
 plt.clf()
 sink_ind = 0
 for pickle_file in pickle_files:
@@ -84,3 +85,69 @@ plt.xlim(left=0)
 plt.ylim(bottom=0)
 plt.legend()
 plt.savefig('spin_comp_primary.png')
+'''
+Mach_labels = ['0.1', '0.2']
+Spin_labels = ['0.20', '0.25', '0.30', '0.35']
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+    
+        #single_pickle
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
+        binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        
+        file = open(single_pickle, 'rb')
+        sink_data = pickle.load(file)
+        file.close()
+        form_time = np.nan
+        
+        for sink_id in sink_data.keys():
+            if np.isnan(form_time):
+                form_time = sink_data[sink_id]['time'][0]
+            L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+            L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+            time = sink_data[sink_id]['time'] - form_time
+            time = yt.YTArray(time, 's')
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+            
+        file = open(binary_pickle, 'rb')
+        sink_data = pickle.load(file)
+        file.close()
+        form_time = np.nan
+        
+        Binary_labels = ['Primary', 'Secondary']
+        line_styles = ['--', '-.']
+        
+        for sink_id in sink_data.keys():
+            if np.isnan(form_time):
+                form_time = sink_data[sink_id]['time'][0]
+            L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+            L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+            time = sink_data[sink_id]['time'] - form_time
+            time = yt.YTArray(time, 's')
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+        
+        if plot_it == 0:
+            axs.flatten()[plot_it].legend()
+            axs.flatten()[plot_it].set_xlim(left=0)
+            axs.flatten()[plot_it].set_ylim(bottom=0)
+        if mach_lab == '0.1'
+            axs.flatten()[plot_it].ylabel('L ($g\,cm^2/s$)')
+            if spin_lab == '0.20':
+                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
+        if mach_lab == '0.2':
+            if spin_lab == '0.20':
+                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].ylabel('Time ($yr$)')
+        
+        plot_it = plot_it + 1
+
+plt.savefig('spin_comp_multi.png')
