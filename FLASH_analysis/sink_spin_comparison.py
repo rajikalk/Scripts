@@ -137,7 +137,7 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].legend()
             axs.flatten()[plot_it].set_xlim(left=0)
             axs.flatten()[plot_it].set_ylim(bottom=0)
-        if mach_lab == '0.1'
+        if mach_lab == '0.1':
             axs.flatten()[plot_it].ylabel('L ($g\,cm^2/s$)')
             if spin_lab == '0.20':
                 axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
