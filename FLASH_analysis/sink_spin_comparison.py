@@ -70,8 +70,10 @@ for pickle_file in pickle_files:
     for sink_id in sink_data.keys():
         if np.isnan(form_time):
             form_time = sink_data[sink_id]['time'][0]
-        L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-        L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+        #L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+        #L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+        L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
+        L_tot = yt.YTArray(L_tot, 'cm**2/s')
         time = sink_data[sink_id]['time'] - form_time
         time = yt.YTArray(time, 's')
         plt.plot(time.in_units('yr'), L_tot, label=sink_id + "_" + pickle_file.split('/')[-1])
