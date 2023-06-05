@@ -79,5 +79,6 @@ for pickle_file in pickle_files:
 plt.xlabel('Time since formation')
 plt.ylabel('Angular momentum')
 plt.xlim(left=0)
+plt.ylim(bottom=0)
 plt.legend()
 plt.savefig('spin_comp_primary.png')
