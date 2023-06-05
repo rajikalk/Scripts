@@ -157,6 +157,6 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it].set_xlim(left=0)
-axs.flatten()[plot_it].set_ylim(bottom=0)
+axs.flatten()[plot_it-1].set_xlim(left=0)
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi.png')
