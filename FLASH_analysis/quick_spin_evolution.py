@@ -22,10 +22,10 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
 
-B_2 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Spin_0.2_Binary_Lref_10_Restart_Mach_0.2_From_binary_formation.pkl'
-B_25 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Spin_0.25_Binary_Lref_10_Restart_Mach_0.2_From_binary_formation.pkl'
-S_2 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Spin_0.2_Single_Lref_10_Mach_0.2.pkl'
-S_25 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Spin_0.25_Single_Lref_10_Mach_0.2.pkl'
+B_2 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.20_Binary_Lref_10_Restart_Mach_0.2_From_binary_formation.pkl'
+B_25 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.25_Binary_Lref_10_Restart_Mach_0.2_From_binary_formation.pkl'
+S_2 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.20_Single_Lref_10_Mach_0.2.pkl'
+S_25 = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_0.25_Single_Lref_10_Mach_0.2.pkl'
 
 file = open(S_2, 'rb')
 sink_data = pickle.load(file)
