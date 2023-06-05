@@ -74,7 +74,7 @@ for pickle_file in pickle_files:
         L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
         time = sink_data[sink_id]['time'] - form_time
         time = yt.YTArray(time, 's')
-        plt.semilogy(time.in_units('yr'), L_tot, label=sink_id + "_" + pickle_file.split('/')[-1])
+        plt.plot(time.in_units('yr'), L_tot, label=sink_id + "_" + pickle_file.split('/')[-1])
 
 plt.xlabel('Time since formation')
 plt.ylabel('Angular momentum')
