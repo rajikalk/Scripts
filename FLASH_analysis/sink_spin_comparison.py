@@ -56,7 +56,6 @@ def parse_inputs():
 #Get simulation files
 #input_dir = sys.argv[1]
 args = parse_inputs()
-pickle_files = sorted(sys.argv[1:])
 
 '''
 plt.clf()
