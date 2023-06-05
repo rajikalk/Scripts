@@ -67,7 +67,7 @@ for pickle_file in pickle_files:
     file.close()
     
     for sink_id in sink_data.keys():
-        L_tot = np.sqrt(sink_data[sink_id]['accelx']**2 + sink_data[sink_id]['accely']**2 + sink_data[sink_id]['accely']**2)
+        L_tot = np.sqrt(sink_data[sink_id]['accelx']**2 + sink_data[sink_id]['accely']**2 + sink_data[sink_id]['accelz']**2)
         L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
         time = sink_data[sink_id]['time'] - sink_data[sink_id]['time'][0]
         time = yt.YTArray(time, 's')
