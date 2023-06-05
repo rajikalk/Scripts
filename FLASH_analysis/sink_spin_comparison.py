@@ -95,6 +95,8 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
 plot_it = 0
+xmax= 0
+ymax = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
     
@@ -114,6 +116,10 @@ for spin_lab in Spin_labels:
             L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
             time = sink_data[sink_id]['time'] - form_time
             time = yt.YTArray(time, 's')
+            if time[-1] > xmax:
+                xmax = time[-1]
+            if np.max(L_tot) > ymax:
+                ymax = np.max(L_tot)
             axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
             
         file = open(binary_pickle, 'rb')
@@ -131,12 +137,14 @@ for spin_lab in Spin_labels:
             L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
             time = sink_data[sink_id]['time'] - form_time
             time = yt.YTArray(time, 's')
+            if time[-1] > xmax:
+                xmax = time[-1]
+            if np.max(L_tot) > ymax:
+                ymax = np.max(L_tot)
             axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
-            axs.flatten()[plot_it].set_xlim(left=0)
-            axs.flatten()[plot_it].set_ylim(bottom=0)
         if mach_lab == '0.1':
             axs.flatten()[plot_it].set_ylabel('L ($g\,cm^2/s$)')
             if spin_lab == '0.20':
@@ -149,4 +157,6 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
+axs.flatten()[plot_it].set_xlim(left=0)
+axs.flatten()[plot_it].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi.png')
