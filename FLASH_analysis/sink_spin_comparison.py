@@ -150,9 +150,9 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
         if spin_lab != '0.20':
-            axs.flatten()[plot_it].axhline(y=[1, 2, 3, 4], 'k-', alpha=0.5)
+            axs.flatten()[plot_it].axhline(y=[1, 2, 3, 4], color='k', linestyle='-', alpha=0.5)
         else:
-            axs.flatten()[plot_it].axhline(y=[1.e51, 2.e51, 3.e51, 4.e51], 'k-', alpha=0.5)
+            axs.flatten()[plot_it].axhline(y=[1.e51, 2.e51, 3.e51, 4.e51], color='k', linestyle='-', alpha=0.5)
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
@@ -234,9 +234,9 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
         if spin_lab != '0.20':
-            axs.flatten()[plot_it].axhline(y=[1, 2, 3, 4], 'k-', alpha=0.5)
+            axs.flatten()[plot_it].axhline(y=[1, 2, 3, 4], color='k', linestyle='-', alpha=0.5)
         else:
-            axs.flatten()[plot_it].axhline(y=[1.e51, 2.e51, 3.e51, 4.e51], 'k-', alpha=0.5)
+            axs.flatten()[plot_it].axhline(y=[1.e51, 2.e51, 3.e51, 4.e51], color='k', linestyle='-', alpha=0.5)
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
