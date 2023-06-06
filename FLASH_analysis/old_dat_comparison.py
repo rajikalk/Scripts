@@ -8,6 +8,9 @@ Labels = ['Single', 'Mach_0.1', 'Mach_0.2']
 dat_files = ['/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Single_star/sinks_evol.dat', '/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Mach_0.1/Lref_10.dat', '/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Mach_0.2/Lref_10.dat']
 pickle_files = ['Single_mach_0.0.pkl', 'Binary_mach_0.1.pkl', 'Binary_mach_0.2.pkl']
 
+Time_all = []
+L_all = []
+
 for dat_it in range(len(dat_files)):
 
     sink_evol_file = dat_files[dat_it]
@@ -92,8 +95,22 @@ for dat_it in range(len(dat_files)):
     #plot spin evolution
     plt.clf()
     for sink_id in sink_data.keys():
-        L_tot = np.sqrt(sink_data[sink_id]['accelx']**2 + sink_data[sink_id]['accely']**2 + sink_data[sink_id]['accely']**2)
+        L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+        time_array = sink_data[sink_id]['time']-sink_data[sink_id]['time'][0]
+        Time_all.append(time_array)
+        L_all.append(L_tot)
+        
         plt.semilogy(sink_data[sink_id]['time'], L_tot, label=sink_id)
+        
     plt.xlabel('Time (s)')
     plt.ylabel('L (gcm$^2$/s)')
     plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
+    
+
+plt.clf()
+for time_it in range(len(Time_all)):
+    plt.plot(Time_all[time_it], L_all[time_it], label=Labels[time_it])
+plt.xlabel('Time (yr)')
+plt.ylabel('L')
+plt.legend()
+plt.savefig('old_comp.png')
