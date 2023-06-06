@@ -120,10 +120,7 @@ for spin_lab in Spin_labels:
                 xmax = time[-1]
             if np.max(L_tot) > ymax:
                 ymax = np.max(L_tot)
-            if spin_lab != '0.20':
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
-            else:
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
             
         file = open(binary_pickle, 'rb')
         sink_data = pickle.load(file)
@@ -144,15 +141,9 @@ for spin_lab in Spin_labels:
                 xmax = time[-1]
             if np.max(L_tot) > ymax:
                 ymax = np.max(L_tot)
-            if spin_lab != '0.20':
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
-            else:
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
-        if spin_lab != '0.20':
-            hline_vals = [1, 2, 3, 4]
-        else:
-            hline_vals = [1.e51, 2.e51, 3.e51, 4.e51]
+        hline_vals = [1, 2, 3, 4]
         for hline_val in hline_vals:
             axs.flatten()[plot_it].axhline(y=hline_val, color='k', linestyle='-', alpha=0.5)
         
@@ -206,10 +197,7 @@ for spin_lab in Spin_labels:
                 xmax = time[-1]
             if np.max(L_tot) > ymax:
                 ymax = np.max(L_tot)
-            if spin_lab != '0.20':
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
-            else:
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
             
         file = open(binary_pickle, 'rb')
         sink_data = pickle.load(file)
@@ -230,15 +218,9 @@ for spin_lab in Spin_labels:
                 xmax = time[-1]
             if np.max(L_tot) > ymax:
                 ymax = np.max(L_tot)
-            if spin_lab != '0.20':
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
-            else:
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
-        if spin_lab != '0.20':
-            hline_vals = [1, 2, 3, 4]
-        else:
-            hline_vals = [1.e51, 2.e51, 3.e51, 4.e51]
+        hline_vals = [1, 2, 3, 4]
         for hline_val in hline_vals:
             axs.flatten()[plot_it].axhline(y=hline_val, color='k', linestyle='-', alpha=0.5)
         
