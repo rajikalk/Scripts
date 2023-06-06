@@ -141,7 +141,7 @@ for spin_lab in Spin_labels:
                 xmax = time[-1]
             if np.max(L_tot) > ymax:
                 ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         
         #hline_vals = [1, 2, 3, 4]
         #for hline_val in hline_vals:
