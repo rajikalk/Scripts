@@ -4,7 +4,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 
-Labels = ['Single', 'Mach_0.1', 'Mach_0.2']
+Labels = ['Single', 'Mach_0.1-Primary', 'Mach_0.1-Secondary', 'Mach_0.2-Primary', 'Mach_0.2-Secondary']
 dat_files = ['/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Single_star/sinks_evol.dat', '/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Mach_0.1/Lref_10.dat', '/Users/reggie/Documents/Simulation_analysis/FLASH/FLASH_sink_evol/Mach_0.2/Lref_10.dat']
 pickle_files = ['Single_mach_0.0.pkl', 'Binary_mach_0.1.pkl', 'Binary_mach_0.2.pkl']
 
