@@ -109,7 +109,7 @@ if args.make_movie_pickles == 'True':
         else:
             file_int = file_int + 1
             if usable_files[file_int] == usable_files[file_int-1]:
-                os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+                os.system('cp '+ output_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + output_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
         file_counter = usable_files.index(fn)
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
