@@ -132,7 +132,7 @@ if args.make_movie_pickles == 'True':
                 part_pos_fields = [field for field in ds.field_list if ('particle_pos' in field[1])&(field[0]=='all')&(field[1]!='particle_pos'+args.axis)]
                 part_pos_x = dd[part_pos_fields[0]].in_units('au')
                 part_pos_y = dd[part_pos_fields[1]].in_units('au')
-                positions = np.array([part_pos_x,part_pos_y])
+                positions = yt.YTArray([part_pos_x,part_pos_y])
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
