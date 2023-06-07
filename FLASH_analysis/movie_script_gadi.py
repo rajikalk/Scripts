@@ -108,7 +108,7 @@ if args.make_movie_pickles == 'True':
             file_int = usable_files.index(fn)
         else:
             file_int = file_int + 1
-            if file_int > 0
+            if file_int > 0:
                 if usable_files[file_int] == usable_files[file_int-1]:
                     os.system('cp '+ output_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + output_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
         file_counter = usable_files.index(fn)
