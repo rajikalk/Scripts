@@ -286,7 +286,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     ymax = limits[1][1]
     box_size = xmax - xmin
     if accretion_rad/box_size < 0.05:
-        line_rad = 0.005*box_size
+        line_rad = yt.YTQuantity(0.005*box_size, 'AU')
     else:
         line_rad = accretion_rad
     try:
