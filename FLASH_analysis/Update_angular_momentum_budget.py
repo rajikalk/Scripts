@@ -69,16 +69,15 @@ for sim_dir in sim_dirs:
                 job_id = job_id + 'S'
             else:
                 job_id = job_id + 'B'
+            
+            job_id = job_id + 'L'
             job_id = job_id + save_dir.split('Spin_0.')[-1].split('/')[0]
             job_id = job_id + save_dir.split('Mach_0.')[-1].split('/')[0]
             
             job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
+        
             
-            import pdb
-            pdb.set_trace()
-            
-            
-            f = open(save_dir+'movie.sh', 'w')
+            f = open(save_dir+'L_budget.sh', 'w')
             
             f.write('#!/bin/bash\n')
             f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue\n')
@@ -94,7 +93,7 @@ for sim_dir in sim_dirs:
             f.write('source ~/.bashrc\n')
             f.write('chmod a+x /home/kuruwira/Scripts/FLASH_analysis/movie_script.py\n')
 
-            f.write(proj_run_line+ ' 1>Levol.out00 2>&1\n')
+            f.write(proj_run_line+ ' 1>budget.out00 2>&1\n')
             f.close()
             
             #os.chdir(save_dir)
