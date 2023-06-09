@@ -71,11 +71,8 @@ for sim_dir in sim_dirs:
                 job_id = job_id + 'B'
             job_id = job_id + save_dir.split('Spin_0.')[-1].split('/')[0]
             job_id = job_id + save_dir.split('Mach_0.')[-1].split('/')[0]
-            job_id = job_id + proj_dir[2]
             
             job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
-            
-            job_id = job_id + zoom_dir[:-3]
             
             import pdb
             pdb.set_trace()
