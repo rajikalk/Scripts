@@ -123,7 +123,7 @@ if args.update_pickles == 'True':
     CW.Barrier()
 
     for ds in ts.piter():
-        t_round = m_times[usable_files.index(ds)]
+        t_round = m_times[usable_files.index(ds.filename)]
         time_val = ds.current_time.in_units('yr') - form_time
         Time_array.append(time_val)
 
