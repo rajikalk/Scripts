@@ -179,7 +179,7 @@ if args.update_pickles == 'True':
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
         pickle.dump((rank_data), file)
         file.close()
-        print('read file', files.index(ds.filename), 'of', len(usable_files), 'files on rank', rank)
+        print('read file', usable_files.index(ds.filename), 'of', len(usable_files), 'files on rank', rank)
 
     sys.stdout.flush()
     CW.Barrier()
