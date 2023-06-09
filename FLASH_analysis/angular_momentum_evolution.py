@@ -60,6 +60,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 if args.update_pickles == 'True':
 
+    
     m_times = mym.generate_frame_times(files, 10, presink_frames=10, end_time=None)
 
     L_dict = {}
@@ -115,18 +116,24 @@ if args.update_pickles == 'True':
 
     #make time series
     ts = yt.DatasetSeries(usable_files, parallel=True)
+    form_time = mym.find_sink_formation_time(files)
+    form_time = yt.YTQuantity(form_time, 'yr')
 
     sys.stdout.flush()
     CW.Barrier()
 
     for ds in ts.piter():
-        Time_array.append(ds.current_time.in_units('yr'))
+        time_val = ds.current_time.in_units('yr') - form_time
+        Time_array.append(time_val)
 
         #load all data
         dd = ds.all_data()
         
-        #Calculate particle spin
-        particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
+        if time_val > 0:
+            #Calculate particle spin
+            particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
+        else:
+            particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'gcm**2/s')
         
         #Calculate orbital angular momentum around CoM
         dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
