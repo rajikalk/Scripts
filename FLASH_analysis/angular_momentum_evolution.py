@@ -68,6 +68,7 @@ if args.update_pickles == 'True':
     L_secondary = []
     L_orbit = []
     L_in_gas = []
+    T_round_all = []
 
     pickle_names = '_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl'
     #get current progress
@@ -85,6 +86,7 @@ if args.update_pickles == 'True':
                     L_secondary = L_secondary + L_dict['L_secondary']
                     L_orbit = L_orbit + L_dict['L_orbit']
                     L_in_gas = L_in_gas + L_dict['L_in_gas']
+                    T_round_all = T_round_all + L_dict['T_round']
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
@@ -92,8 +94,9 @@ if args.update_pickles == 'True':
             L_secondary = list(np.array(L_secondary)[sorted_inds])
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
+            t_round = list(np.array(T_round_all)[sorted_inds])[-1]
             
-            start_time = Time_array[-1]
+            start_time = t_round
         else:
             start_time = m_times[0]
     else:
