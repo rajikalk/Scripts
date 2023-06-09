@@ -94,9 +94,8 @@ if args.update_pickles == 'True':
             L_secondary = list(np.array(L_secondary)[sorted_inds])
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
-            t_round = list(np.array(T_round_all)[sorted_inds])[-1]
             
-            start_time = t_round
+            start_time = np.max(T_round_all)
         else:
             start_time = m_times[0]
     else:
