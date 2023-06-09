@@ -97,5 +97,5 @@ for sim_dir in sim_dirs:
             f.close()
             
             os.chdir(save_dir)
-            subprocess.run('sbatch movie.sh', shell=True)
+            subprocess.run('sbatch L_budget.sh', shell=True)
             os.chdir('/hits/fast/set/kuruwira/Movie_frames')
