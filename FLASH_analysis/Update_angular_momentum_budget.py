@@ -31,7 +31,7 @@ clean_pickles = eval(args.make_pickles)
 for sim_dir in sim_dirs:
     if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0:
         #check if movie directory exists
-        save_dir = '/hits/fast/set/kuruwira/Angular_momentum_budget' + sim_dir.split('Protostellar_spin')[-1]
+        save_dir = '/hits/fast/set/kuruwira/Analysis/Angular_momentum_budget' + sim_dir.split('Protostellar_spin')[-1]
         
         #sys.stdout.flush()
         #CW.Barrier()
@@ -50,7 +50,7 @@ for sim_dir in sim_dirs:
         #    run_line = 'python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py ' + sim_dir +'/ '
             
 
-        elif len(glob.glob(sim_dir + '/*plt_cnt*')) == 0:
+        if len(glob.glob(sim_dir + '/*plt_cnt*')) == 0:
             shutil.rmtree(save_dir)
         
         if len(glob.glob(sim_dir + '/*plt_cnt*')) > 0:
