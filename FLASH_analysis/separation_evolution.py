@@ -52,8 +52,28 @@ for pickle_file in pickle_files:
     file_open = open(pickle_file, 'rb')
     sink_data = pickle.load(file_open)
     file_open.close()
+
+    if len(sink_data.keys()) == 1:
     
-    if len(sink_data.keys()) == 2:
+        mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
+        time = sink_data[list(sink_data.keys())[0]]['time'] - sink_data[list(sink_data.keys())[0]]['time'][0]
+        time = yt.YTArray(time, 's')
+        
+        if time.in_units('yr')[-1].value > x_max:
+            x_max = time.in_units('yr')[-1].value
+        
+        plt.plot(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
+        plt.yscale('linear')
+        plt.ylabel('Mass (Msun)')
+        
+        print("for pickle:", pickle_file, "end time is", time.in_units('yr')[-1], "and final mass is", mass.in_units('Msun')[-1])
+        
+        plt.xlabel('Time (yr)')
+        plt.xlim([0, x_max])
+        plt.ylim(bottom=0)
+        plt.legend()
+        plt.savefig('mass_evolution.png')
+    else:
         secondary_sink_form_time = sink_data[list(sink_data.keys())[1]]['time'][0]
         primary_time_star_ind = np.argwhere(sink_data[list(sink_data.keys())[0]]['time']==secondary_sink_form_time)[0][0]
         
@@ -74,24 +94,3 @@ for pickle_file in pickle_files:
         plt.xlim([0, x_max])
         plt.legend()
         plt.savefig('separation_evolution.png')
-
-    elif len(sink_data.keys()) == 1:
-    
-        mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
-        time = sink_data[list(sink_data.keys())[0]]['time'] - sink_data[list(sink_data.keys())[0]]['time'][0]
-        time = yt.YTArray(time, 's')
-        
-        if time.in_units('yr')[-1].value > x_max:
-            x_max = time.in_units('yr')[-1].value
-        
-        plt.plot(time.in_units('yr'), mass.in_units('Msun'), label=pickle_file.split('/')[-1].split('.pkl')[0])
-        plt.yscale('linear')
-        plt.ylabel('Mass (Msun)')
-        
-        print("for pickle:", pickle_file, "end time is", time.in_units('yr')[-1], "and final mass is", mass.in_units('Msun')[-1])
-        
-        plt.xlabel('Time (yr)')
-        plt.xlim([0, x_max])
-        plt.ylim(bottom=0)
-        plt.legend()
-        plt.savefig('mass_evolution.png')
