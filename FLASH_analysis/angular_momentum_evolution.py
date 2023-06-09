@@ -95,29 +95,26 @@ if args.update_pickles == 'True':
             
             start_time = Time_array[-1] - mym.find_sink_formation_time(files)
         else:
-            start_time = 0
-        start_file = mym.find_files([start_time], files)[0]
+            start_time = m_times[0]
     else:
-        start_file = ''
+        start_time = np.nan
 
     sys.stdout.flush()
     CW.Barrier()
 
-    start_file = CW.bcast(start_file, root=0)
+    start_time = CW.bcast(start_time, root=0)
 
     sys.stdout.flush()
     CW.Barrier()
     
-    import pdb
-    pdb.set_trace()
     no_frames = len(m_times)
-    m_times = m_times[args.start_frame:]
+    start_frame = m_times.index(start_time)
+    m_times = m_times[start_frame:]
     usable_files = mym.find_files(m_times, files)
-    frames = list(range(args.start_frame, no_frames))
+    frames = list(range(start_frame, no_frames))
 
     #make time series
-    files = files[files.index(start_file):] #files[files.index(start_file):]
-    ts = yt.DatasetSeries(files, parallel=True)
+    ts = yt.DatasetSeries(usable_files, parallel=True)
 
     sys.stdout.flush()
     CW.Barrier()
@@ -174,7 +171,7 @@ if args.update_pickles == 'True':
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
         pickle.dump((rank_data), file)
         file.close()
-        print('read file', files.index(ds.filename), 'of', len(files), 'files on rank', rank)
+        print('read file', files.index(ds.filename), 'of', len(usable_files), 'files on rank', rank)
 
     sys.stdout.flush()
     CW.Barrier()
