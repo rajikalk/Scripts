@@ -109,7 +109,7 @@ for sim_dir in sim_dirs:
                     f.write('#!/bin/bash\n')
                     f.write('#SBATCH --job-name='+job_id+'       # shows up in the output of squeue\n')
                     f.write('#SBATCH --partition=cascade.p   # specify the partition to run on\n')
-                    f.write('#SBATCH --time=24:00:00         # specify the requested wall-time\n')
+                    f.write('#SBATCH --time=2:00:00         # specify the requested wall-time\n')
                     f.write('#SBATCH --nodes=1               # number of nodes allocated for this job\n')
                     f.write('#SBATCH --ntasks-per-node=20    # number of MPI ranks per node\n')
                     f.write('#SBATCH --cpus-per-task=1       # number of OpenMP threads per MPI rank\n')
