@@ -102,6 +102,7 @@ if args.make_movie_pickles == 'True':
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 
     #Now let's iterate over the files and get the images we want to plot
+    file_int = -1
     for fn in yt.parallel_objects(usable_files, njobs=int(size/5)):
         if size > 1:
             file_int = usable_files.index(fn)
