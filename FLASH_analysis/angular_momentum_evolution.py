@@ -60,8 +60,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 if args.update_pickles == 'True':
 
-    
-    m_times = mym.generate_frame_times(files, 0, presink_frames=10, end_time=None)
+    m_times = mym.generate_frame_times(files, 10, presink_frames=0, end_time=None)
 
     L_dict = {}
     Time_array = []
@@ -123,7 +122,7 @@ if args.update_pickles == 'True':
     CW.Barrier()
 
     for ds in ts.piter():
-        t_round = m_times[usable_files.index(ds.filename)]
+        t_round = m_times[usable_files.index(ds)]
         time_val = ds.current_time.in_units('yr') - form_time
         Time_array.append(time_val)
 
