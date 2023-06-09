@@ -61,7 +61,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 if args.update_pickles == 'True':
 
     
-    m_times = mym.generate_frame_times(files, 10, presink_frames=10, end_time=None)
+    m_times = mym.generate_frame_times(files, 0, presink_frames=10, end_time=None)
 
     L_dict = {}
     Time_array = []
