@@ -53,7 +53,7 @@ for pickle_file in pickle_files:
     sink_data = pickle.load(file_open)
     file_open.close()
 
-    if len(sink_data.keys()) == 1:
+    if 'Single' in pickle_file:
     
         mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
         time = sink_data[list(sink_data.keys())[0]]['time'] - sink_data[list(sink_data.keys())[0]]['time'][0]
