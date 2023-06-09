@@ -60,6 +60,8 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 if args.update_pickles == 'True':
 
+    m_times = mym.generate_frame_times(files, 10, presink_frames=10, end_time=None)
+
     L_dict = {}
     Time_array = []
     L_primary = []
@@ -105,6 +107,13 @@ if args.update_pickles == 'True':
 
     sys.stdout.flush()
     CW.Barrier()
+    
+    import pdb
+    pdb.set_trace()
+    no_frames = len(m_times)
+    m_times = m_times[args.start_frame:]
+    usable_files = mym.find_files(m_times, files)
+    frames = list(range(args.start_frame, no_frames))
 
     #make time series
     files = files[files.index(start_file):] #files[files.index(start_file):]
