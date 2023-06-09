@@ -231,8 +231,10 @@ if args.make_movie_frames == 'True':
                 
                 if args.axis == 'z':
                     cbar_lims = [1.e-15, 1.e-13]
+                    stdvel = 2
                 else:
                     cbar_lims = [1.e-16, 1.e-14]
+                    stdvel = 5
                 
                 cmap=plt.cm.gist_heat
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
@@ -244,7 +246,7 @@ if args.make_movie_frames == 'True':
                     plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
                     #plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
                 cbar = plt.colorbar(plot, pad=0.0)
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=5)
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
 
                 if len(part_info.keys())>0:
                     mym.set_global_font_size(8)
