@@ -133,7 +133,7 @@ if args.update_pickles == 'True':
             #Calculate particle spin
             particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
         else:
-            particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'gcm**2/s')
+            particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
         
         #Calculate orbital angular momentum around CoM
         dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
