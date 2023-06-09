@@ -321,10 +321,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
         if annotate_field is not None:
-            import pdb
-            pdb.set_trace()
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
+                if units == "Msun":
+                    unit_string = "$\,$M$_\odot$"
             if unit_string == "$\,$M$_\odot$":
                 P_msun = str(np.round(annotate_field[pos_it], 2))
                 if len(P_msun.split('.')[-1]) == 1:
