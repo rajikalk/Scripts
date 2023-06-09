@@ -94,7 +94,7 @@ if args.update_pickles == 'True':
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
             
-            start_time = Time_array[-1] - mym.find_sink_formation_time(files)
+            start_time = Time_array[-1]
         else:
             start_time = m_times[0]
     else:
@@ -123,6 +123,7 @@ if args.update_pickles == 'True':
     CW.Barrier()
 
     for ds in ts.piter():
+        t_round = m_times[usable_files.index(ds)]
         time_val = ds.current_time.in_units('yr') - form_time
         Time_array.append(time_val)
 
@@ -173,7 +174,7 @@ if args.update_pickles == 'True':
         L_orbit.append(L_orb_tot)
         L_in_gas.append(L_gas_tot)
         
-        rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas}
+        rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round]}
         
         #write pickle
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
