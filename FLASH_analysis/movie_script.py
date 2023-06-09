@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
+    #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
@@ -119,7 +120,7 @@ if args.make_movie_pickles == 'True':
             proj_root_rank = int(rank/5)*5
             part_file = 'part'.join(fn.split('plt_cnt'))
             ds = yt.load(fn, particle_filename=part_file)
-            time_val = ds.current_time.in_units('yr')
+            time_val = m_times[file_int]#ds.current_time.in_units('yr')
             
                         #Get particle data:
             dd = ds.all_data()
@@ -227,8 +228,13 @@ if args.make_movie_frames == 'True':
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 
+                if args.axis == 'z':
+                    cbar_lims = [1.e-15, 1.e-13]
+                else:
+                    cbar_lims = [1.e-16, 1.e-14]
+                
                 cmap=plt.cm.gist_heat
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
                 plt.gca().set_aspect('equal')
 
                 if frame_no > 0 or time_val > -1.0:
