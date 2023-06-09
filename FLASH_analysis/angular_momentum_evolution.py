@@ -132,22 +132,23 @@ if args.update_pickles == 'True':
         if time_val > 0:
             #Calculate particle spin
             particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
+            
+            #Calculate orbital angular momentum around CoM
+            dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
+            dy = dd['particle_posy'].in_units('cm') - dd['CoM'][1]
+            dz = dd['particle_posz'].in_units('cm') - dd['CoM'][2]
+            d_pos = yt.YTArray([dx, dy, dz]).T
+            
+            dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
+            dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
+            dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
+            d_vel = yt.YTArray([dvx, dvy, dvz]).T
+            
+            L_orb = dd['particle_mass'].value * np.cross(d_vel, d_pos).T
+            L_orb_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_orb**2, axis=0))), 'g*cm**2/s')
         else:
             particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
-        
-        #Calculate orbital angular momentum around CoM
-        dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
-        dy = dd['particle_posy'].in_units('cm') - dd['CoM'][1]
-        dz = dd['particle_posz'].in_units('cm') - dd['CoM'][2]
-        d_pos = yt.YTArray([dx, dy, dz]).T
-        
-        dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
-        dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
-        dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
-        d_vel = yt.YTArray([dvx, dvy, dvz]).T
-        
-        L_orb = dd['particle_mass'].value * np.cross(d_vel, d_pos).T
-        L_orb_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_orb**2, axis=0))), 'g*cm**2/s')
+            L_orb_tot = yt.YTQuantity([np.nan, np.nan, np.nan], 'g*cm**2/s')
         
         #Calculate angular momentum in gas
         dx_gas = dd['x'] - dd['CoM'][0]
