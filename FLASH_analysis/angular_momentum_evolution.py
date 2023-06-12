@@ -58,7 +58,7 @@ def parse_inputs():
 #---------------------------------------------------
 #Get simulation files
 args = parse_inputs()
-files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+#files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 plt.clf()
 fig, axs = plt.subplots(ncols=2, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
