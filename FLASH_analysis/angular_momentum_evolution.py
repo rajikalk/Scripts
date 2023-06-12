@@ -149,8 +149,8 @@ if args.update_pickles == 'True':
             L_orb = dd['particle_mass'].value * np.cross(d_vel, d_pos).T
             L_orb_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_orb**2, axis=0))), 'g*cm**2/s')
         else:
-            particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
-            L_orb_tot = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
+            particle_spin = yt.YTArray(np.nan, 'g*cm**2/s')
+            L_orb_tot = yt.YTArray(np.nan, 'g*cm**2/s')
         
         #Calculate angular momentum in gas
         dx_gas = dd['x'] - dd['CoM'][0]
