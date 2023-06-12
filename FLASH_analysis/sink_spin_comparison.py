@@ -85,7 +85,7 @@ plt.ylim(bottom=0)
 plt.legend()
 plt.savefig('spin_comp_primary.png')
 '''
-Mach_labels = ['0.1', '0.2']
+Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
 plt.clf()
@@ -104,44 +104,50 @@ for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
-        file = open(single_pickle, 'rb')
-        sink_data = pickle.load(file)
-        file.close()
-        form_time = np.nan
-        
-        for sink_id in sink_data.keys():
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
-            L_tot = yt.YTArray(L_tot, 'cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
+        try:
+            file = open(single_pickle, 'rb')
+            sink_data = pickle.load(file)
+            file.close()
+            form_time = np.nan
             
-        file = open(binary_pickle, 'rb')
-        sink_data = pickle.load(file)
-        file.close()
-        form_time = np.nan
-        
-        Binary_labels = ['Primary', 'Secondary']
-        line_styles = ['--', '-.']
-        
-        for sink_id in sink_data.keys()[:2]:
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
-            L_tot = yt.YTArray(L_tot, 'cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+            for sink_id in sink_data.keys():
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
+                L_tot = yt.YTArray(L_tot, 'cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
+        except:
+            print("Couldn't open", single_pickle)
+            
+        try:
+            file = open(binary_pickle, 'rb')
+            sink_data = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            
+            Binary_labels = ['Primary', 'Secondary']
+            line_styles = ['--', '-.']
+            
+            for sink_id in sink_data.keys()[:2]:
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
+                L_tot = yt.YTArray(L_tot, 'cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+        except:
+            print("Couldn't open", binary_pickle)
         
         hline_vals = [0.25, 0.5, 0.75, 1]
         for hline_val in hline_vals:
@@ -149,7 +155,7 @@ for spin_lab in Spin_labels:
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
-        if mach_lab == '0.1':
+        if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
             if spin_lab == '0.20':
                 axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
@@ -181,44 +187,50 @@ for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
-        file = open(single_pickle, 'rb')
-        sink_data = pickle.load(file)
-        file.close()
-        form_time = np.nan
-        
-        for sink_id in sink_data.keys():
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-            L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
+        try:
+            file = open(single_pickle, 'rb')
+            sink_data = pickle.load(file)
+            file.close()
+            form_time = np.nan
             
-        file = open(binary_pickle, 'rb')
-        sink_data = pickle.load(file)
-        file.close()
-        form_time = np.nan
-        
-        Binary_labels = ['Primary', 'Secondary']
-        line_styles = ['--', '-.']
-        
-        for sink_id in sink_data.keys()[:2]:
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-            L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+            for sink_id in sink_data.keys():
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
+        except:
+            print("Couldn't open", single_pickle)
+            
+        try:
+            file = open(binary_pickle, 'rb')
+            sink_data = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            
+            Binary_labels = ['Primary', 'Secondary']
+            line_styles = ['--', '-.']
+            
+            for sink_id in sink_data.keys()[:2]:
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+        except:
+            print("Couldn't open", binary_pickle)
         
         hline_vals = [1, 2, 3, 4]
         for hline_val in hline_vals:
@@ -226,7 +238,7 @@ for spin_lab in Spin_labels:
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
-        if mach_lab == '0.1':
+        if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
             if spin_lab == '0.20':
                 axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
