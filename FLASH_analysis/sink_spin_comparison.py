@@ -104,7 +104,7 @@ for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
-        try:
+        if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
             sink_data = pickle.load(file)
             file.close()
@@ -122,10 +122,10 @@ for spin_lab in Spin_labels:
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
-        except:
+        else:
             print("Couldn't open", single_pickle)
             
-        try:
+        if os.path.exists(binary_pickle):
             file = open(binary_pickle, 'rb')
             sink_data = pickle.load(file)
             file.close()
@@ -146,7 +146,7 @@ for spin_lab in Spin_labels:
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
-        except:
+        else:
             print("Couldn't open", binary_pickle)
         
         hline_vals = [0.25, 0.5, 0.75, 1]
@@ -187,7 +187,7 @@ for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
-        try:
+        if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
             sink_data = pickle.load(file)
             file.close()
@@ -205,10 +205,10 @@ for spin_lab in Spin_labels:
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label='Single')
-        except:
+        else:
             print("Couldn't open", single_pickle)
             
-        try:
+        if os.path.exists(binary_pickle):
             file = open(binary_pickle, 'rb')
             sink_data = pickle.load(file)
             file.close()
@@ -229,7 +229,7 @@ for spin_lab in Spin_labels:
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
-        except:
+        else:
             print("Couldn't open", binary_pickle)
         
         hline_vals = [1, 2, 3, 4]
