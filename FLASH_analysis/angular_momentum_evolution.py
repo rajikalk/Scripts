@@ -70,9 +70,8 @@ plot_it = -1
 xmax= 0
 ymax = 0
 for spin_lab in Spin_labels:
+    plot_it = plot_it + 1
     for mach_lab in Mach_labels:
-        plot_it = plot_it + 1
-        
         if np.remainder(plot_it, 2) == 0:
     
             single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
