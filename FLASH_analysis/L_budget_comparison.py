@@ -135,6 +135,7 @@ for spin_lab in Spin_labels:
         axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
 axs.flatten()[plot_it].set_xlim(left=0)
+axs.flatten()[plot_it].set_ylim(bottom=1.e47)
 plt.savefig('L_evolution.png', bbox_inches='tight')
 
 plt.clf()
@@ -176,9 +177,9 @@ for spin_lab in Spin_labels:
                     #L_tot = L_tot + L_orbit
                     
                     
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Single', linestyle = mach_ls[mach_it], color=colors[2])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Single', linestyle = mach_ls[mach_it], color=colors[2])
                     axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
                 else:
                     print("Couldn't open", single_pickle)
@@ -207,10 +208,10 @@ for spin_lab in Spin_labels:
                     
                     L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
                     
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Primary', linestyle = mach_ls[mach_it], color=colors[2])
-                    axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary', linestyle = mach_ls[mach_it], color=colors[3])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary', linestyle = mach_ls[mach_it], color=colors[2])
+                    axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary', linestyle = mach_ls[mach_it], color=colors[3])
                 else:
                     print("Couldn't open", binary_pickle)
                 
@@ -227,7 +228,7 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='x', direction='in')
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
     
-axs.flatten()[plot_it].set_ylim([0,1])
+axs.flatten()[plot_it].set_ylim(top=1)
 axs.flatten()[plot_it].set_xlim(left=0)
 plt.savefig('L_evolution_frac.png', bbox_inches='tight')
 
