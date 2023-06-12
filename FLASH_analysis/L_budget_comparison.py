@@ -74,10 +74,10 @@ ymax = 0
 for spin_lab in Spin_labels:
     for col_tit in col_title:
         plot_it = plot_it + 1
-        for mach_lab in Mach_labels:
+        for mach_it in range(len(Mach_labels)):
             if np.remainder(plot_it, 2) == 0:
         
-                single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+                single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+Mach_labels[mach_it]+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+Mach_labels[mach_it]+'_Lref_9_gathered_ang_mom.pkl'
                 
                 if os.path.exists(single_pickle):
                     file = open(single_pickle, 'rb')
@@ -99,7 +99,7 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", single_pickle)
                 
             else:
-                binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+                binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+Mach_labels[mach_it]+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+Mach_labels[mach_it]+'_Lref_9_gathered_ang_mom.pkl'
 
                 if os.path.exists(binary_pickle):
                     file = open(binary_pickle, 'rb')
@@ -149,11 +149,9 @@ ymax = 0
 for spin_lab in Spin_labels:
     for col_tit in col_title:
         plot_it = plot_it + 1
-        for mach_lab in Mach_labels:
-            
+        for mach_it in range(len(Mach_labels)):
             if np.remainder(plot_it, 2) == 0:
-        
-                single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+                single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+Mach_labels[mach_it]+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+Mach_labels[mach_it]+'_Lref_9_gathered_ang_mom.pkl'
                 
                 if os.path.exists(single_pickle):
                     file = open(single_pickle, 'rb')
@@ -187,7 +185,7 @@ for spin_lab in Spin_labels:
                 
                 
             else:
-                binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+                binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+Mach_labels[mach_it]+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+Mach_labels[mach_it]+'_Lref_9_gathered_ang_mom.pkl'
 
                 if os.path.exists(binary_pickle):
                     file = open(binary_pickle, 'rb')
