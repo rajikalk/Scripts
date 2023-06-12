@@ -57,135 +57,56 @@ def parse_inputs():
 
 #---------------------------------------------------
 #Get simulation files
+input_dir = sys.argv[1]
 args = parse_inputs()
-#files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
-plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
-iter_range = range(0, len(Spin_labels))
-plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.0)
-
-plot_it = -1
-xmax= 0
-ymax = 0
-for spin_lab in Spin_labels:
-    plot_it = plot_it + 1
-    for mach_lab in Mach_labels:
-        if np.remainder(plot_it, 2) == 0:
-    
-            single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
-            
-            if os.path.exists(single_pickle):
-                file = open(single_pickle, 'rb')
-                Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
-                file.close()
-                
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Single')
-                axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-            else:
-                print("Couldn't open", single_pickle)
-            
-            
-        else:
-            binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
-
-            if os.path.exists(binary_pickle):
-                file = open(binary_pickle, 'rb')
-                Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
-                file.close()
-                
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Primary')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Secondary')
-            else:
-                print("Couldn't open", binary_pickle)
-            
-        if spin_lab == '0.2':
-            axs.flatten()[plot_it].legend()
-            if plot_it == 0:
-                axs.flatten()[plot_it].set_title('Single')
-            else:
-                axs.flatten()[plot_it].set_title('Binary')
-        if spin_lab == '0.35':
-            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
-        axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
-        axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
-        axs.flatten()[plot_it].tick_params(axis='x', direction='in')
-        axs.flatten()[plot_it].tick_params(axis='y', direction='in')
-    
-axs.flatten()[plot_it].ylim([0,1])
-axs.flatten()[plot_it].xlim(left=0)
-plt.savefig('L_evolution.png', bbox_inches='tight')
-
-plt.clf()
-fig, axs = plt.subplots(ncols=2, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
-iter_range = range(0, len(Spin_labels))
-plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.0)
-
-plot_it = -1
+plot_it = 0
 xmax= 0
 ymax = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
-        plot_it = plot_it + 1
-        
-        if np.remainder(plot_it, 2) == 0:
     
-            single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
-            
-            if os.path.exists(single_pickle):
-                file = open(single_pickle, 'rb')
-                Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
-                file.close()
-                
-                L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
-                
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Single')
-                axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-            else:
-                print("Couldn't open", single_pickle)
-            
-            
-        else:
-            binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
-
-            if os.path.exists(binary_pickle):
-                file = open(binary_pickle, 'rb')
-                Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
-                file.close()
-                
-                L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
-                
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Primary')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Secondary')
-            else:
-                print("Couldn't open", binary_pickle)
-            
-        if spin_lab == '0.2':
-            axs.flatten()[plot_it].legend()
-            if plot_it == 0:
-                axs.flatten()[plot_it].set_title('Single')
-            else:
-                axs.flatten()[plot_it].set_title('Binary')
-        if spin_lab == '0.35':
-            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
-        axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
-        axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
-        axs.flatten()[plot_it].tick_params(axis='x', direction='in')
-        axs.flatten()[plot_it].tick_params(axis='y', direction='in')
+        single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
     
-axs.flatten()[plot_it].ylim([0,1])
-axs.flatten()[plot_it].xlim(left=0)
-plt.savefig('L_evolution_frac.png', bbox_inches='tight')
+    file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'rb')
+    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    file.close()
+    
+    plt.clf()
+    plt.semilogy(Time_array - Time_array[0], L_primary, label='Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
+    plt.semilogy(Time_array - Time_array[0], L_orbit, label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas, label='L_in_gas')
+    plt.xlabel('Time (yr)')
+    plt.ylabel('Angular momentum (g cm$^2$/s)')
+    plt.legend(loc='best')
+    plt.xlim(left=0)
+    plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+    plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+    plt.tick_params(axis='x', direction='in')
+    plt.tick_params(axis='y', direction='in')
+    plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
+    
+    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    plt.clf()
+    plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
+    plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
+    plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
+    plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
+    plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+    plt.tick_params(axis='x', direction='in')
+    plt.tick_params(axis='y', direction='in')
+    plt.xlabel('Time (yr)')
+    plt.ylabel('Angular momentum fraction (%)')
+    plt.legend(loc='best')
+    plt.xlim(left=0)
+    plt.ylim(top=1)
+    plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution_frac.png', bbox_inches='tight')
+    
+    
+    print('saved figure')
 
 sys.stdout.flush()
 CW.Barrier()
