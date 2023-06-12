@@ -159,10 +159,13 @@ for spin_lab in Spin_labels:
                 L_orb_fixed = []
                 for time_it in range(len(L_orbit)):
                     try:
-                        if len(L_orbit[time_it]) == 3:
+                        if np.mean(L_orbit[time_it]) == 3:
                             L_orb_fixed.append(np.nan)
                     except:
-                        L_orb_fixed.append(L_orbit[time_it].value)
+                        try:
+                            L_orb_fixed.append(L_orbit[time_it].value)
+                        except:
+                            L_orb_fixed.append(L_orbit[time_it])
                 
                 L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
                         
@@ -191,10 +194,13 @@ for spin_lab in Spin_labels:
                 L_orb_fixed = []
                 for time_it in range(len(L_orbit)):
                     try:
-                        if len(L_orbit[time_it]) == 3:
+                        if np.mean(L_orbit[time_it]) == 3:
                             L_orb_fixed.append(np.nan)
                     except:
-                        L_orb_fixed.append(L_orbit[time_it].value)
+                        try:
+                            L_orb_fixed.append(L_orbit[time_it].value)
+                        except:
+                            L_orb_fixed.append(L_orbit[time_it])
                 
                 L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
                 
