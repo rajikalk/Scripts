@@ -144,8 +144,8 @@ plot_it = -1
 xmax= 0
 ymax = 0
 for spin_lab in Spin_labels:
+    plot_it = plot_it + 1
     for mach_lab in Mach_labels:
-        plot_it = plot_it + 1
         
         if np.remainder(plot_it, 2) == 0:
     
