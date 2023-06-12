@@ -216,7 +216,7 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", binary_pickle)
                 
     if spin_lab == '0.2':
-        axs.flatten()[plot_it]..set_legend()
+        axs.flatten()[plot_it].set_legend()
         if plot_it == 0:
             axs.flatten()[plot_it].set_title('Single')
         else:
