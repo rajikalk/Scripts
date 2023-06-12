@@ -134,7 +134,6 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].tick_params(axis='x', direction='in')
             axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
-axs.flatten()[plot_it].set_ylim(top=1)
 axs.flatten()[plot_it].set_xlim(left=0)
 plt.savefig('L_evolution.png', bbox_inches='tight')
 
