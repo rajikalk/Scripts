@@ -82,8 +82,11 @@ for spin_lab in Spin_labels:
                 file.close()
                 
                 for time_it in range(len(L_orbit)):
-                    if len(L_orbit[time_it]) == 3:
-                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    try:
+                        if len(L_orbit[time_it]) == 3:
+                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    except:
+                        pass
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
@@ -101,8 +104,11 @@ for spin_lab in Spin_labels:
                 file.close()
                 
                 for time_it in range(len(L_orbit)):
-                    if len(L_orbit[time_it]) == 3:
-                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    try:
+                        if len(L_orbit[time_it]) == 3:
+                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    except:
+                        pass
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
