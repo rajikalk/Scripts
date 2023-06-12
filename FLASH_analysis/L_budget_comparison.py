@@ -81,6 +81,10 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                for time_it in range(len(L_orbit)):
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Single')
@@ -96,10 +100,14 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                for time_it in range(len(L_orbit)):
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas, label='Gas')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Primary')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary, label='Secondary')
+                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_secondary, label='Secondary')
             else:
                 print("Couldn't open", binary_pickle)
             
@@ -142,6 +150,10 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                for time_it in range(len(L_orbit)):
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                
                 L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
@@ -160,12 +172,16 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                for time_it in range(len(L_orbit)):
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                
                 L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Primary')
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Secondary')
+                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary')
             else:
                 print("Couldn't open", binary_pickle)
             
