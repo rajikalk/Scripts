@@ -174,7 +174,7 @@ for spin_lab in Spin_labels:
                 #L_tot = L_tot + L_orbit
                 
                 
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
+                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Single')
                 axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
@@ -205,7 +205,7 @@ for spin_lab in Spin_labels:
                 
                 L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
                 
-                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
+                axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_primary/L_tot, label='Primary')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary')
