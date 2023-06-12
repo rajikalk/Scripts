@@ -156,14 +156,21 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                L_orb_fixed = []
                 for time_it in range(len(L_orbit)):
                     try:
                         if len(L_orbit[time_it]) == 3:
-                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                            L_orb_fixed.append(np.nan)
                     except:
-                        pass
+                        L_orb_fixed.append(L_orbit[time_it].value)
                 
-                L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+                L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
+                        
+
+                L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orbit) + L_in_gas
+                #L_tot = yt.YTArray(np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + L_in_gas, 'g*cm**2/s')
+                #L_tot = L_tot + L_orbit
+                
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
@@ -181,12 +188,15 @@ for spin_lab in Spin_labels:
                 Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                 file.close()
                 
+                L_orb_fixed = []
                 for time_it in range(len(L_orbit)):
                     try:
                         if len(L_orbit[time_it]) == 3:
-                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                            L_orb_fixed.append(np.nan)
                     except:
-                        pass
+                        L_orb_fixed.append(L_orbit[time_it].value)
+                
+                L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
                 
                 L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
                 
