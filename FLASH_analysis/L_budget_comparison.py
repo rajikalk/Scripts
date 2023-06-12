@@ -169,7 +169,7 @@ for spin_lab in Spin_labels:
                 
                 L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
 
-                L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed) + L_in_gas
+                L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
                 #L_tot = yt.YTArray(np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + L_in_gas, 'g*cm**2/s')
                 #L_tot = L_tot + L_orbit
                 
@@ -203,7 +203,7 @@ for spin_lab in Spin_labels:
                 
                 L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
                 
-                L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed) + L_in_gas
+                L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
                 
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit')
                 axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas')
