@@ -111,7 +111,7 @@ for spin_lab in Spin_labels:
             form_time = np.nan
             
             #for sink_id in sink_data.keys():
-            sink_id = 0
+            sink_id = list(sink_data.keys())[0]
             if np.isnan(form_time):
                 form_time = sink_data[sink_id]['time'][0]
             L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
@@ -195,7 +195,7 @@ for spin_lab in Spin_labels:
             form_time = np.nan
             
             #for sink_id in list(sink_data.keys())[0]:
-            sink_id = 0
+            sink_id = list(sink_data.keys())[0]
             if np.isnan(form_time):
                 form_time = sink_data[sink_id]['time'][0]
             L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
