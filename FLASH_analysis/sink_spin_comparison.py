@@ -134,7 +134,7 @@ for spin_lab in Spin_labels:
             Binary_labels = ['Primary', 'Secondary']
             line_styles = ['--', '-.']
             
-            for sink_id in sink_data.keys()[:2]:
+            for sink_id in list(sink_data.keys())[:2]:
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
                 L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
@@ -217,7 +217,7 @@ for spin_lab in Spin_labels:
             Binary_labels = ['Primary', 'Secondary']
             line_styles = ['--', '-.']
             
-            for sink_id in sink_data.keys()[:2]:
+            for sink_id in list(sink_data.keys())[:2]:
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
