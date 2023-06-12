@@ -43,6 +43,9 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
+Mach_labels = ['0.0', '0.1', '0.2']
+Spin_labels = ['0.20', '0.25', '0.30', '0.35']
+
 #---------------------------------------------------
 #Define arguments
 def parse_inputs():
@@ -58,168 +61,14 @@ input_dir = sys.argv[1]
 args = parse_inputs()
 files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
-if args.update_pickles == 'True':
-
-    m_times = mym.generate_frame_times(files, 10, presink_frames=0, end_time=None)
-
-    L_dict = {}
-    Time_array = []
-    L_primary = []
-    L_secondary = []
-    L_orbit = []
-    L_in_gas = []
-    T_round_all = []
-
-    pickle_names = '_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl'
-    #get current progress
-    if rank == 0:
-        pickle_files = glob.glob(pickle_names)
-        if len(pickle_files) > 0:
-            for pickle_file in pickle_files:
-                file = open(pickle_file, 'rb')
-                L_dict = pickle.load(file)
-                file.close()
-                
-                for key in L_dict.keys():
-                    Time_array = Time_array + L_dict['Time_array']
-                    L_primary = L_primary + L_dict['L_primary']
-                    L_secondary = L_secondary + L_dict['L_secondary']
-                    L_orbit = L_orbit + L_dict['L_orbit']
-                    L_in_gas = L_in_gas + L_dict['L_in_gas']
-                    T_round_all = T_round_all + L_dict['T_round']
-            
-            sorted_inds = np.argsort(Time_array)
-            Time_array = list(np.array(Time_array)[sorted_inds])
-            L_primary = list(np.array(L_primary)[sorted_inds])
-            L_secondary = list(np.array(L_secondary)[sorted_inds])
-            L_orbit = list(np.array(L_orbit)[sorted_inds])
-            L_in_gas = list(np.array(L_in_gas)[sorted_inds])
-            
-            start_time = np.max(T_round_all)
-        else:
-            start_time = m_times[0]
-    else:
-        start_time = np.nan
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    start_time = CW.bcast(start_time, root=0)
-
-    sys.stdout.flush()
-    CW.Barrier()
+plot_it = 0
+xmax= 0
+ymax = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
     
-    no_frames = len(m_times)
-    start_frame = m_times.index(start_time)
-    m_times = m_times[start_frame:]
-    usable_files = mym.find_files(m_times, files)
-    frames = list(range(start_frame, no_frames))
-
-    #make time series
-    ts = yt.DatasetSeries(usable_files, parallel=True)
-    form_time = mym.find_sink_formation_time(files)
-    form_time = yt.YTQuantity(form_time, 'yr')
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    for ds in ts.piter():
-        t_round = m_times[usable_files.index(ds.filename)]
-        time_val = ds.current_time.in_units('yr') - form_time
-        Time_array.append(time_val)
-
-        #load all data
-        dd = ds.all_data()
-        
-        if time_val > 0:
-            #Calculate particle spin
-            particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
-            
-            #Calculate orbital angular momentum around CoM
-            dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
-            dy = dd['particle_posy'].in_units('cm') - dd['CoM'][1]
-            dz = dd['particle_posz'].in_units('cm') - dd['CoM'][2]
-            d_pos = yt.YTArray([dx, dy, dz]).T
-            
-            dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
-            dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
-            dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
-            d_vel = yt.YTArray([dvx, dvy, dvz]).T
-            
-            L_orb = dd['particle_mass'].value * np.cross(d_vel, d_pos).T
-            L_orb_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_orb**2, axis=0))), 'g*cm**2/s')
-        else:
-            particle_spin = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
-            L_orb_tot = yt.YTArray([np.nan, np.nan, np.nan], 'g*cm**2/s')
-        
-        #Calculate angular momentum in gas
-        dx_gas = dd['x'] - dd['CoM'][0]
-        dy_gas = dd['y'] - dd['CoM'][1]
-        dz_gas = dd['z'] - dd['CoM'][2]
-        d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
-        
-        dvx_gas = dd['velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
-        dvy_gas = dd['vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
-        dvz_gas = dd['velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
-        d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
-        
-        L_gas = dd['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
-        L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
-        
-        #Save values
-        L_primary.append(particle_spin[0])
-        if len(particle_spin) == 2:
-            L_secondary.append(particle_spin[1])
-        else:
-            L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
-        L_orbit.append(L_orb_tot)
-        L_in_gas.append(L_gas_tot)
-        
-        rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round]}
-        
-        #write pickle
-        file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
-        pickle.dump((rank_data), file)
-        file.close()
-        print('read file', usable_files.index(ds.filename), 'of', len(usable_files), 'files on rank', rank)
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    if rank == 0:
-        #Compile together results
-        pickle_files = glob.glob('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl')
-        for pickle_file in pickle_files:
-            file = open(pickle_file, 'rb')
-            rank_data = pickle.load(file)
-            file.close()
-            
-            for key in rank_data.keys():
-                Time_array = Time_array + rank_data['Time_array']
-                L_primary = L_primary + rank_data['L_primary']
-                L_secondary = L_secondary + rank_data['L_secondary']
-                L_orbit = L_orbit + rank_data['L_orbit']
-                L_in_gas = L_in_gas + rank_data['L_in_gas']
-        
-        sorted_inds = np.argsort(Time_array)
-        Time_array = np.array(Time_array)[sorted_inds]
-        L_primary = np.array(L_primary)[sorted_inds]
-        L_secondary = np.array(L_secondary)[sorted_inds]
-        L_orbit = np.array(L_orbit)[sorted_inds]
-        L_in_gas = np.array(L_in_gas)[sorted_inds]
-        
-        file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
-        pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
-        file.close()
-        
-        for pickle_file in pickle_files:
-            os.remove(pickle_file)
-        print('saved gathered data')
-
-sys.stdout.flush()
-CW.Barrier()
-
-if rank == 0:
+        single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+    
     file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'rb')
     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
     file.close()
