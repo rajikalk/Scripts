@@ -151,8 +151,11 @@ for spin_lab in Spin_labels:
                 file.close()
                 
                 for time_it in range(len(L_orbit)):
-                    if len(L_orbit[time_it]) == 3:
-                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    try:
+                        if len(L_orbit[time_it]) == 3:
+                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    except:
+                        pass
                 
                 L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
                 
@@ -173,8 +176,11 @@ for spin_lab in Spin_labels:
                 file.close()
                 
                 for time_it in range(len(L_orbit)):
-                    if len(L_orbit[time_it]) == 3:
-                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    try:
+                        if len(L_orbit[time_it]) == 3:
+                            L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                    except:
+                        pass
                 
                 L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
                 
