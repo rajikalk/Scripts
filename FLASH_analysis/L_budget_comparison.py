@@ -179,9 +179,9 @@ for spin_lab in Spin_labels:
                     #L_tot = yt.YTArray(np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + L_in_gas, 'g*cm**2/s')
                     #L_tot = L_tot + L_orbit
                     
-                    if np.min((L_primary/L_tot)[-1*int(len(L_primary)/2):])<1.e-4:
-                        import pdb
-                        pdb.set_trace()
+                    #if np.min((L_primary/L_tot)[-1*int(len(L_primary)/2):])<1.e-4:
+                    #    import pdb
+                    #    pdb.set_trace()
                     
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
@@ -214,9 +214,9 @@ for spin_lab in Spin_labels:
                     
                     L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
                     
-                    if np.min((L_primary/L_tot)[-1*int(len(L_primary)/2):])<1.e-4:
-                        import pdb
-                        pdb.set_trace()
+                    #if np.min((L_primary/L_tot)[-1*int(len(L_primary)/2):])<1.e-4:
+                    #    import pdb
+                    #    pdb.set_trace()
                     
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[mach_it], color=colors[0])
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
