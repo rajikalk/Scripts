@@ -121,7 +121,7 @@ for spin_lab in Spin_labels:
                 else:
                     print("Couldn't open", binary_pickle)
                 
-            axs.flatten()[plot_it].grid()
+        axs.flatten()[plot_it].grid()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
