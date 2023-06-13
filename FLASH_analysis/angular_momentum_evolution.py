@@ -133,6 +133,10 @@ if args.update_pickles == 'True':
         
         if time_val > 0:
             #Calculate particle spin
+            import pdb
+            pdb.set_trace()
+            #Define sink pickle
+            
             particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
             
             #Calculate orbital angular momentum around CoM
