@@ -305,8 +305,8 @@ for spin_lab in Spin_labels:
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
         
-    if spin_lab == '0.20':
-        axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach='+mach_lab)
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
@@ -338,6 +338,10 @@ for spin_lab in Spin_labels:
             file = open(single_pickle, 'rb')
             Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
             file.close()
+
+            if mach_lab == '0.0' and spin_lab == '0.30':
+                import pdb
+                pdb.set_trace()
             
             L_orb_fixed = []
             for time_it in range(len(L_orbit)):
@@ -400,8 +404,8 @@ for spin_lab in Spin_labels:
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
         
-    if spin_lab == '0.20':
-        axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach='+mach_lab)
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
