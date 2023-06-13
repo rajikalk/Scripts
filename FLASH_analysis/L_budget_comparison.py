@@ -75,6 +75,7 @@ ymax = 0
 for spin_lab in Spin_labels:
     for col_tit in col_title:
         plot_it = plot_it + 1
+        axs.flatten()[plot_it].grid()
         for mach_it in range(len(Mach_labels)):
             if np.remainder(plot_it, 2) == 0:
         
@@ -96,8 +97,6 @@ for spin_lab in Spin_labels:
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Single', linestyle = mach_ls[mach_it], color=colors[2])
                     axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-                    
-                    axs.flatten()[plot_it].grid()
                 else:
                     print("Couldn't open", single_pickle)
                 
@@ -120,8 +119,6 @@ for spin_lab in Spin_labels:
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, label='Gas', linestyle = mach_ls[mach_it], color=colors[1])
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Primary', linestyle = mach_ls[mach_it], color=colors[2])
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary, label='Secondary', linestyle = mach_ls[mach_it], color=colors[3])
-                
-                    axs.flatten()[plot_it].grid()
                 else:
                     print("Couldn't open", binary_pickle)
         
@@ -137,7 +134,6 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     axs.flatten()[plot_it].tick_params(axis='x', direction='in')
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
-    axs.flatten()[plot_it].grid()
 
 axs.flatten()[plot_it].set_xlim(left=0)
 axs.flatten()[plot_it].set_ylim([5.e48, 5.e54])
