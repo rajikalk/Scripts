@@ -85,6 +85,10 @@ for spin_lab in Spin_labels:
                     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                     file.close()
                     
+                    if np.min(L_primary[-1*int(len(L_primary)/2):])<1.e-4:
+                        import pdb
+                        pdb.set_trace()
+                    
                     for time_it in range(len(L_orbit)):
                         try:
                             if len(L_orbit[time_it]) == 3:
@@ -107,6 +111,10 @@ for spin_lab in Spin_labels:
                     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                     file.close()
                     
+                    if np.min(L_primary[-1*int(len(L_primary)/2):])<1.e-4:
+                        import pdb
+                        pdb.set_trace()
+                    
                     for time_it in range(len(L_orbit)):
                         try:
                             if len(L_orbit[time_it]) == 3:
@@ -122,8 +130,6 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", binary_pickle)
                 
         axs.flatten()[plot_it].grid()
-        import pdb
-        pdb.set_trace()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
@@ -164,6 +170,10 @@ for spin_lab in Spin_labels:
                     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                     file.close()
                     
+                    if np.min(L_primary[-1*int(len(L_primary)/2):])<1.e-4:
+                        import pdb
+                        pdb.set_trace()
+                    
                     L_orb_fixed = []
                     for time_it in range(len(L_orbit)):
                         try:
@@ -198,6 +208,10 @@ for spin_lab in Spin_labels:
                     Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
                     file.close()
                     
+                    if np.min(L_primary[-1*int(len(L_primary)/2):])<1.e-4:
+                        import pdb
+                        pdb.set_trace()
+                    
                     L_orb_fixed = []
                     for time_it in range(len(L_orbit)):
                         try:
@@ -221,8 +235,6 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", binary_pickle)
     
         axs.flatten()[plot_it].grid()
-        import pdb
-        pdb.set_trace()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
