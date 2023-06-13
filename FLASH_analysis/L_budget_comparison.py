@@ -121,7 +121,7 @@ for spin_lab in Spin_labels:
                 else:
                     print("Couldn't open", binary_pickle)
                 
-        axs.flatten()[plot_it].grid()
+            axs.flatten()[plot_it].grid()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
@@ -138,7 +138,7 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].grid()
 
 axs.flatten()[plot_it].set_xlim(left=0)
-axs.flatten()[plot_it].set_ylim([1.e47, 1.e55])
+axs.flatten()[plot_it].set_ylim([1.e48, 1.e54])
 plt.savefig('L_evolution.png', bbox_inches='tight')
 
 plt.clf()
