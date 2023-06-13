@@ -244,3 +244,161 @@ plt.savefig('L_evolution_frac.png', bbox_inches='tight')
 
 sys.stdout.flush()
 CW.Barrier()
+
+plt.clf()
+fig, axs = plt.subplots(ncols=2, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = -1
+xmax= 0
+ymax = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        plot_it = plot_it + 1
+        axs.flatten()[plot_it].grid()
+
+        single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+        
+        if os.path.exists(single_pickle):
+            file = open(single_pickle, 'rb')
+            Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+            file.close()
+            
+            for time_it in range(len(L_orbit)):
+                try:
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                except:
+                    pass
+            
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit, label='Orbit', linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, label='Gas', linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Single', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
+        else:
+            print("Couldn't open", single_pickle)
+        
+        binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+
+        if os.path.exists(binary_pickle):
+            file = open(binary_pickle, 'rb')
+            Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+            file.close()
+            
+            for time_it in range(len(L_orbit)):
+                try:
+                    if len(L_orbit[time_it]) == 3:
+                        L_orbit[time_it] = yt.YTQuantity(np.nan, 'cm**2*g/s')
+                except:
+                    pass
+            
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit, label='Orbit', linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, label='Gas', linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Primary', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary, label='Secondary', linestyle = mach_ls[0], color=colors[3])
+            if plot_it == 0:
+                axs.flatten()[plot_it].set_legend()
+        else:
+            print("Couldn't open", binary_pickle)
+        
+    if spin_lab == '0.2':
+        axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    if spin_lab == '0.35':
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+    axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
+    axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+    axs.flatten()[plot_it].tick_params(axis='x', direction='in')
+    axs.flatten()[plot_it].tick_params(axis='y', direction='in')
+
+axs.flatten()[plot_it].set_xlim(left=0)
+axs.flatten()[plot_it].set_ylim([5.e48, 5.e54])
+plt.savefig('L_evolution_spin_vs_mach.png', bbox_inches='tight')
+
+plt.clf()
+fig, axs = plt.subplots(ncols=2, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = -1
+xmax= 0
+ymax = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        plot_it = plot_it + 1
+        axs.flatten()[plot_it].grid()
+
+        single_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Single/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+        
+        if os.path.exists(single_pickle):
+            file = open(single_pickle, 'rb')
+            Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+            file.close()
+            
+            L_orb_fixed = []
+            for time_it in range(len(L_orbit)):
+                try:
+                    if len(L_orbit[time_it]) == 3:
+                        L_orb_fixed.append(np.nan)
+                except:
+                    try:
+                        L_orb_fixed.append(L_orbit[time_it].value)
+                    except:
+                        L_orb_fixed.append(L_orbit[time_it])
+            
+            L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
+
+            L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
+            
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit', linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Single', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
+        else:
+            print("Couldn't open", single_pickle)
+        
+        binary_pickle = '/home/kuruwira/fast/Analysis/Angular_momentum_budget/Flash_2023/Spin_'+spin_lab+'/Binary/Mach_'+mach_lab+'/Lref_9/Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9_gathered_ang_mom.pkl'
+
+        if os.path.exists(binary_pickle):
+            file = open(binary_pickle, 'rb')
+            Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+            file.close()
+            
+            L_orb_fixed = []
+            for time_it in range(len(L_orbit)):
+                try:
+                    if len(L_orbit[time_it]) == 3:
+                        L_orb_fixed.append(np.nan)
+                except:
+                    try:
+                        L_orb_fixed.append(L_orbit[time_it].value)
+                    except:
+                        L_orb_fixed.append(L_orbit[time_it])
+            
+            L_orb_fixed = yt.YTArray(L_orb_fixed, 'g*cm**2/s')
+
+            L_tot = np.nan_to_num(L_primary) + np.nan_to_num(L_secondary) + np.nan_to_num(L_orb_fixed).value + L_in_gas
+    
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbit', linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary', linestyle = mach_ls[0], color=colors[3])
+            if plot_it == 0:
+                axs.flatten()[plot_it].set_legend()
+        else:
+            print("Couldn't open", binary_pickle)
+        
+    if spin_lab == '0.2':
+        axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    if spin_lab == '0.35':
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+    axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
+    axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
+    axs.flatten()[plot_it].tick_params(axis='x', direction='in')
+    axs.flatten()[plot_it].tick_params(axis='y', direction='in')
+
+axs.flatten()[plot_it].set_xlim(left=0)
+axs.flatten()[plot_it].set_ylim([5.e-5,1])
+plt.savefig('L_evolution_spin_vs_mach_frac.png', bbox_inches='tight')
