@@ -122,8 +122,8 @@ for spin_lab in Spin_labels:
                 else:
                     print("Couldn't open", binary_pickle)
         
-    if spin_lab == '0.2':
-        axs.flatten()[plot_it].set_legend()
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
         if plot_it == 0:
             axs.flatten()[plot_it].set_title('Single')
         else:
@@ -225,8 +225,8 @@ for spin_lab in Spin_labels:
     
         axs.flatten()[plot_it].grid()
         
-    if spin_lab == '0.2':
-        axs.flatten()[plot_it].set_legend()
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
         if plot_it == 0:
             axs.flatten()[plot_it].set_title('Single')
         else:
@@ -299,11 +299,11 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Primary', linestyle = mach_ls[0], color=colors[2])
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary, label='Secondary', linestyle = mach_ls[0], color=colors[3])
             if plot_it == 0:
-                axs.flatten()[plot_it].set_legend()
+                axs.flatten()[plot_it].legend()
         else:
             print("Couldn't open", binary_pickle)
         
-    if spin_lab == '0.2':
+    if spin_lab == '0.20':
         axs.flatten()[plot_it].set_title('Mach='+mach_lab)
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
@@ -386,11 +386,11 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary', linestyle = mach_ls[0], color=colors[2])
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary', linestyle = mach_ls[0], color=colors[3])
             if plot_it == 0:
-                axs.flatten()[plot_it].set_legend()
+                axs.flatten()[plot_it].legend()
         else:
             print("Couldn't open", binary_pickle)
         
-    if spin_lab == '0.2':
+    if spin_lab == '0.20':
         axs.flatten()[plot_it].set_title('Mach='+mach_lab)
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
