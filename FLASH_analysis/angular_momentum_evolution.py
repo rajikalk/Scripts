@@ -143,8 +143,6 @@ if args.update_pickles == 'True':
             match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
             prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
             
-            form_time = np.nan
-            
             particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
             
             if abs(prime_spin - particle_spin[0]).value > 1.e40:
