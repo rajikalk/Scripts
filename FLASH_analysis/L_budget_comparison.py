@@ -122,6 +122,8 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", binary_pickle)
                 
         axs.flatten()[plot_it].grid()
+        import pdb
+        pdb.set_trace()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
@@ -219,6 +221,8 @@ for spin_lab in Spin_labels:
                     print("Couldn't open", binary_pickle)
     
         axs.flatten()[plot_it].grid()
+        import pdb
+        pdb.set_trace()
         
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
