@@ -121,6 +121,8 @@ for spin_lab in Spin_labels:
                 else:
                     print("Couldn't open", binary_pickle)
                 
+        axs.flatten()[plot_it].grid()
+        
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
         if plot_it == 0:
@@ -215,7 +217,9 @@ for spin_lab in Spin_labels:
                     axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary', linestyle = mach_ls[mach_it], color=colors[3])
                 else:
                     print("Couldn't open", binary_pickle)
-                
+    
+        axs.flatten()[plot_it].grid()
+        
     if spin_lab == '0.2':
         axs.flatten()[plot_it].set_legend()
         if plot_it == 0:
@@ -228,7 +232,6 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     axs.flatten()[plot_it].tick_params(axis='x', direction='in')
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
-    axs.flatten()[plot_it].grid()
     
 axs.flatten()[plot_it].set_ylim([1.e-6,1])
 axs.flatten()[plot_it].set_xlim(left=0)
