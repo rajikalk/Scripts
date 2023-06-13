@@ -133,11 +133,24 @@ if args.update_pickles == 'True':
         
         if time_val > 0:
             #Calculate particle spin
-            import pdb
-            pdb.set_trace()
             #Define sink pickle
+            sink_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_'+pickle_names.split('_ang_mom_')[0] + '.pkl'
+            file = open(sink_pickle, 'rb')
+            sink_data = pickle.load(file)
+            file.close()
+            
+            prime_tag = list(sink_data.keys())[0]
+            match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
+            prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
+            
+            form_time = np.nan
             
             particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
+            
+            if abs(prime_spin - particle_spin[0]).value > 1.e40:
+                import pdb
+                pdb.set_trace()
+                
             
             #Calculate orbital angular momentum around CoM
             dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
@@ -174,6 +187,14 @@ if args.update_pickles == 'True':
         L_primary.append(particle_spin[0])
         if len(particle_spin) == 2:
             L_secondary.append(particle_spin[1])
+            
+            sec_tag = list(sink_data.keys())[1]
+            match_time_ind = np.argmin(abs(sink_data[sec_tag]['time']- ds.current_time.value))
+            sec_spin = np.sqrt(sink_data[sec_tag]['anglx'][match_time_ind]**2 + sink_data[sec_tag]['angly'][match_time_ind]**2 + sink_data[sec_tag]['anglz'][match_time_ind]**2)
+            
+            if abs(sec_spin - particle_spin[1]).value > 1.e40:
+                import pdb
+                pdb.set_trace()
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
         L_orbit.append(L_orb_tot)
