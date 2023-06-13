@@ -273,9 +273,9 @@ for spin_lab in Spin_labels:
                 except:
                     pass
             
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit, label='Orbit', linestyle = mach_ls[0], color=colors[0])
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, label='Gas', linestyle = mach_ls[0], color=colors[1])
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, label='Single', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit, linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, linestyle = mach_ls[0], color=colors[2])
         else:
             print("Couldn't open", single_pickle)
         
@@ -364,9 +364,9 @@ for spin_lab in Spin_labels:
             #    import pdb
             #    pdb.set_trace()
             
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, label='Orbit', linestyle = mach_ls[0], color=colors[0])
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='Gas', linestyle = mach_ls[0], color=colors[1])
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Single', linestyle = mach_ls[0], color=colors[2])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orb_fixed/L_tot, linestyle = mach_ls[0], color=colors[0])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = mach_ls[0], color=colors[1])
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary/L_tot, linestyle = mach_ls[0], color=colors[2])
         else:
             print("Couldn't open", single_pickle)
         
