@@ -150,10 +150,6 @@ for spin_lab in Spin_labels:
         else:
             print("Couldn't open", binary_pickle)
         
-        hline_vals = [0.25, 0.5, 0.75, 1]
-        for hline_val in hline_vals:
-            axs.flatten()[plot_it].axhline(y=hline_val, color='k', linestyle='-', alpha=0.25)
-        
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
         if mach_lab == '0.0':
@@ -233,10 +229,6 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e51, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         else:
             print("Couldn't open", binary_pickle)
-        
-        hline_vals = [1, 2, 3, 4]
-        for hline_val in hline_vals:
-            axs.flatten()[plot_it].axhline(y=hline_val, color='k', linestyle='-', alpha=0.25)
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
