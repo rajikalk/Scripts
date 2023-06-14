@@ -174,14 +174,14 @@ if args.update_pickles == 'True':
                 
             
             #Calculate orbital angular momentum around CoM
-            dx = dd['particle_posx'].in_units('cm') - dd['CoM'][0]
-            dy = dd['particle_posy'].in_units('cm') - dd['CoM'][1]
-            dz = dd['particle_posz'].in_units('cm') - dd['CoM'][2]
+            dx = dd['particle_posx'].in_units('cm') - dd['CoM_full'][0]
+            dy = dd['particle_posy'].in_units('cm') - dd['CoM_full'][1]
+            dz = dd['particle_posz'].in_units('cm') - dd['CoM_full'][2]
             d_pos = yt.YTArray([dx, dy, dz]).T
             
-            dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
-            dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
-            dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
+            dvx = dd['particle_velx'].in_units('cm/s') - dd['CoM_Velocity_full'][0]
+            dvy = dd['particle_vely'].in_units('cm/s') - dd['CoM_Velocity_full'][1]
+            dvz = dd['particle_velz'].in_units('cm/s') - dd['CoM_Velocity_full'][2]
             d_vel = yt.YTArray([dvx, dvy, dvz]).T
             
             L_orb = dd['particle_mass'].value * np.cross(d_vel, d_pos).T
@@ -191,14 +191,14 @@ if args.update_pickles == 'True':
             L_orb_tot = yt.YTArray(np.nan, 'g*cm**2/s')
         
         #Calculate angular momentum in gas
-        dx_gas = dd['x'] - dd['CoM'][0]
-        dy_gas = dd['y'] - dd['CoM'][1]
-        dz_gas = dd['z'] - dd['CoM'][2]
+        dx_gas = dd['x'] - dd['CoM_full'][0]
+        dy_gas = dd['y'] - dd['CoM_full'][1]
+        dz_gas = dd['z'] - dd['CoM_full'][2]
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
-        dvx_gas = dd['velx'].in_units('cm/s') - dd['CoM_Velocity'][0]
-        dvy_gas = dd['vely'].in_units('cm/s') - dd['CoM_Velocity'][1]
-        dvz_gas = dd['velz'].in_units('cm/s') - dd['CoM_Velocity'][2]
+        dvx_gas = dd['velx'].in_units('cm/s') - dd['CoM_Velocity_full'][0]
+        dvy_gas = dd['vely'].in_units('cm/s') - dd['CoM_Velocity_full'][1]
+        dvz_gas = dd['velz'].in_units('cm/s') - dd['CoM_Velocity_full'][2]
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         L_gas = dd['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
