@@ -168,9 +168,9 @@ if args.update_pickles == 'True':
                     dt_discrep = yt.YTQuantity(abs(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind]), 's').in_units('yr')
                     if dt_discrep < 5:
                         print("Spin is diverging between YT and the Sink_evol.dat!")
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
+                        #if size == 1:
+                        #    import pdb
+                        #    pdb.set_trace()
                 
             
             #Calculate orbital angular momentum around CoM
@@ -224,9 +224,9 @@ if args.update_pickles == 'True':
                     dt_discrep = yt.YTQuantity(abs(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind]), 's').in_units('yr')
                     if dt_discrep < 5:
                         print("Spin is diverging between YT and the Sink_evol.dat!")
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
+                        #if size == 1:
+                        #    import pdb
+                        #    pdb.set_trace()
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
         L_orbit.append(L_orb_tot)
