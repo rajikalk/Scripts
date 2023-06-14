@@ -147,4 +147,4 @@ def _L_wrt_CoM(field, data):
     del TM
     return com
 
-yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
+yt.add_field("L_wrt_CoM", function=_L_wrt_CoM, units=r"cm/s", sampling_type="local")
