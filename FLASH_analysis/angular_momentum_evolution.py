@@ -143,9 +143,9 @@ if args.update_pickles == 'True':
             match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
             prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
             
-            particle_spin = np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)
+            particle_spin = yt.YTQuantity(np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2), 'g*cm**2/s')
             
-            if abs(prime_spin - particle_spin[0]).value > 1.e40:
+            if '{:0.8e}'.format(particle_spin[0].value) != str(prime_spin):
                 import pdb
                 pdb.set_trace()
                 
@@ -190,7 +190,7 @@ if args.update_pickles == 'True':
             match_time_ind = np.argmin(abs(sink_data[sec_tag]['time']- ds.current_time.value))
             sec_spin = np.sqrt(sink_data[sec_tag]['anglx'][match_time_ind]**2 + sink_data[sec_tag]['angly'][match_time_ind]**2 + sink_data[sec_tag]['anglz'][match_time_ind]**2)
             
-            if abs(sec_spin - particle_spin[1]).value > 1.e40:
+            if '{:0.8e}'.format(particle_spin[1].value) != str(sec_spin):
                 import pdb
                 pdb.set_trace()
         else:
