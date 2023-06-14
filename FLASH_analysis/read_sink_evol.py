@@ -40,8 +40,6 @@ with open(sink_evol_file, 'r') as f:
             else:
                 if float(row_list[1]) in sink_data[row_list[0]][col_tag[1].split(']')[-1]]:
                     #if time in the sink time array
-                    import pdb
-                    pdb.set_trace()
                     match_time = float(row_list[1])
                     remove_keys = []
                     for sink_key in sink_data.keys():
