@@ -140,6 +140,8 @@ if args.update_pickles == 'True':
             file.close()
             
             prime_tag = list(sink_data.keys())[0]
+            import pdb
+            pdb.set_trace()
             match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
             prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
             
