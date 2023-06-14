@@ -48,6 +48,7 @@ font_size = 10
 def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-update", "--update_pickles", help="do you want to read the Flash output and update the pickles?", type=str, default='True')
+    parser.add_argument("-dt", "--time_step", help="what time step between data points do you want to use?", type=float, default=10.0)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -60,7 +61,7 @@ files = sorted(glob.glob(input_dir + '*plt_cnt*'))
 
 if args.update_pickles == 'True':
 
-    m_times = mym.generate_frame_times(files, 10, presink_frames=0, end_time=None)
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
 
     L_dict = {}
     Time_array = []
