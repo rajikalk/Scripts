@@ -42,7 +42,7 @@ def _CoM_full(field, data):
     del TM
     return com
 
-yt.add_field("CoM_full", function=_CoM, units=r"cm", sampling_type="local")
+yt.add_field("CoM_full", function=_CoM_full, units=r"cm", sampling_type="local")
 
 def _CoM_Velocity_full(field, data):
     """
@@ -66,7 +66,7 @@ def _CoM_Velocity_full(field, data):
     del TM
     return com
 
-yt.add_field("CoM_Velocity_full", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
+yt.add_field("CoM_Velocity_full", function=_CoM_Velocity_full, units=r"cm/s", sampling_type="local")
 
 def _CoM(field, data):
     """
