@@ -145,9 +145,13 @@ if args.update_pickles == 'True':
             
             particle_spin = yt.YTQuantity(np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2), 'g*cm**2/s')
             
-            round_int = len(str(prime_spin).split('.')[-1].split('e')[0])
+            if '00000' in str(prime_spin):
+                spin_string = ''.join(str(prime_spin).split('00000'))
+            else:
+                spin_string = str(prime_spin)
+            round_int = len(spin_string.split('.')[-1].split('e')[0])
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[0].value)")
-            if eval(format_string_line) != str(prime_spin):
+            if eval(format_string_line) != spin_string:
                 import pdb
                 pdb.set_trace()
                 
@@ -192,9 +196,13 @@ if args.update_pickles == 'True':
             match_time_ind = np.argmin(abs(sink_data[sec_tag]['time']- ds.current_time.value))
             sec_spin = np.sqrt(sink_data[sec_tag]['anglx'][match_time_ind]**2 + sink_data[sec_tag]['angly'][match_time_ind]**2 + sink_data[sec_tag]['anglz'][match_time_ind]**2)
             
-            round_int = len(str(sec_spin).split('.')[-1].split('e')[0])
+            if '00000' in str(sec_spin):
+                spin_string = ''.join(str(sec_spin).split('00000'))
+            else:
+                spin_string = str(sec_spin)
+            round_int = len(spin_string.split('.')[-1].split('e')[0])
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[1].value)")
-            if eval(format_string_line) != str(sec_spin):
+            if eval(format_string_line) != spin_string:
                 import pdb
                 pdb.set_trace()
         else:
