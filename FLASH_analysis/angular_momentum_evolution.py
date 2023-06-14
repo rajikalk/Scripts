@@ -157,7 +157,7 @@ if args.update_pickles == 'True':
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[0].value)")
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
-                    dt_discrep = yt.YTQuantity(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind], 's').in_units('yr')
+                    dt_discrep = yt.YTQuantity(abs(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind]), 's').in_units('yr')
                     if dt_discrep < 5:
                         print("Spin is diverging between YT and the Sink_evol.dat!")
                         if size == 1:
@@ -213,7 +213,7 @@ if args.update_pickles == 'True':
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[1].value)")
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
-                    dt_discrep = yt.YTQuantity(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind], 's').in_units('yr')
+                    dt_discrep = yt.YTQuantity(abs(ds.current_time.value - sink_data[prime_tag]['time'][match_time_ind]), 's').in_units('yr')
                     if dt_discrep < 5:
                         print("Spin is diverging between YT and the Sink_evol.dat!")
                         if size == 1:
