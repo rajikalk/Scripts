@@ -143,7 +143,10 @@ if args.update_pickles == 'True':
             match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
             prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
             
-            particle_spin = yt.YTQuantity(np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2), 'g*cm**2/s')
+            try:
+                particle_spin = yt.YTArray(np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2), 'g*cm**2/s')
+            except:
+                particle_spin = yt.YTArray([np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)], 'g*cm**2/s')
             
             if '00000' in str(prime_spin):
                 spin_string = ''.join(str(prime_spin).split('00000'))
