@@ -158,6 +158,9 @@ if args.update_pickles == 'True':
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
                     print("Spin is diverging between YT and the Sink_evol.dat!")
+                    if size == 1:
+                        import pdb
+                        pdb.set_trace()
                 
             
             #Calculate orbital angular momentum around CoM
@@ -209,6 +212,9 @@ if args.update_pickles == 'True':
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
                     print("Spin is diverging between YT and the Sink_evol.dat!")
+                    if size == 1:
+                        import pdb
+                        pdb.set_trace()
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
         L_orbit.append(L_orb_tot)
