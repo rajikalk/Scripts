@@ -77,6 +77,7 @@ for sim_dir in sim_dirs:
             job_id = job_id + save_dir.split('Lref_')[-1].split('/')[0]
         
             
+            os.remove(save_dir+'L_budget.sh')
             f = open(save_dir+'/L_budget.sh', 'w')
             
             f.write('#!/bin/bash\n')
