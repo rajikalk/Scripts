@@ -149,6 +149,14 @@ if args.update_pickles == 'True':
             except:
                 particle_spin = yt.YTArray([np.sqrt(dd['particle_x_ang']**2 + dd['particle_y_ang']**2 + dd['particle_z_ang']**2)], 'g*cm**2/s')
             
+            particle_tags = dd['particle_tag']
+            tag_sort_inds = []
+            for sink_tag in list(sink_data.keys()):
+                if int(sink_tag) in particle_tags:
+                    tag_sort_inds.append(list(particle_tags.value).index(float(sink_tag)))
+            
+            particle_spin = particle_spin[tag_sort_inds]
+            
             if '00000' in str(prime_spin):
                 spin_string = ''.join(str(prime_spin).split('00000'))
             else:
