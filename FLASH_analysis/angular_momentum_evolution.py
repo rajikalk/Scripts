@@ -140,8 +140,6 @@ if args.update_pickles == 'True':
             file.close()
             
             prime_tag = list(sink_data.keys())[0]
-            import pdb
-            pdb.set_trace()
             match_time_ind = np.argmin(abs(sink_data[prime_tag]['time']- ds.current_time.value))
             prime_spin = np.sqrt(sink_data[prime_tag]['anglx'][match_time_ind]**2 + sink_data[prime_tag]['angly'][match_time_ind]**2 + sink_data[prime_tag]['anglz'][match_time_ind]**2)
             
@@ -155,8 +153,7 @@ if args.update_pickles == 'True':
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[0].value)")
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
-                    import pdb
-                    pdb.set_trace()
+                    print("Spin is diverging between YT and the Sink_evol.dat!")
                 
             
             #Calculate orbital angular momentum around CoM
@@ -207,8 +204,7 @@ if args.update_pickles == 'True':
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[1].value)")
             if eval(format_string_line) != spin_string:
                 if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
-                    import pdb
-                    pdb.set_trace()
+                    print("Spin is diverging between YT and the Sink_evol.dat!")
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
         L_orbit.append(L_orb_tot)
