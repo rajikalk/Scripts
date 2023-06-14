@@ -183,7 +183,7 @@ xmax= 0
 ymax = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
-    
+        axs.flatten()[plot_it].grid()
         #single_pickle
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
