@@ -152,8 +152,9 @@ if args.update_pickles == 'True':
             round_int = len(spin_string.split('.')[-1].split('e')[0])
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[0].value)")
             if eval(format_string_line) != spin_string:
-                import pdb
-                pdb.set_trace()
+                if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
+                    import pdb
+                    pdb.set_trace()
                 
             
             #Calculate orbital angular momentum around CoM
@@ -203,8 +204,9 @@ if args.update_pickles == 'True':
             round_int = len(spin_string.split('.')[-1].split('e')[0])
             format_string_line = str("'{:0."+str(round_int)+"e}'.format(particle_spin[1].value)")
             if eval(format_string_line) != spin_string:
-                import pdb
-                pdb.set_trace()
+                if abs(float(eval(format_string_line)) - float(spin_string)) > 1.e45:
+                    import pdb
+                    pdb.set_trace()
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
         L_orbit.append(L_orb_tot)
