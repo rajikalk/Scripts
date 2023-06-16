@@ -9,6 +9,7 @@ import numpy as np
 import pickle5 as pickle
 import os
 import my_flash_module as mym
+import my_flash_fields as myf
 
 #------------------------------------------------------
 #get mpi size and ranks
