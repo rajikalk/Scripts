@@ -128,6 +128,7 @@ if args.make_movie_pickles == 'True':
                         #Get particle data:
             dd = ds.all_data()
             #Load fields
+            test_field = dd['dens']
             test_field = dd['velx']
             test_field = dd['vely']
             test_field = dd['velz']
