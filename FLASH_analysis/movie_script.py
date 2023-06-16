@@ -128,8 +128,6 @@ if args.make_movie_pickles == 'True':
                         #Get particle data:
             dd = ds.all_data()
             #Load fields
-            import pdb
-            pdb.set_trace()
             test_field = dd['velx']
             test_field = dd['vely']
             test_field = dd['velz']
