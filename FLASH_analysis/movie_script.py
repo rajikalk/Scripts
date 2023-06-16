@@ -127,6 +127,9 @@ if args.make_movie_pickles == 'True':
             
                         #Get particle data:
             dd = ds.all_data()
+            #Load fields
+            test_field = dd['L_gas_wrt_CoM']
+            del test_field
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
                 part_mass = dd['particle_mass'].in_units('msun')
