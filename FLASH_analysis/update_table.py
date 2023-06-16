@@ -24,9 +24,6 @@ for Lref in Levels:
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
                 star_count = 0
-                if '0.20' in Spin_dir:
-                    import pdb
-                    pdb.set_trace()
                 for line in last_lines[::-1]:
                     if ' ' in line[12:].split('  ')[1]:
                         time_str = line[12:].split('  ')[1].split(' ')[0]
