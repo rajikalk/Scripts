@@ -34,7 +34,7 @@ proj_dirs = ['/XY/'] #, '/XZ/']
 zoom_dirs = ['250AU/'] #['1000AU/', '250AU/']
 
 for sim_dir in sim_dirs:
-    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0 and 'Single' in sim_dir:
+    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0 and 'Single' in sim_dir and 'Lref_9' in sim_dir:
         #check if movie directory exists
         movie_dir = '/hits/fast/set/kuruwira/Movie_frames' + sim_dir.split('Protostellar_spin')[-1]
         
