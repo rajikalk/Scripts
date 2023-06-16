@@ -132,8 +132,6 @@ if args.make_movie_pickles == 'True':
             test_field = dd['velx']
             test_field = dd['vely']
             test_field = dd['velz']
-            import pdb
-            pdb.set_trace()
             del test_field
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True

@@ -171,8 +171,6 @@ def _L_gas_wrt_CoM(field, data):
         dx_gas = data['x'] - CoM_pos[0]
         dy_gas = data['y'] - CoM_pos[1]
         dz_gas = data['z'] - CoM_pos[2]
-        import pdb
-        pdb.set_trace()
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
         dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
@@ -181,7 +179,7 @@ def _L_gas_wrt_CoM(field, data):
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
-        L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
+        L_gas_tot = yt.YTQuantity(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
     return L_gas_tot
 
 yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
