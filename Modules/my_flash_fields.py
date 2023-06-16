@@ -168,11 +168,11 @@ def _L_gas_wrt_CoM(field, data):
     else:
         CoM_pos = data['CoM_full'].in_units('cm')
         CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
-        data._debug()
         
         dx_gas = data['x'] - CoM_pos[0]
         dy_gas = data['y'] - CoM_pos[1]
         dz_gas = data['z'] - CoM_pos[2]
+        data._debug()
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
         dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
