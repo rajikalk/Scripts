@@ -24,6 +24,9 @@ for Lref in Levels:
                 if ' ' in last_time:
                     last_time = last_time.split(' ')[0]
                 star_count = 0
+                if '0.20' in Spin_dir:
+                    import pdb
+                    pdb.set_trace()
                 for line in last_lines[::-1]:
                     if ' ' in line[12:].split('  ')[1]:
                         time_str = line[12:].split('  ')[1].split(' ')[0]
@@ -36,9 +39,6 @@ for Lref in Levels:
                 table_line = table_line + '&' + 'N/A'
         table_line = table_line + '\\'
         Write_lines.append(table_line)
-
-import pdb
-pdb.set_trace()
 
 f = open(Setup+'.tex', 'w')
 
