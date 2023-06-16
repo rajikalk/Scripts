@@ -130,8 +130,12 @@ if args.make_movie_pickles == 'True':
             #Load fields
             import pdb
             pdb.set_trace()
-            #test_field = dd['L_gas_wrt_CoM']
-            #del test_field
+            test_field = dd['velx']
+            test_field = dd['vely']
+            test_field = dd['velz']
+            import pdb
+            pdb.set_trace()
+            del test_field
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
                 part_mass = dd['particle_mass'].in_units('msun')
