@@ -125,7 +125,7 @@ def _CoM_Velocity(field, data):
     return com
 
 yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
-
+'''
 def _L_gas_x_wrt_CoM(field, data):
     """
     Calculates the velcoity fo the CoM
@@ -173,7 +173,34 @@ def _L_gas_z_wrt_CoM(field, data):
     return L_gas
 
 yt.add_field("L_gas_z_wrt_CoM", function=_L_gas_z_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+'''
+def _L_gas_wrt_CoM(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    L_gas_tot = []
+    if np.shape(data['x']) == (16, 16, 16):
+        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "km/s")
+    else:
+        CoM_pos = data['CoM_full'].in_units('cm')
+        CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+        dx_gas = data['x'] - CoM_pos[0]
+        dy_gas = data['y'] - CoM_pos[1]
+        dz_gas = data['z'] - CoM_pos[2]
+        d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        
+        dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
+        dvy_gas = data['vely'].in_units('cm/s') - CoM_vel[1]
+        dvz_gas = data['velz'].in_units('cm/s') - CoM_vel[2]
+        d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        
+        L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+        L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
+    return L_tot
 
+yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+'''
 def _L_gas_wrt_CoM(field, data):
     """
     Calculates the velcoity fo the CoM
@@ -241,4 +268,4 @@ def _L_part_wrt_CoM(field, data):
 
 yt.add_field("L_part_wrt_CoM", function=_L_part_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
 
-
+'''
