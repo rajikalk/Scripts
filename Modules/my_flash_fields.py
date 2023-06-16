@@ -171,6 +171,8 @@ def _L_gas_wrt_CoM(field, data):
         dx_gas = data['x'] - CoM_pos[0]
         dy_gas = data['y'] - CoM_pos[1]
         dz_gas = data['z'] - CoM_pos[2]
+        import pdb
+        pdb.set_trace()
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
         dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
