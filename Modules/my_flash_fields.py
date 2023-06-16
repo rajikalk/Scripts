@@ -126,24 +126,119 @@ def _CoM_Velocity(field, data):
 
 yt.add_field("CoM_Velocity", function=_CoM_Velocity, units=r"cm/s", sampling_type="local")
 
-def _L_wrt_CoM(field, data):
+def _L_gas_x_wrt_CoM(field, data):
     """
     Calculates the velcoity fo the CoM
     """
     CoM_pos = data['CoM_full'].in_units('cm')
     CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
-    dx_gas = data['x'].in_units('cm') - CoM_pos[0]
-    dy_gas = data['y'].in_units('cm') - CoM_pos[1]
-    dz_gas = data['z'].in_units('cm') - CoM_pos[2]
-    d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    d_gas = data['x'].in_units('cm') - CoM_pos[0]
     
-    dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
-    dvy_gas = data['vely'].in_units('cm/s') - CoM_vel[1]
-    dvz_gas = data['velz'].in_units('cm/s') - CoM_vel[2]
-    d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+    dv_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
     
-    L_gas = dd['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
-    L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
-    return L_gas_tot
+    L_gas = data['mass'].value * np.cross(dv_gas, d_gas).T
+    L_gas = yt.YTQuantity(L_gas, 'g*cm**2/s')
+    return L_gas
 
-yt.add_field("L_wrt_CoM", function=_L_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+yt.add_field("L_gas_x_wrt_CoM", function=_L_gas_x_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_gas_y_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    CoM_pos = data['CoM_full'].in_units('cm')
+    CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+    d_gas = data['y'].in_units('cm') - CoM_pos[1]
+    
+    dv_gas = data['vely'].in_units('cm/s') - CoM_vel[1]
+    
+    L_gas = data['mass'].value * np.cross(dv_gas, d_gas).T
+    L_gas = yt.YTQuantity(L_gas, 'g*cm**2/s')
+    return L_gas
+
+yt.add_field("L_gas_y_wrt_CoM", function=_L_gas_y_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_gas_z_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    CoM_pos = data['CoM_full'].in_units('cm')
+    CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+    d_gas = data['z'].in_units('cm') - CoM_pos[2]
+    
+    dv_gas = data['velz'].in_units('cm/s') - CoM_vel[2]
+    
+    L_gas = data['mass'].value * np.cross(dv_gas, d_gas).T
+    L_gas = yt.YTQuantity(L_gas, 'g*cm**2/s')
+    return L_gas
+
+yt.add_field("L_gas_z_wrt_CoM", function=_L_gas_z_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_gas_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    L_tot = np.sqrt(data['L_gas_x_wrt_CoM']**2 + data['L_gas_y_wrt_CoM']**2 + data['L_gas_z_wrt_CoM']**2)
+    return L_tot
+
+yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+
+def _L_part_x_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    CoM_pos = data['CoM_full'].in_units('cm')
+    CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+    d_part = data['particle_posx'].in_units('cm') - CoM_pos[0]
+    
+    dv_part = data['particle_velx'].in_units('cm/s') - CoM_vel[0]
+    
+    L_part = data['particle_mass'].value * np.cross(dv_part, d_part).T
+    L_part = yt.YTQuantity(L_part, 'g*cm**2/s')
+    return L_gas
+
+yt.add_field("L_part_x_wrt_CoM", function=_L_part_x_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_part_y_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    CoM_pos = data['CoM_full'].in_units('cm')
+    CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+    d_part = data['particle_posy'].in_units('cm') - CoM_pos[0]
+    
+    dv_part = data['particle_vely'].in_units('cm/s') - CoM_vel[0]
+    
+    L_part = data['particle_mass'].value * np.cross(dv_part, d_part).T
+    L_part = yt.YTQuantity(L_part, 'g*cm**2/s')
+    return L_gas
+
+yt.add_field("L_part_y_wrt_CoM", function=_L_part_y_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_part_z_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    CoM_pos = data['CoM_full'].in_units('cm')
+    CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+    d_part = data['particle_posz'].in_units('cm') - CoM_pos[0]
+    
+    dv_part = data['particle_velz'].in_units('cm/s') - CoM_vel[0]
+    
+    L_part = data['particle_mass'].value * np.cross(dv_part, d_part).T
+    L_part = yt.YTQuantity(L_part, 'g*cm**2/s')
+    return L_gas
+
+yt.add_field("L_part_z_wrt_CoM", function=_L_part_z_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_part_wrt_CoM(field, data):
+    """
+    Calculates the velcoity fo the CoM
+    """
+    L_tot = np.sqrt(data['L_part_x_wrt_CoM']**2 + data['L_part_y_wrt_CoM']**2 + data['L_part_z_wrt_CoM']**2)
+    return L_tot
+
+yt.add_field("L_part_wrt_CoM", function=_L_part_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+
