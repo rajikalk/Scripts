@@ -30,11 +30,11 @@ args = parse_inputs()
 clean_pickles = eval(args.make_pickles)
 clean_images = eval(args.delete_images)
 
-proj_dirs = ['/XY/', '/XZ/']
-zoom_dirs = ['1000AU/', '250AU/']
+proj_dirs = ['/XY/'] #, '/XZ/']
+zoom_dirs = ['250AU/'] #['1000AU/', '250AU/']
 
 for sim_dir in sim_dirs:
-    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0:
+    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0 and 'Single' in sim_dir:
         #check if movie directory exists
         movie_dir = '/hits/fast/set/kuruwira/Movie_frames' + sim_dir.split('Protostellar_spin')[-1]
         
