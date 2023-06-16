@@ -16,7 +16,7 @@ update = False
 
 rit = -1
 for sim_dir in sim_dirs:
-    if len(glob.glob(sim_dir + '/*.jpg')) > 0:
+    if len(glob.glob(sim_dir + '/*.jpg')) > 0 and 'Single' in sim_dir and 'Lref_9' in sim_dir and 'XY' in sim_dir and '250' in sim_dir:
         rit = rit + 1
         if rit == size:
             rit = 0
