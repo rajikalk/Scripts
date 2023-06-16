@@ -22,6 +22,7 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
+    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens")
     #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
@@ -141,7 +142,13 @@ if args.make_movie_pickles == 'True':
                 part_info = {}
             
             #make list of projection fields: density, velocity, magnetic field
-            proj_field_list = [('flash', 'dens')] + \
+            if args.field == 'dens':
+                proj_field_list = [('flash', 'dens')]
+            else:
+                import pdb
+                pdb.set_trace()
+                
+            proj_field_list = proj_field_list + \
                 [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
                 [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
