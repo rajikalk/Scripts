@@ -85,21 +85,20 @@ if args.update_pickles == 'True':
                     L_orbit = L_orbit + L_dict['L_orbit']
                     L_in_gas = L_in_gas + L_dict['L_in_gas']
                     T_round_all = T_round_all + L_dict['T_round']
-                    import pdb
-                    pdb.set_trace()
-                    for key in rank_data['L_sink'].keys():
-                        if key not in L_sink_full.keys():
-                            L_sink_full.update({key:rank_data['L_sink'][key]})
+                    for key in L_dict['L_sink'].keys():
+                        if key not in L_sink.keys():
+                            L_sink.update({key:L_dict['L_sink'][key]})
+                            print("ADDED PARTICLE TAG", key)
                         else:
-                            L_sink_full[key].append(rank_data['L_sink'][key])
+                            L_sink[key].append(L_dict['L_sink'][key])
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
             import pdb
             pdb.set_trace()
             for key in L_sink_full:
-                t_sorted_inds = np.argsort(L_sink_full[key].T[0])
-                L_sink_full[key] = L_sink_full[key][t_sorted_inds]
+                t_sorted_inds = np.argsort(L_sink[key].T[0])
+                L_sink_full[key] = L_sink[key][t_sorted_inds]
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
             
@@ -214,7 +213,8 @@ if args.update_pickles == 'True':
         #Save values
         for particle_tag in particle_tags:
             if str(particle_tag.value) not in L_sink.keys():
-                L_sink.update({str(particle_tag.value):[time_val, particle_spin[list(particle_tags).index(particle_tag)]]})
+                L_sink.update({str(particle_tag.value):[[time_val, particle_spin[list(particle_tags).index(particle_tag)]]]})
+                print('ADDED PARTICLE TAG', str(particle_tag.value))
             else:
                 L_sink[str(particle_tag.value)].append([time_val, particle_spin[list(particle_tags).index(particle_tag)]])
         '''
