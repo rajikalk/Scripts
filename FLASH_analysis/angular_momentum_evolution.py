@@ -235,7 +235,7 @@ if args.update_pickles == 'True':
         L_orbit.append(L_orb_tot)
         L_in_gas.append(L_gas_tot)
         
-        rank_data = {'Time_array': Time_array, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round], 'L_sink': L_sink'}
+        rank_data = {'Time_array': Time_array, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round], 'L_sink': L_sink}
         
         #write pickle
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
