@@ -206,7 +206,7 @@ if args.update_pickles == 'True':
         #Save values
         for particle_tag in particle_tags:
             if particle_tag not in L_sink.keys():
-                L_sink.update{str(particle_tag):[time_val, particle_spin[list(particle_tags).index(particle_tag)]]}
+                L_sink.update({str(particle_tag):[time_val, particle_spin[list(particle_tags).index(particle_tag)]]})
             else:
                 L_sink[str(particle_tag)].append([time_val, particle_spin[list(particle_tags).index(particle_tag)]])
         '''
@@ -267,7 +267,7 @@ if args.update_pickles == 'True':
                 L_in_gas_full = L_in_gas_full + rank_data['L_in_gas']
                 for key in rank_data['L_sink'].keys()
                     if key not in L_sink_full.keys():
-                        L_sink_full.update{key:rank_data['L_sink'][key]}
+                        L_sink_full.update({key:rank_data['L_sink'][key]})
                     else:
                         L_sink_full[key].append(rank_data['L_sink'][key])
         
