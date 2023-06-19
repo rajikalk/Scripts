@@ -286,8 +286,6 @@ if args.update_pickles == 'True':
         
         sorted_inds = np.argsort(Time_array_full)
         Time_array = np.array(Time_array_full)[sorted_inds]
-        import pdb
-        pdb.set_trace()
         for key in L_sink_full.keys():
             t_sorted_inds = np.argsort(np.array(L_sink_full[key]).T[0])
             L_sink_full[key] = np.array(L_sink_full[key])[t_sorted_inds]
