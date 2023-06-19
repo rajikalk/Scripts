@@ -205,7 +205,7 @@ if args.update_pickles == 'True':
         
         #Save values
         for particle_tag in particle_tags:
-            if particle_tag.value not in L_sink.keys():
+            if str(particle_tag.value) not in L_sink.keys():
                 L_sink.update({str(particle_tag.value):[time_val, particle_spin[list(particle_tags).index(particle_tag)]]})
             else:
                 L_sink[str(particle_tag.value)].append([time_val, particle_spin[list(particle_tags).index(particle_tag)]])
