@@ -97,7 +97,7 @@ if args.update_pickles == 'True':
             for key in L_sink.keys():
                 t_sorted_inds = np.argsort(np.array(L_sink[key]).T[0])
                 L_sink[key] = np.array(L_sink[key])[t_sorted_inds]
-                
+                L_sink[key] = list(L_sink[key])
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
             
