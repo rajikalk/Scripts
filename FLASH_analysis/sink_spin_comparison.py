@@ -111,18 +111,19 @@ for spin_lab in Spin_labels:
             form_time = np.nan
             
             #for sink_id in sink_data.keys():
-            sink_id = list(sink_data.keys())[0]
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
-            L_tot = yt.YTArray(L_tot, 'cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].semilogy(time.in_units('yr'), L_tot/1.e19, label='Single')
+            #sink_id = list(sink_data.keys())[0]
+            for sink_id in sink_data.keys():
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
+                L_tot = yt.YTArray(L_tot, 'cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
         else:
             print("Couldn't open", single_pickle)
             
@@ -146,7 +147,7 @@ for spin_lab in Spin_labels:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].semilogy(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         else:
             print("Couldn't open", binary_pickle)
         
