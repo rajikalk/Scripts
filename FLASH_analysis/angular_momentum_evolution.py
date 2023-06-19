@@ -286,9 +286,11 @@ if args.update_pickles == 'True':
         
         sorted_inds = np.argsort(Time_array_full)
         Time_array = np.array(Time_array_full)[sorted_inds]
-        for key in L_sink_full:
-            t_sorted_inds = np.argsort(L_sink_full[key].T[0])
-            L_sink_full[key] = L_sink_full[key][t_sorted_inds]
+        for key in L_sink_full.keys():
+            t_sorted_inds = np.argsort(np.array(L_sink_full[key]).T[0])
+            L_sink_full[key] = np.array(L_sink_full[key])[t_sorted_inds]
+            L_sink_full[key] = list(L_sink_full[key])
+            
         L_orbit = np.array(L_orbit)[sorted_inds]
         L_in_gas = np.array(L_in_gas)[sorted_inds]
         
