@@ -291,8 +291,8 @@ if args.update_pickles == 'True':
             L_sink_full[key] = np.array(L_sink_full[key])[t_sorted_inds]
             L_sink_full[key] = list(L_sink_full[key])
             
-        L_orbit = np.array(L_orbit)[sorted_inds]
-        L_in_gas = np.array(L_in_gas)[sorted_inds]
+        L_orbit = np.array(L_orbit_full)[sorted_inds]
+        L_in_gas = np.array(L_in_gas_full)[sorted_inds]
         
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
         pickle.dump((Time_array, L_sink_full, L_orbit, L_in_gas), file)
