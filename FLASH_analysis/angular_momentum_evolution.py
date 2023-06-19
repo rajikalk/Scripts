@@ -160,6 +160,12 @@ if args.update_pickles == 'True':
                 if int(sink_tag) in particle_tags:
                     tag_sort_inds.append(list(particle_tags.value).index(float(sink_tag)))
             
+            #Add new sinks:
+            if len(particle_tags) > len(tag_sort_inds):
+                new_ids = list(set(particle_tags.value).symmetric_difference(set(particle_tags.value[tag_sort_inds])))
+                for new_id in new_ids:
+                    tag_sort_inds.append(list(particle_tags.value).index(new_id))
+            
             particle_spin = particle_spin[tag_sort_inds]
             
             if '00000' in str(prime_spin):
