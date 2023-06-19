@@ -265,7 +265,7 @@ if args.update_pickles == 'True':
                 Time_array_full = Time_array_full + rank_data['Time_array']
                 L_orbit_full = L_orbit_full + rank_data['L_orbit']
                 L_in_gas_full = L_in_gas_full + rank_data['L_in_gas']
-                for key in rank_data['L_sink'].keys()
+                for key in rank_data['L_sink'].keys():
                     if key not in L_sink_full.keys():
                         L_sink_full.update({key:rank_data['L_sink'][key]})
                     else:
