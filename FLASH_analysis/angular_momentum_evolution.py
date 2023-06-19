@@ -206,9 +206,9 @@ if args.update_pickles == 'True':
         #Save values
         for particle_tag in particle_tags:
             if particle_tag not in L_sink.keys():
-                L_sink.update{str(particle_tag):particle_spin[list(particle_tags).index(particle_tag)]}
+                L_sink.update{str(particle_tag):[time_val, particle_spin[list(particle_tags).index(particle_tag)]]}
             else:
-                L_sink[str(particle_tag)].append(particle_spin[list(particle_tags).index(particle_tag)])
+                L_sink[str(particle_tag)].append([time_val, particle_spin[list(particle_tags).index(particle_tag)]])
         '''
         L_primary.append(particle_spin[0])
         if len(particle_spin) == 2:
@@ -251,6 +251,10 @@ if args.update_pickles == 'True':
 
     if rank == 0:
         #Compile together results
+        Time_array_full = []
+        L_orbit_full = []
+        L_in_gas_full = []
+        L_sink_full = {}
         pickle_files = glob.glob('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_*.pkl')
         for pickle_file in pickle_files:
             file = open(pickle_file, 'rb')
@@ -258,21 +262,25 @@ if args.update_pickles == 'True':
             file.close()
             
             for key in rank_data.keys():
-                Time_array = Time_array + rank_data['Time_array']
-                import pdb
-                pdb.set_trace()
-                L_orbit = L_orbit + rank_data['L_orbit']
-                L_in_gas = L_in_gas + rank_data['L_in_gas']
+                Time_array_full = Time_array_full + rank_data['Time_array']
+                L_orbit_full = L_orbit_full + rank_data['L_orbit']
+                L_in_gas_full = L_in_gas_full + rank_data['L_in_gas']
+                for key in rank_data['L_sink'].keys()
+                    if key not in L_sink_full.keys():
+                        L_sink_full.update{key:rank_data['L_sink'][key]}
+                    else:
+                        L_sink_full[key].append(rank_data['L_sink'][key])
         
-        sorted_inds = np.argsort(Time_array)
-        Time_array = np.array(Time_array)[sorted_inds]
-        import pdb
-        pdb.set_trace()
+        sorted_inds = np.argsort(Time_array_full)
+        Time_array = np.array(Time_array_full)[sorted_inds]
+        for key in L_sink_full:
+            t_sorted_inds = np.argsort(L_sink_full[key].T[0])
+            L_sink_full[key] = L_sink_full[key][t_sorted_inds]
         L_orbit = np.array(L_orbit)[sorted_inds]
         L_in_gas = np.array(L_in_gas)[sorted_inds]
         
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'wb')
-        pickle.dump((Time_array, L_primary, L_secondary, L_orbit, L_in_gas), file)
+        pickle.dump((Time_array, L_sink_full, L_orbit, L_in_gas), file)
         file.close()
         
         for pickle_file in pickle_files:
