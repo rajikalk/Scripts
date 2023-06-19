@@ -90,14 +90,14 @@ if args.update_pickles == 'True':
                             L_sink.update({key:L_dict['L_sink'][key]})
                             print("ADDED PARTICLE TAG", key)
                         else:
-                            L_sink[key].append(L_dict['L_sink'][key])
+                            L_sink[key] = L_dict['L_sink'][key]
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
             import pdb
             pdb.set_trace()
-            for key in L_sink_full:
-                t_sorted_inds = np.argsort(L_sink[key].T[0])
+            for key in L_sink.keys:
+                t_sorted_inds = np.argsort(np.array(L_sink[key]).T[0])
                 L_sink_full[key] = L_sink[key][t_sorted_inds]
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
