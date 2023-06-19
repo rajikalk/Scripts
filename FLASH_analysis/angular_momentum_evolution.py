@@ -65,8 +65,7 @@ if args.update_pickles == 'True':
 
     L_dict = {}
     Time_array = []
-    L_primary = []
-    L_secondary = []
+    L_sink = {}
     L_orbit = []
     L_in_gas = []
     T_round_all = []
@@ -83,16 +82,16 @@ if args.update_pickles == 'True':
                 
                 for key in L_dict.keys():
                     Time_array = Time_array + L_dict['Time_array']
-                    L_primary = L_primary + L_dict['L_primary']
-                    L_secondary = L_secondary + L_dict['L_secondary']
+                    import pdb
+                    pdb.set_trace()
                     L_orbit = L_orbit + L_dict['L_orbit']
                     L_in_gas = L_in_gas + L_dict['L_in_gas']
                     T_round_all = T_round_all + L_dict['T_round']
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
-            L_primary = list(np.array(L_primary)[sorted_inds])
-            L_secondary = list(np.array(L_secondary)[sorted_inds])
+            import pdb
+            pdb.set_trace()
             L_orbit = list(np.array(L_orbit)[sorted_inds])
             L_in_gas = list(np.array(L_in_gas)[sorted_inds])
             
@@ -205,6 +204,9 @@ if args.update_pickles == 'True':
         L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
         
         #Save values
+        import pdb
+        pdb.set_trace()
+        '''
         L_primary.append(particle_spin[0])
         if len(particle_spin) == 2:
             L_secondary.append(particle_spin[1])
@@ -229,10 +231,11 @@ if args.update_pickles == 'True':
                         #    pdb.set_trace()
         else:
             L_secondary.append(yt.YTQuantity(np.nan, particle_spin.units))
+        '''
         L_orbit.append(L_orb_tot)
         L_in_gas.append(L_gas_tot)
         
-        rank_data = {'Time_array': Time_array, 'L_primary': L_primary, 'L_secondary': L_secondary, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round]}
+        rank_data = {'Time_array': Time_array, 'L_orbit': L_orbit, 'L_in_gas': L_in_gas, 'T_round': [t_round], L_sink}
         
         #write pickle
         file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'ang_mom_'+str(rank)+'.pkl', 'wb')
@@ -253,15 +256,15 @@ if args.update_pickles == 'True':
             
             for key in rank_data.keys():
                 Time_array = Time_array + rank_data['Time_array']
-                L_primary = L_primary + rank_data['L_primary']
-                L_secondary = L_secondary + rank_data['L_secondary']
+                import pdb
+                pdb.set_trace()
                 L_orbit = L_orbit + rank_data['L_orbit']
                 L_in_gas = L_in_gas + rank_data['L_in_gas']
         
         sorted_inds = np.argsort(Time_array)
         Time_array = np.array(Time_array)[sorted_inds]
-        L_primary = np.array(L_primary)[sorted_inds]
-        L_secondary = np.array(L_secondary)[sorted_inds]
+        import pdb
+        pdb.set_trace()
         L_orbit = np.array(L_orbit)[sorted_inds]
         L_in_gas = np.array(L_in_gas)[sorted_inds]
         
@@ -282,8 +285,8 @@ if rank == 0:
     file.close()
     
     plt.clf()
-    plt.semilogy(Time_array - Time_array[0], L_primary, label='Primary spin')
-    plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
+    #plt.semilogy(Time_array - Time_array[0], L_primary, label='Primary spin')
+    #plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
     plt.semilogy(Time_array - Time_array[0], L_orbit, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas, label='L_in_gas')
     plt.xlabel('Time (yr)')
@@ -298,8 +301,8 @@ if rank == 0:
     
     L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
     plt.clf()
-    plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
-    plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
+    #plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
+    #plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
     plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
     plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
