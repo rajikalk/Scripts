@@ -166,6 +166,7 @@ if args.update_pickles == 'True':
                 for new_id in new_ids:
                     tag_sort_inds.append(list(particle_tags.value).index(new_id))
             
+            particle_tags = particle_tags[tag_sort_inds]
             particle_spin = particle_spin[tag_sort_inds]
             
             if '00000' in str(prime_spin):
@@ -329,7 +330,7 @@ if rank == 0:
     
     L_tot = L_orbit + L_in_gas
     for sink_id in L_sink.keys():
-        L_tot = L_tot + np.array(L_sink[sink_id]).T[1]
+        L_tot = L_tot + (np.append(np.zeros(len(L_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
         
     plt.xlabel('Time (yr)')
     plt.clf()
@@ -338,7 +339,7 @@ if rank == 0:
     plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
     for sink_id in L_sink.keys():
-        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1]/L_tot, label='Sink')
+        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(L_sink[sink_id]):], label='Sink')
     plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
     plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     plt.tick_params(axis='x', direction='in')
