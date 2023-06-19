@@ -94,7 +94,7 @@ if args.update_pickles == 'True':
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
-            for key in L_sink.keys:
+            for key in L_sink.keys():
                 t_sorted_inds = np.argsort(np.array(L_sink[key]).T[0])
                 L_sink[key] = np.array(L_sink[key])[t_sorted_inds]
                 
