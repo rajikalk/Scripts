@@ -282,7 +282,7 @@ if args.update_pickles == 'True':
                     if key not in L_sink_full.keys():
                         L_sink_full.update({key:rank_data['L_sink'][key]})
                     else:
-                        L_sink_full[key].append(rank_data['L_sink'][key])
+                        L_sink_full[key] = L_sink_full[key] + rank_data['L_sink'][key]
         
         sorted_inds = np.argsort(Time_array_full)
         Time_array = np.array(Time_array_full)[sorted_inds]
