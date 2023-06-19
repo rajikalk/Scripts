@@ -204,8 +204,11 @@ if args.update_pickles == 'True':
         L_gas_tot = yt.YTQuantity(np.sum(np.sqrt(np.sum(L_gas**2, axis=0))), 'g*cm**2/s')
         
         #Save values
-        import pdb
-        pdb.set_trace()
+        for particle_tag in particle_tags:
+            if particle_tag not in L_sink.keys():
+                L_sink.update{str(particle_tag):particle_spin[list(particle_tags).index(particle_tag)]}
+            else:
+                L_sink[str(particle_tag)].append(particle_spin[list(particle_tags).index(particle_tag)])
         '''
         L_primary.append(particle_spin[0])
         if len(particle_spin) == 2:
