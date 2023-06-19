@@ -191,18 +191,19 @@ for spin_lab in Spin_labels:
             form_time = np.nan
             
             #for sink_id in list(sink_data.keys())[0]:
-            sink_id = list(sink_data.keys())[0]
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-            L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
-            axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+            #sink_id = list(sink_data.keys())[0]
+            for sink_id in sink_data.keys():
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if time[-1] > xmax:
+                    xmax = time[-1]
+                if np.max(L_tot) > ymax:
+                    ymax = np.max(L_tot)
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
         else:
             print("Couldn't open", single_pickle)
             
