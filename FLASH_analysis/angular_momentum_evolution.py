@@ -286,6 +286,8 @@ if args.update_pickles == 'True':
         
         sorted_inds = np.argsort(Time_array_full)
         Time_array = np.array(Time_array_full)[sorted_inds]
+        import pdb
+        pdb.set_trace()
         for key in L_sink_full.keys():
             t_sorted_inds = np.argsort(np.array(L_sink_full[key]).T[0])
             L_sink_full[key] = np.array(L_sink_full[key])[t_sorted_inds]
@@ -298,8 +300,8 @@ if args.update_pickles == 'True':
         pickle.dump((Time_array, L_sink_full, L_orbit, L_in_gas), file)
         file.close()
         
-        for pickle_file in pickle_files:
-            os.remove(pickle_file)
+        #for pickle_file in pickle_files:
+        #    os.remove(pickle_file)
         print('saved gathered data')
 
 sys.stdout.flush()
@@ -307,7 +309,7 @@ CW.Barrier()
 
 if rank == 0:
     file = open('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'gathered_ang_mom.pkl', 'rb')
-    Time_array, L_primary, L_secondary, L_orbit, L_in_gas = pickle.load(file)
+    Time_array, L_sink, L_orbit, L_in_gas = pickle.load(file)
     file.close()
     
     plt.clf()
@@ -315,6 +317,8 @@ if rank == 0:
     #plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
     plt.semilogy(Time_array - Time_array[0], L_orbit, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas, label='L_in_gas')
+    for sink_id in L_sink.keys():
+        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1], label='Sink')
     plt.xlabel('Time (yr)')
     plt.ylabel('Angular momentum (g cm$^2$/s)')
     plt.legend(loc='best')
@@ -325,12 +329,18 @@ if rank == 0:
     plt.tick_params(axis='y', direction='in')
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution.png', bbox_inches='tight')
     
-    L_tot = L_primary + np.nan_to_num(L_secondary) + L_orbit + L_in_gas
+    L_tot = L_orbit + L_in_gas
+    for sink_id in L_sink.keys():
+        L_tot = L_tot + np.array(L_sink[sink_id]).T[1]
+        
+    plt.xlabel('Time (yr)')
     plt.clf()
     #plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
     #plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
     plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
     plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
+    for sink_id in L_sink.keys():
+        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1]/L_tot, label='Sink')
     plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
     plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     plt.tick_params(axis='x', direction='in')
