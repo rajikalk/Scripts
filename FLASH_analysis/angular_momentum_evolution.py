@@ -90,7 +90,7 @@ if args.update_pickles == 'True':
                             L_sink.update({key:L_dict['L_sink'][key]})
                             print("ADDED PARTICLE TAG", key)
                         else:
-                            L_sink[key] = L_dict['L_sink'][key]
+                            L_sink[key] = L_sink[key] + L_dict['L_sink'][key]
             
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
