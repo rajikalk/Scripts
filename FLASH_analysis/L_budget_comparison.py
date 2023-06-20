@@ -339,7 +339,7 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color=colors[1], linewidth=2, label='Gas')
             for sink_id in L_sink.keys():
                 axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = '-', color=colors[3], linewidth=1)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color=colors[2], linewidth=2, Label = 'Sink total')
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color=colors[2], linewidth=2, label = 'Sink total')
         else:
             print("Couldn't open", single_pickle)
             
