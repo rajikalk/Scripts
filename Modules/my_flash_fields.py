@@ -193,15 +193,15 @@ def _nearest_particle(field, data):
     """
     Nearest_tag = []
     if np.shape(data['x']) == (16, 16, 16):
-        Nearest_tag = yt.YTArray(np.zeros(np.shape(data['x'])), "")
+        Nearest_tag = yt.YTArray(np.zeros(np.shape(data['gas', 'x'])), "")
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
             data._debug()
             d_all = []
-            for part_pos_it in range(len(data['particle_tag'])):
-                dx_gas = data['x'].in_units('cm') - data['particle_posx'][part_pos_it].in_units('cm')
-                dy_gas = data['y'].in_units('cm') - data['particle_posy'][part_pos_it].in_units('cm')
-                dz_gas = data['z'].in_units('cm') - data['particle_posz'][part_pos_it].in_units('cm')
+            for part_pos_it in range(len(data['all', 'particle_tag'])):
+                dx_gas = data['gas', 'x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
+                dy_gas = data['gas', 'y'].in_units('cm') - data['all', 'particle_posy'][part_pos_it].in_units('cm')
+                dz_gas = data['gas', 'z'].in_units('cm') - data['all', 'particle_posz'][part_pos_it].in_units('cm')
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             data._debug()
@@ -220,10 +220,10 @@ def _L_gas_wrt_nearest_sink(field, data):
         data._debug()
         if ('all', 'particle_mass') in data.ds.field_list:
             d_all = []
-            for part_pos_it in range(len(data['particle_tags'])):
-                dx_gas = data['x'].in_units('cm') - data['particle_posx'][part_pos_it].in_units('cm')
-                dy_gas = data['y'].in_units('cm') - data['particle_posy'][part_pos_it].in_units('cm')
-                dz_gas = data['z'].in_units('cm') - data['particle_posz'][part_pos_it].in_units('cm')
+            for part_pos_it in range(len(data['all', 'particle_tags'])):
+                dx_gas = data['x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
+                dy_gas = data['y'].in_units('cm') - data['all', 'particle_posy'][part_pos_it].in_units('cm')
+                dz_gas = data['z'].in_units('cm') - data['all', 'particle_posz'][part_pos_it].in_units('cm')
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_gas.append(dx_gas)
     return L_gas_tot
