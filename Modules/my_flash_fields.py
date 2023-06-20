@@ -194,10 +194,6 @@ def _nearest_particle(field, data):
     try:
         data._debug()
         if ('all', 'particle_mass') in data.ds.field_list:
-            dummy = data['particle_tag']
-            dummy = data['particle_posx']
-            dummy = data['particle_posy']
-            dummy = data['particle_posz']
             d_all = []
             for part_pos_it in range(len(data['particle_tag'])):
                 dx_gas = data['gas', 'x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
