@@ -231,9 +231,9 @@ def _L_gas_wrt_nearest_sink(field, data):
             L_wrt_nearest = yt.YTQuantity(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
             
         else:
-            L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+            L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
     except:
-        L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+        L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
     return L_wrt_nearest
 
 yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local")
