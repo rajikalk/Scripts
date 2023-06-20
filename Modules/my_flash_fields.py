@@ -164,7 +164,7 @@ def _L_gas_wrt_CoM(field, data):
     """
     L_gas_tot = []
     if np.shape(data['x']) == (16, 16, 16):
-        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "km/s")
+        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "g*cm**2/s")
     else:
         CoM_pos = data['CoM_full'].in_units('cm')
         CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
@@ -186,6 +186,49 @@ def _L_gas_wrt_CoM(field, data):
     return L_gas_tot
 
 yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
+
+def _nearest_particle(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    Nearest_tag = []
+    if np.shape(data['x']) == (16, 16, 16):
+        Nearest_tag = yt.YTArray(np.zeros(np.shape(data['x'])), "")
+    else:
+        data._debug()
+        if ('all', 'particle_mass') in data.ds.field_list:
+            d_all = []
+            for part_pos_it in range(len(data['particle_tags']):
+                dx_gas = data['x'].in_units('cm') - data['particle_posx'][part_pos_it].in_units('cm')
+                dy_gas = data['y'].in_units('cm') - data['particle_posy'][part_pos_it].in_units('cm')
+                dz_gas = data['z'].in_units('cm') - data['particle_posz'][part_pos_it].in_units('cm')
+                d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
+                d_all.append(d_gas)
+            data._debug()
+    return L_gas_tot
+
+yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
+
+def _L_gas_wrt_nearest_sink(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    L_gas_tot = []
+    if np.shape(data['x']) == (16, 16, 16):
+        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "km/s")
+    else:
+        data._debug()
+        if ('all', 'particle_mass') in data.ds.field_list:
+            d_all = []
+            for part_pos_it in range(len(data['particle_tags']):
+                dx_gas = data['x'].in_units('cm') - data['particle_posx'][part_pos_it].in_units('cm')
+                dy_gas = data['y'].in_units('cm') - data['particle_posy'][part_pos_it].in_units('cm')
+                dz_gas = data['z'].in_units('cm') - data['particle_posz'][part_pos_it].in_units('cm')
+                d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
+                d_gas.append(dx_gas)
+    return L_gas_tot
+
+yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local")
 
 '''
 def _L_gas_wrt_CoM(field, data):

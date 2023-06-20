@@ -105,7 +105,7 @@ for spin_lab in Spin_labels:
         
         if os.path.exists(binary_pickle):
             file = open(binary_pickle, 'rb')
-            Time_array, L_sink, L_orbit, L_in_gas = pickle.load(file)
+            Time_array, L_primary, L_binary, L_orbit, L_in_gas = pickle.load(file)
             file.close()
             
             for time_it in range(len(L_orbit)):
@@ -117,13 +117,10 @@ for spin_lab in Spin_labels:
             
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit, linestyle = '--', color=colors[1], linewidth=2, label='Orbit')
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, linestyle = ':', color=colors[1], linewidth=2, label='Gas')
-            L_sink_tot = np.zeros(np.shape(L_in_gas))
-            for sink_id in L_sink.keys():
-                L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1], linestyle = '-', color=colors[1], linewidth=1)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot, linestyle = '-', color=colors[1], linewidth=2, label='Sink total')
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_primary, linestyle = ':', color=colors[1], linewidth=2, label='Primary')
+
         else:
-            print("Couldn't open", single_pickle)
+            print("Couldn't open", binary_pickle)
             
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
