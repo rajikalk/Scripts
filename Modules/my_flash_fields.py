@@ -216,7 +216,6 @@ def _L_gas_wrt_nearest_sink(field, data):
     """
     try:
         if ('all', 'particle_mass') in data.ds.field_list:
-            data._debug()
             Nearest_tag_ind = data['nearest_particle_index']
             dx_gas = data['particle_posx'][Nearest_tag_ind].in_units('cm') - data['x'].in_units('cm')
             dy_gas = data['particle_posy'][Nearest_tag_ind].in_units('cm') - data['y'].in_units('cm')
@@ -229,7 +228,7 @@ def _L_gas_wrt_nearest_sink(field, data):
             d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
             
             L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
-            L_wrt_nearest = yt.YTQuantity(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+            L_wrt_nearest = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
             
         else:
             L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
