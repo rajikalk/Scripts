@@ -336,7 +336,7 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color=colors[0], linewidth=2)
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color=colors[1], linewidth=2)
             for sink_id in L_sink.keys():
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1]/L_tot, linestyle = '-', color=colors[3], linewidth=1)
+                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = '-', color=colors[3], linewidth=1)
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color=colors[2], linewidth=2)
         else:
             print("Couldn't open", single_pickle)
@@ -391,8 +391,8 @@ for spin_lab in Spin_labels:
             L_tot = L_sink_tot + L_orbit + L_in_gas
                 
             for sink_id in L_sink.keys():
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1]/L_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
+                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
         else:
             print("Couldn't open", single_pickle)
             
@@ -409,7 +409,7 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
 axs.flatten()[plot_it].set_xlim(left=0)
-axs.flatten()[plot_it].set_ylim([5.e-5,1])
+axs.flatten()[plot_it].set_ylim(bottom=0)
 plt.savefig('L_sink_spin_vs_mach_frac.png', bbox_inches='tight')
 
 
@@ -446,8 +446,8 @@ for spin_lab in Spin_labels:
                 L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
                 
             for sink_id in L_sink.keys():
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
+                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
         else:
             print("Couldn't open", single_pickle)
             
@@ -464,5 +464,5 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
 axs.flatten()[plot_it].set_xlim(left=0)
-#axs.flatten()[plot_it].set_ylim([5.e-5,1])
+axs.flatten()[plot_it].set_ylim(bttom=0)
 plt.savefig('L_sink_spin_vs_mach.png', bbox_inches='tight')
