@@ -247,7 +247,7 @@ sys.stdout.flush()
 CW.Barrier()
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -289,6 +289,8 @@ for spin_lab in Spin_labels:
         
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
@@ -301,7 +303,7 @@ axs.flatten()[plot_it].set_ylim([5.e48, 5.e54])
 plt.savefig('L_evolution_spin_vs_mach.png', bbox_inches='tight')
 
 plt.clf()
-fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -346,6 +348,8 @@ for spin_lab in Spin_labels:
         
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
