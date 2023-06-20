@@ -464,5 +464,5 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
 axs.flatten()[plot_it].set_xlim(left=0)
-axs.flatten()[plot_it].set_ylim(bttom=0)
+axs.flatten()[plot_it].set_ylim(bottom=0)
 plt.savefig('L_sink_spin_vs_mach.png', bbox_inches='tight')
