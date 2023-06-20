@@ -247,7 +247,7 @@ sys.stdout.flush()
 CW.Barrier()
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -301,7 +301,7 @@ axs.flatten()[plot_it].set_ylim([5.e48, 5.e54])
 plt.savefig('L_evolution_spin_vs_mach.png', bbox_inches='tight')
 
 plt.clf()
-fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=3, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -358,7 +358,7 @@ axs.flatten()[plot_it].set_ylim([5.e-5,1])
 plt.savefig('L_evolution_spin_vs_mach_frac.png', bbox_inches='tight')
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -391,16 +391,16 @@ for spin_lab in Spin_labels:
             L_tot = L_sink_tot + L_orbit + L_in_gas
                 
             for sink_id in L_sink.keys():
-                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
-            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
+                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)], linewidth=3, label='Mach '+mach_lab)
         else:
             print("Couldn't open", single_pickle)
             
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-        
-        if spin_lab == '0.20':
-            axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
@@ -414,7 +414,7 @@ plt.savefig('L_sink_spin_vs_mach_frac.png', bbox_inches='tight')
 
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -446,16 +446,16 @@ for spin_lab in Spin_labels:
                 L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
                 
             for sink_id in L_sink.keys():
-                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[0], linewidth=1)
-            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[1], linewidth=2, label='Mach '+mach_lab)
+                axs.flatten()[plot_it].plot(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1], linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array - Time_array[0], L_sink_tot, linestyle = mach_ls[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)], linewidth=3, label='Mach '+mach_lab)
         else:
             print("Couldn't open", single_pickle)
             
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
         
-        if spin_lab == '0.20':
-            axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    if spin_lab == '0.20':
+        axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
