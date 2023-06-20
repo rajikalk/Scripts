@@ -216,6 +216,7 @@ def _L_gas_wrt_nearest_sink(field, data):
     """
     try:
         if ('all', 'particle_mass') in data.ds.field_list:
+            data._debug()
             Nearest_tag_ind = data['nearest_particle']
             dx_gas = data['particle_posx'][Nearest_tag_ind].in_units('cm') - data['x'].in_units('cm')
             dy_gas = data['particle_posy'][Nearest_tag_ind].in_units('cm') - data['y'].in_units('cm')
