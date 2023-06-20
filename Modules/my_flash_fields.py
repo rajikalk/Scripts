@@ -208,7 +208,7 @@ def _nearest_particle_index(field, data):
         Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     return Nearest_tag_ind
 
-yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
+yt.add_field("nearest_particle_index", function=_nearest_particle_index, units=r"", sampling_type="local")
 
 def _L_gas_wrt_nearest_sink(field, data):
     """
