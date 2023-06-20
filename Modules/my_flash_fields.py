@@ -205,8 +205,11 @@ def _nearest_particle(field, data):
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             data._debug()
+            Nearest_tag = yt.YTArray(np.ones(np.shape(data['x'])), '')
+        else:
+            Nearest_tag = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     except:
-        Nearest_tag= yt.YTArray(np.zeros(np.shape(data['x'])), '')
+        Nearest_tag = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     return Nearest_tag
 
 yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
