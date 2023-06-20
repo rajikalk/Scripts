@@ -191,16 +191,12 @@ def _nearest_particle(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    Nearest_tag = []
-    if np.shape(data['x']) == (16, 16, 16):
-        Nearest_tag = yt.YTArray(np.zeros(np.shape(data['gas', 'x'])), "")
-    else:
+    try:
         if ('all', 'particle_mass') in data.ds.field_list:
             dummy = data['particle_tag']
             dummy = data['particle_posx']
             dummy = data['particle_posy']
             dummy = data['particle_posz']
-            data._debug()
             d_all = []
             for part_pos_it in range(len(data['particle_tag'])):
                 dx_gas = data['gas', 'x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
@@ -209,6 +205,8 @@ def _nearest_particle(field, data):
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             data._debug()
+    except:
+        Nearest_tag= yt.YTArray(np.zeros(np.shape(data['x'])), '')
     return Nearest_tag
 
 yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
