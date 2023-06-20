@@ -196,9 +196,13 @@ def _nearest_particle(field, data):
         Nearest_tag = yt.YTArray(np.zeros(np.shape(data['gas', 'x'])), "")
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
+            dummy = data['particle_tag']
+            dummy = data['particle_posx']
+            dummy = data['particle_posy']
+            dummy = data['particle_posz']
             data._debug()
             d_all = []
-            for part_pos_it in range(len(data['all', 'particle_tag'])):
+            for part_pos_it in range(len(data['particle_tag'])):
                 dx_gas = data['gas', 'x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
                 dy_gas = data['gas', 'y'].in_units('cm') - data['all', 'particle_posy'][part_pos_it].in_units('cm')
                 dz_gas = data['gas', 'z'].in_units('cm') - data['all', 'particle_posz'][part_pos_it].in_units('cm')
