@@ -187,7 +187,7 @@ def _L_gas_wrt_CoM(field, data):
 
 yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
 
-def _nearest_particle(field, data):
+def _nearest_particle_index(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
@@ -200,13 +200,13 @@ def _nearest_particle(field, data):
                 dz_gas = data['particle_posz'][part_pos_it].in_units('cm') - data['z'].in_units('cm')
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
-            data._debug()
-            Nearest_tag = yt.YTArray(np.ones(np.shape(data['x'])), '')
+            #Nearest_tag = data['particle_tag'][np.argmin(d_all, axis=0)]
+            Nearest_tag_ind = np.argmin(d_all, axis=0)
         else:
-            Nearest_tag = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+            Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     except:
-        Nearest_tag = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
-    return Nearest_tag
+        Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+    return Nearest_tag_ind
 
 yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
 
@@ -214,20 +214,27 @@ def _L_gas_wrt_nearest_sink(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    L_gas_tot = []
-    if np.shape(data['x']) == (16, 16, 16):
-        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "km/s")
-    else:
-        data._debug()
+    try:
         if ('all', 'particle_mass') in data.ds.field_list:
-            d_all = []
-            for part_pos_it in range(len(data['all', 'particle_tags'])):
-                dx_gas = data['x'].in_units('cm') - data['all', 'particle_posx'][part_pos_it].in_units('cm')
-                dy_gas = data['y'].in_units('cm') - data['all', 'particle_posy'][part_pos_it].in_units('cm')
-                dz_gas = data['z'].in_units('cm') - data['all', 'particle_posz'][part_pos_it].in_units('cm')
-                d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
-                d_gas.append(dx_gas)
-    return L_gas_tot
+            Nearest_tag_ind = data['nearest_particle']
+            dx_gas = data['particle_posx'][Nearest_tag_ind].in_units('cm') - data['x'].in_units('cm')
+            dy_gas = data['particle_posy'][Nearest_tag_ind].in_units('cm') - data['y'].in_units('cm')
+            dz_gas = data['particle_posz'][Nearest_tag_ind].in_units('cm') - data['z'].in_units('cm')
+            d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        
+            dvx_gas = data['particle_velx'][Nearest_tag_ind].in_units('cm') - data['velx'].in_units('cm/s')
+            dvy_gas = data['particle_vely'][Nearest_tag_ind].in_units('cm') - data['vely'].in_units('cm/s')
+            dvz_gas = data['particle_velz'][Nearest_tag_ind].in_units('cm') - data['velz'].in_units('cm/s')
+            d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+            
+            L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+            L_wrt_nearest = yt.YTQuantity(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+            
+        else:
+            L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+    except:
+        L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+    return L_wrt_nearest
 
 yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local")
 
