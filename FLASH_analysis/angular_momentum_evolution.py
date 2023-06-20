@@ -201,6 +201,7 @@ if args.update_pickles == 'True':
         else:
             particle_spin = yt.YTArray([np.nan], 'g*cm**2/s')
             L_orb_tot = yt.YTArray(np.nan, 'g*cm**2/s')
+            particle_tags = []
         
         #Calculate angular momentum in gas
         dx_gas = dd['x'] - dd['CoM_full'][0]
