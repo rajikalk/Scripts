@@ -278,8 +278,8 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas, linestyle = ':', color=colors[1], linewidth=2)
             L_sink_tot = np.zeros(np.shape(L_in_gas))
             for sink_id in L_sink.keys():
-                L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-Time_array[0], np.array(L_sink[sink_id]).T[1]))
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-np.array(L_sink[sink_id]).T[0][0], np.array(L_sink[sink_id]).T[1], linestyle = '-', color=colors[3], linewidth=1)
+                L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
+                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1], linestyle = '-', color=colors[3], linewidth=1)
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot, linestyle = '-', color=colors[2], linewidth=2)
         else:
             print("Couldn't open", single_pickle)
