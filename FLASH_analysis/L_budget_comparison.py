@@ -289,8 +289,8 @@ for spin_lab in Spin_labels:
         
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach='+mach_lab)
-    if spin_lab == '0.20':
-        axs.flatten()[plot_it].legend()
+        if spin_lab == '0.20' and mach_lab == '0.0':
+            axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
@@ -348,8 +348,8 @@ for spin_lab in Spin_labels:
         
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach='+mach_lab)
-    if spin_lab == '0.20':
-        axs.flatten()[plot_it].legend()
+        if spin_lab == '0.20' and mach_lab == '0.0':
+            axs.flatten()[plot_it].legend()
     if spin_lab == '0.35':
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
     axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size, right=True)
