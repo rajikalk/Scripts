@@ -192,13 +192,12 @@ def _nearest_particle(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     try:
-        data._debug()
         if ('all', 'particle_mass') in data.ds.field_list:
             d_all = []
             for part_pos_it in range(len(data['particle_tag'])):
-                dx_gas = data['x'].in_units('cm') - data['particle_posx'][part_pos_it].in_units('cm')
-                dy_gas = data['y'].in_units('cm') - data['particle_posy'][part_pos_it].in_units('cm')
-                dz_gas = data['z'].in_units('cm') - data['particle_posz'][part_pos_it].in_units('cm')
+                dx_gas = data['particle_posx'][part_pos_it].in_units('cm') - data['x'].in_units('cm')
+                dy_gas = data['particle_posy'][part_pos_it].in_units('cm') - data['y'].in_units('cm')
+                dz_gas = data['particle_posz'][part_pos_it].in_units('cm') - data['z'].in_units('cm')
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             data._debug()
