@@ -192,6 +192,7 @@ def _nearest_particle(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     try:
+        data._debug()
         if ('all', 'particle_mass') in data.ds.field_list:
             dummy = data['particle_tag']
             dummy = data['particle_posx']
