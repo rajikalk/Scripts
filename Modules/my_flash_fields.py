@@ -223,9 +223,9 @@ def _L_gas_wrt_nearest_sink(field, data):
             dz_gas = data['particle_posz'][Nearest_tag_ind].in_units('cm') - data['z'].in_units('cm')
             d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
-            dvx_gas = data['particle_velx'][Nearest_tag_ind].in_units('cm') - data['velx'].in_units('cm/s')
-            dvy_gas = data['particle_vely'][Nearest_tag_ind].in_units('cm') - data['vely'].in_units('cm/s')
-            dvz_gas = data['particle_velz'][Nearest_tag_ind].in_units('cm') - data['velz'].in_units('cm/s')
+            dvx_gas = data['particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['velx'].in_units('cm/s')
+            dvy_gas = data['particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['vely'].in_units('cm/s')
+            dvz_gas = data['particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['velz'].in_units('cm/s')
             d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
             
             L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
