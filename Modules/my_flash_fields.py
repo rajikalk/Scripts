@@ -205,7 +205,7 @@ def _nearest_particle(field, data):
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             data._debug()
-    return L_gas_tot
+    return Nearest_tag
 
 yt.add_field("nearest_particle", function=_nearest_particle, units=r"", sampling_type="local")
 
