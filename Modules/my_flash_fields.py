@@ -231,10 +231,8 @@ def _L_gas_wrt_nearest_sink(field, data):
             L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
             L_wrt_nearest = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
         else:
-            data._debug()
             L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
     except:
-        data._debug()
         L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
     return L_wrt_nearest
 
