@@ -194,7 +194,7 @@ def _nearest_particle_index(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         d_all = []
-        for part_pos_it in range(len(data['particle_tag'])):
+        for part_pos_it in range(len(data.ds.all_data()['particle_tag'])):
             dx_gas = data['all', 'particle_posx'][part_pos_it].in_units('cm') - data['gas', 'x'].in_units('cm')
             dy_gas = data['all', 'particle_posy'][part_pos_it].in_units('cm') - data['gas', 'y'].in_units('cm')
             dz_gas = data['all', 'particle_posz'][part_pos_it].in_units('cm') - data['gas', 'z'].in_units('cm')
