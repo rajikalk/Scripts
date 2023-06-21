@@ -201,7 +201,8 @@ def _nearest_particle_index(field, data):
                 d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
                 d_all.append(d_gas)
             #Nearest_tag = data['particle_tag'][np.argmin(d_all, axis=0)]
-            Nearest_tag_ind = np.argmin(d_all, axis=0)
+            Nearest_tag_ind = yt.YTArray(np.argmin(d_all, axis=0), '')
+            
         else:
             Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     except:
