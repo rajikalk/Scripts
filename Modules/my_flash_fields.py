@@ -194,10 +194,11 @@ def _nearest_particle_index(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         d_all = []
-        for part_pos_it in range(len(data.ds.all_data()['particle_tag'])):
-            dx_gas = data['all', 'particle_posx'][part_pos_it].in_units('cm') - data['gas', 'x'].in_units('cm')
-            dy_gas = data['all', 'particle_posy'][part_pos_it].in_units('cm') - data['gas', 'y'].in_units('cm')
-            dz_gas = data['all', 'particle_posz'][part_pos_it].in_units('cm') - data['gas', 'z'].in_units('cm')
+        dd = data.ds.all_data()
+        for part_pos_it in range(len(dd['particle_tag'])):
+            dx_gas = dd['all', 'particle_posx'][part_pos_it].in_units('cm') - data['gas', 'x'].in_units('cm')
+            dy_gas = dd['all', 'particle_posy'][part_pos_it].in_units('cm') - data['gas', 'y'].in_units('cm')
+            dz_gas = dd['all', 'particle_posz'][part_pos_it].in_units('cm') - data['gas', 'z'].in_units('cm')
             d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
             d_all.append(d_gas)
         #Nearest_tag = data['particle_tag'][np.argmin(d_all, axis=0)]
