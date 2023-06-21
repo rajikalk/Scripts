@@ -215,15 +215,16 @@ def _L_gas_wrt_nearest_sink(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
         Nearest_tag_ind = data['gas', 'nearest_particle_index'].value.astype(int)
-        dx_gas = data['all', 'particle_posx'][Nearest_tag_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
-        dy_gas = data['all', 'particle_posy'][Nearest_tag_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
-        dz_gas = data['all', 'particle_posz'][Nearest_tag_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
+        dx_gas = dd['all', 'particle_posx'][Nearest_tag_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][Nearest_tag_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][Nearest_tag_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
     
-        dvx_gas = data['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
-        dvy_gas = data['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
-        dvz_gas = data['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        dvx_gas = dd['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = dd['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = dd['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
