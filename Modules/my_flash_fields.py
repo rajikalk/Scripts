@@ -207,7 +207,7 @@ def _nearest_particle_index(field, data):
         Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
     return Nearest_tag_ind
 
-yt.add_field("nearest_particle_index", function=_nearest_particle_index, units=r"", sampling_type="local", validators=[ValidateParameter(['all', 'particle_mass'])])
+yt.add_field("nearest_particle_index", function=_nearest_particle_index, units=r"", sampling_type="local")
 
 def _L_gas_wrt_nearest_sink(field, data):
     """
@@ -231,7 +231,7 @@ def _L_gas_wrt_nearest_sink(field, data):
         L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
     return L_wrt_nearest
 
-yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local", validators=[ValidateParameter(['all', 'particle_mass'])])
+yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local")
 
 '''
 def _L_gas_wrt_CoM(field, data):
