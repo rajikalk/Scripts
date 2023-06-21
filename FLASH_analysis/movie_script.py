@@ -105,7 +105,11 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/5)):
+    if size > 1:
+        njobs = int(size/5)
+    else:
+        njobs = 1
+    for fn in yt.parallel_objects(usable_files, njobs=njobs):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
