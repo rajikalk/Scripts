@@ -243,12 +243,13 @@ if args.make_movie_frames == 'True':
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 
-                if args.axis == 'z':
-                    cbar_lims = [1.e-15, 1.e-13]
-                    stdvel = 2
-                else:
-                    cbar_lims = [1.e-16, 1.e-14]
-                    stdvel = 5
+                if args.field == 'dens':
+                    if args.axis == 'z':
+                        cbar_lims = [1.e-15, 1.e-13]
+                        stdvel = 2
+                    else:
+                        cbar_lims = [1.e-16, 1.e-14]
+                        stdvel = 5
                 
                 cmap=plt.cm.gist_heat
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
