@@ -11,15 +11,15 @@ def _CoM_full(field, data):
     """
     try:
         dd = data.ds.all_data()
-        TM = np.sum(dd['cell_mass'].in_units('g'))
-        x_top = np.sum(dd['cell_mass'].in_units('g')*dd['x'].in_units('cm'))
-        y_top = np.sum(dd['cell_mass'].in_units('g')*dd['y'].in_units('cm'))
-        z_top = np.sum(dd['cell_mass'].in_units('g')*dd['z'].in_units('cm'))
+        TM = np.sum(dd['gas', 'mass'].in_units('g'))
+        x_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'x'].in_units('cm'))
+        y_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'y'].in_units('cm'))
+        z_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'z'].in_units('cm'))
         if ('all', 'particle_mass') in data.ds.field_list:
             TM = TM + np.sum(dd['particle_mass'].in_units('g'))
-            x_top = x_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_posx'].in_units('cm'))
-            y_top = y_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_posy'].in_units('cm'))
-            z_top = z_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_posz'].in_units('cm'))
+            x_top = x_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_posx'].in_units('cm'))
+            y_top = y_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_posy'].in_units('cm'))
+            z_top = z_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_posz'].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm')
         del x_top
@@ -38,15 +38,15 @@ def _CoM_Velocity_full(field, data):
     """
     try:
         dd = data.ds.all_data()
-        TM = np.sum(dd['cell_mass'].in_units('g'))
-        x_top = np.sum(dd['cell_mass'].in_units('g')*dd['velx'].in_units('cm/s'))
-        y_top = np.sum(dd['cell_mass'].in_units('g')*dd['vely'].in_units('cm/s'))
-        z_top = np.sum(dd['cell_mass'].in_units('g')*dd['velz'].in_units('cm/s'))
+        TM = np.sum(dd['gas', 'mass'].in_units('g'))
+        x_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'velx'].in_units('cm/s'))
+        y_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'vely'].in_units('cm/s'))
+        z_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'velz'].in_units('cm/s'))
         if ('all', 'particle_mass') in data.ds.field_list:
-            TM = TM + np.sum(dd['particle_mass'].in_units('g'))
-            x_top = x_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_velx'].in_units('cm/s'))
-            y_top = y_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_vely'].in_units('cm/s'))
-            z_top = z_top + np.sum(dd['particle_mass'].in_units('g')*dd['particle_velz'].in_units('cm/s'))
+            TM = TM + np.sum(dd['all', 'particle_mass'].in_units('g'))
+            x_top = x_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_velx'].in_units('cm/s'))
+            y_top = y_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_vely'].in_units('cm/s'))
+            z_top = z_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_velz'].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm/s')
         del x_top
@@ -64,15 +64,15 @@ def _CoM(field, data):
     Returns center of mass using both the gas and the sink particles
     """
     try:
-        TM = np.sum(data['cell_mass'].in_units('g'))
-        x_top = np.sum(data['cell_mass'].in_units('g')*data['x'].in_units('cm'))
-        y_top = np.sum(data['cell_mass'].in_units('g')*data['y'].in_units('cm'))
-        z_top = np.sum(data['cell_mass'].in_units('g')*data['z'].in_units('cm'))
+        TM = np.sum(data['gas', 'mass'].in_units('g'))
+        x_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'x'].in_units('cm'))
+        y_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'y'].in_units('cm'))
+        z_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'z'].in_units('cm'))
         if ('all', 'particle_mass') in data.ds.field_list:
-            TM = TM + np.sum(data['particle_mass'].in_units('g'))
-            x_top = x_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posx'].in_units('cm'))
-            y_top = y_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posy'].in_units('cm'))
-            z_top = z_top + np.sum(data['particle_mass'].in_units('g')*data['particle_posz'].in_units('cm'))
+            TM = TM + np.sum(data['all', 'particle_mass'].in_units('g'))
+            x_top = x_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_posx'].in_units('cm'))
+            y_top = y_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_posy'].in_units('cm'))
+            z_top = z_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_posz'].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm')
         del x_top
@@ -90,15 +90,15 @@ def _CoM_Velocity(field, data):
     Calculates the velcoity fo the CoM
     """
     try:
-        TM = np.sum(data['cell_mass'].in_units('g'))
-        x_top = np.sum(data['cell_mass'].in_units('g')*data['velx'].in_units('cm/s'))
-        y_top = np.sum(data['cell_mass'].in_units('g')*data['vely'].in_units('cm/s'))
-        z_top = np.sum(data['cell_mass'].in_units('g')*data['velz'].in_units('cm/s'))
+        TM = np.sum(data['gas', 'mass'].in_units('g'))
+        x_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'velx'].in_units('cm/s'))
+        y_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'vely'].in_units('cm/s'))
+        z_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'velz'].in_units('cm/s'))
         if ('all', 'particle_mass') in data.ds.field_list:
             TM = TM + np.sum(data['particle_mass'].in_units('g'))
-            x_top = x_top + np.sum(data['particle_mass'].in_units('g')*data['particle_velx'].in_units('cm/s'))
-            y_top = y_top + np.sum(data['particle_mass'].in_units('g')*data['particle_vely'].in_units('cm/s'))
-            z_top = z_top + np.sum(data['particle_mass'].in_units('g')*data['particle_velz'].in_units('cm/s'))
+            x_top = x_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_velx'].in_units('cm/s'))
+            y_top = y_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_vely'].in_units('cm/s'))
+            z_top = z_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_velz'].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm/s')
         del x_top
@@ -164,25 +164,25 @@ def _L_gas_wrt_CoM(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     L_gas_tot = []
-    if np.shape(data['x']) == (16, 16, 16):
-        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['x'])), "g*cm**2/s")
+    if np.shape(data['gas', 'x']) == (16, 16, 16):
+        L_gas_tot = yt.YTArray(np.zeros(np.shape(data['gas', 'x'])), "g*cm**2/s")
     else:
-        CoM_pos = data['CoM_full'].in_units('cm')
-        CoM_vel = data['CoM_Velocity_full'].in_units('cm/s')
+        CoM_pos = data['gas', 'CoM_full'].in_units('cm')
+        CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
         
-        dx_gas = data['x'] - CoM_pos[0]
-        dy_gas = data['y'] - CoM_pos[1]
-        dz_gas = data['z'] - CoM_pos[2]
+        dx_gas = data['gas', 'x'] - CoM_pos[0]
+        dy_gas = data['gas', 'y'] - CoM_pos[1]
+        dz_gas = data['gas', 'z'] - CoM_pos[2]
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
-        dvx_gas = data['velx'].in_units('cm/s') - CoM_vel[0]
-        dvy_gas = data['vely'].in_units('cm/s') - CoM_vel[1]
-        dvz_gas = data['velz'].in_units('cm/s') - CoM_vel[2]
+        dvx_gas = data['gas', 'velx'].in_units('cm/s') - CoM_vel[0]
+        dvy_gas = data['gas', 'vely'].in_units('cm/s') - CoM_vel[1]
+        dvz_gas = data['gas', 'velz'].in_units('cm/s') - CoM_vel[2]
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         data._debug()
         
-        L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+        L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
         L_gas_tot = yt.YTQuantity(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
     return L_gas_tot
 
@@ -195,16 +195,16 @@ def _nearest_particle_index(field, data):
     if ('all', 'particle_mass') in data.ds.field_list:
         d_all = []
         for part_pos_it in range(len(data['particle_tag'])):
-            dx_gas = data['particle_posx'][part_pos_it].in_units('cm') - data['x'].in_units('cm')
-            dy_gas = data['particle_posy'][part_pos_it].in_units('cm') - data['y'].in_units('cm')
-            dz_gas = data['particle_posz'][part_pos_it].in_units('cm') - data['z'].in_units('cm')
+            dx_gas = data['all', 'particle_posx'][part_pos_it].in_units('cm') - data['gas', 'x'].in_units('cm')
+            dy_gas = data['all', 'particle_posy'][part_pos_it].in_units('cm') - data['gas', 'y'].in_units('cm')
+            dz_gas = data['all', 'particle_posz'][part_pos_it].in_units('cm') - data['gas', 'z'].in_units('cm')
             d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
             d_all.append(d_gas)
         #Nearest_tag = data['particle_tag'][np.argmin(d_all, axis=0)]
         Nearest_tag_ind = yt.YTArray(np.argmin(d_all, axis=0), '')
         
     else:
-        Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), '')
+        Nearest_tag_ind = yt.YTArray(np.nan*np.ones(np.shape(data['gas', 'x'])), '')
     return Nearest_tag_ind
 
 yt.add_field("nearest_particle_index", function=_nearest_particle_index, units=r"", sampling_type="local")
@@ -214,18 +214,18 @@ def _L_gas_wrt_nearest_sink(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
-        Nearest_tag_ind = data['nearest_particle_index'].value.astype(int)
-        dx_gas = data['particle_posx'][Nearest_tag_ind].in_units('cm') - data['x'].in_units('cm')
-        dy_gas = data['particle_posy'][Nearest_tag_ind].in_units('cm') - data['y'].in_units('cm')
-        dz_gas = data['particle_posz'][Nearest_tag_ind].in_units('cm') - data['z'].in_units('cm')
+        Nearest_tag_ind = data['gas', 'nearest_particle_index'].value.astype(int)
+        dx_gas = data['all', 'particle_posx'][Nearest_tag_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
+        dy_gas = data['all', 'particle_posy'][Nearest_tag_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
+        dz_gas = data['all', 'particle_posz'][Nearest_tag_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
     
-        dvx_gas = data['particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['velx'].in_units('cm/s')
-        dvy_gas = data['particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['vely'].in_units('cm/s')
-        dvz_gas = data['particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['velz'].in_units('cm/s')
+        dvx_gas = data['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'velx'].in_units('cm/s')
+        dvy_gas = data['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'vely'].in_units('cm/s')
+        dvz_gas = data['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
-        L_gas = data['mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+        L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
         L_wrt_nearest = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
     else:
         L_wrt_nearest = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
