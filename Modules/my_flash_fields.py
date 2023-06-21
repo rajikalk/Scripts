@@ -39,9 +39,9 @@ def _CoM_Velocity_full(field, data):
     try:
         dd = data.ds.all_data()
         TM = np.sum(dd['gas', 'mass'].in_units('g'))
-        x_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'velx'].in_units('cm/s'))
-        y_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'vely'].in_units('cm/s'))
-        z_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['gas', 'velz'].in_units('cm/s'))
+        x_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['flash','velx'].in_units('cm/s'))
+        y_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['flash','vely'].in_units('cm/s'))
+        z_top = np.sum(dd['gas', 'mass'].in_units('g')*dd['flash','velz'].in_units('cm/s'))
         if ('all', 'particle_mass') in data.ds.field_list:
             TM = TM + np.sum(dd['all', 'particle_mass'].in_units('g'))
             x_top = x_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_velx'].in_units('cm/s'))
@@ -91,9 +91,9 @@ def _CoM_Velocity(field, data):
     """
     try:
         TM = np.sum(data['gas', 'mass'].in_units('g'))
-        x_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'velx'].in_units('cm/s'))
-        y_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'vely'].in_units('cm/s'))
-        z_top = np.sum(data['gas', 'mass'].in_units('g')*data['gas', 'velz'].in_units('cm/s'))
+        x_top = np.sum(data['gas', 'mass'].in_units('g')*data['flash','velx'].in_units('cm/s'))
+        y_top = np.sum(data['gas', 'mass'].in_units('g')*data['flash','vely'].in_units('cm/s'))
+        z_top = np.sum(data['gas', 'mass'].in_units('g')*data['flash','velz'].in_units('cm/s'))
         if ('all', 'particle_mass') in data.ds.field_list:
             TM = TM + np.sum(data['particle_mass'].in_units('g'))
             x_top = x_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_velx'].in_units('cm/s'))
@@ -175,9 +175,9 @@ def _L_gas_wrt_CoM(field, data):
         dz_gas = data['gas', 'z'] - CoM_pos[2]
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         
-        dvx_gas = data['gas', 'velx'].in_units('cm/s') - CoM_vel[0]
-        dvy_gas = data['gas', 'vely'].in_units('cm/s') - CoM_vel[1]
-        dvz_gas = data['gas', 'velz'].in_units('cm/s') - CoM_vel[2]
+        dvx_gas = data['flash','velx'].in_units('cm/s') - CoM_vel[0]
+        dvy_gas = data['flash','vely'].in_units('cm/s') - CoM_vel[1]
+        dvz_gas = data['flash','velz'].in_units('cm/s') - CoM_vel[2]
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         data._debug()
@@ -220,9 +220,9 @@ def _L_gas_wrt_nearest_sink(field, data):
         dz_gas = data['all', 'particle_posz'][Nearest_tag_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
     
-        dvx_gas = data['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'velx'].in_units('cm/s')
-        dvy_gas = data['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'vely'].in_units('cm/s')
-        dvz_gas = data['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['gas', 'velz'].in_units('cm/s')
+        dvx_gas = data['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = data['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = data['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
         
         L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
