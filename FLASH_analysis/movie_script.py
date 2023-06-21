@@ -116,8 +116,8 @@ if args.make_movie_pickles == 'True':
         pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
         make_pickle = True
         #if os.path.isfile(pickle_file) == True:
-        if len(glob.glob(pickle_file)) == 1:
-            make_pickle = False
+        #if len(glob.glob(pickle_file)) == 1:
+        #    make_pickle = False
         if make_pickle:
             #print(fn, "is going to rank", rank)
             proj_root_rank = int(rank/5)*5
@@ -128,10 +128,7 @@ if args.make_movie_pickles == 'True':
                         #Get particle data:
             dd = ds.all_data()
             #Load fields
-            test_field = dd['dens']
-            test_field = dd['velx']
-            test_field = dd['vely']
-            test_field = dd['velz']
+            test_fields = dd['x'], dd['y'], dd['z'], dd['velx'], dd['vely'], dd['velz'], dd['mass']
             del test_field
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
