@@ -129,7 +129,7 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
             #Load fields
             test_fields = dd['x'], dd['y'], dd['z'], dd['velx'], dd['vely'], dd['velz'], dd['mass']
-            del test_field
+            del test_fields
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
                 part_mass = dd['particle_mass'].in_units('msun')
