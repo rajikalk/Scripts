@@ -251,10 +251,13 @@ if args.make_movie_frames == 'True':
                         cbar_lims = [1.e-16, 1.e-14]
                         stdvel = 5
                 else:
-                    cbar_lims = [None, None]
+                    cbar_lims = [np.nan, np.nan]
                 
                 cmap=plt.cm.gist_heat
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+                if np.isnan(cbar_lims[0]):
+                    plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+                else:
+                    plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
                 plt.gca().set_aspect('equal')
 
                 if frame_no > 0 or time_val > -1.0:
