@@ -250,6 +250,8 @@ if args.make_movie_frames == 'True':
                     else:
                         cbar_lims = [1.e-16, 1.e-14]
                         stdvel = 5
+                else:
+                    cbar_lims = [None, None]
                 
                 cmap=plt.cm.gist_heat
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
