@@ -132,9 +132,6 @@ if args.make_movie_pickles == 'True':
                         #Get particle data:
             dd = ds.all_data()
             #Load fields
-            test_fields = dd['x'], dd['y'], dd['z'], dd['velx'], dd['vely'], dd['velz'], dd['mass']
-            test_fields = dd['nearest_particle_index']
-            test_fields = dd['L_gas_wrt_nearest_sink']
             #del test_fields
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
@@ -170,6 +167,10 @@ if args.make_movie_pickles == 'True':
                 left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-(0.5*(args.plot_width/2)), center_pos[2]-((args.plot_width/2)+100)], 'AU')
                 right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+(0.5*(args.plot_width/2)), center_pos[2]+((args.plot_width/2)+100)], 'AU')
                 region = ds.box(left_corner, right_corner)
+                
+            test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
+            test_fields = region['nearest_particle_index']
+            test_fields = region['L_gas_wrt_nearest_sink']
             
             #Make projections of each field
             proj_dict = {}
