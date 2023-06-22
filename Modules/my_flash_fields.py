@@ -163,26 +163,22 @@ def _L_gas_wrt_CoM(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    if ('all', 'particle_mass') in data.ds.field_list:
-        CoM_pos = data['gas', 'CoM_full'].in_units('cm')
-        CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
-        
-        dd = data.ds.all_data()
-        Nearest_tag_ind = data['gas', 'nearest_particle_index'].value.astype(int)
-        dx_gas = CoM_pos[0] - data['gas', 'x'].in_units('cm')
-        dy_gas = CoM_pos[1] - data['gas', 'y'].in_units('cm')
-        dz_gas = CoM_pos[2] - data['gas', 'z'].in_units('cm')
-        d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    CoM_pos = data['gas', 'CoM_full'].in_units('cm')
+    CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-        dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
-        dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
-        dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
-        d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
-        
-        L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
-        L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
-    else:
-        L_gas_wrt_CoM = yt.YTArray(np.nan*np.ones(np.shape(data['x'])), 'g*cm**2/s')
+    dd = data.ds.all_data()
+    dx_gas = CoM_pos[0] - data['gas', 'x'].in_units('cm')
+    dy_gas = CoM_pos[1] - data['gas', 'y'].in_units('cm')
+    dz_gas = CoM_pos[2] - data['gas', 'z'].in_units('cm')
+    d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+
+    dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
+    dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
+    dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
+    d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+    
+    L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+    L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
     return L_gas_wrt_CoM
 
 
