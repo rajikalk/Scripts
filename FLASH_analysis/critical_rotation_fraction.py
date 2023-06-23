@@ -113,15 +113,22 @@ for spin_lab in Spin_labels:
             #for sink_id in sink_data.keys():
             #sink_id = list(sink_data.keys())[0]
             for sink_id in sink_data.keys():
-                Radius = yt.YTQuantity(2, 'rsun')
+                Radius = yt.YTQuantity(2, 'rsun').in_units('cm')
                 Fast_rotator_rate = (2*np.pi)/yt.YTQuantity(2, 'day').in_units('s')
+                Mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                break_up_frequency =  np.sqrt(yt.units.gravitational_constant_cgs*Mass/(Radius**3))
+                Momentum_of_inertia_sphere = 2/5 * Mass * Radius**2
+                L_sphere_break_up = Momentum_of_inertia_sphere * Keplerian_angular_frequency
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                
                 import pdb
                 pdb.set_trace()
             
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
-                L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
-                L_tot = yt.YTArray(L_tot, 'cm**2/s')
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:

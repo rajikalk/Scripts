@@ -254,7 +254,7 @@ if args.make_movie_frames == 'True':
                         cbar_lims = [1.e-16, 1.e-14]
                         stdvel = 5
                 else:
-                    cbar_lims = [np.nan, np.nan]
+                    cbar_lims = [1.e45, 1.e48]
                     stdvel = 5
                 
                 cmap=plt.cm.gist_heat
