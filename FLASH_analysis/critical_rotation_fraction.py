@@ -141,7 +141,7 @@ for spin_lab in Spin_labels:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, ls='-', label='Sink')
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, ls='--', label='Sink breakup')
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, ls='.', label='Star breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, ls=':', label='Star breakup')
                 if plotted_legend == False:
                     axs.flatten()[plot_it].legend()
                     plotted_legend = True
