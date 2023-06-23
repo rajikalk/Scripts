@@ -97,6 +97,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+plotted_legend = False
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         axs.flatten()[plot_it].grid()
@@ -113,29 +114,37 @@ for spin_lab in Spin_labels:
             #for sink_id in sink_data.keys():
             #sink_id = list(sink_data.keys())[0]
             for sink_id in sink_data.keys():
-                Radius = yt.YTQuantity(2, 'rsun').in_units('cm')
                 Fast_rotator_rate = (2*np.pi)/yt.YTQuantity(2, 'day').in_units('s')
                 Mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+            
+                Radius = yt.YTQuantity(2, 'rsun').in_units('cm')
                 break_up_frequency =  np.sqrt(yt.units.gravitational_constant_cgs*Mass/(Radius**3))
                 Momentum_of_inertia_sphere = 2/5 * Mass * Radius**2
-                L_sphere_break_up = Momentum_of_inertia_sphere * Keplerian_angular_frequency
+                L_sphere_break_up = Momentum_of_inertia_sphere * break_up_frequency
+                
+                
+                R_sink = yt.YTQuantity(4.9, 'au').in_units('cm')
+                break_up_frequency_sink = np.sqrt(yt.units.gravitational_constant_cgs*Mass/(R_sink**3))
+                Momentum_of_inertia_sphere_sink = 2/5 * Mass * R_sink**2
+                L_sphere_break_up_sink = Momentum_of_inertia_sphere_sink * break_up_frequency_sink
+                
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-                
-                import pdb
-                pdb.set_trace()
             
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
-                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, ls='-', label='Sink')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, ls='--', label='Sink breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, ls='.', label='Star breakup')
+                if plotted_legend == False:
+                    axs.flatten()[plot_it].legend()
+                    plotted_legend = True
         else:
             print("Couldn't open", single_pickle)
             
