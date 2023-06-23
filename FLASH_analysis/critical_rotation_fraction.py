@@ -143,8 +143,8 @@ for spin_lab in Spin_labels:
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, ls='-', color=colours[cit], label='Sink')
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, color=colours[cit] ls='--', label='Sink breakup')
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, color=colours[cit] ls=':', label='Star breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, color=colours[cit], ls='--', label='Sink breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, color=colours[cit], ls=':', label='Star breakup')
                 if plotted_legend == False:
                     axs.flatten()[plot_it].legend()
                     plotted_legend = True
