@@ -87,6 +87,7 @@ plt.savefig('spin_comp_primary.png')
 '''
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
+colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
@@ -113,7 +114,9 @@ for spin_lab in Spin_labels:
             
             #for sink_id in sink_data.keys():
             #sink_id = list(sink_data.keys())[0]
+            cit = -1
             for sink_id in sink_data.keys():
+                cit = cit + 1
                 Fast_rotator_rate = (2*np.pi)/yt.YTQuantity(2, 'day').in_units('s')
                 Mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
             
@@ -139,9 +142,9 @@ for spin_lab in Spin_labels:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, ls='-', label='Sink')
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, ls='--', label='Sink breakup')
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, ls=':', label='Star breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, ls='-', color=colours[cit], label='Sink')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up_sink, color=colours[cit] ls='--', label='Sink breakup')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_sphere_break_up, color=colours[cit] ls=':', label='Star breakup')
                 if plotted_legend == False:
                     axs.flatten()[plot_it].legend()
                     plotted_legend = True
