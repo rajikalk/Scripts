@@ -118,6 +118,8 @@ for spin_lab in Spin_labels:
             for sink_id in sink_data.keys():
                 cit = cit + 1
                 Fast_rotator_rate = (2*np.pi)/yt.YTQuantity(2, 'day').in_units('s')
+                Momentum_of_inertia_fast = 2/5 * yt.YTQuantity(1, 'msun').in_units('g') * yt.YTQuantity(1, 'rsun').in_units('cm')
+                L_fast = Momentum_of_inertia_fast*Fast_rotator_rate
                 Mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
             
                 Radius = yt.YTQuantity(2, 'rsun').in_units('cm')

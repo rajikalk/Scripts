@@ -497,7 +497,7 @@ if args.make_frames_only == 'False':
                 #del com_vel
             else:
                 center_vel = region['Center_Velocity'].in_units('cm/s').value
-            myf.set_center_pos_ind(args.image_center)
+            #myf.set_center_pos_ind(args.image_center)
             #print("center_vel =", center_vel, "on rank", rank, "for", ds)
             
             if args.axis == 'xy':
