@@ -163,7 +163,7 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
-print('Calculated the units on rank', rank)
+#print('Calculated the units on rank', rank)
 sys.stdout.flush()
 CW.Barrier()
 
