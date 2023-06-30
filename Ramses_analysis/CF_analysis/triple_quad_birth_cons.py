@@ -130,5 +130,5 @@ for pick_it in range(len(pickle_files)):
                     if char == '[' or char == ']':
                         sys_brackets = sys_brackets + char
                 if sys_brackets == '[[][]]':
-                    if superplot_dict['System_seps'][sys_key][0][:2] < 600 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
+                    if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
                         print("Found Quadruple candidate:", sys_key)
