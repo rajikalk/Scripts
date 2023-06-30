@@ -10,7 +10,11 @@ import matplotlib.ticker
 import gc
 import yt
 import sys
+from mpi4py.MPI import COMM_WORLD as CW
 #from mpi4py.MPI import COMM_WORLD as CW
+
+rank = CW.Get_rank()
+size = CW.Get_size()
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
