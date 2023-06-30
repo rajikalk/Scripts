@@ -115,7 +115,12 @@ for pick_it in range(len(pickle_files)):
     superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
+    file = open(birth_con_pickles[file_it], 'rb')
+    Sink_birth_all = pickle.load(file)
+    file.close()
+    
     for sys_key in superplot_dict['System_times'].keys():
         if len(flatten(eval(sys_key))) == 3 or len(flatten(eval(sys_key))) == 4:
-            import pdb
-            pdb.set_trace()
+            if Lifetimes_sys[sys_key] > 1000:
+                import pdb
+                pdb.set_trace()
