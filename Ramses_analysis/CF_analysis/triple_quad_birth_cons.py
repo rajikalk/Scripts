@@ -115,7 +115,7 @@ for pick_it in range(len(pickle_files)):
     superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
-    file = open(birth_con_pickles[file_it], 'rb')
+    file = open(birth_con_pickles[pick_it], 'rb')
     Sink_birth_all = pickle.load(file)
     file.close()
     
