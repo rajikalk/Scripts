@@ -112,7 +112,7 @@ G50_t_max = 0
 for pick_it in range(len(pickle_files)):
     #try:
     file = open(pickle_files[pick_it], 'rb')
-    superplot_dict, Sink_bound_birth, Sink_E_tot, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
+    superplot_dict, Sink_bound_birth, Sink_formation_times, means_dict, Lifetimes_sys, Sep_maxs, Sep_mins, Initial_Seps, Final_seps = pickle.load(file)
     file.close()
     
     import pdb
