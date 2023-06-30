@@ -125,5 +125,10 @@ for pick_it in range(len(pickle_files)):
                 if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100:
                     print("Found Triple candidate:", sys_key)
             if len(flatten(eval(sys_key))) == 4:
-                import pdb
-                pdb.set_trace()
+                sys_brackets = ''
+                for char in sys_key:
+                    if char == '[' or char == ']':
+                        sys_brackets = sys_brackets + char
+                if sys_brackets = '[[][]]':
+                    import pdb
+                    pdb.set_trace()
