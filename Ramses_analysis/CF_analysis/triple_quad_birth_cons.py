@@ -129,6 +129,6 @@ for pick_it in range(len(pickle_files)):
                 for char in sys_key:
                     if char == '[' or char == ']':
                         sys_brackets = sys_brackets + char
-                if sys_brackets = '[[][]]':
+                if sys_brackets == '[[][]]':
                     import pdb
                     pdb.set_trace()
