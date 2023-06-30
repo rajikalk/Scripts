@@ -9,6 +9,7 @@ import matplotlib
 import matplotlib.ticker
 import gc
 import yt
+import sys
 #from mpi4py.MPI import COMM_WORLD as CW
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
