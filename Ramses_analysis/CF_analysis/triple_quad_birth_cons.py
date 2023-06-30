@@ -125,7 +125,8 @@ for pick_it in range(len(pickle_files)):
                 try:
                     youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
                     if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
-                        print("Found Triple candidate:", sys_key)
+                        if youngest_birth_con[0] == True:
+                            print("Found Triple candidate:", sys_key)
                 except:
                     pass
             if len(flatten(eval(sys_key))) == 4:
@@ -137,6 +138,7 @@ for pick_it in range(len(pickle_files)):
                             sys_brackets = sys_brackets + char
                     if sys_brackets == '[[][]]':
                         if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
-                            print("Found Quadruple candidate:", sys_key)
+                            if youngest_birth_con[0] == True:
+                                print("Found Quadruple candidate:", sys_key)
                 except:
                     pass
