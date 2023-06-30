@@ -123,6 +123,7 @@ gc.collect()
 #Define units to override:
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
+global_pickle = /groups/astro/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl
 simulation_density_id = global_pickle.split('/G')[-1].split('/')[0] #save_dir.split('G')[-1].split('/')[0]
 
 if simulation_density_id == '50':
