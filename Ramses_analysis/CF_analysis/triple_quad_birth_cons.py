@@ -120,7 +120,10 @@ for pick_it in range(len(pickle_files)):
     file.close()
     
     for sys_key in superplot_dict['System_times'].keys():
-        if len(flatten(eval(sys_key))) == 3 or len(flatten(eval(sys_key))) == 4:
-            if Lifetimes_sys[sys_key] > 1000:
+        if Lifetimes_sys[sys_key] > 1000:
+            if len(flatten(eval(sys_key))) == 3:
+                if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100:
+                    print("Found Triple candidate:", sys_key)
+            if len(flatten(eval(sys_key))) == 4:
                 import pdb
                 pdb.set_trace()
