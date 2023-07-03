@@ -205,141 +205,140 @@ for pick_it in range(len(pickle_files)):
     for sys_key in superplot_dict['System_times'].keys():
         if Lifetimes_sys[sys_key] > 1000:
             if len(flatten(eval(sys_key))) == 3:
-                try:
-                    youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
-                    if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
-                        if youngest_birth_con[0] == True:
-                            print("Found Triple candidate:", sys_key)
-                            #make frame!
-                            #Find which global frame I need
-                            goal_time = superplot_dict['System_times'][sys_key][0]
-                            closest_time_ind = np.argmin(abs(file_times.value - goal_time))
-                            if file_times[closest_time_ind] < goal_time:
-                                pre_form_ind = closest_time_ind
-                                post_form_ind = closest_time_ind + 1
-                            else:
-                                post_form_ind = closest_time_ind
-                                pre_form_ind = closest_time_ind - 1
-                            
-                            usable_files = file_times[pre_form_ind:post_form_ind+1]
-                            pickle_file_preffix = 'triple_'+sys_key+'_'
-                            pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
-                            if "'" in pickle_file_preffix:
-                                pickle_file_preffix = pickle_file_preffix.replace("'", "")
-                            
-                            for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
-                                pit = 2 - usable_files.index(fn)
-                                pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
-                                if os.path.exists(pickle_file) == False:
-                                    print('Getting sink positions from', fn, 'on rank', rank)
-                                    #fn = usable_files[fn_it]
-                                    file_no = int(fn.split('output_')[-1].split('/')[0])
-                                    datadir = fn.split('output_')[0]
-                                    loaded_sink_data = rsink(file_no, datadir=datadir)
-                                    try:
-                                        if np.isnan(center_sink):
-                                            import pdb
-                                            pdb.set_trace()
-                                        else:
-                                            center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
-                                            center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
-                                            sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
-                                            t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
-                                        center_positions.append(center_pos)
-                                    except:
-                                        curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
-                                        dt = curr_time - t_snap
-                                        prev_center_pos = center_positions[-1]
-                                        center_pos = prev_center_pos + center_vel*dt
-                                        center_positions.append(center_pos)
-                                        sink_creation_time_pick = np.nan
-                                    existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
-                                    if len(existing_sinks)>0:
-                                        particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
-                                        particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
-                                        particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
+                youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
+                if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
+                    if youngest_birth_con[0] == True:
+                        print("Found Triple candidate:", sys_key)
+                        #make frame!
+                        #Find which global frame I need
+                        goal_time = superplot_dict['System_times'][sys_key][0]
+                        closest_time_ind = np.argmin(abs(file_times.value - goal_time))
+                        if file_times[closest_time_ind] < goal_time:
+                            pre_form_ind = closest_time_ind
+                            post_form_ind = closest_time_ind + 1
+                        else:
+                            post_form_ind = closest_time_ind
+                            pre_form_ind = closest_time_ind - 1
+                        
+                        usable_files = file_times[pre_form_ind:post_form_ind+1]
+                        pickle_file_preffix = 'triple_'+sys_key+'_'
+                        pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
+                        if "'" in pickle_file_preffix:
+                            pickle_file_preffix = pickle_file_preffix.replace("'", "")
+                        
+                        for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
+                            pit = 2 - usable_files.index(fn)
+                            pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
+                            if os.path.exists(pickle_file) == False:
+                                print('Getting sink positions from', fn, 'on rank', rank)
+                                #fn = usable_files[fn_it]
+                                file_no = int(fn.split('output_')[-1].split('/')[0])
+                                datadir = fn.split('output_')[0]
+                                loaded_sink_data = rsink(file_no, datadir=datadir)
+                                try:
+                                    if np.isnan(center_sink):
+                                        import pdb
+                                        pdb.set_trace()
                                     else:
-                                        particle_masses = yt.YTArray([], 'Msun')
-                                        particle_x_pos = yt.YTArray([], 'au')
-                                        particle_y_pos = yt.YTArray([], 'au')
-                                    try:
-                                        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                                        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
-                                        if dx > dy:
-                                            max_seps.append(dx)
-                                        else:
-                                            max_seps.append(dy)
-                                    except:
-                                        pass
-                                    gc.collect()
-                                    #particle_masses = dd['sink_particle_mass']
-                                    
-                                    if np.isnan(sink_creation_time_pick) == False:
-                                        sink_creation_time = sink_creation_time_pick
-
-                                    if np.remainder(rank, 3) == 0:
-                                        #if np.remainder(rank,48) == 0:
-                                        file = open(pickle_file, 'wb')
-                                        #pickle.dump((image, time_val, particle_positions, particle_masses), file)
-                                        pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos), file)
-                                        file.close()
-                                        print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
-                                    #del x_lim
-                                    #del y_lim
-                                    #del z_lim
-                                    gc.collect()
-                                else:
-                                    file = open(pickle_file, 'rb')
-                                    particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos = pickle.load(file)
-                                    file.close()
-                                    max_seps.append(max_sep)
+                                        center_pos = yt.YTArray([loaded_sink_data['x'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['y'][center_sink]*units['length_unit'].in_units('au'), loaded_sink_data['z'][center_sink]*units['length_unit'].in_units('au')])
+                                        center_vel = yt.YTArray([loaded_sink_data['ux'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uy'][center_sink]*units['velocity_unit'].in_units('au/yr'), loaded_sink_data['uz'][center_sink]*units['velocity_unit'].in_units('au/yr')])
+                                        sink_creation_time_pick = loaded_sink_data['tcreate'][center_sink]*units['time_unit'].in_units('yr')
+                                        t_snap = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
                                     center_positions.append(center_pos)
-                                    if np.isnan(sink_creation_time_pick) == False:
-                                        sink_creation_time = sink_creation_time_pick
-                                        
-                                    
-                            max_sep = np.max(max_seps)
-                            thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
+                                except:
+                                    curr_time = loaded_sink_data['snapshot_time']*units['time_unit'].in_units('yr')
+                                    dt = curr_time - t_snap
+                                    prev_center_pos = center_positions[-1]
+                                    center_pos = prev_center_pos + center_vel*dt
+                                    center_positions.append(center_pos)
+                                    sink_creation_time_pick = np.nan
+                                existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+                                if len(existing_sinks)>0:
+                                    particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
+                                    particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
+                                    particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
+                                else:
+                                    particle_masses = yt.YTArray([], 'Msun')
+                                    particle_x_pos = yt.YTArray([], 'au')
+                                    particle_y_pos = yt.YTArray([], 'au')
+                                try:
+                                    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
+                                    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                                    if dx > dy:
+                                        max_seps.append(dx)
+                                    else:
+                                        max_seps.append(dy)
+                                except:
+                                    pass
+                                gc.collect()
+                                #particle_masses = dd['sink_particle_mass']
+                                
+                                if np.isnan(sink_creation_time_pick) == False:
+                                    sink_creation_time = sink_creation_time_pick
 
-                            #del units
-                            gc.collect()
-
-                            sys.stdout.flush()
-                            CW.Barrier()
-                            for usable in yt.parallel_objects(usable_files):
-                                #for usable in usable_files:
-                                pit = 3 - usable_files.index(usable)
-                                pickle_file = pickle_file_preffix + str(pit) + '.pkl'
-                                if os.path.exists(pickle_file) == False:
-                                    print('making projection of', usable, 'on rank', rank)
-                                    cit = usable_files.index(usable)
-                                    ds = yt.load(usable, units_override=units_override)
-                                    #dd = ds.all_data()
-
-                                    center_pos = center_positions[cit]
-                                    time_val = ds.current_time.in_units('yr') - sink_creation_time
-                                    
-                                    left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
-                                    right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
-                                    region = ds.box(left_corner, right_corner)
-                                    del left_corner
-                                    del right_corner
-                                    gc.collect()
-                                    
-                                    axis_ind = 2
-                                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                                    del proj
-                                        
-                                    gc.collect()
-                                    
+                                if np.remainder(rank, 3) == 0:
+                                    #if np.remainder(rank,48) == 0:
                                     file = open(pickle_file, 'wb')
-                                    pickle.dump((image, time_val), file)
+                                    #pickle.dump((image, time_val, particle_positions, particle_masses), file)
+                                    pickle.dump((particle_x_pos, particle_y_pos, particle_masses, max_seps[-1], sink_creation_time_pick, center_pos), file)
                                     file.close()
-                                    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                    print("Created Pickle:", pickle_file, "for  file:", fn, "on rank", rank)
+                                #del x_lim
+                                #del y_lim
+                                #del z_lim
+                                gc.collect()
+                            else:
+                                file = open(pickle_file, 'rb')
+                                particle_x_pos, particle_y_pos, particle_masses, max_sep, sink_creation_time_pick, center_pos = pickle.load(file)
+                                file.close()
+                                max_seps.append(max_sep)
+                                center_positions.append(center_pos)
+                                if np.isnan(sink_creation_time_pick) == False:
+                                    sink_creation_time = sink_creation_time_pick
+                                    
+                                
+                        max_sep = np.max(max_seps)
+                        thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
-                            sys.stdout.flush()
-                            CW.Barrier()
+                        #del units
+                        gc.collect()
+
+                        sys.stdout.flush()
+                        CW.Barrier()
+                        for usable in yt.parallel_objects(usable_files):
+                            #for usable in usable_files:
+                            pit = 3 - usable_files.index(usable)
+                            pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+                            if os.path.exists(pickle_file) == False:
+                                print('making projection of', usable, 'on rank', rank)
+                                cit = usable_files.index(usable)
+                                ds = yt.load(usable, units_override=units_override)
+                                #dd = ds.all_data()
+
+                                center_pos = center_positions[cit]
+                                time_val = ds.current_time.in_units('yr') - sink_creation_time
+                                
+                                left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
+                                right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
+                                region = ds.box(left_corner, right_corner)
+                                del left_corner
+                                del right_corner
+                                gc.collect()
+                                
+                                axis_ind = 2
+                                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                                image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                                del proj
+                                    
+                                gc.collect()
+                                
+                                file = open(pickle_file, 'wb')
+                                pickle.dump((image, time_val), file)
+                                file.close()
+                                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+
+                        sys.stdout.flush()
+                        CW.Barrier()
                             
                             
                             
@@ -352,18 +351,15 @@ for pick_it in range(len(pickle_files)):
                             
                             
                             
-                except:
-                    pass
             if len(flatten(eval(sys_key))) == 4:
-                try:
-                    youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
-                    sys_brackets = ''
-                    for char in sys_key:
-                        if char == '[' or char == ']':
-                            sys_brackets = sys_brackets + char
-                    if sys_brackets == '[[][]]':
-                        if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
-                            if youngest_birth_con[0] == True:
-                                print("Found Quadruple candidate:", sys_key)
-                except:
-                    pass
+
+                youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
+                sys_brackets = ''
+                for char in sys_key:
+                    if char == '[' or char == ']':
+                        sys_brackets = sys_brackets + char
+                if sys_brackets == '[[][]]':
+                    if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
+                        if youngest_birth_con[0] == True:
+                            print("Found Quadruple candidate:", sys_key)
+
