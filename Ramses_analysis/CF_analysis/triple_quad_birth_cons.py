@@ -53,6 +53,7 @@ def parse_inputs():
     parser.add_argument("-plt_key", "--plot_key", help="What dictionary key from superplot_dict do you want to plot?", type=str, default='System_seps')
     parser.add_argument("-smooth", "--smooth_bool", help="Do you want to smooth what you are plotting?", type=str, default='False')
     parser.add_argument("-smooth_window", "--smooth_window_val", help="What big (in yrs) do you want the smoothing window to be?", type=float, default=1000)
+    parser.add_argument("-sim_id", "--simulation_id", type=str, default='G50')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -74,7 +75,7 @@ plot_booleans = [[False, True], [False, False], [True, True], [True, False]]
 
 args = parse_inputs()
 
-sim_label = 'G50'
+sim_label = args.simulation_id
 
 #Server pickles
 pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Max_iter_100/means_superplot.pkl"]
