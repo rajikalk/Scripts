@@ -268,13 +268,15 @@ for pick_it in range(len(pickle_files)):
                                     dt = curr_time - t_snap
                                     prev_center_pos = center_positions[-1]
                                     center_pos = prev_center_pos + center_vel*dt
+                                    for new_pos_it in range(len(center_pos)):
+                                        if center_pos[new_pos_it] < 0:
+                                            center_pos[new_pos_it] = units['length_unit'].in_units('au') + center_pos[new_pos_it]
+                                        elif center_pos[new_pos_it] > units['length_unit'].in_units('au'):
+                                            center_pos[new_pos_it] = center_pos[new_pos_it] - units['length_unit'].in_units('au')
                                     center_positions.append(center_pos)
                                     sink_creation_time_pick = np.nan
                                 existing_sinks = list(set(flatten(eval(sys_key))).intersection(np.arange(len(loaded_sink_data['m']))))
                                 if len(existing_sinks)>0:
-                                    if size == 1:
-                                        import pdb
-                                        pdb.set_trace()
                                     particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
                                     particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
                                     particle_y_pos = loaded_sink_data['y'][existing_sinks]*units['length_unit'].in_units('au')
