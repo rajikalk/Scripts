@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import glob
 import os
 import pickle
@@ -321,7 +320,9 @@ for pick_it in range(len(pickle_files)):
                                 cit = usable_files.index(usable)
                                 ds = yt.load(usable, units_override=units_override)
                                 #dd = ds.all_data()
-
+                                
+                                print("cit =", cit)
+                                print("center_positions =", center_positions)
                                 center_pos = center_positions[cit]
                                 time_val = ds.current_time.in_units('yr') - sink_creation_time
                                 
