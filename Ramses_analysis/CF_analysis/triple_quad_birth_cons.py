@@ -218,7 +218,6 @@ for pick_it in range(len(pickle_files)):
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
                 if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
                     if youngest_birth_con[0] == True:
-                        print("Found Triple candidate:", sys_key)
                         #make frame!
                         #Find which global frame I need
                         goal_time = superplot_dict['System_times'][sys_key][0]
@@ -308,169 +307,170 @@ for pick_it in range(len(pickle_files)):
                                 center_positions.append(center_pos)
                                 if np.isnan(sink_creation_time_pick) == False:
                                     sink_creation_time = sink_creation_time_pick
-                                    
-                                
+                        
                         max_sep = np.max(max_seps)
-                        thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
+                        if max_sep < 10000:
+                            print("Found Triple candidate:", sys_key)
+                            thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
-                        #del units
-                        gc.collect()
+                            #del units
+                            gc.collect()
 
-                        sys.stdout.flush()
-                        CW.Barrier()
-                        for usable in yt.parallel_objects(usable_files):
-                            #for usable in usable_files:
-                            pit = 2 - usable_files.index(usable)
-                            pickle_file = pickle_file_preffix + str(pit) + '.pkl'
-                            if os.path.exists(pickle_file) == False:
-                                print('making projection of', usable, 'on rank', rank)
-                                cit = usable_files.index(usable)
-                                ds = yt.load(usable, units_override=units_override)
-                                #dd = ds.all_data()
-                                
-                                center_pos = center_positions[cit]
-                                time_val = ds.current_time.in_units('yr') - sink_creation_time
-                                
-                                left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
-                                right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
-                                region = ds.box(left_corner, right_corner)
-                                del left_corner
-                                del right_corner
-                                gc.collect()
-                                
-                                axis_ind = 2
-                                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                                image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                                del proj
+                            sys.stdout.flush()
+                            CW.Barrier()
+                            for usable in yt.parallel_objects(usable_files):
+                                #for usable in usable_files:
+                                pit = 2 - usable_files.index(usable)
+                                pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+                                if os.path.exists(pickle_file) == False:
+                                    print('making projection of', usable, 'on rank', rank)
+                                    cit = usable_files.index(usable)
+                                    ds = yt.load(usable, units_override=units_override)
+                                    #dd = ds.all_data()
                                     
-                                gc.collect()
-                                
-                                file = open(pickle_file, 'wb')
-                                pickle.dump((image, time_val), file)
-                                file.close()
-                                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                    center_pos = center_positions[cit]
+                                    time_val = ds.current_time.in_units('yr') - sink_creation_time
+                                    
+                                    left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
+                                    right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
+                                    region = ds.box(left_corner, right_corner)
+                                    del left_corner
+                                    del right_corner
+                                    gc.collect()
+                                    
+                                    axis_ind = 2
+                                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                                    del proj
+                                        
+                                    gc.collect()
+                                    
+                                    file = open(pickle_file, 'wb')
+                                    pickle.dump((image, time_val), file)
+                                    file.close()
+                                    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
 
-                        sys.stdout.flush()
-                        CW.Barrier()
-                            
-                        #"""
-                        pickle_files = sorted(glob.glob(pickle_file_preffix[:-2] + '*_part.pkl'))
-                        #cit = 0
-                        #for pickle_file in pickle_files:
-                        for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
-                            pit = pickle_files.index(pickle_file)
-                            file_name = pickle_file_preffix + ("%06d" % pit)
-                            if os.path.exists(file_name+ ".png") == False:
-                                print('making frame for pickle', pickle_file, 'on rank', rank)
-                                file = open(pickle_file, 'rb')
-                                particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
-                                #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
-                                file.close()
+                            sys.stdout.flush()
+                            CW.Barrier()
                                 
-                                center_pos = center_positions[::-1][pit]
-                                
-                                file = open("".join(pickle_file.split('_part')), 'rb')
-                                image, time_val = pickle.load(file)
-                                #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
-                                file.close()
-                                
-                                xlim = [-1*thickness, thickness]
-                                ylim = [-1*thickness, thickness]
-                                x = np.linspace(xlim[0], xlim[1], 800)
-                                y = np.linspace(ylim[0], ylim[1], 800)
-                                X, Y = np.meshgrid(x, y)
-                                
-                                X = X + center_pos[0]
-                                Y = Y + center_pos[1]
-                                xlim = [np.min(X), np.max(X)]
-                                ylim = [np.min(Y), np.max(Y)]
-                                
-                                annotate_space = (xlim[1] - xlim[0])/31
-                                x_ind = []
-                                y_ind = []
-                                counter = 0
-                                while counter < 31:
-                                    val = annotate_space*counter + annotate_space/2. + xlim[0]
-                                    x_ind.append(int(val))
-                                    y_ind.append(int(val))
-                                    counter = counter + 1
-                                X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-                                      
-                                has_particles = True
-                                xabel = "X (AU)"
-                                yabel = "Y (AU)"
-                                plt.clf()
-                                fig, ax = plt.subplots()
-                                ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
-                                ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
-                                ax.set_xlim(xlim)
-                                ax.set_ylim(ylim)
-
-                                
-                                cmin = 10**(np.log10(np.mean(image))-1.5)
-                                if np.isnan(cmin):
-                                    cmin = 1.e-19
-                                cmax = 10**(np.log10(np.mean(image))+1.5)
-                                if np.isnan(cmax):
-                                    cmax = 1.e-16
-                                plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-                                plt.gca().set_aspect('equal')
-                                plt.gca().set_aspect('equal')
-                                #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                                #cbar = plt.colorbar(plot, pad=0.0)
-                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
-                                #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
-                                '''
-                                try:
-                                    mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
-                                except:
-                                    try:
-                                        mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
-                                    except:
-                                        pass
-                                '''
-                                
-                                #cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
-                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-
-                                plt.tick_params(axis='both', which='major')# labelsize=16)
-                                for line in ax.xaxis.get_ticklines():
-                                    line.set_color('white')
-                                for line in ax.yaxis.get_ticklines():
-                                    line.set_color('white')
+                            #"""
+                            pickle_files = sorted(glob.glob(pickle_file_preffix[:-2] + '*_part.pkl'))
+                            #cit = 0
+                            #for pickle_file in pickle_files:
+                            for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
+                                pit = pickle_files.index(pickle_file)
+                                file_name = pickle_file_preffix + ("%06d" % pit)
+                                if os.path.exists(file_name+ ".png") == False:
+                                    print('making frame for pickle', pickle_file, 'on rank', rank)
+                                    file = open(pickle_file, 'rb')
+                                    particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
+                                    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                                    file.close()
+                                    
+                                    center_pos = center_positions[::-1][pit]
+                                    
+                                    file = open("".join(pickle_file.split('_part')), 'rb')
+                                    image, time_val = pickle.load(file)
+                                    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                                    file.close()
+                                    
+                                    xlim = [-1*thickness, thickness]
+                                    ylim = [-1*thickness, thickness]
+                                    x = np.linspace(xlim[0], xlim[1], 800)
+                                    y = np.linspace(ylim[0], ylim[1], 800)
+                                    X, Y = np.meshgrid(x, y)
+                                    
+                                    X = X + center_pos[0]
+                                    Y = Y + center_pos[1]
+                                    xlim = [np.min(X), np.max(X)]
+                                    ylim = [np.min(Y), np.max(Y)]
+                                    
+                                    annotate_space = (xlim[1] - xlim[0])/31
+                                    x_ind = []
+                                    y_ind = []
+                                    counter = 0
+                                    while counter < 31:
+                                        val = annotate_space*counter + annotate_space/2. + xlim[0]
+                                        x_ind.append(int(val))
+                                        y_ind.append(int(val))
+                                        counter = counter + 1
+                                    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+                                          
+                                    has_particles = True
+                                    xabel = "X (AU)"
+                                    yabel = "Y (AU)"
+                                    plt.clf()
+                                    fig, ax = plt.subplots()
+                                    ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
+                                    ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
+                                    ax.set_xlim(xlim)
+                                    ax.set_ylim(ylim)
 
                                     
-                                #part_color = ['cyan','magenta','r','b','y','w','k']
-                                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
-                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-
-                                '''
-                                try:
+                                    cmin = 10**(np.log10(np.mean(image))-1.5)
+                                    if np.isnan(cmin):
+                                        cmin = 1.e-19
+                                    cmax = 10**(np.log10(np.mean(image))+1.5)
+                                    if np.isnan(cmax):
+                                        cmax = 1.e-16
+                                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
+                                    plt.gca().set_aspect('equal')
+                                    plt.gca().set_aspect('equal')
+                                    #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                                    cbar = plt.colorbar(plot, pad=0.0)
                                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                    time_string = "$t$="+str(int(time_val))+"yr"
-                                    time_string_raw = r"{}".format(time_string)
-                                    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+                                    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+                                    #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+                                    '''
+                                    try:
+                                        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
+                                    except:
+                                        try:
+                                            mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
+                                        except:
+                                            pass
+                                    '''
+                                    
+                                    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+
+                                    plt.tick_params(axis='both', which='major')# labelsize=16)
+                                    for line in ax.xaxis.get_ticklines():
+                                        line.set_color('white')
+                                    for line in ax.yaxis.get_ticklines():
+                                        line.set_color('white')
+
+                                        
+                                    #part_color = ['cyan','magenta','r','b','y','w','k']
+                                    ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+
+                                    '''
                                     try:
                                         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                                        time_string = "$t$="+str(int(time_val))+"yr"
+                                        time_string_raw = r"{}".format(time_string)
+                                        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+                                        try:
+                                            plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                                        except:
+                                            print("Couldn't outline time string")
                                     except:
-                                        print("Couldn't outline time string")
-                                except:
-                                    print("Couldn't plot time string")
-                                '''
-                                
-                                file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
-                                pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
-                                file.close()
+                                        print("Couldn't plot time string")
+                                    '''
                                     
-                                try:
-                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                except:
-                                    pass
-                                #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-                                print('Created frame ' + file_name + '.png, on rank', rank)
-                        #"""
+                                    file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
+                                    pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
+                                    file.close()
+                                        
+                                    try:
+                                        plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                    except:
+                                        pass
+                                    #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                                    print('Created frame ' + file_name + '.png, on rank', rank)
+                            #"""
             if len(flatten(eval(sys_key))) == 4:
 
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
@@ -481,7 +481,6 @@ for pick_it in range(len(pickle_files)):
                 if sys_brackets == '[[][]]':
                     if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
                         if youngest_birth_con[0] == True:
-                            print("Found Quadruple candidate:", sys_key)
                             
                             goal_time = superplot_dict['System_times'][sys_key][0]
                             closest_time_ind = np.argmin(abs(file_times.value - goal_time))
@@ -573,164 +572,165 @@ for pick_it in range(len(pickle_files)):
                                         
                                     
                             max_sep = np.max(max_seps)
-                            thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
+                            if max_sep < 10000:
+                                print("Found Quadruple candidate:", sys_key)
+                                thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
-                            #del units
-                            gc.collect()
+                                #del units
+                                gc.collect()
 
-                            sys.stdout.flush()
-                            CW.Barrier()
-                            for usable in yt.parallel_objects(usable_files, njobs=2):
-                                #for usable in usable_files:
-                                pit = 2 - usable_files.index(usable)
-                                pickle_file = pickle_file_preffix + str(pit) + '.pkl'
-                                if os.path.exists(pickle_file) == False:
-                                    print('making projection of', usable, 'on rank', rank)
-                                    cit = usable_files.index(usable)
-                                    ds = yt.load(usable, units_override=units_override)
-                                    #dd = ds.all_data()
+                                sys.stdout.flush()
+                                CW.Barrier()
+                                for usable in yt.parallel_objects(usable_files, njobs=2):
+                                    #for usable in usable_files:
+                                    pit = 2 - usable_files.index(usable)
+                                    pickle_file = pickle_file_preffix + str(pit) + '.pkl'
+                                    if os.path.exists(pickle_file) == False:
+                                        print('making projection of', usable, 'on rank', rank)
+                                        cit = usable_files.index(usable)
+                                        ds = yt.load(usable, units_override=units_override)
+                                        #dd = ds.all_data()
 
-                                    center_pos = center_positions[cit]
-                                    time_val = ds.current_time.in_units('yr') - sink_creation_time
-                                    
-                                    left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
-                                    right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
-                                    region = ds.box(left_corner, right_corner)
-                                    del left_corner
-                                    del right_corner
-                                    gc.collect()
-                                    
-                                    axis_ind = 2
-                                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                                    del proj
+                                        center_pos = center_positions[cit]
+                                        time_val = ds.current_time.in_units('yr') - sink_creation_time
                                         
-                                    gc.collect()
-                                    
-                                    file = open(pickle_file, 'wb')
-                                    pickle.dump((image, time_val), file)
-                                    file.close()
-                                    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
-
-                            sys.stdout.flush()
-                            CW.Barrier()
-                                
-                                
-                            """
-                            pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
-                            #cit = 0
-                            #for pickle_file in pickle_files:
-                            for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
-                                pit = pickle_files.index(pickle_file)
-                                file_name = pickle_file_preffix + ("%06d" % pit)
-                                if os.path.exists(file_name+ ".png") == False:
-                                    print('making frame for pickle', pickle_file, 'on rank', rank)
-                                    file = open(pickle_file, 'rb')
-                                    particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
-                                    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
-                                    file.close()
-                                    
-                                    center_pos = center_positions[::-1][pit]
-                                    
-                                    file = open("".join(pickle_file.split('_part')), 'rb')
-                                    image, time_val = pickle.load(file)
-                                    #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
-                                    file.close()
-                                    
-                                    xlim = [-1*thickness, thickness]
-                                    ylim = [-1*thickness, thickness]
-                                    x = np.linspace(xlim[0], xlim[1], 800)
-                                    y = np.linspace(ylim[0], ylim[1], 800)
-                                    X, Y = np.meshgrid(x, y)
-                                    
-                                    X = X + center_pos[0]
-                                    Y = Y + center_pos[1]
-                                    xlim = [np.min(X), np.max(X)]
-                                    ylim = [np.min(Y), np.max(Y)]
-                                    
-                                    annotate_space = (xlim[1] - xlim[0])/31
-                                    x_ind = []
-                                    y_ind = []
-                                    counter = 0
-                                    while counter < 31:
-                                        val = annotate_space*counter + annotate_space/2. + xlim[0]
-                                        x_ind.append(int(val))
-                                        y_ind.append(int(val))
-                                        counter = counter + 1
-                                    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-                                          
-                                    has_particles = True
-                                    xabel = "X (AU)"
-                                    yabel = "Y (AU)"
-                                    plt.clf()
-                                    fig, ax = plt.subplots()
-                                    ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
-                                    ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
-                                    ax.set_xlim(xlim)
-                                    ax.set_ylim(ylim)
-
-                                    
-                                    cmin = 10**(np.log10(np.mean(image))-1.5)
-                                    if np.isnan(cmin):
-                                        cmin = 1.e-19
-                                    cmax = 10**(np.log10(np.mean(image))+1.5)
-                                    if np.isnan(cmax):
-                                        cmax = 1.e-16
-                                    plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
-                                    plt.gca().set_aspect('equal')
-                                    plt.gca().set_aspect('equal')
-                                    #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                                    cbar = plt.colorbar(plot, pad=0.0)
-                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
-                                    #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
-                                    '''
-                                    try:
-                                        mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
-                                    except:
-                                        try:
-                                            mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
-                                        except:
-                                            pass
-                                    '''
-                                    
-                                    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
-                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-
-                                    plt.tick_params(axis='both', which='major')# labelsize=16)
-                                    for line in ax.xaxis.get_ticklines():
-                                        line.set_color('white')
-                                    for line in ax.yaxis.get_ticklines():
-                                        line.set_color('white')
+                                        left_corner = yt.YTArray([center_pos[0]-(0.75*thickness), center_pos[1]-(0.75*thickness), center_pos[2]-(0.5*thickness)], 'AU')
+                                        right_corner = yt.YTArray([center_pos[0]+(0.75*thickness), center_pos[1]+(0.75*thickness), center_pos[2]+(0.5*thickness)], 'AU')
+                                        region = ds.box(left_corner, right_corner)
+                                        del left_corner
+                                        del right_corner
+                                        gc.collect()
                                         
-                                    #part_color = ['cyan','magenta','r','b','y','w','k']
-                                    ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
-                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                        axis_ind = 2
+                                        proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                                        image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                                        del proj
+                                            
+                                        gc.collect()
+                                        
+                                        file = open(pickle_file, 'wb')
+                                        pickle.dump((image, time_val), file)
+                                        file.close()
+                                        print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
 
-                                    try:
+                                sys.stdout.flush()
+                                CW.Barrier()
+                                    
+                                    
+                                pickle_files = sorted(glob.glob(pickle_file_preffix[:-2] + '*_part.pkl'))
+                                #cit = 0
+                                #for pickle_file in pickle_files:
+                                for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
+                                    pit = pickle_files.index(pickle_file)
+                                    file_name = pickle_file_preffix + ("%06d" % pit)
+                                    if os.path.exists(file_name+ ".png") == False:
+                                        print('making frame for pickle', pickle_file, 'on rank', rank)
+                                        file = open(pickle_file, 'rb')
+                                        particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
+                                        #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                                        file.close()
+                                        
+                                        center_pos = center_positions[::-1][pit]
+                                        
+                                        file = open("".join(pickle_file.split('_part')), 'rb')
+                                        image, time_val = pickle.load(file)
+                                        #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                                        file.close()
+                                        
+                                        xlim = [-1*thickness, thickness]
+                                        ylim = [-1*thickness, thickness]
+                                        x = np.linspace(xlim[0], xlim[1], 800)
+                                        y = np.linspace(ylim[0], ylim[1], 800)
+                                        X, Y = np.meshgrid(x, y)
+                                        
+                                        X = X + center_pos[0]
+                                        Y = Y + center_pos[1]
+                                        xlim = [np.min(X), np.max(X)]
+                                        ylim = [np.min(Y), np.max(Y)]
+                                        
+                                        annotate_space = (xlim[1] - xlim[0])/31
+                                        x_ind = []
+                                        y_ind = []
+                                        counter = 0
+                                        while counter < 31:
+                                            val = annotate_space*counter + annotate_space/2. + xlim[0]
+                                            x_ind.append(int(val))
+                                            y_ind.append(int(val))
+                                            counter = counter + 1
+                                        X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+                                              
+                                        has_particles = True
+                                        xabel = "X (AU)"
+                                        yabel = "Y (AU)"
+                                        plt.clf()
+                                        fig, ax = plt.subplots()
+                                        ax.set_xlabel(xabel, labelpad=-1, fontsize=10)
+                                        ax.set_ylabel(yabel, fontsize=10) #, labelpad=-20
+                                        ax.set_xlim(xlim)
+                                        ax.set_ylim(ylim)
+
+                                        
+                                        cmin = 10**(np.log10(np.mean(image))-1.5)
+                                        if np.isnan(cmin):
+                                            cmin = 1.e-19
+                                        cmax = 10**(np.log10(np.mean(image))+1.5)
+                                        if np.isnan(cmax):
+                                            cmax = 1.e-16
+                                        plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cmin, vmax=cmax), rasterized=True)
+                                        plt.gca().set_aspect('equal')
+                                        plt.gca().set_aspect('equal')
+                                        #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                                        cbar = plt.colorbar(plot, pad=0.0)
                                         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                        time_string = "$t$="+str(int(time_val))+"yr"
-                                        time_string_raw = r"{}".format(time_string)
-                                        time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+                                        #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+                                        #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
+                                        '''
+                                        try:
+                                            mym.annotate_particles(ax, np.array([particle_x_pos, particle_y_pos]), 200, limits=[xlim, ylim], annotate_field=particle_masses)
+                                        except:
+                                            try:
+                                                mym.annotate_particles(ax, np.array([[particle_x_pos], [particle_y_pos]]), 200, limits=[xlim, ylim], annotate_field=[particle_masses])
+                                            except:
+                                                pass
+                                        '''
+                                        
+                                        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+                                        plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+
+                                        plt.tick_params(axis='both', which='major')# labelsize=16)
+                                        for line in ax.xaxis.get_ticklines():
+                                            line.set_color('white')
+                                        for line in ax.yaxis.get_ticklines():
+                                            line.set_color('white')
+                                            
+                                        #part_color = ['cyan','magenta','r','b','y','w','k']
+                                        ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+                                        plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+
                                         try:
                                             plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                                            time_string = "$t$="+str(int(time_val))+"yr"
+                                            time_string_raw = r"{}".format(time_string)
+                                            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+                                            try:
+                                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                                            except:
+                                                print("Couldn't outline time string")
                                         except:
-                                            print("Couldn't outline time string")
-                                    except:
-                                        print("Couldn't plot time string")
+                                            print("Couldn't plot time string")
+                                            
                                         
-                                    
-                                    file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
-                                    pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
-                                    file.close()
-                                        
+                                        file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
+                                        pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
+                                        file.close()
+                                            
 
-                                    try:
-                                        plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
-                                    except:
-                                        pass
-                                    #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-                                    print('Created frame ' + file_name + '.png, on rank', rank)
-                            """
+                                        try:
+                                            plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                        except:
+                                            pass
+                                        #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                                        print('Created frame ' + file_name + '.png, on rank', rank)
+                                
 
