@@ -20,7 +20,7 @@ from pyramses import rsink
 
 rank = CW.Get_rank()
 size = CW.Get_size()
-
+'''
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -38,6 +38,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
+'''
 
 def parse_inputs():
     import argparse
