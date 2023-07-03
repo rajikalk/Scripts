@@ -254,7 +254,7 @@ for pick_it in range(len(pickle_files)):
                                     center_pos = prev_center_pos + center_vel*dt
                                     center_positions.append(center_pos)
                                     sink_creation_time_pick = np.nan
-                                existing_sinks = list(set(Core_frag_sinks).intersection(np.arange(len(loaded_sink_data['m']))))
+                                existing_sinks = list(set(flatten(eval(sys_key))).intersection(np.arange(len(loaded_sink_data['m']))))
                                 if len(existing_sinks)>0:
                                     particle_masses = loaded_sink_data['m'][existing_sinks]*units['mass_unit'].in_units('Msun')
                                     particle_x_pos = loaded_sink_data['x'][existing_sinks]*units['length_unit'].in_units('au')
