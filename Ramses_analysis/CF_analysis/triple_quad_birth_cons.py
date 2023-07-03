@@ -352,7 +352,7 @@ for pick_it in range(len(pickle_files)):
                         sys.stdout.flush()
                         CW.Barrier()
                             
-                            
+                        """
                         pickle_files = sorted(glob.glob(pickle_file_preffix[:-2] + '*_part.pkl'))
                         #cit = 0
                         #for pickle_file in pickle_files:
@@ -468,7 +468,7 @@ for pick_it in range(len(pickle_files)):
                                     pass
                                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                                 print('Created frame ' + file_name + '.png, on rank', rank)
-                                      
+                        """
             if len(flatten(eval(sys_key))) == 4:
 
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
