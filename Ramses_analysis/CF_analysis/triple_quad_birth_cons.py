@@ -276,6 +276,8 @@ for pick_it in range(len(pickle_files)):
                                     particle_x_pos = yt.YTArray([], 'au')
                                     particle_y_pos = yt.YTArray([], 'au')
                                 try:
+                                    import pdb
+                                    pdb.set_trace()
                                     dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
                                     dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
                                     if dx > dy:
