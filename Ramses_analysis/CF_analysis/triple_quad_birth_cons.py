@@ -11,6 +11,7 @@ import gc
 import yt
 import sys
 from mpi4py.MPI import COMM_WORLD as CW
+import csv
 #from mpi4py.MPI import COMM_WORLD as CW
 
 rank = CW.Get_rank()
@@ -125,6 +126,17 @@ for rm_file in rm_files:
 del sink_files
 gc.collect()
 
+if rank == 0:
+    file_times = []
+    for file in files:
+        with open(file, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if row[0].split(' ')[0] == 'time':
+                    import pdb
+                    pdb.set_trace()
+
+
 #Define units to override:
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
@@ -196,6 +208,8 @@ for pick_it in range(len(pickle_files)):
                             #make frame!
                             import pdb
                             pdb.set_trace()
+                            #Find which global frame I need
+                            goal_time =
                             
                 except:
                     pass
