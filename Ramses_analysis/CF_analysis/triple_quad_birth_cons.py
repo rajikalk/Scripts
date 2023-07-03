@@ -225,6 +225,8 @@ for pick_it in range(len(pickle_files)):
                         pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
                         if "'" in pickle_file_preffix:
                             pickle_file_preffix = pickle_file_preffix.replace("'", "")
+                            
+                        center_sink = np.max(flatten(eval(sys_key)))
                         
                         for fn in usable_files:#yt.parallel_objects(usable_files, njobs=int(3)): #range(len(usable_files)):
                             pit = 2 - usable_files.index(fn)
