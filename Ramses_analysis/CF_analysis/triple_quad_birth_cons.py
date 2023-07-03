@@ -85,8 +85,12 @@ birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_ent
 low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
 
-sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/output*/*.dat"))
-files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/*/info*.txt"))
+if sim_label != 'G100':
+    files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/*/info*.txt"))
+    sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/output*/*.dat"))
+else:
+    files = sorted(glob.glob("/lustre/astro/troels/IMF_256_fixed_dt/data/*/info*.txt"))
+    sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_256_fixed_dt/data/output*/*.dat"))
 global_pickle = '/groups/astro/rlk/Analysis_plots/Ramses/Global/'+sim_label+'/stars_imf_'+sim_label+'.pkl'
 
 plt.clf()
