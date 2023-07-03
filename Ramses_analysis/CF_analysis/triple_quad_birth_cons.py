@@ -672,6 +672,7 @@ for pick_it in range(len(pickle_files)):
                                     plt.gca().set_aspect('equal')
                                     #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
                                     cbar = plt.colorbar(plot, pad=0.0)
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                                     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
                                     #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
                                     '''
@@ -685,19 +686,17 @@ for pick_it in range(len(pickle_files)):
                                     '''
                                     
                                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
 
                                     plt.tick_params(axis='both', which='major')# labelsize=16)
                                     for line in ax.xaxis.get_ticklines():
                                         line.set_color('white')
                                     for line in ax.yaxis.get_ticklines():
                                         line.set_color('white')
-
-                                    #Plot boundness lines
-                                    if len(particle_x_pos) > 1:
-                                        ax.plot(particle_x_pos, particle_y_pos, linestyle='-', color='grey')
                                         
                                     #part_color = ['cyan','magenta','r','b','y','w','k']
                                     ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
 
                                     try:
                                         plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
