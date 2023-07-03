@@ -311,7 +311,7 @@ for pick_it in range(len(pickle_files)):
 
                         sys.stdout.flush()
                         CW.Barrier()
-                        for usable in yt.parallel_objects(usable_files, njobs=2):
+                        for usable in yt.parallel_objects(usable_files):
                             #for usable in usable_files:
                             pit = 2 - usable_files.index(usable)
                             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
@@ -321,8 +321,6 @@ for pick_it in range(len(pickle_files)):
                                 ds = yt.load(usable, units_override=units_override)
                                 #dd = ds.all_data()
                                 
-                                print("cit =", cit)
-                                print("center_positions =", center_positions)
                                 center_pos = center_positions[cit]
                                 time_val = ds.current_time.in_units('yr') - sink_creation_time
                                 
@@ -350,7 +348,7 @@ for pick_it in range(len(pickle_files)):
                             
                             
 
-                        pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+                        pickle_files = sorted(glob.glob(pickle_file_preffix[:-2] + '*_part.pkl'))
                         #cit = 0
                         #for pickle_file in pickle_files:
                         for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
@@ -456,7 +454,7 @@ for pick_it in range(len(pickle_files)):
                                     
                                 
                                 file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
-                                pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
+                                pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
                                 file.close()
                                     
 
