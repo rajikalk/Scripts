@@ -118,8 +118,12 @@ t_max = np.nan
 G50_t_max = 0
 '''
 
-sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/output*/*.dat"))
-files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/*/info*.txt"))
+#sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/output*/*.dat"))
+#files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/*/info*.txt"))
+
+sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/output*/*.dat"))
+files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/*/info*.txt"))
+
 rm_files = []
 for info_name in files:
     sink_file = info_name.split('info')[0]+'stars_output.dat'
