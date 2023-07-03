@@ -187,7 +187,7 @@ if rank == 0:
                     
         f.close()
     file_times = np.array(file_times)*units['time_unit'].in_units('yr')
-file_times = CW.bcast(file_times, root=0)
+file_times = CW.Bcast(file_times, root=0)
 
 #print('Calculated the units on rank', rank)
 sys.stdout.flush()
