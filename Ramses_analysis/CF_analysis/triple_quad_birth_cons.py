@@ -416,7 +416,7 @@ for pick_it in range(len(pickle_files)):
                                 plt.gca().set_aspect('equal')
                                 plt.gca().set_aspect('equal')
                                 #plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                                cbar = plt.colorbar(plot, pad=0.0)
+                                #cbar = plt.colorbar(plot, pad=0.0)
                                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                                 #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
                                 #ax.scatter(particle_x_pos, particle_y_pos, color='c', s=1)
