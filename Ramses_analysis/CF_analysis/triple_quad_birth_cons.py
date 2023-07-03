@@ -457,8 +457,10 @@ for pick_it in range(len(pickle_files)):
                                 pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
                                 file.close()
                                     
-
-                                plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                try:
+                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                except:
+                                    pass
                                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                                 print('Created frame ' + file_name + '.png, on rank', rank)
                                       
@@ -717,7 +719,10 @@ for pick_it in range(len(pickle_files)):
                                     file.close()
                                         
 
-                                    plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                    try:
+                                        plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
+                                    except:
+                                        pass
                                     #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                                     print('Created frame ' + file_name + '.png, on rank', rank)
 
