@@ -314,7 +314,7 @@ for pick_it in range(len(pickle_files)):
                         CW.Barrier()
                         for usable in yt.parallel_objects(usable_files):
                             #for usable in usable_files:
-                            pit = 3 - usable_files.index(usable)
+                            pit = 2 - usable_files.index(usable)
                             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
                             if os.path.exists(pickle_file) == False:
                                 print('making projection of', usable, 'on rank', rank)
