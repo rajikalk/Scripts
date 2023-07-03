@@ -2,10 +2,10 @@ import numpy as np
 import glob
 import os
 import pickle
-import matplotlib.patches
+#import matplotlib.patches
 import collections
 import matplotlib
-import matplotlib.ticker
+#import matplotlib.ticker
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
