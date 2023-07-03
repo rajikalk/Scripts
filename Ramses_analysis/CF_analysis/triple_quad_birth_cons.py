@@ -74,12 +74,15 @@ plot_booleans = [[False, True], [False, False], [True, True], [True, False]]
 args = parse_inputs()
 
 #Server pickles
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Max_iter_100/means_superplot.pkl"]
+pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Max_iter_100/means_superplot.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
-low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
+
+sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/output*/*.dat"))
+files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/*/info*.txt"))
 
 plt.clf()
 '''
@@ -120,9 +123,6 @@ G50_t_max = 0
 
 #sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/output*/*.dat"))
 #files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/*/info*.txt"))
-
-sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/output*/*.dat"))
-files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/*/info*.txt"))
 
 rm_files = []
 for info_name in files:
