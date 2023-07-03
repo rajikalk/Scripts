@@ -209,7 +209,7 @@ for pick_it in range(len(pickle_files)):
                             import pdb
                             pdb.set_trace()
                             #Find which global frame I need
-                            goal_time =
+                            #goal_time =
                             
                 except:
                     pass
