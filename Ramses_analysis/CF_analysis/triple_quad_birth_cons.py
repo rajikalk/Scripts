@@ -73,16 +73,19 @@ plot_booleans = [[False, True], [False, False], [True, True], [True, False]]
 
 args = parse_inputs()
 
+sim_label = 'G50'
+
 #Server pickles
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Max_iter_100/means_superplot.pkl"]
+pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Max_iter_100/means_superplot.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
-low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
+low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 #Local pickles
 
-sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/output*/*.dat"))
-files = sorted(glob.glob("/lustre/astro/troels/IMF_G50/data/*/info*.txt"))
+sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/output*/*.dat"))
+files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/*/info*.txt"))
+global_pickle = '/groups/astro/rlk/Analysis_plots/Ramses/Global/'+sim_label+'/stars_imf_'+sim_label+'.pkl'
 
 plt.clf()
 '''
@@ -138,7 +141,6 @@ gc.collect()
 #Define units to override:
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 
-global_pickle = '/groups/astro/rlk/Analysis_plots/Ramses/Global/G400/stars_imf_G400.pkl'
 simulation_density_id = global_pickle.split('/G')[-1].split('/')[0] #save_dir.split('G')[-1].split('/')[0]
 
 if simulation_density_id == '50':
