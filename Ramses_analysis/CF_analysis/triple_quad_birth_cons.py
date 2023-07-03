@@ -133,8 +133,10 @@ if rank == 0:
             reader = csv.reader(f)
             for row in reader:
                 if row[0].split(' ')[0] == 'time':
-                    import pdb
-                    pdb.set_trace()
+                    file_time = eval(row[0].split(' ')[-1])
+                    file_times.append(file_time)
+                    
+        f.close()
 
 
 #Define units to override:
