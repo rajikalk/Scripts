@@ -276,10 +276,9 @@ for pick_it in range(len(pickle_files)):
                                     particle_x_pos = yt.YTArray([], 'au')
                                     particle_y_pos = yt.YTArray([], 'au')
                                 try:
-                                    import pdb
-                                    pdb.set_trace()
-                                    dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                                    dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                                    youngest_sink = np.argmax(existing_sinks)
+                                    dx = np.max(abs(particle_x_pos-particle_x_pos[youngest_sink]))
+                                    dy = np.max(abs(particle_y_pos-particle_y_pos[youngest_sink]))
                                     if dx > dy:
                                         max_seps.append(dx)
                                     else:
@@ -539,8 +538,9 @@ for pick_it in range(len(pickle_files)):
                                         particle_x_pos = yt.YTArray([], 'au')
                                         particle_y_pos = yt.YTArray([], 'au')
                                     try:
-                                        dx = np.max(abs(particle_x_pos-particle_x_pos[0]))
-                                        dy = np.max(abs(particle_y_pos-particle_y_pos[0]))
+                                        youngest_sink = np.argmax(existing_sinks)
+                                        dx = np.max(abs(particle_x_pos-particle_x_pos[youngest_sink]))
+                                        dy = np.max(abs(particle_y_pos-particle_y_pos[youngest_sink]))
                                         if dx > dy:
                                             max_seps.append(dx)
                                         else:
