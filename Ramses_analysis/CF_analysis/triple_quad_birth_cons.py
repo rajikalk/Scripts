@@ -232,7 +232,7 @@ for pick_it in range(len(pickle_files)):
                         center_sink = np.max(flatten(eval(sys_key)))
                         center_positions = []
                         max_seps = []
-                        for fn in yt.parallel_objects(usable_files, njobs=int(2)): #range(len(usable_files)):
+                        for fn in usable_files: #range(len(usable_files)):
                             pit = 2 - usable_files.index(fn)
                             pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
                             if os.path.exists(pickle_file) == False:
