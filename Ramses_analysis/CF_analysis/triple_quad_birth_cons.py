@@ -175,8 +175,8 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
     
+file_times = []
 if rank == 0:
-    file_times = []
     for file in files:
         with open(file, 'r') as f:
             reader = csv.reader(f)
@@ -187,7 +187,7 @@ if rank == 0:
                     
         f.close()
     file_times = np.array(file_times)*units['time_unit'].in_units('yr')
-file_times = CW.Bcast(file_times, root=0)
+file_times = CW.bcast(file_times, root=0)
 
 #print('Calculated the units on rank', rank)
 sys.stdout.flush()
