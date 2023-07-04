@@ -219,7 +219,7 @@ for pick_it in range(len(pickle_files)):
     
     for sys_key in superplot_dict['System_times'].keys():
         if Lifetimes_sys[sys_key] > 1000:
-            if len(flatten(eval(sys_key))) == 3:
+            if len(flatten(eval(sys_key))) == 3 and str(np.max(flatten(eval(sys_key)))) in Sink_birth_all.keys():
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
                 if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
                     if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
@@ -396,8 +396,8 @@ for pick_it in range(len(pickle_files)):
                                 y = np.linspace(ylim[0], ylim[1], 800)
                                 X, Y = np.meshgrid(x, y)
                                 
-                                X = X + center_pos[0]
-                                Y = Y + center_pos[1]
+                                #X = X + center_pos[0]
+                                #Y = Y + center_pos[1]
                                 xlim = [np.min(X), np.max(X)]
                                 ylim = [np.min(Y), np.max(Y)]
                                 
@@ -487,7 +487,7 @@ for pick_it in range(len(pickle_files)):
                                 #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                                 print('Created frame ' + file_name + '.png, on rank', rank)
                             #"""
-            if len(flatten(eval(sys_key))) == 4:
+            if len(flatten(eval(sys_key))) == 4 and str(np.max(flatten(eval(sys_key)))) in Sink_birth_all.keys():
 
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
                 sys_brackets = ''
@@ -665,8 +665,8 @@ for pick_it in range(len(pickle_files)):
                                     y = np.linspace(ylim[0], ylim[1], 800)
                                     X, Y = np.meshgrid(x, y)
                                     
-                                    X = X + center_pos[0]
-                                    Y = Y + center_pos[1]
+                                    #X = X + center_pos[0]
+                                    #Y = Y + center_pos[1]
                                     xlim = [np.min(X), np.max(X)]
                                     ylim = [np.min(Y), np.max(Y)]
                                     
