@@ -667,6 +667,9 @@ for pick_it in range(len(pickle_files)):
                                     
                                     #X = X + center_pos[0]
                                     #Y = Y + center_pos[1]
+                                    particle_x_pos = particle_x_pos - center_pos[0]
+                                    particle_y_pos = particle_y_pos - center_pos[1]
+                                    
                                     xlim = [np.min(X), np.max(X)]
                                     ylim = [np.min(Y), np.max(Y)]
                                     
