@@ -511,7 +511,7 @@ for pick_it in range(len(pickle_files)):
                                 pre_form_ind = closest_time_ind - 1
                             
                             usable_files = files[pre_form_ind:post_form_ind+1][::-1]
-                            pickle_file_preffix = 'triple_'+str(flatten(eval(sys_key)))[1:-1]+'_'
+                            pickle_file_preffix = 'quad_'+str(flatten(eval(sys_key)))[1:-1]+'_'
                             pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
                             if "'" in pickle_file_preffix:
                                 pickle_file_preffix = pickle_file_preffix.replace("'", "")
