@@ -350,16 +350,19 @@ for pick_it in range(len(pickle_files)):
                                 gc.collect()
                                 
                                 axis_ind = 2
-                                proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                                image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                                del proj
+                                try:
+                                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                                    del proj
+                                        
+                                    gc.collect()
                                     
-                                gc.collect()
-                                
-                                file = open(pickle_file, 'wb')
-                                pickle.dump((image, time_val), file)
-                                file.close()
-                                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                    file = open(pickle_file, 'wb')
+                                    pickle.dump((image, time_val), file)
+                                    file.close()
+                                    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                except:
+                                    print("Density field doesn't exist")
 
                         sys.stdout.flush()
                         CW.Barrier()
@@ -372,7 +375,8 @@ for pick_it in range(len(pickle_files)):
                         for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
                             pit = pickle_files.index(pickle_file)
                             file_name = pickle_file_preffix + ("%06d" % pit)
-                            if os.path.exists(file_name+ ".png") == False:
+                            proj_pickle = "".join(pickle_file.split('_part'))
+                            if os.path.exists(file_name+ ".png") == False and os.path.exists(proj_pickle) == True:
                                 print('making frame for pickle', pickle_file, 'on rank', rank)
                                 file = open(pickle_file, 'rb')
                                 particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
@@ -381,7 +385,7 @@ for pick_it in range(len(pickle_files)):
                                 
                                 center_pos = center_positions[::-1][pit]
                                 
-                                file = open("".join(pickle_file.split('_part')), 'rb')
+                                file = open(proj_pickle, 'rb')
                                 image, time_val = pickle.load(file)
                                 #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                                 file.close()
@@ -614,16 +618,20 @@ for pick_it in range(len(pickle_files)):
                                     gc.collect()
                                     
                                     axis_ind = 2
-                                    proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
-                                    image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
-                                    del proj
+                                    try:
+                                        proj = yt.ProjectionPlot(ds, axis_ind, ("ramses", "Density"), width=thickness, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                                        image = (proj.frb.data[("ramses", "Density")]/thickness.in_units('cm')).value*units['density_unit'].in_units('g/cm**3')
+                                        del proj
                                         
-                                    gc.collect()
+                                        gc.collect()
                                     
-                                    file = open(pickle_file, 'wb')
-                                    pickle.dump((image, time_val), file)
-                                    file.close()
-                                    print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                        file = open(pickle_file, 'wb')
+                                        pickle.dump((image, time_val), file)
+                                        file.close()
+                                        print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                                    except:
+                                        print("Density field doesn't exist")
+                                        
 
                             sys.stdout.flush()
                             CW.Barrier()
@@ -636,7 +644,8 @@ for pick_it in range(len(pickle_files)):
                             for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
                                 pit = pickle_files.index(pickle_file)
                                 file_name = pickle_file_preffix + ("%06d" % pit)
-                                if os.path.exists(file_name+ ".png") == False:
+                                proj_pickle = "".join(pickle_file.split('_part'))
+                                if os.path.exists(file_name+ ".png") == False and os.path.exists(proj_pickle) == True:
                                     print('making frame for pickle', pickle_file, 'on rank', rank)
                                     file = open(pickle_file, 'rb')
                                     particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
@@ -645,7 +654,7 @@ for pick_it in range(len(pickle_files)):
                                     
                                     center_pos = center_positions[::-1][pit]
                                     
-                                    file = open("".join(pickle_file.split('_part')), 'rb')
+                                    file = open(proj_pickle, 'rb')
                                     image, time_val = pickle.load(file)
                                     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
                                     file.close()
