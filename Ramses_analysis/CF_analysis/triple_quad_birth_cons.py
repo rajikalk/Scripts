@@ -461,7 +461,7 @@ for pick_it in range(len(pickle_files)):
                                 ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
 
-                                '''
+                                
                                 try:
                                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
                                     time_string = "$t$="+str(int(time_val))+"yr"
@@ -474,7 +474,7 @@ for pick_it in range(len(pickle_files)):
                                         print("Couldn't outline time string")
                                 except:
                                     print("Couldn't plot time string")
-                                '''
+                                
                                 
                                 file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
                                 pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
