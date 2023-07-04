@@ -543,6 +543,11 @@ for pick_it in range(len(pickle_files)):
                                         dt = curr_time - t_snap
                                         prev_center_pos = center_positions[-1]
                                         center_pos = prev_center_pos + center_vel*dt
+                                        for new_pos_it in range(len(center_pos)):
+                                            if center_pos[new_pos_it] < 0:
+                                                center_pos[new_pos_it] = units['length_unit'].in_units('au') + center_pos[new_pos_it]
+                                            elif center_pos[new_pos_it] > units['length_unit'].in_units('au'):
+                                                center_pos[new_pos_it] = center_pos[new_pos_it] - units['length_unit'].in_units('au')
                                         center_positions.append(center_pos)
                                         sink_creation_time_pick = np.nan
                                     existing_sinks = list(set(flatten(eval(sys_key))).intersection(np.arange(len(loaded_sink_data['m']))))
