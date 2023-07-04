@@ -365,7 +365,8 @@ for pick_it in range(len(pickle_files)):
                         CW.Barrier()
                             
                         #"""
-                        pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+                        #pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+                        pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
                         #cit = 0
                         #for pickle_file in pickle_files:
                         for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
@@ -628,7 +629,8 @@ for pick_it in range(len(pickle_files)):
                             CW.Barrier()
                                 
                                 
-                            pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+                            #pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
+                            pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
                             #cit = 0
                             #for pickle_file in pickle_files:
                             for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
