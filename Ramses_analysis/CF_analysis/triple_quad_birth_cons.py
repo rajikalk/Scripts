@@ -222,7 +222,7 @@ for pick_it in range(len(pickle_files)):
             if len(flatten(eval(sys_key))) == 3:
                 youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
                 if superplot_dict['System_seps'][sys_key][0][0] < 1000 and superplot_dict['System_seps'][sys_key][0][0] > 100 and superplot_dict['System_seps'][sys_key][0][1] > 300 and superplot_dict['System_seps'][sys_key][0][1] < 3000:
-                    if youngest_birth_con[0] == True:
+                    if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
                         print("Found Triple candidate:", sys_key)
                         #make frame!
                         #Find which global frame I need
@@ -500,7 +500,7 @@ for pick_it in range(len(pickle_files)):
                         sys_brackets = sys_brackets + char
                 if sys_brackets == '[[][]]':
                     if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
-                        if youngest_birth_con[0] == True:
+                        if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
                             print("Found Quadruple candidate:", sys_key)
                             goal_time = superplot_dict['System_times'][sys_key][0]
                             closest_time_ind = np.argmin(abs(file_times.value - goal_time))
