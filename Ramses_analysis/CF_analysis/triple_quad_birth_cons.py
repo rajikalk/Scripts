@@ -234,6 +234,9 @@ for pick_it in range(len(pickle_files)):
                         else:
                             post_form_ind = closest_time_ind
                             pre_form_ind = closest_time_ind - 1
+                        if size == 1:
+                            import pdb
+                            pdb.set_trace()
                         
                         usable_files = files[pre_form_ind:post_form_ind+1][::-1]
                         pickle_file_preffix = 'triple_'+str(flatten(eval(sys_key)))[1:-1]+'_'
@@ -253,6 +256,9 @@ for pick_it in range(len(pickle_files)):
                                 file_no = int(fn.split('output_')[-1].split('/')[0])
                                 datadir = fn.split('output_')[0]
                                 loaded_sink_data = rsink(file_no, datadir=datadir)
+                                if fn == usable_files[1] and size == 1:
+                                    import pdb
+                                    pdb.set_trace()
                                 try:
                                     if np.isnan(center_sink):
                                         import pdb
