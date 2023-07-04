@@ -744,7 +744,7 @@ for pick_it in range(len(pickle_files)):
                                         
                                     
                                     file = open(pickle_file.split('_part.pkl')[0]+'_all.pkl', 'wb')
-                                    pickle.dump((system, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
+                                    pickle.dump((sys_key, particle_x_pos, particle_y_pos, particle_masses, center_pos, thickness, X, Y, image, time_val), file)
                                     file.close()
                                         
 
