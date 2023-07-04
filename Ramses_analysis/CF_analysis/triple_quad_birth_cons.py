@@ -285,9 +285,6 @@ for pick_it in range(len(pickle_files)):
                                     particle_x_pos = yt.YTArray([], 'au')
                                     particle_y_pos = yt.YTArray([], 'au')
                                 try:
-                                    if size == 1:
-                                        import pdb
-                                        pdb.set_trace()
                                     youngest_sink = np.argmax(existing_sinks)
                                     dx = np.max(abs(particle_x_pos-particle_x_pos[youngest_sink]))
                                     dy = np.max(abs(particle_y_pos-particle_y_pos[youngest_sink]))
@@ -325,9 +322,6 @@ for pick_it in range(len(pickle_files)):
                         
                         max_sep = np.max(max_seps)
                             
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
                         thickness = yt.YTQuantity(np.ceil(max_sep/100)*100+500, 'au')
 
                         #del units
@@ -345,9 +339,6 @@ for pick_it in range(len(pickle_files)):
                                 ds = yt.load(usable, units_override=units_override)
                                 #dd = ds.all_data()
                                 
-                                if size == 1:
-                                    import pdb
-                                    pdb.set_trace()
                                 center_pos = center_positions[cit]
                                 time_val = ds.current_time.in_units('yr') - sink_creation_time
                                 
