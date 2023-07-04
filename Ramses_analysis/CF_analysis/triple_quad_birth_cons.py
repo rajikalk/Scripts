@@ -551,7 +551,7 @@ for pick_it in range(len(pickle_files)):
                             else:
                                 form_time = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
                                 sys_form_time = superplot_dict['System_times'][sys_key][0]
-                                closest_form_ind = np.argmin(abs(file_times.value - form_time))
+                                closest_form_ind = np.argmin(abs(file_times.value - form_time.value))
                                 if file_times[closest_form_ind] < form_time:
                                     pre_sink_ind = closest_form_ind
                                     post_sink_ind = closest_form_ind + 1
