@@ -239,7 +239,7 @@ for pick_it in range(len(pickle_files)):
                         else:
                             form_time = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
                             sys_form_time = superplot_dict['System_times'][sys_key][0]
-                            closest_form_ind = np.argmin(abs(file_times.value - form_time))
+                            closest_form_ind = np.argmin(abs(file_times.value - form_time.value))
                             if file_times[closest_form_ind] < form_time:
                                 pre_sink_ind = closest_form_ind
                                 post_sink_ind = closest_form_ind + 1
@@ -254,6 +254,10 @@ for pick_it in range(len(pickle_files)):
                                 pre_sys_form_ind = closes_sys_form_ind - 1
                                 post_sys_form_ind = closes_sys_form_ind
                             usable_files = [files[post_sys_form_ind], files[pre_sys_form_ind], files[post_sink_ind], files[pre_sink_ind]]
+                        
+                        sys.stdout.flush()
+                        CW.Barrier()
+
                         
                         #usable_files = files[pre_form_ind:post_form_ind+1][::-1]
                         pickle_file_preffix = 'triple_'+str(flatten(eval(sys_key)))[1:-1]+'_'
@@ -563,6 +567,10 @@ for pick_it in range(len(pickle_files)):
                                     post_sys_form_ind = closes_sys_form_ind
                                 usable_files = [files[post_sys_form_ind], files[pre_sys_form_ind], files[post_sink_ind], files[pre_sink_ind]]
                             
+                            
+                            sys.stdout.flush()
+                            CW.Barrier()
+
                             #usable_files = files[pre_form_ind:post_form_ind+1][::-1]
                             pickle_file_preffix = 'quad_'+str(flatten(eval(sys_key)))[1:-1]+'_'
                             pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
