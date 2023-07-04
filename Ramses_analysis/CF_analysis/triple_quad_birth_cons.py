@@ -658,7 +658,7 @@ for pick_it in range(len(pickle_files)):
 
                             sys.stdout.flush()
                             CW.Barrier()
-                            for usable in yt.parallel_objects(usable_files, njobs=2):
+                            for usable in yt.parallel_objects(usable_files):
                                 #for usable in usable_files:
                                 pit = len(usable_files) - usable_files.index(usable)
                                 pickle_file = pickle_file_preffix + str(pit) + '.pkl'
