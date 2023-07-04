@@ -498,7 +498,8 @@ for pick_it in range(len(pickle_files)):
 
                                     
                                 #part_color = ['cyan','magenta','r','b','y','w','k']
-                                ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+                                for part_it in range(len(particle_x_pos)):
+                                    ax.scatter(particle_x_pos[part_it], particle_y_pos[part_it], marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                                 plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
 
                                 
@@ -808,7 +809,8 @@ for pick_it in range(len(pickle_files)):
                                         line.set_color('white')
                                         
                                     #part_color = ['cyan','magenta','r','b','y','w','k']
-                                    ax.scatter(particle_x_pos, particle_y_pos, c='y', marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
+                                    for part_it in range(len(particle_x_pos)):
+                                        ax.scatter(particle_x_pos[part_it], particle_y_pos[part_it], marker='*', s=100, linewidth=1.5, edgecolor="k", zorder=11)
                                     plt.savefig(file_name + ".png", format='png', bbox_inches='tight')
 
                                     try:
