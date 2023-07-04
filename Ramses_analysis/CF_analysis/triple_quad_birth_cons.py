@@ -363,6 +363,9 @@ for pick_it in range(len(pickle_files)):
                                     print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
                                 except:
                                     print("Density field doesn't exist")
+                                    file = open(pickle_file, 'wb')
+                                    pickle.dump((np.zeros((800,800)), time_val), file)
+                                    file.close()
 
                         sys.stdout.flush()
                         CW.Barrier()
@@ -376,7 +379,11 @@ for pick_it in range(len(pickle_files)):
                             pit = pickle_files.index(pickle_file)
                             file_name = pickle_file_preffix + ("%06d" % pit)
                             proj_pickle = "".join(pickle_file.split('_part'))
-                            if os.path.exists(file_name+ ".png") == False and os.path.exists(proj_pickle) == True:
+                            file = open(proj_pickle, 'rb')
+                            image, time_val = pickle.load(file)
+                                #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+                            file.close()
+                            if os.path.exists(file_name+ ".png") == False and np.nanmean(image) != 0:
                                 print('making frame for pickle', pickle_file, 'on rank', rank)
                                 file = open(pickle_file, 'rb')
                                 particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
@@ -639,6 +646,9 @@ for pick_it in range(len(pickle_files)):
                                         print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
                                     except:
                                         print("Density field doesn't exist")
+                                        file = open(pickle_file, 'wb')
+                                        pickle.dump((np.zeros((800,800)), time_val), file)
+                                        file.close()
                                         
 
                             sys.stdout.flush()
@@ -653,7 +663,11 @@ for pick_it in range(len(pickle_files)):
                                 pit = pickle_files.index(pickle_file)
                                 file_name = pickle_file_preffix + ("%06d" % pit)
                                 proj_pickle = "".join(pickle_file.split('_part'))
-                                if os.path.exists(file_name+ ".png") == False and os.path.exists(proj_pickle) == True:
+                                file = open(proj_pickle, 'rb')
+                                image, time_val = pickle.load(file)
+                                #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel =   pickle.load(file)
+                                file.close()
+                                if os.path.exists(file_name+ ".png") == False and np.nanmean(image) != 0:
                                     print('making frame for pickle', pickle_file, 'on rank', rank)
                                     file = open(pickle_file, 'rb')
                                     particle_x_pos, particle_y_pos, particle_masses, max_seps, sink_creation_time_pick, center_pos = pickle.load(file)
