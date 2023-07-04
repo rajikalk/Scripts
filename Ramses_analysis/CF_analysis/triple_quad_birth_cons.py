@@ -226,19 +226,36 @@ for pick_it in range(len(pickle_files)):
                         print("Found Triple candidate:", sys_key)
                         #make frame!
                         #Find which global frame I need
-                        goal_time = superplot_dict['System_times'][sys_key][0]
-                        closest_time_ind = np.argmin(abs(file_times.value - goal_time))
-                        if file_times[closest_time_ind] < goal_time:
-                            pre_form_ind = closest_time_ind
-                            post_form_ind = closest_time_ind + 1
+                        if youngest_birth_con[0] == True:
+                            goal_time = superplot_dict['System_times'][sys_key][0]
+                            closest_time_ind = np.argmin(abs(file_times.value - goal_time))
+                            if file_times[closest_time_ind] < goal_time:
+                                pre_form_ind = closest_time_ind
+                                post_form_ind = closest_time_ind + 1
+                            else:
+                                post_form_ind = closest_time_ind
+                                pre_form_ind = closest_time_ind - 1
+                            usable_files = [files[post_form_ind], files[pre_form_ind]]
                         else:
-                            post_form_ind = closest_time_ind
-                            pre_form_ind = closest_time_ind - 1
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
+                            form_time = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
+                            sys_form_time = superplot_dict['System_times'][sys_key][0]
+                            closest_form_ind = np.argmin(abs(file_times.value - form_time))
+                            if file_times[closest_form_ind] < form_time:
+                                pre_sink_ind = closest_form_ind
+                                post_sink_ind = closest_form_ind + 1
+                            else:
+                                pre_sink_ind = closest_form_ind - 1
+                                post_sink_ind = closest_form_ind
+                            closes_sys_form_ind = np.argmin(abs(file_times.value - sys_form_time))
+                            if file_times[closes_sys_form_ind] < sys_form_time:
+                                pre_sys_form_ind = closes_sys_form_ind
+                                post_sys_form_ind = closes_sys_form_ind + 1
+                            else:
+                                pre_sys_form_ind = closes_sys_form_ind - 1
+                                post_sys_form_ind = closes_sys_form_ind
+                            usable_files = [files[post_sys_form_ind], files[pre_sys_form_ind], files[post_sink_ind], files[pre_sink_ind]]
                         
-                        usable_files = files[pre_form_ind:post_form_ind+1][::-1]
+                        #usable_files = files[pre_form_ind:post_form_ind+1][::-1]
                         pickle_file_preffix = 'triple_'+str(flatten(eval(sys_key)))[1:-1]+'_'
                         pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
                         if "'" in pickle_file_preffix:
@@ -248,7 +265,7 @@ for pick_it in range(len(pickle_files)):
                         center_positions = []
                         max_seps = []
                         for fn in usable_files: #range(len(usable_files)):
-                            pit = 2 - usable_files.index(fn)
+                            pit = len(usable_files) - usable_files.index(fn)
                             pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
                             if os.path.exists(pickle_file) == False:
                                 print('Getting sink positions from', fn, 'on rank', rank)
@@ -337,7 +354,7 @@ for pick_it in range(len(pickle_files)):
                         CW.Barrier()
                         for usable in yt.parallel_objects(usable_files):
                             #for usable in usable_files:
-                            pit = 2 - usable_files.index(usable)
+                            pit = len(usable_files) - usable_files.index(usable)
                             pickle_file = pickle_file_preffix + str(pit) + '.pkl'
                             if os.path.exists(pickle_file) == False:
                                 print('making projection of', usable, 'on rank', rank)
@@ -378,7 +395,10 @@ for pick_it in range(len(pickle_files)):
                             
                         #"""
                         #pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
-                        pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
+                        if len(usable_files) == 2:
+                            pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
+                        else:
+                            pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                         #cit = 0
                         #for pickle_file in pickle_files:
                         for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
@@ -514,16 +534,36 @@ for pick_it in range(len(pickle_files)):
                     if np.max(superplot_dict['System_seps'][sys_key][0][:2]) < 600 and np.min(superplot_dict['System_seps'][sys_key][0][0]) > 100 and superplot_dict['System_seps'][sys_key][0][2] > 300 and superplot_dict['System_seps'][sys_key][0][2] < 3000:
                         if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
                             print("Found Quadruple candidate:", sys_key)
-                            goal_time = superplot_dict['System_times'][sys_key][0]
-                            closest_time_ind = np.argmin(abs(file_times.value - goal_time))
-                            if file_times[closest_time_ind] < goal_time:
-                                pre_form_ind = closest_time_ind
-                                post_form_ind = closest_time_ind + 1
+                            if youngest_birth_con[0] == True:
+                                goal_time = superplot_dict['System_times'][sys_key][0]
+                                closest_time_ind = np.argmin(abs(file_times.value - goal_time))
+                                if file_times[closest_time_ind] < goal_time:
+                                    pre_form_ind = closest_time_ind
+                                    post_form_ind = closest_time_ind + 1
+                                else:
+                                    post_form_ind = closest_time_ind
+                                    pre_form_ind = closest_time_ind - 1
+                                usable_files = [files[post_form_ind], files[pre_form_ind]]
                             else:
-                                post_form_ind = closest_time_ind
-                                pre_form_ind = closest_time_ind - 1
+                                form_time = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
+                                sys_form_time = superplot_dict['System_times'][sys_key][0]
+                                closest_form_ind = np.argmin(abs(file_times.value - form_time))
+                                if file_times[closest_form_ind] < form_time:
+                                    pre_sink_ind = closest_form_ind
+                                    post_sink_ind = closest_form_ind + 1
+                                else:
+                                    pre_sink_ind = closest_form_ind - 1
+                                    post_sink_ind = closest_form_ind
+                                closes_sys_form_ind = np.argmin(abs(file_times.value - sys_form_time))
+                                if file_times[closes_sys_form_ind] < sys_form_time:
+                                    pre_sys_form_ind = closes_sys_form_ind
+                                    post_sys_form_ind = closes_sys_form_ind + 1
+                                else:
+                                    pre_sys_form_ind = closes_sys_form_ind - 1
+                                    post_sys_form_ind = closes_sys_form_ind
+                                usable_files = [files[post_sys_form_ind], files[pre_sys_form_ind], files[post_sink_ind], files[pre_sink_ind]]
                             
-                            usable_files = files[pre_form_ind:post_form_ind+1][::-1]
+                            #usable_files = files[pre_form_ind:post_form_ind+1][::-1]
                             pickle_file_preffix = 'quad_'+str(flatten(eval(sys_key)))[1:-1]+'_'
                             pickle_file_preffix = pickle_file_preffix.replace(', ', '_')
                             if "'" in pickle_file_preffix:
@@ -533,7 +573,7 @@ for pick_it in range(len(pickle_files)):
                             center_positions = []
                             max_seps = []
                             for fn in yt.parallel_objects(usable_files, njobs=int(2)): #range(len(usable_files)):
-                                pit = 2 - usable_files.index(fn)
+                                pit = len(usable_files) - usable_files.index(fn)
                                 pickle_file = pickle_file_preffix + str(pit) + '_part.pkl'
                                 if os.path.exists(pickle_file) == False:
                                     print('Getting sink positions from', fn, 'on rank', rank)
@@ -620,7 +660,7 @@ for pick_it in range(len(pickle_files)):
                             CW.Barrier()
                             for usable in yt.parallel_objects(usable_files, njobs=2):
                                 #for usable in usable_files:
-                                pit = 2 - usable_files.index(usable)
+                                pit = len(usable_files) - usable_files.index(usable)
                                 pickle_file = pickle_file_preffix + str(pit) + '.pkl'
                                 if os.path.exists(pickle_file) == False:
                                     print('making projection of', usable, 'on rank', rank)
@@ -662,7 +702,10 @@ for pick_it in range(len(pickle_files)):
                                 
                                 
                             #pickle_files = sorted(glob.glob(pickle_file_preffix + '*_part.pkl'))
-                            pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
+                            if len(usable_files) == 2:
+                                pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
+                            else:
+                                pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                             #cit = 0
                             #for pickle_file in pickle_files:
                             for pickle_file in yt.parallel_objects(pickle_files, njobs=2):
