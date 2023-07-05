@@ -556,7 +556,10 @@ for pick_it in range(len(pickle_files)):
                                     post_form_ind = closest_time_ind + 1
                                 else:
                                     post_form_ind = closest_time_ind
-                                    pre_form_ind = closest_time_ind - 1
+                                    if closest_time_ind != 0:
+                                        pre_form_ind = closest_time_ind - 1
+                                    else:
+                                        pre_form_ind = closest_time_ind
                                 usable_files = [files[post_form_ind], files[pre_form_ind]]
                             else:
                                 form_time = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
@@ -566,14 +569,20 @@ for pick_it in range(len(pickle_files)):
                                     pre_sink_ind = closest_form_ind
                                     post_sink_ind = closest_form_ind + 1
                                 else:
-                                    pre_sink_ind = closest_form_ind - 1
+                                    if closest_form_ind != 0:
+                                        pre_sink_ind = closest_form_ind - 1
+                                    else:
+                                        pre_sink_ind = closest_form_ind
                                     post_sink_ind = closest_form_ind
                                 closes_sys_form_ind = np.argmin(abs(file_times.value - sys_form_time))
                                 if file_times[closes_sys_form_ind] < sys_form_time:
                                     pre_sys_form_ind = closes_sys_form_ind
                                     post_sys_form_ind = closes_sys_form_ind + 1
                                 else:
-                                    pre_sys_form_ind = closes_sys_form_ind - 1
+                                    if closes_sys_form_ind != 0:
+                                        pre_sys_form_ind = closes_sys_form_ind - 1
+                                    else:
+                                        pre_sys_form_ind = closes_sys_form_ind
                                     post_sys_form_ind = closes_sys_form_ind
                                 usable_files = [files[post_sys_form_ind], files[pre_sys_form_ind], files[post_sink_ind], files[pre_sink_ind]]
                             
