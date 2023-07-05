@@ -48,6 +48,7 @@ font_size = 10
 def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-update", "--update_pickles", help="do you want to read the Flash output and update the pickles?", type=str, default='True')
+    parser.add_argument("-lref", "--refinment_level", type=str, default='9')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -101,7 +102,7 @@ for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
-        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
         #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
         if os.path.exists(single_pickle):
@@ -182,7 +183,7 @@ for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
-        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
         #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
         if os.path.exists(single_pickle):
@@ -251,5 +252,5 @@ for spin_lab in Spin_labels:
 axs.flatten()[plot_it-1].set_xlim(left=0)
 #axs.flatten()[plot_it-1].set_ylim([5.e48, 5.e54])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
-plt.savefig('spin_comp_multi.png')
+plt.savefig('spin_comp_multi_'+args.refinment_level+'.png')
 
