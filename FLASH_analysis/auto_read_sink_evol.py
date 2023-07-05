@@ -16,7 +16,7 @@ update = True
 
 rit = -1
 for sim_dir in sim_dirs:
-    if os.path.exists(sim_dir+'/sinks_evol.dat') == True:
+    if os.path.exists(sim_dir+'/sinks_evol.dat') == True and 'Binary' not in sim_dir:
         rit = rit + 1
         if rit == size:
             rit = 0
