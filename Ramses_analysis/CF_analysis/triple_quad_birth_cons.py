@@ -411,7 +411,7 @@ for pick_it in range(len(pickle_files)):
                         if len(usable_files) == 2:
                             pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
                         elif usable_files[2] == usable_files[3]:
-                            pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl']
+                            pickle_files = [pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                         else:
                             pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                         #cit = 0
@@ -734,7 +734,7 @@ for pick_it in range(len(pickle_files)):
                             if len(usable_files) == 2:
                                 pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl']
                             elif usable_files[2] == usable_files[3]:
-                                pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl']
+                                pickle_files = [pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                             else:
                                 pickle_files = [pickle_file_preffix + '1_part.pkl', pickle_file_preffix + '2_part.pkl', pickle_file_preffix + '3_part.pkl', pickle_file_preffix + '4_part.pkl']
                             #cit = 0
