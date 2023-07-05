@@ -102,7 +102,7 @@ for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
-        binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
         if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
@@ -126,7 +126,7 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
         else:
             print("Couldn't open", single_pickle)
-            
+        '''
         if os.path.exists(binary_pickle):
             file = open(binary_pickle, 'rb')
             sink_data = pickle.load(file)
@@ -150,7 +150,7 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         else:
             print("Couldn't open", binary_pickle)
-        
+        '''
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
         if mach_lab == '0.0':
@@ -183,7 +183,7 @@ for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
-        binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
         
         if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
@@ -207,7 +207,8 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
         else:
             print("Couldn't open", single_pickle)
-            
+        
+        '''
         if os.path.exists(binary_pickle):
             file = open(binary_pickle, 'rb')
             sink_data = pickle.load(file)
@@ -231,6 +232,7 @@ for spin_lab in Spin_labels:
                 axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label=Binary_labels[list(sink_data.keys()).index(sink_id)], ls=line_styles[list(sink_data.keys()).index(sink_id)])
         else:
             print("Couldn't open", binary_pickle)
+        '''
         
         if plot_it == 0:
             axs.flatten()[plot_it].legend()
