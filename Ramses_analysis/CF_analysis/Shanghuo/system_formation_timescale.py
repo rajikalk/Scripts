@@ -240,7 +240,7 @@ for pick_it in range(len(pickle_files)):
         
         form_hist, bins = np.histogram(form_scale, bins)
         plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2)
-        prev_hist = prev_hist + form_hist
+
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
     plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
