@@ -239,8 +239,9 @@ for pick_it in range(len(pickle_files)):
     for form_scale in formation_timescales:
         lit = lit + 1
         
-        form_hist, bins = np.histogram(form_scale, bins)
-        plt.step(bin_centers, form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
+        unique_vales = list(set(form_scale))
+        form_hist, bins = np.histogram(unique_vales, bins)
+        plt.step(np.linspace(1.5, 6, 10), form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
 
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
