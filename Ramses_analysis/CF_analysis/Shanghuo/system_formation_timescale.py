@@ -240,7 +240,7 @@ for pick_it in range(len(pickle_files)):
         lit = lit + 1
         
         form_hist, bins = np.histogram(form_scale, bins)
-        n, form_hist, _ = plt.hist(noise, bins=np.logspace(1.5, 6, 10),
+        n, form_hist, _ = plt.hist(form_scale, bins=np.logspace(1.5, 6, 10),
                    histtype=u'step', density=True)
         plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2, edgecolor=colors[lit])
 
