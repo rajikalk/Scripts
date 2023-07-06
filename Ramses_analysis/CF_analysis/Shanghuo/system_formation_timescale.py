@@ -240,9 +240,7 @@ for pick_it in range(len(pickle_files)):
         lit = lit + 1
         
         form_hist, bins = np.histogram(form_scale, bins)
-        n, form_hist, _ = plt.hist(form_scale, bins=np.logspace(1.5, 6, 10),
-                   histtype=u'step', density=True)
-        plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2, edgecolor=colors[lit])
+        plt.step(bin_centers, form_hist, where='post', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
 
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
