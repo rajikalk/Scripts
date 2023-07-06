@@ -228,6 +228,13 @@ for pick_it in range(len(pickle_files)):
                 append_ind = len(flatten(eval(sys_key))) - 2
                 formation_timescales[append_ind].append(sys_form_timescale)
     
-    import pdb
-    pdb.set_trace()
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
+    plt.clf()
+    labels = ['Binary', 'Triple', 'Quadruple', 'Quintuple', 'Sextuple']
+    lit = -1
+    for form_scale in formation_timescales:
+        lit = lit + 1
+        plt.scatter(np.sort(formation_timescales[0]), label = labels[lit])
+    plt.ylabel('Formation timescale (yr)')
+    plt.yscale('log')
+    plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
