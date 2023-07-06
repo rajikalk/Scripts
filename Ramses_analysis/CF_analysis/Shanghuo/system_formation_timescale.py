@@ -231,7 +231,6 @@ for pick_it in range(len(pickle_files)):
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
     bins = np.logspace(1.5, 6, 10)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
-    prev_hist = np.array([0., 0., 0., 0., 0., 0., 0., 0., 0.])
 
     plt.clf()
     labels = ['Binary', 'Triple', 'Quadruple', 'Quintuple', 'Sextuple']
@@ -240,7 +239,7 @@ for pick_it in range(len(pickle_files)):
         lit = lit + 1
         
         form_hist, bins = np.histogram(form_scale, bins)
-        plt.bar(bin_centers, form_hist, width=0.5, bottom=prev_hist, label=labels[lit])
+        plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2)
         prev_hist = prev_hist + form_hist
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
