@@ -237,4 +237,5 @@ for pick_it in range(len(pickle_files)):
         plt.scatter(np.sort(formation_timescales[0]), label = labels[lit])
     plt.ylabel('Formation timescale (yr)')
     plt.yscale('log')
+    plt.legend(loc='best')
     plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
