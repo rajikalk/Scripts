@@ -234,7 +234,7 @@ for pick_it in range(len(pickle_files)):
     lit = -1
     for form_scale in formation_timescales:
         lit = lit + 1
-        plt.scatter(np.arange(len(np.sort(form_scale))), np.sort(formation_timescales[0]), label = labels[lit])
+        plt.scatter(np.arange(len(np.sort(form_scale))), np.sort(form_scale), label = labels[lit])
     plt.ylabel('Formation timescale (yr)')
     plt.yscale('log')
     plt.legend(loc='best')
