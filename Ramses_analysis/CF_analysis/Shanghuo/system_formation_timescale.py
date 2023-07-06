@@ -245,4 +245,5 @@ for pick_it in range(len(pickle_files)):
 
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
+    plt.ylim(bottom=0)
     plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
