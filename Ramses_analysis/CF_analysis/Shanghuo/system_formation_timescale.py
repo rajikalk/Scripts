@@ -229,7 +229,7 @@ for pick_it in range(len(pickle_files)):
                 formation_timescales[append_ind].append(sys_form_timescale)
     
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
-    bins = np.logspace(1.5, 6.5, 11)
+    bins = np.logspace(1, 6.5, 12)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
 
     plt.clf()
@@ -241,9 +241,10 @@ for pick_it in range(len(pickle_files)):
         
         unique_vales = list(set(form_scale))
         form_hist, bins = np.histogram(unique_vales, bins)
-        plt.step(np.linspace(1.5, 6.5, 11)[:-1], form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
+        plt.step(np.linspace(1, 6.5, 12)[:-1], form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
 
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
     plt.ylim(bottom=0)
+    plt.xlim([1, 6.5])
     plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
