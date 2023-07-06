@@ -234,12 +234,13 @@ for pick_it in range(len(pickle_files)):
 
     plt.clf()
     labels = ['Binary', 'Triple', 'Quadruple', 'Quintuple', 'Sextuple']
+    colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     lit = -1
     for form_scale in formation_timescales:
         lit = lit + 1
         
         form_hist, bins = np.histogram(form_scale, bins)
-        plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2)
+        plt.bar(bin_centers, form_hist, width=0.5, label=labels[lit], fill=False, linewidth=2, color=colors[lit])
 
     plt.xlabel('log Formation timescale (yr)')
     plt.legend(loc='best')
