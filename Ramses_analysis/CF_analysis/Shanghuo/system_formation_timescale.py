@@ -222,8 +222,8 @@ for pick_it in range(len(pickle_files)):
         if str(np.max(flatten(eval(sys_key)))) in Sink_birth_all.keys():
             youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
             if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
-                form_time_oldest = Sink_birth_all[str(np.min(flatten(eval(sys_key))))]*units['time_unit'].in_units('yr')
-                form_time_youngest = youngest_birth_con[-1]*units['time_unit'].in_units('yr')
+                form_time_oldest = superplot_dict['Times'][np.argmin(abs(np.array(superplot_dict['SFE']) - Sink_birth_all[str(np.min(flatten(eval(sys_key))))][-1]))] - Sink_birth_all[str(np.min(flatten(eval(sys_key))))][-2]
+                form_time_youngest = superplot_dict['Times'][np.argmin(abs(np.array(superplot_dict['SFE']) - youngest_birth_con[-1]))] - youngest_birth_con[-2]
                 sys_form_timescale = form_time_youngest - form_time_oldest
                 append_ind = len(flatten(eval(sys_key))) - 2
                 formation_timescales[append_ind].append(sys_form_timescale)
