@@ -242,7 +242,7 @@ for pick_it in range(len(pickle_files)):
         
         unique_vales = list(set(form_scale))
         form_hist, bins = np.histogram(unique_vales, bins)
-        plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
+        plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='post', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
         offset = offset + 0.02
 
     plt.xlabel('log Formation timescale (yr)')
