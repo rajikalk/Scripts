@@ -92,7 +92,7 @@ CW.Barrier()
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
 
-fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width,page_height))
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(1.5*single_col_width,page_height))
 iter_range = range(0, len(pickle_files)*2)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.07)
@@ -180,6 +180,7 @@ for pick_it in range(len(pickle_files)):
         axs[pick_it].legend(loc='best')
     axs[pick_it].set_ylim(bottom=0)
     axs[pick_it].set_ylabel(subplot_titles[pick_it])
+    axs[pick_it].tick_params(which='both', direction='in')
 
 axs[pick_it].set_xlim([1, 6.5])
 axs[pick_it].set_xlabel('log lifetime (yr)')
