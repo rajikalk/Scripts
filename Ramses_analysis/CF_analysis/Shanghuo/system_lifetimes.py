@@ -227,8 +227,6 @@ for pick_it in range(len(pickle_files)):
                 system_lifetimes[append_ind].append(lifetime)
     
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
-    import pdb
-    pdb.set_trace()
     bins = np.logspace(1, 7, 13)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
 
@@ -245,8 +243,8 @@ for pick_it in range(len(pickle_files)):
         plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
         offset = offset + 0.02
 
-    plt.xlabel('log Formation timescale (yr)')
+    plt.xlabel('log lifetime (yr)')
     plt.legend(loc='best')
     plt.ylim(bottom=0)
     plt.xlim([1, 6.5])
-    plt.savefig('Form_timescale_G'+args.simulation_id+'.png')
+    plt.savefig('Lifetime_'+args.simulation_id+'.png')
