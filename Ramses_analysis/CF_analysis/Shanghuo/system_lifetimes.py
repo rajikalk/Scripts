@@ -97,6 +97,8 @@ iter_range = range(0, len(pickle_files)*2)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.07)
 
+subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
+
 for pick_it in range(len(pickle_files)):
 
     units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
@@ -177,8 +179,9 @@ for pick_it in range(len(pickle_files)):
 
     if pick_it == 0:
         axs[pick_it].legend(loc='best')
-    axs[pick_it].ylim(bottom=0)
+    axs[pick_it].set_ylim(bottom=0)
+    axs[pick_it].set_ylabel(subplot_titles[pick_it])
 
-axs[pick_it].xlim([1, 6.5])
-axs[pick_it].xlabel('log lifetime (yr)')
+axs[pick_it].set_xlim([1, 6.5])
+axs[pick_it].set_xlabel('log lifetime (yr)')
 plt.savefig('Lifetimes.png')
