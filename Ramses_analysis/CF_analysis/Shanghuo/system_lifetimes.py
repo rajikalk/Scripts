@@ -239,7 +239,7 @@ for pick_it in range(len(pickle_files)):
         lit = lit + 1
         
         form_hist, bins = np.histogram(lifetime, bins)
-        plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='pre', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
+        plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='post', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
         offset = offset + 0.02
 
     plt.xlabel('log lifetime (yr)')
