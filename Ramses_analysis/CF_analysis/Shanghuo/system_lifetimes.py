@@ -235,7 +235,7 @@ for pick_it in range(len(pickle_files)):
     colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     lit = -1
     offset = -0.04
-    for form_scale in formation_timescales:
+    for lifetime in system_lifetimes:
         lit = lit + 1
         
         unique_vales = list(set(form_scale))
