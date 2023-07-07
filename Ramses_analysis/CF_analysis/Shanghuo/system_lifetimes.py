@@ -184,4 +184,4 @@ for pick_it in range(len(pickle_files)):
 
 axs[pick_it].set_xlim([1, 6.5])
 axs[pick_it].set_xlabel('log lifetime (yr)')
-plt.savefig('Lifetimes.png')
+plt.savefig('Lifetimes.png', bbox_inches='tight', pad_inches=0.02)
