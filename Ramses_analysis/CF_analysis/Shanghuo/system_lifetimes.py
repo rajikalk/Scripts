@@ -223,7 +223,8 @@ for pick_it in range(len(pickle_files)):
             youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
             if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
                 lifetime = Lifetimes_sys[sys_key]
-                system_lifetimes[append_ind].append(lifetime)
+                append_ind = len(flatten(eval(sys_key))) - 2
+                system_lifetimes[append_ind].append(sys_form_timescale)
     
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
     import pdb
