@@ -222,15 +222,12 @@ for pick_it in range(len(pickle_files)):
         if str(np.max(flatten(eval(sys_key)))) in Sink_birth_all.keys():
             youngest_birth_con = Sink_birth_all[str(np.max(flatten(eval(sys_key))))]
             if youngest_birth_con[0] == True or youngest_birth_con[1]==youngest_birth_con[2]:
-                import pdb
-                pdb.set_trace()
-                form_time_oldest = superplot_dict['Times'][np.argmin(abs(np.array(superplot_dict['SFE']) - Sink_birth_all[str(np.min(flatten(eval(sys_key))))][-1]))] - Sink_birth_all[str(np.min(flatten(eval(sys_key))))][-2]
-                form_time_youngest = superplot_dict['Times'][np.argmin(abs(np.array(superplot_dict['SFE']) - youngest_birth_con[-1]))] - youngest_birth_con[-2]
-                sys_form_timescale = form_time_youngest - form_time_oldest
-                append_ind = len(flatten(eval(sys_key))) - 2
-                system_lifetimes[append_ind].append(sys_form_timescale)
+                lifetime = Lifetimes_sys[sys_key]
+                system_lifetimes[append_ind].append(lifetime)
     
     #Inspect formation times. Do they look reasonable? Let's make a histogram!
+    import pdb
+    pdb.set_trace()
     bins = np.logspace(1, 7, 13)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
 
