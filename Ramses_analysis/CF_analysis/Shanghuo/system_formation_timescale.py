@@ -207,6 +207,8 @@ CW.Barrier()
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
 
+
+
 for pick_it in range(len(pickle_files)):
     #try:
     file = open(pickle_files[pick_it], 'rb')

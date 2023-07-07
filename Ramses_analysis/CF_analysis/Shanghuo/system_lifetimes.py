@@ -78,70 +78,9 @@ args = parse_inputs()
 sim_label = args.simulation_id
 
 #Server pickles
-pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Max_iter_100/means_superplot.pkl"]
+pickle_files = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Max_iter_100/means_superplot.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Max_iter_100/means_superplot.pkl"]
 
-birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
-
-low_cadence_birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/"+sim_label+"/Low_Cadence_birth_con/sink_birth_all_delayed_core_frag_cleaned.pkl"]
-#Local pickles
-
-if sim_label != 'G100':
-    files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/*/info*.txt"))
-    sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_"+sim_label+"/data/output*/*.dat"))
-else:
-    files = sorted(glob.glob("/lustre/astro/troels/IMF_256_fixed_dt/data/*/info*.txt"))
-    sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_256_fixed_dt/data/output*/*.dat"))
-global_pickle = '/groups/astro/rlk/Analysis_plots/Ramses/Global/'+sim_label+'/stars_imf_'+sim_label+'.pkl'
-
-plt.clf()
-'''
-if plot_booleans[rank][0] == True:
-    fig, axs = plt.subplots(len(pickle_files), 2, gridspec_kw={'width_ratios': [3, 1]}, figsize=(12, len(pickle_files)*3), sharex='col')
-    iter_range = range(0, len(pickle_files)*2, 2)
-    args.figure_suffix = args.figure_suffix + '_hist'
-else:
-'''
-
-'''
-#fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width,page_height))
-iter_range = range(0, len(pickle_files)*2)
-plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.07)
-
-#if plot_booleans[rank][1] == True:
-#    args.figure_suffix = args.figure_suffix + '_thres'
-
-subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
-GMC_mass_arr = [12000]
-Shrinkage_hist = []
-Shrinkage_bins = [-10000, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-Shrinks = []
-Lifetime_bins = [0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]
-Lifetime_hist = []
-S_bins = np.logspace(1,4,13)
-CF_hist = np.zeros((len(pickle_files),12)).tolist()
-Times_all = []
-M_tot_all = []
-M_tot_multi_all = []
-N_stars_all = []
-N_multi_stars_all = []
-SFE_all = []
-t_max = np.nan
-G50_t_max = 0
-'''
-
-#sink_files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/output*/*.dat"))
-#files = sorted(glob.glob("/lustre/astro/troels/IMF_G400/data/*/info*.txt"))
-
-rm_files = []
-for info_name in files:
-    sink_file = info_name.split('info')[0]+'stars_output.dat'
-    if sink_file not in sink_files:
-        rm_files.append(info_name)
-for rm_file in rm_files:
-    files.remove(rm_file)
-del sink_files
-gc.collect()
+birth_con_pickles = ["/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G50/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G100/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G125/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G150/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G200/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl", "/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"] #"/groups/astro/rlk/rlk/Analysis_plots/Superplot_pickles_entire_sim/G400/Full_sink_data/Fast_analysis/sink_birth_all_delayed_core_frag_cleaned.pkl"]
 
 
 #Define units to override:
@@ -185,20 +124,6 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
-    
-file_times = []
-if rank == 0:
-    for file in files:
-        with open(file, 'r') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                if row[0].split(' ')[0] == 'time':
-                    file_time = eval(row[0].split(' ')[-1])
-                    file_times.append(file_time)
-                    
-        f.close()
-    file_times = np.array(file_times)*units['time_unit'].in_units('yr')
-file_times = CW.bcast(file_times, root=0)
 
 #print('Calculated the units on rank', rank)
 sys.stdout.flush()
@@ -206,6 +131,11 @@ CW.Barrier()
 
 #================================================================================================
 #plot fractions of core fragmentation and dynamical capture
+
+fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(two_col_width,page_height))
+iter_range = range(0, len(pickle_files)*2)
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.07)
 
 for pick_it in range(len(pickle_files)):
     #try:
@@ -239,11 +169,13 @@ for pick_it in range(len(pickle_files)):
         lit = lit + 1
         
         form_hist, bins = np.histogram(lifetime, bins)
-        plt.step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='post', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
+        axs[pick_it].step(np.linspace(1, 7, 13)[:-1]+offset, form_hist, where='post', label=labels[lit], linewidth=2, color=colors[lit], alpha=0.5, ls='-')
         offset = offset + 0.02
 
-    plt.xlabel('log lifetime (yr)')
-    plt.legend(loc='best')
-    plt.ylim(bottom=0)
-    plt.xlim([1, 6.5])
-    plt.savefig('Lifetime_'+args.simulation_id+'.png')
+    if pick_it == 0:
+        axs[pick_it].legend(loc='best')
+    axs[pick_it].ylim(bottom=0)
+
+axs[pick_it].xlim([1, 6.5])
+axs[pick_it].xlabel('log lifetime (yr)')
+plt.savefig('Lifetimes.png')
