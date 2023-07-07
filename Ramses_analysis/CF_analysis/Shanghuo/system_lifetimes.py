@@ -95,7 +95,7 @@ CW.Barrier()
 fig, axs = plt.subplots(ncols=1, nrows=len(pickle_files), figsize=(1.5*single_col_width,page_height))
 iter_range = range(0, len(pickle_files)*2)
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.07)
+plt.subplots_adjust(hspace=0.0)
 
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
