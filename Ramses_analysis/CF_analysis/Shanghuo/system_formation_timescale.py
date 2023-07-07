@@ -167,7 +167,6 @@ for pick_it in range(len(pickle_files)):
     bins = np.logspace(1, 7, 13)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
 
-    plt.clf()
     labels = ['Binary', 'Triple', 'Quadruple', 'Quintuple', 'Sextuple']
     colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     lit = -1
@@ -186,5 +185,5 @@ for pick_it in range(len(pickle_files)):
     axs[pick_it].tick_params(which='both', direction='in')
 
 axs[pick_it].set_xlim([1, 6.5])
-axs[pick_it].set_xlabel('log lifetime (yr)')
+axs[pick_it].set_xlabel('log formation time (yr)')
 plt.savefig('Formation_timescale.png', bbox_inches='tight', pad_inches=0.02)
