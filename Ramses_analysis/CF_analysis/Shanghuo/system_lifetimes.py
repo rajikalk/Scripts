@@ -165,7 +165,6 @@ for pick_it in range(len(pickle_files)):
     bins = np.logspace(1, 7, 13)
     bin_centers = (np.log10(bins[:-1])+np.log10(bins[1:]))/2
 
-    plt.clf()
     labels = ['Binary', 'Triple', 'Quadruple', 'Quintuple', 'Sextuple']
     colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     lit = -1
