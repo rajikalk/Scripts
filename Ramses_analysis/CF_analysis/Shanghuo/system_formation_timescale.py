@@ -172,7 +172,7 @@ for pick_it in range(len(pickle_files)):
     colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown']
     lit = -1
     offset = -0.04
-    for lifetime in system_lifetimes:
+    for lifetime in formation_timescales:
         lit = lit + 1
         
         form_hist, bins = np.histogram(lifetime, bins)
