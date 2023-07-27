@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import os
+from copy import deepcopy
 
 sink_evol_file = sys.argv[1]
 sink_evol_pickle = sys.argv[2]
@@ -91,7 +92,7 @@ with open(sink_evol_file, 'r') as f:
                     sink_data[row_list[0]][col_tag[15].split(']')[-1]].append(float(row_list[15]))
                 if np.remainder(line_counter, 5000) == 0:
                     print('Read up to line', line_counter)
-                    write_sink_data = sink_data.copy()
+                    write_sink_data = deepcopy(sink_data)
                     for sink_id in write_sink_data.keys():
                         sort_inds = np.argsort(write_sink_data[sink_id]['time'])
                         for para_key in write_sink_data[sink_id].keys():
@@ -101,7 +102,7 @@ with open(sink_evol_file, 'r') as f:
                     pickle_file.close()
 f.close()
 
-write_sink_data = sink_data.copy()
+write_sink_data = deepcopy(sink_data)
 for sink_id in write_sink_data.keys():
     sort_inds = np.argsort(write_sink_data[sink_id]['time'])
     for para_key in write_sink_data[sink_id].keys():
