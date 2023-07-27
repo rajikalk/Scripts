@@ -190,15 +190,14 @@ for spin_lab in Spin_labels:
             file = open(single_pickle, 'rb')
             sink_data, line_counter = pickle.load(file)
             file.close()
-            import pdb
-            pdb.set_trace()
-            form_time = np.nan
+            form_time = np.inf
+            for sink_id in sink_data.keys():
+                if sink_data[sink_id]['time'][0] < form_time:
+                    form_time = sink_data[sink_id]['time'][0]
             
             #for sink_id in list(sink_data.keys())[0]:
             #sink_id = list(sink_data.keys())[0]
             for sink_id in sink_data.keys():
-                if np.isnan(form_time):
-                    form_time = sink_data[sink_id]['time'][0]
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
                 time = sink_data[sink_id]['time'] - form_time
