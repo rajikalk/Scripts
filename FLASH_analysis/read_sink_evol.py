@@ -101,13 +101,14 @@ with open(sink_evol_file, 'r') as f:
                     pickle_file.close()
 f.close()
 
-for sink_id in sink_data.keys():
-    sort_inds = np.argsort(sink_data[sink_id]['time'])
-    for para_key in sink_data[sink_id].keys():
-        sink_data[sink_id][para_key] = np.array(sink_data[sink_id][para_key])[sort_inds]
+write_sink_data = sink_data
+for sink_id in write_sink_data.keys():
+    sort_inds = np.argsort(write_sink_data[sink_id]['time'])
+    for para_key in write_sink_data[sink_id].keys():
+        write_sink_data[sink_id][para_key] = np.array(write_sink_data[sink_id][para_key])[sort_inds]
 
 pickle_file = open(sink_evol_pickle, 'wb')
-pickle.dump((sink_data, line_counter), pickle_file)
+pickle.dump((write_sink_data, line_counter), pickle_file)
 pickle_file.close()
 
 #plot spin evolution
