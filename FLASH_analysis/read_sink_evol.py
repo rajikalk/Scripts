@@ -25,11 +25,11 @@ with open(sink_evol_file, 'r') as f:
     reader = csv.reader(f, delimiter=' ')
     line_counter = 0
     for row in reader:
+        row_list = [x for x in row if x]
+        if row_list[0] == '[00]part_tag':
+            col_tag = row_list
         line_counter = line_counter + 1
         if line_counter > prev_line_counter:
-            row_list = [x for x in row if x]
-            if row_list[0] == '[00]part_tag':
-                col_tag = row_list
             if row_list[0] != '[00]part_tag':
                 if row_list[0] not in sink_data.keys():
                     #If sink id isn't in saved data, add it
