@@ -250,7 +250,7 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it-1].set_xlim(left=0)
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
 #axs.flatten()[plot_it-1].set_ylim([5.e48, 5.e54])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi_'+args.refinment_level+'.png')
