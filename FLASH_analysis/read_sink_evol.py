@@ -10,7 +10,7 @@ sink_evol_pickle = sys.argv[2]
 
 try:
     if os.path.exists(sink_evol_pickle):
-        file = open(single_pickle, 'rb')
+        file = open(sink_evol_pickle, 'rb')
         sink_data, prev_line_counter = pickle.load(file)
         file.close()
     else:
