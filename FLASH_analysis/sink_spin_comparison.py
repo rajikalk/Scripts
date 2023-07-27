@@ -190,6 +190,8 @@ for spin_lab in Spin_labels:
             file = open(single_pickle, 'rb')
             sink_data = pickle.load(file)
             file.close()
+            import pdb
+            pdb.set_trace()
             form_time = np.nan
             
             #for sink_id in list(sink_data.keys())[0]:
