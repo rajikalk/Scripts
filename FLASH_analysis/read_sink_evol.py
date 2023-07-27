@@ -13,6 +13,9 @@ try:
         file = open(sink_evol_pickle, 'rb')
         sink_data, prev_line_counter = pickle.load(file)
         file.close()
+        for sink_id in sink_data.keys():
+            for para_key in sink_data[sink_id]:
+                sink_data[sink_id][para_key] = list(sink_data[sink_id][para_key])
     else:
         prev_line_counter = 0
         sink_data = {}
@@ -70,6 +73,7 @@ with open(sink_evol_file, 'r') as f:
                             time_ind = np.where(np.array(sink_data[sink_key][col_tag[1].split(']')[-1]]) == match_time)[0][0]
                             for field_key in sink_data[sink_key].keys():
                                 sink_data[sink_key][field_key] = sink_data[sink_key][field_key][:time_ind]
+
                     sink_data[row_list[0]][col_tag[1].split(']')[-1]].append(float(row_list[1]))
                     sink_data[row_list[0]][col_tag[2].split(']')[-1]].append(float(row_list[2]))
                     sink_data[row_list[0]][col_tag[3].split(']')[-1]].append(float(row_list[3]))
@@ -87,6 +91,10 @@ with open(sink_evol_file, 'r') as f:
                     sink_data[row_list[0]][col_tag[15].split(']')[-1]].append(float(row_list[15]))
                 if np.remainder(line_counter, 5000) == 0:
                     print('Read up to line', line_counter)
+                    for sink_id in sink_data.keys():
+                        sort_inds = np.argsort(sink_data[sink_id]['time'])
+                        for para_key in sink_data[sink_id]:
+                            sink_data[sink_id][para_key] = np.array(sink_data[sink_id][para_key])[sort_inds]
                     pickle_file = open(sink_evol_pickle, 'wb')
                     pickle.dump((sink_data, line_counter), pickle_file)
                     pickle_file.close()
