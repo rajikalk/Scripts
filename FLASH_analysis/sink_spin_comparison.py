@@ -107,7 +107,7 @@ for spin_lab in Spin_labels:
         
         if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
-            sink_data = pickle.load(file)
+            sink_data, line_counter = pickle.load(file)
             file.close()
             form_time = np.nan
             
@@ -188,7 +188,7 @@ for spin_lab in Spin_labels:
         
         if os.path.exists(single_pickle):
             file = open(single_pickle, 'rb')
-            sink_data = pickle.load(file)
+            sink_data, line_counter = pickle.load(file)
             file.close()
             import pdb
             pdb.set_trace()
