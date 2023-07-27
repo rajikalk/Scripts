@@ -244,9 +244,9 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
-            if mach_lab != '0.0':
+            if mach_lab != '0.2':
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                plt.setp(xticklabels[0], visible=False)
+                plt.setp(xticklabels[-1], visible=False)
         
         plot_it = plot_it + 1
 
