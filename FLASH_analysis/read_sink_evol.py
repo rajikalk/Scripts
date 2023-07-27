@@ -14,7 +14,7 @@ try:
         sink_data, prev_line_counter = pickle.load(file)
         file.close()
         for sink_id in sink_data.keys():
-            for para_key in sink_data[sink_id]:
+            for para_key in sink_data[sink_id].keys():
                 sink_data[sink_id][para_key] = list(sink_data[sink_id][para_key])
     else:
         prev_line_counter = 0
@@ -102,7 +102,7 @@ f.close()
 
 for sink_id in sink_data.keys():
     sort_inds = np.argsort(sink_data[sink_id]['time'])
-    for para_key in sink_data[sink_id]:
+    for para_key in sink_data[sink_id].keys():
         sink_data[sink_id][para_key] = np.array(sink_data[sink_id][para_key])[sort_inds]
 
 pickle_file = open(sink_evol_pickle, 'wb')
