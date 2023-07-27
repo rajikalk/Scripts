@@ -236,17 +236,17 @@ for spin_lab in Spin_labels:
             print("Couldn't open", binary_pickle)
         '''
         
-        if plot_it == 0:
-            axs.flatten()[plot_it].legend()
+        #if plot_it == 0:
+        #    axs.flatten()[plot_it].legend()
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-            if spin_lab == '0.20':
-                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
-        if mach_lab == '0.2':
-            if spin_lab == '0.20':
-                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+            if mach_lab != '0.0':
+                xticklabels = axs.get_xticklabels()
+                plt.setp(xticklabels[0], visible=False)
         
         plot_it = plot_it + 1
 
