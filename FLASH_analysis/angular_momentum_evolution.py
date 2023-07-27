@@ -142,7 +142,7 @@ if args.update_pickles == 'True':
             #Define sink pickle
             sink_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_'+pickle_names.split('_ang_mom_')[0] + '.pkl'
             file = open(sink_pickle, 'rb')
-            sink_data = pickle.load(file)
+            sink_data, line_counter = pickle.load(file)
             file.close()
             
             prime_tag = list(sink_data.keys())[0]
