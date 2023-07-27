@@ -315,8 +315,8 @@ if rank == 0:
     plt.clf()
     #plt.semilogy(Time_array - Time_array[0], L_primary, label='Primary spin')
     #plt.semilogy(Time_array - Time_array[0], L_secondary, label='Secondary spin')
-    plt.semilogy(Time_array - Time_array[0], L_orbit, label='Orbital L')
-    plt.semilogy(Time_array - Time_array[0], L_in_gas, label='L_in_gas')
+    plt.semilogy(Time_array - Time_array[0], L_orbit, 'k--', label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas,'k:', label='L_in_gas')
     for sink_id in L_sink.keys():
         plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1], label='Sink')
     plt.xlabel('Time (yr)')
@@ -337,10 +337,12 @@ if rank == 0:
     plt.clf()
     #plt.semilogy(Time_array - Time_array[0], L_primary/L_tot, label='Primary spin')
     #plt.semilogy(Time_array - Time_array[0], L_secondary/L_tot, label='Secondary spin')
-    plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, label='Orbital L')
-    plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, label='L_in_gas')
+    plt.semilogy(Time_array - Time_array[0], L_orbit/L_tot, 'k--', label='Orbital L')
+    plt.semilogy(Time_array - Time_array[0], L_in_gas/L_tot, 'k:', label='L_in_gas')
+    sink_counter = 1
     for sink_id in L_sink.keys():
-        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(L_sink[sink_id]):], label='Sink')
+        plt.semilogy(np.array(L_sink[sink_id]).T[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(L_sink[sink_id]):], label='Sink #'+str(sink_counter))
+        sink_counter = sink_counter + 1
     plt.tick_params(axis='both', which='major', labelsize=font_size, right=True)
     plt.tick_params(axis='both', which='minor', labelsize=font_size, right=True)
     plt.tick_params(axis='x', direction='in')
@@ -349,7 +351,7 @@ if rank == 0:
     plt.ylabel('Angular momentum fraction (%)')
     plt.legend(loc='best')
     plt.xlim(left=0)
-    plt.ylim(top=1)
+    plt.ylim([1.e-5, 1.05e0])
     plt.savefig('_'.join(input_dir.split('Flash_2023/')[-1].split('/'))+'L_evolution_frac.png', bbox_inches='tight')
     
     
