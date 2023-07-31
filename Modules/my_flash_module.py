@@ -214,7 +214,7 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
             t = text.get_transform() + \
                 offset_copy(Affine2D(), fig=fig, x=0, y=ex.height)
                 
-def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None, velz_full=None, axis = None):
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=31., smooth_cells=None, center_vel=None, velz_full=None, axis = None):
     if axis == 'xy':
         center_vel_plane = np.array([center_vel[0], center_vel[1]])
         center_vel_perp = center_vel[2]
@@ -227,7 +227,7 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
     else:
         center_vel_plane = center_vel
         center_vel_perp = 0
-    annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
+    annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers)
     if smooth_cells is None:
         smoothing_val = int(annotate_freq/2)
     else:
@@ -235,7 +235,7 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
     x_ind = []
     y_ind = []
     counter = 0
-    while counter < (no_of_quivers-1):
+    while counter < (no_of_quivers):
         valx = int(x_pos_min + annotate_freq*counter + annotate_freq/2.)
         valy = int(y_pos_min + annotate_freq*counter + annotate_freq/2.)
         x_ind.append(int(valx))

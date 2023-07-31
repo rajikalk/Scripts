@@ -92,11 +92,11 @@ if args.make_movie_pickles == 'True':
     #x_image_max = ds.domain_width.in_units('au')[0]/2
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
-    annotate_space = (x_image_max - x_image_min)/32.
+    annotate_space = (x_image_max - x_image_min)/31.
     x_ind = []
     y_ind = []
     counter = 0
-    while counter < 32:
+    while counter < 31:
         val = annotate_space*counter + annotate_space/2. + x_image_min
         x_ind.append(int(val))
         y_ind.append(int(val))
@@ -197,13 +197,13 @@ if args.make_movie_pickles == 'True':
                 #    file.close()
             
             if rank == proj_root_rank and size > 1:
-                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]])
+                velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_min.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]])
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_counter, "on rank", rank)
             elif size == 1:
-                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]])
+                velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_min.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]])
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
