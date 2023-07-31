@@ -213,6 +213,80 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
         else:
             t = text.get_transform() + \
                 offset_copy(Affine2D(), fig=fig, x=0, y=ex.height)
+                
+def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, no_of_quivers=32., smooth_cells=None, center_vel=None, velz_full=None, axis = None):
+    if axis == 'xy':
+        center_vel_plane = np.array([center_vel[0], center_vel[1]])
+        center_vel_perp = center_vel[2]
+    elif axis == 'xz':
+        center_vel_plane = np.array([center_vel[0], center_vel[2]])
+        center_vel_perp = center_vel[1]
+    elif axis == 'yz':
+        center_vel_plane = np.array([center_vel[1], center_vel[2]])
+        center_vel_perp = center_vel[0]
+    else:
+        center_vel_plane = center_vel
+        center_vel_perp = 0
+    annotate_freq = float(np.shape(image_array)[0])/float(no_of_quivers-1)
+    if smooth_cells is None:
+        smoothing_val = int(annotate_freq/2)
+    else:
+        smoothing_val = int(smooth_cells)
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < (no_of_quivers-1):
+        valx = int(x_pos_min + annotate_freq*counter + annotate_freq/2.)
+        valy = int(y_pos_min + annotate_freq*counter + annotate_freq/2.)
+        x_ind.append(int(valx))
+        y_ind.append(int(valy))
+        counter = counter + 1
+    
+    try:
+        if velz_full is None:
+            velz_full = np.zeros(np.shape(velx_full))
+    except:
+        velz_full = velz_full
+    
+    velx = []
+    vely = []
+    velz = []
+    for x in x_ind:
+        x = int(x)
+        xarr = []
+        yarr = []
+        zarr = []
+        for y in y_ind:
+            y = int(y)
+            x_vel = []
+            y_vel = []
+            z_vel = []
+            for curx in range(x-smoothing_val, x+smoothing_val):
+                for cury in range(y-smoothing_val, y+smoothing_val):
+                    x_vel.append(velx_full[curx][cury])
+                    y_vel.append(vely_full[curx][cury])
+                    z_vel.append(velz_full[curx][cury])
+            x_vel = np.mean(x_vel)
+            y_vel = np.mean(y_vel)
+            z_vel = np.mean(z_vel)
+            xarr.append(x_vel)
+            yarr.append(y_vel)
+            zarr.append(z_vel)
+        velx.append(xarr)
+        vely.append(yarr)
+        velz.append(zarr)
+    velx = np.array(velx)
+    vely = np.array(vely)
+    velz = np.array(velz)
+    try:
+        velx = velx - center_vel_plane[0]
+        vely = vely - center_vel_plane[1]
+        velz = velz - center_vel_perp
+    except:
+        velx = velx
+        vely = vely
+        velz = velz
+    return velx, vely, velz
 
 def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
     global fontsize_global
@@ -245,6 +319,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     max_length = 0
     import pdb
     pdb.set_trace()
+    speeds = np.sqrt(X_val**2 + Y_val**2)
+    
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = len_scale*(X_val[xp][yp]/standard_vel)
