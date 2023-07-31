@@ -64,19 +64,19 @@ for pick_file in pickle_files:
 
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end].T[part], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file))
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file), color=proj_colours[0]])
         else:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end].T[part], L_tot[t_start:t_end].T[part])
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
     axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].legend()
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end].T[part], particle_data['mdot'][t_start:t_end].T[part], color=proj_colours[0])
+        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], particle_data['mdot'][t_start:t_end].T[part], color=proj_colours[1])
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[2].plot(particle_data['time'][t_start:t_end].T[part], particle_data['mass'][t_start:t_end].T[part], color=proj_colours[0])
+        axs.flatten()[2].plot(particle_data['time'][t_start:t_end], particle_data['mass'][t_start:t_end].T[part], color=proj_colours[2])
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
