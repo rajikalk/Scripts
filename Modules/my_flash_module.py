@@ -247,7 +247,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         for yp in range(len(Y_pos[0])):
             xvel = len_scale*(X_val[xp][yp]/standard_vel)
             yvel = len_scale*(Y_val[xp][yp]/standard_vel)
-            length = np.sqrt(xvel**2 + Y_val[xp][yp]**2)
+            length = np.sqrt(X_val[xp][yp]**2 + Y_val[xp][yp]**2)
             if length > max_length:
                 max_length = length
             #xvel = length_scale*X_val[xp][yp]/len_scale
