@@ -236,8 +236,6 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
     y_ind = []
     counter = 0
     while counter < (no_of_quivers):
-        import pdb
-        pdb.set_trace()
         valx = int(x_pos_min + annotate_freq*counter + annotate_freq/2.)
         valy = int(y_pos_min + annotate_freq*counter + annotate_freq/2.)
         x_ind.append(int(valx))
