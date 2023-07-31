@@ -72,11 +72,11 @@ for pick_file in pickle_files:
     axs.flatten()[0].legend()
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], particle_data['mdot'][t_start:t_end].T[part], color=proj_colours[1])
+        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[1])
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[2].plot(particle_data['time'][t_start:t_end], particle_data['mass'][t_start:t_end].T[part], color=proj_colours[2])
+        axs.flatten()[2].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[2])
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
