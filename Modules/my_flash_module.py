@@ -245,6 +245,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     max_length = 0
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
+            import pdb
+            pdb.set_trace()
             if X_val[xp][yp] == np.max(X_val) or Y_val[xp][yp] == np.max(Y_val):
                 import pdb
                 pdb.set_trace()
