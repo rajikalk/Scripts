@@ -92,7 +92,7 @@ if args.make_movie_pickles == 'True':
     #x_image_max = ds.domain_width.in_units('au')[0]/2
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
-    annotate_space = (x_image_min - x_image_max)/32.
+    annotate_space = (x_image_max - x_image_min)/32.
     x_ind = []
     y_ind = []
     counter = 0
