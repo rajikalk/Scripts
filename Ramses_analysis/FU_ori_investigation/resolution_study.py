@@ -68,7 +68,7 @@ for pick_file in pickle_files:
         if part == 0:
             axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
         else:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], , color=proj_colours[cit])
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], color=proj_colours[cit])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
     axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].legend()
