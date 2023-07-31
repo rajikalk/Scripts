@@ -245,14 +245,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     max_length = 0
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
-            import pdb
-            pdb.set_trace()
-            if X_val[xp][yp] == np.max(X_val) or Y_val[xp][yp] == np.max(Y_val):
-                import pdb
-                pdb.set_trace()
             xvel = len_scale*(X_val[xp][yp]/standard_vel)
             yvel = len_scale*(Y_val[xp][yp]/standard_vel)
-            length = np.sqrt(X_val[xp][yp]**2 + Y_val[xp][yp]**2)
+            length = np.sqrt(xvel**2 + Y_val[xp][yp]**2)
             if length > max_length:
                 max_length = length
             #xvel = length_scale*X_val[xp][yp]/len_scale
@@ -270,6 +265,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 zvel = Z_val[xp][yp]/len_scale
                 cit = np.argmin(abs(rv_colors - zvel))
                 color = rv_cmap(cit)
+            import pdb
+            pdb.set_trace()
             axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
     print("Max velocity =", max_length)
     if plot_velocity_legend:
