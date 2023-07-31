@@ -42,7 +42,9 @@ plt.subplots_adjust(hspace=0.0)
 
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 
+cit = -1
 for pick_file in pickle_files:
+    cit = cit + 1
     file_open = open(pick_file, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
@@ -64,19 +66,19 @@ for pick_file in pickle_files:
 
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[0])
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
         else:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part])
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], L_tot[t_start:t_end].T[part], , color=proj_colours[cit])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
     axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].legend()
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[1])
+        axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
 
     for part in range(len(L_tot[t_start:t_end].T)):
-        axs.flatten()[2].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[2])
+        axs.flatten()[2].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit])
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
