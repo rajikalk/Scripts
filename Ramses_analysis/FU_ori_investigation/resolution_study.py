@@ -64,7 +64,7 @@ for pick_file in pickle_files:
 
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end].T[part], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file), color=proj_colours[0])
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end].T[part], L_tot[t_start:t_end].T[part], label=label[pickle_files.index(pick_file))
         else:
             axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end].T[part], L_tot[t_start:t_end].T[part])
     axs.flatten()[0].set_ylabel('Luminosity (Lsun)')
