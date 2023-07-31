@@ -243,6 +243,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))
     #vels = np.hypot(X_val, Y_val)
     max_length = 0
+    import pdb
+    pdb.set_trace()
     for xp in range(len(X_pos[0])):
         for yp in range(len(Y_pos[0])):
             xvel = len_scale*(X_val[xp][yp]/standard_vel)
