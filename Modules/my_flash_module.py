@@ -159,7 +159,7 @@ def rainbow_text(x,y,ls,lc,**kw):
             #import pdb
             #pdb.set_trace()
             #t = transforms.offset_copy(text._transform, x=ex.width, units='dots')
-            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')
+            t = transforms.offset_copy(text._transform, x=0.75*ex.width, units='dots')ßß
         else:
             #import pdb
             #pdb.set_trace()
@@ -418,18 +418,16 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
-        import pdb
-        pdb.set_trace()
         if len(particle_tags) > 3:
             string_l = p_t[:68]
             string_2 = p_t[69:]
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
             #except:
             #    print("couldn't annotate particle masses")
     return axis
