@@ -57,7 +57,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-plot_it = 0
+plot_it = -1
 
 for spin_val in spin_values:
     for mach_val in mach_values:
@@ -69,6 +69,7 @@ for spin_val in spin_values:
             
             os.rename('movie_frame_000000.pkl', pickle_file)
         
+        plot_it = plot_it +1
         file = open(pickle_file, 'rb')
         X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
         file.close()
