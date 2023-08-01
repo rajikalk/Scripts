@@ -48,6 +48,7 @@ font_size = 10
 spin_values = ['0.20', '0.25', '0.30', '0.35']
 mach_values = ['0.0', '0.1', '0.2']
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
+cmap=plt.cm.gist_heat
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
