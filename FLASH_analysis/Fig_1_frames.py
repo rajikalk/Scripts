@@ -65,7 +65,7 @@ for spin_val in spin_values:
         pickle_file = 'Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
             runline = "python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_"+spin_val+"/Single/Mach_"+mach_val+"/Lref_9/ ./ -pt 10000 -width 300"
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', '10000', '-width', '300']
+            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', '10000', '-width', '400', '-no_quiv', '15']
             subprocess.Popen(cmd).wait()
             
             os.rename('movie_frame_000000.pkl', pickle_file)
@@ -88,10 +88,10 @@ for spin_val in spin_values:
         stdvel = 2
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-        plt.gca().set_aspect('equal')
+        axs.flatten()[plot_it].gca().set_aspect('equal')
         
         axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-        if spin_val == '0.20' and mach_val == '0.35':
+        if spin_val == '0.20' and mach_val == '0.0':
             plot_velocity_legend = True
         else:
             plot_velocity_legend = False

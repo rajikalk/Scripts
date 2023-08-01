@@ -31,6 +31,7 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
+    parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     
@@ -92,11 +93,11 @@ if args.make_movie_pickles == 'True':
     #x_image_max = ds.domain_width.in_units('au')[0]/2
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
-    annotate_space = (x_image_max - x_image_min)/31.
+    annotate_space = (x_image_max - x_image_min)/args.quiver_arrows
     x_ind = []
     y_ind = []
     counter = 0
-    while counter < 31:
+    while counter < args.quiver_arrows:
         val = annotate_space*counter + annotate_space/2. + x_image_min
         x_ind.append(int(val))
         y_ind.append(int(val))
