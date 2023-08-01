@@ -12,6 +12,7 @@ import my_flash_module as mym
 import my_flash_fields as myf
 import subprocess
 import matplotlib
+import matplotlib.pyplot as plt
 
 #------------------------------------------------------
 #get mpi size and ranks
