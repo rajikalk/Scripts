@@ -13,6 +13,7 @@ import my_flash_fields as myf
 import subprocess
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 #------------------------------------------------------
 #get mpi size and ranks
