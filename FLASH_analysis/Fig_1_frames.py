@@ -90,8 +90,12 @@ for spin_val in spin_values:
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         plt.gca().set_aspect('equal')
         
-        axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=1, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+        axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+        if spin_val == '0.20' and mach_val == '0.35':
+            plot_velocity_legend = True
+        else:
+            plot_velocity_legend = False
+        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=True,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
         mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
         
         plt.tick_params(axis='both', which='major')# labelsize=16)
