@@ -14,6 +14,7 @@ import subprocess
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+import matplotlib.patheffects as path_effects
 
 #------------------------------------------------------
 #get mpi size and ranks
