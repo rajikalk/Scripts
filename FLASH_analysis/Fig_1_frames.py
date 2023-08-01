@@ -55,6 +55,8 @@ cmap=plt.cm.gist_heat
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+for ax_it in axs.flatten():
+    ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
