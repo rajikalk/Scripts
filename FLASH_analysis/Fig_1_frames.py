@@ -88,7 +88,7 @@ for spin_val in spin_values:
         stdvel = 2
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-        axs.flatten()[plot_it].gca().set_aspect('equal')
+        axs.flatten()[plot_it].set_aspect('equal')
         
         axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
         if spin_val == '0.20' and mach_val == '0.0':
