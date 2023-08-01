@@ -80,6 +80,9 @@ for spin_val in spin_values:
         ylim = [np.min(Y_image).value, np.max(Y_image).value]
         axs.flatten()[plot_it].set_xlim(xlim)
         axs.flatten()[plot_it].set_ylim(ylim)
+        
+        cbar_lims = [1.e-15, 1.e-13]
+        stdvel = 2
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         plt.gca().set_aspect('equal')
