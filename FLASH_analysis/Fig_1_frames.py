@@ -62,6 +62,8 @@ for spin_val in spin_values:
             runline = "python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_"+spin_val+"/Single/Mach_"+mach_val+"/Lref_9/ ./ -pt 10000 -width 300"
             cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', '10000', '-width', '300']
             subprocess.Popen(cmd).wait()
+            
+            os.rename('movie_frame_000000.pkl', pickle_file)
         
         file = open(pickle_file, 'rb')
         X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
