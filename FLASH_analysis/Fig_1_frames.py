@@ -50,8 +50,7 @@ mach_values = ['0.0', '0.1', '0.2']
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
-iter_range = range(0, len(Spin_labels))
+fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
