@@ -59,7 +59,7 @@ plot_it = 0
 for spin_val in spin_values:
     for mach_val in mach_values:
         pickle_file = 'Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
-        if os.path.exists(single_pickle) == False:
+        if os.path.exists(pickle_file) == False:
             runline = "python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_"+spin_val+"/Single/Mach_"+mach_val+"/Lref_9/ ./ -pt 10000 -width 300"
             cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', '10000', '-width', '300']
             subprocess.Popen(cmd).wait()
