@@ -399,6 +399,31 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
+        
+        if annotate_field is not None:
+            if units is not None:
+                annotate_field = annotate_field.in_units(units)
+                if units == "Msun":
+                    unit_string = "$\,$M$_\odot$"
+            if unit_string == "$\,$M$_\odot$":
+                P_msun = str(np.round(annotate_field[pos_it], 2))
+                if len(P_msun.split('.')[-1]) == 1:
+                    P_msun = P_msun +"0"
+            else:
+                if annotate_field[pos_it] == 0.0:
+                    P_msun = "0.0"
+                else:
+                    P_msun = "{:0.1f}".format(annotate_field[pos_it])
+            if p_t == "":
+                p_t = field_symbol+"$ =$\,[$"
+                rainbow_text_colors.append('white')
+            elif pos_it != np.argsort(particle_tags)[-1]:
+                p_t = p_t + P_msun + ', '
+                rainbow_text_colors.append(part_color[pos_it])
+            else:
+                p_t = p_t + P_msun + ']$\,$M$_\odot$'
+                rainbow_text_colors.append(part_color[pos_it])
+        '''
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
@@ -419,6 +444,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 p_t = p_t+", "+field_symbol+str(pos_it+1)+"$ =$\,$"+P_msun+unit_string
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
+            '''
     if annotate_field is not None:
         if len(particle_tags) > 3:
             import pdb
