@@ -57,7 +57,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
-plt.subplots_adjust(wspace=-0.2)
+plt.subplots_adjust(wspace=-0.25)
 plt.subplots_adjust(hspace=0.0)
 
 plot_it = -1
@@ -87,7 +87,7 @@ for spin_val in spin_values:
         axs.flatten()[plot_it].set_ylim(ylim)
         
         cbar_lims = [1.e-15, 1.e-13]
-        stdvel = 2
+        stdvel = 1
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         axs.flatten()[plot_it].set_aspect('equal')

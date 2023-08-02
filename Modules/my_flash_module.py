@@ -449,7 +449,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append('white')
             '''
     if annotate_field is not None:
-        if len(particle_tags) > 3:
+        if len(particle_tags) > 5:
             import pdb
             pdb.set_trace()
             string_l = p_t[:68]
