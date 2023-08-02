@@ -391,7 +391,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     string_pos = []
     if particle_tags == None:
         particle_tags = np.arange(len(particle_position))
-    for pos_it in np.argsort(particle_tags):
+    for pos_it in range(len(particle_tags)): #np.argsort(particle_tags):
         #axis.scatter(particle_position[0][pos_it], particle_position[1][pos_it], c=part_color[pos_it], s=1, zorder=zorder)
         axis.plot((particle_position[0][pos_it]-(line_rad), particle_position[0][pos_it]+(line_rad)), (particle_position[1][pos_it], particle_position[1][pos_it]), lw=lw, c='k')
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw, c='k')
@@ -417,7 +417,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if p_t == "":
                 p_t = "M=[ "
                 rainbow_text_colors.append('white')
-            if pos_it != np.argsort(particle_tags)[-1]:
+            if pos_it != len(particle_tags)-1:
                 p_t = p_t + P_msun + ', '
                 rainbow_text_colors.append(part_color[pos_it])
             else:
