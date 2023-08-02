@@ -343,7 +343,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 color = rv_cmap(cit)
             #import pdb
             #pdb.set_trace()
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=7.*width_val, shrinkA=0.0, shrinkB=0.0)) #alpha=width_val/width_ceil
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0)) #alpha=width_val/width_ceil
     print("Max velocity =", max_length)
     if plot_velocity_legend:
         #print("plotting quiver legend")
@@ -352,7 +352,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
-        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.04*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
+        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.05*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
@@ -449,17 +449,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             '''
     if annotate_field is not None:
         if len(particle_tags) > 4:
-            import pdb
-            pdb.set_trace()
-            string_1 = p_t[:27]
-            string_2 = p_t[28:]
-            colors_1 = rainbow_text_colors[:5]
-            colors_2 = rainbow_text_colors[5:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
+            string_1 = p_t[:31]
+            string_2 = p_t[32:]
+            colors_1 = rainbow_text_colors[:9]
+            colors_2 = rainbow_text_colors[9:]
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)*3), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
             #except:
             #    print("couldn't annotate particle masses")
     return axis
