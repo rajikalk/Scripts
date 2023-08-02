@@ -343,12 +343,12 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 color = rv_cmap(cit)
             #import pdb
             #pdb.set_trace()
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0)) #alpha=width_val/width_ceil
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=7.*width_val, shrinkA=0.0, shrinkB=0.0)) #alpha=width_val/width_ceil
     print("Max velocity =", max_length)
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*0.75*(ymax-ymin)]
+        pos_start = [xmax - 0.25*(xmax-xmin), ymin + (fontsize_global/100)*0.70*(ymax-ymin)]
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
@@ -418,15 +418,13 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if p_t == "":
                 p_t = "M=[ "
                 rainbow_text_colors.append('white')
+            p_t = p_t + P_msun + ' '
+            rainbow_text_colors.append(part_color[pos_it])
             if pos_it != len(particle_tags)-1:
-                p_t = p_t + P_msun + ', '
-                rainbow_text_colors.append(part_color[pos_it])
+                p_t = p_t + ', '
             else:
-                p_t = p_t + P_msun
-                rainbow_text_colors.append(part_color[pos_it])
-            if pos_it == len(particle_tags)-1:
                 p_t = p_t + ' ]$\,$M$_\odot$'
-                rainbow_text_colors.append('white')
+            rainbow_text_colors.append('white')
         '''
         if annotate_field is not None:
             if units is not None:
@@ -453,11 +451,11 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         if len(particle_tags) > 4:
             import pdb
             pdb.set_trace()
-            string_l = p_t[:68]
-            string_2 = p_t[69:]
-            colors_1 = rainbow_text_colors[:9]
-            colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            string_1 = p_t[:27]
+            string_2 = p_t[28:]
+            colors_1 = rainbow_text_colors[:5]
+            colors_2 = rainbow_text_colors[5:]
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
