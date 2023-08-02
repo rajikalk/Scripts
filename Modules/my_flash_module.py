@@ -198,7 +198,7 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
         kwargs.update(rotation=90, verticalalignment='bottom')
 
     for s, c in zip(strings, colors):
-        text = ax.text(x, y, s + " ", color=c, transform=t, **kwargs)
+        text = ax.text(x, y, s + "", color=c, transform=t, **kwargs)
 
         # Need to draw to update the text position.
         text.draw(canvas.get_renderer())
@@ -415,13 +415,13 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = "{:0.1f}".format(annotate_field[pos_it])
             if p_t == "":
-                p_t = "M=["
+                p_t = "M=[ "
                 rainbow_text_colors.append('white')
             if pos_it != np.argsort(particle_tags)[-1]:
                 p_t = p_t + P_msun + ', '
                 rainbow_text_colors.append(part_color[pos_it])
             else:
-                p_t = p_t + P_msun + ']$\,$M$_\odot$'
+                p_t = p_t + P_msun + ' ]$\,$M$_\odot$'
                 rainbow_text_colors.append(part_color[pos_it])
         '''
         if annotate_field is not None:
