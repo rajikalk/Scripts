@@ -199,6 +199,7 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
 
     for s, c in zip(strings, colors):
         text = ax.text(x, y, s + "", color=c, transform=t, **kwargs)
+        text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
         # Need to draw to update the text position.
         text.draw(canvas.get_renderer())
@@ -351,7 +352,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
-        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.03*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
+        annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.04*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
@@ -449,7 +450,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append('white')
             '''
     if annotate_field is not None:
-        if len(particle_tags) > 5:
+        if len(particle_tags) > 4:
             import pdb
             pdb.set_trace()
             string_l = p_t[:68]

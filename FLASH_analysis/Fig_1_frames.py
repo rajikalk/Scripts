@@ -108,7 +108,7 @@ for spin_val in spin_values:
             
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
-        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
