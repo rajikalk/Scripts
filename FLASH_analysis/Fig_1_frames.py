@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=-0.2)
+plt.subplots_adjust(hspace=-0.3)
 
 plot_it = -1
 
@@ -77,10 +77,6 @@ for spin_val in spin_values:
         X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
         file.close()
         
-        if spin_val == '0.35':
-            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-        if mach_val == '0.0':
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
         xlim = [np.min(X_image).value, np.max(X_image).value]
         ylim = [np.min(Y_image).value, np.max(Y_image).value]
         axs.flatten()[plot_it].set_xlim(xlim)
@@ -117,11 +113,22 @@ for spin_val in spin_values:
         axs.flatten()[plot_it].yaxis.label.set_color('black')
         axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
+        if spin_val == '0.35':
+            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
+            if mach_val != '0.0':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[0], visible=False)
+        if mach_val == '0.0':
+            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
+            if spin_val != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
-fig.subplots_adjust(right=0.9)
-cbar_ax = fig.add_axes([0.91, 0.2, 0.02, 0.7])
+fig.subplots_adjust(right=0.95)
+cbar_ax = fig.add_axes([0.95, 0.1, 0.02, 0.7])
 cbar = fig.colorbar(plot, cax=cbar_ax)
-cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=font_size)
+cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
 plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
