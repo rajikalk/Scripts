@@ -80,7 +80,7 @@ for spin_val in spin_values:
         if spin_val == '0.35':
             axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
         if mach_val == '0.0':
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=10, labelpad=-20
+            axs.flatten()[plot_it].set_ylabel('AU', fontsize=10, labelpad=-20)
         xlim = [np.min(X_image).value, np.max(X_image).value]
         ylim = [np.min(Y_image).value, np.max(Y_image).value]
         axs.flatten()[plot_it].set_xlim(xlim)
