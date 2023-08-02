@@ -138,7 +138,7 @@ for spin_val in spin_values:
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.95)
-cbar_ax = fig.add_axes([0.95, 0.15, 0.02, 0.7])
+cbar_ax = fig.add_axes([0.95, 0.13, 0.02, 0.73])
 cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
