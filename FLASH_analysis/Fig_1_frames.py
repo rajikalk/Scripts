@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=-0.1)
+plt.subplots_adjust(hspace=-0.2)
 
 plot_it = -1
 
@@ -118,7 +118,7 @@ for spin_val in spin_values:
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.9)
-cbar_ax = fig.add_axes([0.9, 0.0, 0.02, 0.9])
+cbar_ax = fig.add_axes([0.92, 0.0, 0.02, 0.8])
 cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=font_size)
 
