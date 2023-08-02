@@ -116,11 +116,11 @@ for spin_val in spin_values:
         if spin_val == '0.20':
             #add mach labels:
             mach_label = "$\mathcal(M)="+str(mach_val)
-            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size))
+            title_text = axs.flatten()[plot_it].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size))
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         if mach_val =='0.0':
             spin_label = "\Omega t_{\mathrm{ff}}="+str(spin_val)
-            title_text = axes_dict[ax_label].text((xlim[0]+0.03*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90)
+            title_text = axs.flatten()[plot_it].text((xlim[0]+0.03*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90)
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
         
