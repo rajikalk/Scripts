@@ -415,7 +415,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 else:
                     P_msun = "{:0.1f}".format(annotate_field[pos_it])
             if p_t == "":
-                p_t = field_symbol+"$ =$\,[$"
+                p_t = "M$=$\,[$"
                 rainbow_text_colors.append('white')
             elif pos_it != np.argsort(particle_tags)[-1]:
                 p_t = p_t + P_msun + ', '
