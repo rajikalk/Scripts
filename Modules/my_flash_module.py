@@ -454,7 +454,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)*5), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.05*(box_size)), (ymin + 0.027*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.027*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
