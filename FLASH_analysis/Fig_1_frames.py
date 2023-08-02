@@ -113,7 +113,8 @@ for spin_val in spin_values:
         
         axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
         axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
-        ax.xaxis.label.set_color('black')
+        axs.flatten()[plot_it].xaxis.label.set_color('black')
+        axs.flatten()[plot_it].yaxis.label.set_color('black')
         axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
