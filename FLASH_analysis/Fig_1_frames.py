@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=-0.25)
+plt.subplots_adjust(hspace=-0.23)
 
 plot_it = -1
 
@@ -115,12 +115,12 @@ for spin_val in spin_values:
         
         if spin_val == '0.20':
             #add mach labels:
-            mach_label = "$\mathcal(M)="+str(mach_val)
-            title_text = axs.flatten()[plot_it].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size))
+            mach_label = "$\mathcal{M}$="+str(mach_val)
+            title_text = axs.flatten()[plot_it].text((np.mean(xlim)), (ylim[1]-0.04*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size))
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         if mach_val =='0.0':
-            spin_label = "\Omega t_{\mathrm{ff}}="+str(spin_val)
-            title_text = axs.flatten()[plot_it].text((xlim[0]+0.03*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90)
+            spin_label = "\Omega t_{\mathrm{ff}}$="+str(spin_val)
+            title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90)
             title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
         
