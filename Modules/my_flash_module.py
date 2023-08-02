@@ -421,8 +421,11 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
                 p_t = p_t + P_msun + ', '
                 rainbow_text_colors.append(part_color[pos_it])
             else:
-                p_t = p_t + P_msun + ' ]$\,$M$_\odot$'
+                p_t = p_t + P_msun
                 rainbow_text_colors.append(part_color[pos_it])
+            if pos_it == len(particle_tags)-1:
+                p_t = p_t + ' ]$\,$M$_\odot$'
+                rainbow_text_colors.append('white')
         '''
         if annotate_field is not None:
             if units is not None:
