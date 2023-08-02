@@ -111,8 +111,9 @@ for spin_val in spin_values:
         time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
-        axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', colors='w')
-        axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', colors='w')
+        axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
+        axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
+        ax.xaxis.label.set_color('black')
         axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
