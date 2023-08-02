@@ -423,7 +423,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if pos_it != len(particle_tags)-1:
                 p_t = p_t + ', '
             else:
-                p_t = p_t + ' ]$\,$M$_\odot$'
+                p_t = p_t + ']$\,$M$_\odot$'
             rainbow_text_colors.append('white')
         '''
         if annotate_field is not None:
