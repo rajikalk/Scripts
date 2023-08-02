@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=-0.3)
+plt.subplots_adjust(hspace=-0.25)
 
 plot_it = -1
 
@@ -113,6 +113,17 @@ for spin_val in spin_values:
         axs.flatten()[plot_it].yaxis.label.set_color('black')
         axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
+        if spin_val == '0.20':
+            #add mach labels:
+            mach_label = "$\mathcal(M)="+str(mach_val)
+            title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size))
+            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+        if mach_val =='0.0':
+            spin_label = "\Omega t_{\mathrm{ff}}="+str(spin_val)
+            title_text = axes_dict[ax_label].text((xlim[0]+0.03*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90)
+            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+        
         if spin_val == '0.35':
             axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
             if mach_val != '0.0':
@@ -127,7 +138,7 @@ for spin_val in spin_values:
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.95)
-cbar_ax = fig.add_axes([0.95, 0.1, 0.02, 0.7])
+cbar_ax = fig.add_axes([0.95, 0.15, 0.02, 0.7])
 cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
