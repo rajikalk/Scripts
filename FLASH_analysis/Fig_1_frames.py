@@ -80,7 +80,7 @@ for spin_val in spin_values:
         if spin_val == '0.35':
             axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
         if mach_val == '0.0':
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=10, labelpad=-20)
+            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
         xlim = [np.min(X_image).value, np.max(X_image).value]
         ylim = [np.min(Y_image).value, np.max(Y_image).value]
         axs.flatten()[plot_it].set_xlim(xlim)
@@ -100,7 +100,7 @@ for spin_val in spin_values:
         mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
         mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
         
-        plt.tick_params(axis='both', which='major', labelsize=fontsize)
+        plt.tick_params(axis='both', which='major', labelsize=font_size)
         for line in axs.flatten()[plot_it].xaxis.get_ticklines():
             line.set_color('white')
         for line in axs.flatten()[plot_it].yaxis.get_ticklines():
@@ -120,6 +120,6 @@ for spin_val in spin_values:
 fig.subplots_adjust(right=0.9)
 cbar_ax = fig.add_axes([0.9, 0.0, 0.02, 0.9])
 cbar = fig.colorbar(plot, cax=cbar_ax)
-cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=fontsize)
+cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=font_size)
 
 plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
