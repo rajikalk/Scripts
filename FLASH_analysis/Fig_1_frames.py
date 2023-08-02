@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.01)
-plt.subplots_adjust(hspace=-0.182)
+plt.subplots_adjust(hspace=-0.18)
 
 plot_it = -1
 
