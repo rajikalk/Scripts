@@ -86,7 +86,7 @@ for spin_val in spin_values:
         axs.flatten()[plot_it].set_xlim(xlim)
         axs.flatten()[plot_it].set_ylim(ylim)
         
-        cbar_lims = [1.e-15, 1.e-13]
+        cbar_lims = [5.e-16, 5.e-14]
         stdvel = 1
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
@@ -108,7 +108,7 @@ for spin_val in spin_values:
             
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
-        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
         axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
@@ -120,7 +120,7 @@ for spin_val in spin_values:
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.9)
-cbar_ax = fig.add_axes([0.92, 0.0, 0.02, 0.8])
+cbar_ax = fig.add_axes([0.91, 0.2, 0.02, 0.7])
 cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=font_size)
 
