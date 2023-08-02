@@ -417,7 +417,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if p_t == "":
                 p_t = "M=["
                 rainbow_text_colors.append('white')
-            elif pos_it != np.argsort(particle_tags)[-1]:
+            if pos_it != np.argsort(particle_tags)[-1]:
                 p_t = p_t + P_msun + ', '
                 rainbow_text_colors.append(part_color[pos_it])
             else:
