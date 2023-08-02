@@ -43,7 +43,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 8
+font_size = 10
 mym.set_global_font_size(font_size)
 
 
@@ -58,7 +58,7 @@ fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.0)
+plt.subplots_adjust(hspace=-0.1)
 
 plot_it = -1
 
@@ -78,9 +78,9 @@ for spin_val in spin_values:
         file.close()
         
         if spin_val == '0.35':
-            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=10)
+            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
         if mach_val == '0.0':
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=10) #, labelpad=-20
+            axs.flatten()[plot_it].set_ylabel('AU', fontsize=10, labelpad=-20
         xlim = [np.min(X_image).value, np.max(X_image).value]
         ylim = [np.min(Y_image).value, np.max(Y_image).value]
         axs.flatten()[plot_it].set_xlim(xlim)
@@ -100,7 +100,7 @@ for spin_val in spin_values:
         mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
         mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
         
-        plt.tick_params(axis='both', which='major')# labelsize=16)
+        plt.tick_params(axis='both', which='major', labelsize=fontsize)
         for line in axs.flatten()[plot_it].xaxis.get_ticklines():
             line.set_color('white')
         for line in axs.flatten()[plot_it].yaxis.get_ticklines():
@@ -111,10 +111,13 @@ for spin_val in spin_values:
         time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
-        axs.flatten()[plot_it].tick_params(axis='x', which='major', labelsize=font_size, direction='in', colors='w')
-        axs.flatten()[plot_it].tick_params(axis='y', which='major', labelsize=font_size, direction='in', colors='w')
+        #axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', colors='w')
+        #axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', colors='w')
+        #axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
-fig.colorbar(plot, axs=axes.ravel().tolist())
+fig.subplots_adjust(right=0.9)
+cbar_ax = fig.add_axes([0.9, 0.0, 0.02, 0.9])
+fig.colorbar(plot, cax=cbar_ax)
 plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
