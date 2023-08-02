@@ -347,7 +347,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     print("Max velocity =", max_length)
     if plot_velocity_legend:
         #print("plotting quiver legend")
-        pos_start = [xmax - 0.23*(xmax-xmin), ymin + 0.12*(ymax-ymin)]
+        pos_start = [xmax - 0.2*(xmax-xmin), ymin + 0.12*(ymax-ymin)]
         #pos_start = [xmax - 0.25*(xmax-xmin), ymin + (fontsize_global/100)*0.70*(ymax-ymin)]
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
@@ -453,7 +453,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             string_2 = p_t[32:]
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.028*(ymax-ymin)*5), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.028*(ymax-ymin)*3), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             rainbow_text((xmin + 0.15*(box_size)), (ymin + 0.028*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
