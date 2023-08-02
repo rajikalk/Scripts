@@ -100,7 +100,7 @@ for spin_val in spin_values:
         mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
         mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
         
-        plt.tick_params(axis='both', which='major', labelsize=font_size)
+        axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
         for line in axs.flatten()[plot_it].xaxis.get_ticklines():
             line.set_color('white')
         for line in axs.flatten()[plot_it].yaxis.get_ticklines():
@@ -111,9 +111,9 @@ for spin_val in spin_values:
         time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.04*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
         time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
-        #axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', colors='w')
-        #axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', colors='w')
-        #axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
+        axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', colors='w')
+        axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', colors='w')
+        axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
         
         plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
         
