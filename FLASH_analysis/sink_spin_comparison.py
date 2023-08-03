@@ -159,7 +159,7 @@ for spin_lab in Spin_labels:
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
         if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
+            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($cm^2/s$)')
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
