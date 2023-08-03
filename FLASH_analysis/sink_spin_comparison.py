@@ -200,6 +200,8 @@ for spin_lab in Spin_labels:
             for sink_id in sink_data.keys():
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                if spin_lab != '0.20':
+                    L_tot = L_tot/1.e52
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:
