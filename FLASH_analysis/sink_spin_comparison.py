@@ -124,7 +124,7 @@ for spin_lab in Spin_labels:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot/1.e19, label='Single')
+                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
         else:
             print("Couldn't open", single_pickle)
         '''
