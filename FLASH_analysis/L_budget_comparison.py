@@ -99,7 +99,7 @@ for spin_lab in Spin_labels:
             
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color='k', linewidth=3, label='Orbit', alpha=0.5)
             axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color='k', linewidth=3, label='Gas', alpha=0.5)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='.', linewidth=3, label = 'Sink total', alpha=0.5)
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='k', linewidth=3, label = 'Sink total', alpha=0.5)
             cit = -1
             form_times = []
             for sink_id in L_sink.keys():
