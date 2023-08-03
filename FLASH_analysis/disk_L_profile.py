@@ -43,36 +43,15 @@ if args.make_movie_pickles == 'True':
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=1, end_time=None)
     print('generated frame times')
     sys.stdout.flush()
     CW.Barrier()
     
-    if args.use_all_files == 'False':
-        no_frames = len(m_times)
-        m_times = m_times[args.start_frame:]
-        usable_files = mym.find_files(m_times, files)
-        frames = list(range(args.start_frame, no_frames))
-    elif args.use_all_files != 'False' and args.plot_time != None:
-        usable_files = mym.find_files([args.plot_time], files)
-        start_index = files.index(usable_files[0])
-        args.plot_time = None
-        end_file = mym.find_files([args.end_time], files)
-        end_index = files.index(end_file[0])
-        usable_files = files[start_index:end_index]
-        frames = list(range(len(usable_files)))
-        no_frames = len(usable_files)
-    else:
-        start_file = mym.find_files([0], files)
-        usable_files = files[files.index(start_file[0]):]
-        frames = list(range(len(usable_files)))
-        no_frames = len(usable_files)
+    usable_files = mym.find_files(m_times, files)
+    frames = list(range(len(usable_files)))
+    no_frames = len(usable_files)
     print('found usable files for frames')
-
-    fn = usable_files[-1]
-    part_file = 'part'.join(fn.split('plt_cnt'))
-    ds = yt.load(fn, particle_filename=part_file)
-
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
