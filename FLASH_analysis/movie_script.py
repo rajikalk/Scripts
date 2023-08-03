@@ -150,7 +150,6 @@ if args.make_movie_pickles == 'True':
                          'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                          'particle_tag':dd['particle_tag'],
                          'particle_form_time':dd['particle_creation_time']}
-}
             else:
                 has_particles = False
                 part_info = {}
