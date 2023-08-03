@@ -90,7 +90,7 @@ Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -118,6 +118,10 @@ for spin_lab in Spin_labels:
                     form_time = sink_data[sink_id]['time'][0]
                 L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
                 L_tot = yt.YTArray(L_tot, 'cm**2/s')
+                axs.flatten()[plot_it].set_ylim([0.0e19, 1.5e19])
+                if spin_lab != '0.20':
+                    L_tot = L_tot/1.e19
+                    axs.flatten()[plot_it].set_ylim([0.0, 1.5])
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:
@@ -152,22 +156,19 @@ for spin_lab in Spin_labels:
         else:
             print("Couldn't open", binary_pickle)
         '''
-        if plot_it == 0:
-            axs.flatten()[plot_it].legend()
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: L ($g\,cm^2/s$)')
-            if spin_lab == '0.20':
-                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
-        if mach_lab == '0.2':
-            if spin_lab == '0.20':
-                axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+            if mach_lab != '0.2':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=False)
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it-1].set_xlim(left=0)
-axs.flatten()[plot_it-1].set_ylim(bottom=0)
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('spin_comp_multi_specific.pdf', bbox_inches='tight')
 
 plt.clf()
