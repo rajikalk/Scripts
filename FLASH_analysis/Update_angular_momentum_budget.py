@@ -29,7 +29,7 @@ args = parse_inputs()
 clean_pickles = eval(args.make_pickles)
 
 for sim_dir in sim_dirs:
-    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0 and 'Single' in sim_dir and 'Lref_9' in sim_dir:
+    if len(glob.glob(sim_dir + '/sinks_evol.dat')) > 0 and 'Single' in sim_dir and 'Lref_9' in sim_dir and 'Spin_0.40' not in sim_dir and 'Spin_0.50' not in sim_dir:
         #check if movie directory exists
         save_dir = '/hits/fast/set/kuruwira/Analysis/Angular_momentum_budget' + sim_dir.split('Protostellar_spin')[-1]
         
