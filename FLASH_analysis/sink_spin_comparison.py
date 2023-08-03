@@ -171,7 +171,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi_specific.png')
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -200,8 +200,8 @@ for spin_lab in Spin_labels:
             for sink_id in sink_data.keys():
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-                if spin_lab != '0.20':
-                    L_tot = L_tot/1.e52
+                #if spin_lab != '0.20':
+                #    L_tot = L_tot/1.e52
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:
