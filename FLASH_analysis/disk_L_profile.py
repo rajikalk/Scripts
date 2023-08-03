@@ -43,7 +43,7 @@ if args.make_movie_pickles == 'True':
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=1, end_time=None)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, )
     print('generated frame times')
     sys.stdout.flush()
     CW.Barrier()
