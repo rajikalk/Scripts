@@ -97,13 +97,13 @@ for spin_lab in Spin_labels:
                 L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
             L_tot = L_sink_tot + L_orbit + L_in_gas
             
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color='grey', linewidth=2, label='Orbit')
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color='grey', linewidth=2, label='Gas')
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='grey', linewidth=2, label = 'Sink total')
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color='grey', linewidth=4, label='Orbit')
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color='grey', linewidth=4, label='Gas')
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='grey', linewidth=4, label = 'Sink total')
             cit = -1
             for sink_id in L_sink.keys():
                 cit = cit + 1
-                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = '-', color=colors[cit], linewidth=1)
+                axs.flatten()[plot_it].semilogy(np.array(L_sink[sink_id]).T[0]-Time_array[0], np.array(L_sink[sink_id]).T[1]/L_tot[-len(np.array(L_sink[sink_id]).T[1]):], linestyle = '-', color=colors[cit], linewidth=2)
         else:
             print("Couldn't open", single_pickle)
             
@@ -122,5 +122,5 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it].tick_params(axis='y', direction='in')
 
 axs.flatten()[plot_it].set_xlim([0, 10000])
-axs.flatten()[plot_it].set_ylim([5.e-5,1.05])
+axs.flatten()[plot_it].set_ylim([5.e-5,1.1])
 plt.savefig('L_evolution_spin_vs_mach_frac.pdf', bbox_inches='tight')
