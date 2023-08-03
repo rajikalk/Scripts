@@ -253,5 +253,5 @@ for spin_lab in Spin_labels:
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 #axs.flatten()[plot_it-1].set_ylim([5.e48, 5.e54])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
-plt.savefig('spin_comp_multi_'+args.refinment_level+'.png')
+plt.savefig('spin_comp_multi_'+args.refinment_level+'.pdf', bbox_inches='tight')
 
