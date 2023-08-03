@@ -168,7 +168,7 @@ for spin_lab in Spin_labels:
 
 axs.flatten()[plot_it-1].set_xlim(left=0)
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
-plt.savefig('spin_comp_multi_specific.png')
+plt.savefig('spin_comp_multi_specific.pdf', bbox_inches='tight')
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
