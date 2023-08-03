@@ -97,9 +97,9 @@ for spin_lab in Spin_labels:
                 L_sink_tot = L_sink_tot + (np.append(np.zeros(len(L_sink_tot)-len(np.array(L_sink[sink_id]).T[1])), np.array(L_sink[sink_id]).T[1]))
             L_tot = L_sink_tot + L_orbit + L_in_gas
             
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color='k', linewidth=3, label='Orbit', alpha=0.5)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color='k', linewidth=3, label='Gas', alpha=0.5)
-            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='k', linewidth=3, label = 'Sink total', alpha=0.5)
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_orbit/L_tot, linestyle = '--', color='k', linewidth=3, label='Orbit', alpha=0.75)
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_in_gas/L_tot, linestyle = ':', color='k', linewidth=3, label='Gas', alpha=0.75)
+            axs.flatten()[plot_it].semilogy(Time_array - Time_array[0], L_sink_tot/L_tot, linestyle = '-', color='k', linewidth=3, label = 'Sink total', alpha=0.75)
             cit = -1
             form_times = []
             for sink_id in L_sink.keys():
