@@ -231,6 +231,31 @@ def _L_gas_wrt_nearest_sink(field, data):
 
 yt.add_field("L_gas_wrt_nearest_sink", function=_L_gas_wrt_nearest_sink, units=r"g*cm**2/s", sampling_type="local")
 
+def _L_gas_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
+        d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    
+        dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        
+        L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+        L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+    else:
+        L_wrt_primary = data['gas', 'L_gas_wrt_CoM']
+    return L_wrt_primary
+
+yt.add_field("L_gas_wrt_primary", function=_L_gas_wrt_primary, units=r"g*cm**2/s", sampling_type="local")
+
 '''
 def _L_gas_wrt_CoM(field, data):
     """
