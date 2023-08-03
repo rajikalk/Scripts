@@ -52,6 +52,8 @@ if args.make_movie_pickles == 'True':
     frames = list(range(len(usable_files)))
     no_frames = len(usable_files)
     print('found usable files for frames')
+    
+    All_profiles = []
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
@@ -86,9 +88,31 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
 
             #Define cylinder!:
-            import pdb
-            pdb.set_trace()
+            primary_ind = np.argmin(dd['particle_creation_time'])
+            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
+            normal = yt.YTArray([0, 0, 1], '')
+            height = yt.YTQuantity(50, 'au')
+            if len(dd['particle_creation_time']) == 1:
+                radius = yt.YTQuantity(100, 'au')
+            else:
+                import pdb
+                pdb.set_trace()
+            disk = ds.disk(center, normal, radius, height)
+            Radius_field = disk['radius'].in_units('AU')
+            L_disk = disk['L_gas_wrt_primary']
+            r_bins = np.arange(0, radius.value+5, 5)
+            r_centers = []
+            L_means = []
+            for rit in range(1,len(r_bins[1:])):
+                usable_inds = np.where((Radius_field>r_bins[rit-1])&(Radius_field<r_bins[rit]))
+                weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                r_centers.append(np.mean(r_bins[rit-1:rit+1]))
+                L_means.append(weighted_mean)
+            
+            All_profiles.append([r_centers, L_means])
 
-
-
+            pickle_file = 'profile_'+str(rank)+'.pkl'
+            file = open(pickle_file, 'wb')
+            pickle.dump((time_val, All_profiles), file)
+            file.close()
     print("Calculated angular momentum profile on", rank)
