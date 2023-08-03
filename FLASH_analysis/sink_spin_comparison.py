@@ -200,7 +200,7 @@ for spin_lab in Spin_labels:
             for sink_id in sink_data.keys():
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-                #axs.flatten()[plot_it-1].set_ylim([0.0e52, 1.35e52])
+                axs.flatten()[plot_it].set_ylim([0.0e52, 1.35e52])
                 if spin_lab != '0.20':
                     L_tot = L_tot/1.e52
                     axs.flatten()[plot_it].set_ylim([0.0, 1.35])
