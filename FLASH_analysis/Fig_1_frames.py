@@ -96,8 +96,9 @@ for spin_val in spin_values:
         mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
         
         if len(part_info['particle_tag']) > 1:
-            import pdb
-            pdb.set_trace()
+            if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                import pdb
+                pdb.set_trace()
         mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
         
         axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
