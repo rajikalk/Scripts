@@ -203,7 +203,7 @@ for spin_lab in Spin_labels:
                 #axs.flatten()[plot_it-1].set_ylim([0.0e52, 1.35e52])
                 if spin_lab != '0.20':
                     L_tot = L_tot/1.e52
-                    axs.flatten()[plot_it-1].set_ylim([0.0, 1.35])
+                    axs.flatten()[plot_it].set_ylim([0.0, 1.35])
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if time[-1] > xmax:
