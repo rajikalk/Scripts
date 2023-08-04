@@ -67,7 +67,7 @@ if args.make_movie_pickles == 'True':
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
             Radius_array = list(np.array(Radius_array)[sorted_inds])
-            All_profiles_array = np.array(All_profiles_array)[sorted_inds]
+            All_profiles_array = list(np.array(All_profiles_array)[sorted_inds])
             
             start_time = np.max(Time_array)
         else:
