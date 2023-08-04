@@ -45,14 +45,14 @@ if args.make_movie_pickles == 'True':
     else:
         m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
     print('generated frame times')
+    
+    Time_array = []
+    Radius_array = []
+    All_profiles_array = []
 
     if rank == 0:
         pickle_names = 'profile_*.pkl'
         pickle_files = glob.glob(pickle_names)
-        
-        Time_array = []
-        Radius_array = []
-        All_profiles_array = []
         
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
