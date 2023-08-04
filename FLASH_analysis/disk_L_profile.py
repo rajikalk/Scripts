@@ -84,7 +84,6 @@ if args.make_movie_pickles == 'True':
                 dd = ds.all_data()
                 time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
             
-                        #Get particle data:
             dd = ds.all_data()
 
             #Define cylinder!:
@@ -95,6 +94,7 @@ if args.make_movie_pickles == 'True':
             if len(dd['particle_creation_time']) == 1:
                 radius = yt.YTQuantity(100, 'au')
             else:
+                part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
                 import pdb
                 pdb.set_trace()
             disk = ds.disk(center, normal, radius, height)
@@ -113,6 +113,6 @@ if args.make_movie_pickles == 'True':
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
-            pickle.dump((time_val, All_profiles), file)
+            pickle.dump((time_val, radius, All_profiles), file)
             file.close()
     print("Calculated angular momentum profile on", rank)
