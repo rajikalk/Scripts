@@ -39,6 +39,7 @@ center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
 
+    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
@@ -88,7 +89,6 @@ if args.make_movie_pickles == 'True':
     usable_files = mym.find_files(m_times, files)
     frames = list(range(start_frame, no_frames))
 
-    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     sys.stdout.flush()
     CW.Barrier()
     
