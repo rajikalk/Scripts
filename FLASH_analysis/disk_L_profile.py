@@ -208,7 +208,7 @@ for time_it in range(len(Time_array)):
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
         plt.axvline(x = Radius_array[time_it], color='k')
-        plt.axhline(y = mean_L, xmin=0, xmax=20, color='r')
+        plt.axhline(y = mean_L, xmin=0, xmax=0.2, color='r')
         plt.xlim([0,100])
         plt.ylim([min_val, max_val])
         plt.xlabel('Radius (AU)')
