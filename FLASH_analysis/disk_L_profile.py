@@ -194,6 +194,9 @@ for profile in All_profiles_array:
 
 sys.stdout.flush()
 CW.Barrier()
+
+import matplotlib.pyplot as plt
+
 rit = -1
 for time_it in range(len(Time_array)):
     rit = rit + 1
