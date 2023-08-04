@@ -53,6 +53,7 @@ if args.make_movie_pickles == 'True':
         Time_array = []
         Radius_array = []
         All_profiles_array = []
+        
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
                 file = open(pickle_file, 'rb')
@@ -61,8 +62,7 @@ if args.make_movie_pickles == 'True':
                 
                 Time_array.append(time_val)
                 Radius_array.append(radius)
-                import pdb
-                pdb.set_trace()
+                All_profiles_array = All_profiles_array + All_profiles
                 
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
@@ -96,8 +96,6 @@ if args.make_movie_pickles == 'True':
     frames = list(range(len(usable_files)))
     no_frames = len(usable_files)
     print('found usable files for frames')
-    
-    All_profiles = []
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
