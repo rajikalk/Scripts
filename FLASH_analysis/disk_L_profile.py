@@ -148,7 +148,7 @@ if args.make_movie_pickles == 'True':
             file = open(pickle_file, 'wb')
             pickle.dump((Time_array, Radius_array, All_profiles_array), file)
             file.close()
-            print("Calculated angular momentum profile on", rank)
+            print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
 #collect pickles
 
