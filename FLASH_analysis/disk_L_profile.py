@@ -134,10 +134,10 @@ if args.make_movie_pickles == 'True':
             r_bins = np.arange(0, radius.value+5, 5)
             r_centers = []
             L_means = []
-            for rit in range(1,len(r_bins[1:])):
-                usable_inds = np.where((Radius_field>r_bins[rit-1])&(Radius_field<r_bins[rit]))
+            for bit in range(1,len(r_bins[1:])):
+                usable_inds = np.where((Radius_field>r_bins[bit-1])&(Radius_field<r_bins[bit]))
                 weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
-                r_centers.append(np.mean(r_bins[rit-1:rit+1]))
+                r_centers.append(np.mean(r_bins[bit-1:bit+1]))
                 L_means.append(weighted_mean)
             
             Time_array.append(time_val)
