@@ -99,54 +99,56 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     ts = yt.DatasetSeries(usable_files)
+    file_int = -1
+    rit = -1
     for ds in ts:
-        Time_array = []
-        Radius_array = []
-        All_profiles_array = []
+        file_int = file_int + 1
         #print(fn, "is going to rank", rank)
-        part_file = 'part'.join(fn.split('plt_cnt'))
-        ds = yt.load(fn, particle_filename=part_file)
-        if args.plot_time == None:
-            time_val = m_times[file_int]#ds.current_time.in_units('yr')
-        else:
+        rit = rit + 1
+        if rit == size:
+            rit = 0
+        if rit == rank:
+            if args.plot_time == None:
+                time_val = m_times[file_int]#ds.current_time.in_units('yr')
+            else:
+                dd = ds.all_data()
+                time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
+            
             dd = ds.all_data()
-            time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
-        
-        dd = ds.all_data()
 
-        #Define cylinder!:
-        primary_ind = np.argmin(dd['particle_creation_time'])
-        center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
-        normal = yt.YTArray([0, 0, 1], '')
-        height = yt.YTQuantity(50, 'au')
-        if len(dd['particle_creation_time']) == 1:
-            radius = yt.YTQuantity(100, 'au')
-        else:
-            part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
-            nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
-            nearest_sink_pos = part_pos.T[nearest_sink_ind]
-            radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
-        disk = ds.disk(center, normal, radius, height)
-        Radius_field = disk['radius'].in_units('AU')
-        L_disk = disk['L_gas_wrt_primary']
-        r_bins = np.arange(0, radius.value+5, 5)
-        r_centers = []
-        L_means = []
-        for rit in range(1,len(r_bins[1:])):
-            usable_inds = np.where((Radius_field>r_bins[rit-1])&(Radius_field<r_bins[rit]))
-            weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
-            r_centers.append(np.mean(r_bins[rit-1:rit+1]))
-            L_means.append(weighted_mean)
-        
-        Time_array.append(time_val)
-        Radius_array.append(radius)
-        All_profiles_array.append([r_centers, L_means])
+            #Define cylinder!:
+            primary_ind = np.argmin(dd['particle_creation_time'])
+            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
+            normal = yt.YTArray([0, 0, 1], '')
+            height = yt.YTQuantity(50, 'au')
+            if len(dd['particle_creation_time']) == 1:
+                radius = yt.YTQuantity(100, 'au')
+            else:
+                part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
+                nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
+                nearest_sink_pos = part_pos.T[nearest_sink_ind]
+                radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
+            disk = ds.disk(center, normal, radius, height)
+            Radius_field = disk['radius'].in_units('AU')
+            L_disk = disk['L_gas_wrt_primary']
+            r_bins = np.arange(0, radius.value+5, 5)
+            r_centers = []
+            L_means = []
+            for rit in range(1,len(r_bins[1:])):
+                usable_inds = np.where((Radius_field>r_bins[rit-1])&(Radius_field<r_bins[rit]))
+                weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                r_centers.append(np.mean(r_bins[rit-1:rit+1]))
+                L_means.append(weighted_mean)
+            
+            Time_array.append(time_val)
+            Radius_array.append(radius)
+            All_profiles_array.append([r_centers, L_means])
 
-        pickle_file = 'profile_'+str(rank)+'.pkl'
-        file = open(pickle_file, 'wb')
-        pickle.dump((Time_array, Radius_array, All_profiles_array), file)
-        file.close()
-        print("Calculated angular momentum profile on", rank)
+            pickle_file = 'profile_'+str(rank)+'.pkl'
+            file = open(pickle_file, 'wb')
+            pickle.dump((Time_array, Radius_array, All_profiles_array), file)
+            file.close()
+            print("Calculated angular momentum profile on", rank)
     
 #collect pickles
 
