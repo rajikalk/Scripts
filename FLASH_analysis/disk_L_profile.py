@@ -210,7 +210,7 @@ for time_it in range(len(Time_array)):
         plt.ylim([min_val, max_val])
         plt.xlabel('Radius (AU)')
         plt.ylabel('L ($g\,cm^2/s$)')
-        plt.title('Time:'+str(Time_array[time])+'yr')
+        plt.title('Time:'+str(Time_array[time_it])+'yr')
         
         save_name = 'movie_frame_' + ("%06d" % time_it)
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
