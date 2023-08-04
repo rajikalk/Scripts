@@ -203,6 +203,8 @@ for time_it in range(len(Time_array)):
     if rit == size:
         rit = 0
     if rank == rit:
+        import pdb
+        pdb.set_trace()
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
         plt.axvline(x = Radius_array[time_it])
