@@ -203,11 +203,12 @@ for time_it in range(len(Time_array)):
     if rit == size:
         rit = 0
     if rank == rit:
-        import pdb
-        pdb.set_trace()
+        inner_inds = np.where(np.array(All_profiles_array[time_it][0])<20)[0]
+        mean_L = np.mean(np.array(All_profiles_array[time_it][1])[inner_inds])
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
-        plt.axvline(x = Radius_array[time_it])
+        plt.axvline(x = Radius_array[time_it], color='k')
+        plt.axhline(y = mean_L, xmin=0, xmax=20, color='r')
         plt.xlim([0,100])
         plt.ylim([min_val, max_val])
         plt.xlabel('Radius (AU)')
