@@ -60,14 +60,14 @@ if args.make_movie_pickles == 'True':
                 time_val, radius, All_profiles = pickle.load(file)
                 file.close()
                 
-                Time_array.append(time_val)
-                Radius_array.append(radius)
+                Time_array = Time_array + time_val
+                Radius_array = Radius_array + radius
                 All_profiles_array = All_profiles_array + All_profiles
                 
-            sorted_inds = np.argsort(Time_array)
-            Time_array = list(np.array(Time_array)[sorted_inds])
             import pdb
             pdb.set_trace()
+            sorted_inds = np.argsort(Time_array)
+            Time_array = list(np.array(Time_array)[sorted_inds])
             
             start_time = np.max(Time_array)
         else:
@@ -151,4 +151,21 @@ if args.make_movie_pickles == 'True':
             print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
 #collect pickles
-
+if rank == 0:
+    pickle_names = 'profile_*.pkl'
+    pickle_files = glob.glob(pickle_names)
+    
+    if len(pickle_files) > 0:
+        for pickle_file in pickle_files:
+            file = open(pickle_file, 'rb')
+            time_val, radius, All_profiles = pickle.load(file)
+            file.close()
+            
+            Time_array.append(time_val)
+            Radius_array.append(radius)
+            All_profiles_array = All_profiles_array + All_profiles
+            
+        sorted_inds = np.argsort(Time_array)
+        Time_array = list(np.array(Time_array)[sorted_inds])
+        import pdb
+        pdb.set_trace()
