@@ -134,15 +134,18 @@ if args.make_movie_pickles == 'True':
             r_bins = np.arange(0, radius.value+5, 5)
             r_centers = []
             L_means = []
+            L_means_spec = []
             for bit in range(1,len(r_bins[1:])):
                 usable_inds = np.where((Radius_field>r_bins[bit-1])&(Radius_field<r_bins[bit]))
-                weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                weighted_mean = np.sum((disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                means_spec = np.sum((disk['L_gas_wrt_primary'][usable_inds]/disk['mass'][usable_inds])*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
                 r_centers.append(np.mean(r_bins[bit-1:bit+1]))
                 L_means.append(weighted_mean)
+                L_means_spec.append(means_spec)
             
             Time_array.append(time_val)
             Radius_array.append(radius)
-            All_profiles_array.append([r_centers, L_means])
+            All_profiles_array.append([r_centers, L_means, L_means_spec])
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
