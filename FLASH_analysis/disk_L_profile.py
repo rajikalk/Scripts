@@ -99,15 +99,13 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     ts = yt.DatasetSeries(usable_files)
-    import pdb
-    pdb.set_trace()
     for ds in ts:
         make_pickle = True
         #if os.path.isfile(pickle_file) == True:
         #if len(glob.glob(pickle_file)) == 1:
         #    make_pickle = False
-        time_values = []
-        radius_values = []
+        Time_array = []
+        Radius_array = []
         if make_pickle:
             #print(fn, "is going to rank", rank)
             part_file = 'part'.join(fn.split('plt_cnt'))
@@ -144,13 +142,13 @@ if args.make_movie_pickles == 'True':
                 r_centers.append(np.mean(r_bins[rit-1:rit+1]))
                 L_means.append(weighted_mean)
             
-            time_values.append(time_val)
-            radius_values.append(radius)
-            All_profiles.append([r_centers, L_means])
+            Time_array.append(time_val)
+            Radius_array.append(radius)
+            All_profiles_array.append([r_centers, L_means])
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
-            pickle.dump((time_values, radius_values, All_profiles), file)
+            pickle.dump((Time_array, Radius_array, All_profiles_array), file)
             file.close()
             print("Calculated angular momentum profile on", rank)
     
