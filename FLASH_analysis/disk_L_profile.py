@@ -39,12 +39,56 @@ center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
 
-    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None, )
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
     print('generated frame times')
+
+    if rank == 0:
+        pickle_names = 'profile_*.pkl'
+        pickle_files = glob.glob(pickle_names)
+        
+        Time_array = []
+        Radius_array = []
+        All_profiles_array = []
+        if len(pickle_files) > 0:
+            for pickle_file in pickle_files:
+                file = open(pickle_file, 'rb')
+                time_val, radius, All_profiles = pickle.load(file)
+                file.close()
+                
+                Time_array.append(time_val)
+                Radius_array.append(radius)
+                import pdb
+                pdb.set_trace()
+                
+            sorted_inds = np.argsort(Time_array)
+            Time_array = list(np.array(Time_array)[sorted_inds])
+            import pdb
+            pdb.set_trace()
+            
+            start_time = np.max(Time_array)
+        else:
+            start_time = m_times[0]
+    else:
+        start_time = np.nan
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    start_time = CW.bcast(start_time, root=0)
+
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    no_frames = len(m_times)
+    start_frame = m_times.index(start_time)
+    m_times = m_times[start_frame:]
+    usable_files = mym.find_files(m_times, files)
+    frames = list(range(start_frame, no_frames))
+
+    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     sys.stdout.flush()
     CW.Barrier()
     
@@ -57,11 +101,7 @@ if args.make_movie_pickles == 'True':
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
-    if size > 1:
-        njobs = int(size/5)
-    else:
-        njobs = 1
-    for fn in yt.parallel_objects(usable_files, njobs=njobs):
+    for fn in yt.parallel_objects(usable_files, njobs=size):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
