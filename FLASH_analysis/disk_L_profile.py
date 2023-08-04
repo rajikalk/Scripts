@@ -38,7 +38,7 @@ args = parse_inputs()
 center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
-    
+
     files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     if args.plot_time != None:
         m_times = [args.plot_time]
@@ -95,8 +95,9 @@ if args.make_movie_pickles == 'True':
                 radius = yt.YTQuantity(100, 'au')
             else:
                 part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
-                import pdb
-                pdb.set_trace()
+                nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
+                nearest_sink_pos = part_pos.T[nearest_sink_ind]
+                radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
             disk = ds.disk(center, normal, radius, height)
             Radius_field = disk['radius'].in_units('AU')
             L_disk = disk['L_gas_wrt_primary']
@@ -116,3 +117,6 @@ if args.make_movie_pickles == 'True':
             pickle.dump((time_val, radius, All_profiles), file)
             file.close()
     print("Calculated angular momentum profile on", rank)
+    
+#collect pickles
+
