@@ -64,10 +64,10 @@ if args.make_movie_pickles == 'True':
                 Radius_array = Radius_array + radius
                 All_profiles_array = All_profiles_array + All_profiles
                 
-            import pdb
-            pdb.set_trace()
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
+            Radius_array = list(np.array(Radius_array)[sorted_inds])
+            All_profiles_array = np.array(All_profiles_array)[sorted_inds]
             
             start_time = np.max(Time_array)
         else:
@@ -150,6 +150,9 @@ if args.make_movie_pickles == 'True':
             file.close()
             print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
+sys.stdout.flush()
+CW.Barrier()
+
 #collect pickles
 if rank == 0:
     pickle_names = 'profile_*.pkl'
@@ -161,11 +164,51 @@ if rank == 0:
             time_val, radius, All_profiles = pickle.load(file)
             file.close()
             
-            Time_array.append(time_val)
-            Radius_array.append(radius)
+            Time_array = Time_array + time_val
+            Radius_array = Radius_array + radius
             All_profiles_array = All_profiles_array + All_profiles
             
         sorted_inds = np.argsort(Time_array)
         Time_array = list(np.array(Time_array)[sorted_inds])
-        import pdb
-        pdb.set_trace()
+        Radius_array = list(np.array(Radius_array)[sorted_inds])
+        All_profiles_array = np.array(All_profiles_array)[sorted_inds]
+        
+    file = open('gathered_profile.pkl', 'wb')
+    pickle.dump((Time_array, Radius_array, All_profiles_array), file)
+    file.close()
+    
+sys.stdout.flush()
+CW.Barrier()
+
+file = open('gathered_profile.pkl', 'rb')
+Time_array, Radius_array, All_profiles_array = pickle.load(file)
+file.close()
+
+max_val = 0
+min_val = np.inf
+for profile in All_profiles_array:
+    if np.max(profile[1]) > max_val:
+        max_val = np.max(profile[1])
+    if np.min(profile[1]) < min_val:
+        min_val = np.min(profile[1])
+
+sys.stdout.flush()
+CW.Barrier()
+rit = -1
+for time_it in range(len(Time_array)):
+    rit = rit + 1
+    if rit == size:
+        rit = 0
+    if rank == rit:
+        plt.clf()
+        plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
+        plt.axvline(x = Radius_array[time_it])
+        plt.xlim([0,100])
+        plt.ylim([min_val, max_val])
+        plt.xlabel('Radius (AU)')
+        plt.ylabel('L ($g\,cm^2/s$)')
+        plt.title('Time:'+str(Time_array[time])+'yr')
+        
+        save_name = 'movie_frame_' + ("%06d" % time_it)
+        plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
+        print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
