@@ -201,6 +201,7 @@ CW.Barrier()
 import matplotlib.pyplot as plt
 
 rit = -1
+mean_inner = []
 for time_it in range(len(Time_array)):
     rit = rit + 1
     if rit == size:
@@ -218,7 +219,9 @@ for time_it in range(len(Time_array)):
         plt.ylabel('L ($g\,cm^2/s$)')
         plt.title('Time:'+str(Time_array[time_it])+'yr')
         
-        save_name = 'movie_frame_' + ("%06d" % time_it)
+        mean_inner.append([Time_array[time_it], mean_L])
+        
+        save_name = 'movie_frame_non_spec' + ("%06d" % time_it)
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
         print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
 
@@ -232,7 +235,19 @@ for time_it in range(len(Time_array)):
         plt.xlabel('Radius (AU)')
         plt.ylabel('L ($g\,cm^2/s$)')
         plt.title('Time:'+str(Time_array[time_it])+'yr')
+    
+        mean_inner[-1].append(mean_L)
         
         save_name = 'movie_frame_spec_' + ("%06d" % time_it)
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
         print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
+        
+
+sys.stdout.flush()
+CW.Barrier()
+
+mean_inner_all = comm.gather(mean_inner,root=0)
+
+if rank == 0:
+    import pdb
+    pdb.set_trace()
