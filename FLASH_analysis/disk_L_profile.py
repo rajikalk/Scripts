@@ -253,9 +253,18 @@ CW.Barrier()
 mean_inner_all = CW.gather(mean_inner,root=0)
 
 if rank == 0:
-    sort_inds = np.argsort(np.array(mean_inner_all[0]).T[0])
-    mean_inner_all = np.array(mean_inner_all[0])[sort_inds]
-    mean_inner_all.T[1][np.where(mean_inner_all.T[1]==100)] = np.nan
+    pickle_file = 'mean_inner_L.pkl'
+    if os.path.isfile(pickle_file) == False:
+        sort_inds = np.argsort(np.array(mean_inner_all[0]).T[0])
+        mean_inner_all = np.array(mean_inner_all[0])[sort_inds]
+        mean_inner_all.T[1][np.where(mean_inner_all.T[1]==100)] = np.nan
+        file = open(pickle_file, 'wb')
+        pickle.dump((mean_inner_all), file)
+        file.close()
+    else:
+        file = open(pickle_file, 'wb')
+        mean_inner_all = pickle.load(file)
+        file.close()
     
     plt.clf()
     fig, ax1 = plt.subplots()
@@ -267,9 +276,12 @@ if rank == 0:
     ax1.set_xlabel('Time (yr)')
     ax1.set_ylabel('Mean <L>')
     ax2.set_ylabel('Separation (AU)')
+    ax1.set_xlim(left=0)
+    ax1.set_ylim(bottom=0)
+    ax2.set_ylim(bottom=0)
     plt.legend(loc='best')
     
-    plt.savefig('inner_L_vs_time.png')
+    plt.savefig('inner_L_vs_time.pdf', bbox_inches='tight')
 
     plt.clf()
     fig, ax1 = plt.subplots()
@@ -281,6 +293,9 @@ if rank == 0:
     ax1.set_xlabel('Time (yr)')
     ax1.set_ylabel('Mean <L>')
     ax2.set_ylabel('Separation (AU)')
+    ax1.set_xlim(left=0)
+    ax1.set_ylim(bottom=0)
+    ax2.set_ylim(bottom=0)
     plt.legend(loc='best')
     
-    plt.savefig('inner_L_spec_vs_time.png')
+    plt.savefig('inner_L_spec_vs_time.pdf', bbox_inches='tight')
