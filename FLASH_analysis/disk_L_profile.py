@@ -147,15 +147,15 @@ if args.make_movie_pickles == 'True':
                 L_means_spec.append(means_spec)
                 
             #Make inner disk:
-            height = yt.YTQuantity(20, 'au')
+            height_inner = yt.YTQuantity(20, 'au')
             if len(dd['particle_creation_time']) == 1:
-                radius = yt.YTQuantity(20, 'au')
+                radius_inner = yt.YTQuantity(20, 'au')
             else:
                 part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
                 nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
                 nearest_sink_pos = part_pos.T[nearest_sink_ind]
-                radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
-            inner_disk = ds.disk(center, normal, radius, height)
+                radius_inner = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
+            inner_disk = ds.disk(center, normal, radius_inner, height_inner)
             L_tot = np.sum(inner_disk['L_gas_wrt_primary'])
             
             Time_array.append(time_val)
