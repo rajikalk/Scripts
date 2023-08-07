@@ -156,7 +156,7 @@ if args.make_movie_pickles == 'True':
                 nearest_sink_pos = part_pos.T[nearest_sink_ind]
                 radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
             inner_disk = ds.disk(center, normal, radius, height)
-            L_tot = np.sum(disk['L_gas_wrt_primary']))
+            L_tot = np.sum(disk['L_gas_wrt_primary'])
             Total_inner_disk.append(inner_disk)
             
             
