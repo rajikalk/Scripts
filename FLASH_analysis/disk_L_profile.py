@@ -156,13 +156,12 @@ if args.make_movie_pickles == 'True':
                 nearest_sink_pos = part_pos.T[nearest_sink_ind]
                 radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
             inner_disk = ds.disk(center, normal, radius, height)
-            L_tot = np.sum(disk['L_gas_wrt_primary'])
-            Total_inner_disk.append(inner_disk)
-            
+            L_tot = np.sum(inner_disk['L_gas_wrt_primary'])
             
             Time_array.append(time_val)
             Radius_array.append(radius)
             All_profiles_array.append([r_centers, L_means, L_means_spec])
+            Total_inner_disk.append(inner_disk)
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
