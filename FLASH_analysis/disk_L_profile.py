@@ -120,7 +120,15 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
 
             #Define cylinder!:
-            primary_ind = np.argmin(dd['particle_creation_time'])
+            try:
+                primary_ind = np.argmin(dd['particle_creation_time'])
+            except:
+                curr_file = ds.filename
+                next_file = curr_file[:-4] + ("%04d"%(int(curr_file[-4:])+1))
+                ds = yt.load(next_file)
+                dd = ds.all_data()
+                primary_ind = np.argmin(dd['particle_creation_time'])
+                
             center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
             normal = yt.YTArray([0, 0, 1], '')
             height = yt.YTQuantity(50, 'au')
