@@ -324,8 +324,8 @@ if rank == 0:
     plt.savefig('inner_L_spec_vs_time.pdf', bbox_inches='tight')
     
     plt.clf()
-    plt.semilogy(mean_inner_all.T[0], Total_inner_disk)
-    plt.xlim([0,1000])
+    plt.semilogy(Time_array, Total_inner_disk)
+    plt.xlim([0,10000])
     plt.xlabel('Time (yr)')
     plt.ylabel('L ($g\,cm^2/s$)')
     
