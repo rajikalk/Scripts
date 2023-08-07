@@ -257,7 +257,7 @@ if args.make_movie_frames == 'True':
                 
                 if args.field == 'dens':
                     if args.axis == 'z':
-                        cbar_lims = [1.e-15, 1.e-13]
+                        cbar_lims = [5.e-16, 5.e-14]
                         stdvel = 2
                     else:
                         cbar_lims = [1.e-16, 1.e-14]
