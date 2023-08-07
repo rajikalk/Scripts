@@ -161,7 +161,7 @@ if args.make_movie_pickles == 'True':
             Time_array.append(time_val)
             Radius_array.append(radius)
             All_profiles_array.append([r_centers, L_means, L_means_spec])
-            Total_inner_disk.append(inner_disk)
+            Total_inner_disk.append(L_tot)
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
