@@ -225,7 +225,7 @@ for time_it in range(len(Time_array)):
         
         mean_inner.append([Time_array[time_it], Radius_array[time_it], mean_L])
         
-        save_name = 'movie_frame_non_spec' + ("%06d" % time_it)
+        save_name = 'movie_frame_non_spec_' + ("%06d" % time_it)
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
         print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
 
