@@ -229,7 +229,7 @@ for time_it in range(len(Time_array)):
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
         print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
 
-        mean_L = np.mean(np.array(All_profiles_array[time_it][1])[inner_inds])
+        mean_L = np.mean(np.array(All_profiles_array[time_it][2])[inner_inds])
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
         plt.axvline(x = Radius_array[time_it], color='k')
@@ -250,8 +250,37 @@ for time_it in range(len(Time_array)):
 sys.stdout.flush()
 CW.Barrier()
 
-mean_inner_all = comm.gather(mean_inner,root=0)
+mean_inner_all = CW.gather(mean_inner,root=0)
 
 if rank == 0:
-    import pdb
-    pdb.set_trace()
+    sort_inds = np.argsort(np.array(mean_inner_all[0]).T[0])
+    mean_inner_all = np.array(mean_inner_all[0])[sort_inds]
+    mean_inner_all.T[1][np.where(mean_inner_all.T[1]==100)] = np.nan
+    
+    plt.clf()
+    fig, ax1 = plt.subplots()
+
+    ax2 = ax1.twinx()
+    ax1.plot(mean_inner_all.T[0], mean_inner_all.T[2], label='<L>')
+    ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], label='Separation', color='k', alpha=0.20)
+
+    ax1.set_xlabel('Time (yr)')
+    ax1.set_ylabel('Mean <L>')
+    ax2.set_ylabel('Separation (AU)')
+    plt.legend(loc='best')
+    
+    plt.savefig('inner_L_vs_time.png')
+
+    plt.clf()
+    fig, ax1 = plt.subplots()
+
+    ax2 = ax1.twinx()
+    ax1.plot(mean_inner_all.T[0], mean_inner_all.T[3], label='<L>')
+    ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], label='Separation', color='k', alpha=0.20)
+
+    ax1.set_xlabel('Time (yr)')
+    ax1.set_ylabel('Mean <L>')
+    ax2.set_ylabel('Separation (AU)')
+    plt.legend(loc='best')
+    
+    plt.savefig('inner_L_spec_vs_time.png')
