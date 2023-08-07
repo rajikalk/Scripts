@@ -49,6 +49,7 @@ if args.make_movie_pickles == 'True':
     Time_array = []
     Radius_array = []
     All_profiles_array = []
+    Total_inner_disk = []
 
     if rank == 0:
         pickle_names = 'profile_*.pkl'
@@ -57,17 +58,19 @@ if args.make_movie_pickles == 'True':
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
                 file = open(pickle_file, 'rb')
-                time_val, radius, All_profiles = pickle.load(file)
+                time_val, radius, All_profiles, T_inner_disk = pickle.load(file)
                 file.close()
                 
                 Time_array = Time_array + time_val
                 Radius_array = Radius_array + radius
                 All_profiles_array = All_profiles_array + All_profiles
+                Total_inner_disk = Total_inner_disk + T_inner_disk
                 
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
             Radius_array = list(np.array(Radius_array)[sorted_inds])
             All_profiles_array = list(np.array(All_profiles_array)[sorted_inds])
+            Total_inner_disk = list(np.array(Total_inner_disk)[sorted_inds])
             
             start_time = np.max(Time_array)
         else:
@@ -142,6 +145,20 @@ if args.make_movie_pickles == 'True':
                 r_centers.append(np.mean(r_bins[bit-1:bit+1]))
                 L_means.append(weighted_mean)
                 L_means_spec.append(means_spec)
+                
+            #Make inner disk:
+            height = yt.YTQuantity(20, 'au')
+            if len(dd['particle_creation_time']) == 1:
+                radius = yt.YTQuantity(20, 'au')
+            else:
+                part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
+                nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
+                nearest_sink_pos = part_pos.T[nearest_sink_ind]
+                radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
+            inner_disk = ds.disk(center, normal, radius, height)
+            L_tot = np.sum(disk['L_gas_wrt_primary']))
+            Total_inner_disk.append(inner_disk)
+            
             
             Time_array.append(time_val)
             Radius_array.append(radius)
@@ -149,7 +166,7 @@ if args.make_movie_pickles == 'True':
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
-            pickle.dump((Time_array, Radius_array, All_profiles_array), file)
+            pickle.dump((Time_array, Radius_array, All_profiles_array, Total_inner_disk), file)
             file.close()
             print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
@@ -164,31 +181,38 @@ if rank == 0:
     Time_array = []
     Radius_array = []
     All_profiles_array = []
-    
-    if len(pickle_files) > 0:
-        for pickle_file in pickle_files:
-            file = open(pickle_file, 'rb')
-            time_val, radius, All_profiles = pickle.load(file)
-            file.close()
-            
-            Time_array = Time_array + time_val
-            Radius_array = Radius_array + radius
-            All_profiles_array = All_profiles_array + All_profiles
-            
-        sorted_inds = np.argsort(Time_array)
-        Time_array = list(np.array(Time_array)[sorted_inds])
-        Radius_array = list(np.array(Radius_array)[sorted_inds])
-        All_profiles_array = np.array(All_profiles_array)[sorted_inds]
+    Total_inner_disk = []
+
+    if rank == 0:
+        pickle_names = 'profile_*.pkl'
+        pickle_files = glob.glob(pickle_names)
+        
+        if len(pickle_files) > 0:
+            for pickle_file in pickle_files:
+                file = open(pickle_file, 'rb')
+                time_val, radius, All_profiles, T_inner_disk = pickle.load(file)
+                file.close()
+                
+                Time_array = Time_array + time_val
+                Radius_array = Radius_array + radius
+                All_profiles_array = All_profiles_array + All_profiles
+                Total_inner_disk = Total_inner_disk + T_inner_disk
+                
+            sorted_inds = np.argsort(Time_array)
+            Time_array = list(np.array(Time_array)[sorted_inds])
+            Radius_array = list(np.array(Radius_array)[sorted_inds])
+            All_profiles_array = list(np.array(All_profiles_array)[sorted_inds])
+            Total_inner_disk = list(np.array(Total_inner_disk)[sorted_inds])
         
     file = open('gathered_profile.pkl', 'wb')
-    pickle.dump((Time_array, Radius_array, All_profiles_array), file)
+    pickle.dump((Time_array, Radius_array, All_profiles_array, Total_inner_disk), file)
     file.close()
     
 sys.stdout.flush()
 CW.Barrier()
 
 file = open('gathered_profile.pkl', 'rb')
-Time_array, Radius_array, All_profiles_array = pickle.load(file)
+Time_array, Radius_array, All_profiles_array, Total_inner_disk = pickle.load(file)
 file.close()
 
 max_val = 0
@@ -299,3 +323,11 @@ if rank == 0:
     plt.legend(loc='best')
     
     plt.savefig('inner_L_spec_vs_time.pdf', bbox_inches='tight')
+    
+    plt.clf()
+    plt.semilogy(mean_inner_all.T[0], Total_inner_disk)
+    plt.xlim([0,1000])
+    plt.xlabel('Time (yr)')
+    plt.ylabel('L ($g\,cm^2/s$)')
+    
+    plt.savefig('Total_inner_disk.pdf', bbox_inches='tight')
