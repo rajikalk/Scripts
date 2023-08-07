@@ -221,3 +221,18 @@ for time_it in range(len(Time_array)):
         save_name = 'movie_frame_' + ("%06d" % time_it)
         plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
         print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
+
+        mean_L = np.mean(np.array(All_profiles_array[time_it][1])[inner_inds])
+        plt.clf()
+        plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
+        plt.axvline(x = Radius_array[time_it], color='k')
+        plt.axhline(y = mean_L, xmin=0, xmax=0.2, color='r')
+        plt.xlim([0,100])
+        plt.ylim([min_val, max_val])
+        plt.xlabel('Radius (AU)')
+        plt.ylabel('L ($g\,cm^2/s$)')
+        plt.title('Time:'+str(Time_array[time_it])+'yr')
+        
+        save_name = 'movie_frame_spec_' + ("%06d" % time_it)
+        plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
+        print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
