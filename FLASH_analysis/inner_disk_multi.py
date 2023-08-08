@@ -108,6 +108,12 @@ for spin_lab in Spin_labels:
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L.pdf', bbox_inches='tight')
 
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
 plot_it = 0
 xmax= 0
 ymax = 0
@@ -148,4 +154,56 @@ for spin_lab in Spin_labels:
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L_spec.pdf', bbox_inches='tight')
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = 0
+xmax= 0
+ymax = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/gathered_profile.pkl'
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+
+        if os.path.exists(inner_pickle):
+            file = open(pickle_file, 'wb')
+            Time_array, Radius_array, All_profiles_array, Total_inner_disk = pickle.load(file)
+            file.close()
+            
+            Radius_array.T[1][np.where(Radius_array.T[1]==100)] = np.nan
+            
+            ax2 = axs.flatten()[plot_it].twinx()
+            axs.flatten()[plot_it].plot((Time_array, Total_inner_disk, label='L_{total}')
+            ax2.plot(Time_array, Radius_array, color='k', alpha=0.20, label='Separation')
+            
+        else:
+            print("Couldn't open", inner_pickle)
+            
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('L$_{total}$ ($cm^2/s$)')
+            if spin_lab != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        if mach_lab == '0.2':
+            ax2.set_ylabel('Separation (AU)')
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+            if mach_lab != '0.2':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=False)
+        
+        plot_it = plot_it + 1
+
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+plt.savefig('Inner_total_L.pdf', bbox_inches='tight')
+
+
+
 
