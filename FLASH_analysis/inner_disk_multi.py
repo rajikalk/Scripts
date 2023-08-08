@@ -84,6 +84,11 @@ for spin_lab in Spin_labels:
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[2], label='<L>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
+            if mach_lab == '0.2':
+                ax2.set_ylabel('Separation (AU)')
+            if mach_lab != '0.2':
+                yticklabels = ax2.get_yticklabels()
+                plt.setp(yticklabels, visible=False)
             
         else:
             print("Couldn't open", inner_pickle)
@@ -95,11 +100,6 @@ for spin_lab in Spin_labels:
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
-        if mach_lab != '0.2':
-            yticklabels = ax2.get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab == '0.2':
-            ax2.set_ylabel('Separation (AU)')
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
             if mach_lab != '0.2':
@@ -138,6 +138,11 @@ for spin_lab in Spin_labels:
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[3], label='<h>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
+            if mach_lab == '0.2':
+                ax2.set_ylabel('Separation (AU)')
+            if mach_lab != '0.2':
+                yticklabels = ax2.get_yticklabels()
+                plt.setp(yticklabels, visible=False)
             
         else:
             print("Couldn't open", inner_pickle)
@@ -149,11 +154,6 @@ for spin_lab in Spin_labels:
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
-        if mach_lab != '0.2':
-            yticklabels = ax2.get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab == '0.2':
-            ax2.set_ylabel('Separation (AU)')
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
             if mach_lab != '0.2':
