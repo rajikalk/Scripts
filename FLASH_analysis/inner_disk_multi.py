@@ -129,7 +129,7 @@ for spin_lab in Spin_labels:
             file.close()
             
             ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot((mean_inner_all.T[0], mean_inner_all.T[3], label='<h>')
+            axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[3], label='<h>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
             
         else:
@@ -178,7 +178,7 @@ for spin_lab in Spin_labels:
             Radius_array.T[1][np.where(Radius_array.T[1]==100)] = np.nan
             
             ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot((Time_array, Total_inner_disk, label='L_{total}')
+            axs.flatten()[plot_it].plot(Time_array, Total_inner_disk, label='L_{total}')
             ax2.plot(Time_array, Radius_array, color='k', alpha=0.20, label='Separation')
             
         else:
