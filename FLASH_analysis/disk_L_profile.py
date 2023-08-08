@@ -225,10 +225,11 @@ file.close()
 max_val = 0
 min_val = np.inf
 for profile in All_profiles_array:
-    if np.max(profile[1]) > max_val:
-        max_val = np.max(profile[1])
-    if np.min(profile[1]) < min_val:
-        min_val = np.min(profile[1])
+    if len(profile[1]) > 0:
+        if np.max(profile[1]) > max_val:
+            max_val = np.max(profile[1])
+        if np.min(profile[1]) < min_val:
+            min_val = np.min(profile[1])
 
 sys.stdout.flush()
 CW.Barrier()
