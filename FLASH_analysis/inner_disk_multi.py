@@ -97,6 +97,9 @@ for spin_lab in Spin_labels:
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
+        if mach_lab != '0.2':
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels[-1], visible=False)
         if mach_lab == '0.2':
             ax2.set_ylabel('Separation (AU)')
         if spin_lab == '0.35':
@@ -148,6 +151,9 @@ for spin_lab in Spin_labels:
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
+        if mach_lab != '0.2':
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels[-1], visible=False)
         if mach_lab == '0.2':
             ax2.set_ylabel('Separation (AU)')
         if spin_lab == '0.35':
@@ -200,6 +206,9 @@ for spin_lab in Spin_labels:
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
+        if mach_lab != '0.2':
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels[-1], visible=False)
         if mach_lab == '0.2':
             ax2.set_ylabel('Separation (AU)')
         if spin_lab == '0.35':
