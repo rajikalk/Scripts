@@ -188,7 +188,8 @@ for spin_lab in Spin_labels:
             Time_array, Radius_array, All_profiles_array, Total_inner_disk = pickle.load(file)
             file.close()
             
-            Radius_array.T[1][np.where(Radius_array.T[1]==100)] = np.nan
+            Radius_array = np.array(Radius_array)
+            Radius_array[np.where(Radius_array==100)] = np.nan
             
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(Time_array, Total_inner_disk, label='L_{total}')
