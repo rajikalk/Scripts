@@ -82,7 +82,7 @@ for spin_lab in Spin_labels:
             file.close()
             
             ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot((mean_inner_all.T[0], mean_inner_all.T[2], label='<L>')
+            axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[2], label='<L>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
             
         else:
