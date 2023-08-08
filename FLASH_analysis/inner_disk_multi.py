@@ -77,7 +77,7 @@ for spin_lab in Spin_labels:
         #single_pickle
 
         if os.path.exists(inner_pickle):
-            file = open(pickle_file, 'wb')
+            file = open(inner_pickle, 'wb')
             mean_inner_all = pickle.load(file)
             file.close()
             
@@ -107,6 +107,7 @@ for spin_lab in Spin_labels:
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L.pdf', bbox_inches='tight')
+print('saved figure Inner_disk_L.pdf')
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
@@ -124,7 +125,7 @@ for spin_lab in Spin_labels:
         #single_pickle
 
         if os.path.exists(inner_pickle):
-            file = open(pickle_file, 'wb')
+            file = open(inner_pickle, 'wb')
             mean_inner_all = pickle.load(file)
             file.close()
             
@@ -154,6 +155,7 @@ for spin_lab in Spin_labels:
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L_spec.pdf', bbox_inches='tight')
+print('saved figure Inner_disk_L_spec.pdf')
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
@@ -171,7 +173,7 @@ for spin_lab in Spin_labels:
         #single_pickle
 
         if os.path.exists(inner_pickle):
-            file = open(pickle_file, 'wb')
+            file = open(inner_pickle, 'wb')
             Time_array, Radius_array, All_profiles_array, Total_inner_disk = pickle.load(file)
             file.close()
             
