@@ -86,7 +86,7 @@ for spin_lab in Spin_labels:
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
             
         else:
-            print("Couldn't open", single_pickle)
+            print("Couldn't open", inner_pickle)
             
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
@@ -137,7 +137,7 @@ for spin_lab in Spin_labels:
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
             
         else:
-            print("Couldn't open", single_pickle)
+            print("Couldn't open", inner_pickle)
             
         if spin_lab == '0.20':
             axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
