@@ -23,6 +23,7 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
+    parser.add_argument("-thickness", "--proj_thickness", type=float, default=None)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens", type=str)
     #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
@@ -166,7 +167,10 @@ if args.make_movie_pickles == 'True':
         
             #define projection region
             if args.axis == 'z':
-                thickness = args.plot_width/2
+                if args.proj_thickness == None:
+                    thickness = args.plot_width/2
+                else:
+                    thickness = args.proj_thickness
                 left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(thickness/2))], 'AU')
                 right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(thickness/2))], 'AU')
                 region = ds.box(left_corner, right_corner)
