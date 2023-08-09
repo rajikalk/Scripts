@@ -295,7 +295,7 @@ if args.make_movie_frames == 'True':
                 for line in ax.yaxis.get_ticklines():
                     line.set_color('white')
                     
-                if args.field == 'Dens':
+                if args.field == 'dens':
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
                 else:
                     cbar.set_label(r"Angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
