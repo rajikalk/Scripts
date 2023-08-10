@@ -245,6 +245,7 @@ for time_it in range(len(Time_array)):
     if rank == rit:
         inner_inds = np.where(np.array(All_profiles_array[time_it][0])<20)[0]
         mean_L = np.mean(np.array(All_profiles_array[time_it][1])[inner_inds])
+        '''
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
         plt.axvline(x = Radius_array[time_it], color='k')
@@ -254,14 +255,15 @@ for time_it in range(len(Time_array)):
         plt.xlabel('Radius (AU)')
         plt.ylabel('L ($g\,cm^2/s$)')
         plt.title('Time:'+str(Time_array[time_it])+'yr')
-        
+        '''
         mean_inner.append([Time_array[time_it], Radius_array[time_it], mean_L])
         
-        save_name = 'movie_frame_non_spec_' + ("%06d" % time_it)
-        plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
-        print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
+        #save_name = 'movie_frame_non_spec_' + ("%06d" % time_it)
+        #plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
+        #print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
 
         mean_L = np.mean(np.array(All_profiles_array[time_it][2])[inner_inds])
+        '''
         plt.clf()
         plt.semilogy(All_profiles_array[time_it][0], All_profiles_array[time_it][1])
         plt.axvline(x = Radius_array[time_it], color='k')
@@ -271,12 +273,12 @@ for time_it in range(len(Time_array)):
         plt.xlabel('Radius (AU)')
         plt.ylabel('L ($g\,cm^2/s$)')
         plt.title('Time:'+str(Time_array[time_it])+'yr')
-    
+        '''
         mean_inner[-1].append(mean_L)
         
-        save_name = 'movie_frame_spec_' + ("%06d" % time_it)
-        plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
-        print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
+        #save_name = 'movie_frame_spec_' + ("%06d" % time_it)
+        #plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
+        #print('Made frame', time_it, 'of', len(Time_array), 'on rank', rank)
         
 
 sys.stdout.flush()
