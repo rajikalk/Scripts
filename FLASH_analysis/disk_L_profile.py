@@ -275,6 +275,7 @@ for time_it in range(len(Time_array)):
         plt.title('Time:'+str(Time_array[time_it])+'yr')
         '''
         mean_inner[-1].append(mean_L)
+        print('saved inner disk mean values for time_it', time_it, 'of', len(Time_array))
         
         #save_name = 'movie_frame_spec_' + ("%06d" % time_it)
         #plt.savefig(save_name+'.jpg', dpi=300, bbox_inches='tight')
