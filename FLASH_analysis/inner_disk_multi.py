@@ -212,7 +212,7 @@ for spin_lab in Spin_labels:
                 ax2.set_ylabel('Separation (AU)')
             if mach_lab != '0.2':
                 yticklabels = ax2.get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
+                plt.setp(yticklabels, visible=False)
             
         else:
             print("Couldn't open", inner_pickle)
