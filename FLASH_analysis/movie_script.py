@@ -287,6 +287,13 @@ if args.make_movie_frames == 'True':
 
                 if len(part_info.keys())>0:
                     mym.set_global_font_size(8)
+                    if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                        sort_inds = np.argsort(part_info['particle_form_time'])
+                        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                        part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                        part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                        part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+                    
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
