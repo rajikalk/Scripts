@@ -78,8 +78,8 @@ for spin_lab in Spin_labels:
             file = open(inner_pickle, 'rb')
             mean_inner_all = pickle.load(file)
             file.close()
-            if np.max(mean_inner_all.T[1]) > max_sep:
-                max_sep = np.max(mean_inner_all.T[1])
+            if np.nanmax(mean_inner_all.T[1]) > max_sep:
+                max_sep = np.nanmax(mean_inner_all.T[1])
 
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
