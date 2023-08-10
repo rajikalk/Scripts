@@ -70,6 +70,17 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+max_sep = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/mean_inner_L.pkl'
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            mean_inner_all = pickle.load(file)
+            file.close()
+            if np.max(mean_inner_all.T[1]) > max_sep:
+                max_sep = np.max(mean_inner_all.T[1])
+
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/mean_inner_L.pkl'
@@ -84,6 +95,7 @@ for spin_lab in Spin_labels:
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[2], label='<L>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
+            ax2.set_ylim([0, max_sep])
             if mach_lab == '0.2':
                 ax2.set_ylabel('Separation (AU)')
             if mach_lab != '0.2':
@@ -109,7 +121,7 @@ for spin_lab in Spin_labels:
         plot_it = plot_it + 1
         axs.flatten()[plot_it-1].set_xlim([0, 10000])
         plt.savefig('Inner_disk_L.pdf', bbox_inches='tight')
-        
+    
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L.pdf', bbox_inches='tight')
@@ -138,6 +150,7 @@ for spin_lab in Spin_labels:
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[3], label='<h>')
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, label='Separation')
+            ax2.set_ylim([0, max_sep])
             if mach_lab == '0.2':
                 ax2.set_ylabel('Separation (AU)')
             if mach_lab != '0.2':
@@ -194,6 +207,7 @@ for spin_lab in Spin_labels:
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(Time_array, Total_inner_disk, label='L_{total}')
             ax2.plot(Time_array, Radius_array, color='k', alpha=0.20, label='Separation')
+            ax2.set_ylim([0, max_sep])
             if mach_lab == '0.2':
                 ax2.set_ylabel('Separation (AU)')
             if mach_lab != '0.2':
