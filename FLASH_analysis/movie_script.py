@@ -294,9 +294,9 @@ if args.make_movie_frames == 'True':
                             part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                             part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                             part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-                        else:
-                            print("pickle doesn't have sink formation time")
-                            os.remove(pickle_file)
+                    else:
+                        print("pickle doesn't have sink formation time")
+                        os.remove(pickle_file)
                             
                     
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
