@@ -107,7 +107,7 @@ for spin_val in spin_values:
                     part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                     part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                     part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-            mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=10)
+        mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=10)
         
         axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
         for line in axs.flatten()[plot_it].xaxis.get_ticklines():
