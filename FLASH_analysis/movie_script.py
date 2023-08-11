@@ -225,6 +225,22 @@ if args.make_movie_pickles == 'True':
                 print("created pickle for frame", file_int, "of", len(m_times))
 
     print("finished making movie frame pickles on rank", rank)
+    
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    if rank == 0:
+        for sim_file in usable_files:
+            file_int = file_int + 1
+            try:
+                if usable_files[file_int] == usable_files[file_int-1]:
+                    os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+            except:
+                continue
+        print('Finished copying pickles that use the same file for the same frame')
+    
+    del usable_files
+    del frames
 
 sys.stdout.flush()
 CW.Barrier()
