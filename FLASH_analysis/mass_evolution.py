@@ -123,8 +123,10 @@ for spin_lab in Spin_labels:
                     plot_time = time.in_units('yr')
                     plot_mass = mass.in_units('msun')
                 else:
-                    import pdb
-                    pdb.set_trace()
+                    end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                    end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                    plot_time = time.in_units('yr')[:end_ind+1]
+                    plot_mass = mass.in_units('msun')[:end_ind+1]
                 axs.flatten()[plot_it].plot(plot_time, plot_mass)
         else:
             print("Couldn't open", single_pickle)
@@ -145,4 +147,5 @@ for spin_lab in Spin_labels:
         plot_it = plot_it + 1
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol.pdf', bbox_inches='tight')
