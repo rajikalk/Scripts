@@ -117,10 +117,19 @@ if args.make_movie_pickles == 'True':
         else:
             file_int = file_int + 1
             if usable_files[file_int] == usable_files[file_int-1]:
-                os.system('cp '+ output_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + output_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
-        file_counter = usable_files.index(fn)
-        pickle_file = output_dir+"movie_frame_"+("%06d" % file_counter)+".pkl"
-        make_pickle = True
+                os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+        make_pickle = False
+        if args.plot_time is None:
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+        else:
+            pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
+        if os.path.isfile(pickle_file) == False:
+            make_pickle = True
+        elif os.path.isfile(pickle_file) == True:
+            if os.stat(pickle_file).st_size == 0:
+                make_pickle = True
+        if usable_files[file_int] == usable_files[file_int-1]:
+            os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
         #if os.path.isfile(pickle_file) == True:
         #if len(glob.glob(pickle_file)) == 1:
         #    make_pickle = False
@@ -207,13 +216,13 @@ if args.make_movie_pickles == 'True':
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_counter, "on rank", rank)
+                print("created pickle for frame", file_int, "on rank", rank)
             elif size == 1:
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_counter, "of", len(m_times))
+                print("created pickle for frame", file_int, "of", len(m_times))
 
     print("finished making movie frame pickles on rank", rank)
 
