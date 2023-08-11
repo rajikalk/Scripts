@@ -111,7 +111,7 @@ for spin_lab in Spin_labels:
             file.close()
             form_time = np.nan
             
-            if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
+            if max_time[Spin_labels.index(spin_val)][Mach_labels.index(mach_val)] == None:
                 end_ind = -1
             else:
                 import pdb
