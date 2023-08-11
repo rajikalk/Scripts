@@ -41,7 +41,7 @@ def parse_inputs():
     return args
 
 #-------------------------------------------------------
-#get input and output directory and arguments
+#get input and save_dir directory and arguments
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 args = parse_inputs()
@@ -242,7 +242,7 @@ if args.make_movie_frames == 'True':
     import my_flash_module as mym
 
     #Let's get the pickle files
-    pickle_files = sorted(glob.glob(output_dir+"movie_frame_*.pkl"))
+    pickle_files = sorted(glob.glob(save_dir+"movie_frame_*.pkl"))
     no_frames = len(pickle_files)
 
     rit = -1
@@ -252,7 +252,7 @@ if args.make_movie_frames == 'True':
             rit = 0
         if rank == rit:
             frame_no = int(pickle_file.split('_')[-1].split('.')[0])
-            file_name = output_dir + "movie_frame_" + ("%06d" % frame_no)
+            file_name = save_dir + "movie_frame_" + ("%06d" % frame_no)
             if os.path.isfile(file_name+'.jpg') == False:
                 print('making frame from', pickle_file, 'on rank', rank)
                 file = open(pickle_file, 'rb')
