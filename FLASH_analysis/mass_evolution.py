@@ -177,9 +177,9 @@ for spin_lab in Spin_labels:
             #for sink_id in sink_data.keys():
             #sink_id = list(sink_data.keys())[0]
             if np.isnan(form_time):
-                form_time = sink_data[0]['time'][0]
-            mass = yt.YTArray(sink_data[0]['mass'], 'g')
-            time = sink_data[0]['time'] - form_time
+                form_time = sink_data[list(sink_data.keys())[0]]['time'][0]
+            mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
+            time = sink_data[list(sink_data.keys())[0]]['time'] - form_time
             time = yt.YTArray(time, 's')
             if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
                 plot_time = time.in_units('yr')
