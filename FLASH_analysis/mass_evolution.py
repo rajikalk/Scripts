@@ -116,14 +116,16 @@ for spin_lab in Spin_labels:
             for sink_id in sink_data.keys():
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
+                mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
-                    end_ind = -1
+                    plot_time = time.in_units('yr')
+                    plot_mass = mass.in_units('msun')
                 else:
                     import pdb
                     pdb.set_trace()
-                axs.flatten()[plot_it].plot(time.in_units('yr'), sink_data[sink_id]['mass'])
+                axs.flatten()[plot_it].plot(plot_time, plot_mass)
         else:
             print("Couldn't open", single_pickle)
 
