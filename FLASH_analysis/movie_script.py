@@ -43,7 +43,7 @@ def parse_inputs():
 #-------------------------------------------------------
 #get input and output directory and arguments
 input_dir = sys.argv[1]
-output_dir = sys.argv[2]
+save_dir = sys.argv[2]
 args = parse_inputs()
 center_pos = [0, 0, 0]
 
