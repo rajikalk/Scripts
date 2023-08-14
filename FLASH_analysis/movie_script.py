@@ -326,7 +326,7 @@ if args.make_movie_frames == 'True':
                         os.remove(pickle_file)
                             
                     
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=10)
+                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
                 for line in ax.xaxis.get_ticklines():
