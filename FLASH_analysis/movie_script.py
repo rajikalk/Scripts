@@ -46,6 +46,8 @@ input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 args = parse_inputs()
 center_pos = [0, 0, 0]
+font_size = 10
+mym.set_global_font_size(font_size)
 
 if args.make_movie_pickles == 'True':
     
@@ -311,7 +313,6 @@ if args.make_movie_frames == 'True':
                 mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
 
                 if len(part_info.keys())>0:
-                    mym.set_global_font_size(8)
                     if 'particle_form_time' in part_info.keys():
                         if len(part_info['particle_form_time']) > 1:
                             if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
@@ -325,7 +326,7 @@ if args.make_movie_frames == 'True':
                         os.remove(pickle_file)
                             
                     
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=10)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
                 for line in ax.xaxis.get_ticklines():
