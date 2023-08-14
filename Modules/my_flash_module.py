@@ -361,14 +361,12 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         bbox_text = annotate_text.get_window_extent(renderer=renderer)
         bbox_text = annotate_text.get_window_extent(renderer=renderer)
         bbox_text = annotate_text.get_window_extent(renderer=renderer)
-        text_height = bbox_text.height
+        text_height = bbox_text.transformed(axis.transAxes.inverted()).height
         box_center_pos = [np.mean([bbox_text.transformed(axis.transAxes.inverted()).x0, bbox_text.transformed(axis.transAxes.inverted()).x1]), np.mean([bbox_text.transformed(axis.transAxes.inverted()).y0, bbox_text.transformed(axis.transAxes.inverted()).y1])]
         arrow_center_pos = [box_center_pos[0], box_center_pos[1]+text_height]
         pos_start = [box_center_pos[0]-xvel_axis_scale/0.5, arrow_center_pos[1]]
-        import pdb
-        pdb.set_trace()
         #set arrow pos to be 10% higher than text pos
-        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel_axis_scale, pos_start[1]), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
+        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0]*(xmax-xmin), pos_start[1]*(ymax-ymin)), ((pos_start[0]+xvel_axis_scale)*(xmax-xmin), pos_start[1]*(ymax-ymin)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
         #axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
     return axis
 
