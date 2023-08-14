@@ -289,7 +289,7 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         velz = velz
     return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3, renderer=None):
     global fontsize_global
     if plot_velocity_legend == 'False' or plot_velocity_legend == False:
         plot_velocity_legend = False
@@ -353,10 +353,16 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         yvel = 0.0
         width_val = width_ceil
         #annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.05*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
-        annotate_text = axis.text(1.0, 0.05, legend_text, va="bottom", ha="right", color='w', fontsize=fontsize_global)
+        annotate_text = axis.text(0.99, 0.05, legend_text, va="bottom", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        import pdb
-        pdb.set_trace()
+        pf = plt.gcf()
+        renderer = pf.canvas.get_renderer()
+        bbox_text = annotate_text.get_window_extent(renderer=renderer)
+        text_height = bbox_text.height
+        #set arrow pos to be 10% higher than text pos
+        
+        #import pdb
+        #pdb.set_trace()
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
         #axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
     return axis
