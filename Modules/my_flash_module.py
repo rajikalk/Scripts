@@ -353,7 +353,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         yvel = 0.0
         width_val = width_ceil
         #annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.05*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
-        annotate_text = axis.text(xmax - 0.01*xmax, ymin+0.01*yax, legend_text, va="bottom", ha="right", color='w', fontsize=fontsize_global)
+        annotate_text = axis.text(xmax - 0.01*xmax, ymin+0.01*ymax, legend_text, va="bottom", ha="right", color='w', fontsize=fontsize_global)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         pf = plt.gcf()
         renderer = pf.canvas.get_renderer()
