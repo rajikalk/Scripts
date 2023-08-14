@@ -314,7 +314,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     rv_colors = np.linspace(0, 1, 256)
     rv_cmap = plt.cm.get_cmap('RdGy_r')#plt.cm.get_cmap('bwr')
     
-    len_scale = (0.07*(xmax - xmin))
+    x_width = xmax-xmin
+    len_scale = (0.07*x_width)
     #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))
     #vels = np.hypot(X_val, Y_val)
     max_length = 0
@@ -350,7 +351,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         pos_start = [xmax - 0.2*(xmax-xmin), ymin + 0.12*(ymax-ymin)]
         #pos_start = [xmax - 0.25*(xmax-xmin), ymin + (fontsize_global/100)*0.70*(ymax-ymin)]
         xvel = len_scale*(standard_vel/standard_vel)
-        xvel_axis_scale = xvel/(xmax-xmin)
+        
+        xvel_axis_scale = xvel/x_width
         yvel = 0.0
         width_val = width_ceil
         #annotate_text = axis.text((xmax - 0.01*(xmax-xmin)), (ymin + 0.05*(ymax-ymin)), legend_text, va="center", ha="right", color='w', fontsize=fontsize_global)
@@ -364,11 +366,9 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         text_height = bbox_text.transformed(axis.transAxes.inverted()).height
         box_center_pos = [np.mean([bbox_text.transformed(axis.transAxes.inverted()).x0, bbox_text.transformed(axis.transAxes.inverted()).x1]), np.mean([bbox_text.transformed(axis.transAxes.inverted()).y0, bbox_text.transformed(axis.transAxes.inverted()).y1])]
         arrow_center_pos = [box_center_pos[0], box_center_pos[1]+text_height]
-        pos_start = [box_center_pos[0]-xvel_axis_scale/0.5, arrow_center_pos[1]]
-        import pdb
-        pdb.set_trace()
+        pos_start = [box_center_pos[0]-xvel_axis_scale/2, arrow_center_pos[1]]
         #set arrow pos to be 10% higher than text pos
-        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0]*(xmax-xmin), pos_start[1]*(ymax-ymin)), ((pos_start[0]+xvel_axis_scale)*(xmax-xmin), pos_start[1]*(ymax-ymin)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
+        axis.add_patch(mpatches.FancyArrowPatch(((pos_start[0]*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), (((pos_start[0]+xvel_axis_scale)*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
         #axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
     return axis
 
