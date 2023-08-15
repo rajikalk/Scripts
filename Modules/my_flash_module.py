@@ -363,7 +363,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         bbox_text = annotate_text.get_window_extent(renderer=renderer)
         text_height = bbox_text.transformed(axis.transAxes.inverted()).height
         box_center_pos = [np.mean([bbox_text.transformed(axis.transAxes.inverted()).x0, bbox_text.transformed(axis.transAxes.inverted()).x1]), np.mean([bbox_text.transformed(axis.transAxes.inverted()).y0, bbox_text.transformed(axis.transAxes.inverted()).y1])]
-        arrow_center_pos = [box_center_pos[0], box_center_pos[1]+text_height]
+        arrow_center_pos = [box_center_pos[0], box_center_pos[1]+0.75text_height]
         pos_start = [box_center_pos[0]-xvel_axis_scale/2, arrow_center_pos[1]]
         #set arrow pos to be 10% higher than text pos
         axis.add_patch(mpatches.FancyArrowPatch(((pos_start[0]*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), (((pos_start[0]+xvel_axis_scale)*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
@@ -475,12 +475,20 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             text_height = bbox_text.height
             annotate_text.remove()
             
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)+(1.1*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), 'M=[', va="bottom", ha="right", color='w', fontsize=fontsize_global)
+            annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            pf = plt.gcf()
+            renderer = pf.canvas.get_renderer()
+            bbox_text = annotate_text.get_window_extent(renderer=renderer)
+            indent_width = bbox_text.width
+            annotate_text.remove()
             
-            rainbow_text((xmin + 0.1*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(1.2*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            
+            rainbow_text((xmin + 0.01*(box_size) + indent_width), (ymin + 0.02*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
             #except:
             #    print("couldn't annotate particle masses")
     return axis
