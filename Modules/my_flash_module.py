@@ -467,17 +467,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
             
-            annotate_text = axis.text(xmax - 0.01*xmax, ymin+0.01*ymax, string_2, va="bottom", ha="right", color='w', fontsize=fontsize_global)
+            annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2, va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             pf = plt.gcf()
             renderer = pf.canvas.get_renderer()
             bbox_text = annotate_text.get_window_extent(renderer=renderer)
-            text_height = bbox_text.transformed(axis.transAxes.inverted()).height
+            text_height = bbox_text.height
+            annotate_text.remove()
             
-            import pdb
-            pdb.set_trace()
-            
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)*4), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)+(1.1*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             
             rainbow_text((xmin + 0.1*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
