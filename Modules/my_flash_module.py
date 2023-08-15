@@ -363,7 +363,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         bbox_text = annotate_text.get_window_extent(renderer=renderer)
         text_height = bbox_text.transformed(axis.transAxes.inverted()).height
         box_center_pos = [np.mean([bbox_text.transformed(axis.transAxes.inverted()).x0, bbox_text.transformed(axis.transAxes.inverted()).x1]), np.mean([bbox_text.transformed(axis.transAxes.inverted()).y0, bbox_text.transformed(axis.transAxes.inverted()).y1])]
-        arrow_center_pos = [box_center_pos[0], box_center_pos[1]+0.75text_height]
+        arrow_center_pos = [box_center_pos[0], box_center_pos[1]+(0.75*text_height)]
         pos_start = [box_center_pos[0]-xvel_axis_scale/2, arrow_center_pos[1]]
         #set arrow pos to be 10% higher than text pos
         axis.add_patch(mpatches.FancyArrowPatch(((pos_start[0]*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), (((pos_start[0]+xvel_axis_scale)*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
