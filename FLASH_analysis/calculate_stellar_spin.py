@@ -94,8 +94,8 @@ Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 R_star = yt.YTQuantity(2, 'rsun')
 Cirumference = 2 * np.pi * R_star.in_units('cm')
-L_acc_frac = 0.05
-M_acc_frac = 0.95
+L_acc_frac = 0.01
+M_acc_frac = 0.75
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
