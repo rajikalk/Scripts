@@ -126,11 +126,12 @@ for spin_lab in Spin_labels:
                 L_tot = np.sqrt((sink_data[sink_id]['anglx'])**2 + (sink_data[sink_id]['angly'])**2 + (sink_data[sink_id]['anglz'])**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
                 L_star = L_acc_frac*L_tot
+                
                 M_star = M_acc_frac*yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 I_star = (2/5) * M_star * R_star.in_units('cm')**2
-                Ang_freq_star = L_tot/I_star
-                T_rot = (2*np.pi)/Ang_freq_star
-            
+                
+                T_rot = (I_star * 2 * np.pi)/L_star
+                
                 axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
         else:
             print("Couldn't open", single_pickle)
