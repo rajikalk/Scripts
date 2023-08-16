@@ -42,6 +42,9 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+              '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+              '#bcbd22', '#17becf']
 
 #---------------------------------------------------
 #Define arguments
@@ -189,7 +192,7 @@ for spin_lab in Spin_labels:
                 end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab)
+            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab)
         else:
             print("Couldn't open", single_pickle)
 
@@ -211,11 +214,12 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_comp.pdf', bbox_inches='tight')
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
+line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
 ymax = 0
@@ -248,23 +252,82 @@ for mach_lab in Mach_labels:
                 end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab)
+            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Mach_labels.index(mach_lab)])
         else:
             print("Couldn't open", single_pickle)
 
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)')
-            if spin_lab != '0.20':
-                yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
-        if spin_lab == '0.35':
-            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
-            if mach_lab != '0.2':
-                xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                plt.setp(xticklabels[-1], visible=False)
-        
+        else:
+            yticklabels = axs.flatten()[plot_it].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if mach_lab != '0.2':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[0].legend(loc='best')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+line_styles = ['-', '--', '-.', ':']
+plot_it = -1
+xmax= 0
+ymax = 0
+for mach_lab in Mach_labels:
+    plot_it = plot_it + 1
+    for spin_lab in Spin_labels:
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
+        #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        
+        if os.path.exists(single_pickle):
+            file = open(single_pickle, 'rb')
+            sink_data, line_counter = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            
+            for sink_id in sink_data.keys():
+                #sink_id = list(sink_data.keys())[0]
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
+                    plot_time = time.in_units('yr')
+                    plot_mass = mass.in_units('msun')
+                else:
+                    end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                    end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                    plot_time = time.in_units('yr')[:end_ind+1]
+                    plot_mass = mass. in_units('msun')[:end_ind+1]
+                if sink_id == list(sink_data.keys())[0]:
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)])
+                else:
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Mach_labels.index(mach_lab)], color=colors[Mach_labels.index(mach_lab)])
+        else:
+            print("Couldn't open", single_pickle)
+
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)')
+        else:
+            yticklabels = axs.flatten()[plot_it].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if mach_lab != '0.2':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
+
+axs.flatten()[0].legend(loc='best')
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
+plt.savefig('Mass_evol_spin_comp_all_sinks.pdf', bbox_inches='tight')
