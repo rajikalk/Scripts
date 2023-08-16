@@ -223,7 +223,7 @@ plt.savefig('rotation_rate_lin.pdf', bbox_inches='tight')
 
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
