@@ -203,7 +203,7 @@ for spin_lab in Spin_labels:
                 plt.setp(yticklabels[-1], visible=False)
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
-            if mach_lab != '0.2':
+            if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
                 plt.setp(xticklabels[-1], visible=False)
         
@@ -262,7 +262,7 @@ for mach_lab in Mach_labels:
         else:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
-        if mach_lab != '0.2':
+        if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
 
