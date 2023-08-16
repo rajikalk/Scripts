@@ -91,7 +91,7 @@ Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 R_star = yt.YTQuantity(2, 'rsun')
 Cirumference = 2 * np.pi * R_star.in_units('cm')
-L_acc_frac = 0.1
+L_acc_frac = 0.01
 M_acc_frac = 0.9
 
 plt.clf()
