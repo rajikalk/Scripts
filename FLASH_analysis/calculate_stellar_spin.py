@@ -217,7 +217,7 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it-1].set_ylim([0, 10])
+axs.flatten()[plot_it-1].set_ylim([0, 2])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate_lin.pdf', bbox_inches='tight')
 
@@ -283,10 +283,10 @@ for spin_lab in Spin_labels:
             if mach_lab != '0.2':
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
                 plt.setp(xticklabels[-1], visible=False)
-    axs.flatten()[plot_it].axhline(y=2, color='k', linestyle='--', alpha=0.5)
+    axs.flatten()[plot_it].axhline(y=2, color='k', linestyle=':', alpha=0.5)
     plot_it = plot_it + 1
 
 axs.flatten()[0].legend(loc='best')
-axs.flatten()[plot_it-1].set_ylim([0, 10])
+axs.flatten()[plot_it-1].set_ylim([0, 2])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate_lin_comp.pdf', bbox_inches='tight')
