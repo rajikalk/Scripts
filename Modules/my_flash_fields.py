@@ -184,6 +184,31 @@ def _L_gas_wrt_CoM(field, data):
 
 yt.add_field("L_gas_wrt_CoM", function=_L_gas_wrt_CoM, units=r"g*cm**2/s", sampling_type="local")
 
+def _L_gas_wrt_CoM_cyl(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    CoM_pos = data['gas', 'CoM_full'].in_units('cm')
+    CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
+    
+    dd = data.ds.all_data()
+    dx_gas = CoM_pos[0] - data['gas', 'x'].in_units('cm')
+    dy_gas = CoM_pos[1] - data['gas', 'y'].in_units('cm')
+    dz_gas = CoM_pos[2] - data['gas', 'z'].in_units('cm')
+    d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+
+    dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
+    dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
+    dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
+    d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+    
+    L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+    L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+    return L_gas_wrt_CoM
+
+
+yt.add_field("L_gas_wrt_CoM_cyl", function=_L_gas_wrt_CoM_cyl, units=r"g*cm**2/s", sampling_type="local")
+
 def _nearest_particle_index(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
@@ -255,6 +280,31 @@ def _L_gas_wrt_primary(field, data):
     return L_wrt_primary
 
 yt.add_field("L_gas_wrt_primary", function=_L_gas_wrt_primary, units=r"g*cm**2/s", sampling_type="local")
+
+def _L_gas_wrt_primary_cyl(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
+        d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+    
+        dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+        
+        L_gas = data['gas', 'mass'].value * np.cross(d_vel_gas, d_pos_gas).T
+        L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+    else:
+        L_wrt_primary = data['gas', 'L_gas_wrt_CoM_cyl']
+    return L_wrt_primary
+
+yt.add_field("L_gas_wrt_primary_cyl", function=_L_gas_wrt_primary_cyl, units=r"g*cm**2/s", sampling_type="local")
 
 '''
 def _L_gas_wrt_CoM(field, data):
