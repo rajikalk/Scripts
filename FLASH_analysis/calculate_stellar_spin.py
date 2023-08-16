@@ -117,7 +117,7 @@ for spin_lab in Spin_labels:
             form_time = np.nan
             
             for sink_id in sink_data.keys():
-                sink_id = list(sink_data.keys())[0]
+                #sink_id = list(sink_data.keys())[0]
                 if np.isnan(form_time):
                     form_time = sink_data[sink_id]['time'][0]
                     
