@@ -155,7 +155,7 @@ plt.savefig('Mass_evol.pdf', bbox_inches='tight')
 
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -192,7 +192,7 @@ for spin_lab in Spin_labels:
                 end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab)
+            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab, color=colors[Mach_labels.index(mach_lab)], alpha=0.5)
         else:
             print("Couldn't open", single_pickle)
 
@@ -252,7 +252,7 @@ for mach_lab in Mach_labels:
                 end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)])
+            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], alpha=0.5)
         else:
             print("Couldn't open", single_pickle)
 
@@ -313,7 +313,7 @@ for mach_lab in Mach_labels:
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 else:
-                    axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.5)
         else:
             print("Couldn't open", single_pickle)
 
