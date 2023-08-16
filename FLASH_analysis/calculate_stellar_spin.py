@@ -289,4 +289,4 @@ for spin_lab in Spin_labels:
 axs.flatten()[0].legend(loc='best')
 axs.flatten()[plot_it-1].set_ylim([0, 10])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-plt.savefig('rotation_rate_lin.pdf', bbox_inches='tight')
+plt.savefig('rotation_rate_lin_comp.pdf', bbox_inches='tight')
