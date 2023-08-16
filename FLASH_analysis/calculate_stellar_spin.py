@@ -91,8 +91,8 @@ Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 R_star = yt.YTQuantity(2, 'rsun')
 Cirumference = 2 * np.pi * R_star.in_units('cm')
-L_acc_frac = 0.5
-M_acc_frac = 1.0
+L_acc_frac = 0.1
+M_acc_frac = 0.9
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
@@ -132,7 +132,7 @@ for spin_lab in Spin_labels:
                 
                 T_rot = (I_star * 2 * np.pi)/L_star
                 
-                axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
+            axs.flatten()[plot_it].axhline(y=2, 'k--', alpha=0.5)
         else:
             print("Couldn't open", single_pickle)
         
