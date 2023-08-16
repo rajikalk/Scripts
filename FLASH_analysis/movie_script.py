@@ -25,6 +25,7 @@ def parse_inputs():
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
     parser.add_argument("-thickness", "--proj_thickness", type=float, default=None)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens", type=str)
+    parser.add_argument("-calc_spec", "--calculate_mass_specific_field", help="Do you want to calculate the mass specific field?", default='False', type=str)
     #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
@@ -110,7 +111,10 @@ if args.make_movie_pickles == 'True':
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
     if size > 1:
-        njobs = int(size/5)
+        if args.calculate_mass_specific_field == 'False':
+            njobs = int(size/5)
+        else:
+            njobs = int(size/6)
     else:
         njobs = 1
     for fn in yt.parallel_objects(usable_files, njobs=njobs):
@@ -175,6 +179,9 @@ if args.make_movie_pickles == 'True':
             proj_field_list = proj_field_list + \
                 [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
                 [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
+                
+            if args.calculate_mass_specific_field != 'False':
+                proj_field_list = proj_field_list + [('gas', 'mass')]
         
             #define projection region
             if args.axis == 'z':
@@ -216,13 +223,19 @@ if args.make_movie_pickles == 'True':
             if rank == proj_root_rank and size > 1:
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                if args.calculate_mass_specific_field == 'False':
+                    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                else:
+                    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]]/proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_int, "on rank", rank)
             elif size == 1:
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
-                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                if args.calculate_mass_specific_field == 'False':
+                    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                else:
+                    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]]/proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle for frame", file_int, "of", len(m_times))
 
@@ -337,7 +350,10 @@ if args.make_movie_frames == 'True':
                 if args.field == 'dens':
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
                 else:
-                    cbar.set_label(r"Angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
+                    if args.calculate_mass_specific_field == 'False':
+                        cbar.set_label(r"Angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
+                    else:
+                        cbar.set_label(r"Angular momentum (cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
                 time_string = "$t$="+str(int(time_val))+"yr"
                 time_string_raw = r"{}".format(time_string)
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
