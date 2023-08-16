@@ -129,7 +129,7 @@ for spin_lab in Spin_labels:
                 M_star = M_acc_frac*yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 I_star = (2/5) * M_star * R_star.in_units('cm')**2
                 Ang_freq_star = L_tot/I_star
-                T_rot = 1/Ang_freq_star
+                T_rot = (2*np.pi)/Ang_freq_star
             
                 axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
         else:
