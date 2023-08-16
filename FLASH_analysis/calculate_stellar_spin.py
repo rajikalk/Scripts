@@ -155,3 +155,65 @@ for spin_lab in Spin_labels:
 axs.flatten()[plot_it-1].set_ylim([5.e-1, 1.e2])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate.pdf', bbox_inches='tight')
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = 0
+xmax= 0
+ymax = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
+        #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        
+        if os.path.exists(single_pickle):
+            file = open(single_pickle, 'rb')
+            sink_data, line_counter = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            
+            for sink_id in sink_data.keys():
+                #sink_id = list(sink_data.keys())[0]
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                    
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                L_tot = np.sqrt((sink_data[sink_id]['anglx'])**2 + (sink_data[sink_id]['angly'])**2 + (sink_data[sink_id]['anglz'])**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                L_star = L_acc_frac*L_tot
+                
+                M_star = M_acc_frac*yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                I_star = (2/5) * M_star * R_star.in_units('cm')**2
+                
+                T_rot = (I_star * 2 * np.pi)/L_star
+                
+                axs.flatten()[plot_it].plot(time.in_units('yr'), T_rot.in_units('day'))
+            axs.flatten()[plot_it].axhline(y=2, color='k', linestyle='--', alpha=0.5)
+        else:
+            print("Couldn't open", single_pickle)
+        
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: T$_{rot}$ (day)')
+            if spin_lab != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+            if mach_lab != '0.2':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=False)
+        
+        plot_it = plot_it + 1
+
+axs.flatten()[plot_it-1].set_ylim([0, 30])
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+plt.savefig('rotation_rate.pdf', bbox_inches='tight')
