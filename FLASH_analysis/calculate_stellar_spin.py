@@ -91,11 +91,11 @@ Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 R_star = yt.YTQuantity(2, 'rsun')
 Cirumference = 2 * np.pi * R_star.in_units('cm')
-L_acc_frac = 0.01
-M_acc_frac = 0.9
+L_acc_frac = 0.05
+M_acc_frac = 0.95
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -152,6 +152,6 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it-1].set_ylim(bottom=0)
+axs.flatten()[plot_it-1].set_ylim([1.e-2, 1.e3])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate.pdf', bbox_inches='tight')
