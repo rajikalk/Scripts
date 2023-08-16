@@ -131,7 +131,7 @@ for spin_lab in Spin_labels:
                 Ang_freq_star = L_tot/I_star
                 T_rot = 1/Ang_freq_star
             
-                axs.flatten()[plot_it].plot(time.in_units('yr'), T_rot.in_units('day'))
+                axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
         else:
             print("Couldn't open", single_pickle)
         
@@ -150,5 +150,6 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate.pdf', bbox_inches='tight')
