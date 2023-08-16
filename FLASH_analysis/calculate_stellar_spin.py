@@ -90,6 +90,7 @@ plt.savefig('spin_comp_primary.png')
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 R_star = yt.YTQuantity(2, 'rsun')
+Cirumference = 2 * np.pi * R_star.in_units('cm')
 L_acc_frac = 0.5
 M_acc_frac = 1.0
 
@@ -115,22 +116,39 @@ for spin_lab in Spin_labels:
             file.close()
             form_time = np.nan
             
-            #for sink_id in sink_data.keys():
-            sink_id = list(sink_data.keys())[0]
-            if np.isnan(form_time):
-                form_time = sink_data[sink_id]['time'][0]
-            L_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
-            L_tot = yt.YTArray(L_tot, 'cm**2/s')
-            import pdb
-            pdb.set_trace()
-            axs.flatten()[plot_it].set_ylim([0.0e19, 1.5e19])
-            if spin_lab != '0.20':
-                L_tot = L_tot/1.e19
-                axs.flatten()[plot_it].set_ylim([0.0, 1.5])
-            time = sink_data[sink_id]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if time[-1] > xmax:
-                xmax = time[-1]
-            if np.max(L_tot) > ymax:
-                ymax = np.max(L_tot)
+            for sink_id in sink_data.keys():
+                sink_id = list(sink_data.keys())[0]
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
                     
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                L_tot = np.sqrt((sink_data[sink_id]['anglx'])**2 + (sink_data[sink_id]['angly'])**2 + (sink_data[sink_id]['anglz'])**2)
+                L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                L_star = L_acc_frac*L_tot
+                M_star = M_acc_frac*yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                I_star = (2/5) * M_star * R_star.in_units('cm')**2
+                Ang_freq_star = L_tot/I_star
+                T_rot = 1/Ang_freq_star
+            
+                axs.flatten()[plot_it].plot(time.in_units('yr'), T_rot.in_units('day'))
+        else:
+            print("Couldn't open", single_pickle)
+        
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].set_title('Mach ='+mach_lab)
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('$\Omega t_{ff}='+spin_lab+'$: T$_{rot}$ (day)')
+            if spin_lab != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+            if mach_lab != '0.2':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=False)
+        
+        plot_it = plot_it + 1
+
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+plt.savefig('rotation_rate.pdf', bbox_inches='tight')
