@@ -177,22 +177,25 @@ for spin_lab in Spin_labels:
             file.close()
             form_time = np.nan
             
-            #for sink_id in sink_data.keys():
+            for sink_id in sink_data.keys():
             #sink_id = list(sink_data.keys())[0]
-            if np.isnan(form_time):
-                form_time = sink_data[list(sink_data.keys())[0]]['time'][0]
-            mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
-            time = sink_data[list(sink_data.keys())[0]]['time'] - form_time
-            time = yt.YTArray(time, 's')
-            if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
-                plot_time = time.in_units('yr')
-                plot_mass = mass.in_units('msun')
-            else:
-                end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
-                end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
-                plot_time = time.in_units('yr')[:end_ind+1]
-                plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab, color=colors[Mach_labels.index(mach_lab)], alpha=0.5)
+                if np.isnan(form_time):
+                    form_time = sink_data[list(sink_data.keys())[0]]['time'][0]
+                mass = yt.YTArray(sink_data[list(sink_data.keys())[0]]['mass'], 'g')
+                time = sink_data[list(sink_data.keys())[0]]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
+                    plot_time = time.in_units('yr')
+                    plot_mass = mass.in_units('msun')
+                else:
+                    end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                    end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                    plot_time = time.in_units('yr')[:end_ind+1]
+                    plot_mass = mass.in_units('msun')[:end_ind+1]
+                if sink_id == list(sink_data.keys())[0]:
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\mathcal{M}=$'+mach_lab, color=colors[Mach_labels.index(mach_lab)], alpha=0.75)
+                else:
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, color=colors[Mach_labels.index(mach_lab)], alpha=0.75)
         else:
             print("Couldn't open", single_pickle)
 
@@ -252,7 +255,7 @@ for mach_lab in Mach_labels:
                 end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_mass = mass.in_units('msun')[:end_ind+1]
-            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], alpha=0.5)
+            axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], alpha=0.75)
         else:
             print("Couldn't open", single_pickle)
 
@@ -311,9 +314,9 @@ for mach_lab in Mach_labels:
                     plot_time = time.in_units('yr')[:end_ind+1]
                     plot_mass = mass. in_units('msun')[:end_ind+1]
                 if sink_id == list(sink_data.keys())[0]:
-                    axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
-                    axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.5)
+                    axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
         else:
             print("Couldn't open", single_pickle)
 
