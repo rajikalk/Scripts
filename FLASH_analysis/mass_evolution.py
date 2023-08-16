@@ -91,7 +91,7 @@ plt.savefig('spin_comp_primary.png')
 '''
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
-max_time = [[None, None, None], [None, 10000, None], [4050, None, 10000], [None, 3770, None]]
+max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [4050, 10000, 10000], [10000, 10000, 10000]]
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*1.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
