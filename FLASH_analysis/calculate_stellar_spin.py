@@ -152,6 +152,6 @@ for spin_lab in Spin_labels:
         
         plot_it = plot_it + 1
 
-axs.flatten()[plot_it-1].set_ylim([1.e-1, 1.e3])
+axs.flatten()[plot_it-1].set_ylim([5.e-1, 1.e2])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('rotation_rate.pdf', bbox_inches='tight')
