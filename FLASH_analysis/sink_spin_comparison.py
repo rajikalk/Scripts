@@ -42,6 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
+max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [4050, 10000, 10000], [10000, 10000, 10000]]
 
 #---------------------------------------------------
 #Define arguments
@@ -128,7 +129,12 @@ for spin_lab in Spin_labels:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+                    
+                end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                plot_time = time.in_units('yr')[:end_ind+1]
+                plot_L = L_tot[:end_ind+1]
+                axs.flatten()[plot_it].plot(plot_time, plot_L)
         else:
             print("Couldn't open", single_pickle)
         '''
@@ -214,7 +220,11 @@ for spin_lab in Spin_labels:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
                     ymax = np.max(L_tot)
-                axs.flatten()[plot_it].plot(time.in_units('yr'), L_tot, label='Single')
+                end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                plot_time = time.in_units('yr')[:end_ind+1]
+                plot_L = L_tot[:end_ind+1]
+                axs.flatten()[plot_it].plot(plot_time, plot_L, label='Single')
         else:
             print("Couldn't open", single_pickle)
         
