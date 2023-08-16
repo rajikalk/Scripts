@@ -133,7 +133,6 @@ for spin_lab in Spin_labels:
                 T_rot = (I_star * 2 * np.pi)/L_star
                 
                 axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
-                            axs.flatten()[plot_it].semilogy(time.in_units('yr'), T_rot.in_units('day'))
             axs.flatten()[plot_it].axhline(y=2, color='k', linestyle='--', alpha=0.5)
         else:
             print("Couldn't open", single_pickle)
