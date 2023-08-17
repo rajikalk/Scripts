@@ -294,9 +294,10 @@ if args.make_movie_frames == 'True':
                         cbar_lims = [1.e-16, 1.e-14]
                         stdvel = 5
                 else:
-                    import pdb
-                    pdb.set_trace()
-                    cbar_lims = [1.e45, 1.e48]
+                    if 'spec' in args.field:
+                        cbar_lims = [1.e16, 1.e18]
+                    else:
+                        cbar_lims = [1.e45, 1.e48]
                     stdvel = 5
                 
                 cmap=plt.cm.gist_heat
