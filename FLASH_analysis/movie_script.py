@@ -295,7 +295,7 @@ if args.make_movie_frames == 'True':
                         stdvel = 5
                 else:
                     if 'spec' in args.field:
-                        cbar_lims = [1.e16, 1.e19]
+                        cbar_lims = [1.e18, 1.e21]
                     else:
                         cbar_lims = [1.e45, 1.e48]
                     stdvel = 5
