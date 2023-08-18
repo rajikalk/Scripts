@@ -97,11 +97,6 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[2], label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.set_ylim([0, max_sep])
-            if mach_lab == '0.2':
-                ax2.set_ylabel('Separation (AU)')
-            if mach_lab != '0.2':
-                yticklabels = ax2.get_yticklabels()
-                plt.setp(yticklabels, visible=False)
         else:
             print("Couldn't open", inner_pickle)
             
@@ -109,6 +104,7 @@ for spin_lab in Spin_labels:
             axs.flatten()[plot_it].legend(loc='best')
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('L ($g\,cm^2/s$)')
+            ax2.set_ylabel('Separation (AU)')
             if spin_lab != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
