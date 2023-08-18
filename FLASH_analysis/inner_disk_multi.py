@@ -163,20 +163,20 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].set_ylabel('L ($g\,cm^2/s$)')
         if mach_lab == '0.20':
             ax2.set_ylabel('Separation (AU)')
-            if spin_lab != '0.20':
-                yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
-        if spin_lab == '0.35':
-            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        if spin_lab != '0.0':
+            yticklabels = axs.flatten()[plot_it].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+                
+    axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         
     plot_it = plot_it + 1
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
-    plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
+    plt.savefig('Inner_disk_L_spin_comp.pdf', bbox_inches='tight')
     
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
-print('saved figure Inner_disk_L_mach_comp.pdf')
+plt.savefig('Inner_disk_L_spin_comp.pdf', bbox_inches='tight')
+print('saved figure Inner_disk_L_spin_comp.pdf')
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey=True)
