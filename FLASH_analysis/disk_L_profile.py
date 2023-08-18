@@ -295,11 +295,11 @@ if rank == 0:
         sort_inds = np.argsort(np.array(mean_inner_all[0]).T[0])
         mean_inner_all = np.array(mean_inner_all[0])[sort_inds]
         mean_inner_all.T[1][np.where(mean_inner_all.T[1]==100)] = np.nan
-        file = open(pickle_file, 'wb')
+        file = open(pickle_file, 'rb')
         pickle.dump((mean_inner_all), file)
         file.close()
     else:
-        file = open(pickle_file, 'wb')
+        file = open(pickle_file, 'rb')
         mean_inner_all = pickle.load(file)
         file.close()
     
