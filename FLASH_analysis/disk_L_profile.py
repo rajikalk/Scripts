@@ -22,6 +22,8 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
+    parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
+    parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
@@ -141,14 +143,14 @@ if args.make_movie_pickles == 'True':
                 radius = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
             disk = ds.disk(center, normal, radius, height)
             Radius_field = disk['radius'].in_units('AU')
-            L_disk = disk['L_gas_wrt_primary']
+            L_disk = disk[args.profile_field]
             r_bins = np.arange(0, radius.value+5, 5)
             r_centers = []
             L_means = []
             L_means_spec = []
             for bit in range(1,len(r_bins[1:])):
                 usable_inds = np.where((Radius_field>r_bins[bit-1])&(Radius_field<r_bins[bit]))
-                weighted_mean = np.sum(disk['L_gas_wrt_primary'][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                weighted_mean = np.sum(disk[args.profile_field][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
                 means_spec = np.sum((disk['L_gas_wrt_primary'][usable_inds]/disk['mass'][usable_inds])*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
                 r_centers.append(np.mean(r_bins[bit-1:bit+1]))
                 L_means.append(weighted_mean)
@@ -243,7 +245,7 @@ for time_it in range(len(Time_array)):
     if rit == size:
         rit = 0
     if rank == rit:
-        inner_inds = np.where(np.array(All_profiles_array[time_it][0])<20)[0]
+        inner_inds = np.where(np.array(All_profiles_array[time_it][0])<args.inner_radius_threshold)[0]
         mean_L = np.mean(np.array(All_profiles_array[time_it][1])[inner_inds])
         '''
         plt.clf()
