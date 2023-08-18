@@ -217,7 +217,7 @@ for spin_lab in Spin_labels:
             file.close()
             
             ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[2], label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
+            axs.flatten()[plot_it].plot(mean_inner_all.T[0], mean_inner_all.T[3], label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.plot(mean_inner_all.T[0], mean_inner_all.T[1], color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.set_ylim([0, max_sep])
         else:
