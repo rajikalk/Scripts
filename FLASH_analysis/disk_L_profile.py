@@ -151,7 +151,7 @@ if args.make_movie_pickles == 'True':
             for bit in range(1,len(r_bins[1:])):
                 usable_inds = np.where((Radius_field>r_bins[bit-1])&(Radius_field<r_bins[bit]))
                 weighted_mean = np.sum(disk[args.profile_field][usable_inds]*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
-                means_spec = np.sum((disk['L_gas_wrt_primary'][usable_inds]/disk['mass'][usable_inds])*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
+                means_spec = np.sum((disk[args.profile_field][usable_inds]/disk['mass'][usable_inds])*disk['mass'][usable_inds])/np.sum(disk['mass'][usable_inds])
                 r_centers.append(np.mean(r_bins[bit-1:bit+1]))
                 L_means.append(weighted_mean)
                 L_means_spec.append(means_spec)
@@ -166,7 +166,7 @@ if args.make_movie_pickles == 'True':
                 nearest_sink_pos = part_pos.T[nearest_sink_ind]
                 radius_inner = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
             inner_disk = ds.disk(center, normal, radius_inner, height_inner)
-            L_tot = np.sum(inner_disk['L_gas_wrt_primary'])
+            L_tot = np.sum(inner_disk[args.profile_field])
             
             Time_array.append(time_val)
             Radius_array.append(radius)
