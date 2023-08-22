@@ -43,6 +43,7 @@ plt.subplots_adjust(hspace=0.0)
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 
 cit = -1
+t_end_yr = None#9000
 for pick_file in pickle_files:
     cit = cit + 1
     file_open = open(pick_file, 'rb')
@@ -51,7 +52,6 @@ for pick_file in pickle_files:
 
     #find time bounds:
     t_start_yr = 3000
-    t_end_yr = None#9000
     if t_end_yr == None:
         t_end_yr = (np.array(particle_data['time']) - t_start_yr)[-1]
     t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
