@@ -28,6 +28,9 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 
+peri_times = [3900.00360611, 5584.72522835, 6573.76016707, 7300.0285258, 7854.76013498, 8271.17007293, 8620.19949296]
+find_it = 0
+
 path = sys.argv[1]
 save_dir = sys.argv[2]
 if save_dir[-1] != '/':
@@ -129,8 +132,9 @@ if args.update_pickle == 'True':
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                import pdb
-                pdb.set_trace()
+                if abs(peri_times[find_it] - time_val) < 1:
+                    import pdb
+                    pdb.set_trace()
                 #if len(particle_tags) == 1:
                 particle_data['time'].append(time_val)
                 particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
