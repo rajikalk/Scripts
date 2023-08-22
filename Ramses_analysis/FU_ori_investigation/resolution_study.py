@@ -35,7 +35,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.5), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
