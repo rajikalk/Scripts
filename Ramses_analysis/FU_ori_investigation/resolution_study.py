@@ -82,7 +82,7 @@ for pick_file in pickle_files:
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
     axs.flatten()[1].set_ylim(bottom=1.e-9)
     '''
-    axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]).T[part], color=proj_colours[cit])
+    axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Separation (au)')
     #axs.flatten()[1].set_ylim()
     
