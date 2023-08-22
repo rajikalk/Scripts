@@ -17,6 +17,7 @@ matplotlib.rcParams['ps.fonttype'] = 42
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("-pickle", "--sink_pickle", type=str, default='particle_data.pkl')
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
