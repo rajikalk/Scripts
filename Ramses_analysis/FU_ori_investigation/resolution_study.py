@@ -43,7 +43,7 @@ plt.subplots_adjust(hspace=0.0)
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 
 cit = -1
-t_end_yr = None #9000 # None
+t_end_yr = 9000 # None
 for pick_file in pickle_files:
     cit = cit + 1
     file_open = open(pick_file, 'rb')
@@ -84,9 +84,9 @@ for pick_file in pickle_files:
     '''
     axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Separation (au)')
-    axs.flatten()[1].axhline(y=1.5)
-    axs.flatten()[1].axhline(y=3)
-    axs.flatten()[1].axhline(y=6)
+    axs.flatten()[1].axhline(y=1.5,'k-', alpha=0.5)
+    axs.flatten()[1].axhline(y=3,'k-', alpha=0.5)
+    axs.flatten()[1].axhline(y=6,'k-', alpha=0.5)
     #axs.flatten()[1].set_ylim()
     
 
