@@ -315,6 +315,8 @@ if args.make_frames_only == 'False':
         verbatim = False
         if rank == 0:
             verbatim = True
+            import pdb
+            pdb.set_trace()
         usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
         del sink_form_time
         del files
