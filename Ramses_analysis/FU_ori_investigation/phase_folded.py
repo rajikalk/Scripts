@@ -59,7 +59,7 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 
-file_open = open(save_dir+'particle_data.pkl', 'rb')
+file_open = open(save_dir+args.sink_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
