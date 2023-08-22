@@ -26,7 +26,7 @@ def parse_inputs():
     
 #================================================================================
 
-pickle_files = ["/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/particle_data.pkl", "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/particle_data.pkl", "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/particle_data.pkl"]#, "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20/Level_21/particle_data.pkl"]
+pickle_files = ["/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L18.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L19.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L21.pkl"]#, "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20/Level_21/particle_data.pkl"]
 
 label = ["Lvl=18", "Lvl=19", "Lvl=20", "Lvl=21"]
 

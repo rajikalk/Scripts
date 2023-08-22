@@ -24,7 +24,7 @@ def parse_inputs():
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-width", "--plot_width", type=float, default=2000)
     parser.add_argument("-thickness", "--proj_thickness", type=float, default=None)
-    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens", type=str)
+    parser.add_argument("11575008", "--field", help="What field to you wish to plot?", default="dens", type=str)
     #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
