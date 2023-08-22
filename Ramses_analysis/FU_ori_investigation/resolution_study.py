@@ -84,9 +84,9 @@ for pick_file in pickle_files:
     '''
     axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Separation (au)')
-    axs.flatten()[1].axhline(y=1.5,'k-', alpha=0.5)
-    axs.flatten()[1].axhline(y=3,'k-', alpha=0.5)
-    axs.flatten()[1].axhline(y=6,'k-', alpha=0.5)
+    axs.flatten()[1].axhline(y=1.5,c='k', alpha=0.5)
+    axs.flatten()[1].axhline(y=3, c='k', alpha=0.5)
+    axs.flatten()[1].axhline(y=6, c='k', alpha=0.5)
     #axs.flatten()[1].set_ylim()
     
 
