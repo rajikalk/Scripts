@@ -129,6 +129,8 @@ if args.update_pickle == 'True':
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
+                import pdb
+                pdb.set_trace()
                 #if len(particle_tags) == 1:
                 particle_data['time'].append(time_val)
                 particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
