@@ -132,7 +132,7 @@ if args.update_pickle == 'True':
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                if abs(peri_times[find_it] - time_val) < 1:
+                if abs(peri_times[find_it] - time_val.value) < 1:
                     import pdb
                     pdb.set_trace()
                 #if len(particle_tags) == 1:
