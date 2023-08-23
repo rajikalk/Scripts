@@ -310,6 +310,8 @@ if args.make_movie_frames == 'True':
                 else:
                     cmax = args.colourbar_max
                 
+                cbar_lims = [cmin, cmax]
+                
                 if args.standard_vel == None:
                     if args.field == 'dens':
                         if args.axis == 'z':
