@@ -143,8 +143,8 @@ for spin_lab in Spin_labels:
             file = open(inner_pickle, 'rb')
             Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
             file.close()
-            if np.nanmax(mean_inner_all.T[1]) > max_sep:
-                max_sep = np.nanmax(mean_inner_all.T[1])
+            if np.nanmax(Separation) > max_sep:
+                max_sep = np.nanmax(Separation)
 
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
