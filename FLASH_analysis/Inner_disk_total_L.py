@@ -131,6 +131,7 @@ if args.make_movie_pickles == 'True':
                 dd = ds.all_data()
                 primary_ind = np.argmin(dd['particle_creation_time'])
                 
+            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
             if len(dd['particle_creation_time']) > 1:
                 sep = yt.YTQuantity(np.nan, 'au')
             else:
@@ -141,7 +142,6 @@ if args.make_movie_pickles == 'True':
             
             Separation.append(sep)
                 
-            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
             normal = yt.YTArray([0, 0, 1], '')
             height = yt.YTQuantity(20, 'au')
             radius = yt.YTQuantity(20, 'au')
