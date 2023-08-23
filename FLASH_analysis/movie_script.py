@@ -33,7 +33,9 @@ def parse_inputs():
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
-    
+    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
+    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     
     parser.add_argument("files", nargs='*')
@@ -286,19 +288,38 @@ if args.make_movie_frames == 'True':
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 
-                if args.field == 'dens':
-                    if args.axis == 'z':
-                        cbar_lims = [5.e-16, 5.e-14]
-                        stdvel = 2
+                if args.colourbar_min == None:
+                    if args.field == 'dens':
+                        cmin = 1.e-16
                     else:
-                        cbar_lims = [1.e-16, 1.e-14]
+                        if 'spec' in args.field:
+                            cmin = 1.e18
+                        else:
+                            cmin = 1.e45
+                else:
+                    cmin = args.colourbar_min
+                
+                if args.colourbar_max == None:
+                    if args.field == 'dens':
+                        cmax = 5.e-14
+                    else:
+                        if 'spec' in args.field:
+                            cmax = 1.e20
+                        else:
+                            cmax = 1.e48
+                else:
+                    cmax = args.colourbar_max
+                
+                if args.standard_vel == None:
+                    if args.field == 'dens':
+                        if args.axis == 'z':
+                            stdvel = 2
+                        else:
+                            stdvel = 5
+                    else:
                         stdvel = 5
                 else:
-                    if 'spec' in args.field:
-                        cbar_lims = [1.e18, 1.e20]
-                    else:
-                        cbar_lims = [1.e45, 1.e48]
-                    stdvel = 5
+                    stdvel = args.standard_vel
                 
                 cmap=plt.cm.gist_heat
                 if np.isnan(cbar_lims[0]):
