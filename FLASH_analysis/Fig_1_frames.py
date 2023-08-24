@@ -170,7 +170,7 @@ plt.subplots_adjust(hspace=-0.11)
 
 plot_it = -1
 width = 1000
-stdvel = 0.5
+stdvel = 2
 
 for spin_val in spin_values:
     for mach_val in mach_values:
@@ -181,7 +181,7 @@ for spin_val in spin_values:
                 end_time_string = '10000'
             else:
                 end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '500', '-no_quiv', '15', '-stdv', '2', '-ax', 'xz']
+            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '500', '-no_quiv', '15', '-stdv', str(stdvel), '-ax', 'xz']
             subprocess.Popen(cmd).wait()
             
             os.rename('time_'+end_time_string+'.0.pkl', pickle_file)
@@ -197,7 +197,6 @@ for spin_val in spin_values:
         axs.flatten()[plot_it].set_ylim(ylim)
         
         cbar_lims = [5.e-17, 5.e-15]
-        stdvel = 2
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         axs.flatten()[plot_it].set_aspect('equal')
@@ -257,11 +256,11 @@ for spin_val in spin_values:
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels[-1], visible=False)
         
-        plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight')
+        plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.95)
 cbar_ax = fig.add_axes([0.951, 0.123, 0.02, 0.744])
 cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
-plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight', dpi=300)
+plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight', dpi=300)
