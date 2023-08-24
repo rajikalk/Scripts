@@ -325,7 +325,7 @@ for mach_lab in Mach_labels:
                 else:
                     add_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
                     Total_accrete_mass = Total_accrete_mass + add_mass
-            axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab))
+            axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab)])
                 
         else:
             print("Couldn't open", single_pickle)
