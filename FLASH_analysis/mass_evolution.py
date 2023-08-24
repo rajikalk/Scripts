@@ -91,7 +91,7 @@ plt.savefig('spin_comp_primary.png')
 '''
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
-max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [4050, 10000, 10000], [10000, 10000, 10000]]
+max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*1.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -320,8 +320,8 @@ for mach_lab in Mach_labels:
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 if Total_accrete_mass == None:
-                    Total_accrete_mass = plot_mass
-                    Total_time_arr = plot_time
+                    Total_accrete_mass = mass.in_units('msun')
+                    Total_time_arr = time.in_units('yr')
                 else:
                     import pdb
                     pdb.set_trace()
