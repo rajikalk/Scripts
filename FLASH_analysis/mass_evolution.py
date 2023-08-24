@@ -325,7 +325,7 @@ for mach_lab in Mach_labels:
                 else:
                     add_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
                     Total_accrete_mass = Total_accrete_mass + add_mass
-            axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25)
+            axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab))
                 
         else:
             print("Couldn't open", single_pickle)
@@ -340,7 +340,7 @@ for mach_lab in Mach_labels:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp_all_sinks.pdf', bbox_inches='tight')
