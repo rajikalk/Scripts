@@ -323,9 +323,9 @@ for mach_lab in Mach_labels:
                     Total_accrete_mass = mass.in_units('msun')
                     Total_time_arr = time.in_units('yr')
                 else:
-                    Total_accrete_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value), alpha=0.25)
+                    Total_accrete_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
             if len(sink_data.keys()) > 1:
-                axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.75)
+                axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25)
                 
         else:
             print("Couldn't open", single_pickle)
