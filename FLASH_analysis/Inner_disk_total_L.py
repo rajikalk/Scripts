@@ -133,12 +133,12 @@ if args.make_movie_pickles == 'True':
                 
             center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
             if len(dd['particle_creation_time']) > 1:
-                sep = yt.YTQuantity(np.nan, 'au')
-            else:
                 part_pos = yt.YTArray([dd['particle_posx'], dd['particle_posy'], dd['particle_posz']])
                 nearest_sink_ind = np.argsort(np.sqrt(np.sum((part_pos.T - center)**2, axis=1)).in_units('au'))[1]
                 nearest_sink_pos = part_pos.T[nearest_sink_ind]
                 sep = np.sqrt(np.sum((center - nearest_sink_pos)**2)).in_units('au')
+            else:
+                sep = yt.YTQuantity(np.nan, 'au')
             
             Separation.append(sep)
                 
