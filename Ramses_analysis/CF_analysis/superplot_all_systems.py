@@ -102,8 +102,11 @@ elif simulation_density_id == '400':
     units_override.update({"mass_unit":(12000,"Msun")})
 else:
     print("MASS UNIT NOT SET")
-    import pdb
-    pdb.set_trace()
+    imulation_density_id = '100'
+    Grho=100
+    units_override.update({"mass_unit":(3000,"Msun")})
+    #import pdb
+    #pdb.set_trace()
     
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/(units_override['length_unit'][0]**3), "Msun/pc**3")})
