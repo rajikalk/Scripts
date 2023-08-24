@@ -119,6 +119,7 @@ if args.make_movie_pickles == 'True':
                 dd = ds.all_data()
                 time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
             
+            Time_array.append(time_val)
             dd = ds.all_data()
 
             #Define cylinder!:
