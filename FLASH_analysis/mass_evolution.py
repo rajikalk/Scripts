@@ -325,6 +325,9 @@ for mach_lab in Mach_labels:
                 else:
                     import pdb
                     pdb.set_trace()
+            if len(sink_data.keys()) > 1:
+                axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.75)
+                
         else:
             print("Couldn't open", single_pickle)
 
