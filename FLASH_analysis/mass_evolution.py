@@ -298,8 +298,8 @@ for mach_lab in Mach_labels:
             file.close()
             form_time = np.nan
             
-            Total_accrete_mass = None
-            Total_time_arr = None
+            Total_accrete_mass = []
+            Total_time_arr = []
             for sink_id in sink_data.keys():
                 #sink_id = list(sink_data.keys())[0]
                 if np.isnan(form_time):
@@ -319,7 +319,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
-                if Total_accrete_mass == None:
+                if len(Total_time_arr) == 0:
                     Total_accrete_mass = mass.in_units('msun')
                     Total_time_arr = time.in_units('yr')
                 else:
