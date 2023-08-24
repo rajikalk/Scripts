@@ -50,7 +50,7 @@ mym.set_global_font_size(font_size)
 #------------------------------------------------------
 spin_values = ['0.20', '0.25', '0.30', '0.35']
 mach_values = ['0.0', '0.1', '0.2']
-max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [4050, 10000, 10000], [10000, 10000, 10000]]
+max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 cmap=plt.cm.gist_heat
 
@@ -72,7 +72,7 @@ for spin_val in spin_values:
                 end_time_string = '10000'
             else:
                 end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', '300', '-thickness', '200', '-no_quiv', '15']
+            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', '300', '-thickness', '200', '-no_quiv', '15', '-stdv', '0.5']
             subprocess.Popen(cmd).wait()
             
             os.rename('time_'+end_time_string+'.0.pkl', pickle_file)
