@@ -320,10 +320,11 @@ for mach_lab in Mach_labels:
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 if len(Total_time_arr) == 0:
-                    Total_accrete_mass = mass.in_units('msun')
+                    Total_accrete_mass = mass.in_units('msun').value
                     Total_time_arr = time.in_units('yr')
                 else:
-                    Total_accrete_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
+                    add_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
+                    Total_accrete_mass = Total_accrete_mass + add_mass
             if len(sink_data.keys()) > 1:
                 axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25)
                 
