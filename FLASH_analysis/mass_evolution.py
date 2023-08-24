@@ -298,6 +298,8 @@ for mach_lab in Mach_labels:
             file.close()
             form_time = np.nan
             
+            Total_accrete_mass = None
+            Total_time_arr = None
             for sink_id in sink_data.keys():
                 #sink_id = list(sink_data.keys())[0]
                 if np.isnan(form_time):
@@ -317,6 +319,12 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_mass, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+                if Total_accrete_mass == None:
+                    Total_accrete_mass = plot_mass
+                    Total_time_arr = plot_time
+                else:
+                    import pdb
+                    pdb.set_trace()
         else:
             print("Couldn't open", single_pickle)
 
