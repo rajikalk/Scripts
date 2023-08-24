@@ -63,7 +63,7 @@ plt.subplots_adjust(hspace=-0.11)
 
 plot_it = -1
 width = 300
-stdvel = 0.5
+stdvel = 2
 
 for spin_val in spin_values:
     for mach_val in mach_values:
