@@ -323,8 +323,7 @@ for mach_lab in Mach_labels:
                     Total_accrete_mass = mass.in_units('msun')
                     Total_time_arr = time.in_units('yr')
                 else:
-                    import pdb
-                    pdb.set_trace()
+                    Total_accrete_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value), alpha=0.25)
             if len(sink_data.keys()) > 1:
                 axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.75)
                 
