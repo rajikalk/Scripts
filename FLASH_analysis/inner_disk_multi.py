@@ -79,7 +79,6 @@ for spin_lab in Spin_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Separation,
             Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
             file.close()
             if np.nanmax(Separation) > max_sep:
