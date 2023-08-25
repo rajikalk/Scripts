@@ -95,10 +95,6 @@ for spin_lab in Spin_labels:
             Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
             file.close()
             
-            if spin_lab == '0.20' and mach_lab == '0.1':
-                import pdb
-                pdb.set_trace()
-            
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             #axs.flatten()[plot_it].plot(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
