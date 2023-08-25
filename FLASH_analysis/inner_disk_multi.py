@@ -164,7 +164,7 @@ for spin_lab in Spin_labels:
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.set_ylim([0, max_sep])
-            ax2.axhline(y=20, 'k', linewidth=0.5)
+            ax2.axhline(y=20, color='k', linewidth=0.5)
         else:
             print("Couldn't open", inner_pickle)
             
