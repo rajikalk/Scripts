@@ -119,7 +119,7 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
     plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
     
-axs.flatten()[plot_it-1].set_ylim(top=1.e52)
+#axs.flatten()[plot_it-1].set_ylim(top=1.e52)
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
 print('saved figure Inner_disk_L_mach_comp.pdf')
@@ -182,7 +182,7 @@ for spin_lab in Spin_labels:
     plt.savefig('Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
     
 
-axs.flatten()[plot_it-1].set_ylim(top=1.e24)
+#axs.flatten()[plot_it-1].set_ylim(top=1.e24)
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
 print('saved figure Inner_disk_L_mach_comp_spec.pdf')
