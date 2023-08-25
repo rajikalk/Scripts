@@ -97,7 +97,7 @@ for spin_lab in Spin_labels:
             
             ax2 = axs.flatten()[plot_it].twinx()
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
-            axs.flatten()[plot_it].plot(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.9)
+            axs.flatten()[plot_it].plot(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
             ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.set_ylim([0, max_sep])
             ax2.axhline(y=20, color='k', linewidth=0.5)
@@ -161,7 +161,7 @@ for spin_lab in Spin_labels:
             file.close()
             
             ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.9)
+            axs.flatten()[plot_it].plot(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             ax2.set_ylim([0, max_sep])
