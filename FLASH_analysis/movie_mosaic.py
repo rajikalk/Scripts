@@ -97,7 +97,7 @@ for frame_it in range(10025):
                     axs.flatten()[plot_it].set_aspect('equal')
                     
                     axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-                    if spin_val == '0.20' and mach_val == '0.0':
+                    if spin_val == '0.30' and mach_val == '0.2':
                         plot_velocity_legend = True
                     else:
                         plot_velocity_legend = False
@@ -119,10 +119,11 @@ for frame_it in range(10025):
                     for line in axs.flatten()[plot_it].yaxis.get_ticklines():
                         line.set_color('white')
                         
-                    time_string = "$t$="+str(int(time_val))+"yr"
-                    time_string_raw = r"{}".format(time_string)
-                    time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
-                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                    if mach_val == '0.0' and spin_val == '0.20':
+                        time_string = "$t$="+str(int(time_val))+"yr"
+                        time_string_raw = r"{}".format(time_string)
+                        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+                        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                     
                     axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
                     axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
