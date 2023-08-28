@@ -167,7 +167,7 @@ plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.11)
 
 plot_it = -1
-width = 300
+width = 400
 stdvel = 2
 
 for spin_val in spin_values:
