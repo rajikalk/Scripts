@@ -55,10 +55,10 @@ directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Sin
 cmap=plt.cm.gist_heat
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, two_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 1.1*two_col_width), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
-plt.subplots_adjust(wspace=-0.11)
+plt.subplots_adjust(wspace=0)
 plt.subplots_adjust(hspace=0)
 #plt.subplots_adjust(wspace=0.01)
 #plt.subplots_adjust(hspace=-0.11)
