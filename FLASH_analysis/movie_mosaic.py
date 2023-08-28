@@ -54,15 +54,6 @@ max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000],
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 cmap=plt.cm.gist_heat
 
-plt.clf()
-fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 1.19*two_col_width), sharex=True, sharey=True)
-for ax_it in axs.flatten():
-    ax_it.set_aspect('equal')
-plt.subplots_adjust(wspace=0)
-plt.subplots_adjust(hspace=0)
-#plt.subplots_adjust(wspace=0.01)
-#plt.subplots_adjust(hspace=-0.11)
-
 width = 300
 stdvel = 2
 
@@ -75,6 +66,15 @@ for frame_it in range(10025):
         plot_it = -1
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         if os.path.exists(savename) == False:
+            plt.clf()
+            fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 1.19*two_col_width), sharex=True, sharey=True)
+            for ax_it in axs.flatten():
+                ax_it.set_aspect('equal')
+            plt.subplots_adjust(wspace=0)
+            plt.subplots_adjust(hspace=0)
+            #plt.subplots_adjust(wspace=0.01)
+            #plt.subplots_adjust(hspace=-0.11)
+        
             for mach_val in mach_values:
                 for spin_val in spin_values:
                     pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/XY/250AU/Thickness_200AU/movie_frame_'+("%06d" % frame_it)+'.pkl'
