@@ -478,7 +478,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             pf = plt.gcf()
             renderer = pf.canvas.get_renderer()
-            bbox_text = annotate_text.get_window_extent(renderer=renderer)
+            bbox_text = annotate_text.get_window_extent(renderer=renderer).transformed(axis.transData.inverted())
             indent_width = bbox_text.width
             annotate_text.remove()
             
