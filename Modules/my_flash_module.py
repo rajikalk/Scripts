@@ -471,8 +471,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             pf = plt.gcf()
             renderer = pf.canvas.get_renderer()
-            bbox_text = annotate_text.get_window_extent(renderer=renderer)
-            text_height = bbox_text.height
+            bbox_text = annotate_text.get_window_extent(renderer=renderer) # xz=Bbox([[400.0891245378304, 736.4342475881048], [465.384355629139, 753.1342475881048]])
+            text_height = bbox_text.height #xz = 0.16700000000000045
             annotate_text.remove()
             
             import pdb
