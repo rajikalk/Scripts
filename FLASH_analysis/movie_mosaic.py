@@ -61,7 +61,6 @@ for ax_it in axs.flatten():
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.11)
 
-plot_it = -1
 width = 300
 stdvel = 2
 
@@ -71,6 +70,7 @@ for frame_it in range(10025):
     if rit == size:
         rit = 0
     if rank == rit:
+        plot_it = -1
         for mach_val in mach_values:
             for spin_val in spin_values:
                 pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/XY/250AU/Thickness_200AU/movie_frame_'+("%06d" % frame_it)+'.pkl'
