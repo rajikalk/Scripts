@@ -150,10 +150,10 @@ for frame_it in range(10025):
                         plt.setp(yticklabels[-1], visible=False)
         
         fig.subplots_adjust(right=0.95)
-        cbar_ax = fig.add_axes([0.951, 0.115, 0.02, 0.77])
+        cbar_ax = fig.add_axes([0.951, 0.111, 0.02, 0.77])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
                 
-        plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
         print("Made frame " + "movie_frame_" + ("%06d" % frame_it) + ".jpg" + " on rank" + str(rank))
 
