@@ -339,6 +339,9 @@ for mach_lab in Mach_labels:
         if mach_lab != '0.2' and spin_lab == '0.35':
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
+        if mach_lab != '0.0' and spin_lab == '0.35':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
