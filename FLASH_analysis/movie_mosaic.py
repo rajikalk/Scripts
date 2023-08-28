@@ -150,7 +150,7 @@ for frame_it in range(10025):
                         plt.setp(yticklabels[-1], visible=False)
         
         fig.subplots_adjust(right=0.95)
-        cbar_ax = fig.add_axes([0.951, 0.122, 0.02, 0.745])
+        cbar_ax = fig.add_axes([0.951, 0.12, 0.02, 0.747])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
                 
