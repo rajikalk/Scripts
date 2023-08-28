@@ -482,7 +482,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             indent_width = bbox_text.width
             annotate_text.remove()
             
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8*text_height), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             
             rainbow_text((xmin + 0.01*(box_size) + indent_width), (ymin + 0.02*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
