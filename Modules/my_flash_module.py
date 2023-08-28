@@ -475,6 +475,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             text_height = bbox_text.height
             annotate_text.remove()
             
+            import pdb
+            pdb.set_trace()
+            
             annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), 'M=[', va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             pf = plt.gcf()
