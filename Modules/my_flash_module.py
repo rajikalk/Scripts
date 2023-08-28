@@ -469,14 +469,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             
             annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2, va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-            pf = plt.gcf()
-            renderer = pf.canvas.get_renderer()
-            bbox_text = annotate_text.get_window_extent(renderer=renderer) # xz=Bbox([[400.0891245378304, 736.4342475881048], [465.384355629139, 753.1342475881048]])
-            text_height = bbox_text.height #xz = 0.16700000000000045
+            renderer = plt.gcf().canvas.get_renderer()
+            bbox_text = annotate_text.get_window_extent(renderer=renderer).transformed(axis.transData.inverted())
+            text_height = bbox_text.height
             annotate_text.remove()
-            
-            import pdb
-            pdb.set_trace()
             
             annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), 'M=[', va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -486,7 +482,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             indent_width = bbox_text.width
             annotate_text.remove()
             
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(1.2*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8text_height), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             
             rainbow_text((xmin + 0.01*(box_size) + indent_width), (ymin + 0.02*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
