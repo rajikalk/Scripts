@@ -146,6 +146,11 @@ for frame_it in range(10025):
                     if mach_val != '0.0':
                         yticklabels = axs.flatten()[plot_it].get_yticklabels()
                         plt.setp(yticklabels[-1], visible=False)
+        
+        fig.subplots_adjust(right=0.95)
+        cbar_ax = fig.add_axes([0.951, 0.123, 0.02, 0.744])
+        cbar = fig.colorbar(plot, cax=cbar_ax)
+        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
                 
         plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight')
         print("Made frame " + "movie_frame_" + ("%06d" % frame_it) + ".jpg" + " on rank" + str(rank))
