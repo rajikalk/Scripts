@@ -42,7 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [4050, 10000, 10000], [10000, 10000, 10000]]
+max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
               '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
               '#bcbd22', '#17becf']
@@ -288,6 +288,7 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
+    axs.flatten()[plot_it].set_title('Mach = ' + mach_lab)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
