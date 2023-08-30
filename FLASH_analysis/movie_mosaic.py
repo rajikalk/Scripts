@@ -51,8 +51,11 @@ mym.set_global_font_size(font_size)
 spin_values = ['0.20', '0.25', '0.30', '0.35']
 mach_values = ['0.0', '0.1', '0.2']
 max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
-input_dir = sys.argv[1]
-save_dir = sys.argv[2]
+ax = sys.argv[1]
+if ax == 'xy':
+    append_dir = 'XY/250AU/Thickness_200AU/'
+else:
+    append_dir = 'XZ/'
 import pdb
 pdb.set_trace()
 cmap=plt.cm.gist_heat
@@ -80,9 +83,9 @@ for frame_it in range(10025):
         
             for mach_val in mach_values:
                 for spin_val in spin_values:
-                    pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/XY/250AU/Thickness_200AU/movie_frame_'+("%06d" % frame_it)+'.pkl'
+                    pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_'+("%06d" % frame_it)+'.pkl'
                     if os.path.exists(pickle_file) == False:
-                        pickle_file = sorted(glob.glob('/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/XY/250AU/Thickness_200AU/movie_frame_*.pkl'))[-1]
+                        pickle_file = sorted(glob.glob('/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_*.pkl'))[-1]
                     
                     plot_it = plot_it +1
                     file = open(pickle_file, 'rb')
