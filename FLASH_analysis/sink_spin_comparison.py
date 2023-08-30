@@ -335,7 +335,7 @@ for mach_lab in Mach_labels:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Spin_init_spin_comp.pdf', bbox_inches='tight')
