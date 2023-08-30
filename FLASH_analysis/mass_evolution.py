@@ -286,6 +286,7 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
+    axs.flatten()[plot_it].set_title('Mach='+mach_lab)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
