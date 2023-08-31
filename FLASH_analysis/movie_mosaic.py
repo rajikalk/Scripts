@@ -105,7 +105,11 @@ for frame_it in range(10025):
                         plot_velocity_legend = True
                     else:
                         plot_velocity_legend = False
-                    mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+                    try:
+                        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+                    except:
+                        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+                    
                     
                     if 'particle_tag' in part_info.keys():
                         if len(part_info['particle_tag']) > 1:
