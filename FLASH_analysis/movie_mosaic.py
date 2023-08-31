@@ -56,8 +56,6 @@ if ax == 'xy':
     append_dir = 'XY/250AU/Thickness_200AU/'
 else:
     append_dir = 'XZ/'
-import pdb
-pdb.set_trace()
 cmap=plt.cm.gist_heat
 
 width = 300
