@@ -334,6 +334,9 @@ for mach_lab in Mach_labels:
         if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
+        if mach_lab == '0.0' and spin_lab == '0.35':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
@@ -352,6 +355,7 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
+    axs.flatten()[plot_it].set_title("Mach = " + mach_lab)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
@@ -395,6 +399,9 @@ for mach_lab in Mach_labels:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
         if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
+        if mach_lab == '0.0' and spin_lab == '0.35':
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
 
