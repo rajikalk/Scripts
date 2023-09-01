@@ -491,9 +491,7 @@ def _Keplerian_velocity_wrt_primary(field, data):
         
         mass = data['gas', 'mass'].in_units('g')
     
-        import pdb
-        pdb.set_trace()
-        v_kep = np.sqrt((yt.units.G.in_cgs()*mass)/radius)
+        v_kep = np.sqrt((yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')*mass)/radius)
     else:
         v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
     return v_kep
