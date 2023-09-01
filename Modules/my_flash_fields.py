@@ -506,8 +506,9 @@ def _Relative_keplerian_velocity_wrt_primary(field, data):
         v_kep = data['Keplerian_velocity_wrt_primary']
         vel = np.sqrt(data['flash','velx'].in_units('cm/s')**2 + data['flash','vely'].in_units('cm/s')**2 + data['flash','velz'].in_units('cm/s')**2)
         rel_kep = vel/v_kep
+        
     else:
-        v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
-    return v_kep
+        rel_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
+    return rel_kep
 
 yt.add_field("Relative_keplerian_velocity_wrt_primary", function=_Relative_keplerian_velocity_wrt_primary, units=r"", sampling_type="local")
