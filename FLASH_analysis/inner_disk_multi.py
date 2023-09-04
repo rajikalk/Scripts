@@ -170,7 +170,7 @@ for spin_lab in Spin_labels:
             print("Couldn't open", inner_pickle)
             
         if spin_lab == '0.20':
-            axs.flatten()[plot_it].legend(loc='best')
+            axs.flatten()[plot_it].legend(loc='upper right')
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('h ($cm^2/s$)')
             ax2.set_ylabel('Separation (AU)')
