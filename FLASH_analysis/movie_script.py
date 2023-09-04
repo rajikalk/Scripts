@@ -325,7 +325,7 @@ if args.make_movie_frames == 'True':
                 
                 cmap=plt.cm.gist_heat
                 if 0 in cbar_lims:
-                    plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                    plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.bwr, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
                 else:
                     if np.isnan(cbar_lims[0]):
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
