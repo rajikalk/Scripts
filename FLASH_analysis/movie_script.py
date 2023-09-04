@@ -368,6 +368,10 @@ if args.make_movie_frames == 'True':
                     
                 if args.field == 'dens':
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+                elif 'Relative_keplerian_velocity_wrt_primary' in args.field:
+                    cbar.set_label(r"Relative Keplerian Velocity", rotation=270, labelpad=14, size=10)
+                elif 'spec' in args.field:
+                    cbar.set_label(r"Specific angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
                 else:
                     cbar.set_label(r"Angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
                 time_string = "$t$="+str(int(time_val))+"yr"
