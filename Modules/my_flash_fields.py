@@ -482,7 +482,7 @@ def _Keplerian_velocity_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
-        v_kep = np.sqrt(data['gpot'].in_cgs()).in_units('cm/s')
+        v_kep = np.sqrt(data['flash', 'gpot'].in_cgs()).in_units('cm/s')
     else:
         v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
     return v_kep
