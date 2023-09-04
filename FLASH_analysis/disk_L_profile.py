@@ -338,9 +338,16 @@ if rank == 0:
     plt.savefig('inner_L_spec_vs_time.pdf', bbox_inches='tight')
     
     plt.clf()
-    plt.semilogy(Time_array, Total_inner_disk)
-    plt.xlim([0,10000])
-    plt.xlabel('Time (yr)')
-    plt.ylabel('L ($g\,cm^2/s$)')
+    fig, ax1 = plt.subplots()
+    
+    ax2 = ax1.twinx()
+    ax1.semilogy(Time_array, Total_inner_disk)
+    ax2.plot(Time_array, Radius_array, label='Separation', color='k', alpha=0.20)
+    ax1.set_xlim([0,10000])
+    ax1.set_xlabel('Time (yr)')
+    ax1.set_ylabel('L ($g\,cm^2/s$)')
+    ax2.set_ylabel('Separation (AU)')
+    ax2.set_ylim(bottom=0)
+    plt.legend(loc='best')
     
     plt.savefig('Total_inner_disk.pdf', bbox_inches='tight')

@@ -198,3 +198,10 @@ if rank == 0:
     
 sys.stdout.flush()
 CW.Barrier()
+
+import pdb
+pdb.set_trace()
+
+file = open('gathered_profile.pkl', 'wb')
+pickle.dump((Time_array, Total_L, Total_L_spec, Separation), file)
+file.close()
