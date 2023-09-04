@@ -482,16 +482,7 @@ def _Keplerian_velocity_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
-        dd = data.ds.all_data()
-        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['gas', 'x'].in_units('cm')
-        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['gas', 'y'].in_units('cm')
-        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['gas', 'z'].in_units('cm')
-        radius = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
-        
-        mass = data['gas', 'mass'].in_units('g')
-    
-        v_kep = np.sqrt((yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')*mass)/radius)
+        v_kep = np.sqrt(data['gpot'].in_cgs()).in_units('cm/s')
     else:
         v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
     return v_kep
@@ -506,8 +497,6 @@ def _Relative_keplerian_velocity_wrt_primary(field, data):
         v_kep = data['Keplerian_velocity_wrt_primary']
         vel = np.sqrt(data['flash','velx'].in_units('cm/s')**2 + data['flash','vely'].in_units('cm/s')**2 + data['flash','velz'].in_units('cm/s')**2)
         rel_kep = vel/v_kep
-        import pdb
-        pdb.set_trace()
         
     else:
         rel_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
