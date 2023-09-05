@@ -118,13 +118,13 @@ for spin_lab in Spin_labels:
         
     plot_it = plot_it + 1
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
-    plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
+    plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
     
 #axs.flatten()[plot_it-1].set_ylim(top=1.e52)
-axs.flatten()[plot_it-1].set_ylim([4.5e+50, 6.5e+51])
+#axs.flatten()[plot_it-1].set_ylim([4.5e+50, 6.5e+51])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-plt.savefig('Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
-print('saved figure Inner_disk_L_mach_comp.pdf')
+plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
+print('saved figure Total_Inner_disk_L_mach_comp.pdf')
 
 #================================================================
 #Specific L comparison
@@ -182,11 +182,141 @@ for spin_lab in Spin_labels:
         
     plot_it = plot_it + 1
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
-    plt.savefig('Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
+    plt.savefig('Total_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
     
 
 #axs.flatten()[plot_it-1].set_ylim(top=1.e24)
-axs.flatten()[plot_it-1].set_ylim([1.e23, 6.3e23])
+#axs.flatten()[plot_it-1].set_ylim([1.e23, 6.3e23])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-plt.savefig('Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
-print('saved figure Inner_disk_L_mach_comp_spec.pdf')
+plt.savefig('Total_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
+print('saved figure Total_Inner_disk_L_mach_comp_spec.pdf')
+
+#=========================================================================
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = 0
+xmax= 0
+ymax = 0
+max_sep = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            file.close()
+            if np.nanmax(Separation) > max_sep:
+                max_sep = np.nanmax(Separation)
+
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            file.close()
+            
+            ax2 = axs.flatten()[plot_it].twinx()
+            #axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
+            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
+            ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
+            ax2.set_ylim([0, max_sep])
+            ax2.axhline(y=20, color='k', linewidth=0.5)
+            if mach_lab == '0.2':
+                ax2.set_ylabel('Separation (AU)')
+        else:
+            print("Couldn't open", inner_pickle)
+            
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].legend(loc='best')
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('L ($g\,cm^2/s$)')
+            if spin_lab != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        
+    plot_it = plot_it + 1
+    axs.flatten()[plot_it-1].set_xlim([0, 10000])
+    plt.savefig('Mean_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
+    
+#axs.flatten()[plot_it-1].set_ylim(top=1.e52)
+#axs.flatten()[plot_it-1].set_ylim([4.5e+50, 6.5e+51])
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+plt.savefig('Mean_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
+print('saved figure Mean_Inner_disk_L_mach_comp.pdf')
+
+#================================================================
+#Specific L comparison
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = 0
+xmax= 0
+ymax = 0
+max_sep = 0
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            file.close()
+            if np.nanmax(Separation) > max_sep:
+                max_sep = np.nanmax(Separation)
+
+for spin_lab in Spin_labels:
+    for mach_lab in Mach_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            file.close()
+            
+            ax2 = axs.flatten()[plot_it].twinx()
+            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
+            #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
+            ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
+            ax2.set_ylim([0, max_sep])
+            ax2.axhline(y=20, color='k', linewidth=0.5)
+        else:
+            print("Couldn't open", inner_pickle)
+            
+        if spin_lab == '0.20':
+            axs.flatten()[plot_it].legend(loc='upper right')
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('h ($cm^2/s$)')
+            ax2.set_ylabel('Separation (AU)')
+            if spin_lab != '0.20':
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        
+    plot_it = plot_it + 1
+    axs.flatten()[plot_it-1].set_xlim([0, 10000])
+    plt.savefig('Mean_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
+    
+
+#axs.flatten()[plot_it-1].set_ylim(top=1.e24)
+#axs.flatten()[plot_it-1].set_ylim([1.e23, 6.3e23])
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+plt.savefig('Mean_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
+print('saved figure Mean_Inner_disk_L_mach_comp_spec.pdf')
+
