@@ -79,7 +79,7 @@ for spin_lab in Spin_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
+            time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
             file.close()
             if np.nanmax(Separation) > max_sep:
                 max_sep = np.nanmax(Separation)
@@ -92,7 +92,7 @@ for spin_lab in Spin_labels:
 
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
+            time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
             file.close()
             
             ax2 = axs.flatten()[plot_it].twinx()
@@ -144,7 +144,7 @@ for spin_lab in Spin_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Total_L, Total_L_spec, Separation = pickle.load(file)
+            time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
             file.close()
             if np.nanmax(Separation) > max_sep:
                 max_sep = np.nanmax(Separation)
