@@ -308,17 +308,17 @@ for mach_lab in Mach_labels:
                 mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
-                L_tot = L_tot.in_units('kg*m**2/s')
+                #L_tot = L_tot.in_units('kg*m**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
                     plot_time = time.in_units('yr')
-                    plot_mass = mass.in_units('g*cm**2/s')
+                    plot_mass = mass.in_units('kg*m**2/s')
                 else:
                     end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
                     end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                     plot_time = time.in_units('yr')[:end_ind+1]
-                    plot_L = L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                    plot_L = L_tot.in_units('kg*m**2/s')[:end_ind+1]
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
@@ -328,7 +328,7 @@ for mach_lab in Mach_labels:
 
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('L ($g\,cm^2/s$)')
+            axs.flatten()[plot_it].set_ylabel('L ($kg\,m^2/s$)')
         else:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
@@ -376,17 +376,17 @@ for mach_lab in Mach_labels:
                 mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot/sink_data[sink_id]['mass'], 'cm**2/s')
-                L_tot = L_tot.in_units('m**2/s')
+                #L_tot = L_tot.in_units('m**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
                     plot_time = time.in_units('yr')
-                    plot_mass = mass.in_units('g*cm**2/s')
+                    plot_mass = mass.in_units('m**2/s')
                 else:
                     end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
                     end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                     plot_time = time.in_units('yr')[:end_ind+1]
-                    plot_L = L_tot.in_units('cm**2/s')[:end_ind+1]
+                    plot_L = L_tot.in_units('m**2/s')[:end_ind+1]
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
@@ -396,7 +396,7 @@ for mach_lab in Mach_labels:
 
         axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('h ($cm^2/s$)')
+            axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)')
         else:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
