@@ -308,6 +308,7 @@ for mach_lab in Mach_labels:
                 mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+                L_tot = L_tot.in_units('kg*m**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
@@ -375,6 +376,7 @@ for mach_lab in Mach_labels:
                 mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
                 L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
                 L_tot = yt.YTArray(L_tot/sink_data[sink_id]['mass'], 'cm**2/s')
+                L_tot = L_tot.in_units('m**2/s')
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
                 if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
