@@ -101,7 +101,7 @@ for frame_it in range(10025):
                     axs.flatten()[plot_it].set_aspect('equal')
                     
                     axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-                    if spin_val == '0.30' and mach_val == '0.2':
+                    if spin_val == '0.35' and mach_val == '0.0':
                         plot_velocity_legend = True
                     else:
                         plot_velocity_legend = False
