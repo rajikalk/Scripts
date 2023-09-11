@@ -47,7 +47,7 @@ def parse_inputs():
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 args = parse_inputs()
-center_pos = [0, 0, 0]
+center_pos = yt.YTArray([0, 0, 0], 'cm')
 font_size = 10
 mym.set_global_font_size(font_size)
 
@@ -167,7 +167,7 @@ if args.make_movie_pickles == 'True':
                 primary_ind = np.argmin(dd['all', 'particle_creation_time'])
                 center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
             else:
-                center_pos = [0, 0, 0]
+                center_pos = yt.YTArray([0, 0, 0], 'cm')
                 has_particles = False
                 part_info = {}
             
@@ -189,12 +189,12 @@ if args.make_movie_pickles == 'True':
                     thickness = args.plot_width/2
                 else:
                     thickness = args.proj_thickness
-                left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-((args.plot_width/2)+100), center_pos[2]-(0.5*(thickness/2))], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+((args.plot_width/2)+100), center_pos[2]+(0.5*(thickness/2))], 'AU')
+                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-((args.plot_width/2)+100), center_pos[2].in_units('au').value-(0.5*(thickness/2))], 'AU')
+                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+((args.plot_width/2)+100), center_pos[2].in_units('au').value+(0.5*(thickness/2))], 'AU')
                 region = ds.box(left_corner, right_corner)
             else:
-                left_corner = yt.YTArray([center_pos[0]-((args.plot_width/2)+100), center_pos[1]-(0.5*(args.plot_width/2)), center_pos[2]-((args.plot_width/2)+100)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+((args.plot_width/2)+100), center_pos[1]+(0.5*(args.plot_width/2)), center_pos[2]+((args.plot_width/2)+100)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-(0.5*(args.plot_width/2)), center_pos[2].in_units('au').value-((args.plot_width/2)+100)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+(0.5*(args.plot_width/2)), center_pos[2].in_units('au').value+((args.plot_width/2)+100)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
