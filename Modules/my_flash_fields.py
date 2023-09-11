@@ -518,3 +518,11 @@ def _Neg_dz(field, data):
     return -1*data['flash', 'dz']
 
 yt.add_field("Neg_dz", function=_Neg_z, units=r"cm", sampling_type="local")
+
+def _N_cells(field, data):
+    """
+    returns the negative of the dz
+    """
+    return np.ones(np.shape(data['flash', 'x']))
+
+yt.add_field("N_cells", function=_N_cells, units=r"", sampling_type="local")
