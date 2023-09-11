@@ -262,7 +262,10 @@ if args.make_movie_frames == 'True':
     import my_flash_module as mym
 
     #Let's get the pickle files
-    pickle_files = sorted(glob.glob(save_dir+"movie_frame_*.pkl"))
+    if args.plot_time != None:
+        pickle_files = save_dir + "time_" + str(args.plot_time) +".pkl"
+    else:
+        pickle_files = sorted(glob.glob(save_dir+"movie_frame_*.pkl"))
     no_frames = len(pickle_files)
 
     rit = -1
