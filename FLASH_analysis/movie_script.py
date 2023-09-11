@@ -275,7 +275,10 @@ if args.make_movie_frames == 'True':
             rit = 0
         if rank == rit:
             frame_no = int(pickle_file.split('_')[-1].split('.')[0])
-            file_name = save_dir + "movie_frame_" + ("%06d" % frame_no)
+            if args.plot_time != None:
+                file_name = save_dir + "plot_time_" + ("%06d" % frame_no)
+            else:
+                file_name = save_dir + "movie_frame_" + ("%06d" % frame_no)
             if os.path.isfile(file_name+'.jpg') == False:
                 print('making frame from', pickle_file, 'on rank', rank)
                 file = open(pickle_file, 'rb')
