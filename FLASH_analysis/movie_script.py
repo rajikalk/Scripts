@@ -197,6 +197,8 @@ if args.make_movie_pickles == 'True':
             test_fields = region['L_gas_wrt_nearest_sink']
             
             #Make projections of each field
+            proj_depth = yt.ProjectionPlot(ds, axis_ind, ['z', 'Neg_z', 'dz', 'Neg_dz'], width=(x_width,'au'), weight_field=None, data_source=region, method='mip', center=dd['Center_Position'].in_units('cm'))
+            thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('gas', 'z')].in_units('cm') + proj_depth.frb.data[('gas', 'dz')].in_units('cm')/2.))
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
