@@ -164,7 +164,10 @@ if args.make_movie_pickles == 'True':
                          'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                          'particle_tag':dd['particle_tag'],
                          'particle_form_time':dd['particle_creation_time']}
+                primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+                center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
             else:
+                center_pos = [0, 0, 0]
                 has_particles = False
                 part_info = {}
             
