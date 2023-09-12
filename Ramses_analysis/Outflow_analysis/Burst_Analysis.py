@@ -13,7 +13,9 @@ import pickle
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
+    parser.add_argument("-make_pickles", "--make_pickle_files", help="do you want to update pickles?", default='True', type=str)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -82,7 +84,7 @@ myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 del dd
 
-if args.make_pickles == 'True':
+if args.make_pickle_files == 'True':
     file_int = -1
     for fn in yt.parallel_objects(files, njobs=int(size/6)):
         ds = yt.load(fn, units_override=units_override)
