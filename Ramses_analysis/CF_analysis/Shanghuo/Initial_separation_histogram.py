@@ -118,7 +118,7 @@ for birth_con_pickle in birth_con_pickles:
     
     Initial_Seps.append([Core_frag_seps, Delayed_core_frag_seps, Dynamical_capt_seps])
     '''
-'''
+
 x_labels = ['Bound core frag.', 'Unbound core frag.', 'Dynamical capture']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -179,7 +179,6 @@ plt.ylabel('Fraction', fontsize=font_size, labelpad=-0.5)
 plt.ylim([0,1])
 plt.savefig('formation_pathway_unbound.png', format='png', bbox_inches='tight', pad_inches = 0.02)
 
-'''
 ### Make histograms
 import scipy.stats as stats
 from scipy.optimize import curve_fit
