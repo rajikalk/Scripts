@@ -88,7 +88,7 @@ if args.make_pickle_files == 'True':
     file_int = -1
     for fn in yt.parallel_objects(files):
         ds = yt.load(fn, units_override=units_override)
-        if ds.current_time.in_units('yr') > sink_form_time
+        if ds.current_time.in_units('yr') > sink_form_time:
             dd = ds.all_data()
             
             #Define box:
