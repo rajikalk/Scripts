@@ -255,10 +255,10 @@ for pick_it in range(len(Initial_Seps_all)):
         
         plt.clf()
         plt.cla()
-        fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.8*single_col_width))
+        fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width))
         plt.bar(bin_centers, core_sep_hist_normalised, width=0.25, color='b', label='Bound core frag. (Kuruwita & Haug${\o}$lle, 2023)', alpha=0.5)
         plt.bar(bin_centers, core_delayed_sep_hist_normalised, width=0.25, bottom=core_sep_hist_normalised, color='m', label='Unbound core frag. (Kuruwita & Haug${\o}$lle, 2023)', alpha=0.5)
-        plt.bar(bin_centers, Shanghuo_hist_normalised, width=0.25, color='grey', label='This Paper')
+        plt.bar(bin_centers, Shanghuo_hist_normalised, width=0.25, color='grey', label='This Paper', alpha=0.5)
         
         plt.xlabel('Separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
         plt.ylabel('Normalised # System', fontsize=font_size)
