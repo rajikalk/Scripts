@@ -80,19 +80,29 @@ else:
     sink_id = args.sink_number
 if rank == 0:
     print("CENTERED SINK ID:", sink_id)
+myf.set_com_pos_use_gas(False)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 del dd
 
 if args.make_pickle_files == 'True':
+
+    sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
+
     file_int = -1
     for fn in yt.parallel_objects(files):
         ds = yt.load(fn, units_override=units_override)
         if ds.current_time.in_units('yr') > sink_form_time:
             dd = ds.all_data()
             
+            sink_dict['time'].append(ds.current_time.in_units('yr'))
+            sink_dict['mass'].append(dd['sink_particle_mass'][sink_id].in_units('msun'))
+            sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
             #Define box:
-            import pdb
-            pdb.set_trace()
-            center_pos = dd['Center_Position'].in_units('au').value
+            center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au'), dd['sink_particle_posy'][sink_id].in_units('au'), dd['sink_particle_posz'][sink_id].in_units('au')])
+            
+            sph = ds.sphere(center_pos, (20, "kpc"))
+            
+            
+            
         
