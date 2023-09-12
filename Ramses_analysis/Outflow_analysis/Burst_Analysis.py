@@ -86,12 +86,13 @@ del dd
 
 if args.make_pickle_files == 'True':
     file_int = -1
-    for fn in yt.parallel_objects(files, njobs=int(size/6)):
+    for fn in yt.parallel_objects(files):
         ds = yt.load(fn, units_override=units_override)
-        dd = ds.all_data()
+        if ds.current_time.in_units('yr') > sink_form_time
+            dd = ds.all_data()
             
-        #Define box:
-        import pdb
-        pdb.set_trace()
-        center_pos = dd['Center_Position'].in_units('au').value
+            #Define box:
+            import pdb
+            pdb.set_trace()
+            center_pos = dd['Center_Position'].in_units('au').value
         
