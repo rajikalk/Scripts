@@ -255,10 +255,15 @@ for pick_it in range(len(Initial_Seps_all)):
         
         plt.clf()
         plt.cla()
-        fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.6*single_col_width))
+        fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, 0.7*single_col_width))
         plt.bar(bin_centers, core_sep_hist_normalised, width=0.25, color='b', label='Bound core frag. (KH23)', alpha=0.5)
         plt.bar(bin_centers, core_delayed_sep_hist_normalised, width=0.25, bottom=core_sep_hist_normalised, color='m', label='Unbound core frag. (KH23)', alpha=0.5)
         plt.bar(bin_centers, Shanghuo_hist_normalised, width=0.25, color='grey', label='This Paper', alpha=0.5)
+        
+        plt.step(step_centers, np.concatenate(([core_sep_hist_normalised[0]], core_sep_hist_normalised, [core_sep_hist_normalised[-1]])), 'k', where="mid", linewidth=1)
+        plt.step(step_centers, np.concatenate(([(core_sep_hist_normalised+core_delayed_sep_hist_normalised)[0]], core_sep_hist_normalised+core_delayed_sep_hist_normalised, [(core_sep_hist_normalised+core_delayed_sep_hist_normalised)[-1]])), 'k', where="mid", linewidth=1)
+        
+        plt.step(step_centers, np.concatenate(([Shanghuo_hist_normalised[0]], Shanghuo_hist_normalised, [Shanghuo_hist_normalised[-1]])), 'k', where="mid", linewidth=1)
         
         plt.xlim([1,4])
         plt.ylim([0, 0.6])
