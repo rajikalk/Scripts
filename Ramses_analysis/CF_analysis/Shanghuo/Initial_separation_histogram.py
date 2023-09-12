@@ -261,8 +261,8 @@ for pick_it in range(len(Initial_Seps_all)):
         plt.bar(bin_centers, Shanghuo_hist_normalised, width=0.25, color='grey', label='This Paper', alpha=0.5)
         
         plt.xlim([1,4])
-        plt.ylim([0, 0.5])
-        plt.xlabel('Separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
+        plt.ylim([0, 0.6])
+        plt.xlabel('Initial separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
         plt.ylabel('Normalised # System', fontsize=font_size)
         plt.legend(loc='best')
         
