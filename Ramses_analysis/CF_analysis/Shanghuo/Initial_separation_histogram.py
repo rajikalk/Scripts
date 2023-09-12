@@ -239,7 +239,7 @@ for pick_it in range(len(Initial_Seps_all)):
     axs[pick_it][0].set_xlim([1,4])
     axs[pick_it][1].set_xlim([1,4])
     
-    if pick_it == 10:
+    if pick_it == 5:
         import pdb
         pdb.set_trace()
     
