@@ -206,7 +206,7 @@ Shnaghuo_sep = [692.1945689148221,737.4803164795995,1213.8896276468101,467.17906
  610.2815890074502,326.753154960137,1405.8571018041273,479.7568722618951,
  756.8869692206754,530.3654108966807,520.1109734513876,1176.7210281092603,
 583.9974996285858]
-Shanghuo_hist = np.histogram(Shnaghuo_sep, S_bins)
+Shanghuo_hist, bins = np.histogram(Shnaghuo_sep, S_bins)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=2, nrows=len(birth_con_pickles), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
@@ -240,6 +240,30 @@ for pick_it in range(len(Initial_Seps_all)):
     axs[pick_it][1].set_xlim([1,4])
     
     if pick_it == 5:
+        Core_seps_2D = (1/np.sqrt(2))*np.array(Initial_Seps_all[pick_it][0])
+        core_sep_hist, bins = np.histogram(Core_seps_2D, S_bins)
+        
+        Unbound_core_seps_2D = (1/np.sqrt(2))*np.array(Initial_Seps_all[pick_it][1])
+        core_delayed_sep_hist, bins = np.histogram(Unbound_core_seps_2D, S_bins)
+        
+        total_hist = core_sep_hist + core_delayed_sep_hist
+        total_hist_normalised = total_hist/(np.sum(total_hist))
+        core_sep_hist_normalised = core_sep_hist/(np.sum(total_hist))
+        core_delayed_sep_hist_normalised = core_delayed_sep_hist/(np.sum(total_hist))
+        
+        Shanghuo_hist_normalised = Shanghuo_hist/np.sum(Shanghuo_hist)
+        
+        plt.clf()
+        plt.cla()
+        plt.bar(bin_centers, core_sep_hist_normalised, width=0.25, color='b', label='Bound core frag. (Kuruwita \& Haug{\o}lle, 2023)')
+        plt.bar(bin_centers, core_delayed_sep_hist_normalised, width=0.25, bottom=core_sep_hist_normalised, color='m', label='Unbound core frag. (Kuruwita \& Haug{\o}lle, 2023)')
+        plt.bar(bin_centers, Shanghuo_hist_normalised, width=0.25, color='b', label='This Paper')
+        
+        plt.xlabel('Separation (Log$_{10}$(AU))', labelpad=-0.5, fontsize=font_size)
+        plt.ylabel('Normalised # System', fontsize=font_size)
+        plt.legend(loc='best')
+        
+        plt.savefig('Shanghuo.pdf', bbox_inches='tight', pad_inches=0.02)
         import pdb
         pdb.set_trace()
     
