@@ -117,7 +117,9 @@ if args.make_pickle_files == 'True':
         L_norm = L_vec/L_mag
         
         disk = ds.disk(center_pos, L_norm, (20, "au"), (20, "au"))
-        
+        sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
+        gas_vel = yt.YTArray([disk['x-velocity'], disk['y-velocity'], disk['z-velocity']]).in_units('cm/s').T
+        myf.projected_vector(gas_vel, sep_vector)
         #Calculate L_mom vector
         
         import pdb

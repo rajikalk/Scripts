@@ -327,10 +327,16 @@ def projected_vector(vector, proj_vector):
     Calculates the projection of vecter projected onto vector
     """
     vector_units = vector.units
-    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
-    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
-    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
-    proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    if len(proj_vector)>3:
+        proj_v_x = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[0]
+        proj_v_y = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[1]
+        proj_v_z = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+    else:
+        proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+        proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+        proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
     return proj_v
 
 #===========================OVERWRITING DENSITY FIELD BECAUSE DENSITY UNIT DOESN'T GET OVERWRITTEN======================================
