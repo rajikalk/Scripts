@@ -85,8 +85,8 @@ myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 #find start file
 usable_files = mym.find_files([0], files, sink_form_time, sink_id, verbatim=False)
-import pdb
-pdb.set_trace()
+start_ind = files.index(usable_files[0])
+files = files[start_ind+1:]
 del dd
 
 if args.make_pickle_files == 'True':
@@ -96,35 +96,34 @@ if args.make_pickle_files == 'True':
     file_int = -1
     for fn in yt.parallel_objects(files):
         ds = yt.load(fn, units_override=units_override)
-        if ds.current_time.in_units('yr') > sink_form_time:
-            dd = ds.all_data()
-            
-            sink_dict['time'].append(ds.current_time.in_units('yr'))
-            sink_dict['mass'].append(dd['sink_particle_mass'][sink_id].in_units('msun'))
-            sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
-            #Define box:
-            center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au'), dd['sink_particle_posy'][sink_id].in_units('au'), dd['sink_particle_posz'][sink_id].in_units('au')])
-            center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
-            
-            sph = ds.sphere(center_pos, (20, "kpc"))
-            dx_pos = sph['x'].in_units('cm') - center_pos[0].in_units('cm')
-            dy_pos = sph['y'].in_units('cm') - center_pos[1].in_units('cm')
-            dz_pos = sph['z'].in_units('cm') - center_pos[2].in_units('cm')
-            d_pos = yt.YTArray([dx_pos, dy_pos, dz_pos]).T
-            
-            dx_vel = sph['x-velocity'].in_units('cm/s') - center_vel[0].in_units('cm/s')
-            dy_vel = sph['y-velocity'].in_units('cm/s') - center_vel[1].in_units('cm/s')
-            dz_vel = sph['z-velocity'].in_units('cm/s') - center_vel[2].in_units('cm/s')
-            d_vel = yt.YTArray([dx_vel, dy_vel, dz_vel]).T
-            
-            mass = sph['mass'].in_units('g')
-            
-            sph_mom = mass * np.cross(d_vel, d_pos)
-            #Calculate L_mom vector
-            
-            import pdb
-            pdb.set_trace()
-            
-            
-            
+        dd = ds.all_data()
         
+        sink_dict['time'].append(ds.current_time.in_units('yr'))
+        sink_dict['mass'].append(dd['sink_particle_mass'][sink_id].in_units('msun'))
+        sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
+        #Define box:
+        center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au'), dd['sink_particle_posy'][sink_id].in_units('au'), dd['sink_particle_posz'][sink_id].in_units('au')])
+        center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
+        
+        sph = ds.sphere(center_pos, (20, "kpc"))
+        dx_pos = sph['x'].in_units('cm') - center_pos[0].in_units('cm')
+        dy_pos = sph['y'].in_units('cm') - center_pos[1].in_units('cm')
+        dz_pos = sph['z'].in_units('cm') - center_pos[2].in_units('cm')
+        d_pos = yt.YTArray([dx_pos, dy_pos, dz_pos]).T
+        
+        dx_vel = sph['x-velocity'].in_units('cm/s') - center_vel[0].in_units('cm/s')
+        dy_vel = sph['y-velocity'].in_units('cm/s') - center_vel[1].in_units('cm/s')
+        dz_vel = sph['z-velocity'].in_units('cm/s') - center_vel[2].in_units('cm/s')
+        d_vel = yt.YTArray([dx_vel, dy_vel, dz_vel]).T
+        
+        mass = sph['mass'].in_units('g')
+        
+        sph_mom = mass * np.cross(d_vel, d_pos)
+        #Calculate L_mom vector
+        
+        import pdb
+        pdb.set_trace()
+        
+        
+        
+    
