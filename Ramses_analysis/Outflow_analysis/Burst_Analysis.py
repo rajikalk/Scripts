@@ -96,12 +96,12 @@ if args.make_pickle_files == 'True':
 
     sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
 
-    file_int = -1
     for fn in yt.parallel_objects(files):
+        pickle_name = 'burst_analysys_'+str(rank)+'.pkl'
         ds = yt.load(fn, units_override=units_override)
         dd = ds.all_data()
         
-        sink_dict['time'].append(ds.current_time.in_units('yr'))
+        sink_dict['time'].append(ds.current_time.in_units('yr') - sink_form_time)
         sink_dict['mass'].append(dd['sink_particle_mass'][sink_id].in_units('msun'))
         sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
         #Define box:
@@ -118,13 +118,17 @@ if args.make_pickle_files == 'True':
         
         disk = ds.disk(center_pos, L_norm, (20, "au"), (20, "au"))
         sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
-        gas_vel = yt.YTArray([disk['x-velocity'], disk['y-velocity'], disk['z-velocity']]).in_units('cm/s').T
-        myf.projected_vector(gas_vel, sep_vector)
-        #Calculate L_mom vector
+        gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
+        proj_vectors = myf.projected_vector(gas_vel, sep_vector)
+        vel_dot = np.diag(np.dot(gas_vel, proj_vectors.T))
+        outflow_inds = np.where(vel_dot>1)[0]
+        max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
+        sink_dict['max_outflow_speed'].append(max_outflow_speed.in_units('km/s'))
+        sink_dict['mean_density'].append(np.mean(disk['density']))
         
-        import pdb
-        pdb.set_trace()
+        file = open(pickle_file, 'wb')
+        pickle.dump((sink_dict), file)
+        file.close()
         
-        
-        
+        print('updated', pickle_file, 'for file', files.index(fn), 'of', len(files))
     
