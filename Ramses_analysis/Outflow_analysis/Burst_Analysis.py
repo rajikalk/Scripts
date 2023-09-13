@@ -81,6 +81,9 @@ else:
 if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_com_pos_use_gas(False)
+myf.set_com_pos_use_part(True)
+myf.set_com_vel_use_gas(False)
+myf.set_com_vel_use_part(True)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 #find start file
@@ -103,7 +106,7 @@ if args.make_pickle_files == 'True':
         sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
         #Define box:
         center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au'), dd['sink_particle_posy'][sink_id].in_units('au'), dd['sink_particle_posz'][sink_id].in_units('au')])
-        center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
+        center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('cm/s'), dd['sink_particle_vely'][sink_id].in_units('cm/s'), dd['sink_particle_velz'][sink_id].in_units('cm/s')])
         
         sph = ds.sphere(center_pos, (20, "kpc"))
         dx_pos = sph['x'].in_units('cm') - center_pos[0].in_units('cm')
