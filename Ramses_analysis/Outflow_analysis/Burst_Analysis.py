@@ -97,7 +97,7 @@ if args.make_pickle_files == 'True':
     sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
 
     for fn in yt.parallel_objects(files):
-        pickle_name = 'burst_analysys_sink'+str(sink_id)+'_'+str(rank)+'.pkl'
+        pickle_file = 'burst_analysys_sink'+str(sink_id)+'_'+str(rank)+'.pkl'
         ds = yt.load(fn, units_override=units_override)
         dd = ds.all_data()
         
