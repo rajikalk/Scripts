@@ -111,16 +111,27 @@ if args.make_pickle_files == 'True':
         center_pos = dd['Center_Position'].in_units('au')
         center_vel = dd['Center_Velocity'].in_units('cm/s')
         
-        sph = ds.sphere(center_pos, (20, "au"))
+        sph = ds.sphere(center_pos, (100, "au"))
         L_vec = yt.YTArray([np.sum(sph['Angular_Momentum_x']), np.sum(sph['Angular_Momentum_y']), np.sum(sph['Angular_Momentum_z'])])
         L_mag = np.sqrt(np.sum(L_vec**2))
         L_norm = L_vec/L_mag
         
-        disk = ds.disk(center_pos, L_norm, (20, "au"), (20, "au"))
+        disk = ds.disk(center_pos, L_norm, (100, "au"), (100, "au"))
+        
+        
+        
         sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
         proj_vectors = myf.projected_vector(gas_vel, sep_vector)
         vel_dot = np.diag(np.dot(gas_vel, proj_vectors.T))
+        
+        #Quantify mass flux in disc. I guess just summing the mass of inflowing material
+        import pdb
+        pdb.set_trace()
+        inflow_inds = np.where(vel_dot<1)[0]
+        
+        #Get a distribution of outflow velocities
+        
         outflow_inds = np.where(vel_dot>1)[0]
         max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
         sink_dict['max_outflow_speed'].append(max_outflow_vel.in_units('km/s'))
@@ -132,3 +143,56 @@ if args.make_pickle_files == 'True':
         
         print('updated', pickle_file, 'for file', files.index(fn), 'of', len(files))
     
+sys.stdout.flush()
+CW.Barrier()
+
+#gather_pickles
+if rank == 0:
+    pickle_files = sorted(glob.glob('burst_analysys_sink'+str(sink_id)+'_*.pkl'))
+
+    sink_all = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
+    
+    for pickle_file in pickle_files:
+        file = open(pickle_file, 'rb')
+        sink_dict = pickle.load(file)
+        file.close()
+        
+        for key in sink_dict.keys():
+            sink_all[key] = sink_all[key] + sink_dict[key]
+        
+    sorted_inds = np.argsort(sink_all['time'])
+    for key in sink_all:
+        sink_all[key] = yt.YTArray(sink_all[key])[sorted_inds]
+        
+    file = open('gathered_burst_analysys_sink_'+str(sink_id)+'.pkl', 'wb')
+    pickle.dump((sink_all), file)
+    file.close()
+    
+    print('Gathered sink data for sink_id', sink_id)
+    
+    #Maybe plot interesting things?
+    
+    import matplotlib.pyplot as plt
+    two_col_width = 7.20472 #inches
+    single_col_width = 3.50394 #inches
+    page_height = 10.62472
+    font_size = 10
+    plt.clf()
+    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, single_col_width*1.5), sharex=True)
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.0)
+    
+    axs[0].plot(sink_all['time'], sink_all['mass'].in_units('msun'))
+    axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
+    axs[2].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
+    axs[3].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
+        
+    axs[0].set_ylabel('Mass (Msun)')
+    axs[1].set_ylabel('Mdot (Msun/y)')
+    axs[2].set_ylabel('Max speed (km/s)')
+    axs[3].set_ylabel('<dens> (g/cm^3)')
+    axs[3].set_xlabel('Time (yr)')
+    axs[3].set_xlim(left=0)
+    
+    plt.savefig('Sink_id_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
+        
