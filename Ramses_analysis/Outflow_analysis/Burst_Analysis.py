@@ -123,7 +123,7 @@ if args.make_pickle_files == 'True':
         vel_dot = np.diag(np.dot(gas_vel, proj_vectors.T))
         outflow_inds = np.where(vel_dot>1)[0]
         max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
-        sink_dict['max_outflow_speed'].append(max_outflow_speed.in_units('km/s'))
+        sink_dict['max_outflow_speed'].append(max_outflow_vel.in_units('km/s'))
         sink_dict['mean_density'].append(np.mean(disk['density']))
         
         file = open(pickle_file, 'wb')
