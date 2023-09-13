@@ -148,7 +148,7 @@ CW.Barrier()
 
 #gather_pickles
 if rank == 0:
-    pickle_files = sorted(glob.glob('burst_analysys_sink'+str(sink_id)+'_*.pkl'))
+    pickle_files = sorted(glob.glob('burst_analysys_sink_'+str(sink_id)+'_*.pkl'))
 
     sink_all = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
     
