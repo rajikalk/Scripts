@@ -328,9 +328,12 @@ def projected_vector(vector, proj_vector):
     """
     vector_units = vector.units
     if len(proj_vector)>3:
-        proj_v_x = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[0]
-        proj_v_y = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[1]
-        proj_v_z = (np.diag(np.dot(vector, proj_vector.T))/np.diag(np.dot(proj_vector, proj_vector.T)))*proj_vector.T[2]
+        #Calc vector.proj
+        v_dot_pv = vector.T[0]*proj_vector.T[0] + vector.T[1]*proj_vector.T[1] + vector.T[2]*proj_vector.T[2]
+        pv_dot_pv = proj_vector.T[0]**2 + proj_vector.T[1]**2 + proj_vector.T[2]**2
+        proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
+        proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
+        proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
         proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
     else:
         proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]

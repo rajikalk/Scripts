@@ -129,6 +129,7 @@ if args.make_pickle_files == 'True':
         import pdb
         pdb.set_trace()
         inflow_inds = np.where(vel_dot<1)[0]
+        inflow_mass = np.sum(disk['cell_mass'][inflow_inds].in_units('g'))
         
         #Get a distribution of outflow velocities
         
