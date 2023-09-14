@@ -153,7 +153,10 @@ if args.make_pickle_files == 'True':
         vel_hist_norm = (vel_hist)/np.sum(vel_hist)
         sink_dict['outflow_distribution'].append(vel_hist_norm)
         
-        max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
+        try:
+            max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
+        except:
+            max_outflow_vel = yt.YTQuantity(np.nan, 'km/s')
         sink_dict['max_outflow_speed'].append(max_outflow_vel.in_units('km/s'))
         
         file = open(pickle_file, 'wb')
