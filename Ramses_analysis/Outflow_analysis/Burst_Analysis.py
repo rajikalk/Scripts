@@ -132,6 +132,7 @@ if args.make_pickle_files == 'True':
         sep_vector_norm = (sep_vector.T/sep_vector_length).T
         
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
+        #gas_vel = yt.YTArray([disk['x-velocity']-center_vel[0], disk['y-velocity']-center_vel[1], disk['z-velocity']-center_vel[2]]).in_units('cm/s').T
         import pdb
         pdb.set_trace()
         gas_vel_length = np.sqrt(np.sum(gas_vel**2, axis=1))

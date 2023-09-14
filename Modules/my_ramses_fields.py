@@ -356,6 +356,15 @@ def _Density(field,data):
     return density_arr
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3")
+
+def _cell_mass(field,data):
+    """
+    Overwrites cell mass field
+    """
+    cell_mass = data['Density'].in_units('g/cm**3')*data['cell_volume'].in_units('cm**3')
+    return cell_mass
+
+yt.add_field("cell_mass", function=_cell_mass, units=r"g")
     
 #===========================CALCULATING RAMSES CENTERED MAGNETIC FIELDS======================================
 
