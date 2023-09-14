@@ -16,6 +16,7 @@ def parse_inputs():
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-make_pickles", "--make_pickle_files", help="do you want to update pickles?", default='True', type=str)
+    parser.add_argunemt("-radius", "--analysis_radius", type=float, default=100.)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -116,13 +117,13 @@ if args.make_pickle_files == 'True':
         center_vel = dd['Center_Velocity'].in_units('cm/s')
         
         #Use Sphere to get Angular momentum vector
-        sph = ds.sphere(center_pos, (100, "au"))
+        sph = ds.sphere(center_pos, (args.analysis_radius, "au"))
         L_vec = yt.YTArray([np.sum(sph['Angular_Momentum_x']), np.sum(sph['Angular_Momentum_y']), np.sum(sph['Angular_Momentum_z'])])
         L_mag = np.sqrt(np.sum(L_vec**2))
         L_norm = L_vec/L_mag
         
         #Define cyclinder based on momentum vector
-        disk = ds.disk(center_pos, L_norm, (100, "au"), (100, "au"))
+        disk = ds.disk(center_pos, L_norm, (args.analysis_radius, "au"), (args.analysis_radius, "au"))
         
         
         #Work our which cells have velocities towards to away from the sink
