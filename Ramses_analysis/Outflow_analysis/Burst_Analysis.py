@@ -197,6 +197,26 @@ if rank == 0:
     file.close()
     
     #Maybe plot interesting things?
+    smoothing_inds = 5
+    mdot_smooth = []
+    M_disk_smooth = []
+    max_speed_smooth = []
+    
+    for ind in range(len(sink_all['time'])):
+        start_ind = ind - smoothing_inds
+        if start_ind < 0:
+            if ind == 0:
+                mdot_smooth.append(sink_all['mdot'].in_units('msun/yr')[0])
+                M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[0])
+                max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[0])
+            else:
+                mdot_smooth.append(sink_all['mdot'].in_units('msun/yr')[0:ind])
+                M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[0:ind])
+                max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[0:ind])
+        else:
+            mdot_smooth.append(sink_all['mdot'].in_units('msun/yr')[start_ind:ind])
+            M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[start_ind:ind])
+            max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[start_ind:ind])
     
     import matplotlib.pyplot as plt
     two_col_width = 7.20472 #inches
@@ -209,23 +229,26 @@ if rank == 0:
     plt.subplots_adjust(hspace=0.0)
     
     axs[0].plot(sink_all['time'], sink_all['mass'].in_units('msun'))
-    axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
-    axs[2].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
-    axs[3].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
+    axs[1].semilogy(sink_all['time'], mdot_smooth)
+    axs[2].semilogy(sink_all['time'], M_disk_smooth)
+    axs[3].plot(sink_all['time'], max_speed_smooth)
+    #axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
+    #axs[2].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
+    #axs[3].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
     #axs[3].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
         
     axs[0].set_ylabel('Mass (Msun)')
     axs[1].set_ylabel('Mdot (Msun/y)')
-    axs[2].set_ylabel('Max speed (km/s)')
     #axs[3].set_ylabel('<dens> (g/cm^3)')
-    axs[3].set_ylabel('M_d in (Msun)')
+    axs[2].set_ylabel('M_d in (Msun)')
+    axs[3].set_ylabel('Max speed (km/s)')
     axs[3].set_xlabel('Time (yr)')
     axs[3].set_xlim(left=0)
     
     axs[0].set_ylim(bottom=0)
-    axs[2].set_ylim(bottom=0)
     #axs[3].set_ylim(bottom=1.e4)
-    axs[3].set_ylim(bottom=5.e-4)
+    axs[2].set_ylim(bottom=5.e-4)
+    axs[3].set_ylim(bottom=0)
     
     plt.savefig('Sink_id_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
         
