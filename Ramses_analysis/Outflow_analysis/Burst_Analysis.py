@@ -133,13 +133,10 @@ if args.make_pickle_files == 'True':
         
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
         #gas_vel = yt.YTArray([disk['x-velocity']-center_vel[0], disk['y-velocity']-center_vel[1], disk['z-velocity']-center_vel[2]]).in_units('cm/s').T
-        import pdb
-        pdb.set_trace()
         gas_vel_length = np.sqrt(np.sum(gas_vel**2, axis=1))
         gas_vel_norm = (gas_vel.T/gas_vel_length).T
         
-        proj_vectors = myf.projected_vector(gas_vel_norm, sep_vector_norm)
-        vel_dot = gas_vel_norm.T[0]*proj_vectors.T[0] + gas_vel_norm.T[1]*proj_vectors.T[1] + gas_vel_norm.T[2]*proj_vectors.T[2]
+        vel_dot = gas_vel_norm.T[0]*sep_vector_norm.T[0] + gas_vel_norm.T[1]*sep_vector_norm.T[1] + gas_vel_norm.T[2]*sep_vector_norm.T[2]
         
         #Quantify mass flux in disc. I guess just summing the mass of inflowing material
         inflow_inds = np.where(vel_dot<0)[0]
