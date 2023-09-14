@@ -91,7 +91,7 @@ sink_form_time = dd['sink_particle_form_time'][sink_id]
 usable_files = mym.find_files([0], files, sink_form_time, sink_id, verbatim=False)
 start_ind = files.index(usable_files[0])
 files = files[start_ind+1:]
-vel_bins = np.linspace(0, 20, 21).tolist()
+vel_bins = np.linspace(0, 50, 26).tolist()
 vel_bins.append(100)
 del dd
 
@@ -170,7 +170,7 @@ CW.Barrier()
 
 #gather_pickles
 if rank == 0:
-    pickle_files = sorted(glob.glob('burst_analysys_sink_'+str(sink_id)+'_*.pkl'))
+    pickle_files = sorted(glob.glob('burst_analysis_sink_'+str(sink_id)+'_*.pkl'))
 
     sink_all = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[], 'outflow_distribution':[] }
     
@@ -192,6 +192,10 @@ if rank == 0:
     
     print('Gathered sink data for sink_id', sink_id)
     
+    file = open('gathered_burst_analysis_sink_'+str(sink_id)+'.pkl', 'rb')
+    sink_all = pickle.load(file)
+    file.close()
+    
     #Maybe plot interesting things?
     
     import matplotlib.pyplot as plt
@@ -200,23 +204,28 @@ if rank == 0:
     page_height = 10.62472
     font_size = 10
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*1.5), sharex=True)
+    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, single_col_width*1.5), sharex=True)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.0)
     
     axs[0].plot(sink_all['time'], sink_all['mass'].in_units('msun'))
     axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
     axs[2].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
-    axs[3].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
-    axs[4].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
+    axs[3].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
+    #axs[3].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
         
     axs[0].set_ylabel('Mass (Msun)')
     axs[1].set_ylabel('Mdot (Msun/y)')
     axs[2].set_ylabel('Max speed (km/s)')
-    axs[3].set_ylabel('<dens> (g/cm^3)')
-    axs[4].set_ylabel('M_d in (Msun)')
-    axs[4].set_xlabel('Time (yr)')
-    axs[4].set_xlim(left=0)
+    #axs[3].set_ylabel('<dens> (g/cm^3)')
+    axs[3].set_ylabel('M_d in (Msun)')
+    axs[3].set_xlabel('Time (yr)')
+    axs[3].set_xlim(left=0)
+    
+    axs[0].set_ylim(bottom=0)
+    axs[2].set_ylim(bottom=0)
+    #axs[3].set_ylim(bottom=1.e4)
+    axs[3].set_ylim(bottom=5.e-4)
     
     plt.savefig('Sink_id_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
         
