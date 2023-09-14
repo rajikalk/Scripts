@@ -210,13 +210,13 @@ if rank == 0:
                 M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[0])
                 max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[0])
             else:
-                mdot_smooth.append(sink_all['mdot'].in_units('msun/yr')[0:ind])
-                M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[0:ind])
-                max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[0:ind])
+                mdot_smooth.append(np.mean(sink_all['mdot'].in_units('msun/yr')[0:ind]))
+                M_disk_smooth.append(np.mean(sink_all['inflow_mass'].in_units('msun')[0:ind]))
+                max_speed_smooth.append(np.mean(sink_all['max_outflow_speed'].in_units('km/s')[0:ind]))
         else:
-            mdot_smooth.append(sink_all['mdot'].in_units('msun/yr')[start_ind:ind])
-            M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[start_ind:ind])
-            max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[start_ind:ind])
+            mdot_smooth.append(np.mean(sink_all['mdot'].in_units('msun/yr')[start_ind:ind]))
+            M_disk_smooth.append(np.mean(sink_all['inflow_mass'].in_units('msun')[start_ind:ind]))
+            max_speed_smooth.append(np.mean(sink_all['max_outflow_speed'].in_units('km/s')[start_ind:ind]))
     
     import matplotlib.pyplot as plt
     two_col_width = 7.20472 #inches
