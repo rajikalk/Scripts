@@ -100,7 +100,7 @@ if args.make_pickle_files == 'True':
     sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[], 'outflow_distribution':[]}
 
     for fn in yt.parallel_objects(files):
-        pickle_file = 'burst_analysys_sink_'+str(sink_id)+'_'+str(rank)+'.pkl'
+        pickle_file = 'burst_analysis_sink_'+str(sink_id)+'_'+str(rank)+'.pkl'
         ds = yt.load(fn, units_override=units_override)
         dd = ds.all_data()
         
@@ -132,6 +132,8 @@ if args.make_pickle_files == 'True':
         sep_vector_norm = (sep_vector.T/sep_vector_length).T
         
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
+        import pdb
+        pdb.set_trace()
         gas_vel_length = np.sqrt(np.sum(gas_vel**2, axis=1))
         gas_vel_norm = (gas_vel.T/gas_vel_length).T
         
@@ -140,7 +142,7 @@ if args.make_pickle_files == 'True':
         
         #Quantify mass flux in disc. I guess just summing the mass of inflowing material
         inflow_inds = np.where(vel_dot<0)[0]
-        inflow_mass = np.sum(disk['cell_mass'][inflow_inds].in_units('g'))
+        inflow_mass = np.sum(disk['cell_mass'][inflow_inds].in_units('msun'))
         sink_dict['inflow_mass'].append(inflow_mass)
         sink_dict['mean_density'].append(np.mean(disk['density'][inflow_inds]))
         
@@ -169,7 +171,7 @@ CW.Barrier()
 if rank == 0:
     pickle_files = sorted(glob.glob('burst_analysys_sink_'+str(sink_id)+'_*.pkl'))
 
-    sink_all = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
+    sink_all = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[], 'outflow_distribution':[] }
     
     for pickle_file in pickle_files:
         file = open(pickle_file, 'rb')
@@ -183,7 +185,7 @@ if rank == 0:
     for key in sink_all:
         sink_all[key] = yt.YTArray(sink_all[key])[sorted_inds]
         
-    file = open('gathered_burst_analysys_sink_'+str(sink_id)+'.pkl', 'wb')
+    file = open('gathered_burst_analysis_sink_'+str(sink_id)+'.pkl', 'wb')
     pickle.dump((sink_all), file)
     file.close()
     
@@ -197,7 +199,7 @@ if rank == 0:
     page_height = 10.62472
     font_size = 10
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, single_col_width*1.5), sharex=True)
+    fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*1.5), sharex=True)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.0)
     
@@ -205,13 +207,15 @@ if rank == 0:
     axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
     axs[2].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
     axs[3].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
+    axs[4].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
         
     axs[0].set_ylabel('Mass (Msun)')
     axs[1].set_ylabel('Mdot (Msun/y)')
     axs[2].set_ylabel('Max speed (km/s)')
     axs[3].set_ylabel('<dens> (g/cm^3)')
-    axs[3].set_xlabel('Time (yr)')
-    axs[3].set_xlim(left=0)
+    axs[4].set_ylabel('M_d in (Msun)')
+    axs[4].set_xlabel('Time (yr)')
+    axs[4].set_xlim(left=0)
     
     plt.savefig('Sink_id_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
         
