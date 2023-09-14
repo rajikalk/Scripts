@@ -94,7 +94,7 @@ del dd
 
 if args.make_pickle_files == 'True':
 
-    sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[]}
+    sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[]}
 
     for fn in yt.parallel_objects(files):
         pickle_file = 'burst_analysys_sink_'+str(sink_id)+'_'+str(rank)+'.pkl'
@@ -121,22 +121,30 @@ if args.make_pickle_files == 'True':
         
         
         sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
+        sep_vector_length = np.sqrt(np.sum(sep_vector**2, axis=1))
+        sep_vector_norm = (sep_vector.T/sep_vector_length).T
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
-        proj_vectors = myf.projected_vector(gas_vel, sep_vector)
-        vel_dot = np.diag(np.dot(gas_vel, proj_vectors.T))
+        gas_vel_length = np.sqrt(np.sum(gas_vel**2, axis=1))
+        gas_vel_norm = (gas_vel.T/gas_vel_length).T
+        proj_vectors = myf.projected_vector(gas_vel_norm, sep_vector_norm)
+        vel_dot = gas_vel_norm.T[0]*proj_vectors.T[0] + gas_vel_norm.T[1]*proj_vectors.T[1] + gas_vel_norm.T[2]*proj_vectors.T[2]
         
         #Quantify mass flux in disc. I guess just summing the mass of inflowing material
-        import pdb
-        pdb.set_trace()
         inflow_inds = np.where(vel_dot<1)[0]
         inflow_mass = np.sum(disk['cell_mass'][inflow_inds].in_units('g'))
+        sink_dict['inflow_mass'].append(inflow_mass)
+        sink_dict['mean_density'].append(np.mean(disk['density'][inflow_inds]))
         
         #Get a distribution of outflow velocities
-        
         outflow_inds = np.where(vel_dot>1)[0]
+        outflow_velocities = disk['Corrected_vel_mag'][outflow_inds].in_units('km/s')
+        import pdb
+        pdb.set_trace()
+        #Make histogram
+        vel_bins = np.linspace(0, 50, 10)
+        vel_hist, vel_bins = np.histogram(outflow_velocities, bins=vel_bins)
         max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
         sink_dict['max_outflow_speed'].append(max_outflow_vel.in_units('km/s'))
-        sink_dict['mean_density'].append(np.mean(disk['density']))
         
         file = open(pickle_file, 'wb')
         pickle.dump((sink_dict), file)
