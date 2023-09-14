@@ -90,17 +90,20 @@ sink_form_time = dd['sink_particle_form_time'][sink_id]
 usable_files = mym.find_files([0], files, sink_form_time, sink_id, verbatim=False)
 start_ind = files.index(usable_files[0])
 files = files[start_ind+1:]
+vel_bins = np.linspace(0, 20, 21).tolist()
+vel_bins.append(100)
 del dd
 
 if args.make_pickle_files == 'True':
 
-    sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[]}
+    sink_dict = {'time':[], 'mass':[], 'mdot':[], 'max_outflow_speed':[], 'mean_density':[], 'inflow_mass':[], 'outflow_distribution':[]}
 
     for fn in yt.parallel_objects(files):
         pickle_file = 'burst_analysys_sink_'+str(sink_id)+'_'+str(rank)+'.pkl'
         ds = yt.load(fn, units_override=units_override)
         dd = ds.all_data()
         
+        #save time, mass, and accretion
         sink_dict['time'].append(ds.current_time.in_units('yr') - sink_form_time)
         sink_dict['mass'].append(dd['sink_particle_mass'][sink_id].in_units('msun'))
         sink_dict['mdot'].append(dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr'))
@@ -108,41 +111,47 @@ if args.make_pickle_files == 'True':
         #center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au'), dd['sink_particle_posy'][sink_id].in_units('au'), dd['sink_particle_posz'][sink_id].in_units('au')])
         #center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('cm/s'), dd['sink_particle_vely'][sink_id].in_units('cm/s'), dd['sink_particle_velz'][sink_id].in_units('cm/s')])
         
+        #get position and velocity of centred sink particle
         center_pos = dd['Center_Position'].in_units('au')
         center_vel = dd['Center_Velocity'].in_units('cm/s')
         
+        #Use Sphere to get Angular momentum vector
         sph = ds.sphere(center_pos, (100, "au"))
         L_vec = yt.YTArray([np.sum(sph['Angular_Momentum_x']), np.sum(sph['Angular_Momentum_y']), np.sum(sph['Angular_Momentum_z'])])
         L_mag = np.sqrt(np.sum(L_vec**2))
         L_norm = L_vec/L_mag
         
+        #Define cyclinder based on momentum vector
         disk = ds.disk(center_pos, L_norm, (100, "au"), (100, "au"))
         
         
-        
+        #Work our which cells have velocities towards to away from the sink
         sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
         sep_vector_length = np.sqrt(np.sum(sep_vector**2, axis=1))
         sep_vector_norm = (sep_vector.T/sep_vector_length).T
+        
         gas_vel = yt.YTArray([disk['Corrected_velx'], disk['Corrected_vely'], disk['Corrected_velz']]).in_units('cm/s').T
         gas_vel_length = np.sqrt(np.sum(gas_vel**2, axis=1))
         gas_vel_norm = (gas_vel.T/gas_vel_length).T
+        
         proj_vectors = myf.projected_vector(gas_vel_norm, sep_vector_norm)
         vel_dot = gas_vel_norm.T[0]*proj_vectors.T[0] + gas_vel_norm.T[1]*proj_vectors.T[1] + gas_vel_norm.T[2]*proj_vectors.T[2]
         
         #Quantify mass flux in disc. I guess just summing the mass of inflowing material
-        inflow_inds = np.where(vel_dot<1)[0]
+        inflow_inds = np.where(vel_dot<0)[0]
         inflow_mass = np.sum(disk['cell_mass'][inflow_inds].in_units('g'))
         sink_dict['inflow_mass'].append(inflow_mass)
         sink_dict['mean_density'].append(np.mean(disk['density'][inflow_inds]))
         
         #Get a distribution of outflow velocities
-        outflow_inds = np.where(vel_dot>1)[0]
+        outflow_inds = np.where(vel_dot>0)[0]
         outflow_velocities = disk['Corrected_vel_mag'][outflow_inds].in_units('km/s')
-        import pdb
-        pdb.set_trace()
+
         #Make histogram
-        vel_bins = np.linspace(0, 50, 10)
         vel_hist, vel_bins = np.histogram(outflow_velocities, bins=vel_bins)
+        vel_hist_norm = (vel_hist)/np.sum(vel_hist)
+        sink_dict['outflow_distribution'].append(vel_hist_norm)
+        
         max_outflow_vel = np.max(disk['Corrected_vel_mag'][outflow_inds])
         sink_dict['max_outflow_speed'].append(max_outflow_vel.in_units('km/s'))
         
