@@ -54,7 +54,7 @@ def parse_inputs():
     parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
     parser.add_argument("-res", "--resolution", help="define image resolution", default=800, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("ƒ", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
+    parser.add_argument("-proj_sep", "--projected_separation", help="if you want to make a projection such that the separation is a particular ammount, what is that?", type=float, default=200.0)
     parser.add_argument("-threshold", "--density_threshold", help="What number density threshold would you like to use?", type=float, default=0.0)
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-sm", "--skip_made", help="do you want to skip frames already made?", type=str, default='True')
