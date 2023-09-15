@@ -118,13 +118,16 @@ if args.make_pickle_files == 'True':
         
         #Use Sphere to get Angular momentum vector
         sph = ds.sphere(center_pos, (args.analysis_radius, "au"))
-        L_vec = yt.YTArray([np.sum(sph['Angular_Momentum_x']), np.sum(sph['Angular_Momentum_y']), np.sum(sph['Angular_Momentum_z'])])
-        L_mag = np.sqrt(np.sum(L_vec**2))
-        L_norm = L_vec/L_mag
         
-        #Define cyclinder based on momentum vector
-        disk = ds.disk(center_pos, L_norm, (args.analysis_radius, "au"), (args.analysis_radius, "au"))
-        
+        if args.analysis_radius > 50:
+            L_vec = yt.YTArray([np.sum(sph['Angular_Momentum_x']), np.sum(sph['Angular_Momentum_y']), np.sum(sph['Angular_Momentum_z'])])
+            L_mag = np.sqrt(np.sum(L_vec**2))
+            L_norm = L_vec/L_mag
+            
+            #Define cyclinder based on momentum vector
+            disk = ds.disk(center_pos, L_norm, (args.analysis_radius, "au"), (args.analysis_radius, "au"))
+        else:
+            disk = sph
         
         #Work our which cells have velocities towards to away from the sink
         sep_vector = yt.YTArray([disk['x'].in_units('cm')-center_pos[0].in_units('cm'), disk['y'].in_units('cm')-center_pos[1].in_units('cm'), disk['z'].in_units('cm')-center_pos[2].in_units('cm')]).T
@@ -210,13 +213,13 @@ if rank == 0:
                 M_disk_smooth.append(sink_all['inflow_mass'].in_units('msun')[0])
                 max_speed_smooth.append(sink_all['max_outflow_speed'].in_units('km/s')[0])
             else:
-                mdot_smooth.append(np.mean(sink_all['mdot'].in_units('msun/yr')[0:ind]))
-                M_disk_smooth.append(np.mean(sink_all['inflow_mass'].in_units('msun')[0:ind]))
-                max_speed_smooth.append(np.mean(sink_all['max_outflow_speed'].in_units('km/s')[0:ind]))
+                mdot_smooth.append(np.nanmean(sink_all['mdot'].in_units('msun/yr')[0:ind]))
+                M_disk_smooth.append(np.nanmean(sink_all['inflow_mass'].in_units('msun')[0:ind]))
+                max_speed_smooth.append(np.nanmean(sink_all['max_outflow_speed'].in_units('km/s')[0:ind]))
         else:
-            mdot_smooth.append(np.mean(sink_all['mdot'].in_units('msun/yr')[start_ind:ind]))
-            M_disk_smooth.append(np.mean(sink_all['inflow_mass'].in_units('msun')[start_ind:ind]))
-            max_speed_smooth.append(np.mean(sink_all['max_outflow_speed'].in_units('km/s')[start_ind:ind]))
+            mdot_smooth.append(np.nanmean(sink_all['mdot'].in_units('msun/yr')[start_ind:ind]))
+            M_disk_smooth.append(np.nanmean(sink_all['inflow_mass'].in_units('msun')[start_ind:ind]))
+            max_speed_smooth.append(np.nanmean(sink_all['max_outflow_speed'].in_units('km/s')[start_ind:ind]))
     
     import matplotlib.pyplot as plt
     two_col_width = 7.20472 #inches
@@ -224,7 +227,7 @@ if rank == 0:
     page_height = 10.62472
     font_size = 10
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, single_col_width*1.5), sharex=True)
+    fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*1.5), sharex=True)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.0)
     
@@ -232,6 +235,7 @@ if rank == 0:
     axs[1].semilogy(sink_all['time'], mdot_smooth)
     axs[2].semilogy(sink_all['time'], M_disk_smooth)
     axs[3].plot(sink_all['time'], max_speed_smooth)
+    axs[4].semilogy(sink_all['time'], sink_all['mean_density'].in_units('g/cm**3'))
     #axs[1].semilogy(sink_all['time'], sink_all['mdot'].in_units('msun/yr'))
     #axs[2].semilogy(sink_all['time'], sink_all['inflow_mass'].in_units('msun'))
     #axs[3].plot(sink_all['time'], sink_all['max_outflow_speed'].in_units('km/s'))
@@ -242,13 +246,15 @@ if rank == 0:
     #axs[3].set_ylabel('<dens> (g/cm^3)')
     axs[2].set_ylabel('M_d in (Msun)')
     axs[3].set_ylabel('Max speed (km/s)')
-    axs[3].set_xlabel('Time (yr)')
-    axs[3].set_xlim(left=0)
+    axs[4].set_ylabel('<dens> (g/cm^3)')
+    axs[4].set_xlabel('Time (yr)')
+    #axs[3].set_xlim([50000, 130000])
     
-    axs[0].set_ylim(bottom=0)
+    #axs[0].set_ylim(bottom=1)
+    #axs[1].set_ylim([2.e-6, 2.e-5])
     #axs[3].set_ylim(bottom=1.e4)
-    axs[2].set_ylim(bottom=5.e-4)
-    axs[3].set_ylim(bottom=0)
+    #axs[2].set_ylim([5.e-4, 2.e-2])
+    #axs[3].set_ylim([10, 40])
     
     plt.savefig('Sink_id_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
         
