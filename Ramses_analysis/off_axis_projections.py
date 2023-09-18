@@ -60,6 +60,7 @@ def parse_inputs():
     parser.add_argument("-sm", "--skip_made", help="do you want to skip frames already made?", type=str, default='True')
     parser.add_argument("-spec_file", "--specific_file", help="Do you want to use a specific file", type=str, default=None)
     parser.add_argument("-conv", "--convolve", help="Do you want to convolve the image with a gaussian beam?", type=str, default='True')
+    parser.add_argument("-transpose", "--transpose_image", help="Do you want to transport image?", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -683,6 +684,14 @@ for pickle_file in pickle_files:
                 vely = np.flip(np.flip(vely, axis=0), axis=1)
                 part_info['particle_position'][1][0] = part_info['particle_position'][1][0]*-1
             file.close()
+            
+            if args.transpose_image == 'True':
+                image = image.T
+                vel_rad = vel_rad.T
+                velx = velx.T
+                vely = vely.T
+                import pdb
+                pdb.set_trace()
             
             if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
                 xlim = args_dict['xlim']
