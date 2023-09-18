@@ -690,8 +690,8 @@ for pickle_file in pickle_files:
                 vel_rad = vel_rad.T
                 velx = velx.T
                 vely = vely.T
-                import pdb
-                pdb.set_trace()
+                part_info['particle_position'][0][1] = part_info['particle_position'][1][1]*-1
+                part_info['particle_position'][1][1] = part_info['particle_position'][1][1]*0
             
             if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
                 xlim = args_dict['xlim']
