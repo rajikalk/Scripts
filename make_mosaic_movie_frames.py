@@ -8,6 +8,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-left", "--left_files", help="left files", type=str)
     parser.add_argument("-right", "--right_files", help="right files", type=str)
+    parser.add_argument("-transpose", "--transpose_image", help="Do you want to rotate image?", type=str, default='True')
     parser.add_argument("-save_dir", "--save_directory", help="save_directory", type=str)
     args = parser.parse_args()
     return args
@@ -29,6 +30,8 @@ else:
 
 for image_ind in range(range_number):
     file_name = save_dir + "movie_frame_" + ("%06d" % image_ind)
+    import pdb
+    pdb.set_trace()
     images = [Image.open(x) for x in [left_frames[image_ind], right_frames[image_ind]]]
     
     widths, heights = zip(*(i.size for i in images))
