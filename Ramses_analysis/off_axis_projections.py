@@ -686,8 +686,6 @@ for pickle_file in pickle_files:
             file.close()
             
             if args.transpose_image == 'True':
-                import pdb
-                pdb.set_trace()
                 image = np.rot(np.rot90(np.rot90(image)))
                 vel_rad = np.rot(np.rot90(np.rot90(vel_rad)))
                 velx = np.rot(np.rot90(np.rot90(velx)))
