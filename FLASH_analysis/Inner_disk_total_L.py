@@ -150,8 +150,8 @@ if args.make_movie_pickles == 'True':
             Separation.append(sep)
                 
             normal = yt.YTArray([0, 0, 1], '')
-            height = yt.YTQuantity(10, 'au')
-            radius = yt.YTQuantity(10, 'au')
+            height = yt.YTQuantity(args.inner_radius_threshold, 'au')
+            radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
             Radius_field = disk['radius'].in_units('AU')
             Total_L.append(np.sum(disk[args.profile_field]))
