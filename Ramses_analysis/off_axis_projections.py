@@ -686,10 +686,10 @@ for pickle_file in pickle_files:
             file.close()
             
             if args.transpose_image == 'True':
-                image = image.T
-                vel_rad = vel_rad.T
-                velx = velx.T
-                vely = vely.T
+                image = np.rot90(image)
+                vel_rad = np.rot90(vel_rad)
+                velx = np.rot90(velx)
+                vely = np.rot90(vely)
                 part_info['particle_position'][0][1] = part_info['particle_position'][1][1]*-1
                 part_info['particle_position'][1][1] = part_info['particle_position'][1][1]*0
             
