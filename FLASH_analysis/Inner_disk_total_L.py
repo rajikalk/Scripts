@@ -27,6 +27,8 @@ def parse_inputs():
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
+    parser.add_argument("-start", "--start_time", type=float, default=0)
+    parser.add_argument("-end", "--end_time", type=float, default=None)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -45,7 +47,7 @@ if args.make_movie_pickles == 'True':
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=None)
+        m_times = mym.generate_frame_times(files, args.time_step, start_time=args.start_time, presink_frames=0, end_time=args.end_time)
     print('generated frame times')
     
     Time_array = []
