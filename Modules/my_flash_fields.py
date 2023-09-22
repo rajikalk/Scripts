@@ -425,6 +425,19 @@ def _Distance_from_primary(field, data):
 
 yt.add_field("Distance_from_primary", function=_Distance_from_primary, units=r"cm", sampling_type="local")
 
+def _Distance_from_domain_centre(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    dx_gas = data['flash', 'x'].in_units('cm')
+    dy_gas = data['flash', 'y'].in_units('cm')
+    dz_gas = data['flash', 'z'].in_units('cm')
+
+    radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+    return radius
+
+yt.add_field("Distance_from_domain_centre", function=_Distance_from_domain_centre, units=r"cm", sampling_type="local")
+
 '''
 def _L_gas_wrt_CoM(field, data):
     """
