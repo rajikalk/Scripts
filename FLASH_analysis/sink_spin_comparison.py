@@ -479,7 +479,7 @@ for mach_lab in Mach_labels:
 
 axs.flatten()[0].legend(loc='lower left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([-0.5e14, 1.e14])
+axs.flatten()[plot_it-1].set_ylim([-0.25e14, 0.75e14])
 plt.savefig('d_spin_init_spin_spec_comp.pdf', bbox_inches='tight')
 
 
