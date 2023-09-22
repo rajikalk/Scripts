@@ -407,6 +407,27 @@ def _L_gas_wrt_primary_cyl(field, data):
 
 yt.add_field("L_gas_wrt_primary_cyl", function=_L_gas_wrt_primary_cyl, units=r"g*cm**2/s", sampling_type="local")
 
+def _Distance_from_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
+
+        radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+    else:
+        dx_gas = data['flash', 'x'].in_units('cm')
+        dy_gas = data['flash', 'y'].in_units('cm')
+        dz_gas = data['flash', 'z'].in_units('cm')
+        radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+    return radius
+
+yt.add_field("Distance_from_primary", function=_Distance_from_primary, units=r"cm", sampling_type="local")
+
 '''
 def _L_gas_wrt_CoM(field, data):
     """
