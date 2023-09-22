@@ -47,7 +47,6 @@ def parse_inputs():
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 args = parse_inputs()
-center_pos = yt.YTArray([0, 0, 0], 'cm')
 font_size = 10
 mym.set_global_font_size(font_size)
 
@@ -165,9 +164,9 @@ if args.make_movie_pickles == 'True':
                          'particle_tag':dd['particle_tag'],
                          'particle_form_time':dd['particle_creation_time']}
                 primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-                #center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
+                center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
             else:
-                #center_pos = yt.YTArray([0, 0, 0], 'cm')
+                center_pos = yt.YTArray([0, 0, 0], 'cm')
                 has_particles = False
                 part_info = {}
             
