@@ -188,8 +188,8 @@ if args.make_movie_pickles == 'True':
                     thickness = args.plot_width/2
                 else:
                     thickness = args.proj_thickness
-                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-((args.plot_width/2)+100), center_pos[2].in_units('au').value-(0.5*(thickness/2))], 'AU')
-                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+((args.plot_width/2)+100), center_pos[2].in_units('au').value+(0.5*(thickness/2))], 'AU')
+                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-((args.plot_width/2)+100), center_pos[2].in_units('au').value-(0.5*(thickness.in_units('au')/2))], 'AU')
+                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+((args.plot_width/2)+100), center_pos[2].in_units('au').value+(0.5*(thickness.in_units('au')/2))], 'AU')
                 region = ds.box(left_corner, right_corner)
             else:
                 left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-(0.5*(args.plot_width/2)), center_pos[2].in_units('au').value-((args.plot_width/2)+100)], 'AU')
