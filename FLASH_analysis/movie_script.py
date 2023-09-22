@@ -183,17 +183,19 @@ if args.make_movie_pickles == 'True':
                 [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
             #define projection region
+            plot_width = yt.YTQuantity(args.plot_width, 'au')
             if args.axis == 'z':
                 if args.proj_thickness == None:
                     thickness = yt,YTQuantity(args.plot_width/2, 'au')
                 else:
                     thickness = yt.YTQuantity(args.proj_thickness, 'au')
-                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-((args.plot_width/2)+100), center_pos[2].in_units('au').value-(0.5*(thickness.in_units('au')/2))], 'AU')
-                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+((args.plot_width/2)+100), center_pos[2].in_units('au').value+(0.5*(thickness.in_units('au')/2))], 'AU')
+                
+                left_corner = yt.YTArray([center_pos[0].in_units('au')-((plot_width.in_units('au')/2)+100), center_pos[1].in_units('au')-((plot_width.in_units('au')/2)+100), center_pos[2].in_units('au')-(0.5*(thickness.in_units('au')/2))], 'AU')
+                right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+100), center_pos[1].in_units('au')+((plot_width.in_units('au')/2)+100), center_pos[2].in_units('au')+(0.5*(thickness.in_units('au')/2))], 'AU')
                 region = ds.box(left_corner, right_corner)
             else:
-                left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-(0.5*(args.plot_width/2)), center_pos[2].in_units('au').value-((args.plot_width/2)+100)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+(0.5*(args.plot_width/2)), center_pos[2].in_units('au').value+((args.plot_width/2)+100)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].in_units('au')-((plot_width.in_units('au')/2)+100), center_pos[1].in_units('au')-(0.5*(plot_width.in_units('au')/2)), center_pos[2].in_units('au')-((plot_width.in_units('au')/2)+100)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+100), center_pos[1].in_units('au')+(0.5*(plot_width.in_units('au')/2)), center_pos[2].in_units('au')+((plot_width.in_units('au')/2)+100)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
