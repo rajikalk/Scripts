@@ -411,3 +411,76 @@ axs.flatten()[0].legend(loc='lower left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Spin_init_spin_spec_comp.pdf', bbox_inches='tight')
+
+#==========================================================================================================================
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+line_styles = ['-', '--', '-.', ':']
+plot_it = -1
+xmax= 0
+ymax = 0
+for mach_lab in Mach_labels:
+    plot_it = plot_it + 1
+    axs.flatten()[plot_it].set_title("Mach = " + mach_lab)
+    for spin_lab in Spin_labels:
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
+        #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
+        
+        if os.path.exists(single_pickle):
+            file = open(single_pickle, 'rb')
+            sink_data, line_counter = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            
+            for sink_id in sink_data.keys():
+                #sink_id = list(sink_data.keys())[0]
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot/sink_data[sink_id]['mass'], 'cm**2/s')
+                #L_tot = L_tot.in_units('m**2/s')
+                time = sink_data[sink_id]['time'] - form_time
+                time = yt.YTArray(time, 's')
+                if max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)] == None:
+                    plot_time = time.in_units('yr')
+                    plot_mass = mass.in_units('m**2/s')
+                else:
+                    end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
+                    end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
+                    plot_time = time.in_units('yr')[:end_ind+1]
+                    plot_L = L_tot.in_units('m**2/s')[:end_ind+1]
+                    plot_L = plot_L[1:] - plot_L[:-1]
+                if sink_id == list(sink_data.keys())[0]:
+                    axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+                else:
+                    axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+        else:
+            print("Couldn't open", single_pickle)
+
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)')
+        else:
+            yticklabels = axs.flatten()[plot_it].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
+        if mach_lab == '0.0' and spin_lab == '0.35':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
+
+axs.flatten()[0].legend(loc='lower left')
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
+plt.savefig('d_spin_init_spin_spec_comp.pdf', bbox_inches='tight')
+
+
+
