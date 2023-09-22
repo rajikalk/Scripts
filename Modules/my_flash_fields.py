@@ -420,10 +420,7 @@ def _Distance_from_primary(field, data):
 
         radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
     else:
-        dx_gas = data['flash', 'x'].in_units('cm')
-        dy_gas = data['flash', 'y'].in_units('cm')
-        dz_gas = data['flash', 'z'].in_units('cm')
-        radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+        radius = yt.YTArray(np.zeros(np.shape(data['flash', 'x'])), 'cm')
     return radius
 
 yt.add_field("Distance_from_primary", function=_Distance_from_primary, units=r"cm", sampling_type="local")
