@@ -438,6 +438,20 @@ def _Distance_from_domain_centre(field, data):
 
 yt.add_field("Distance_from_domain_centre", function=_Distance_from_domain_centre, units=r"cm", sampling_type="local")
 
+def _cell_mass(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    volume = data['flash', 'dx'].in_units('cm') * data['flash', 'dy'].in_units('cm') * data['flash', 'dz'].in_units('cm')
+    density = region['flash', 'dens'].in_units('g/cm**3')
+
+    mass = density * volume
+    return mass
+
+yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local")
+
+
+
 '''
 def _L_gas_wrt_CoM(field, data):
     """
