@@ -456,7 +456,9 @@ for mach_lab in Mach_labels:
                     end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                     plot_time = time.in_units('yr')[:end_ind+1]
                     plot_L = L_tot.in_units('m**2/s')[:end_ind+1]
-                    plot_L = plot_L[1:] - plot_L[:-1]
+                    dL = plot_L[1:] - plot_L[:-1]
+                    dt = plot_time[1:] - plot_time[:-1]
+                    plot_L = dL/dt
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time[:-1], plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.25)
                 else:
@@ -479,7 +481,7 @@ for mach_lab in Mach_labels:
 
 axs.flatten()[0].legend(loc='lower left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0e14, 0.1e14])
+#axs.flatten()[plot_it-1].set_ylim([0e14, 0.1e14])
 plt.savefig('d_spin_init_spin_spec_comp.pdf', bbox_inches='tight')
 
 
