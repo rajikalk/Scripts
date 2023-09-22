@@ -443,7 +443,7 @@ def _cell_mass(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     volume = data['flash', 'dx'].in_units('cm') * data['flash', 'dy'].in_units('cm') * data['flash', 'dz'].in_units('cm')
-    density = region['flash', 'dens'].in_units('g/cm**3')
+    density = data['flash', 'dens'].in_units('g/cm**3')
 
     mass = density * volume
     return mass
