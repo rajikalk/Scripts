@@ -185,9 +185,9 @@ if args.make_movie_pickles == 'True':
             #define projection region
             if args.axis == 'z':
                 if args.proj_thickness == None:
-                    thickness = args.plot_width/2
+                    thickness = yt,YTQuantity(args.plot_width/2, 'au')
                 else:
-                    thickness = args.proj_thickness
+                    thickness = yt.YTQuantity(args.proj_thickness, 'au')
                 left_corner = yt.YTArray([center_pos[0].in_units('au').value-((args.plot_width/2)+100), center_pos[1].in_units('au').value-((args.plot_width/2)+100), center_pos[2].in_units('au').value-(0.5*(thickness.in_units('au')/2))], 'AU')
                 right_corner = yt.YTArray([center_pos[0].in_units('au').value+((args.plot_width/2)+100), center_pos[1].in_units('au').value+((args.plot_width/2)+100), center_pos[2].in_units('au').value+(0.5*(thickness.in_units('au')/2))], 'AU')
                 region = ds.box(left_corner, right_corner)
