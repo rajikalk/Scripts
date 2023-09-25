@@ -404,6 +404,8 @@ if args.make_movie_frames == 'True':
                 for line in ax.yaxis.get_ticklines():
                     line.set_color('white')
                     
+                cbar.set_label(args.field + " (" + str(image.units)+")", rotation=270, labelpad=14, size=10)
+                '''
                 if args.field == 'dens':
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
                 elif 'Relative_keplerian_velocity_wrt_primary' in args.field:
@@ -412,6 +414,7 @@ if args.make_movie_frames == 'True':
                     cbar.set_label(r"Specific angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
                 else:
                     cbar.set_label(r"Angular momentum (g$\,$cm$^{2}/s$)", rotation=270, labelpad=14, size=10)
+                '''
                 time_string = "$t$="+str(int(time_val))+"yr"
                 time_string_raw = r"{}".format(time_string)
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
