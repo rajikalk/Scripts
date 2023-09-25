@@ -35,6 +35,7 @@ def parse_inputs():
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)
+    parser.add_argument("-weight", "--weight_field", help="set weight field?", type=str, default=None)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     
@@ -211,9 +212,12 @@ if args.make_movie_pickles == 'True':
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
-                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-                thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                proj_array = proj.frb.data[field].in_cgs()/thickness
+                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
+                if args.weight_field == None:
+                    thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
+                    proj_array = proj.frb.data[field].in_cgs()/thickness
+                else:
+                    proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
                     proj_array = proj_array.T
                 #print(field, "projection =", proj_array)
