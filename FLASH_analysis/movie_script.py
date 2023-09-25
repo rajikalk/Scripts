@@ -213,7 +213,10 @@ if args.make_movie_pickles == 'True':
             z_proj_max = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
             z_proj_min = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='min', data_source=region, width=plot_width, weight_field=None, center=center_pos)
             
-            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() - z_proj_min.frb.data[('gas', 'z')].in_cgs()
+            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() + abs(z_proj_min.frb.data[('gas', 'z')].in_cgs())
+            
+            thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
+            thickness = thickness_proj.frb.data[('gas', 'dz')].in_cgs()
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
@@ -221,7 +224,7 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    proj_array = proj.frb.data[field].in_cgs()#/thickness
+                    proj_array = proj.frb.data[field].in_cgs()/thickness
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
