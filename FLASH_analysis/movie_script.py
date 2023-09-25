@@ -305,6 +305,18 @@ if args.make_movie_frames == 'True':
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
                 
+                
+                if args.colourbar_min == None:
+                    cmin = np.min(image)
+                else:
+                    cmin = args.colourbar_min
+                    
+                if args.colourbar_max == None:
+                    cmax = np.max(image)
+                else:
+                    cmax = args.colourbar_min
+                
+                '''
                 if args.colourbar_min == None:
                     if args.field == 'dens':
                         cmin = 1.e-16
@@ -326,6 +338,7 @@ if args.make_movie_frames == 'True':
                             cmax = 1.e48
                 else:
                     cmax = args.colourbar_max
+                '''
                 
                 cbar_lims = [cmin, cmax]
                 
