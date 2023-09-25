@@ -31,6 +31,7 @@ def parse_inputs():
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
+    parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
@@ -57,7 +58,7 @@ if args.make_movie_pickles == 'True':
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
-        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time)
+        m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, start_time=args.start_time)
     print('generated frame times')
     sys.stdout.flush()
     CW.Barrier()
