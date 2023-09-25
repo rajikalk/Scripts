@@ -210,8 +210,10 @@ if args.make_movie_pickles == 'True':
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
             #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
             
-            #proj_thickness = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            #thickness = proj_thickness.frb.data[('gas', 'dz')].in_cgs()/(proj_thickness.bounds[1] - proj_thickness.bounds[0]).in_cgs()
+            z_proj_max = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            z_proj_min = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='min', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            
+            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() - z_proj_min.frb.data[('gas', 'z')].in_cgs()
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
@@ -219,7 +221,7 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    proj_array = proj.frb.data[field].in_cgs()#/thickness
+                    proj_array = proj.frb.data[field].in_cgs()/thickness
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
