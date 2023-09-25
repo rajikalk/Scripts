@@ -218,13 +218,23 @@ if args.make_movie_pickles == 'True':
             thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field='volume', center=center_pos)
             thickness = (thickness_proj.frb.data[('gas', 'dz')].in_cgs())**0.5
             '''
+            
+            def _cell_mass_dz(field, data):
+                """
+                Calculates the angular momentum w.r.t to the CoM
+                """
+                field = data['gas', 'cell_mass'].in_units('g')/ data['flash', 'dz'].in_units('cm')
+                return field
+
+            yt.add_field("cell_mass_dz", function=_cell_mass_dz, units=r"g/cm", sampling_type="local")
+            
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    proj_array = proj.frb.data[field].in_cgs()/thickness
+                    proj_array = proj.frb.data[field].in_cgs()#/thickness
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
