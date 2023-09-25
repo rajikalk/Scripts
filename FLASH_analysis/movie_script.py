@@ -210,8 +210,8 @@ if args.make_movie_pickles == 'True':
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
             #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
             
-            proj_thickness = proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            thickness = proj_thickness.frb.data['dz'].in_cgs()
+            proj_thickness = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            thickness = proj_thickness.frb.data[('gas', 'dz')].in_cgs()/(proj_thickness.bounds[1] - proj_thickness.bounds[0]).in_cgs()
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
