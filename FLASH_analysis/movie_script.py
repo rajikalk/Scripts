@@ -329,7 +329,7 @@ if args.make_movie_frames == 'True':
                 if args.colourbar_max == None:
                     cmax = np.max(image)
                 else:
-                    cmax = args.colourbar_min
+                    cmax = args.colourbar_max
                 
                 '''
                 if args.colourbar_min == None:
