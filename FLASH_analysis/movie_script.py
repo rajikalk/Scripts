@@ -207,6 +207,7 @@ if args.make_movie_pickles == 'True':
             test_fields = region['nearest_particle_index']
             test_fields = region['L_gas_wrt_nearest_sink']
             test_fields = region['vely']
+            test_fields = region['Relative_keplerian_velocity_wrt_primary']
             
             #Make projections of each field
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
