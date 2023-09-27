@@ -5,6 +5,26 @@ from yt.fields.api import ValidateParameter
 yt.enable_parallelism()
 import numpy as np
 
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the projection of vecter projected onto vector
+    """
+    vector_units = vector.units
+    if len(proj_vector)>3:
+        #Calc vector.proj
+        v_dot_pv = vector.T[0]*proj_vector.T[0] + vector.T[1]*proj_vector.T[1] + vector.T[2]*proj_vector.T[2]
+        pv_dot_pv = proj_vector.T[0]**2 + proj_vector.T[1]**2 + proj_vector.T[2]**2
+        proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
+        proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
+        proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+    else:
+        proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+        proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+        proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
+
 def _CoM_full(field, data):
     """
     Returns center of mass using both the gas and the sink particles
@@ -579,6 +599,28 @@ def _Keplerian_velocity_wrt_primary(field, data):
         v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
     else:
         v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
+    return v_kep
+
+yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
+
+def _Radial_velocity_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
+        
+        r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
+        v_vec = yt.YTArray([data['flash','velx'].in_units('cm/s'), data['flash','vely'].in_units('cm/s'), data['flash','velz'].in_units('cm/s')])
+        
+        rad_vel = projected_vector(v_vec, r_vec)
+        
+        import pdb
+        pdb.set_trace()
     return v_kep
 
 yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
