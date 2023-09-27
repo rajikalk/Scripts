@@ -640,6 +640,7 @@ def _Tangential_velocity_wrt_primary(field, data):
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
             dd = data.ds.all_data()
+            primary_ind = np.argmin(dd['all', 'particle_creation_time'])
             dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
             dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
             dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
@@ -660,7 +661,7 @@ def _Relative_keplerian_velocity_wrt_primary(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         v_kep = data['Keplerian_velocity_wrt_primary']
-        vel = np.sqrt(data['flash','velx'].in_units('cm/s')**2 + data['flash','vely'].in_units('cm/s')**2 + data['flash','velz'].in_units('cm/s')**2)
+        vel = data['Tangential_velocity_wrt_primary']
         rel_kep = vel/v_kep
     else:
         rel_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
