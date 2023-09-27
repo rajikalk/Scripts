@@ -603,6 +603,40 @@ def _Keplerian_velocity_wrt_primary(field, data):
 
 yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
+def _Position_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
+        dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
+        dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
+        r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
+    else:
+        v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
+    return v_kep
+
+yt.add_field("Position_wrt_primary", function=_Position_wrt_primary, units=r"cm/s", sampling_type="local")
+
+def _Velocity_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
+    else:
+        v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
+    return v_kep
+
+yt.add_field("Velocity_wrt_primary", function=_Velocity_wrt_primary, units=r"cm/s", sampling_type="local")
+
 def _Radial_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
@@ -611,23 +645,8 @@ def _Radial_velocity_wrt_primary(field, data):
         rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
-            dd = data.ds.all_data()
-            primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-            dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
-            dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
-            dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
-            r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
-            del dx_gas
-            del dy_gas
-            del dz_gas
-            
-            dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
-            dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
-            dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
-            v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
-            del dvx_gas
-            del dvy_gas
-            del dvz_gas
+            r_vec = data['Position_wrt_primary']
+            v_vec = data['Velocity_wrt_primary']
             
             rad_vel = projected_vector(v_vec.T, r_vec.T)
             rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
@@ -645,15 +664,7 @@ def _Tangential_velocity_wrt_primary(field, data):
         tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
-            dd = data.ds.all_data()
-            primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-            dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
-            dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
-            dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
-            v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
-            del dx_gas
-            del dy_gas
-            del dz_gas
+            v_vec = data['Velocity_wrt_primary']
             v_mag_sq = np.sum(v_vec.T**2, axis=1)
             
             rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
