@@ -617,11 +617,17 @@ def _Radial_velocity_wrt_primary(field, data):
             dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
             dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
             r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
+            del dx_gas
+            del dy_gas
+            del dz_gas
             
             dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
             dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
             dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
             v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
+            del dvx_gas
+            del dvy_gas
+            del dvz_gas
             
             rad_vel = projected_vector(v_vec.T, r_vec.T)
             rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
@@ -645,6 +651,9 @@ def _Tangential_velocity_wrt_primary(field, data):
             dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
             dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
             v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
+            del dx_gas
+            del dy_gas
+            del dz_gas
             v_mag_sq = np.sum(v_vec.T**2, axis=1)
             
             rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
