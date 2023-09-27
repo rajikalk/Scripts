@@ -615,10 +615,10 @@ def _Position_wrt_primary(field, data):
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
     else:
-        r_vec = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
+        r_vec = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm')
     return r_vec
 
-yt.add_field("Position_wrt_primary", function=_Position_wrt_primary, units=r"cm/s", sampling_type="local")
+yt.add_field("Position_wrt_primary", function=_Position_wrt_primary, units=r"cm", sampling_type="local")
 
 def _Velocity_wrt_primary(field, data):
     """
