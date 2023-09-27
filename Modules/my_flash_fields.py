@@ -623,7 +623,7 @@ def _Radial_velocity_wrt_primary(field, data):
         pdb.set_trace()
     return v_kep
 
-yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
+yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
 def _Relative_keplerian_velocity_wrt_primary(field, data):
     """
