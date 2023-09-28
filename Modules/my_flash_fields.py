@@ -355,6 +355,8 @@ def _velx_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
     else:
         dvx_gas = data['flash','velx'].in_units('cm/s')
@@ -367,6 +369,8 @@ def _vely_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
     else:
         dvx_gas = data['flash','vely'].in_units('cm/s')
@@ -379,6 +383,8 @@ def _velz_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
     else:
         dvx_gas = data['flash','velz'].in_units('cm/s')
