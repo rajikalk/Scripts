@@ -39,6 +39,7 @@ def parse_inputs():
     parser.add_argument("-weight", "--weight_field", help="set weight field?", type=str, default=None)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
+    parser.add_argument("-update_vel", "--update_velocity_field", help="update velocity field to be wrt to primary", type=str, default='False')
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -314,6 +315,10 @@ if args.make_movie_frames == 'True':
                 file = open(pickle_file, 'rb')
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
+                
+                if args.update_velocity_field != 'False':
+                    import pdb
+                    pdb.set_trace()
 
                 plt.clf()
                 fig, ax = plt.subplots()
