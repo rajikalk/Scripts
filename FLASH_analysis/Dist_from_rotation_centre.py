@@ -19,9 +19,8 @@ size = CW.Get_size()
 #------------------------------------------------------
 def parse_inputs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
-    parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=100)
+    parser.add_argument("-radius", "--radius_threshold", type=float, default=100)
     
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-start", "--start_time", type=float, default=0)
@@ -40,11 +39,7 @@ center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
 
-    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
-    if args.plot_time != None:
-        m_times = [args.plot_time]
-    else:
-        m_times = mym.generate_frame_times(files, args.time_step, start_time=args.start_time, presink_frames=0, end_time=args.end_time)
+    m_times = mym.generate_frame_times(files, args.time_step, start_time=args.start_time, presink_frames=0, end_time=args.end_time)
     print('generated frame times')
     
     Time_array = []
@@ -106,11 +101,9 @@ if args.make_movie_pickles == 'True':
         if rit == size:
             rit = 0
         if rit == rank:
-            if args.plot_time == None:
-                time_val = m_times[file_int]#ds.current_time.in_units('yr')
-            else:
-                dd = ds.all_data()
-                time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
+
+            dd = ds.all_data()
+            time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
             
             Time_array.append(time_val)
             dd = ds.all_data()
@@ -127,8 +120,8 @@ if args.make_movie_pickles == 'True':
                 
             center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
             normal = yt.YTArray([0, 0, 1], '')
-            height = yt.YTQuantity(args.inner_radius_threshold, 'au')
-            radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
+            height = yt.YTQuantity(args.radius_threshold, 'au')
+            radius = yt.YTQuantity(args.radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
             import pdb
             pdb.set_trace()
