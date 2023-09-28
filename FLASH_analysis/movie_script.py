@@ -171,6 +171,8 @@ if args.make_movie_pickles == 'True':
                 center_pos = yt.YTArray([0, 0, 0], 'cm')
                 has_particles = False
                 part_info = {}
+                
+            del dd
             
             #make list of projection fields: density, velocity, magnetic field
             if args.field == 'dens':
