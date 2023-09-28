@@ -77,7 +77,11 @@ if args.make_movie_pickles == 'True':
     CW.Barrier()
     
     no_frames = len(m_times)
-    start_frame = m_times.index(start_time)
+    try:
+        start_frame = m_times.index(start_time)
+    except:
+        start_frame = np.argmin(abs(np.array(m_times) - start_time))
+        
     m_times = m_times[start_frame:]
     usable_files = mym.find_files(m_times, files)
     frames = list(range(start_frame, no_frames))
