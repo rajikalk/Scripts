@@ -151,9 +151,7 @@ if rank == 0:
     pickle_files = glob.glob(pickle_names)
     
     Time_array = []
-    Total_L = []
-    Total_L_spec = []
-    Separation = []
+    Distance = []
 
     if rank == 0:
         pickle_names = 'profile_*.pkl'
@@ -162,31 +160,23 @@ if rank == 0:
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
                 file = open(pickle_file, 'rb')
-                time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
+                time_val, dist = pickle.load(file)
                 file.close()
                 
                 Time_array = Time_array + time_val
-                Total_L = Total_L + L_tot
-                Total_L_spec = Total_L_spec + L_spec_tot
-                Mean_L = Mean_L + L_mean
-                Mean_L_spec = Mean_L_spec + L_spec_mean
-                Separation = Separation + sep
+                Distance = Distance + dist
                 
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
-            Total_L = list(np.array(Total_L)[sorted_inds])
-            Total_L_spec = list(np.array(Total_L_spec)[sorted_inds])
-            Mean_L = list(np.array(Mean_L)[sorted_inds])
-            Mean_L_spec = list(np.array(Mean_L_spec)[sorted_inds])
-            Separation = list(np.array(Separation)[sorted_inds])
+            Distance = list(np.array(Distance)[sorted_inds])
         
     file = open('gathered_profile.pkl', 'wb')
-    pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation), file)
+    pickle.dump((Time_array, Distance), file)
     file.close()
     
 sys.stdout.flush()
 CW.Barrier()
 
 file = open('gathered_profile.pkl', 'wb')
-pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation), file)
+pickle.dump((Time_array, Distance), file)
 file.close()
