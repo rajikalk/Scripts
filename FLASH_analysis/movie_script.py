@@ -162,8 +162,8 @@ if args.make_movie_pickles == 'True':
                 part_pos_y = dd[part_pos_fields[1]].in_units('au')
                 positions = yt.YTArray([part_pos_x,part_pos_y])
                 part_vel_fields = [field for field in ds.field_list if ('particle_vel' in field[1])&(field[0]=='all')&(field[1]!='particle_vel'+args.axis)]
-                part_vel_x = dd[part_vel_fields[0]].in_units('au')
-                part_vel_y = dd[part_vel_fields[1]].in_units('au')
+                part_vel_x = dd[part_vel_fields[0]].in_units('cm/s')
+                part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
                 velocities = yt.YTArray([part_pos_x,part_pos_y])
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
