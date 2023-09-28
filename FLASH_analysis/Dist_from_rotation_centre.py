@@ -38,7 +38,7 @@ args = parse_inputs()
 center_pos = [0, 0, 0]
 
 if args.make_movie_pickles == 'True':
-
+    files = sorted(glob.glob(input_dir + '*plt_cnt*'))
     m_times = mym.generate_frame_times(files, args.time_step, start_time=args.start_time, presink_frames=0, end_time=args.end_time)
     print('generated frame times')
     
