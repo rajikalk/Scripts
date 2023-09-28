@@ -118,14 +118,23 @@ if args.make_movie_pickles == 'True':
                 dd = ds.all_data()
                 primary_ind = np.argmin(dd['particle_creation_time'])
                 
-            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]])
+            center = yt.YTArray([dd['particle_posx'][primary_ind], dd['particle_posy'][primary_ind], dd['particle_posz'][primary_ind]]).in_units('au')
             normal = yt.YTArray([0, 0, 1], '')
             height = yt.YTQuantity(args.radius_threshold, 'au')
             radius = yt.YTQuantity(args.radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
-            import pdb
-            pdb.set_trace()
+            com_x = (np.sum(disk['x'].in_units('au')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com_y = (np.sum(disk['y'].in_units('au')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com_z = (np.sum(disk['z'].in_units('au')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com = yt.YTArray([com_x, com_y, com_z])
             
+            com_x = (np.sum(disk['velx'].in_units('cm/s')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com_y = (np.sum(disk['vely'].in_units('cm/s')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com_z = (np.sum(disk['velz'].in_units('cm/s')*disk['mass'].in_units('g')))/(np.sum(disk['mass'].in_units('g')))
+            com_v = yt.YTArray([com_x, com_y, com_z])
+            
+            dist = np.sqrt(np.sum((center - com)**2))
+            Distance.append(dist)
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
