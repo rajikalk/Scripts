@@ -164,7 +164,7 @@ if args.make_movie_pickles == 'True':
                 part_vel_fields = [field for field in ds.field_list if ('particle_vel' in field[1])&(field[0]=='all')&(field[1]!='particle_vel'+args.axis)]
                 part_vel_x = dd[part_vel_fields[0]].in_units('cm/s')
                 part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
-                velocities = yt.YTArray([part_pos_x,part_pos_y])
+                velocities = yt.YTArray([part_vel_x,part_vel_y])
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'particle_velocities':velocities,
@@ -323,6 +323,8 @@ if args.make_movie_frames == 'True':
                 
                 if args.update_velocity_field != 'False':
                     primary_ind = np.argmin(part_info['particle_form_time'])
+                    part_velx = part_info['particle_velocities'][0][primary_ind]
+                    part_vely = part_info['particle_velocities'][1][primary_ind]
                     import pdb
                     pdb.set_trace()
 
