@@ -325,8 +325,8 @@ if args.make_movie_frames == 'True':
                     primary_ind = np.argmin(part_info['particle_form_time'])
                     part_velx = part_info['particle_velocities'][0][primary_ind]
                     part_vely = part_info['particle_velocities'][1][primary_ind]
-                    velx = velx - part_velx
-                    vely = vely - part_vely
+                    velx = velx - part_velx.value
+                    vely = vely - part_vely.value
 
                 plt.clf()
                 fig, ax = plt.subplots()
