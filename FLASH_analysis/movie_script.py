@@ -221,15 +221,9 @@ if args.make_movie_pickles == 'True':
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
             #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
             
-            z_proj_max = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            z_proj_min = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='min', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            dz_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            
-            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() + abs(z_proj_min.frb.data[('gas', 'z')].in_cgs()) + dz_proj.frb.data[('gas', 'dz')].in_cgs()
-            '''
-            thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field='volume', center=center_pos)
-            thickness = (thickness_proj.frb.data[('gas', 'dz')].in_cgs())**0.5
-            '''
+
+            thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            thickness = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
