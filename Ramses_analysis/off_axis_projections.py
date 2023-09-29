@@ -550,11 +550,12 @@ if args.make_frames_only == 'False':
                     #field_list = [('gas', 'Radial_Velocity')]
                     #proj_dict = {'Radial_Velocity':[]}
                     field_list = [simfo['field'], ('gas', 'Radial_Velocity'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
-                    proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
+                    proj_dict = {}
+                    #proj_dict = {simfo['field'][1]:[], 'Radial_Velocity':[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
                     
-                    proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                    #proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                     #print("About to start parallel projections")
-                    for field in yt.parallel_objects(field_list):
+                    for sto, field in yt.parallel_objects(field_list, storage=proj_dict):
                         print("Calculating projection with normal", proj_vector_unit, "for field", field, "on rank", rank)
                         #rv_cut_region = dd.cut_region([str(simfo['field'])+".in_units('"+str(args.field_unit)+"') > " + str(args.density_threshold)])
                         proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, field, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)#data_source=rv_cut_region
@@ -577,32 +578,34 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
-                                
-                        if rank == proj_root_rank:
-                            proj_dict[field[1]] = proj_array
-                        else:
-                            print("Dumping projection data into", pickle_file + 'proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl')
-                            file = open(pickle_file + 'proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
-                            pickle.dump((field[1], proj_array), file)
-                            file.close()
-                    
-                    sys.stdout.flush()
-                    CW.Barrier()
+                        sto.result_id = field[1]
+                        sto.result = proj_array
+                        
+                        #if rank == proj_root_rank:
+                        #    proj_dict[field[1]] = proj_array
+                        #else:
+                        #    print("Dumping projection data into", pickle_file + 'proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl')
+                        #    file = open(pickle_file + 'proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
+                        #    pickle.dump((field[1], proj_array), file)
+                        #    file.close()
                     
                     if rank == proj_root_rank and size > 1:
                         #check to see if all proj files exist yet
+                        '''
                         for kit in range(1,len(proj_dict_keys)):
                             file = open(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
                             key, proj_array = pickle.load(file)
                             file.close()
                             proj_dict[key] = proj_array
                             os.remove(pickle_file + 'proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
+                        '''
+                        
                             
                     if rank == proj_root_rank:
-                        image = yt.YTArray(proj_dict[proj_dict_keys[0]], args.field_unit)
-                        vel_rad = yt.YTArray(proj_dict[proj_dict_keys[1]], 'cm/s')
-                        velx_full = yt.YTArray(proj_dict[proj_dict_keys[2]], 'cm/s')
-                        vely_full = yt.YTArray(proj_dict[proj_dict_keys[3]], 'cm/s')
+                        image = proj_dict[list(proj_dict.keys())[0]]
+                        vel_rad = proj_dict[list(proj_dict.keys())[1]]
+                        velx_full = proj_dict[list(proj_dict.keys())[2]]
+                        vely_full = proj_dict[list(proj_dict.keys())[3]]
 
                         velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
                         
