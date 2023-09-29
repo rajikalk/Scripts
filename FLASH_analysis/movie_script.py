@@ -235,7 +235,7 @@ if args.make_movie_pickles == 'True':
                     if args.field == 'L_gas_wrt_primary_density':
                         proj_array = proj.frb.data[field].in_cgs()*fix_thickness
                         import pdb
-                        pdb.set_trace()ßß
+                        pdb.set_trace()
                     proj_array = proj.frb.data[field].in_cgs()/thickness_arr
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
