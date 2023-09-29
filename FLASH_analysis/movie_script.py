@@ -223,8 +223,9 @@ if args.make_movie_pickles == 'True':
             
             z_proj_max = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
             z_proj_min = yt.ProjectionPlot(ds, args.axis, ('gas', 'z'), method='min', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            dz_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='max', data_source=region, width=plot_width, weight_field=None, center=center_pos)
             
-            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() + abs(z_proj_min.frb.data[('gas', 'z')].in_cgs())
+            thickness = z_proj_max.frb.data[('gas', 'z')].in_cgs() + abs(z_proj_min.frb.data[('gas', 'z')].in_cgs()) + dz_proj.frb.data[('gas', 'dz')].in_cgs()
             '''
             thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'dz'), method='integrate', data_source=region, width=plot_width, weight_field='volume', center=center_pos)
             thickness = (thickness_proj.frb.data[('gas', 'dz')].in_cgs())**0.5
