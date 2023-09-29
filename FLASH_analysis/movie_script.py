@@ -232,7 +232,7 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    if args.field == 'L_gas_wrt_primary_density':
+                    if field[1] == 'L_gas_wrt_primary_density':
                         proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
                     else:
                         proj_array = proj.frb.data[field].in_cgs()/thickness_arr
