@@ -238,7 +238,8 @@ if args.make_movie_pickles == 'True':
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                     if args.field == field[1] and size == 1:
-                        import pdb.set_trace()
+                        import pdb
+                        pdb.set_trace()
                     proj_array = proj.frb.data[field].in_cgs()/thickness
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
