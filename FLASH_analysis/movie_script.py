@@ -335,7 +335,6 @@ if args.make_movie_frames == 'True':
                 ylim = [np.min(Y_image).value, np.max(Y_image).value]
                 ax.set_xlim(xlim)
                 ax.set_ylim(ylim)
-                plt.savefig('test_1.png')
                 
                 
                 if args.colourbar_min == None:
@@ -393,23 +392,18 @@ if args.make_movie_frames == 'True':
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
                     else:
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-                plt.savefig('test_2.png')
                 plt.gca().set_aspect('equal')
-                plt.savefig('test_3.png')
 
                 if frame_no > 0 or time_val > -1.0:
                     plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
                 else:
                     plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
                     #plt.streamplot(X_image, Y_image, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-                plt.savefig('test_4.png')
                 cbar = plt.colorbar(plot, pad=0.0)
-                plt.savefig('test_5.png')
                 try:
                     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
                 except:
                     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-                plt.savefig('test_6.png')
 
                 if len(part_info.keys())>0:
                     if 'particle_form_time' in part_info.keys():
@@ -426,7 +420,6 @@ if args.make_movie_frames == 'True':
                             
                     
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
-                plt.savefig('test_7.png')
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
                 for line in ax.xaxis.get_ticklines():
@@ -435,7 +428,6 @@ if args.make_movie_frames == 'True':
                     line.set_color('white')
                     
                 cbar.set_label(args.field + " (" + str(image.units)+")", rotation=270, labelpad=14, size=10)
-                plt.savefig('test_8.png')
                 '''
                 if args.field == 'dens':
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
@@ -450,7 +442,6 @@ if args.make_movie_frames == 'True':
                 time_string_raw = r"{}".format(time_string)
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
                 time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                plt.savefig('test_9.png')
 
                 if size > 1:
                     try:

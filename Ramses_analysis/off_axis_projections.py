@@ -635,7 +635,6 @@ if args.make_frames_only == 'False':
                         del time_val
                         del dd
                         del center_vel
-                        del proj
                         del image
                         del velx
                         del vely
