@@ -128,6 +128,17 @@ for spin_lab in Spin_labels:
                     axs.flatten()[plot_it].set_ylim([0.0, 1.5])
                 time = sink_data[sink_id]['time'] - form_time
                 time = yt.YTArray(time, 's')
+                time = time.in_units('yr')
+                smooth_time = []
+                gradient = []
+                window = yt.YTQuantity(5, 'yr')
+                for time_it in range(len(time)):
+                    start_time = time[time_it] - window
+                    if start_time < 0:
+                        start_time = 0
+                    import pdb
+                    pdb.set_trace()
+                
                 if time[-1] > xmax:
                     xmax = time[-1]
                 if np.max(L_tot) > ymax:
