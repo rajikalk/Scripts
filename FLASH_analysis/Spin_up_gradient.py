@@ -137,21 +137,14 @@ for spin_lab in Spin_labels:
                     if start_time < 0:
                         start_time = yt.YTQuantity(0, 'yr')
                     start_it = np.argmin(abs(time - start_time))
-                    import pdb
-                    pdb.set_trace()
-                
-                if time[-1] > xmax:
-                    xmax = time[-1]
-                if np.max(L_tot) > ymax:
-                    ymax = np.max(L_tot)
-                    
+                    dt = time[time_it] - time[start_it]
+                    dL = L_tot[time_it] - L_tot[start_it]
+                    smooth_time.append(np.mean(time[start_it:time_it+1]))
+                    gradient.append(dL/dt)
                 import pdb
                 pdb.set_trace()
-                end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
-                end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
-                plot_time = time.in_units('yr')[:end_ind+1]
-                plot_L = L_tot[:end_ind+1]
-                axs.flatten()[plot_it].plot(plot_time, plot_L)
+                   
+                axs.flatten()[plot_it].plot(smooth_time, gradient)
         else:
             print("Couldn't open", single_pickle)
         '''
