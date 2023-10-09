@@ -131,7 +131,7 @@ for spin_lab in Spin_labels:
                 time = time.in_units('yr')
                 smooth_time = []
                 gradient = []
-                window = yt.YTQuantity(5, 'yr')
+                window = yt.YTQuantity(10, 'yr')
                 for time_it in range(1, len(time)):
                     start_time = time[time_it] - window
                     if start_time < 0:
@@ -141,6 +141,8 @@ for spin_lab in Spin_labels:
                     dL = L_tot[time_it] - L_tot[start_it]
                     smooth_time.append(np.mean(time[start_it:time_it+1]))
                     gradient.append(dL/dt)
+                smooth_time = yt.YTArray(smooth_time)
+                gradient = yt.YTArray(gradient)
                 import pdb
                 pdb.set_trace()
                    
