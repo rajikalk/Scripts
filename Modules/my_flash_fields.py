@@ -418,7 +418,7 @@ def _L_gas_wrt_primary_spec(field, data):
         dvy_gas = data['gas','vely_wrt_primary'].in_units('cm/s')
         dvz_gas = data['gas','velz_wrt_primary'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
-        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
+        del dvx_gas, dvy_gas, dvz_gas, dd
         
         L_gas = np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'cm**2/s')
