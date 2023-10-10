@@ -468,7 +468,7 @@ def _L_gas_wrt_primary(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
-        del dx_gas, dy_gas, dz_gas, primary_ind, dd
+        del dx_gas, dy_gas, dz_gas
     
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
