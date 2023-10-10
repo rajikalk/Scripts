@@ -711,6 +711,28 @@ def _Radial_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        r_vec = data['Position_wrt_primary']
+        distance = np.sqrt(np.sum(region['Position_wrt_primary']**2, axis=0))
+        r_unit = region['Position_wrt_primary']/distance
+        v_vec = data['Velocity_wrt_primary']
+        import pdb
+        pdb.set_trace()
+        
+        rad_vel = projected_vector(v_vec.T, r_vec.T)
+        rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+        del r_vec, v_vec
+    else:
+        rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
+    return rad_vel
+
+yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
+
+'''
+def _Radial_velocity_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
     if np.shape(data['flash','velx']) == (16, 16, 16):
         rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     else:
@@ -726,7 +748,7 @@ def _Radial_velocity_wrt_primary(field, data):
     return rad_vel
 
 yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
-
+'''
 def _Tangential_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
