@@ -379,7 +379,7 @@ def _vely_wrt_primary(field, data):
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
-        del dd, dvx_gas
+        del dd, primary_ind
     else:
         dvx_gas = data['flash','vely'].in_units('cm/s')
     return dvx_gas
@@ -394,7 +394,7 @@ def _velz_wrt_primary(field, data):
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
-        del dd, dvx_gas
+        del dd, primary_ind
     else:
         dvx_gas = data['flash','velz'].in_units('cm/s')
     return dvx_gas
