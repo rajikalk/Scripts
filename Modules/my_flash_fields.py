@@ -18,11 +18,13 @@ def projected_vector(vector, proj_vector):
         proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
         proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
         proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+        del v_dot_pv, pv_dot_pv, proj_v_x, proj_v_y, proj_v_z
     else:
         proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
         proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
         proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
         proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+        del proj_v_x, proj_v_y, proj_v_z
     return proj_v
 
 def _CoM_full(field, data):
@@ -42,10 +44,7 @@ def _CoM_full(field, data):
             z_top = z_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_posz'].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm')
-        del x_top
-        del y_top
-        del z_top
-        del TM
+        del x_top, y_top, z_top, TM
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm')
     return com
@@ -69,10 +68,7 @@ def _CoM_Velocity_full(field, data):
             z_top = z_top + np.sum(dd['all', 'particle_mass'].in_units('g')*dd['all', 'particle_velz'].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm/s')
-        del x_top
-        del y_top
-        del z_top
-        del TM
+        del x_top, y_top, z_top, TM
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     return com
@@ -95,10 +91,7 @@ def _CoM(field, data):
             z_top = z_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_posz'].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm')
-        del x_top
-        del y_top
-        del z_top
-        del TM
+        del x_top, y_top, z_top, TM
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm')
     return com
@@ -121,10 +114,7 @@ def _CoM_Velocity(field, data):
             z_top = z_top + np.sum(data['all', 'particle_mass'].in_units('g')*data['all', 'particle_velz'].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
         com = yt.YTArray(com, 'cm/s')
-        del x_top
-        del y_top
-        del z_top
-        del TM
+        del x_top, y_top, z_top, TM
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     return com
@@ -187,19 +177,21 @@ def _L_gas_wrt_CoM_spec(field, data):
     CoM_pos = data['gas', 'CoM_full'].in_units('cm')
     CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-    dd = data.ds.all_data()
     dx_gas = CoM_pos[0] - data['flash', 'x'].in_units('cm')
     dy_gas = CoM_pos[1] - data['flash', 'y'].in_units('cm')
     dz_gas = CoM_pos[2] - data['flash', 'z'].in_units('cm')
     d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    del CoM_pos, dx_gas, dy_gas, dz_gas
 
     dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
     dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
     dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
     d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+    del CoM_vel, dvx_gas, dvy_gas, dvz_gas
     
     L_gas = np.cross(d_pos_gas, d_vel_gas).T
     L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'cm**2/s')
+    del L_gas
     return L_gas_wrt_CoM
 
 yt.add_field("L_gas_wrt_CoM_spec", function=_L_gas_wrt_CoM_spec, units=r"cm**2/s", sampling_type="local")
@@ -211,19 +203,21 @@ def _L_gas_wrt_CoM_spec_cyl(field, data):
     CoM_pos = data['gas', 'CoM_full'].in_units('cm')
     CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-    dd = data.ds.all_data()
     dx_gas = CoM_pos[0] - data['flash', 'x'].in_units('cm')
     dy_gas = CoM_pos[1] - data['flash', 'y'].in_units('cm')
     dz_gas = CoM_pos[2] - data['flash', 'z'].in_units('cm')
     d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+    del CoM_pos, dx_gas, dy_gas, dz_gas
 
     dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
     dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
     dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
     d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+    del CoM_vel, dvx_gas, dvy_gas, dvz_gas
     
     L_gas = np.cross(d_pos_gas, d_vel_gas).T
     L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'cm**2/s')
+    del L_gas
     return L_gas_wrt_CoM
 
 
@@ -236,19 +230,21 @@ def _L_gas_wrt_CoM(field, data):
     CoM_pos = data['gas', 'CoM_full'].in_units('cm')
     CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-    dd = data.ds.all_data()
     dx_gas = CoM_pos[0] - data['flash', 'x'].in_units('cm')
     dy_gas = CoM_pos[1] - data['flash', 'y'].in_units('cm')
     dz_gas = CoM_pos[2] - data['flash', 'z'].in_units('cm')
     d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    del CoM_pos, dx_gas, dy_gas, dz_gas
 
     dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
     dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
     dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
     d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+    del CoM_vel, dvx_gas, dvy_gas, dvz_gas
     
     L_gas = data['gas', 'mass'].value * np.cross(d_pos_gas, d_vel_gas).T
     L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+    del L_gas
     return L_gas_wrt_CoM
 
 
@@ -261,19 +257,21 @@ def _L_gas_wrt_CoM_density(field, data):
     CoM_pos = data['gas', 'CoM_full'].in_units('cm')
     CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-    dd = data.ds.all_data()
     dx_gas = CoM_pos[0] - data['flash', 'x'].in_units('cm')
     dy_gas = CoM_pos[1] - data['flash', 'y'].in_units('cm')
     dz_gas = CoM_pos[2] - data['flash', 'z'].in_units('cm')
     d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+    del CoM_pos, dx_gas, dy_gas, dz_gas
 
     dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
     dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
     dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
     d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+    del CoM_vel, dvx_gas, dvy_gas, dvz_gas
     
     L_gas = data['flash', 'dens'].value * np.cross(d_pos_gas, d_vel_gas).T
     L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g/cm*s')
+    del L_gas
     return L_gas_wrt_CoM
 
 yt.add_field("L_gas_wrt_CoM_density", function=_L_gas_wrt_CoM_density, units=r"g/cm*s", sampling_type="local")
@@ -285,19 +283,21 @@ def _L_gas_wrt_CoM_cyl(field, data):
     CoM_pos = data['gas', 'CoM_full'].in_units('cm')
     CoM_vel = data['gas', 'CoM_Velocity_full'].in_units('cm/s')
     
-    dd = data.ds.all_data()
     dx_gas = CoM_pos[0] - data['flash', 'x'].in_units('cm')
     dy_gas = CoM_pos[1] - data['flash', 'y'].in_units('cm')
     dz_gas = CoM_pos[2] - data['flash', 'z'].in_units('cm')
     d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+    del CoM_pos, dx_gas, dy_gas, dz_gas
 
     dvx_gas = CoM_vel[0] - data['flash','velx'].in_units('cm/s')
     dvy_gas = CoM_vel[1] - data['flash','vely'].in_units('cm/s')
     dvz_gas = CoM_vel[2] - data['flash','velz'].in_units('cm/s')
     d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+    del CoM_vel, dvx_gas, dvy_gas, dvz_gas
     
     L_gas = data['gas', 'mass'].value * np.cross(d_pos_gas, d_vel_gas).T
     L_gas_wrt_CoM = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+    del L_gas
     return L_gas_wrt_CoM
 
 
@@ -315,7 +315,10 @@ def _nearest_particle_index(field, data):
             dy_gas = dd['all', 'particle_posy'][part_pos_it].in_units('cm') - data['flash', 'y'].in_units('cm')
             dz_gas = dd['all', 'particle_posz'][part_pos_it].in_units('cm') - data['flash', 'z'].in_units('cm')
             d_gas = np.sqrt(dx_gas**2 + dy_gas**2 + dz_gas**2)
+            del dx_gas, dy_gas, dz_gas
             d_all.append(d_gas)
+            del d_gas
+        del dd
         #Nearest_tag = data['particle_tag'][np.argmin(d_all, axis=0)]
         Nearest_tag_ind = yt.YTArray(np.argmin(d_all, axis=0), '')
         
@@ -336,14 +339,17 @@ def _L_gas_wrt_nearest_sink(field, data):
         dy_gas = dd['all', 'particle_posy'][Nearest_tag_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][Nearest_tag_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        del dx_gas, dy_gas, dz_gas
     
         dvx_gas = dd['all', 'particle_velx'][Nearest_tag_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][Nearest_tag_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][Nearest_tag_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        del dvx_gas, dvy_gas, dvz_gas, Nearest_tag_ind, dd
         
         L_gas = data['gas', 'mass'].value * np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_nearest = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+        del L_gas
     else:
         L_wrt_nearest = data['gas', 'L_gas_wrt_CoM']
     return L_wrt_nearest
@@ -358,6 +364,7 @@ def _velx_wrt_primary(field, data):
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        del dd, primary_ind
     else:
         dvx_gas = data['flash','velx'].in_units('cm/s')
     return dvx_gas
@@ -372,6 +379,7 @@ def _vely_wrt_primary(field, data):
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        del dd, dvx_gas
     else:
         dvx_gas = data['flash','vely'].in_units('cm/s')
     return dvx_gas
@@ -386,6 +394,7 @@ def _velz_wrt_primary(field, data):
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        del dd, dvx_gas
     else:
         dvx_gas = data['flash','velz'].in_units('cm/s')
     return dvx_gas
@@ -403,14 +412,17 @@ def _L_gas_wrt_primary_spec(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        del primary_ind, dx_gas, dy_gas, dz_gas
     
         dvx_gas = data['gas','velx_wrt_primary'].in_units('cm/s')
         dvy_gas = data['gas','vely_wrt_primary'].in_units('cm/s')
         dvz_gas = data['gas','velz_wrt_primary'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
         
         L_gas = np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'cm**2/s')
+        del L_gas
     else:
         L_wrt_primary = data['gas', 'L_gas_wrt_CoM_spec']
     return L_wrt_primary
@@ -428,14 +440,17 @@ def _L_gas_wrt_primary_spec_cyl(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+        del dx_gas, dy_gas, dz_gas
     
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
         
         L_gas = np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'cm**2/s')
+        del L_gas
     else:
         L_wrt_primary = data['gas', 'L_gas_wrt_CoM_spec_cyl']
     return L_wrt_primary
@@ -453,14 +468,17 @@ def _L_gas_wrt_primary(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        del dx_gas, dy_gas, dz_gas, primary_ind, dd
     
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
         
         L_gas = data['gas', 'mass'].value * np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+        del L_gas
     else:
         L_wrt_primary = data['gas', 'L_gas_wrt_CoM']
     return L_wrt_primary
@@ -478,14 +496,17 @@ def _L_gas_wrt_primary_density(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
+        del dx_gas, dy_gas, dz_gas
     
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas]).T
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
         
         L_gas = data['flash', 'dens'].value * np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g/cm*s')
+        del L_gas
     else:
         L_wrt_primary = data['gas', 'L_gas_wrt_CoM_density']
     return L_wrt_primary
@@ -503,14 +524,17 @@ def _L_gas_wrt_primary_cyl(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas*0]).T
+        del dx_gas, dy_gas, dz_gas
     
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         d_vel_gas = yt.YTArray([dvx_gas, dvy_gas, dvz_gas*0]).T
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
         
         L_gas = data['gas', 'mass'].value * np.cross(d_pos_gas, d_vel_gas).T
         L_wrt_primary = yt.YTArray(np.sqrt(np.sum(L_gas**2, axis=0)), 'g*cm**2/s')
+        del L_gas
     else:
         L_wrt_primary = data['gas', 'L_gas_wrt_CoM_cyl']
     return L_wrt_primary
@@ -529,6 +553,7 @@ def _Distance_from_primary(field, data):
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
 
         radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+        del dd, primary_ind, dx_gas, dy_gas, dz_gas
     else:
         radius = yt.YTArray(np.zeros(np.shape(data['flash', 'x'])), 'cm')
     return radius
@@ -544,6 +569,7 @@ def _Distance_from_domain_centre(field, data):
     dz_gas = data['flash', 'z'].in_units('cm')
 
     radius = (dx_gas**2 + dy_gas**2 + dz_gas**2)**0.5
+    del dx_gas, dy_gas, dz_gas
     return radius
 
 yt.add_field("Distance_from_domain_centre", function=_Distance_from_domain_centre, units=r"cm", sampling_type="local")
@@ -556,6 +582,7 @@ def _cell_mass(field, data):
     density = data['flash', 'dens'].in_units('g/cm**3')
 
     mass = density * volume
+    del volume, density
     return mass
 
 yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local")
@@ -655,6 +682,7 @@ def _Position_wrt_primary(field, data):
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
         r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
+        del dx_gas, dy_gas, dz_gas, primary_ind, dd
     else:
         r_vec = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm')
     return r_vec
@@ -672,6 +700,7 @@ def _Velocity_wrt_primary(field, data):
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
+        del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
     else:
         v_vec = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
     return v_vec
@@ -691,6 +720,7 @@ def _Radial_velocity_wrt_primary(field, data):
             
             rad_vel = projected_vector(v_vec.T, r_vec.T)
             rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+            del r_vec, v_vec
         else:
             rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return rad_vel
@@ -710,6 +740,7 @@ def _Tangential_velocity_wrt_primary(field, data):
             
             rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
             tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
+            del v_vec, v_mag_sq, rad_vel
         else:
             tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return tang_vel
@@ -725,6 +756,7 @@ def _Relative_keplerian_velocity_wrt_primary(field, data):
         #v_kep = data['Keplerian_velocity_wrt_primary']
         vel = data['Tangential_velocity_wrt_primary']
         rel_kep = vel/v_kep
+        del v_kep, vel
     else:
         rel_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
     return rel_kep
