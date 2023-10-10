@@ -215,7 +215,7 @@ if args.make_movie_pickles == 'True':
             del test_fields
             test_fields = region['L_gas_wrt_nearest_sink']
             del test_fields
-            test_fields = region['Relative_keplerian_velocity_wrt_primary']
+            test_fields = region['Tangential_velocity_wrt_primary']
             del test_fields
             
             #Make projections of each field
