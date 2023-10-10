@@ -216,7 +216,6 @@ if args.make_movie_pickles == 'True':
             test_fields = region['L_gas_wrt_nearest_sink']
             del test_fields
             test_fields = region['Radial_velocity_wrt_primary']
-            del test_fields
             
             #Make projections of each field
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
