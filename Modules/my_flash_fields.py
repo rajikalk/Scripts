@@ -713,8 +713,8 @@ def _Radial_velocity_wrt_primary(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         r_vec = data['Position_wrt_primary']
-        distance = np.sqrt(np.sum(region['Position_wrt_primary']**2, axis=0))
-        r_unit = region['Position_wrt_primary']/distance
+        distance = np.sqrt(np.sum(data['Position_wrt_primary']**2, axis=0))
+        r_unit = data['Position_wrt_primary']/distance
         v_vec = data['Velocity_wrt_primary']
         import pdb
         pdb.set_trace()
