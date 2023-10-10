@@ -721,7 +721,8 @@ def _Relative_keplerian_velocity_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
-        v_kep = data['Keplerian_velocity_wrt_primary']
+        v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
+        #v_kep = data['Keplerian_velocity_wrt_primary']
         vel = data['Tangential_velocity_wrt_primary']
         rel_kep = vel/v_kep
     else:
