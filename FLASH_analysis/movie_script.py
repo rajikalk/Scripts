@@ -211,11 +211,16 @@ if args.make_movie_pickles == 'True':
                 right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')+(plot_width.in_units('au')/2), center_pos[2].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au'))], 'AU')
                 region = ds.box(left_corner, right_corner)
                 
+            import pdb
+            pdb.set_trace()
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
+            del test_fields
             test_fields = region['nearest_particle_index']
+            del test_fields
             test_fields = region['L_gas_wrt_nearest_sink']
-            test_fields = region['vely']
+            del test_fields
             test_fields = region['Relative_keplerian_velocity_wrt_primary']
+            del test_fields
             
             #Make projections of each field
             #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
