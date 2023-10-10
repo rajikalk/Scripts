@@ -771,18 +771,19 @@ def _Tangential_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    if np.shape(data['flash','velx']) == (16, 16, 16):
-        tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+        dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+        dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        v_mag_sq = dvx_gas**2 + dvy_gas**2 + dvz_gas**2
+        
+        rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
+        tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
+        del v_vec, v_mag_sq, rad_vel
     else:
-        if ('all', 'particle_mass') in data.ds.field_list:
-            v_vec = data['Velocity_wrt_primary']
-            v_mag_sq = np.sum(v_vec.T**2, axis=1)
-            
-            rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
-            tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
-            del v_vec, v_mag_sq, rad_vel
-        else:
-            tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
+        tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return tang_vel
 
 yt.add_field("Tangential_velocity_wrt_primary", function=_Tangential_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
