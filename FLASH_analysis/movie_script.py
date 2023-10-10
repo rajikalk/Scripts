@@ -191,9 +191,7 @@ if args.make_movie_pickles == 'True':
                     if len(proj_field_list) > 1:
                         proj_field_list = [proj_field_list[0]]
                 
-            proj_field_list = proj_field_list + \
-                [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + \
-                [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
+            proj_field_list = [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])] + proj_field_list
         
             #define projection region
             plot_width = yt.YTQuantity(args.plot_width, 'au')
@@ -211,8 +209,6 @@ if args.make_movie_pickles == 'True':
                 right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')+(plot_width.in_units('au')/2), center_pos[2].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au'))], 'AU')
                 region = ds.box(left_corner, right_corner)
                 
-            import pdb
-            pdb.set_trace()
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
             del test_fields
             test_fields = region['nearest_particle_index']
