@@ -721,7 +721,7 @@ def _Radial_velocity_wrt_primary(field, data):
             del r_vec, distance
             v_vec = data['Velocity_wrt_primary']
             rad_vel = v_vec[0]*r_unit[0] + v_vec[1]*r_unit[1] + v_vec[2]*r_unit[2]
-            del v_vecm r_unit
+            del v_vec, r_unit
             #import pdb
             #pdb.set_trace()
             
