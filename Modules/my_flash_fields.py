@@ -719,12 +719,12 @@ def _Radial_velocity_wrt_primary(field, data):
             distance = np.sqrt(np.sum(data['Position_wrt_primary']**2, axis=0))
             r_unit = data['Position_wrt_primary']/distance
             v_vec = data['Velocity_wrt_primary']
-            v_rad = np.dot(v_vec, r_unit)
-            import pdb
-            pdb.set_trace()
+            rad_vel = v_vec[0]*r_unit[0] + v_vec[1]*r_unit[1] + v_vec[2]*r_unit[2]
+            #import pdb
+            #pdb.set_trace()
             
-            rad_vel = projected_vector(v_vec.T, r_vec.T)
-            rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+            #rad_vel = projected_vector(v_vec.T, r_vec.T)
+            #rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
             del r_vec, v_vec
         else:
             rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
