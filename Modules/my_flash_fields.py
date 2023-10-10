@@ -727,7 +727,7 @@ def _Radial_velocity_wrt_primary(field, data):
             
             #rad_vel = projected_vector(v_vec.T, r_vec.T)
             #rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
-            del r_vec, v_vec
+            #del r_vec, v_vec
         else:
             rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return rad_vel
