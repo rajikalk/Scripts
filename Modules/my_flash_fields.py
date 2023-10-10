@@ -715,11 +715,23 @@ def _Radial_velocity_wrt_primary(field, data):
         rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     else:
         if ('all', 'particle_mass') in data.ds.field_list:
-            r_vec = data['Position_wrt_primary']
+            dd = data.ds.all_data()
+            primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+            dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
+            dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
+            dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
+            r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
+            del dx_gas, dy_gas, dz_gas
             distance = np.sqrt(np.sum(r_vec**2, axis=0))
             r_unit = r_vec/distance
             del r_vec, distance
-            v_vec = data['Velocity_wrt_primary']
+            
+            dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
+            dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
+            dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+            v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
+            del dvx_gas, dvy_gas, dvz_gas
+            
             rad_vel = v_vec[0]*r_unit[0] + v_vec[1]*r_unit[1] + v_vec[2]*r_unit[2]
             del v_vec, r_unit
             #import pdb
