@@ -778,10 +778,11 @@ def _Tangential_velocity_wrt_primary(field, data):
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         v_mag_sq = dvx_gas**2 + dvy_gas**2 + dvz_gas**2
+        del dd, primary_ind, dvx_gas, dvy_gas, dvz_gas
         
         rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
         tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
-        del v_vec, v_mag_sq, rad_vel
+        del v_mag_sq, rad_vel
     else:
         tang_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return tang_vel
