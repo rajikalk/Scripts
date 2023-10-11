@@ -396,7 +396,7 @@ if args.make_movie_frames == 'True':
 
                 if 'L_gas_wrt_primary_spec' in args.field:
                     #make contour plot
-                    plt.contour([X_image, Y_image], image)
+                    ax.contour(X,Y,image, locator=plt.LogLocator())
                 else:
                     if frame_no > 0 or time_val > -1.0:
                         plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
