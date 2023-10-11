@@ -396,8 +396,8 @@ if args.make_movie_frames == 'True':
 
                 if 'L_gas_wrt_primary_spec' in args.field:
                     #make contour plot
-                    exp_min = np.log10(cbar_min)
-                    exp_max = np.log10(cbar_max)
+                    exp_min = np.log10(cbar_lims[0])
+                    exp_max = np.log10(cbar_lims[1])
                     n_level = (exp_max-exp_min)*2 + 1
                     contour_levels = np.logspace(exp_min, exp_max, int(n_level))
                     CS = ax.contour(X_image,Y_image,image, locator=plt.LogLocator(), linewidths=0.5, levels=contour_levels)
