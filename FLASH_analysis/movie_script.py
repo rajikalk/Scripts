@@ -191,7 +191,7 @@ if args.make_movie_pickles == 'True':
                     if len(proj_field_list) > 1:
                         proj_field_list = [proj_field_list[0]]
                 
-            proj_field_list = [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])] + proj_field_list
+            proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
             #define projection region
             plot_width = yt.YTQuantity(args.plot_width, 'au')
