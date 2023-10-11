@@ -742,13 +742,13 @@ def _Radial_velocity_wrt_primary(field, data):
 
         rad_vel = projected_vector(v_vec.T, r_vec.T)
         if np.shape(rad_vel) == (16, 16, 16, 3):
-            rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
+            rad_vel_mag = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
         else:
-            rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
-        del r_vec, v_vec
+            rad_vel_mag = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+        del r_vec, v_vec, rad_vel
     else:
-        rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
-    return rad_vel
+        rad_vel_mag = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
+    return rad_vel_mag
 
 yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
