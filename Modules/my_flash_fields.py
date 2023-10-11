@@ -741,7 +741,10 @@ def _Radial_velocity_wrt_primary(field, data):
         v_vec = data['Velocity_wrt_primary']
 
         rad_vel = projected_vector(v_vec.T, r_vec.T)
-        rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+        if np.shape(rad_vel) == (16, 16, 16, 3):
+            rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
+        else:
+            rad_vel = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
         del r_vec, v_vec
     else:
         rad_vel = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
@@ -786,8 +789,7 @@ def _Tangential_velocity_wrt_primary(field, data):
         '''
         
         v_vec = data['Velocity_wrt_primary']
-        import pdb
-        pdb.set_trace()
+        v_mag_sq = v_vec[0]**2 + v_vec[1]**2 + v_vec[2]**2
         
         rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
         tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
