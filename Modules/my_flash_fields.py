@@ -775,6 +775,7 @@ def _Tangential_velocity_wrt_primary(field, data):
     Calculates the angular momentum w.r.t to the CoM
     """
     if ('all', 'particle_mass') in data.ds.field_list:
+        '''
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
@@ -782,6 +783,11 @@ def _Tangential_velocity_wrt_primary(field, data):
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
         v_mag_sq = dvx_gas**2 + dvy_gas**2 + dvz_gas**2
         del dd, primary_ind, dvx_gas, dvy_gas, dvz_gas
+        '''
+        
+        v_vec = data['Velocity_wrt_primary']
+        import pdb
+        pdb.set_trace()
         
         rad_vel = data['Radial_velocity_wrt_primary'].in_units('cm/s')
         tang_vel = np.sqrt(v_mag_sq - rad_vel**2)
