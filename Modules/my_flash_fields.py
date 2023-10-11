@@ -745,7 +745,7 @@ def _Radial_velocity_wrt_primary(field, data):
             rad_vel_mag = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
         else:
             rad_vel_mag = yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
-        if np.min(Radial_velocity_wrt_primary) < 0:
+        if np.min(rad_vel_mag) < 0:
             import pdb
             pdb.set_trace()
         del r_vec, v_vec, rad_vel
