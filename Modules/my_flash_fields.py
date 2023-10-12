@@ -666,9 +666,14 @@ def _Position_wrt_primary(field, data):
     if ('all', 'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        """
         dx_gas = dd['all', 'particle_posx'][primary_ind].in_units('cm') - data['flash', 'x'].in_units('cm')
         dy_gas = dd['all', 'particle_posy'][primary_ind].in_units('cm') - data['flash', 'y'].in_units('cm')
         dz_gas = dd['all', 'particle_posz'][primary_ind].in_units('cm') - data['flash', 'z'].in_units('cm')
+        """
+        dx_gas = data['flash', 'x'].in_units('cm') - dd['all', 'particle_posx'][primary_ind].in_units('cm')
+        dy_gas = data['flash', 'y'].in_units('cm') - dd['all', 'particle_posy'][primary_ind].in_units('cm')
+        dz_gas = data['flash', 'z'].in_units('cm') - dd['all', 'particle_posz'][primary_ind].in_units('cm')
         r_vec = yt.YTArray([dx_gas, dy_gas, dz_gas])
         del dx_gas, dy_gas, dz_gas, primary_ind, dd
     else:
@@ -684,9 +689,14 @@ def _Velocity_wrt_primary(field, data):
     if ('all', 'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        '''
         dvx_gas = dd['all', 'particle_velx'][primary_ind].in_units('cm/s') - data['flash','velx'].in_units('cm/s')
         dvy_gas = dd['all', 'particle_vely'][primary_ind].in_units('cm/s') - data['flash','vely'].in_units('cm/s')
         dvz_gas = dd['all', 'particle_velz'][primary_ind].in_units('cm/s') - data['flash','velz'].in_units('cm/s')
+        '''
+        dvx_gas = data['flash','velx'].in_units('cm/s') - dd['all', 'particle_velx'][primary_ind].in_units('cm/s')
+        dvy_gas = data['flash','vely'].in_units('cm/s') - dd['all', 'particle_vely'][primary_ind].in_units('cm/s')
+        dvz_gas = data['flash','velz'].in_units('cm/s') - dd['all', 'particle_velz'][primary_ind].in_units('cm/s')
         v_vec = yt.YTArray([dvx_gas, dvy_gas, dvz_gas])
         del dvx_gas, dvy_gas, dvz_gas, primary_ind, dd
     else:
@@ -699,17 +709,7 @@ def _Keplerian_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    if ('all', 'particle_mass') in data.ds.field_list:
-        dd = data.ds.all_data()
-        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
-        del dd
-        G = yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')
-        Distance_from_primary = data['Distance_from_primary'].in_units('cm')
-        v_kep = np.sqrt((G*Primary_mass)/Distance_from_primary).in_units('cm/s')
-        del G, Primary_mass, Distance_from_primary
-    else:
-        v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
+    v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
     return v_kep
 
 yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
@@ -829,7 +829,6 @@ def _Relative_keplerian_velocity_wrt_primary_full_v(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
-        v_kep_alt = data['Keplerian_velocity_wrt_primary']
         vel_mag = np.sqrt(data['Velocity_wrt_primary'][0].in_units('cm/s')**2 + data['Velocity_wrt_primary'][1].in_units('cm/s')**2 + data['Velocity_wrt_primary'][2].in_units('cm/s')**2)
         rel_kep = vel_mag/v_kep
         if np.shape(v_kep) != (16, 16, 16):
