@@ -723,7 +723,7 @@ def _Gpot_wrt_primary(field, data):
         gpot = data['flash', 'gpot'].in_units('cm**2/s**2')
     return gpot
 
-yt.add_field("Gpot_wrt_primary", function=_Gpot_wrt_primary, units=r"erg", sampling_type="local")
+yt.add_field("Gpot_wrt_primary", function=_Gpot_wrt_primary, units=r"cm**2/s**2", sampling_type="local")
 
 def _Keplerian_velocity_wrt_primary(field, data):
     """
