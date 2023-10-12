@@ -830,7 +830,7 @@ def _Relative_keplerian_velocity_wrt_primary_full_v(field, data):
     if ('all', 'particle_mass') in data.ds.field_list:
         #v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
         v_kep = data['Keplerian_velocity_wrt_primary']
-        vel_mag = np.sqrt(np.sum(data['Velocity_wrt_primary'][0].in_units('cm/s')**2 + data['Velocity_wrt_primary'][1].in_units('cm/s')**2 + data['Velocity_wrt_primary'][2].in_units('cm/s')**2))
+        vel_mag = np.sqrt(data['Velocity_wrt_primary'][0].in_units('cm/s')**2 + data['Velocity_wrt_primary'][1].in_units('cm/s')**2 + data['Velocity_wrt_primary'][2].in_units('cm/s')**2)
         rel_kep = vel_mag/v_kep
         del v_kep, vel_mag
     else:
