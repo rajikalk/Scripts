@@ -705,11 +705,44 @@ def _Velocity_wrt_primary(field, data):
 
 yt.add_field("Velocity_wrt_primary", function=_Velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
+def _Gpot_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        del dd
+        G = yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')
+        Distance_from_primary = data['Distance_from_primary'].in_units('cm')
+        gpot_part = -1*((G*Primary_mass)/Distance_from_primary).in_units('cm**2/s**2')
+        gpot = data['flash', 'gpot'].in_units('cm**2/s**2') + gpot_part
+        del G, Primary_mass, Distance_from_primary
+    else:
+        gpot = data['flash', 'gpot'].in_units('cm**2/s**2')
+    return v_kep
+
+yt.add_field("Gpot_wrt_primary", function=_Gpot_wrt_primary, units=r"erg", sampling_type="local")
+
 def _Keplerian_velocity_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
     """
-    v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
+    v_kep = np.sqrt(abs(data['Gpot_wrt_primary'].in_cgs())).in_units('cm/s')
+    '''
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        del dd
+        G = yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')
+        Distance_from_primary = data['Distance_from_primary'].in_units('cm')
+        v_kep = np.sqrt((G*Primary_mass)/Distance_from_primary).in_units('cm/s')
+        del G, Primary_mass, Distance_from_primary
+    else:
+        v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
+    '''
     return v_kep
 
 yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
