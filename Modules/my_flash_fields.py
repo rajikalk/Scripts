@@ -704,8 +704,10 @@ def _Keplerian_velocity_wrt_primary(field, data):
         primary_ind = np.argmin(dd['all', 'particle_creation_time'])
         Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
         del dd
+        G = yt.YTQuantity(6.67384e-08, 'cm**3/(g*s**2)')
         Distance_from_primary = data['Distance_from_primary'].in_units('cm')
-        v_kep = np.sqrt((yt.units.G.in_cgs()*Primary_mass)/Distance_from_primary).in_units('cm/s')
+        v_kep = np.sqrt((G*Primary_mass)/Distance_from_primary).in_units('cm/s')
+        del G, Primary_mass, Distance_from_primary
     else:
         v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
     return v_kep
