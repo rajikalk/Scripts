@@ -335,9 +335,9 @@ def _L_gas_wrt_nearest_sink(field, data):
     if ('all', 'particle_mass') in data.ds.field_list:
         dd = data.ds.all_data()
         Nearest_tag_ind = data['gas', 'nearest_particle_index'].value.astype(int)
-        dx_gas = data['flash', 'x'].in_units('cm') - dd['all', 'particle_posx'][part_pos_it].in_units('cm')
-        dy_gas = data['flash', 'y'].in_units('cm') - dd['all', 'particle_posy'][part_pos_it].in_units('cm')
-        dz_gas = data['flash', 'z'].in_units('cm') - dd['all', 'particle_posz'][part_pos_it].in_units('cm')
+        dx_gas = data['flash', 'x'].in_units('cm') - dd['all', 'particle_posx'][Nearest_tag_ind].in_units('cm')
+        dy_gas = data['flash', 'y'].in_units('cm') - dd['all', 'particle_posy'][Nearest_tag_ind].in_units('cm')
+        dz_gas = data['flash', 'z'].in_units('cm') - dd['all', 'particle_posz'][Nearest_tag_ind].in_units('cm')
         d_pos_gas = yt.YTArray([dx_gas, dy_gas, dz_gas]).T
         del dx_gas, dy_gas, dz_gas
     
