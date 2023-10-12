@@ -829,11 +829,12 @@ def _Relative_keplerian_velocity_wrt_primary_full_v(field, data):
     """
     if ('all', 'particle_mass') in data.ds.field_list:
         v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
-        #v_kep = data['Keplerian_velocity_wrt_primary']
+        v_kep_alt = data['Keplerian_velocity_wrt_primary']
         vel_mag = np.sqrt(data['Velocity_wrt_primary'][0].in_units('cm/s')**2 + data['Velocity_wrt_primary'][1].in_units('cm/s')**2 + data['Velocity_wrt_primary'][2].in_units('cm/s')**2)
         rel_kep = vel_mag/v_kep
-        import pdb
-        pdb.set_trace()
+        if np.shape(v_kep) != (16, 16, 16):
+            import pdb
+            pdb.set_trace()
         del v_kep, vel_mag
     else:
         rel_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, '')
