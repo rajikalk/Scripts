@@ -659,18 +659,6 @@ yt.add_field("L_part_wrt_CoM", function=_L_part_wrt_CoM, units=r"g*cm**2/s", sam
 
 '''
 
-def _Keplerian_velocity_wrt_primary(field, data):
-    """
-    Calculates the angular momentum w.r.t to the CoM
-    """
-    if ('all', 'particle_mass') in data.ds.field_list:
-        v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
-    else:
-        v_kep = yt.YTArray(np.ones(np.shape(data['gas', 'mass']))*np.nan, 'cm/s')
-    return v_kep
-
-yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
-
 def _Position_wrt_primary(field, data):
     """
     Calculates the angular momentum w.r.t to the CoM
@@ -706,6 +694,23 @@ def _Velocity_wrt_primary(field, data):
     return v_vec
 
 yt.add_field("Velocity_wrt_primary", function=_Velocity_wrt_primary, units=r"cm/s", sampling_type="local")
+
+def _Keplerian_velocity_wrt_primary(field, data):
+    """
+    Calculates the angular momentum w.r.t to the CoM
+    """
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        del dd
+        Distance_from_primary = data['Distance_from_primary'].in_units('cm')
+        v_kep = np.sqrt((yt.units.G.in_cgs()*Primary_mass)/Distance_from_primary).in_units('cm/s')
+    else:
+        v_kep = np.sqrt(abs(data['flash', 'gpot'].in_cgs())).in_units('cm/s')
+    return v_kep
+
+yt.add_field("Keplerian_velocity_wrt_primary", function=_Keplerian_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
 def _Radial_velocity_wrt_primary(field, data):
     """
