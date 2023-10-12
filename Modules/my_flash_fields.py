@@ -721,7 +721,7 @@ def _Gpot_wrt_primary(field, data):
         del G, Primary_mass, Distance_from_primary
     else:
         gpot = data['flash', 'gpot'].in_units('cm**2/s**2')
-    return v_kep
+    return gpot
 
 yt.add_field("Gpot_wrt_primary", function=_Gpot_wrt_primary, units=r"erg", sampling_type="local")
 
