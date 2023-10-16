@@ -631,13 +631,6 @@ if args.make_frames_only == 'False':
                         pickle.dump((X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv), file)
                         file.close()
                         print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
-                        del has_particles
-                        del time_val
-                        del dd
-                        del center_vel
-                        del image
-                        del velx
-                        del vely
 sys.stdout.flush()
 CW.Barrier()
 
