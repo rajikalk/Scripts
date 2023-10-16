@@ -716,6 +716,8 @@ for pickle_file in pickle_files:
             title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
             ax.set_title(title_str)
             
+            plt.savefig('test_1.png')
+            
             if None in (cbar_min, cbar_max):
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
             elif 0.0 in (cbar_min, cbar_max):
@@ -724,7 +726,12 @@ for pickle_file in pickle_files:
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
             plt.gca().set_aspect('equal')
             cbar = plt.colorbar(plot, pad=0.0)
+            
+            plt.savefig('test_2.png')
+            
             mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+            
+            plt.savefig('test_3.png')
 
             if has_particles:
                 if size > 1:
@@ -733,6 +740,8 @@ for pickle_file in pickle_files:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
                 else:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+            
+            plt.savefig('test_4.png')
 
             if 'Density' in simfo['field']:
                 if args.divide_by_proj_thickness == "True":
@@ -747,16 +756,22 @@ for pickle_file in pickle_files:
             else:
                 label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
                 cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
+            
+            plt.savefig('test_5.png')
 
             if len(title) > 0:
                 title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            plt.savefig('test_6.png')
 
             plt.tick_params(axis='both', which='major')# labelsize=16)
             for line in ax.xaxis.get_ticklines():
                 line.set_color('white')
             for line in ax.yaxis.get_ticklines():
                 line.set_color('white')
+                
+            plt.savefig('test_7.png')
 
             if args.annotate_time == "True":
                 try:
