@@ -638,7 +638,7 @@ CW.Barrier()
 print("Finished generating projection pickles")
 if args.plot_time is None:
     pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
-    start_pickle = save_dir + "movie_frame_" + ("%06d" % args.start_frame) + "/projection_0.pkl"
+    start_pickle = save_dir + "movie_frame_" + ("%06d" % (args.start_frame+1)) + "/projection_0.pkl"
 else:
     pickle_files = sorted(glob.glob(save_dir+"time_" + str(int(args.plot_time)) + "/projection*.pkl"))
     start_pickle = save_dir+"time_" + str(int(args.plot_time)) + "/projection_0.pkl"
