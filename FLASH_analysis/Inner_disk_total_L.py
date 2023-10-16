@@ -22,7 +22,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
-    parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary_cyl')
+    parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
     parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
@@ -158,7 +158,7 @@ if args.make_movie_pickles == 'True':
             Radius_field = disk['radius'].in_units('AU')
             Total_L.append(np.sum(disk[args.profile_field]))
             Mean_L.append(np.mean(disk[args.profile_field]))
-            spec_field = args.profile_field.split('_cyl')[0] + '_spec_cyl'
+            spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             Total_L_spec.append(np.sum(disk[spec_field]))
             Mean_L_spec.append(np.mean(disk[spec_field]))
 
