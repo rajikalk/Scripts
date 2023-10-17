@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import yt
-from yt.utilities.exceptions import YTOutputNotIdentified
+#from yt.utilities.exceptions import YTOutputNotIdentified
 import numpy as np
 import matplotlib.pyplot as plt
 import glob
