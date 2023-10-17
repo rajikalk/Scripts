@@ -776,7 +776,8 @@ for pickle_file in pickle_files:
             if args.annotate_time == "True":
                 try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                    time_string = "$t$="+str(int(time_val))+"yr"
+                    time_string = "t="+str(int(time_val))+"yr"
+                    #time_string = "$t$="+str(int(time_val))+"yr"
                     time_string_raw = r"{}".format(time_string)
                     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
                     try:
@@ -877,7 +878,8 @@ for pickle_file in pickle_files:
             if args.annotate_time == "True":
                 try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                    time_string = "$t$="+str(int(time_val))+"yr"
+                    time_string = "t="+str(int(time_val))+"yr"
+                    #time_string = "$t$="+str(int(time_val))+"yr"
                     time_string_raw = r"{}".format(time_string)
                     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
                     try:
