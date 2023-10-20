@@ -253,6 +253,12 @@ for spin_lab in Spin_labels:
             Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
             file.close()
             
+            if np.min(Mean_L) < ymin:
+            	ymin = np.min(Mean_L)
+            if spin_lab != '0.20' and mach_lab != '0.1':
+            	if np.max(Mean_L) > ymax:
+            		ymax = np.max(Mean_L)
+            
             ax2 = axs.flatten()[plot_it].twinx()
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
@@ -279,7 +285,7 @@ for spin_lab in Spin_labels:
     plt.savefig('Mean_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
     
 #axs.flatten()[plot_it-1].set_ylim(top=1.e52)
-#axs.flatten()[plot_it-1].set_ylim([4.5e+50, 6.5e+51])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Mean_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
 print('saved figure Mean_Inner_disk_L_mach_comp.pdf')
@@ -296,6 +302,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+ymin = np.inf
 max_sep = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
@@ -319,6 +326,12 @@ for spin_lab in Spin_labels:
             file = open(inner_pickle, 'rb')
             Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
             file.close()
+            
+            if np.min(Mean_L_spec) < ymin:
+            	ymin = np.min(Mean_L_spec)
+            if spin_lab != '0.20' and mach_lab != '0.1':
+            	if np.max(Mean_L_spec) > ymax:
+            		ymax = np.max(Mean_L_spec)
             
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
@@ -346,7 +359,7 @@ for spin_lab in Spin_labels:
     
 
 #axs.flatten()[plot_it-1].set_ylim(top=1.e24)
-#axs.flatten()[plot_it-1].set_ylim([1.e23, 6.3e23])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Mean_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
 print('saved figure Mean_Inner_disk_L_mach_comp_spec.pdf')
