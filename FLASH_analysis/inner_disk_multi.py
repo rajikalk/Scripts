@@ -134,7 +134,7 @@ for spin_lab in Spin_labels:
     plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
     
 #axs.flatten()[plot_it-1].set_ylim(top=1.e58)
-axs.flatten()[plot_it-1].set_ylim([0, 1e+56])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
 print('saved figure Total_Inner_disk_L_mach_comp.pdf')
