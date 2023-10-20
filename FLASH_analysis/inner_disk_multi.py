@@ -97,6 +97,10 @@ for spin_lab in Spin_labels:
             Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
             file.close()
             
+            if spin_lab == '0.20' and mach_lab == '0.1':
+            	import pdb
+            	pdb.set_trace()
+            
             ax2 = axs.flatten()[plot_it].twinx()
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             axs.flatten()[plot_it].plot(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
@@ -123,7 +127,7 @@ for spin_lab in Spin_labels:
     plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
     
 #axs.flatten()[plot_it-1].set_ylim(top=1.e52)
-axs.flatten()[plot_it-1].set_ylim([1e+57, 1e+58])
+#axs.flatten()[plot_it-1].set_ylim([1e+57, 1e+58])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Total_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
 print('saved figure Total_Inner_disk_L_mach_comp.pdf')
@@ -164,6 +168,10 @@ for spin_lab in Spin_labels:
             Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
             file.close()
             
+            if spin_lab == '0.20' and mach_lab == '0.1':
+            	import pdb
+            	pdb.set_trace()
+            
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
@@ -190,7 +198,7 @@ for spin_lab in Spin_labels:
     
 
 #axs.flatten()[plot_it-1].set_ylim(top=1.e24)
-axs.flatten()[plot_it-1].set_ylim([1.e35, 5e35])
+#axs.flatten()[plot_it-1].set_ylim([1.e35, 5e35])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Total_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
 print('saved figure Total_Inner_disk_L_mach_comp_spec.pdf')
