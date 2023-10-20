@@ -73,6 +73,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+ymin = np.inf
 max_sep = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
@@ -100,6 +101,12 @@ for spin_lab in Spin_labels:
             #if spin_lab == '0.20' and mach_lab == '0.1':
             #	import pdb
             #	pdb.set_trace()
+            
+            if np.min(Total_L) < ymin:
+            	ymin = np.min(Total_L)
+            if spin_lab != '0.20' and mach_lab != '0.1':
+            	if np.max(Total_L) > ymax:
+            		ymax = np.max(Total_L)
             
             ax2 = axs.flatten()[plot_it].twinx()
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
@@ -144,6 +151,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+ymin = np.inf
 max_sep = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
@@ -172,6 +180,12 @@ for spin_lab in Spin_labels:
             #	import pdb
             #	pdb.set_trace()
             
+            if np.min(Total_L_spec) < ymin:
+            	ymin = np.min(Total_L_spec)
+            if spin_lab != '0.20' and mach_lab != '0.1':
+            	if np.max(Total_L_spec) > ymax:
+            		ymax = np.max(Total_L_spec)
+            
             ax2 = axs.flatten()[plot_it].twinx()
             axs.flatten()[plot_it].plot(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
@@ -198,7 +212,7 @@ for spin_lab in Spin_labels:
     
 
 #axs.flatten()[plot_it-1].set_ylim(top=1.e34)
-axs.flatten()[plot_it-1].set_ylim([0, 1.e34])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Total_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
 print('saved figure Total_Inner_disk_L_mach_comp_spec.pdf')
@@ -214,6 +228,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
+ymin = np.inf
 max_sep = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
