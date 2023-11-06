@@ -78,7 +78,7 @@ for frame_no in range(1,5):
         axs.flatten()[plot_it].set_xlim(xlim)
         axs.flatten()[plot_it].set_ylim(ylim)
         
-        cbar_lims = [4.e-16, 4.e-14]
+        cbar_lims = [3.e-16, 3.e-14]
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         axs.flatten()[plot_it].set_aspect('equal')
@@ -119,7 +119,7 @@ for frame_no in range(1,5):
         
         axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
         if frame_no == 1:
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
+            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-15)
         else:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
