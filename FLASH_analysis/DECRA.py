@@ -55,7 +55,7 @@ directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Sin
 cmap=plt.cm.gist_heat
 
 plt.clf()
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 2.3), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 2.1), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.01)
@@ -78,7 +78,7 @@ for frame_no in range(1,5):
         axs.flatten()[plot_it].set_xlim(xlim)
         axs.flatten()[plot_it].set_ylim(ylim)
         
-        cbar_lims = [5.e-17, 5.e-15]
+        cbar_lims = [5.e-16, 5.e-14]
 
         plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
         axs.flatten()[plot_it].set_aspect('equal')
