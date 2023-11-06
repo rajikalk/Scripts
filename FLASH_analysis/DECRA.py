@@ -62,7 +62,7 @@ plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.11)
 
 plot_it = -1
-width = 1000
+width = 500
 stdvel = 2
 
 for frame_no in range(1,5):
