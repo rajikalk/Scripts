@@ -84,7 +84,7 @@ for frame_no in range(1,5):
         axs.flatten()[plot_it].set_aspect('equal')
         
         axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-        if spin_val == '0.20' and mach_val == '0.0':
+        if frame_no == 1:
             plot_velocity_legend = True
         else:
             plot_velocity_legend = False
@@ -115,24 +115,13 @@ for frame_no in range(1,5):
         axs.flatten()[plot_it].xaxis.label.set_color('black')
         axs.flatten()[plot_it].yaxis.label.set_color('black')
         axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
-        
-        if spin_val == '0.20':
-            #add mach labels:
-            mach_label = "$\mathcal{M}$="+str(mach_val)
-            title_text = axs.flatten()[plot_it].text((np.mean(xlim)+15), (ylim[1]-0.05*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size), bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        if mach_val =='0.0':
-            spin_label = "$\Omega t_{\mathrm{ff}}$="+str(spin_val)
-            title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90, bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
         
-        if spin_val == '0.35':
-            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-            if mach_val != '0.0':
-                xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                plt.setp(xticklabels[0], visible=False)
-        if mach_val == '0.0':
+        axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
+        if mach_val != '0.0':
+            xticklabels = axs.flatten()[plot_it].get_xticklabels()
+            plt.setp(xticklabels[0], visible=False)
+        if frame_no == 1:
             axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
             if spin_val != '0.20':
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
