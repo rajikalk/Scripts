@@ -118,14 +118,11 @@ for frame_no in range(1,5):
             
         
         axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-        if mach_val != '0.0':
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
         if frame_no == 1:
             axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
-            if spin_val != '0.20':
-                yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
+        else:
+            yticklabels = axs.flatten()[plot_it].get_yticklabels()
+            plt.setp(yticklabels, visible=False)
         
         plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
         
