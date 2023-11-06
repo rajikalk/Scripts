@@ -43,7 +43,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 10
+font_size = 8
 mym.set_global_font_size(font_size)
 
 
@@ -55,7 +55,7 @@ directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Sin
 cmap=plt.cm.gist_heat
 
 plt.clf()
-fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 2.5), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=1, figsize=(two_col_width, 2.3), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.01)
