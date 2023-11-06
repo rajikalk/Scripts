@@ -129,6 +129,6 @@ for frame_no in range(1,5):
 fig.subplots_adjust(right=0.95)
 cbar_ax = fig.add_axes([0.951, 0.123, 0.02, 0.744])
 cbar = fig.colorbar(plot, cax=cbar_ax)
-cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=15, size=font_size)
+cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=12, size=font_size)
 
-plt.savefig("Decra.pdf", format='pdf', bbox_inches='tight', dpi=300)
+plt.savefig("Decra.pdf", format='pdf', bbox_inches='tight', dpi=300, pad=0.02)
