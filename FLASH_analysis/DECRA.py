@@ -66,7 +66,7 @@ width = 1000
 stdvel = 2
 
 for frame_no in range(1,5):
-        pickle_file = 'frame_'+str(frame_no)+'_xz.pkl'
+        pickle_file = 'frame_'+str(frame_no)+'.pkl'
         
         plot_it = plot_it +1
         file = open(pickle_file, 'rb')
