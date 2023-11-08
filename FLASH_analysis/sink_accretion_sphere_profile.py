@@ -154,7 +154,7 @@ if args.make_movie_pickles == 'True':
             Separation.append(sep)
                 
             radius = yt.YTQuantity(args.sphere_radius, 'au')
-            sph = ds.sphere(center, radius)
+            disk = ds.sphere(center, radius)
             #disk = ds.disk(center, normal, radius, height)
             Radius_field = disk['radius'].in_units('AU')
             Total_L.append(np.sum(disk[args.profile_field]))
