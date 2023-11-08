@@ -27,6 +27,7 @@ def parse_inputs():
     parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
     parser.add_argument("-radius", "--sphere_radius", type=float, default=5)
     
+    parser.add_argument("-pt", "--plot_time")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
     parser.add_argument("-start", "--start_time", type=float, default=0)
     parser.add_argument("-end", "--end_time", type=float, default=None)
