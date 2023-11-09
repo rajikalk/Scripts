@@ -116,7 +116,7 @@ pickle_file.close()
 plt.clf()
 for sink_id in write_sink_data.keys():
     L_tot = np.sqrt(write_sink_data[sink_id]['anglx']**2 + write_sink_data[sink_id]['angly']**2 + write_sink_data[sink_id]['anglz']**2)
-    plt.semilogy(write_sink_data[sink_id]['time'], L_tot, label=sink_id)
+    plt.plot(write_sink_data[sink_id]['time'], L_tot, label=sink_id)
 plt.xlabel('Time (s)')
 plt.ylabel('L (gcm$^2$/s)')
 plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
