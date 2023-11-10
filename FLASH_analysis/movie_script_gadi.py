@@ -426,7 +426,8 @@ if args.make_movie_frames == 'True':
                         print("pickle doesn't have sink formation time")
                         os.remove(pickle_file)
                             
-                    
+                    import pdb
+                    pdb.set_trace()
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
