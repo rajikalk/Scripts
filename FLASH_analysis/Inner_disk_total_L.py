@@ -55,6 +55,7 @@ if args.make_movie_pickles == 'True':
     Total_L_spec = []
     Mean_L = []
     Mean_L_spec = []
+    Mass_all = []
     Separation = []
 
     if rank == 0:
@@ -64,7 +65,7 @@ if args.make_movie_pickles == 'True':
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
                 file = open(pickle_file, 'rb')
-                time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
+                time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, Mass, sep = pickle.load(file)
                 file.close()
                 
                 Time_array = Time_array + time_val
@@ -72,6 +73,7 @@ if args.make_movie_pickles == 'True':
                 Total_L_spec = Total_L_spec + L_spec_tot
                 Mean_L = Mean_L + L_mean
                 Mean_L_spec = Mean_L_spec + L_spec_mean
+                Mass_all = Mass_all + Mass
                 Separation = Separation + sep
                 
             sorted_inds = np.argsort(Time_array)
@@ -80,6 +82,7 @@ if args.make_movie_pickles == 'True':
             Total_L_spec = list(np.array(Total_L_spec)[sorted_inds])
             Mean_L = list(np.array(Mean_L)[sorted_inds])
             Mean_L_spec = list(np.array(Mean_L_spec)[sorted_inds])
+            Mass_all = list(np.array(Mass_all)[sorted_inds])
             Separation = list(np.array(Separation)[sorted_inds])
             
             start_time = np.max(Time_array)
@@ -161,10 +164,11 @@ if args.make_movie_pickles == 'True':
             spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             Total_L_spec.append(np.sum(disk[spec_field]))
             Mean_L_spec.append(np.mean(disk[spec_field]))
+            Mass_all.append(np.sum(disk['mass'].in_units('msun')))
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
-            pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation), file)
+            pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mass_all, Separation), file)
             file.close()
             print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
@@ -179,12 +183,15 @@ if rank == 0:
     Time_array = []
     Total_L = []
     Total_L_spec = []
+    Mean_L = []
+    Mean_L_spec = []
+    Mass_all = []
     Separation = []
     
     if len(pickle_files) > 0:
         for pickle_file in pickle_files:
             file = open(pickle_file, 'rb')
-            time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, sep = pickle.load(file)
+            time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, Mass, sep = pickle.load(file)
             file.close()
             
             Time_array = Time_array + time_val
@@ -192,6 +199,7 @@ if rank == 0:
             Total_L_spec = Total_L_spec + L_spec_tot
             Mean_L = Mean_L + L_mean
             Mean_L_spec = Mean_L_spec + L_spec_mean
+            Mass_all = Mass_all + Mass
             Separation = Separation + sep
             
         sorted_inds = np.argsort(Time_array)
@@ -200,15 +208,16 @@ if rank == 0:
         Total_L_spec = list(np.array(Total_L_spec)[sorted_inds])
         Mean_L = list(np.array(Mean_L)[sorted_inds])
         Mean_L_spec = list(np.array(Mean_L_spec)[sorted_inds])
+        Mass_all = list(np.array(Mass_all)[sorted_inds])
         Separation = list(np.array(Separation)[sorted_inds])
         
     file = open('gathered_profile.pkl', 'wb')
-    pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation), file)
+    pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mass_all, Separation), file)
     file.close()
     
 sys.stdout.flush()
 CW.Barrier()
 
 file = open('gathered_profile.pkl', 'wb')
-pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation), file)
+pickle.dump((Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mass_all, Separation), file)
 file.close()
