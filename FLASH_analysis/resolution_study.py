@@ -3,7 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 import yt
 
-pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl', 'Lref_11.pkl']
+pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl']#, 'Lref_11.pkl']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -14,6 +14,7 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
               '#bcbd22', '#17becf']
 plot_it = -1
 end_time = 10000
+scaling_factor = [1, 2, 4, 8]
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 0.7*page_height), sharex=True)
@@ -28,10 +29,18 @@ for pickle_file in pickle_files:
     
     form_time = np.inf
     sink_it = -1
+    primary_mass = 0
+    primary_ind = np.nan
+    for sink_id in sink_data.keys():
+        mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+        if mass[-1].in_units('msun').value > primary_mass:
+            primary_mass = mass[-1].in_units('msun').value
+            primary_ind = sink_id
+    
+    form_time = sink_data[primary_ind]['time'][0]
+    
     for sink_id in sink_data.keys():
         sink_it = sink_it + 1
-        if sink_data[sink_id]['time'][0] < form_time:
-            form_time = sink_data[sink_id]['time'][0]
 
         time = sink_data[sink_id]['time'] - form_time
         time = yt.YTArray(time, 's')
@@ -50,11 +59,14 @@ for pickle_file in pickle_files:
         plot_mass = mass.in_units('msun')[:end_ind+1]
     
         if sink_it == 0:
-            axs.flatten()[0].plot(plot_time, plot_mass, linestyle=line_styles[plot_it], label=pickle_file.split('.')[0], color=colors[plot_it])
+            #if pickle_file == 'Lref_10.pkl':
+            #    import pdb
+            #    pdb.set_trace()
+            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], label=pickle_file.split('.')[0], color=colors[plot_it])
         else:
-            axs.flatten()[0].plot(plot_time, plot_mass, linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[1].plot(plot_time, plot_L_tot, linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[2].plot(plot_time, plot_L_spec_tot, linestyle=line_styles[plot_it], color=colors[plot_it])
+            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[1].plot(plot_time, plot_L_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[2].plot(plot_time, plot_L_spec_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
 axs.flatten()[0].set_ylabel("Mass (M$_\odot$)")
