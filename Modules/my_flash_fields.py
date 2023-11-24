@@ -779,8 +779,9 @@ def _Radial_velocity_wrt_primary(field, data):
         
         r_vec = data['Position_wrt_primary']
         v_vec = data['Velocity_wrt_primary']
-        import pdb
-        pdb.set_trace()
+        if np.shape(data) != (16, 16, 16):
+            import pdb
+            pdb.set_trace()
 
         rad_vel = projected_vector(v_vec.T, r_vec.T)
         if np.shape(rad_vel) == (16, 16, 16, 3):
