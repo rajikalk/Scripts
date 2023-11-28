@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import yt
 import numpy as np
 
-pickle_files = ['5_au.pkl', '10_au.pkl']
+pickle_files = ['5_au.pkl', '10_au.pkl', '20_au.pkl']
 
 plt.clf()
 
