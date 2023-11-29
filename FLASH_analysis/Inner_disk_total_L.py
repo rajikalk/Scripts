@@ -168,8 +168,6 @@ if args.make_movie_pickles == 'True':
             height = yt.YTQuantity(args.inner_radius_threshold, 'au')
             radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
-            import pdb
-            pdb.set_trace()
             R_sink = 2.5*np.min(disk['dx']).in_units('au')
             
             Radius_field = disk['radius'].in_units('AU')
