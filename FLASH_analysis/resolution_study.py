@@ -3,7 +3,11 @@ import pickle
 import matplotlib.pyplot as plt
 import yt
 
-pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl']#, 'Lref_11.pkl']
+pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl', 'Lref_11.pkl']
+r_sink_9 = yt.YTQuantity(4.89593797, 'AU')
+R_proto = yt.YTQuantity(2, 'rsun')
+r_sink = [2*r_sink_9, r_sink_9, (1/(2))*r_sink_9, (1/(2**2))*r_sink_9, R_proto.in_units('au')]
+#          8            9           10                  11 need Lref 18 to resolve protostellar surface
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -15,9 +19,12 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
 plot_it = -1
 end_time = 10000
 scaling_factor = [1, 2, 4, 8]
+comp_time = np.nan
+comp_h = []
+comp_period = []
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 0.7*page_height), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, 0.7*page_height), sharex=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -38,6 +45,8 @@ for pickle_file in pickle_files:
             primary_ind = sink_id
     
     form_time = sink_data[primary_ind]['time'][0]
+    if np.isnan(comp_time):
+        comp_time = yt.YTQuantity((sink_data[primary_ind]['time'] - form_time)[-1], 's')
     
     for sink_id in sink_data.keys():
         sink_it = sink_it + 1
@@ -50,6 +59,10 @@ for pickle_file in pickle_files:
         L_spec_tot = np.sqrt((sink_data[sink_id]['anglx']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['angly']/sink_data[sink_id]['mass'])**2 + (sink_data[sink_id]['anglz']/sink_data[sink_id]['mass'])**2)
         L_spec_tot = yt.YTArray(L_spec_tot, 'cm**2/s')
         plot_L_spec_tot = L_spec_tot.in_units('m**2/s')[:end_ind+1]
+        
+        Sink_rot = plot_L_spec_tot.in_units('km**2/s') / r_sink[plot_it].in_units('km')
+        Sink_circum = 2*np.pi * r_sink[plot_it].in_units('km')
+        Sink_period = Sink_circum/Sink_rot
 
         L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
         L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
@@ -62,11 +75,14 @@ for pickle_file in pickle_files:
             #if pickle_file == 'Lref_10.pkl':
             #    import pdb
             #    pdb.set_trace()
-            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], label=pickle_file.split('.')[0], color=colors[plot_it])
+            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], label="R$_{sink}$="+str(np.round(r_sink[plot_it], decimals=2))+"au", color=colors[plot_it])
+            comp_h.append(plot_L_spec_tot[np.argmin(abs(plot_time - comp_time.in_units('yr')))])
+            comp_period.append(Sink_period[np.argmin(abs(plot_time - comp_time.in_units('yr')))].in_units('day'))
         else:
             axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
         axs.flatten()[1].plot(plot_time, plot_L_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
         axs.flatten()[2].plot(plot_time, plot_L_spec_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[3].semilogy(plot_time, Sink_period.in_units('day'), linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
 axs.flatten()[0].set_ylabel("Mass (M$_\odot$)")
@@ -74,11 +90,21 @@ axs.flatten()[0].set_ylim(bottom=0)
 axs.flatten()[1].set_ylabel("L (kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim(bottom=0)
 axs.flatten()[2].set_ylabel("h (m$^2$/s)")
-axs.flatten()[2].set_xlabel("time (yr)")
+axs.flatten()[3].set_ylabel("Period (days)")
+axs.flatten()[3].set_xlabel("time (yr)")
+axs.flatten()[3].set_ylim(top=1.e6)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
 
+plt.savefig('resolution_study.png', bbox_inches='tight')
 plt.savefig('resolution_study.pdf', bbox_inches='tight')
         
-    
+comp_period.append(yt.YTQuantity(np.nan, 'day'))
+
+plt.clf()
+plt.figure(figsize=(single_col_width, 0.3*page_height))
+plt.semilogx(r_sink, comp_period)
+plt.xlabel('R$_{sink}$ (au)')
+plt.ylabel('P$_{rot}$ (days)')
+plt.savefig("period_vs_r_sink.png", bbox_inches='tight')

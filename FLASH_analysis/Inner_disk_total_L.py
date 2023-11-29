@@ -176,8 +176,8 @@ if args.make_movie_pickles == 'True':
             spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             Total_L_spec.append(np.sum(disk[spec_field]))
             Mean_L_spec.append(np.mean(disk[spec_field]))
-            Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary']))
-            Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary']))
+            Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary_div_v_kep']))
+            Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary_div_v_kep']))
             Mass_all.append(np.sum(disk['mass'].in_units('msun')))
 
             pickle_file = 'profile_'+str(rank)+'.pkl'

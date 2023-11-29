@@ -799,6 +799,18 @@ def _Radial_velocity_wrt_primary(field, data):
 
 yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
 
+def _Radial_velocity_wrt_primary_div_v_kep(field, data):
+    """
+    Radial_velocity_wrt_primary div by v_kep
+    """
+    rad_vel = data["Radial_velocity_wrt_primary"].in_units('km/s')
+    kep_vel = data["Keplerian_velocity_wrt_primary"].in_units('km/s')
+    rel_vel = rad_vel/kep_vel
+    
+    return rel_vel
+
+yt.add_field("Radial_velocity_wrt_primary_div_v_kep", function=_Radial_velocity_wrt_primary_div_v_kep, units=r"", sampling_type="local")
+
 '''
 def _Radial_velocity_wrt_primary(field, data):
     """
