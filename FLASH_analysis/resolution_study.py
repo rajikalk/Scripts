@@ -2,9 +2,12 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import yt
+import sys
 
-pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl', 'Lref_11.pkl']
 r_sink_9 = yt.YTQuantity(4.89593797, 'AU')
+L_reference = int(sys.argv[1])
+r_scale = (1/(2**(L_reference-9)))*r_sink_9
+pickle_files = ['Lref_8.pkl', 'Lref_9.pkl', 'Lref_10.pkl', 'Lref_11.pkl']
 R_proto = yt.YTQuantity(2, 'rsun')
 r_sink = [2*r_sink_9, r_sink_9, (1/(2))*r_sink_9, (1/(2**2))*r_sink_9, R_proto.in_units('au')]
 #          8            9           10                  11 need Lref 18 to resolve protostellar surface
@@ -18,7 +21,10 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
               '#bcbd22', '#17becf']
 plot_it = -1
 end_time = 10000
-scaling_factor = [1, 2, 4, 8]
+L_scale= np.sqrt(2)/16
+L_spec_scale = np.sqrt(2)/2
+m_scale = 1/8
+scaling_factor = [L_reference-8, L_reference-9, L_reference-10, L_reference-11]
 comp_time = np.nan
 comp_h = []
 comp_period = []
@@ -60,28 +66,40 @@ for pickle_file in pickle_files:
         L_spec_tot = yt.YTArray(L_spec_tot, 'cm**2/s')
         plot_L_spec_tot = L_spec_tot.in_units('m**2/s')[:end_ind+1]
         
-        Sink_rot = plot_L_spec_tot.in_units('km**2/s') / r_sink[plot_it].in_units('km')
-        Sink_circum = 2*np.pi * r_sink[plot_it].in_units('km')
-        Sink_period = Sink_circum/Sink_rot
-
+        #Sink_rot = plot_L_spec_tot.in_units('km**2/s') / r_sink[plot_it].in_units('km') #I think this is wrong
+        #Sink_circum = 2*np.pi * r_sink[plot_it].in_units('km')
+        #Sink_period = Sink_circum/Sink_rot
+        
         L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
         L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
         plot_L_tot = L_tot.in_units('kg*m**2/s')[:end_ind+1]
         
         mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
         plot_mass = mass.in_units('msun')[:end_ind+1]
+        
+        #===================================================
+        #Calculate rotation Period
+        #v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_sink_9.in_units('km')
+        v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_scale.in_units('km')
+        Sink_circum = 2*np.pi * r_scale.in_units('km')
+        Sink_period = Sink_circum/v_scale
+        
+        #Sink_period = 0.8 * np.pi * plot_mass.in_units('g') * r_sink[plot_it].in_units('cm')**2 / plot_L_tot.in_units('g*cm**2/day')
+        
+        #================================
+
     
         if sink_it == 0:
             #if pickle_file == 'Lref_10.pkl':
             #    import pdb
             #    pdb.set_trace()
-            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], label="R$_{sink}$="+str(np.round(r_sink[plot_it], decimals=2))+"au", color=colors[plot_it])
+            axs.flatten()[0].plot(plot_time, plot_mass*(m_scale**(scaling_factor[plot_it])), linestyle=line_styles[plot_it], label="R$_{sink}$="+str(np.round(r_sink[plot_it], decimals=2))+"au", color=colors[plot_it])
             comp_h.append(plot_L_spec_tot[np.argmin(abs(plot_time - comp_time.in_units('yr')))])
             comp_period.append(Sink_period[np.argmin(abs(plot_time - comp_time.in_units('yr')))].in_units('day'))
         else:
-            axs.flatten()[0].plot(plot_time, plot_mass*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[1].plot(plot_time, plot_L_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[2].plot(plot_time, plot_L_spec_tot*scaling_factor[plot_it], linestyle=line_styles[plot_it], color=colors[plot_it])
+            axs.flatten()[0].plot(plot_time, plot_mass*(m_scale**(scaling_factor[plot_it])), linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[1].plot(plot_time, plot_L_tot*(L_scale**(scaling_factor[plot_it])), linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[2].plot(plot_time, plot_L_spec_tot*(L_spec_scale**(scaling_factor[plot_it])), linestyle=line_styles[plot_it], color=colors[plot_it])
         axs.flatten()[3].semilogy(plot_time, Sink_period.in_units('day'), linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
@@ -92,13 +110,19 @@ axs.flatten()[1].set_ylim(bottom=0)
 axs.flatten()[2].set_ylabel("h (m$^2$/s)")
 axs.flatten()[3].set_ylabel("Period (days)")
 axs.flatten()[3].set_xlabel("time (yr)")
-axs.flatten()[3].set_ylim(top=1.e6)
+
+if L_reference == 11:
+    axs.flatten()[3].set_ylim(top=3.e5)
+if L_reference == 19:
+    axs.flatten()[3].set_ylim(top=2.e0)
+else:
+    axs.flatten()[3].set_ylim(top=1.e1)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
 
-plt.savefig('resolution_study.png', bbox_inches='tight')
-plt.savefig('resolution_study.pdf', bbox_inches='tight')
+plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.png', bbox_inches='tight')
+#plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight')
         
 comp_period.append(yt.YTQuantity(np.nan, 'day'))
 

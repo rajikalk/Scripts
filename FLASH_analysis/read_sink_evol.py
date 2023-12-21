@@ -115,8 +115,9 @@ pickle_file.close()
 #plot spin evolution
 plt.clf()
 for sink_id in write_sink_data.keys():
+    plot_time = (write_sink_data[sink_id]['time'] - write_sink_data[sink_id]['time'])/3.154e+7
     L_tot = np.sqrt(write_sink_data[sink_id]['anglx']**2 + write_sink_data[sink_id]['angly']**2 + write_sink_data[sink_id]['anglz']**2)
-    plt.plot(write_sink_data[sink_id]['time'], L_tot, label=sink_id)
-plt.xlabel('Time (s)')
+    plt.plot(plot_time, L_tot, label=sink_id)
+plt.xlabel('Time (yr)')
 plt.ylabel('L (gcm$^2$/s)')
 plt.savefig(sink_evol_pickle.split('.pkl')[0] + '.png')
