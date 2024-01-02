@@ -323,8 +323,23 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
-            import pdb
-            pdb.set_trace()
+
+            if len(sink_data.keys()) == 0:
+                spin_up_percentage = 0
+            else:
+                prime_id = list(sink_data.keys())[0]
+                second_id = list(sink_data.keys())[1]
+                secondary_form_time = sink_data[second_id]['time'][0]
+                secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_sink_form))
+                pre_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind-1]**2 + sink_data[prime_id]['angly'][secondary_form_ind-1]**2 + sink_data[prime_id]['anglz'][secondary_form_ind-1]**2)
+                pre_sec_L_spec = pre_sec_L/sink_data[prime_id]['mass'][secondary_form_ind-1]
+                post_sec_L = np.sqrt(sink_data[prime_id]['anglx'][-1]**2 + sink_data[prime_id]['angly'][-1]**2 + sink_data[prime_id]['anglz'][-1]**2)
+                post_sec_L_spec = post_sec_L/sink_data[prime_id]['mass'][-1]
+                DL = post_sec_L - pre_sec_L
+                spin_up_percentage = DL/pre_sec_L * 100
+                DL_spec = post_sec_L_spec - pre_sec_L_spec
+                spin_up_percentage_spec = DL_spec/pre_sec_L_spec * 100
+                print("Spin up: L=", spin_up_percentage, "%, L_spec=", spin_up_percentage_spec, "%")
             #Calculate pre spin adn post spin
         else:
             print("Couldn't open", single_pickle)
