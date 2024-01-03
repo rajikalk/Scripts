@@ -227,7 +227,7 @@ axs.flatten()[2].set_ylabel("h (m$^2$/s)")
 axs.flatten()[3].set_ylabel("Period (days)")
 axs.flatten()[3].set_xlabel("time (yr)")
 
-.flatten()[3].set_ylim(top=1.e4)
+axs.flatten()[3].set_ylim(top=1.e4)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
