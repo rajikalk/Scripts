@@ -214,8 +214,8 @@ for pickle_file in pickle_files:
             comp_period.append(Sink_period[np.argmin(abs(plot_time - comp_time.in_units('yr')))].in_units('day'))
         else:
             axs.flatten()[0].plot(plot_time, plot_mass, linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[1].plot(plot_time, plot_L_tot, linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[2].plot(plot_time, plot_L_spec_tot, linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[1].plot(plot_time, plot_L_tot/1e45, linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[2].plot(plot_time, plot_L_spec_tot/1e15, linestyle=line_styles[plot_it], color=colors[plot_it])
         axs.flatten()[3].semilogy(plot_time, Sink_period.in_units('day'), linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
@@ -227,12 +227,7 @@ axs.flatten()[2].set_ylabel("h (m$^2$/s)")
 axs.flatten()[3].set_ylabel("Period (days)")
 axs.flatten()[3].set_xlabel("time (yr)")
 
-if L_reference == 11:
-    axs.flatten()[3].set_ylim(top=3.e5)
-if L_reference == 19:
-    axs.flatten()[3].set_ylim(top=2.e0)
-else:
-    axs.flatten()[3].set_ylim(top=1.e1)
+.flatten()[3].set_ylim(top=1.e4)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
