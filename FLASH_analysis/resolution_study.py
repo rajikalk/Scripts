@@ -135,6 +135,16 @@ plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 
 #============Not scaled version============================
 
+plot_it = -1
+end_time = 10000
+L_scale= np.sqrt(2)/16
+L_spec_scale = np.sqrt(2)/2
+m_scale = 1/8
+scaling_factor = [L_reference-8, L_reference-9, L_reference-10, L_reference-11]
+comp_time = np.nan
+comp_h = []
+comp_period = []
+
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, 0.7*page_height), sharex=True)
 plt.subplots_adjust(wspace=0.0)
