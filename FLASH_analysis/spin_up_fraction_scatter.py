@@ -58,6 +58,7 @@ def parse_inputs():
     return args
 
 #---------------------------------------------------
+args = parse_inputs()
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
