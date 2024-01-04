@@ -89,19 +89,23 @@ for mach_lab in Mach_labels:
                 second_id = list(sink_data.keys())[1]
                 secondary_form_time = sink_data[second_id]['time'][0]
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
+                
                 pre_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind-1]**2 + sink_data[prime_id]['angly'][secondary_form_ind-1]**2 + sink_data[prime_id]['anglz'][secondary_form_ind-1]**2)
                 pre_sec_L_spec = pre_sec_L/sink_data[prime_id]['mass'][secondary_form_ind-1]
+                
                 post_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind:]**2 + sink_data[prime_id]['angly'][secondary_form_ind:]**2 + sink_data[prime_id]['anglz'][secondary_form_ind:]**2)
+                post_sec_L_spec = post_sec_L/sink_data[prime_id]['mass']
+                
                 post_sec_L_val = post_sec_L[-1]
-                post_sec_L_last = post_sec_L[-1]
-                post_sec_L_spec = post_sec_L_last/sink_data[prime_id]['mass'][-1]
-                post_sec_L_peak = np.max(post_sec_L)
-                post_sec_L_spec_peak = post_sec_L_peak/sink_data[prime_id]['mass'][-1]
+                post_sec_L_spec_last = post_sec_L_spec[-1]
+                post_sec_L_spec_peak = np.max(post_sec_L_spec)
                 
                 DL = post_sec_L_val - pre_sec_L
                 spin_up_percentage = DL/pre_sec_L * 100
-                DL_spec = post_sec_L_spec - pre_sec_L_spec
+                
+                DL_spec = post_sec_L_spec_last - pre_sec_L_spec
                 spin_up_percentage_spec = DL_spec/pre_sec_L_spec * 100
+                
                 DL_spec_peak = post_sec_L_spec_peak - pre_sec_L_spec
                 spin_up_percentage_spec_peak = DL_spec_peak/pre_sec_L_spec * 100
                 print("Spin up: L=", spin_up_percentage, "%, L_spec=", spin_up_percentage_spec, "%")
