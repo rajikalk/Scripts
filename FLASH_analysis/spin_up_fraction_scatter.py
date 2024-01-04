@@ -87,7 +87,7 @@ for mach_lab in Mach_labels:
             else:
                 prime_id = list(sink_data.keys())[0]
                 second_id = list(sink_data.keys())[1]
-                secondary_form_time = sink_data[second_id]['time'][0] - yt.YTQuantity(100, 'yr').in_units('s').value
+                secondary_form_time = sink_data[second_id]['time'][0] - yt.YTQuantity(500, 'yr').in_units('s').value
                 #secondary_form_time = yt.YTQuantity(2000, 'yr').in_units('s').value + sink_data[prime_id]['time'][0]
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
                 
