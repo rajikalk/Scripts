@@ -94,7 +94,7 @@ for mach_lab in Mach_labels:
                 pre_sec_L_spec = pre_sec_L/sink_data[prime_id]['mass'][secondary_form_ind-1]
                 
                 post_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind:]**2 + sink_data[prime_id]['angly'][secondary_form_ind:]**2 + sink_data[prime_id]['anglz'][secondary_form_ind:]**2)
-                post_sec_L_spec = post_sec_L/sink_data[prime_id]['mass']
+                post_sec_L_spec = post_sec_L/sink_data[prime_id]['mass'][secondary_form_ind:]
                 
                 post_sec_L_val = post_sec_L[-1]
                 post_sec_L_spec_last = post_sec_L_spec[-1]
