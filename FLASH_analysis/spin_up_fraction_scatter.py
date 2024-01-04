@@ -65,6 +65,8 @@ Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 spin_val = [0.20, 0.25, 0.3, 0.35]
 spin_up = [[], [], []]
 spin_up_spec = [[], [], []]
+spin_up_spec_peak = [[], [], []]
+
 
 for mach_lab in Mach_labels:
     for spin_lab in Spin_labels:
@@ -81,6 +83,7 @@ for mach_lab in Mach_labels:
             if len(sink_data.keys()) == 1:
                 spin_up_percentage = np.nan
                 spin_up_percentage_spec = np.nan
+                spin_up_percentage_spec_peak = np.nan
             else:
                 prime_id = list(sink_data.keys())[0]
                 second_id = list(sink_data.keys())[1]
@@ -88,18 +91,26 @@ for mach_lab in Mach_labels:
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
                 pre_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind-1]**2 + sink_data[prime_id]['angly'][secondary_form_ind-1]**2 + sink_data[prime_id]['anglz'][secondary_form_ind-1]**2)
                 pre_sec_L_spec = pre_sec_L/sink_data[prime_id]['mass'][secondary_form_ind-1]
-                post_sec_L = np.sqrt(sink_data[prime_id]['anglx'][-1]**2 + sink_data[prime_id]['angly'][-1]**2 + sink_data[prime_id]['anglz'][-1]**2)
-                post_sec_L_spec = post_sec_L/sink_data[prime_id]['mass'][-1]
+                post_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind:]**2 + sink_data[prime_id]['angly'][secondary_form_ind:]**2 + sink_data[prime_id]['anglz'][secondary_form_ind:]**2)
+                post_sec_L_last = post_sec_L[-1]
+                post_sec_L_spec = post_sec_L_last/sink_data[prime_id]['mass'][-1]
+                post_sec_L_peak = np.max(post_sec_L)
+                post_sec_L_spec_peak = post_sec_L_peak/sink_data[prime_id]['mass'][-1]
+                
                 DL = post_sec_L - pre_sec_L
                 spin_up_percentage = DL/pre_sec_L * 100
                 DL_spec = post_sec_L_spec - pre_sec_L_spec
                 spin_up_percentage_spec = DL_spec/pre_sec_L_spec * 100
+                DL_spec_peak = post_sec_L_spec_peak - pre_sec_L_spec
+                spin_up_percentage_spec_peak = DL_spec_peak/pre_sec_L_spec * 100
                 print("Spin up: L=", spin_up_percentage, "%, L_spec=", spin_up_percentage_spec, "%")
         else:
             spin_up_percentage = np.nan
             spin_up_percentage_spec = np.nan
+            spin_up_percentage_spec_peak = np.nan
         spin_up[int(mach_lab.split('.')[-1])].append(spin_up_percentage)
         spin_up_spec[int(mach_lab.split('.')[-1])].append(spin_up_percentage_spec)
+        spin_up_spec_peak[int(mach_lab.split('.')[-1])].append(spin_up_percentage_spec_peak)
         
 plt.clf()
 fig = plt.figure(figsize=(single_col_width, 0.7*single_col_width))
@@ -120,4 +131,14 @@ plt.xlabel('Initial cloud spin ($\Omega t_{ff}$)')
 plt.ylabel('h spin up percentage (%)')
 plt.legend(loc='best')
 plt.savefig('spin_up_percentage_h.pdf', bbox_inches='tight', pad_inches=0.02)
+
+plt.clf()
+fig = plt.figure(figsize=(single_col_width, 0.7*single_col_width))
+for mach_lab in Mach_labels:
+    plt.plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab)
+    plt.scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])])
+plt.xlabel('Initial cloud spin ($\Omega t_{ff}$)')
+plt.ylabel('h spin up percentage (%)')
+plt.legend(loc='best')
+plt.savefig('spin_up_percentage_h_peak.pdf', bbox_inches='tight', pad_inches=0.02)
             
