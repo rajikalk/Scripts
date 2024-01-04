@@ -61,16 +61,12 @@ def parse_inputs():
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
-plot_it = -1
 spin_val = [0.20, 0.25, 0.3, 0.35]
 spin_up = [[], [], []]
 spin_up_spec = [[], [], []]
 
 for mach_lab in Mach_labels:
-    plot_it = plot_it + 1
-    axs.flatten()[plot_it].set_title('Mach = ' + mach_lab)
     for spin_lab in Spin_labels:
-        axs.flatten()[plot_it].grid()
         #single_pickle
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
         #binary_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Binary_Mach_'+mach_lab+'_Lref_9.pkl'
