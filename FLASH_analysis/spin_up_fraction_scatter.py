@@ -149,7 +149,7 @@ plt.legend(loc='best')
 plt.savefig('spin_up_percentage_h_peak.pdf', bbox_inches='tight', pad_inches=0.02)
             
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey='row')
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 axs.flatten()[0].grid()
