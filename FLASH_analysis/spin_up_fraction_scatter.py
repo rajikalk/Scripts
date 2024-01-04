@@ -148,3 +148,21 @@ plt.ylabel('h spin up percentage (%)')
 plt.legend(loc='best')
 plt.savefig('spin_up_percentage_h_peak.pdf', bbox_inches='tight', pad_inches=0.02)
             
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*2.5), sharex=True, sharey='row')
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+axs.flatten()[0].grid()
+for mach_lab in Mach_labels:
+    axs.flatten()[0].plot(spin_val, spin_up[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab)
+    axs.flatten()[0].scatter(spin_val, spin_up[int(mach_lab.split('.')[-1])])
+axs.flatten()[0].set_ylabel('L spin up percentage (%)')
+axs.flatten()[0].legend(loc='best')
+axs.flatten()[1].grid()
+for mach_lab in Mach_labels:
+    axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab)
+    axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])])
+axs.flatten()[1].set_xlabel('Initial cloud spin ($\Omega t_{ff}$)')
+axs.flatten()[1].set_ylabel('h spin up percentage (%)')
+plt.savefig('spin_up_percentage.pdf', bbox_inches='tight', pad_inches=0.02)
+
