@@ -219,20 +219,20 @@ for pickle_file in pickle_files:
         axs.flatten()[3].semilogy(plot_time, Sink_period.in_units('day'), linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
-axs.flatten()[0].set_ylabel("Mass (M$_\odot$)")
+axs.flatten()[0].set_ylabel("Mass (M$_\odot$)", labelpad=-0.3)
 axs.flatten()[0].set_ylim(bottom=0)
-axs.flatten()[1].set_ylabel("L (10$^45$kg$\,$m$^2$/s)")
+axs.flatten()[1].set_ylabel("L (10$^{45}$kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim(bottom=0)
-axs.flatten()[2].set_ylabel("h (10$^15$m$^2$/s)")
-axs.flatten()[3].set_ylabel("Period (days)")
-axs.flatten()[3].set_xlabel("time (yr)")
+axs.flatten()[2].set_ylabel("h (10$^{15}$m$^2$/s)")
+axs.flatten()[3].set_ylabel("Period (days)", labelpad=-0.3)
+axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
 axs.flatten()[3].set_ylim(top=5.e4)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
 
-plt.savefig('resolution_study_raw.png', bbox_inches='tight')
+plt.savefig('resolution_study_raw.pdf', bbox_inches='tight', pad_inches=0.02)
 #plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight')
         
 comp_period.append(yt.YTQuantity(np.nan, 'day'))
@@ -308,7 +308,7 @@ for pickle_file in pickle_files:
         #===================================================
         #Calculate rotation Period
         #v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_sink_9.in_units('km')
-        v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_scale.in_units('km')
+        v_scale = plot_L_spec_tot.in_units('km**2/day')*(1/(2**(L_reference - L_ref)))/r_scale.in_units('km')
         Sink_circum = 2*np.pi * r_scale.in_units('km')
         Sink_period = Sink_circum/v_scale
         
@@ -326,30 +326,25 @@ for pickle_file in pickle_files:
             comp_period.append(Sink_period[np.argmin(abs(plot_time - comp_time.in_units('yr')))].in_units('day'))
         else:
             axs.flatten()[0].plot(plot_time, plot_mass, linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[1].plot(plot_time, plot_L_tot*(1/(2**(L_reference - L_ref))), linestyle=line_styles[plot_it], color=colors[plot_it])
-        axs.flatten()[2].plot(plot_time, plot_L_spec_tot*(1/(2**(L_reference - L_ref))), linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[1].plot(plot_time, (plot_L_tot*(1/(2**(L_reference - L_ref))))/1.e44, linestyle=line_styles[plot_it], color=colors[plot_it])
+        axs.flatten()[2].plot(plot_time, (plot_L_spec_tot*(1/(2**(L_reference - L_ref))))/1.e14, linestyle=line_styles[plot_it], color=colors[plot_it])
         axs.flatten()[3].semilogy(plot_time, Sink_period.in_units('day'), linestyle=line_styles[plot_it], color=colors[plot_it])
         
     
-axs.flatten()[0].set_ylabel("Mass (M$_\odot$)")
+axs.flatten()[0].set_ylabel("Mass (M$_\odot$)", labelpad=-0.3)
 axs.flatten()[0].set_ylim(bottom=0)
-axs.flatten()[1].set_ylabel("L (kg$\,$m$^2$/s)")
+axs.flatten()[1].set_ylabel("L (10$^{44}$kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim(bottom=0)
-axs.flatten()[2].set_ylabel("h (m$^2$/s)")
-axs.flatten()[3].set_ylabel("Period (days)")
-axs.flatten()[3].set_xlabel("time (yr)")
+axs.flatten()[2].set_ylabel("h (10$^{14}$m$^2$/s)")
+axs.flatten()[3].set_ylabel("Period (days)", labelpad=-0.3)
+axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
-if L_reference == 11:
-    axs.flatten()[3].set_ylim(top=5.e4)
-if L_reference == 19:
-    axs.flatten()[3].set_ylim(top=2.e0)
-else:
-    axs.flatten()[3].set_ylim(top=1.e1)
+axs.flatten()[3].set_ylim([5.e3, 5.e4])
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
 axs.flatten()[0].legend(loc='best')
 
-plt.savefig('rough_resolution_study_scaled_L'+str(L_reference)+'.png', bbox_inches='tight')
+plt.savefig('rough_resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 #plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight')
         
 comp_period.append(yt.YTQuantity(np.nan, 'day'))

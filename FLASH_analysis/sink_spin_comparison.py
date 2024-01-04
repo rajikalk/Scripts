@@ -324,7 +324,7 @@ for mach_lab in Mach_labels:
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
 
-            if len(sink_data.keys()) == 0:
+            if len(sink_data.keys()) == 1:
                 spin_up_percentage = 0
             else:
                 prime_id = list(sink_data.keys())[0]
