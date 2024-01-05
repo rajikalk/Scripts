@@ -28,7 +28,7 @@ scaling_factor = [L_reference-8, L_reference-9, L_reference-10, L_reference-11]
 comp_time = np.nan
 comp_h = []
 comp_period = []
-
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, 0.7*page_height), sharex=True)
 plt.subplots_adjust(wspace=0.0)
@@ -39,6 +39,7 @@ for pickle_file in pickle_files:
     file = open(pickle_file, 'rb')
     sink_data, line_counter = pickle.load(file)
     file.close()
+    L_ref = int(pickle_file.split('_')[-1].split('.')[0])
     
     form_time = np.inf
     sink_it = -1
@@ -78,14 +79,9 @@ for pickle_file in pickle_files:
         plot_mass = mass.in_units('msun')[:end_ind+1]
         
         #===================================================
-        #Calculate rotation Period
-        #v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_sink_9.in_units('km')
-        v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_scale.in_units('km')
-        Sink_circum = 2*np.pi * r_scale.in_units('km')
-        Sink_period = Sink_circum/v_scale
-        
-        #Sink_period = 0.8 * np.pi * plot_mass.in_units('g') * r_sink[plot_it].in_units('cm')**2 / plot_L_tot.in_units('g*cm**2/day')
-        
+        r_sink = (1/(2**(L_ref-9)))*r_sink_9
+        ang_vel = (5/2)*(plot_L_spec_tot.in_units('au**2/day')/(r_sink.in_units('au')**2))
+        Sink_period = 1/ang_vel
         #================================
 
     
@@ -132,7 +128,7 @@ plt.semilogx(r_sink, comp_period)
 plt.xlabel('R$_{sink}$ (au)')
 plt.ylabel('P$_{rot}$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
-
+'''
 #============Not scaled version============================
 
 plot_it = -1
@@ -155,6 +151,7 @@ for pickle_file in pickle_files:
     file = open(pickle_file, 'rb')
     sink_data, line_counter = pickle.load(file)
     file.close()
+    L_ref = int(pickle_file.split('_')[-1].split('.')[0])
     
     form_time = np.inf
     sink_it = -1
@@ -195,12 +192,9 @@ for pickle_file in pickle_files:
         
         #===================================================
         #Calculate rotation Period
-        #v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_sink_9.in_units('km')
-        v_scale = plot_L_spec_tot.in_units('km**2/day')/r_scale.in_units('km')
-        Sink_circum = 2*np.pi * r_scale.in_units('km')
-        Sink_period = Sink_circum/v_scale
-        
-        #Sink_period = 0.8 * np.pi * plot_mass.in_units('g') * r_sink[plot_it].in_units('cm')**2 / plot_L_tot.in_units('g*cm**2/day')
+        r_sink_val = (1/(2**(L_ref-9)))*r_sink_9
+        ang_vel = (5/2)*(plot_L_spec_tot.in_units('au**2/day')/(r_sink_val.in_units('au')**2))
+        Sink_period = 1/ang_vel
         
         #================================
 
@@ -230,7 +224,23 @@ axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 axs.flatten()[3].set_ylim(top=5.e4)
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[0].legend(loc='upper right')
+axs.flatten()[0].tick_params(axis='x', direction='in')
+axs.flatten()[0].tick_params(axis='y', direction='in')
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in')
+axs.flatten()[1].tick_params(axis='x', direction='in')
+axs.flatten()[1].tick_params(axis='y', direction='in')
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in')
+axs.flatten()[2].tick_params(axis='x', direction='in')
+axs.flatten()[2].tick_params(axis='y', direction='in')
+axs.flatten()[2].minorticks_on()
+axs.flatten()[2].tick_params(which='both', direction='in')
+axs.flatten()[3].tick_params(axis='x', direction='in')
+axs.flatten()[3].tick_params(axis='y', direction='in')
+axs.flatten()[3].minorticks_on()
+axs.flatten()[3].tick_params(which='both', direction='in')
 
 plt.savefig('resolution_study_raw.pdf', bbox_inches='tight', pad_inches=0.02)
 #plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight')
@@ -307,13 +317,11 @@ for pickle_file in pickle_files:
         
         #===================================================
         #Calculate rotation Period
-        #v_scale = plot_L_spec_tot.in_units('km**2/day')*(L_spec_scale**(scaling_factor[plot_it]))/r_sink_9.in_units('km')
-        v_scale = plot_L_spec_tot.in_units('km**2/day')*(1/(2**(L_reference - L_ref)))/r_scale.in_units('km')
-        Sink_circum = 2*np.pi * r_scale.in_units('km')
-        Sink_period = Sink_circum/v_scale
-        
-        #Sink_period = 0.8 * np.pi * plot_mass.in_units('g') * r_sink[plot_it].in_units('cm')**2 / plot_L_tot.in_units('g*cm**2/day')
-        
+        #WORK OUT SCALED VERSION
+    
+        r_sink_val = (1/(2**(L_reference-9)))*r_sink_9
+        ang_vel = (5/2)*((plot_L_spec_tot.in_units('au**2/day')*(1/(2**(L_reference - L_ref))))/(r_sink_val.in_units('au')**2))
+        Sink_period = 1/ang_vel
         #================================
 
     
@@ -339,10 +347,27 @@ axs.flatten()[2].set_ylabel("h (10$^{14}$m$^2$/s)")
 axs.flatten()[3].set_ylabel("Period (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
-axs.flatten()[3].set_ylim([5.e3, 5.e4])
+#axs.flatten()[3].set_ylim([5.e3, 5.e4])
+axs.flatten()[3].set_ylim([3.e2, 5.e3])
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[2].set_ylim(bottom=0)
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[0].legend(loc='upper right')
+axs.flatten()[0].tick_params(axis='x', direction='in')
+axs.flatten()[0].tick_params(axis='y', direction='in')
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in')
+axs.flatten()[1].tick_params(axis='x', direction='in')
+axs.flatten()[1].tick_params(axis='y', direction='in')
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in')
+axs.flatten()[2].tick_params(axis='x', direction='in')
+axs.flatten()[2].tick_params(axis='y', direction='in')
+axs.flatten()[2].minorticks_on()
+axs.flatten()[2].tick_params(which='both', direction='in')
+axs.flatten()[3].tick_params(axis='x', direction='in')
+axs.flatten()[3].tick_params(axis='y', direction='in')
+axs.flatten()[3].minorticks_on()
+axs.flatten()[3].tick_params(which='both', direction='in')
 
 plt.savefig('rough_resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 #plt.savefig('resolution_study_scaled_L'+str(L_reference)+'.pdf', bbox_inches='tight')

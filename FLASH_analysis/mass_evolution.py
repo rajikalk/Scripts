@@ -92,6 +92,7 @@ plt.savefig('spin_comp_primary.png')
 Mach_labels = ['0.0', '0.1', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*1.5), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -273,7 +274,7 @@ axs.flatten()[0].legend(loc='best')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
-
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -301,6 +302,7 @@ for mach_lab in Mach_labels:
             
             Total_accrete_mass = []
             Total_time_arr = []
+            print("Spin", spin_lab, "mach", mach_lab, "# stars:", len(sink_data.keys()))
             for sink_id in sink_data.keys():
                 #sink_id = list(sink_data.keys())[0]
                 if np.isnan(form_time):
