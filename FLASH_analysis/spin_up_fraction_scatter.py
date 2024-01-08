@@ -158,11 +158,21 @@ for mach_lab in Mach_labels:
     axs.flatten()[0].scatter(spin_val, spin_up[int(mach_lab.split('.')[-1])])
 axs.flatten()[0].set_ylabel('L spin up percentage (%)')
 axs.flatten()[0].legend(loc='best')
+
+axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
 axs.flatten()[1].grid()
 for mach_lab in Mach_labels:
     axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab)
     axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])])
 axs.flatten()[1].set_xlabel('Initial cloud spin ($\Omega t_{ff}$)')
 axs.flatten()[1].set_ylabel('h spin up percentage (%)')
+axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 plt.savefig('spin_up_percentage.pdf', bbox_inches='tight', pad_inches=0.02)
 
