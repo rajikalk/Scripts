@@ -167,7 +167,7 @@ axs.flatten()[0].tick_params(which='both', direction='in', axis='both', right=Tr
 
 axs.flatten()[1].grid()
 for mach_lab in Mach_labels:
-    axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_labls=linestyle[Mach_labels.index(mach_lab)], color='k')
+    axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], color='k')
 axs.flatten()[1].set_xlabel('Initial cloud spin ($\Omega t_{ff}$)')
 axs.flatten()[1].set_ylabel('h spin up percentage (%)')
