@@ -287,7 +287,7 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
-    axs.flatten()[plot_it].set_title('Mach='+mach_lab)
+    axs.flatten()[plot_it].set_title('Mach='+mach_lab, labelpad=-0.2)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
@@ -333,9 +333,9 @@ for mach_lab in Mach_labels:
         else:
             print("Couldn't open", single_pickle)
 
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)')
+            axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
         else:
             yticklabels = axs.flatten()[plot_it].get_yticklabels()
             plt.setp(yticklabels, visible=False)
@@ -364,4 +364,4 @@ axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=Tr
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
-plt.savefig('Mass_evol_spin_comp_all_sinks.pdf', bbox_inches='tight')
+plt.savefig('Mass_evol_spin_comp_all_sinks.pdf', bbox_inches='tight', pad_inches=0.02)
