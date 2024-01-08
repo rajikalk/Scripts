@@ -347,6 +347,21 @@ for mach_lab in Mach_labels:
             #plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[0].legend(loc='upper left')
+axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
+axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
+axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[2].minorticks_on()
+axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp_all_sinks.pdf', bbox_inches='tight')
