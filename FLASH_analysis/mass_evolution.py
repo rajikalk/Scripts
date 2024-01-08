@@ -333,7 +333,7 @@ for mach_lab in Mach_labels:
         else:
             print("Couldn't open", single_pickle)
 
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
+        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', pad=-0.2)
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
         else:
