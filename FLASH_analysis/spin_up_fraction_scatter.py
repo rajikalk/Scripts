@@ -157,7 +157,7 @@ axs.flatten()[0].grid()
 for mach_lab in Mach_labels:
     axs.flatten()[0].plot(spin_val, spin_up[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[0].scatter(spin_val, spin_up[int(mach_lab.split('.')[-1])], color='k')
-axs.flatten()[0].set_ylabel('L spin up percentage (%)')
+axs.flatten()[0].set_ylabel('$\Delta L$ (%)')
 axs.flatten()[0].legend(loc='best')
 
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
@@ -170,7 +170,7 @@ for mach_lab in Mach_labels:
     axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], color='k')
 axs.flatten()[1].set_xlabel('Initial cloud spin ($\Omega t_{ff}$)')
-axs.flatten()[1].set_ylabel('h spin up percentage (%)')
+axs.flatten()[1].set_ylabel('\Delta h (%)')
 axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[1].minorticks_on()
