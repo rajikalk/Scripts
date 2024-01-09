@@ -170,7 +170,7 @@ for mach_lab in Mach_labels:
     axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], color='k')
 axs.flatten()[1].set_xlabel('Initial cloud spin ($\Omega t_{ff}$)')
-axs.flatten()[1].set_ylabel('\Delta h (%)')
+axs.flatten()[1].set_ylabel('$\Delta h$ (%)')
 axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[1].minorticks_on()
