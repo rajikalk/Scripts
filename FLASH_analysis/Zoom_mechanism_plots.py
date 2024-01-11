@@ -24,16 +24,21 @@ com_y = np.sum(dd['particle_mass'][:2].in_units('msun') * dd['particle_posy'][:2
 com_z = np.sum(dd['particle_mass'][:2].in_units('msun') * dd['particle_posz'][:2].in_units('au'))/np.sum(dd['particle_mass'][:2].in_units('msun'))
 com = yt.YTArray([com_x, com_y, com_z])
 
+com_vel_x = np.sum(dd['particle_mass'][:2].in_units('msun') * dd['particle_velx'][:2].in_units('km/s'))/np.sum(dd['particle_mass'][:2].in_units('msun'))
+com_vel_y = np.sum(dd['particle_mass'][:2].in_units('msun') * dd['particle_vely'][:2].in_units('km/s'))/np.sum(dd['particle_mass'][:2].in_units('msun'))
+com_vel_z = np.sum(dd['particle_mass'][:2].in_units('msun') * dd['particle_velz'][:2].in_units('km/s'))/np.sum(dd['particle_mass'][:2].in_units('msun'))
+com_vel = yt.YTArray([com_vel_x, com_vel_y, com_vel_z])
+
 
 #Calculate orbital angular momentum vector mr x v
-dx = dd['particle_posx'][:2].in_units('cm') - com[0]
-dy = dd['particle_posy'][:2].in_units('cm') - com[1]
-dz = dd['particle_posz'][:2].in_units('cm') - com[2]
+dx = dd['particle_posx'][:2].in_units('au') - com[0]
+dy = dd['particle_posy'][:2].in_units('au') - com[1]
+dz = dd['particle_posz'][:2].in_units('au') - com[2]
 d_pos = yt.YTArray([dx, dy, dz]).T
 
-dvx = dd['particle_velx'][:2].in_units('cm/s') - com[0]
-dvy = dd['particle_vely'][:2].in_units('cm/s') - com[1]
-dvz = dd['particle_velz'][:2].in_units('cm/s') - com[2]
+dvx = dd['particle_velx'][:2].in_units('km/s') - com[0]
+dvy = dd['particle_vely'][:2].in_units('km/s') - com[1]
+dvz = dd['particle_velz'][:2].in_units('km/s') - com[2]
 d_vel = yt.YTArray([dvx, dvy, dvz]).T
 
 L_orb = dd['particle_mass'].value * np.cross(d_pos, d_vel).T
