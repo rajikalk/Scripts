@@ -11,7 +11,7 @@ save_dir = sys.argv[2]
 plot_time = yt.YTQuantity(4220, 'yr')
 
 files = sorted(glob.glob(input_dir + '*plt_cnt*'))
-fn = mym.find_files([plot_time.value], files)
+fn = mym.find_files([plot_time.value], files)[0]
 part_file = 'part'.join(fn.split('plt_cnt'))
 ds = yt.load(fn, particle_filename=part_file)
 
