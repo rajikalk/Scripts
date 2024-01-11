@@ -36,9 +36,9 @@ dy = dd['particle_posy'][:2].in_units('au') - com[1]
 dz = dd['particle_posz'][:2].in_units('au') - com[2]
 d_pos = yt.YTArray([dx, dy, dz]).T
 
-dvx = dd['particle_velx'][:2].in_units('km/s') - com[0]
-dvy = dd['particle_vely'][:2].in_units('km/s') - com[1]
-dvz = dd['particle_velz'][:2].in_units('km/s') - com[2]
+dvx = dd['particle_velx'][:2].in_units('km/s') - com_vel[0]
+dvy = dd['particle_vely'][:2].in_units('km/s') - com_vel[1]
+dvz = dd['particle_velz'][:2].in_units('km/s') - com_vel[2]
 d_vel = yt.YTArray([dvx, dvy, dvz]).T
 
 L_orb = dd['particle_mass'].value * np.cross(d_pos, d_vel).T
