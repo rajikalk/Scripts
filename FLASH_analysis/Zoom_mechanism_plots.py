@@ -63,14 +63,14 @@ slice_dict = {}
 for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     #print("Projecting field", field, "on rank", rank)
     slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=plot_width, center=Primary_pos, north_vector=[0, 1, 0])
-    slice_array = proj.frb.data[field].in_cgs()
+    slice_array = slc.frb.data[field].in_cgs()
     #print(field, "projection =", proj_array)
     sto.result_id = field[1]
     sto.result = slice_array
 
-velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=quiver_arrows)
+velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
 file = open(pickle_file, 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
+pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", pickle_file)
 
