@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import sys
+import yt
+yt.enable_parallelism()
 import glob
 import my_flash_module as mym
 
