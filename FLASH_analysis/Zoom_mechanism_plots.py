@@ -57,7 +57,7 @@ part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
              'particle_form_time':dd['particle_creation_time']}
 
 slice_field_list = [('flash', 'dens')]
-slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
+slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
 
 slice_dict = {}
 for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
