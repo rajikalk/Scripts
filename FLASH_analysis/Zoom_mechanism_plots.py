@@ -14,6 +14,7 @@ pickle_file = save_dir + "time_" + str(int(plot_time.value)) +".pkl"
 plot_width = 200
 quiver_arrows = 1
 axis = 'z'
+proj_thickness = 2
 colourbar_min = None
 colourbar_max = None
 standard_vel = None
@@ -52,28 +53,52 @@ d_vel = Secondary_vel - Primary_vel
 L_vec = np.cross(d_pos, d_vel).T
 L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
 
+
+part_info = mym.get_particle_data(ds, sink_id=sink_id)
+pos_array = yt.YTArray([Primary_pos, Secondary_pos])
+east_unit_vector = [1, 0, 0]
+north_unit = [0, 1, 0]
+
+projected_particle_posy = projected_vector(pos_array, north_unit)
+proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
+north_sign = np.dot(north_unit, proj_part_y_unit.T)
+proj_part_y = proj_part_y_mag*north_sign
+proj_part_y = np.nan_to_num(proj_part_y)
+
+projected_particle_posx = projected_vector(pos_array, east_unit_vector)
+proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
+east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
+proj_part_x = proj_part_x_mag*east_sign
+proj_part_x = np.nan_to_num(proj_part_x)
+
+part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[1].value],[proj_part_y[0].value, proj_part_y[1].value]])
+
+'''
 part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
              'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
              'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
              'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
              'particle_tag':dd['particle_tag'],
              'particle_form_time':dd['particle_creation_time']}
+'''
 
-slice_field_list = [('flash', 'dens')]
-slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
+proj_field_list = [('flash', 'dens')]
+proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
 
-slice_dict = {}
-for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
+proj_dict = {}
+for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     #print("Projecting field", field, "on rank", rank)
-    slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=plot_width, center=Primary_pos, north_vector=[0, 1, 0])
-    slice_array = slc.frb.data[field].in_cgs()
+    proj = yt.OffAxisProjectionPlot(ds, L_vec_norm, field, width=plot_width, center=Primary_pos, north_vector=[0, 1, 0], depth=(proj_thickness, 'AU'))
+    proj_array = proj.frb.data[field].in_cgs()/yt.YTQuantity(proj_thickness, 'AU').in_units('cgs')
     #print(field, "projection =", proj_array)
     sto.result_id = field[1]
-    sto.result = slice_array
+    sto.result = proj_array
 
-velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
+velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=quiver_arrows)
 file = open(pickle_file, 'wb')
-pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
+pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", pickle_file)
 
