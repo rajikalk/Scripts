@@ -7,6 +7,17 @@ import my_flash_module as mym
 import numpy as np
 import pickle
 
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the position of vector projected onto proj_vector
+    """
+    vector_units = vector.units
+    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+    proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
+
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 plot_time = yt.YTQuantity(4220, 'yr')
