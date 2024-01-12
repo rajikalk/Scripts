@@ -7,16 +7,16 @@ import my_flash_module as mym
 import numpy as np
 import pickle
 
-def projected_vector(vector, proj_vector):
+def sliceected_vector(vector, slice_vector):
     """
-    Calculates the position of vector projected onto proj_vector
+    Calculates the position of vector sliceected onto slice_vector
     """
     vector_units = vector.units
-    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
-    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
-    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
-    proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
-    return proj_v
+    slice_v_x = (np.dot(vector, slice_vector)/np.dot(slice_vector,slice_vector))*slice_vector[0]
+    slice_v_y = (np.dot(vector, slice_vector)/np.dot(slice_vector,slice_vector))*slice_vector[1]
+    slice_v_z = (np.dot(vector, slice_vector)/np.dot(slice_vector,slice_vector))*slice_vector[2]
+    slice_v = yt.YTArray(np.array([slice_v_x,slice_v_y,slice_v_z]).T, vector_units)
+    return slice_v
 
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
@@ -25,7 +25,7 @@ pickle_file = save_dir + "time_" + str(int(plot_time.value)) +".pkl"
 plot_width = 200
 quiver_arrows = 1
 axis = 'z'
-proj_thickness = 2
+slice_thickness = 2
 colourbar_min = None
 colourbar_max = None
 standard_vel = None
@@ -75,37 +75,36 @@ pos_array = yt.YTArray([Primary_pos, Secondary_pos])
 east_unit_vector = [1, 0, 0]
 north_unit = [0, 1, 0]
 
-projected_particle_posy = projected_vector(pos_array, north_unit)
-proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
-proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
-north_sign = np.dot(north_unit, proj_part_y_unit.T)
-proj_part_y = proj_part_y_mag*north_sign
-proj_part_y = np.nan_to_num(proj_part_y)
+sliceected_particle_posy = sliceected_vector(pos_array, north_unit)
+slice_part_y_mag = np.sqrt(np.sum((sliceected_particle_posy**2), axis=1))
+slice_part_y_unit = (sliceected_particle_posy.T/slice_part_y_mag).T
+north_sign = np.dot(north_unit, slice_part_y_unit.T)
+slice_part_y = slice_part_y_mag*north_sign
+slice_part_y = np.nan_to_num(slice_part_y)
 
-projected_particle_posx = projected_vector(pos_array, east_unit_vector)
-proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
-proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
-east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
-proj_part_x = proj_part_x_mag*east_sign
-proj_part_x = np.nan_to_num(proj_part_x)
+sliceected_particle_posx = sliceected_vector(pos_array, east_unit_vector)
+slice_part_x_mag = np.sqrt(np.sum((sliceected_particle_posx**2), axis=1))
+slice_part_x_unit = (sliceected_particle_posx.T/slice_part_x_mag).T
+east_sign = np.dot(east_unit_vector, slice_part_x_unit.T)
+slice_part_x = slice_part_x_mag*east_sign
+slice_part_x = np.nan_to_num(slice_part_x)
 
-part_info['particle_position'] = yt.YTArray([proj_part_x, proj_part_y])
+part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
 
-proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
+slice_field_list = [('flash', 'dens')]
+slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
 
-proj_dict = {}
-for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+slice_dict = {}
+for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     #print("Projecting field", field, "on rank", rank)
-    proj = yt.OffAxisProjectionPlot(ds, L_vec_norm, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0], depth=(proj_thickness, 'AU'))
-    proj_array = proj.frb.data[field].in_cgs()/yt.YTQuantity(proj_thickness, 'AU').in_cgs()
-    #print(field, "projection =", proj_array)
+    slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
+    slice_array = slc.frb.data[field].in_cgs()/yt.YTQuantity(slice_thickness, 'AU').in_cgs()
     sto.result_id = field[1]
-    sto.result = proj_array
+    sto.result = slice_array
 
-velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=quiver_arrows)
+velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
 file = open(pickle_file, 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
+pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", pickle_file)
 
