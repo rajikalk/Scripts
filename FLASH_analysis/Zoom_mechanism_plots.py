@@ -98,7 +98,7 @@ slice_dict = {}
 for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     #print("Projecting field", field, "on rank", rank)
     slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
-    slice_array = slc.frb.data[field].in_cgs()/yt.YTQuantity(slice_thickness, 'AU').in_cgs()
+    slice_array = slc.frb.data[field].in_cgs()
     sto.result_id = field[1]
     sto.result = slice_array
 
