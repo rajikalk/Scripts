@@ -54,7 +54,12 @@ L_vec = np.cross(d_pos, d_vel).T
 L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
 
 
-part_info = mym.get_particle_data(ds, sink_id=sink_id)
+part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
+             'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
+             'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
+             'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
+             'particle_tag':dd['particle_tag'],
+             'particle_form_time':dd['particle_creation_time']}
 pos_array = yt.YTArray([Primary_pos, Secondary_pos])
 east_unit_vector = [1, 0, 0]
 north_unit = [0, 1, 0]
@@ -74,15 +79,6 @@ proj_part_x = proj_part_x_mag*east_sign
 proj_part_x = np.nan_to_num(proj_part_x)
 
 part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[1].value],[proj_part_y[0].value, proj_part_y[1].value]])
-
-'''
-part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
-             'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
-             'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
-             'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
-             'particle_tag':dd['particle_tag'],
-             'particle_form_time':dd['particle_creation_time']}
-'''
 
 proj_field_list = [('flash', 'dens')]
 proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
