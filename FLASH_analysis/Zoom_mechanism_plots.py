@@ -98,7 +98,7 @@ proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     #print("Projecting field", field, "on rank", rank)
     proj = yt.OffAxisProjectionPlot(ds, L_vec_norm, field, width=plot_width, center=Primary_pos, north_vector=[0, 1, 0], depth=(proj_thickness, 'AU'))
-    proj_array = proj.frb.data[field].in_cgs()/yt.YTQuantity(proj_thickness, 'AU').in_units('cgs')
+    proj_array = proj.frb.data[field].in_cgs()/yt.YTQuantity(proj_thickness, 'AU').in_cgs()
     #print(field, "projection =", proj_array)
     sto.result_id = field[1]
     sto.result = proj_array
