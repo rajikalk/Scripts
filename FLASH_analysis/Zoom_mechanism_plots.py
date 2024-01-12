@@ -89,7 +89,7 @@ east_sign = np.dot(east_unit_vector, proj_part_x_unit.T)
 proj_part_x = proj_part_x_mag*east_sign
 proj_part_x = np.nan_to_num(proj_part_x)
 
-part_info['particle_position'] = np.array([[proj_part_x[0], proj_part_x[1]],[proj_part_y[0], proj_part_y[1]]])
+part_info['particle_position'] = yt.YTArray([proj_part_x, proj_part_y])
 
 proj_field_list = [('flash', 'dens')]
 proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
