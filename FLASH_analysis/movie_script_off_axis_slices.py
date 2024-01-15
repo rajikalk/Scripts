@@ -247,7 +247,7 @@ if args.make_movie_pickles == 'True':
                 
             del dd
             
-            myf.set_normal(proj_vector_unit)
+            myf.set_normal(L_vec_norm)
             myf.set_east_vector(east_unit_vector)
             myf.set_north_vector(north_unit)
             
