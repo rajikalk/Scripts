@@ -4,6 +4,7 @@ import yt
 yt.enable_parallelism()
 import glob
 import my_flash_module as mym
+import my_flash_fields as myf
 import numpy as np
 import pickle
 
