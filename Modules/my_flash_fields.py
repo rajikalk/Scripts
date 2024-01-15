@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #Created by Rajika Kuruwita, 2019
 import yt
-from yt.fields.api import ValidateParameter
+#from yt.fields.api import ValidateParameter
 yt.enable_parallelism()
 import numpy as np
 
