@@ -173,7 +173,7 @@ if args.make_movie_pickles == 'True':
                     Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particle_vely'].in_units('km/s')[1], dd['particle_velz'].in_units('km/s')[1]])
                     d_vel = Secondary_vel - Primary_vel
                     L_vec = np.cross(d_pos, d_vel).T
-                    L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
+                    proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
 
                     part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
                                  'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
@@ -205,7 +205,7 @@ if args.make_movie_pickles == 'True':
                     projected_particle_posz = projected_vector(pos_array, L_vec_norm)
                     slice_part_z_mag = np.sqrt(np.sum((projected_particle_posz**2), axis=1))
                     slice_part_z_unit = (projected_particle_posz.T/slice_part_z_mag).T
-                    slice_sign = np.dot(slice_vector_unit, slice_part_z_unit.T)
+                    slice_sign = np.dot(proj_vector_unit, slice_part_z_unit.T)
                     slice_part_z = slice_part_z_mag*slice_sign
                     slice_part_z = np.nan_to_num(slice_part_z)
 
@@ -258,7 +258,7 @@ if args.make_movie_pickles == 'True':
                 
             del dd
             
-            myf.set_normal(L_vec_norm)
+            myf.set_normal(proj_vector_unit)
             myf.set_east_vector(east_unit_vector)
             myf.set_north_vector(north_unit)
             
@@ -280,7 +280,7 @@ if args.make_movie_pickles == 'True':
             
             slice_dict = {}
             for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
-                slice = yt.OffAxisSlicePlot(ds, L_vec_norm, args.axis, field, method='integrate', width=plot_width, weight_field=args.weight_field, center=center_pos)
+                slice = yt.OffAxisSlicePlot(ds, proj_vector_unit, args.axis, field, method='integrate', width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (slice.bounds[1] - slice.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                     slice_array = slice.frb.data[field].in_cgs()
