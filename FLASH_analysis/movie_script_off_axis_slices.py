@@ -288,9 +288,6 @@ if args.make_movie_pickles == 'True':
             except:
                 continue
         print('Finished copying pickles that use the same file for the same frame')
-    
-    del usable_files
-    del frames
 
 sys.stdout.flush()
 CW.Barrier()
