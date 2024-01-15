@@ -202,7 +202,7 @@ if args.make_movie_pickles == 'True':
                     slice_part_x = slice_part_x_mag*east_sign
                     slice_part_x = np.nan_to_num(slice_part_x)
                     
-                    projected_particle_posz = projected_vector(pos_array, L_vec_norm)
+                    projected_particle_posz = projected_vector(pos_array, proj_vector_unit)
                     slice_part_z_mag = np.sqrt(np.sum((projected_particle_posz**2), axis=1))
                     slice_part_z_unit = (projected_particle_posz.T/slice_part_z_mag).T
                     slice_sign = np.dot(proj_vector_unit, slice_part_z_unit.T)
@@ -235,7 +235,7 @@ if args.make_movie_pickles == 'True':
                     Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
                     Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
                     
-                    L_vec_norm = [0, 0, 1]
+                    proj_vector_unit = [0, 0, 1]
 
                     part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
                                  'particle_position':yt.YTArray([Primary_pos]).T,
