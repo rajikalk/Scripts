@@ -91,7 +91,7 @@ slice_part_x = np.nan_to_num(slice_part_x)
 
 part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
 
-slice_field_list = [('flash', 'dens')+('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
+slice_field_list = [('flash', 'dens'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
 #slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
 
 slice_dict = {}
