@@ -852,7 +852,7 @@ def _Radial_velocity_wrt_primary(field, data):
             rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
         del r_vec, v_vec, rad_vel
     else:
-        rad_vel_mag = sign*yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
+        rad_vel_mag = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return rad_vel_mag
 
 yt.add_field("Radial_velocity_wrt_primary", function=_Radial_velocity_wrt_primary, units=r"cm/s", sampling_type="local")
