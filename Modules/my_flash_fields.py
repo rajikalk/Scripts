@@ -1008,9 +1008,9 @@ def _Proj_x_velocity(field, data):
     rv_mag = np.reshape(rv_mag, shape)
     return rv_mag
 
-yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
+yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s", sampling_type="local")
 
-def _Proj_y_velocity(field, data):
+def (field, data):
     global north_vector
     '''
     if np.shape(data['x']) != (16,16,16):
@@ -1033,3 +1033,5 @@ def _Proj_y_velocity(field, data):
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
     return rv_mag
+
+yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s", sampling_type="local")
