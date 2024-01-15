@@ -5,6 +5,76 @@ from yt.fields.api import ValidateParameter
 yt.enable_parallelism()
 import numpy as np
 
+center_pos = yt.YTArray([0.0, 0.0, 0.0], 'cm')
+center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
+normal = [0.0, 0.0, 1.0]
+north_vector = [0.0, 1.0, 0.0]
+east_vector = [1.0, 0.0, 0.0]
+
+def set_center_pos_ind(x):
+    """
+    Sets the center pos ind used when calculating fields.
+    
+    Type: int
+    Default: 0
+    Options:0=center of mass, 1=particle 1, 2=particle 2.
+    """
+    global center_pos_ind
+    global global_enc_mass
+    center_pos_ind = x
+    global_enc_mass = []
+    return center_pos_ind
+    
+def set_center_vel_ind(x):
+    """
+    Sets the center vel ind used when calculating fields.
+    
+    Type: int
+    Default: 0
+    Options:0=center of mass, 1=particle 1, 2=particle 2.
+    """
+    global center_vel_ind
+    global global_enc_mass
+    center_vel_ind = x
+    global_enc_mass = []
+    return center_vel_ind
+
+def set_normal(x):
+    """
+    Sets the normal used for projected fields.
+        
+    Default: [x,y,z] = [0,0,1]
+    """
+    global normal
+    if isinstance(x,list) == False:
+        x = x.tolist()
+    normal = x
+    return normal
+    
+def set_north_vector(x):
+    """
+    Sets the north vector used for projected fields.
+        
+    Default: [x,y,z] = [0,1,0]
+    """
+    global north_vector
+    if isinstance(x,list) == False:
+        x = x.tolist()
+    north_vector = x
+    return north_vector
+    
+def set_east_vector(x):
+    """
+    Sets the east vector used for projected fields.
+        
+    Default: [x,y,z] = [1,0,0]
+    """
+    global east_vector
+    if isinstance(x,list) == False:
+        x = x.tolist()
+    east_vector = x
+    return east_vector
+
 def projected_vector(vector, proj_vector):
     """
     Calculates the projection of vecter projected onto vector
@@ -913,3 +983,53 @@ def _N_cells(field, data):
     return np.ones(np.shape(data['flash', 'x']))
 
 yt.add_field("N_cells", function=_N_cells, units=r"", sampling_type="local")
+
+def _Proj_x_velocity(field, data):
+    global east_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("East vector =", east_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = (data['flash','velx'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['flash','vely'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['flash','velz'].in_units('cm/s')-center_vel[2]).flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,east_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(east_vector, radial_vel_unit.T)
+    
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
+
+def _Proj_y_velocity(field, data):
+    global north_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = (data['flash','velx'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['flash','vely'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['flash','velz'].in_units('cm/s')-center_vel[2]).flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,north_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(north_vector, radial_vel_unit.T)
+    
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag

@@ -247,6 +247,10 @@ if args.make_movie_pickles == 'True':
                 
             del dd
             
+            myf.set_normal(proj_vector_unit)
+            myf.set_east_vector(east_unit_vector)
+            myf.set_north_vector(north_unit)
+            
             #make list of sliceection fields: density, velocity, magnetic field
             if args.field == 'dens':
                 slice_field_list = [('flash', 'dens')]
@@ -258,7 +262,7 @@ if args.make_movie_pickles == 'True':
                     if len(slice_field_list) > 1:
                         slice_field_list = [slice_field_list[0]]
                 
-            slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
+            slice_field_list = slice_field_list + [('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
         
             #define sliceection region
             plot_width = yt.YTQuantity(args.plot_width, 'au')
