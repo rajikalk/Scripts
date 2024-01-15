@@ -174,6 +174,8 @@ if args.make_movie_pickles == 'True':
                     d_vel = Secondary_vel - Primary_vel
                     L_vec = np.cross(d_pos, d_vel).T
                     proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
+                    north_unit = np.cross(proj_vector_unit, [1, 0, 0])
+                    east_unit_vector = np.cross(north_unit, proj_vector_unit)
 
                     part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
                                  'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
@@ -182,10 +184,6 @@ if args.make_movie_pickles == 'True':
                                  'particle_tag':dd['particle_tag'][:2],
                                  'particle_form_time':dd['particle_creation_time'][:2]}
                     pos_array = yt.YTArray([Primary_pos, Secondary_pos])
-                    
-                    ##CALCULATE NORTH VECTOR
-                    import pdb
-                    pdb.set_trace()
                     
                     center_pos = Primary_pos
                     center_vel = Primary_vel
