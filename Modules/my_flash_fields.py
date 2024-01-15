@@ -1045,9 +1045,9 @@ def _Proj_x_mag(field, data):
         print("East vector =", east_vector)
     '''
     shape = np.shape(data['x'])
-    gas_velx = (data['flash','magx'].in_units('cm/s')
-    gas_vely = (data['flash','magy'].in_units('cm/s')
-    gas_velz = (data['flash','magz'].in_units('cm/s')
+    gas_velx = data['flash','magx'].in_units('cm/s')
+    gas_vely = data['flash','magy'].in_units('cm/s')
+    gas_velz = data['flash','magz'].in_units('cm/s')
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,east_vector)
@@ -1071,9 +1071,9 @@ def _Proj_y_mag(field, data):
         print("North vector =", north_vector)
     '''
     shape = np.shape(data['x'])
-    gas_velx = (data['flash','magx'].in_units('cm/s')
-    gas_vely = (data['flash','magy'].in_units('cm/s')
-    gas_velz = (data['flash','magz'].in_units('cm/s')
+    gas_velx = data['flash','magx'].in_units('cm/s')
+    gas_vely = data['flash','magy'].in_units('cm/s')
+    gas_velz = data['flash','magz'].in_units('cm/s')
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,north_vector)
