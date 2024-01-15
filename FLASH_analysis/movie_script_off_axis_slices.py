@@ -285,8 +285,6 @@ if args.make_movie_pickles == 'True':
                     slice_array = slice.frb.data[field].in_cgs()
                 else:
                     slice_array = slice.frb.data[field].in_cgs()
-                if args.axis == 'y':
-                    slice_array = slice_array.T
                 #print(field, "sliceection =", slice_array)
                 sto.result_id = field[1]
                 sto.result = slice_array
