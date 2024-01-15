@@ -152,76 +152,92 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
             #Load fields
             #del test_fields
-            if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 1:
-                Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
-                Secondary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[1], dd['particle_posy'].in_units('au')[1], dd['particle_posz'].in_units('au')[1]])
-                d_pos = Secondary_pos - Primary_pos
+            if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
+                if len(dd['particle_mass']) > 1:
+                    Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
+                    Secondary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[1], dd['particle_posy'].in_units('au')[1], dd['particle_posz'].in_units('au')[1]])
+                    d_pos = Secondary_pos - Primary_pos
 
-                Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
-                Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particle_vely'].in_units('km/s')[1], dd['particle_velz'].in_units('km/s')[1]])
-                d_vel = Secondary_vel - Primary_vel
-                L_vec = np.cross(d_pos, d_vel).T
-                L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
+                    Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
+                    Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particle_vely'].in_units('km/s')[1], dd['particle_velz'].in_units('km/s')[1]])
+                    d_vel = Secondary_vel - Primary_vel
+                    L_vec = np.cross(d_pos, d_vel).T
+                    L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
 
-                part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
-                             'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
-                             'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
-                             'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
-                             'particle_tag':dd['particle_tag'],
-                             'particle_form_time':dd['particle_creation_time']}
-                pos_array = yt.YTArray([Primary_pos, Secondary_pos])
-                east_unit_vector = [1, 0, 0]
-                north_unit = [0, 1, 0]
-                
-                center_pos = Primary_pos
-                center_vel = Primary_vel
+                    part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
+                                 'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
+                                 'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
+                                 'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
+                                 'particle_tag':dd['particle_tag'][:2],
+                                 'particle_form_time':dd['particle_creation_time'][:2]}
+                    pos_array = yt.YTArray([Primary_pos, Secondary_pos])
+                    east_unit_vector = [1, 0, 0]
+                    north_unit = [0, 1, 0]
+                    
+                    center_pos = Primary_pos
+                    center_vel = Primary_vel
 
-                projected_particle_posy = projected_vector(pos_array, north_unit)
-                slice_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
-                slice_part_y_unit = (projected_particle_posy.T/slice_part_y_mag).T
-                north_sign = np.dot(north_unit, slice_part_y_unit.T)
-                slice_part_y = slice_part_y_mag*north_sign
-                slice_part_y = np.nan_to_num(slice_part_y)
+                    projected_particle_posy = projected_vector(pos_array, north_unit)
+                    slice_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+                    slice_part_y_unit = (projected_particle_posy.T/slice_part_y_mag).T
+                    north_sign = np.dot(north_unit, slice_part_y_unit.T)
+                    slice_part_y = slice_part_y_mag*north_sign
+                    slice_part_y = np.nan_to_num(slice_part_y)
 
-                projected_particle_posx = projected_vector(pos_array, east_unit_vector)
-                slice_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
-                slice_part_x_unit = (projected_particle_posx.T/slice_part_x_mag).T
-                east_sign = np.dot(east_unit_vector, slice_part_x_unit.T)
-                slice_part_x = slice_part_x_mag*east_sign
-                slice_part_x = np.nan_to_num(slice_part_x)
-                
-                projected_particle_posz = projected_vector(pos_array, L_vec_norm)
-                slice_part_z_mag = np.sqrt(np.sum((projected_particle_posz**2), axis=1))
-                slice_part_z_unit = (projected_particle_posz.T/slice_part_z_mag).T
-                slice_sign = np.dot(slice_vector_unit, slice_part_z_unit.T)
-                slice_part_z = slice_part_z_mag*slice_sign
-                slice_part_z = np.nan_to_num(slice_part_z)
+                    projected_particle_posx = projected_vector(pos_array, east_unit_vector)
+                    slice_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+                    slice_part_x_unit = (projected_particle_posx.T/slice_part_x_mag).T
+                    east_sign = np.dot(east_unit_vector, slice_part_x_unit.T)
+                    slice_part_x = slice_part_x_mag*east_sign
+                    slice_part_x = np.nan_to_num(slice_part_x)
+                    
+                    projected_particle_posz = projected_vector(pos_array, L_vec_norm)
+                    slice_part_z_mag = np.sqrt(np.sum((projected_particle_posz**2), axis=1))
+                    slice_part_z_unit = (projected_particle_posz.T/slice_part_z_mag).T
+                    slice_sign = np.dot(slice_vector_unit, slice_part_z_unit.T)
+                    slice_part_z = slice_part_z_mag*slice_sign
+                    slice_part_z = np.nan_to_num(slice_part_z)
 
-                part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
-                part_info.update({'particle_position_z':proj_part_z})
+                    part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
+                    part_info.update({'particle_position_z':proj_part_z})
+                    
+                    center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
+                    center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
+                    
+                    center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
+                    center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
+                    
+                    center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
+                    center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
+                    center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
+                    rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
+                    center_vel_rv = center_vel_rv_mag*rv_sign
+                    
+                    center_vel_image = np.array([center_vel_x, center_vel_y])
                 
-                center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
-                center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
+                    #set vectors:
+                    myf.set_normal(proj_vector_unit)
+                    myf.set_east_vector(east_unit_vector)
+                    myf.set_north_vector(north_unit)
                 
-                center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
-                center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
-                
-                center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
-                center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
-                center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
-                rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
-                center_vel_rv = center_vel_rv_mag*rv_sign
-                
-                center_vel_image = np.array([center_vel_x, center_vel_y])
-            
-                #set vectors:
-                myf.set_normal(proj_vector_unit)
-                myf.set_east_vector(east_unit_vector)
-                myf.set_north_vector(north_unit)
-                
-            elif len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
-                import pdb
-                pdb.set_trace()
+                else:
+                    Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
+                    Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
+                    
+                    L_vec_norm = [0, 0, 1]
+
+                    part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
+                                 'particle_position':yt.YTArray([Primary_pos]).T,
+                                 'particle_velocities':yt.YTArray([Primary_vel]).T,
+                                 'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
+                                 'particle_tag':dd['particle_tag'],
+                                 'particle_form_time':dd['particle_creation_time']}
+                    pos_array = yt.YTArray([Primary_pos])
+                    east_unit_vector = [1, 0, 0]
+                    north_unit = [0, 1, 0]
+                    
+                    center_pos = Primary_pos
+                    center_vel = Primary_vel
             else:
                 import pdb
                 pdb.set_trace()
