@@ -1035,3 +1035,55 @@ def _Proj_y_velocity(field, data):
     return rv_mag
 
 yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s", sampling_type="local")
+
+def _Proj_x_mag(field, data):
+    global east_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("East vector =", east_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = (data['flash','magx'].in_units('cm/s')
+    gas_vely = (data['flash','magy'].in_units('cm/s')
+    gas_velz = (data['flash','magz'].in_units('cm/s')
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,east_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(east_vector, radial_vel_unit.T)
+    
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Proj_x_mag", function=_Proj_x_mag, units="cm/s", sampling_type="local")
+
+def _Proj_y_mag(field, data):
+    global north_vector
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    shape = np.shape(data['x'])
+    gas_velx = (data['flash','magx'].in_units('cm/s')
+    gas_vely = (data['flash','magy'].in_units('cm/s')
+    gas_velz = (data['flash','magz'].in_units('cm/s')
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,north_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(north_vector, radial_vel_unit.T)
+    
+    rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    return rv_mag
+
+yt.add_field("Proj_y_mag", function=_Proj_y_mag, units="cm/s", sampling_type="local")
