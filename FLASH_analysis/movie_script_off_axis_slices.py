@@ -182,8 +182,10 @@ if args.make_movie_pickles == 'True':
                                  'particle_tag':dd['particle_tag'][:2],
                                  'particle_form_time':dd['particle_creation_time'][:2]}
                     pos_array = yt.YTArray([Primary_pos, Secondary_pos])
-                    east_unit_vector = [1, 0, 0]
-                    north_unit = [0, 1, 0]
+                    
+                    ##CALCULATE NORTH VECTOR
+                    import pdb
+                    pdb.set_trace()
                     
                     center_pos = Primary_pos
                     center_vel = Primary_vel
@@ -249,9 +251,11 @@ if args.make_movie_pickles == 'True':
                     center_pos = Primary_pos
                     center_vel = Primary_vel
             else:
-                import pdb
-                pdb.set_trace()
+                proj_vector_unit = [0, 0, 1]
+                east_unit_vector = [1, 0, 0]
+                north_unit = [0, 1, 0]
                 center_pos = yt.YTArray([0, 0, 0], 'cm')
+                center_vel = yt.YTArray([0, 0, 0], 'cm/s')
                 has_particles = False
                 part_info = {}
                 
