@@ -272,7 +272,7 @@ if args.make_movie_pickles == 'True':
                     if len(slice_field_list) > 1:
                         slice_field_list = [slice_field_list[0]]
                 
-            slice_field_list = slice_field_list + [('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
+            slice_field_list = slice_field_list + [('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity'), ('gas', 'Proj_x_mag'), ('gas', 'Proj_y_mag')]
         
             #define sliceection region
             plot_width = yt.YTQuantity(args.plot_width, 'au')
