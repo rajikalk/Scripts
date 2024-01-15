@@ -279,7 +279,7 @@ if args.make_movie_pickles == 'True':
             
             slice_dict = {}
             for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
-                slice = yt.OffAxisSlicePlot(ds, proj_vector_unit, field, width=(plot_width.in_units('au').value, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
+                slice = yt.OffAxisSlicePlot(ds, proj_vector_unit, field, width=(float(plot_width.in_units('au').value), 'au'), center=Primary_pos, north_vector=[0, 1, 0])
                 if args.weight_field == None:
                     #thickness = (slice.bounds[1] - slice.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                     slice_array = slice.frb.data[field].in_cgs()
