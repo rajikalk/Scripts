@@ -172,6 +172,9 @@ if args.make_movie_pickles == 'True':
                 pos_array = yt.YTArray([Primary_pos, Secondary_pos])
                 east_unit_vector = [1, 0, 0]
                 north_unit = [0, 1, 0]
+                
+                center_pos = Primary_pos
+                center_vel = Primary_vel
 
                 projected_particle_posy = projected_vector(pos_array, north_unit)
                 slice_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
