@@ -1010,7 +1010,7 @@ def _Proj_x_velocity(field, data):
 
 yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s", sampling_type="local")
 
-def (field, data):
+def _Proj_y_velocity(field, data):
     global north_vector
     '''
     if np.shape(data['x']) != (16,16,16):
