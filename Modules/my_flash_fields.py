@@ -1051,7 +1051,11 @@ def _Proj_x_mag(field, data):
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,east_vector)
-    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    axis_ind = 0
+    radial_vel_mag = np.ones((1,2,3))
+    while np.shape(radial_vel_mag) != shape:
+        radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=axis_ind))
+        axis_ind = axis_ind + 1
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
     sign = np.dot(east_vector, radial_vel_unit.T)
     
@@ -1077,7 +1081,11 @@ def _Proj_y_mag(field, data):
     cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
     
     radial_vel = projected_vector(cell_vel,north_vector)
-    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    axis_ind = 0
+    radial_vel_mag = np.ones((1,2,3))
+    while np.shape(radial_vel_mag) != shape:
+        radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=axis_ind))
+        axis_ind = axis_ind + 1
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
     sign = np.dot(north_vector, radial_vel_unit.T)
     
