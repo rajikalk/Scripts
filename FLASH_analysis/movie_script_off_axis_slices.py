@@ -257,6 +257,8 @@ if args.make_movie_pickles == 'True':
                 
             del dd
             
+            myf.set_center_vel(center_vel)
+            myf.set_center_pos(center_pos)
             myf.set_normal(proj_vector_unit)
             myf.set_east_vector(east_unit_vector)
             myf.set_north_vector(north_unit)

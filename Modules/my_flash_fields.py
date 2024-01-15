@@ -11,33 +11,21 @@ normal = [0.0, 0.0, 1.0]
 north_vector = [0.0, 1.0, 0.0]
 east_vector = [1.0, 0.0, 0.0]
 
-def set_center_pos_ind(x):
+def set_center_vel(x):
     """
-    Sets the center pos ind used when calculating fields.
-    
-    Type: int
-    Default: 0
-    Options:0=center of mass, 1=particle 1, 2=particle 2.
+    Sets the center velocity when calculating fields.
     """
-    global center_pos_ind
-    global global_enc_mass
-    center_pos_ind = x
-    global_enc_mass = []
-    return center_pos_ind
-    
-def set_center_vel_ind(x):
+    global center_vel
+    center_vel = x
+    return center_vel
+
+def set_center_pos(x):
     """
-    Sets the center vel ind used when calculating fields.
-    
-    Type: int
-    Default: 0
-    Options:0=center of mass, 1=particle 1, 2=particle 2.
+    Sets the center position when calculating fields.
     """
-    global center_vel_ind
-    global global_enc_mass
-    center_vel_ind = x
-    global_enc_mass = []
-    return center_vel_ind
+    global center_pos
+    center_pos = x
+    return center_pos
 
 def set_normal(x):
     """
