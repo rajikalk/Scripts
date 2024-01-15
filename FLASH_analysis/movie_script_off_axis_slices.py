@@ -211,7 +211,7 @@ if args.make_movie_pickles == 'True':
 
                     part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
                     
-                    center_vel_proj_y = projected_vector(center_vel, north_vectors[proj_it])
+                    center_vel_proj_y = projected_vector(center_vel, north_unit)
                     center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
                     
                     center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
