@@ -237,16 +237,16 @@ if args.make_movie_pickles == 'True':
                     Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
                     Primary_mass = dd['particle_mass'][0].in_units('msun')
                     
-                    Gas_pos = yt.YTArray([region['x'].in_units('au'), region['y'].in_units('au'), region['z'].in_units('au')])
-                    Gas_vel = yt.YTArray([region['velx'].in_units('km/s'), region['vely'].in_units('km/s'), region['velz'].in_units('km/s')])
-                    Gas_mass = region['mass'].in_units('msun')
-                    
                     Primary_L = yt.YTArray([dd['particle_x_ang'].value, dd['particle_y_ang'].value, dd['particle_z_ang'].value], 'g*cm**2/s').T
                     Primary_L_norm = Primary_L/np.sqrt(np.sum(Primary_L**2))
                     #Cube around primary
                     left_corner = yt.YTArray([Primary_pos[0]-(0.5*plot_width), Primary_pos[1]-(0.5*plot_width), Primary_pos[2]-(0.5*plot_width)], 'AU')
                     right_corner = yt.YTArray([Primary_pos[0]+(0.5*plot_width), Primary_pos[1]+(0.5*plot_width), Primary_pos[2]+(0.5*plot_width)], 'AU')
                     region = ds.box(left_corner, right_corner)
+                    
+                    Gas_pos = yt.YTArray([region['x'].in_units('au'), region['y'].in_units('au'), region['z'].in_units('au')])
+                    Gas_vel = yt.YTArray([region['velx'].in_units('km/s'), region['vely'].in_units('km/s'), region['velz'].in_units('km/s')])
+                    Gas_mass = region['mass'].in_units('msun')
                     
                     #CoM position
                     CoM_pos = (np.sum(Gas_pos*Gas_mass, axis=1) + Primary_mass*Primary_pos)/(np.sum(Gas_mass) + Primary_mass)
