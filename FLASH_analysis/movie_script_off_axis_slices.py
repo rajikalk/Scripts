@@ -235,6 +235,10 @@ if args.make_movie_pickles == 'True':
                     Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
                     Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
                     
+                    #Should I used particle spin or the gas? or both?
+                    import pdb
+                    pdb.set_trace()
+                    
                     proj_vector_unit = [0, 0, 1]
 
                     part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
@@ -250,12 +254,14 @@ if args.make_movie_pickles == 'True':
                     center_pos = Primary_pos
                     center_vel = Primary_vel
             else:
+                #Calculate Gas angular momentum
+                import pdb
+                pdb.set_trace()
                 proj_vector_unit = [0, 0, 1]
                 east_unit_vector = [1, 0, 0]
                 north_unit = [0, 1, 0]
                 center_pos = yt.YTArray([0, 0, 0], 'cm')
                 center_vel = yt.YTArray([0, 0, 0], 'cm/s')
-                has_particles = False
                 part_info = {}
                 
             del dd
@@ -361,7 +367,7 @@ if args.make_movie_frames == 'True':
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
                 
-                if args.update_velocity_field != 'False':
+                if args.update_velocity_field != 'False' and len(part_info.keys())>0:
                     primary_ind = np.argmin(part_info['particle_form_time'])
                     part_velx = part_info['particle_velocities'][0][primary_ind]
                     part_vely = part_info['particle_velocities'][1][primary_ind]
