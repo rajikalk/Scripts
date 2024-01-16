@@ -235,38 +235,38 @@ if args.make_movie_pickles == 'True':
                 else:
                     Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
                     Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
+                    Primary_mass = dd['particle_mass'][0].in_units('msun')
                     
-                    #Should I used particle spin or the gas? or both? Maybe both
-                    import pdb
-                    pdb.set_trace()
+                    Gas_pos = yt.YTArray([region['x'].in_units('au'), region['y'].in_units('au'), region['z'].in_units('au')])
+                    Gas_vel = yt.YTArray([region['velx'].in_units('km/s'), region['vely'].in_units('km/s'), region['velz'].in_units('km/s')])
+                    Gas_mass = region['mass'].in_units('msun')
                     
-                    Primary_L = yt.YTArray([dd['particle_x_ang'].value, dd['particle_y_ang'].value, dd['particle_z_ang'].value], 'g*cm**2/s')
+                    Primary_L = yt.YTArray([dd['particle_x_ang'].value, dd['particle_y_ang'].value, dd['particle_z_ang'].value], 'g*cm**2/s').T
+                    Primary_L_norm = Primary_L/np.sqrt(np.sum(Primary_L**2))
                     #Cube around primary
                     left_corner = yt.YTArray([Primary_pos[0]-(0.5*plot_width), Primary_pos[1]-(0.5*plot_width), Primary_pos[2]-(0.5*plot_width)], 'AU')
                     right_corner = yt.YTArray([Primary_pos[0]+(0.5*plot_width), Primary_pos[1]+(0.5*plot_width), Primary_pos[2]+(0.5*plot_width)], 'AU')
                     region = ds.box(left_corner, right_corner)
                     
                     #CoM position
-                    CoM_x = np.sum(region['x'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_y = np.sum(region['y'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_z = np.sum(region['z'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_x = (np.sum(region['mass'].in_units('msun'))*CoM_x + dd['particle_mass'][0].in_units('msun')*Primary_pos[0])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM_y = (np.sum(region['mass'].in_units('msun'))*CoM_y + dd['particle_mass'][0].in_units('msun')*Primary_pos[1])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM_z = (np.sum(region['mass'].in_units('msun'))*CoM_z + dd['particle_mass'][0].in_units('msun')*Primary_pos[2])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM = yt.YTArray([CoM_x, CoM_y, CoM_z])
+                    CoM_pos = (np.sum(Gas_pos*Gas_mass, axis=1) + Primary_mass*Primary_pos)/(np.sum(Gas_mass) + Primary_mass)
                     
-                    CoM_x = np.sum(region['x'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_y = np.sum(region['y'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_z = np.sum(region['z'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
-                    CoM_x = (np.sum(region['mass'].in_units('msun'))*CoM_x + dd['particle_mass'][0].in_units('msun')*Primary_pos[0])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM_y = (np.sum(region['mass'].in_units('msun'))*CoM_y + dd['particle_mass'][0].in_units('msun')*Primary_pos[1])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM_z = (np.sum(region['mass'].in_units('msun'))*CoM_z + dd['particle_mass'][0].in_units('msun')*Primary_pos[2])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
-                    CoM = yt.YTArray([CoM_x, CoM_y, CoM_z])
+                    #CoM velocity
+                    CoM_vel = (np.sum(Gas_vel*Gas_mass, axis=1) + Primary_mass*Primary_vel)/(np.sum(Gas_mass) + Primary_mass)
                     
-                    dpos_part = Primary_pos - CoM
-                    dvel_
+                    dpos_part = Primary_pos - CoM_pos
+                    dpos_gas = Gas_pos.T - CoM_pos
                     
-                    proj_vector_unit = [0, 0, 1]
+                    dvel_part = Primary_vel - CoM_vel
+                    dvel_gas = Gas_vel.T - CoM_vel
+                    
+                    L_part = Primary_mass.in_units('g') * yt.YTArray(np.cross(dpos_part.in_units('cm'), dvel_part.in_units('cm/s')), 'cm**2/s')
+                    L_gas = np.sum(Gas_mass.in_units('g') * yt.YTArray(np.cross(dpos_gas.in_units('cm'), dvel_gas.in_units('cm/s')).T, 'cm**2/s'), axis=1)
+                    L_tot = L_part + L_gas
+                    proj_vector_unit =  L_tot/np.sqrt(np.sum(L_tot**2))
+                    north_unit = np.cross(proj_vector_unit, [1, 0, 0])
+                    north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
+                    east_unit_vector = np.cross(north_unit, proj_vector_unit)
 
                     part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
                                  'particle_position':yt.YTArray([Primary_pos]).T,
@@ -281,14 +281,32 @@ if args.make_movie_pickles == 'True':
                     center_pos = Primary_pos
                     center_vel = Primary_vel
             else:
-                #Calculate Gas angular momentum
-                import pdb
-                pdb.set_trace()
-                proj_vector_unit = [0, 0, 1]
-                east_unit_vector = [1, 0, 0]
-                north_unit = [0, 1, 0]
                 center_pos = yt.YTArray([0, 0, 0], 'cm')
                 center_vel = yt.YTArray([0, 0, 0], 'cm/s')
+                left_corner = yt.YTArray([center_pos[0]-(0.5*plot_width), center_pos[1]-(0.5*plot_width), center_pos[2]-(0.5*plot_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.5*plot_width), center_pos[1]+(0.5*plot_width), center_pos[2]+(0.5*plot_width)], 'AU')
+                region = ds.box(left_corner, right_corner)
+                
+                Gas_pos = yt.YTArray([region['x'].in_units('au'), region['y'].in_units('au'), region['z'].in_units('au')])
+                Gas_vel = yt.YTArray([region['velx'].in_units('km/s'), region['vely'].in_units('km/s'), region['velz'].in_units('km/s')])
+                Gas_mass = region['mass'].in_units('msun')
+                
+                #CoM position & velocity
+                center_pos = ((np.sum(Gas_pos*Gas_mass, axis=1))/(np.sum(Gas_mass))).in_units('cm')
+                center_vel = ((np.sum(Gas_vel*Gas_mass, axis=1))/(np.sum(Gas_mass))).in_units('cm/s')
+                
+                left_corner = yt.YTArray([center_pos[0]-(0.5*plot_width), center_pos[1]-(0.5*plot_width), center_pos[2]-(0.5*plot_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.5*plot_width), center_pos[1]+(0.5*plot_width), center_pos[2]+(0.5*plot_width)], 'AU')
+                region = ds.box(left_corner, right_corner)
+                
+                dpos_gas = Gas_pos.T - CoM_pos
+                dvel_gas = Gas_vel.T - CoM_vel
+                
+                L_gas = np.sum(Gas_mass.in_units('g') * yt.YTArray(np.cross(dpos_gas.in_units('cm'), dvel_gas.in_units('cm/s')).T, 'cm**2/s'), axis=1)
+                proj_vector_unit =  L_gas/np.sqrt(np.sum(L_gas**2))
+                north_unit = np.cross(proj_vector_unit, [1, 0, 0])
+                north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
+                east_unit_vector = np.cross(north_unit, proj_vector_unit)
                 part_info = {}
                 
             del dd
