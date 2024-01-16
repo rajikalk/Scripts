@@ -161,6 +161,7 @@ if args.make_movie_pickles == 'True':
             
                         #Get particle data:
             dd = ds.all_data()
+            plot_width = yt.YTQuantity(args.plot_width, 'au')
             #Load fields
             #del test_fields
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
@@ -235,9 +236,35 @@ if args.make_movie_pickles == 'True':
                     Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
                     Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
                     
-                    #Should I used particle spin or the gas? or both?
+                    #Should I used particle spin or the gas? or both? Maybe both
                     import pdb
                     pdb.set_trace()
+                    
+                    Primary_L = yt.YTArray([dd['particle_x_ang'].value, dd['particle_y_ang'].value, dd['particle_z_ang'].value], 'g*cm**2/s')
+                    #Cube around primary
+                    left_corner = yt.YTArray([Primary_pos[0]-(0.5*plot_width), Primary_pos[1]-(0.5*plot_width), Primary_pos[2]-(0.5*plot_width)], 'AU')
+                    right_corner = yt.YTArray([Primary_pos[0]+(0.5*plot_width), Primary_pos[1]+(0.5*plot_width), Primary_pos[2]+(0.5*plot_width)], 'AU')
+                    region = ds.box(left_corner, right_corner)
+                    
+                    #CoM position
+                    CoM_x = np.sum(region['x'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_y = np.sum(region['y'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_z = np.sum(region['z'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_x = (np.sum(region['mass'].in_units('msun'))*CoM_x + dd['particle_mass'][0].in_units('msun')*Primary_pos[0])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM_y = (np.sum(region['mass'].in_units('msun'))*CoM_y + dd['particle_mass'][0].in_units('msun')*Primary_pos[1])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM_z = (np.sum(region['mass'].in_units('msun'))*CoM_z + dd['particle_mass'][0].in_units('msun')*Primary_pos[2])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM = yt.YTArray([CoM_x, CoM_y, CoM_z])
+                    
+                    CoM_x = np.sum(region['x'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_y = np.sum(region['y'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_z = np.sum(region['z'].in_units('au')*region['mass'].in_units('msun'))/np.sum(region['mass'].in_units('msun'))
+                    CoM_x = (np.sum(region['mass'].in_units('msun'))*CoM_x + dd['particle_mass'][0].in_units('msun')*Primary_pos[0])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM_y = (np.sum(region['mass'].in_units('msun'))*CoM_y + dd['particle_mass'][0].in_units('msun')*Primary_pos[1])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM_z = (np.sum(region['mass'].in_units('msun'))*CoM_z + dd['particle_mass'][0].in_units('msun')*Primary_pos[2])/(np.sum(region['mass'].in_units('msun'))+dd['particle_mass'][0].in_units('msun'))
+                    CoM = yt.YTArray([CoM_x, CoM_y, CoM_z])
+                    
+                    dpos_part = Primary_pos - CoM
+                    dvel_
                     
                     proj_vector_unit = [0, 0, 1]
 
@@ -286,7 +313,6 @@ if args.make_movie_pickles == 'True':
             slice_field_list = slice_field_list + [('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity'), ('gas', 'Proj_x_mag'), ('gas', 'Proj_y_mag')]
         
             #define sliceection region
-            plot_width = yt.YTQuantity(args.plot_width, 'au')
             
             slice_dict = {}
             for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
