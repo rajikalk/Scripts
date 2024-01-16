@@ -166,6 +166,8 @@ if args.make_movie_pickles == 'True':
             #del test_fields
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 if len(dd['particle_mass']) > 1:
+                    import pdb
+                    pdb.set_trace()
                     Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
                     Secondary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[1], dd['particle_posy'].in_units('au')[1], dd['particle_posz'].in_units('au')[1]])
                     d_pos = Secondary_pos - Primary_pos
