@@ -166,14 +166,14 @@ if args.make_movie_pickles == 'True':
             #del test_fields
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 if len(dd['particle_mass']) > 1:
-                    import pdb
-                    pdb.set_trace()
-                    Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[0], dd['particle_posy'].in_units('au')[0], dd['particle_posz'].in_units('au')[0]])
-                    Secondary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[1], dd['particle_posy'].in_units('au')[1], dd['particle_posz'].in_units('au')[1]])
+                    primary_ind = np.argsort(dd['particle_creation_time'])[0]
+                    secondary_ind = np.argsort(dd['particle_creation_time'])[1]
+                    Primary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[primary_ind], dd['particle_posy'].in_units('au')[primary_ind], dd['particle_posz'].in_units('au')[primary_ind]])
+                    Secondary_pos = yt.YTArray([dd['particle_posx'].in_units('au')[secondary_ind], dd['particle_posy'].in_units('au')[secondary_ind], dd['particle_posz'].in_units('au')[secondary_ind]])
                     d_pos = Secondary_pos - Primary_pos
-
-                    Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_vely'].in_units('km/s')[0], dd['particle_velz'].in_units('km/s')[0]])
-                    Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particle_vely'].in_units('km/s')[1], dd['particle_velz'].in_units('km/s')[1]])
+                    
+                    Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[primary_ind], dd['particle_vely'].in_units('km/s')[primary_ind], dd['particle_velz'].in_units('km/s')[primary_ind]])
+                    Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[secondary_ind], dd['particle_vely'].in_units('km/s')[secondary_ind], dd['particle_velz'].in_units('km/s')[secondary_ind]])
                     d_vel = Secondary_vel - Primary_vel
                     L_vec = np.cross(d_pos, d_vel).T
                     proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
@@ -186,7 +186,7 @@ if args.make_movie_pickles == 'True':
                                  'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
                                  'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                                  'particle_tag':dd['particle_tag'][:2],
-                                 'particle_form_time':dd['particle_creation_time'][:2]}
+                                 'particle_form_time':dd['particle_creation_time'][np.argsort(dd['particle_creation_time'])[:2]]}
                     pos_array = yt.YTArray([Primary_pos, Secondary_pos])
                     
                     center_pos = Primary_pos
