@@ -184,15 +184,13 @@ if args.make_movie_pickles == 'True':
                     
                     sorted_inds = np.argsort(dd['particle_creation_time'])
                     
-                    import pdb
-                    pdb.set_trace()
                     part_info = {'particle_mass':dd['particle_mass'][sorted_inds].in_units('msun'),
-                                 'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
-                                 'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
+                                 'particle_position':yt.YTArray([dd['particle_posx'].in_units('au')[sorted_inds], dd['particle_posy'].in_units('au')[sorted_inds], dd['particle_posz'].in_units('au')[sorted_inds]]),
+                                 'particle_velocities':yt.YTArray([dd['particle_velx'].in_units('km/s')[sorted_inds], dd['particle_vely'].in_units('km/s')[sorted_inds], dd['particle_velz'].in_units('km/s')[sorted_inds]]),
                                  'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                                  'particle_tag':dd['particle_tag'][sorted_inds],
                                  'particle_form_time':dd['particle_creation_time'][sorted_inds]}
-                    pos_array = yt.YTArray([Primary_pos, Secondary_pos])
+                    pos_array = yt.YTArray([dd['particle_posx'].in_units('au')[sorted_inds], dd['particle_posy'].in_units('au')[sorted_inds], dd['particle_posz'].in_units('au')[sorted_inds]]).T
                     
                     center_pos = Primary_pos
                     center_vel = Primary_vel
