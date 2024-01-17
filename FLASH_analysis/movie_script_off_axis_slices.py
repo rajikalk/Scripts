@@ -176,7 +176,7 @@ if args.make_movie_pickles == 'True':
                     Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[secondary_ind], dd['particle_vely'].in_units('km/s')[secondary_ind], dd['particle_velz'].in_units('km/s')[secondary_ind]])
                     d_vel = Secondary_vel - Primary_vel
                     L_vec = np.cross(d_pos, d_vel).T
-                    #proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
+                    proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
                     proj_vector_unit = [0, 0, 1]
                     north_unit = np.cross(proj_vector_unit, [1, 0, 0])
                     north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
