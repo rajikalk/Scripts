@@ -104,10 +104,10 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open(pickle_file, 'wb')
+file = open("Off_axis_projected_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
-print("created pickle", pickle_file)
+print("created pickle", "Off_axis_projected_vel_"+pickle_file)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -115,7 +115,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 
-file = open(pickle_file, 'rb')
+file = open("Off_axis_projected_vel_"+pickle_file, 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
 file.close()
 
@@ -197,10 +197,10 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open(pickle_file, 'wb')
+file = open("Off_axis_true_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
-print("created pickle", pickle_file)
+print("created pickle", "Off_axis_true_vel_"+pickle_file)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -208,7 +208,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 
-file = open(pickle_file, 'rb')
+file = open("Off_axis_true_vel_"+pickle_file, 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
 file.close()
 
@@ -289,7 +289,7 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open(pickle_file, 'wb')
+file = open("Axis_aligned_true_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", pickle_file)
@@ -300,7 +300,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 
-file = open(pickle_file, 'rb')
+file = open("Axis_aligned_true_vel_"+pickle_file, 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
 file.close()
 
