@@ -26,10 +26,9 @@ pickle_file = "time_" + str(int(plot_time.value)) +".pkl"
 plot_width = 200
 quiver_arrows = 31
 axis = 'z'
-slice_thickness = 2
 colourbar_min = None
 colourbar_max = None
-standard_vel = None
+standard_vel = 10
 
 x_image_min = yt.YTQuantity(-1*plot_width/2, 'au')
 x_image_max = yt.YTQuantity(plot_width/2, 'au')
