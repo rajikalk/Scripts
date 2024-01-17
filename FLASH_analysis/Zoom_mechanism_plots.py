@@ -64,33 +64,62 @@ Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particl
 d_vel = Secondary_vel - Primary_vel
 L_vec = np.cross(d_pos, d_vel).T
 L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
+north_unit = np.cross(proj_vector_unit, [1, 0, 0])
+north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
+east_unit_vector = np.cross(north_unit, proj_vector_unit)
 
-
-part_info = {'particle_mass':dd['particle_mass'].in_units('msun'),
+part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
              'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
              'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
              'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
-             'particle_tag':dd['particle_tag'],
-             'particle_form_time':dd['particle_creation_time']}
+             'particle_tag':dd['particle_tag'][:2],
+             'particle_form_time':dd['particle_creation_time'][np.argsort(dd['particle_creation_time'])[:2]]}
 pos_array = yt.YTArray([Primary_pos, Secondary_pos])
-east_unit_vector = [1, 0, 0]
-north_unit = [0, 1, 0]
 
-sliceected_particle_posy = projected_vector(pos_array, north_unit)
-slice_part_y_mag = np.sqrt(np.sum((sliceected_particle_posy**2), axis=1))
-slice_part_y_unit = (sliceected_particle_posy.T/slice_part_y_mag).T
+center_pos = Primary_pos
+center_vel = Primary_vel
+
+projected_particle_posy = projected_vector(pos_array, north_unit)
+slice_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+slice_part_y_unit = (projected_particle_posy.T/slice_part_y_mag).T
 north_sign = np.dot(north_unit, slice_part_y_unit.T)
 slice_part_y = slice_part_y_mag*north_sign
 slice_part_y = np.nan_to_num(slice_part_y)
 
-sliceected_particle_posx = projected_vector(pos_array, east_unit_vector)
-slice_part_x_mag = np.sqrt(np.sum((sliceected_particle_posx**2), axis=1))
-slice_part_x_unit = (sliceected_particle_posx.T/slice_part_x_mag).T
+projected_particle_posx = projected_vector(pos_array, east_unit_vector)
+slice_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+slice_part_x_unit = (projected_particle_posx.T/slice_part_x_mag).T
 east_sign = np.dot(east_unit_vector, slice_part_x_unit.T)
 slice_part_x = slice_part_x_mag*east_sign
 slice_part_x = np.nan_to_num(slice_part_x)
 
+projected_particle_posz = projected_vector(pos_array, proj_vector_unit)
+slice_part_z_mag = np.sqrt(np.sum((projected_particle_posz**2), axis=1))
+slice_part_z_unit = (projected_particle_posz.T/slice_part_z_mag).T
+slice_sign = np.dot(proj_vector_unit, slice_part_z_unit.T)
+slice_part_z = slice_part_z_mag*slice_sign
+slice_part_z = np.nan_to_num(slice_part_z)
+
 part_info['particle_position'] = yt.YTArray([slice_part_x, slice_part_y])
+
+center_vel_proj_y = projected_vector(center_vel, north_unit)
+center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
+
+center_vel_proj_x = projected_vector(center_vel, east_unit_vector)
+center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
+
+center_vel_proj_rv = projected_vector(center_vel, proj_vector_unit)
+center_vel_rv_mag = np.sqrt(np.sum(center_vel_proj_rv**2))
+center_vel_rv_unit = center_vel_proj_rv/center_vel_rv_mag
+rv_sign = np.dot(proj_vector_unit, center_vel_rv_unit)
+center_vel_rv = center_vel_rv_mag*rv_sign
+
+center_vel_image = np.array([center_vel_x, center_vel_y])
+
+#set vectors:
+myf.set_normal(proj_vector_unit)
+myf.set_east_vector(east_unit_vector)
+myf.set_north_vector(north_unit)
 
 slice_field_list = [('flash', 'dens'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity'), ('gas', 'Proj_x_mag'), ('gas', 'Proj_y_mag')]
 #slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
@@ -277,6 +306,13 @@ file_name = "Off_axis_True_vel_" + str(int(plot_time.value)) +".jpg"
 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
 
 #===================Axis aligned
+part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
+             'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
+             'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
+             'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
+             'particle_tag':dd['particle_tag'][:2],
+             'particle_form_time':dd['particle_creation_time'][np.argsort(dd['particle_creation_time'])[:2]]}
+
 slice_field_list = [('flash', 'dens'), ('flash', 'velx'), ('flash', 'vely'), ('flash', 'magx'), ('flash', 'magy')]
 #slice_field_list = slice_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+axis not in field[1])]
 

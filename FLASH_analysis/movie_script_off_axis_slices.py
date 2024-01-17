@@ -177,7 +177,7 @@ if args.make_movie_pickles == 'True':
                     d_vel = Secondary_vel - Primary_vel
                     L_vec = np.cross(d_pos, d_vel).T
                     proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
-                    proj_vector_unit = [0, 0, 1]
+                    #proj_vector_unit = [0, 0, 1]
                     north_unit = np.cross(proj_vector_unit, [1, 0, 0])
                     north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
                     east_unit_vector = np.cross(north_unit, proj_vector_unit)
