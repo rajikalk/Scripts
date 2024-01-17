@@ -22,7 +22,7 @@ def projected_vector(vector, slice_vector):
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 plot_time = yt.YTQuantity(4220, 'yr')
-pickle_file = save_dir + "time_" + str(int(plot_time.value)) +".pkl"
+pickle_file = "time_" + str(int(plot_time.value)) +".pkl"
 plot_width = 200
 quiver_arrows = 1
 axis = 'z'
@@ -104,7 +104,7 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open("Off_axis_projected_vel_"+pickle_file, 'wb')
+file = open(save_dir + "Off_axis_projected_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", "Off_axis_projected_vel_"+pickle_file)
@@ -197,7 +197,7 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open("Off_axis_true_vel_"+pickle_file, 'wb')
+file = open(save_dir + "Off_axis_true_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", "Off_axis_true_vel_"+pickle_file)
@@ -289,7 +289,7 @@ for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     sto.result = slice_array
 
 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, slice_dict[list(slice_dict.keys())[1]], slice_dict[list(slice_dict.keys())[2]], no_of_quivers=quiver_arrows)
-file = open("Axis_aligned_true_vel_"+pickle_file, 'wb')
+file = open(save_dir + "Axis_aligned_true_vel_"+pickle_file, 'wb')
 pickle.dump((X_image, Y_image, slice_dict[list(slice_dict.keys())[0]], slice_dict[list(slice_dict.keys())[3]], slice_dict[list(slice_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, plot_time), file)
 file.close()
 print("created pickle", pickle_file)
