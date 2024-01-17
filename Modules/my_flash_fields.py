@@ -981,6 +981,9 @@ def _Proj_x_velocity(field, data):
         print("East vector =", east_vector)
     '''
     shape = np.shape(data['x'])
+    if shape != (16, 16, 16):
+        import pdb
+        pdb.set_trace()
     gas_velx = (data['flash','velx'].in_units('cm/s')-center_vel[0]).flatten()
     gas_vely = (data['flash','vely'].in_units('cm/s')-center_vel[1]).flatten()
     gas_velz = (data['flash','velz'].in_units('cm/s')-center_vel[2]).flatten()
@@ -1007,6 +1010,9 @@ def _Proj_y_velocity(field, data):
         print("North vector =", north_vector)
     '''
     shape = np.shape(data['x'])
+    if shape != (16, 16, 16):
+        import pdb
+        pdb.set_trace()
     gas_velx = (data['flash','velx'].in_units('cm/s')-center_vel[0]).flatten()
     gas_vely = (data['flash','vely'].in_units('cm/s')-center_vel[1]).flatten()
     gas_velz = (data['flash','velz'].in_units('cm/s')-center_vel[2]).flatten()
@@ -1033,6 +1039,9 @@ def _Proj_x_mag(field, data):
         print("East vector =", east_vector)
     '''
     shape = np.shape(data['x'])
+    if shape != (16, 16, 16):
+        import pdb
+        pdb.set_trace()
     gas_velx = data['flash','magx'].in_units('gauss').flatten()
     gas_vely = data['flash','magy'].in_units('gauss').flatten()
     gas_velz = data['flash','magz'].in_units('gauss').flatten()
@@ -1059,6 +1068,9 @@ def _Proj_y_mag(field, data):
         print("North vector =", north_vector)
     '''
     shape = np.shape(data['x'])
+    if shape != (16, 16, 16):
+        import pdb
+        pdb.set_trace()
     gas_velx = data['flash','magx'].in_units('gauss').flatten()
     gas_vely = data['flash','magy'].in_units('gauss').flatten()
     gas_velz = data['flash','magz'].in_units('gauss').flatten()
