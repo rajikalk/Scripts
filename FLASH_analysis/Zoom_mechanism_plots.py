@@ -63,7 +63,7 @@ Primary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[0], dd['particle_
 Secondary_vel = yt.YTArray([dd['particle_velx'].in_units('km/s')[1], dd['particle_vely'].in_units('km/s')[1], dd['particle_velz'].in_units('km/s')[1]])
 d_vel = Secondary_vel - Primary_vel
 L_vec = np.cross(d_pos, d_vel).T
-L_vec_norm = L_vec/np.sqrt(np.sum(L_vec**2))
+proj_vector_unit = L_vec/np.sqrt(np.sum(L_vec**2))
 north_unit = np.cross(proj_vector_unit, [1, 0, 0])
 north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
 east_unit_vector = np.cross(north_unit, proj_vector_unit)
@@ -127,7 +127,7 @@ slice_field_list = [('flash', 'dens'), ('gas', 'Proj_x_velocity'), ('gas', 'Proj
 slice_dict = {}
 for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     #print("Projecting field", field, "on rank", rank)
-    slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
+    slc = yt.OffAxisSlicePlot(ds, proj_vector_unit, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
     slice_array = slc.frb.data[field].in_cgs()
     sto.result_id = field[1]
     sto.result = slice_array
@@ -220,7 +220,7 @@ slice_field_list = [('flash', 'dens'), ('flash', 'velx'), ('flash', 'vely'), ('f
 slice_dict = {}
 for sto, field in yt.parallel_objects(slice_field_list, storage=slice_dict):
     #print("Projecting field", field, "on rank", rank)
-    slc = yt.OffAxisSlicePlot(ds, L_vec_norm, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
+    slc = yt.OffAxisSlicePlot(ds, proj_vector_unit, field, width=(plot_width, 'au'), center=Primary_pos, north_vector=[0, 1, 0])
     slice_array = slc.frb.data[field].in_cgs()
     sto.result_id = field[1]
     sto.result = slice_array
