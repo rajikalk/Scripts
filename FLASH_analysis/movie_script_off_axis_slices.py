@@ -182,14 +182,12 @@ if args.make_movie_pickles == 'True':
                     north_unit = north_unit/np.sqrt(np.sum(north_unit**2))
                     east_unit_vector = np.cross(north_unit, proj_vector_unit)
 
-                    part_info = {'particle_mass':dd['particle_mass'][:2].in_units('msun'),
+                    part_info = {'particle_mass':dd['particle_mass'][np.argsort(dd['particle_creation_time'])[:2]].in_units('msun'),
                                  'particle_position':yt.YTArray([Primary_pos, Secondary_pos]).T,
                                  'particle_velocities':yt.YTArray([Primary_vel, Secondary_vel]).T,
                                  'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
-                                 'particle_tag':dd['particle_tag'][:2],
+                                 'particle_tag':dd['particle_tag'][np.argsort(dd['particle_creation_time'])[:2]],
                                  'particle_form_time':dd['particle_creation_time'][np.argsort(dd['particle_creation_time'])[:2]]}
-                    import pdb
-                    pdb.set_trace()
                     pos_array = yt.YTArray([Primary_pos, Secondary_pos])
                     
                     center_pos = Primary_pos
