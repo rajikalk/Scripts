@@ -847,14 +847,14 @@ def _Radial_velocity_wrt_primary(field, data):
         
         print("np.shape(v_vec.T)=", np.shape(v_vec.T), "np.shape(r_vec.T)=", np.shape(r_vec.T))
         if len(v_vec.T) == 0:
-            import pdb
-            pdb.set_trace()
-        rad_vel = projected_vector(v_vec.T, r_vec.T)
-        if np.shape(rad_vel) == (16, 16, 16, 3):
-            rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
+            rad_vel_mag = yt.YTArray([], 'cm/s')
         else:
-            rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
-        del r_vec, v_vec, rad_vel
+            rad_vel = projected_vector(v_vec.T, r_vec.T)
+            if np.shape(rad_vel) == (16, 16, 16, 3):
+                rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
+            else:
+                rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=1)).value, 'cm/s')
+            del r_vec, v_vec, rad_vel
     else:
         rad_vel_mag = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'cm/s')
     return rad_vel_mag
