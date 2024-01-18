@@ -845,7 +845,7 @@ def _Radial_velocity_wrt_primary(field, data):
         dot = dot_x + dot_y + dot_z
         sign = np.sign(dot)
         
-        rad_vel = projected_vector(v_vec.T, r_vec.T)
+        rad_vel = projected_vector(v_vec, r_vec.T)
         if np.shape(rad_vel) == (16, 16, 16, 3):
             rad_vel_mag = sign*yt.YTArray(np.sqrt(np.sum(rad_vel**2, axis=3)).value, 'cm/s')
         else:
