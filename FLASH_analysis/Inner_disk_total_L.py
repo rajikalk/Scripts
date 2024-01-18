@@ -179,9 +179,9 @@ if args.make_movie_pickles == 'True':
             Radius_field = disk['radius'].in_units('AU')
             Total_L.append(np.sum(disk[args.profile_field]))
             Mean_L.append(np.mean(disk[args.profile_field]))
-            spec_field = args.profile_field.split('_cyl')[0] + '_spec'
-            Total_L_spec.append(np.sum(disk[spec_field]))
-            Mean_L_spec.append(np.mean(disk[spec_field]))
+            #spec_field = args.profile_field.split('_cyl')[0] + '_spec'
+            #Total_L_spec.append(np.sum(disk[spec_field]))
+            #Mean_L_spec.append(np.mean(disk[spec_field]))
             Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary_div_v_kep']))
             Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary_div_v_kep']))
             Mean_rel_vel.append(np.mean(disk['Relative_keplerian_velocity_wrt_primary_full_v']))
