@@ -69,24 +69,25 @@ for mach_lab in Mach_labels:
 
         pickle_file = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/Relative_keplerian_velocity/gathered_profile.pkl'
         
-        file = open(pickle_file, 'rb')
-        R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
-        file.close()
-        
-        axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
-        
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-        if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('Average $v_\mathrm{kep_relative}$', labelpad=-0.2)
-        else:
-            yticklabels = axs.flatten()[plot_it].get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab != '0.2' and spin_lab == '0.35':
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            plt.setp(xticklabels[-1], visible=False)
-        if mach_lab == '0.0' and spin_lab == '0.35':
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            #plt.setp(xticklabels[-1], visible=False)
+        if os.path.exists(pickle_file):
+            file = open(pickle_file, 'rb')
+            R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            file.close()
+            
+            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+            
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
+            if mach_lab == '0.0':
+                axs.flatten()[plot_it].set_ylabel('Average $v_\mathrm{kep_relative}$', labelpad=-0.2)
+            else:
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels, visible=False)
+            if mach_lab != '0.2' and spin_lab == '0.35':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                plt.setp(xticklabels[-1], visible=False)
+            if mach_lab == '0.0' and spin_lab == '0.35':
+                xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                #plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
