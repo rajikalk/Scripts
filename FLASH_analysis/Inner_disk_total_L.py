@@ -27,6 +27,7 @@ def parse_inputs():
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
     parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
+    parser.add_argument("-weight", "--weight_field", type=str, default=None)
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 10., type=float)
@@ -178,7 +179,11 @@ if args.make_movie_pickles == 'True':
             
             Radius_field = disk['radius'].in_units('AU')
             Total_L.append(np.sum(disk[args.profile_field]))
-            Mean_L.append(np.mean(disk[args.profile_field]))
+            if args.weight_field == None:
+                Mean_L.append(np.mean(disk[args.profile_field]))
+            else:
+                weighted_mean = np.sum(disk[args.profile_field]*disk[args.weight_field])/np.sum(disk[args.weight_field])
+                Mean_L.append(weighted_mean)
             #spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             #Total_L_spec.append(np.sum(disk[spec_field]))
             #Mean_L_spec.append(np.mean(disk[spec_field]))
