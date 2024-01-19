@@ -66,7 +66,7 @@ for mach_lab in Mach_labels:
 
         pickle_file = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/Relative_keplerian_velocity/gathered_profile.pkl'
         
-        file = open('gathered_profile.pkl', 'rb')
+        file = open(pickle_file, 'rb')
         R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
         file.close()
         
