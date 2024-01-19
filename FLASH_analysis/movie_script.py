@@ -394,7 +394,7 @@ if args.make_movie_frames == 'True':
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
                 plt.gca().set_aspect('equal')
 
-                if 'L_gas_wrt_primary_spec' in args.field:
+                if 'L_gas_wrt_primary_spec' in args.field or "Relative_keplerian_velocity_wrt_primary" in args.field:
                     #make contour plot
                     exp_min = np.log10(cbar_lims[0])
                     exp_max = np.log10(cbar_lims[1])
