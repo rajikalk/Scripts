@@ -492,10 +492,13 @@ if args.make_movie_frames == 'True':
 
                 if 'L_gas_wrt_primary_spec' in args.field or 'Relative_keplerian_velocity_wrt_primary' in args.field:
                     #make contour plot
-                    exp_min = np.log10(cbar_lims[0])
-                    exp_max = np.log10(cbar_lims[1])
                     n_level = 11#(exp_max-exp_min)*2 + 1
-                    contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+                    if 'L_gas_wrt_primary_spec' in args.field:
+                        exp_min = np.log10(cbar_lims[0])
+                        exp_max = np.log10(cbar_lims[1])
+                        contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+                    else:
+                        contour_levels = np.linspace(cbar_lims[0], cbar_lims[1], int(n_level))
                     CS = ax.contour(X_image,Y_image,image, locator=plt.LogLocator(), linewidths=0.5, levels=contour_levels, colors='k')
                 else:
                     if frame_no > 0 or time_val > -1.0:
