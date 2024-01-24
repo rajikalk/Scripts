@@ -81,10 +81,10 @@ for mach_lab in Mach_labels:
             for t_ind in range(len(Time_array)):
                 t_start = Time_array[t_ind] - smooth_window/2
                 t_end = Time_array[t_ind] + smooth_window/2
-                if t_start < 0:
-                    t_start = 0
-                if t_end > 10000:
-                    t_end = 10000
+                if t_start < 0.0:
+                    t_start = 0.0
+                if t_end > 10000.0:
+                    t_end = 10000.0
                 t_start_ind = np.argmin(abs(Time_array-t_start))
                 t_end_ind = np.argmin(abs(Time_array-t_end))
                 import pdb
