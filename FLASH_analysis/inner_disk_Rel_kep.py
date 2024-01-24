@@ -85,8 +85,8 @@ for mach_lab in Mach_labels:
                     t_start = 0.0
                 if t_end > 10000.0:
                     t_end = 10000.0
-                t_start_ind = np.argmin(abs(Time_array-t_start))
-                t_end_ind = np.argmin(abs(Time_array-t_end))
+                t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
+                t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
                 import pdb
                 pdb.set_trace()
             
