@@ -87,10 +87,12 @@ for mach_lab in Mach_labels:
                     t_end = 10000.0
                 t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
                 t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
-                import pdb
-                pdb.set_trace()
+                t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                T_smoothed.append(t_smooth_val)
+                Rel_kep_smoothed.append(rel_kep_smooth_val)
             
-            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+            axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
@@ -148,7 +150,24 @@ for mach_lab in Mach_labels:
             R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             
-            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+            #Calculate smoothed arrays
+            T_smoothed = []
+            Rel_kep_smoothed = []
+            for t_ind in range(len(Time_array)):
+                t_start = Time_array[t_ind] - smooth_window/2
+                t_end = Time_array[t_ind] + smooth_window/2
+                if t_start < 0.0:
+                    t_start = 0.0
+                if t_end > 10000.0:
+                    t_end = 10000.0
+                t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
+                t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
+                t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                T_smoothed.append(t_smooth_val)
+                Rel_kep_smoothed.append(rel_kep_smooth_val)
+            
+            axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
