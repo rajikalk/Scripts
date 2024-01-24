@@ -42,6 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
+smooth_window = 40
 
 #---------------------------------------------------
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
@@ -73,6 +74,21 @@ for mach_lab in Mach_labels:
             file = open(pickle_file, 'rb')
             R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
             file.close()
+            
+            #Calculate smoothed arrays
+            T_smoothed = []
+            Rel_kep_smoothed = []
+            for t_ind in range(len(Time_array)):
+                t_start = Time_array[t_ind] - smooth_window/2
+                t_end = Time_array[t_ind] + smooth_window/2
+                if t_start < 0:
+                    t_start = 0
+                if t_end > 10000:
+                    t_end = 10000
+                t_start_ind = np.argmin(abs(Time_array-t_start))
+                t_end_ind = np.argmin(abs(Time_array-t_end))
+                import pdb
+                pdb.set_trace()
             
             axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
             
@@ -107,7 +123,7 @@ axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=Tr
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim([0.58, 1.0])
-plt.savefig('Relative_kep_pro.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('Relative_kep_10_au.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
