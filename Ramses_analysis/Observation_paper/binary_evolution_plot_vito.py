@@ -59,5 +59,15 @@ for pit in range(len(pickle_files)):
     file_open.close()
     
     axs.flatten()[0].plot(particle_data['time'], particle_data['separation'], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
-    import pdb
-    pdb.set_trace()
+    mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
+    axs.flatten()[1].plot(particle_data['time'], mass_ratio, linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[2].plot(particle_data['time'], particle_data['eccentricity'], linestyle=linestyles[pit], color=colors[pit])
+
+
+axs.flatten()[0].set_xlim(left=0)
+axs.flatten()[0].legend(loc='best')
+axs.flatten()[0].set_ylabel('Separation (AU)')
+axs.flatten()[1].set_ylabel('Mass ratio (M_s/M_p)')
+axs.flatten()[2].set_ylabel('Eccentricity')
+axs.flatten()[2].set_xlabel('Time (yr)')
+plt.savefig("system_evolution.png")
