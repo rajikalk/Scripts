@@ -40,7 +40,6 @@ def parse_inputs():
 
 end_peri = 13
 args = parse_inputs()
-read_file = sys.argv[1]
 labels = ['B1*', 'B1', 'B2', 'B3']
 panel_tag = ['a)', 'b)', 'c)', 'd)']
 linestyles = [':', '-', '-', '-']
