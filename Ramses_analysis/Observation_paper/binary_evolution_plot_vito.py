@@ -75,13 +75,13 @@ for pit in range(len(pickle_files)):
 
 
 axs.flatten()[0].set_xlim(left=0)
-axs.flatten()[0].legend(loc='best')
 axs.flatten()[0].set_ylabel('Separation (AU)')
-axs.flatten()[1].set_ylabel('Total Stellar Mass (M$_\odot$)')
+axs.flatten()[1].set_ylabel('Total Mass (M$_\odot$)')
 axs.flatten()[1].set_ylim(bottom=0)
+axs.flatten()[1].legend(loc='best')
 axs.flatten()[2].set_ylabel('Mass ratio (M$_s$/M$_p$)')
-axs.flatten()[2].set_ylim([0, 1])
+axs.flatten()[2].set_ylim([0, 1.1])
 axs.flatten()[3].set_ylabel('Eccentricity')
 axs.flatten()[3].set_ylim([0.2, 1.1])
 axs.flatten()[3].set_xlabel('Time since Primary star formation (yr)')
-plt.savefig("system_evolution.png", bbox_inches='tight', pad_inches=0.02)
+plt.savefig("system_evolution.pdf", bbox_inches='tight', pad_inches=0.02)
