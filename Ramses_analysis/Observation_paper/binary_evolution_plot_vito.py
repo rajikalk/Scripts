@@ -58,6 +58,10 @@ for pit in range(len(pickle_files)):
     particle_data, line_counter, tag = pickle.load(file_open)
     file_open.close()
     
+    if labels[pit] == 'B1':
+        import pdb
+        pdb.set_trace()
+    
     axs.flatten()[0].semilogy(particle_data['time'], particle_data['separation'], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
     if labels[pit] != 'B2':
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
@@ -73,6 +77,6 @@ axs.flatten()[0].set_ylabel('Separation (AU)')
 axs.flatten()[1].set_ylabel('Mass ratio (M_s/M_p)')
 axs.flatten()[1].set_ylim([0, 1])
 axs.flatten()[2].set_ylabel('Eccentricity')
-axs.flatten()[2].set_ylim([0.2, 1.4])
+axs.flatten()[2].set_ylim([0.2, 1.1])
 axs.flatten()[2].set_xlabel('Time (yr)')
 plt.savefig("system_evolution.png", bbox_inches='tight', pad_inches=0.02)
