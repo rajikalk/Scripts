@@ -46,17 +46,18 @@ panel_tag = ['a)', 'b)', 'c)', 'd)']
 linestyles = [':', '-', '-', '-']
 colors = ['b', 'b', 'orange', 'g']
 
-pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/High_resolution/Remade_pickles/reduced_system_data.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/Remade_pickles/reduced_system_data.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_49/Remade_pickles/reduced_system_data.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_164/Remade_pickles/reduced_system_data.pkl']
+pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/High_resolution/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_49/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_164/Remade_pickles/particle_data_neat.pkl']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, two_col_width), sharex=True, sharey=False)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-for pickle_file in pickle_files:
-    file_open = open(pickle_file, 'rb')
-    reduced_systems_data = pickle.load(file_open)
+for pit in range(len(pickle_files)):
+    file_open = open(pickle_files[pit], 'rb')
+    particle_data, line_counter, tag = pickle.load(file_open)
     file_open.close()
     
+    axs.flatten()[0].plot(particle_data['time'], particle_data['separation'], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
     import pdb
     pdb.set_trace()
