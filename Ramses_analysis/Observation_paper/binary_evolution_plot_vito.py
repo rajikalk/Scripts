@@ -68,13 +68,14 @@ for pit in range(len(pickle_files)):
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
     else:
         mass_ratio = particle_data['mass'][0]/particle_data['mass'][1]
+        T_end = particle_data['time'][-1]
     total_mass = np.nansum(particle_data['mass'][:2], axis=0)
     axs.flatten()[1].plot(particle_data['time'][:end_time_ind], total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
     axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
     axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
 
 
-axs.flatten()[0].set_xlim(left=0)
+axs.flatten()[0].set_xlim([0, T_end])
 axs.flatten()[0].set_ylabel('Separation (AU)')
 axs.flatten()[1].set_ylabel('Total Mass (M$_\odot$)')
 axs.flatten()[1].set_ylim(bottom=0)
