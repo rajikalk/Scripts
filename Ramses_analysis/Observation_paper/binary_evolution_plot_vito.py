@@ -59,16 +59,17 @@ for pit in range(len(pickle_files)):
     file_open.close()
     
     if labels[pit] == 'B1':
-        import pdb
-        pdb.set_trace()
+        end_time_ind = np.argmin(abs(particle_data['time'].value - 110000))
+    else:
+        end_time_ind = len(particle_data['time']) - 1
     
-    axs.flatten()[0].semilogy(particle_data['time'], particle_data['separation'], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[0].semilogy(particle_data['time'][:end_time_ind], particle_data['separation'][:end_time_ind], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
     if labels[pit] != 'B2':
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
     else:
         mass_ratio = particle_data['mass'][0]/particle_data['mass'][1]
-    axs.flatten()[1].plot(particle_data['time'], mass_ratio, linestyle=linestyles[pit], color=colors[pit])
-    axs.flatten()[2].plot(particle_data['time'], particle_data['eccentricity'], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
 
 
 axs.flatten()[0].set_xlim(left=0)
