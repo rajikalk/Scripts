@@ -49,7 +49,6 @@ pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/High_resolu
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, two_col_width), sharex=True, sharey=False)
-iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
