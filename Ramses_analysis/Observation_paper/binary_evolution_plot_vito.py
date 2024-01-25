@@ -44,7 +44,7 @@ args = parse_inputs()
 labels = ['B1*', 'B1', 'B2', 'B3']
 panel_tag = ['a)', 'b)', 'c)', 'd)']
 linestyles = [':', '-', '-', '-']
-colors = ['b', 'b', 'orange', 'g']
+colors = ['g', 'g', 'b', 'magenta']
 
 pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/High_resolution/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_49/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_164/Remade_pickles/particle_data_neat.pkl']
 
