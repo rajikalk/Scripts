@@ -49,7 +49,7 @@ colors = ['b', 'b', 'orange', 'g']
 pickle_files = ['/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/High_resolution/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_91/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_49/Remade_pickles/particle_data_neat.pkl', '/groups/astro/rlk/rlk/Analysis_plots/Ramses/Sink_164/Remade_pickles/particle_data_neat.pkl']
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, two_col_width), sharex=True, sharey=False)
+fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, two_col_width), sharex=True, sharey=False)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -68,16 +68,20 @@ for pit in range(len(pickle_files)):
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
     else:
         mass_ratio = particle_data['mass'][0]/particle_data['mass'][1]
-    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
-    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
+    total_mass = np.nansum(particle_data['mass'][:2], axis=0)
+    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit])
 
 
 axs.flatten()[0].set_xlim(left=0)
 axs.flatten()[0].legend(loc='best')
 axs.flatten()[0].set_ylabel('Separation (AU)')
-axs.flatten()[1].set_ylabel('Mass ratio (M_s/M_p)')
-axs.flatten()[1].set_ylim([0, 1])
-axs.flatten()[2].set_ylabel('Eccentricity')
-axs.flatten()[2].set_ylim([0.2, 1.1])
-axs.flatten()[2].set_xlabel('Time (yr)')
+axs.flatten()[1].set_ylabel('Total Stellar Mass (M$_\odot$)')
+axs.flatten()[1].set_ylim(bottom=0)
+axs.flatten()[2].set_ylabel('Mass ratio (M$_s$/M$_p$)')
+axs.flatten()[2].set_ylim([0, 1])
+axs.flatten()[3].set_ylabel('Eccentricity')
+axs.flatten()[3].set_ylim([0.2, 1.1])
+axs.flatten()[3].set_xlabel('Time since Primary star formation (yr)')
 plt.savefig("system_evolution.png", bbox_inches='tight', pad_inches=0.02)
