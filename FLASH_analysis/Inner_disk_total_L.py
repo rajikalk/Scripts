@@ -172,7 +172,9 @@ if args.make_movie_pickles == 'True':
             
             Separation.append(sep)
                 
-            normal = yt.YTArray([0, 0, 1], '')
+            #normal = yt.YTArray([0, 0, 1], '')
+            import pdb
+            pdb.set_trace()
             height = yt.YTQuantity(args.disk_height, 'au')
             radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
