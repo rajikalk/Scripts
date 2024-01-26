@@ -42,7 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-smooth_window = 200
+smooth_window = 300
 
 #---------------------------------------------------
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
@@ -92,6 +92,7 @@ for mach_lab in Mach_labels:
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
+            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
@@ -134,7 +135,7 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
 line_styles = ['-', '--', '-.', ':']
-smooth_window = 200
+smooth_window = 300
 plot_it = -1
 xmax= 0
 ymax = 0
@@ -168,6 +169,7 @@ for mach_lab in Mach_labels:
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
+            axs.flatten()[plot_it].plot(Time_array, Mean_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
