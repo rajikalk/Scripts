@@ -42,7 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-smooth_window = 40
+smooth_window = 100
 
 #---------------------------------------------------
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
