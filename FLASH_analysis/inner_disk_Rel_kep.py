@@ -97,7 +97,7 @@ for mach_lab in Mach_labels:
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
-                axs.flatten()[plot_it].set_ylabel('Average $v_{\mathrm{kep_relative}}$', labelpad=-0.2)
+                axs.flatten()[plot_it].set_ylabel('Relative $v_{\mathrm{kep}}$', labelpad=-0.2)
             else:
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels, visible=False)
@@ -174,7 +174,7 @@ for mach_lab in Mach_labels:
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
-                axs.flatten()[plot_it].set_ylabel('Average $v_{\mathrm{kep_relative}}$', labelpad=-0.2)
+                axs.flatten()[plot_it].set_ylabel('Relative $v_{\mathrm{kep}}$', labelpad=-0.2)
             else:
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
                 plt.setp(yticklabels, visible=False)
