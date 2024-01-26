@@ -124,7 +124,7 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.58, 1.0])
+axs.flatten()[plot_it-1].set_ylim([0.78, 1.0])
 plt.savefig('Relative_kep_10_au.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
@@ -199,7 +199,7 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.58, 0.75])
+axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
 plt.savefig('Relative_kep_pro_5au.pdf', bbox_inches='tight', pad_inches=0.02)
 
 
