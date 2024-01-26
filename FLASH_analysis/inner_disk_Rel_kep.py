@@ -42,7 +42,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-smooth_window = 100
+smooth_window = 200
 
 #---------------------------------------------------
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
@@ -134,7 +134,7 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
 line_styles = ['-', '--', '-.', ':']
-smooth_window = 120
+smooth_window = 200
 plot_it = -1
 xmax= 0
 ymax = 0
