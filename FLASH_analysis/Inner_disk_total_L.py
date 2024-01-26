@@ -27,6 +27,7 @@ def parse_inputs():
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
     parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
+    parser.add_argument("-height", "--disk_height", type=float, default=20)
     parser.add_argument("-weight", "--weight_field", type=str, default=None)
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
@@ -172,7 +173,7 @@ if args.make_movie_pickles == 'True':
             Separation.append(sep)
                 
             normal = yt.YTArray([0, 0, 1], '')
-            height = yt.YTQuantity(args.inner_radius_threshold, 'au')
+            height = yt.YTQuantity(args.disk_height, 'au')
             radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
             R_sink = 2.5*np.min(disk['dx']).in_units('au')
