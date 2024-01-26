@@ -95,7 +95,7 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-            if mach_lab == '0.1':
+            if mach_lab == '0.0':
                 axs.flatten()[plot_it].set_ylabel('Average $v_\mathrm{kep_relative}$', labelpad=-0.2)
             else:
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
@@ -107,7 +107,7 @@ for mach_lab in Mach_labels:
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
                 #plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[1].legend(loc='best')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -170,7 +170,7 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-            if mach_lab == '0.1':
+            if mach_lab == '0.0':
                 axs.flatten()[plot_it].set_ylabel('Average $v_\mathrm{kep_relative}$', labelpad=-0.2)
             else:
                 yticklabels = axs.flatten()[plot_it].get_yticklabels()
@@ -182,7 +182,7 @@ for mach_lab in Mach_labels:
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
                 #plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[0].legend(loc='best')
+axs.flatten()[1].legend(loc='best')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
