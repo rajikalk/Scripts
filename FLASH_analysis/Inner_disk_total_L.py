@@ -173,8 +173,8 @@ if args.make_movie_pickles == 'True':
             Separation.append(sep)
                 
             #normal = yt.YTArray([0, 0, 1], '')
-            import pdb
-            pdb.set_trace()
+            L_primary = yt.YTArray([dd['particle_x_ang'][primary_ind], dd['particle_y_ang'][primary_ind], dd['particle_z_ang'][primary_ind]])
+            normal = L_primary/np.sqrt(np.sum(L_primary**2))
             height = yt.YTQuantity(args.disk_height, 'au')
             radius = yt.YTQuantity(args.inner_radius_threshold, 'au')
             disk = ds.disk(center, normal, radius, height)
