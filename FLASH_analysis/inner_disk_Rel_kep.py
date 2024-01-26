@@ -134,6 +134,7 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
 line_styles = ['-', '--', '-.', ':']
+smooth_window = 120
 plot_it = -1
 xmax= 0
 ymax = 0
