@@ -24,7 +24,6 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
-    parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
     parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary_spec')
     parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
     parser.add_argument("-height", "--disk_height", type=float, default=20)
@@ -119,16 +118,14 @@ if args.make_movie_pickles == 'True':
     CW.Barrier()
     
     no_frames = len(m_times)
-    start_frame = m_times.index(start_time)
+    #start_frame = m_times.index(start_time)
     #m_times = m_times[start_frame:]
     usable_files = mym.find_files(m_times, files)
-    frames = list(range(start_frame, no_frames))
-
+    
     sys.stdout.flush()
     CW.Barrier()
     
     usable_files = mym.find_files(m_times, files)
-    frames = list(range(len(usable_files)))
     no_frames = len(usable_files)
     print('found usable files for frames')
 
