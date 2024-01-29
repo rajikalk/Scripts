@@ -104,6 +104,7 @@ if args.make_movie_pickles == 'True':
             Separation = list(np.array(Separation)[sorted_inds])
             
             start_time = np.max(Time_array)
+            m_times = sorted(list(set(m_times).difference(set(Time_array))))
         else:
             start_time = m_times[0]
     else:
@@ -119,7 +120,7 @@ if args.make_movie_pickles == 'True':
     
     no_frames = len(m_times)
     start_frame = m_times.index(start_time)
-    m_times = m_times[start_frame:]
+    #m_times = m_times[start_frame:]
     usable_files = mym.find_files(m_times, files)
     frames = list(range(start_frame, no_frames))
 
