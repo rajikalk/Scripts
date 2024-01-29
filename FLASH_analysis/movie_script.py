@@ -255,13 +255,13 @@ if args.make_movie_pickles == 'True':
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_int, "on rank", rank)
+                print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_int, "of", len(m_times))
+                print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
     print("finished making movie frame pickles on rank", rank)
     
@@ -309,7 +309,7 @@ if args.make_movie_frames == 'True':
         if rit == size:
             rit = 0
         if rank == rit:
-            frame_no = int(pickle_file.split('_')[-1].split('.')[0])
+            frame_no = int(pickle_file.split('_')[-1].split('.')[0]) + args.start_frame
             if args.plot_time != None:
                 file_name = save_dir + "plot_time_" + ("%06d" % frame_no)
             else:
