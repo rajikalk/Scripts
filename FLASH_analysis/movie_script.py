@@ -320,7 +320,7 @@ if args.make_movie_frames == 'True':
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
                 
-                if args.update_velocity_field != 'False':
+                if args.update_velocity_field != 'False' and len(part_info.keys())!=0:
                     primary_ind = np.argmin(part_info['particle_form_time'])
                     part_velx = part_info['particle_velocities'][0][primary_ind]
                     part_vely = part_info['particle_velocities'][1][primary_ind]
