@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
-    parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary')
+    parser.add_argument("-field", "--profile_field", type=str, default='L_gas_wrt_primary_spec')
     parser.add_argument("-inner_radius", "--inner_radius_threshold", type=float, default=20)
     parser.add_argument("-height", "--disk_height", type=float, default=20)
     parser.add_argument("-weight", "--weight_field", type=str, default=None)
@@ -190,10 +190,10 @@ if args.make_movie_pickles == 'True':
             #spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             Total_L_spec.append(np.sum(disk['mass']))
             Mean_L_spec.append(np.mean(disk['mass']))
-            Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary_div_v_kep']))
-            Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary_div_v_kep']))
-            Mean_rel_vel.append(np.mean(disk['Relative_keplerian_velocity_wrt_primary_full_v']))
-            Min_rel_vel.append(np.min(disk['Relative_keplerian_velocity_wrt_primary_full_v']))
+            Mean_rad_vel.append(np.mean(disk[args.profile_field]))
+            Min_rad_vel.append(np.min(disk[args.profile_field]))
+            Mean_rel_vel.append(np.mean(disk[args.profile_field]))
+            Min_rel_vel.append(np.min(disk[args.profile_field]))
             Mass_all.append(np.sum(disk['mass'].in_units('msun')))
 
             pickle_file = 'profile_'+str(rank)+'.pkl'

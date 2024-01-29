@@ -294,3 +294,29 @@ for spin_lab in Spin_labels:
 axs.flatten()[plot_it].set_xlim([0, 10000])
 axs.flatten()[plot_it].set_ylim([0.58,1])
 plt.savefig('Rel_kep_10_and_5_au.pdf', bbox_inches='tight')
+
+#======================================================================================================================
+#Plotting disk mass and specific angular momentum
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+line_styles = ['-', '--', '-.', ':']
+plot_it = -1
+xmax= 0
+ymax = 0
+for mach_lab in Mach_labels:
+    plot_it = plot_it + 1
+    axs.flatten()[plot_it].set_title('Mach='+mach_lab, pad=-0.2)
+    for spin_lab in Spin_labels:
+        axs.flatten()[plot_it].grid()
+
+        pickle_file = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
+        
+        if os.path.exists(pickle_file):
+            file = open(pickle_file, 'rb')
+            R_sink, Time_array, Total_L, Total_Mass, Mean_Mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            file.close()
