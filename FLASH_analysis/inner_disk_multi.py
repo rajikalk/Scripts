@@ -388,7 +388,7 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
-    plt.savefig('Disk_mass.pdf', bbox_inches='tight')
+    plt.savefig('Disk_h.pdf', bbox_inches='tight')
     
 axs.flatten()[0].legend(loc='upper right')
 axs.flatten()[0].set_xlim([0, 10000])
