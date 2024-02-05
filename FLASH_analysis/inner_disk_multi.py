@@ -292,6 +292,9 @@ print('saved figure Mean_Inner_disk_L_mach_comp.pdf')
 '''
 #================================================================
 #Mass comparison
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
+              '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
+              '#bcbd22', '#17becf']
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
@@ -320,7 +323,7 @@ for mach_lab in Mach_labels:
             	if np.max(Mean_L_spec) > ymax:
             		ymax = np.max(Mean_L_spec)
             '''
-            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
+            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.set_ylim([0, max_sep])
@@ -371,7 +374,7 @@ for mach_lab in Mach_labels:
                 if np.max(Mean_L_spec) > ymax:
                     ymax = np.max(Mean_L_spec)
             '''
-            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
+            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.set_ylim([0, max_sep])
