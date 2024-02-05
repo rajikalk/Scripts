@@ -321,7 +321,7 @@ for mach_lab in Mach_labels:
             R_sink, Time_array, Total_L, Total_mass, Mean_L_spec, Mean_mass, Mean_L_spec, Min_L_spec, Mean_L_spec, Min_L_spec, Mass_all, Separation = pickle.load(file)
             file.close()
 
-            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
+            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         else:
             print("Couldn't open", pickle_file)
@@ -384,7 +384,7 @@ for mach_lab in Mach_labels:
             R_sink, Time_array, Total_L, Total_mass, Mean_L_spec, Mean_mass, Mean_L_spec, Min_L_spec, Mean_L_spec, Min_L_spec, Mass_all, Separation = pickle.load(file)
             file.close()
 
-            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
+            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         else:
             print("Couldn't open", pickle_file)
