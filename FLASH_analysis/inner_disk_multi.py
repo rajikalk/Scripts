@@ -315,8 +315,10 @@ for spin_lab in Spin_labels:
             if np.nanmax(Separation) > max_sep:
                 max_sep = np.nanmax(Separation)
 
-for spin_lab in Spin_labels:
-    for mach_lab in Mach_labels:
+plot_it = -1
+for mach_lab in Mach_labels:
+    plot_it = plot_it + 1
+    for spin_lab in Spin_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
         #inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
         axs.flatten()[plot_it].grid()
@@ -328,30 +330,23 @@ for spin_lab in Spin_labels:
             file.close()
             import pdb
             pdb.set_trace()
-            
+            '''
             if np.min(Mean_L_spec) < ymin:
             	ymin = np.min(Mean_L_spec)
             if spin_lab != '0.20' and mach_lab != '0.1':
             	if np.max(Mean_L_spec) > ymax:
             		ymax = np.max(Mean_L_spec)
-            
-            ax2 = axs.flatten()[plot_it].twinx()
-            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
+            '''
+            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
-            ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
-            ax2.set_ylim([0, max_sep])
-            ax2.axhline(y=20, color='k', linewidth=0.5)
+            #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
+            #ax2.set_ylim([0, max_sep])
+            #ax2.axhline(y=20, color='k', linewidth=0.5)
         else:
             print("Couldn't open", inner_pickle)
             
-        if spin_lab == '0.20':
-            axs.flatten()[plot_it].legend(loc='upper right')
         if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('h ($cm^2/s$)')
-            ax2.set_ylabel('Separation (AU)')
-            if spin_lab != '0.20':
-                yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
+            axs.flatten()[plot_it].set_ylabel('Disk Mass (M$_\odot$)')
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         
@@ -359,8 +354,8 @@ for spin_lab in Spin_labels:
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
     plt.savefig('Disk_mass.pdf', bbox_inches='tight')
     
-
-#axs.flatten()[plot_it-1].set_ylim(top=1.e24)
+axs.flatten()[0].legend(loc='upper right')
+axs.flatten()[plot_it-1].set_ylim(top=1.e24)
 axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Disk_mass.pdf', bbox_inches='tight')
