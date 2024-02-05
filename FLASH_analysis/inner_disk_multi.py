@@ -328,8 +328,7 @@ for mach_lab in Mach_labels:
             file = open(inner_pickle, 'rb')
             R_sink, Time_array, Total_L, Total_mass, Mean_mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel,  Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
             file.close()
-            import pdb
-            pdb.set_trace()
+
             '''
             if np.min(Mean_L_spec) < ymin:
             	ymin = np.min(Mean_L_spec)
