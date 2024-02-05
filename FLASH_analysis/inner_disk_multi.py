@@ -320,7 +320,7 @@ for mach_lab in Mach_labels:
             	if np.max(Mean_L_spec) > ymax:
             		ymax = np.max(Mean_L_spec)
             '''
-            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)], alpha=0.8)
+            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.set_ylim([0, max_sep])
