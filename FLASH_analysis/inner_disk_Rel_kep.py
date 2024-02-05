@@ -324,7 +324,7 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         else:
-            print("Couldn't open", inner_pickle)
+            print("Couldn't open", pickle_file)
         
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('Disk mass (M$_\odot$)', labelpad=-0.2)
@@ -387,7 +387,7 @@ for mach_lab in Mach_labels:
             axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)])
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         else:
-            print("Couldn't open", inner_pickle)
+            print("Couldn't open", pickle_file)
         
         if mach_lab == '0.0':
             axs.flatten()[plot_it].set_ylabel('h (m$^2$/s)', labelpad=-0.2)
