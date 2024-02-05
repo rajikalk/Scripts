@@ -294,7 +294,7 @@ print('saved figure Mean_Inner_disk_L_mach_comp.pdf')
 #Mass comparison
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
