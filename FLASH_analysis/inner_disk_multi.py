@@ -349,7 +349,6 @@ for mach_lab in Mach_labels:
         if spin_lab == '0.35':
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
         
-    plot_it = plot_it + 1
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
     plt.savefig('Disk_mass.pdf', bbox_inches='tight')
     
