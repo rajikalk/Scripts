@@ -338,7 +338,7 @@ for mach_lab in Mach_labels:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             #plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[1].legend(loc='best')
+axs.flatten()[0].legend(loc='best')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -355,7 +355,7 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
+#axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
 plt.savefig('Disk_mass.pdf', bbox_inches='tight', pad_inches=0.02)
 
 #======================================================================================================================
@@ -401,7 +401,7 @@ for mach_lab in Mach_labels:
             xticklabels = axs.flatten()[plot_it].get_xticklabels()
             #plt.setp(xticklabels[-1], visible=False)
 
-axs.flatten()[1].legend(loc='best')
+axs.flatten()[0].legend(loc='best')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -418,5 +418,5 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
+#axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
 plt.savefig('disk_h.pdf', bbox_inches='tight', pad_inches=0.02)
