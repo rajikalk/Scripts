@@ -63,7 +63,7 @@ Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 linestyles = ['-', '--', ':']
 
 #=========================================================================
-
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -289,9 +289,9 @@ axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('Mean_Inner_disk_L_mach_comp.pdf', bbox_inches='tight')
 print('saved figure Mean_Inner_disk_L_mach_comp.pdf')
-
+'''
 #================================================================
-#Specific L comparison
+#Mass comparison
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(Spin_labels), figsize=(single_col_width, single_col_width*2), sharex=True, sharey=True)
@@ -310,7 +310,7 @@ for spin_lab in Spin_labels:
         #inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            R_sink, Time_array, Total_L, Total_mass, Mean_mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             if np.nanmax(Separation) > max_sep:
                 max_sep = np.nanmax(Separation)
@@ -324,8 +324,10 @@ for spin_lab in Spin_labels:
 
         if os.path.exists(inner_pickle):
             file = open(inner_pickle, 'rb')
-            Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Separation = pickle.load(file)
+            R_sink, Time_array, Total_L, Total_mass, Mean_mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel,  Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
             file.close()
+            import pdb
+            pdb.set_trace()
             
             if np.min(Mean_L_spec) < ymin:
             	ymin = np.min(Mean_L_spec)
@@ -355,12 +357,12 @@ for spin_lab in Spin_labels:
         
     plot_it = plot_it + 1
     axs.flatten()[plot_it-1].set_xlim([0, 10000])
-    plt.savefig('Mean_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
+    plt.savefig('Disk_mass.pdf', bbox_inches='tight')
     
 
 #axs.flatten()[plot_it-1].set_ylim(top=1.e24)
 axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-plt.savefig('Mean_Inner_disk_L_mach_comp_spec.pdf', bbox_inches='tight')
-print('saved figure Mean_Inner_disk_L_mach_comp_spec.pdf')
+plt.savefig('Disk_mass.pdf', bbox_inches='tight')
+print('saved figure Disk_mass.pdf')
 
