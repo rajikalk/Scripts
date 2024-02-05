@@ -299,17 +299,6 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-for spin_lab in Spin_labels:
-    for mach_lab in Mach_labels:
-        inner_pickle = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
-        #inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
-        if os.path.exists(inner_pickle):
-            file = open(inner_pickle, 'rb')
-            R_sink, Time_array, Total_L, Total_mass, Mean_mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
-            file.close()
-            if np.nanmax(Separation) > max_sep:
-                max_sep = np.nanmax(Separation)
-
 plot_it = -1
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
