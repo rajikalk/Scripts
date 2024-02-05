@@ -320,7 +320,7 @@ for mach_lab in Mach_labels:
             	if np.max(Mean_L_spec) > ymax:
             		ymax = np.max(Mean_L_spec)
             '''
-            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
+            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
             #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
             #ax2.set_ylim([0, max_sep])
@@ -341,3 +341,53 @@ axs.flatten()[0].set_xlim([0, 10000])
 plt.savefig('Disk_mass.pdf', bbox_inches='tight')
 print('saved figure Disk_mass.pdf')
 
+#================================================================
+#h comparison
+
+plt.clf()
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+plot_it = -1
+for mach_lab in Mach_labels:
+    plot_it = plot_it + 1
+    for spin_lab in Spin_labels:
+        inner_pickle = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
+        #inner_pickle = '/home/kuruwira/fast/Analysis/Disk_L_profiles/Spin_'+spin_lab+'/Mach_'+mach_lab+'/Total_L/gathered_profile.pkl'
+        axs.flatten()[plot_it].grid()
+        #single_pickle
+
+        if os.path.exists(inner_pickle):
+            file = open(inner_pickle, 'rb')
+            R_sink, Time_array, Total_L, Total_mass, Mean_mass, Mean_L_spec, Mean_rad_vel, Min_rad_vel,  Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            file.close()
+
+            '''
+            if np.min(Mean_L_spec) < ymin:
+                ymin = np.min(Mean_L_spec)
+            if spin_lab != '0.20' and mach_lab != '0.1':
+                if np.max(Mean_L_spec) > ymax:
+                    ymax = np.max(Mean_L_spec)
+            '''
+            axs.flatten()[plot_it].plot(Time_array, Mean_L_spec, label='$\Omega t_{ff}$='+spin_lab, ls=linestyles[Spin_labels.index(spin_lab)], alpha=0.75)
+            #axs.flatten()[plot_it].semilogy(Time_array, Total_L_spec, label='$\mathcal{M}$='+mach_lab, ls=linestyles[Mach_labels.index(mach_lab)])
+            #ax2.plot(Time_array, Separation, color='k', alpha=0.20, ls=linestyles[Mach_labels.index(mach_lab)])
+            #ax2.set_ylim([0, max_sep])
+            #ax2.axhline(y=20, color='k', linewidth=0.5)
+        else:
+            print("Couldn't open", inner_pickle)
+            
+        if mach_lab == '0.0':
+            axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)')
+        if spin_lab == '0.35':
+            axs.flatten()[plot_it].set_xlabel('Time ($yr$)')
+        
+    axs.flatten()[plot_it-1].set_xlim([0, 10000])
+    plt.savefig('Disk_mass.pdf', bbox_inches='tight')
+    
+axs.flatten()[0].legend(loc='upper right')
+axs.flatten()[0].set_xlim([0, 10000])
+plt.savefig('Disk_h.pdf', bbox_inches='tight')
+print('saved figure Disk_h.pdf')
