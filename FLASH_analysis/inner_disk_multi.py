@@ -299,11 +299,6 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-plot_it = 0
-xmax= 0
-ymax = 0
-ymin = np.inf
-max_sep = 0
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         inner_pickle = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
@@ -353,9 +348,7 @@ for mach_lab in Mach_labels:
     plt.savefig('Disk_mass.pdf', bbox_inches='tight')
     
 axs.flatten()[0].legend(loc='upper right')
-axs.flatten()[plot_it-1].set_ylim(top=1.e24)
-axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
-axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[0].set_xlim([0, 10000])
 plt.savefig('Disk_mass.pdf', bbox_inches='tight')
 print('saved figure Disk_mass.pdf')
 
