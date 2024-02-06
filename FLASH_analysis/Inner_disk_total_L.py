@@ -56,14 +56,12 @@ if args.make_movie_pickles == 'True':
     
     R_sink = np.nan
     Time_array = []
-    Total_L = []
-    Total_L_spec = []
-    Mean_L = []
-    Mean_L_spec = []
+    Total_mass = []
+    Mean_mass = []
+    Mean_rel_kep = []
+    Min_rel_kep = []
     Mean_rad_vel = []
     Min_rad_vel = []
-    Mean_rel_vel = []
-    Min_rel_vel = []
     Mass_all = []
     Separation = []
 
@@ -74,36 +72,32 @@ if args.make_movie_pickles == 'True':
         if len(pickle_files) > 0:
             for pickle_file in pickle_files:
                 file = open(pickle_file, 'rb')
-                R_sink, time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, Rad_vel, Rad_vel_min, Mean_rel, Min_rel, Mass, sep = pickle.load(file)
+                R_sink_val, Time_array_val, Total_mass_val, Mean_mass_val, Mean_rel_kep_val, Min_rel_kep_val, Mean_rad_vel_val, Min_rad_vel_val, Mass_all_val, Separation_val = pickle.load(file)
                 file.close()
                 
-                Time_array = Time_array + time_val
-                Total_L = Total_L + L_tot
-                Total_L_spec = Total_L_spec + L_spec_tot
-                Mean_L = Mean_L + L_mean
-                Mean_L_spec = Mean_L_spec + L_spec_mean
-                Mean_rad_vel = Mean_rad_vel + Rad_vel
-                Min_rad_vel = Min_rad_vel + Rad_vel_min
-                Mean_rel_vel = Mean_rel_vel + Mean_rel
-                Min_rel_vel = Min_rel_vel + Min_rel
-                Mass_all = Mass_all + Mass
-                Separation = Separation + sep
+                
+                Time_array = Time_array + Time_array_val
+                Total_mass = Total_mass + Total_mass_val
+                Mean_mass = Mean_mass + Mean_mass_val
+                Mean_rel_kep = Mean_rel_kep + Mean_rel_kep_val
+                Min_rel_kep = Min_rel_kep + Min_rel_kep_val
+                Mean_rad_vel = Mean_rad_vel + Mean_rad_vel_val
+                Min_rad_vel = Min_rad_vel + Min_rad_vel_val
+                Mass_all = Mass_all + Mass_all_val
+                Separation = Separation + Separation_val
                 
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
-            Total_L = list(np.array(Total_L)[sorted_inds])
-            Total_L_spec = list(np.array(Total_L_spec)[sorted_inds])
-            Mean_L = list(np.array(Mean_L)[sorted_inds])
-            Mean_L_spec = list(np.array(Mean_L_spec)[sorted_inds])
+            Mean_mass = list(np.array(Mean_mass)[sorted_inds])
+            Mean_rel_kep = list(np.array(Mean_rel_kep)[sorted_inds])
+            Min_rel_kep = list(np.array(Min_rel_kep)[sorted_inds])
             Mean_rad_vel = list(np.array(Mean_rad_vel)[sorted_inds])
             Min_rad_vel = list(np.array(Min_rad_vel)[sorted_inds])
-            Mean_rel_vel = list(np.array(Mean_rel_vel)[sorted_inds])
-            Min_rel_vel = list(np.array(Min_rel_vel)[sorted_inds])
             Mass_all = list(np.array(Mass_all)[sorted_inds])
             Separation = list(np.array(Separation)[sorted_inds])
             
-            start_time = np.max(Time_array)
             m_times = sorted(list(set(m_times).difference(set(Time_array))))
+            start_time = np.min(m_times)
         else:
             start_time = m_times[0]
     else:
@@ -179,24 +173,24 @@ if args.make_movie_pickles == 'True':
             R_sink = 2.5*np.min(disk['dx']).in_units('au')
             
             Radius_field = disk['radius'].in_units('AU')
-            Total_L.append(np.sum(disk[args.profile_field]))
+            Total_mass.append(np.sum(disk[args.profile_field]))
             if args.weight_field == None:
-                Mean_L.append(np.mean(disk[args.profile_field]))
+                Mean_rel_kep.append(np.mean(disk[args.profile_field]))
             else:
                 weighted_mean = np.sum(disk[args.profile_field]*disk[args.weight_field])/np.sum(disk[args.weight_field])
-                Mean_L.append(weighted_mean)
+                Mean_rel_kep.append(weighted_mean)
             #spec_field = args.profile_field.split('_cyl')[0] + '_spec'
-            Total_L_spec.append(np.sum(disk['mass']))
-            Mean_L_spec.append(np.mean(disk['mass']))
-            Mean_rad_vel.append(np.mean(disk[args.profile_field]))
-            Min_rad_vel.append(np.min(disk[args.profile_field]))
-            Mean_rel_vel.append(np.mean(disk[args.profile_field]))
-            Min_rel_vel.append(np.min(disk[args.profile_field]))
+            Total_mass.append(np.sum(disk['mass']))
+            Mean_mass.append(np.mean(disk['mass']))
+            Mean_rel_kep.append(np.mean(disk[args.profile_field]))
+            Min_rel_kep.append(np.min(disk[args.profile_field]))
+            Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary']))
+            Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary']))
             Mass_all.append(np.sum(disk['mass'].in_units('msun')))
 
             pickle_file = 'profile_'+str(rank)+'.pkl'
             file = open(pickle_file, 'wb')
-            pickle.dump((R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation), file)
+            pickle.dump((R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation), file)
             file.close()
             print("Calculated angular momentum profile on", rank, "for file", file_int, "of ", no_frames)
     
@@ -210,55 +204,50 @@ if rank == 0:
     
     R_sink = np.nan
     Time_array = []
-    Total_L = []
-    Total_L_spec = []
-    Mean_L = []
-    Mean_L_spec = []
+    Total_mass = []
+    Mean_mass = []
+    Mean_rel_kep = []
+    Min_rel_kep = []
     Mean_rad_vel = []
     Min_rad_vel = []
-    Mean_rel_vel = []
-    Min_rel_vel = []
+    Mean_rad_vel = []
+    Min_rad_vel = []
     Mass_all = []
     Separation = []
     
     if len(pickle_files) > 0:
         for pickle_file in pickle_files:
             file = open(pickle_file, 'rb')
-            R_sink, time_val, L_tot, L_spec_tot, L_mean, L_spec_mean, Rad_vel, Rad_vel_min, Mean_rel, Min_rel, Mass, sep = pickle.load(file)
+            R_sink_val, Time_array_val, Total_mass_val, Mean_mass_val, Mean_rel_kep_val, Min_rel_kep_val, Mean_rad_vel_val, Min_rad_vel_val, Mass_all_val, Separation_val = pickle.load(file)
             file.close()
             
-            Time_array = Time_array + time_val
-            Total_L = Total_L + L_tot
-            Total_L_spec = Total_L_spec + L_spec_tot
-            Mean_L = Mean_L + L_mean
-            Mean_L_spec = Mean_L_spec + L_spec_mean
-            Mean_rad_vel = Mean_rad_vel + Rad_vel
-            Min_rad_vel = Min_rad_vel + Rad_vel_min
-            Mean_rel_vel = Mean_rel_vel + Mean_rel
-            Min_rel_vel = Min_rel_vel + Min_rel
-            Mass_all = Mass_all + Mass
-            Separation = Separation + sep
+            Time_array = Time_array + Time_array_val
+            Total_mass = Total_mass + Total_mass_val
+            Mean_mass = Mean_mass + Mean_mass_val
+            Mean_rel_kep = Mean_rel_kep + Mean_rel_kep_val
+            Min_rel_kep = Min_rel_kep + Min_rel_kep_val
+            Mean_rad_vel = Mean_rad_vel + Mean_rad_vel_val
+            Min_rad_vel = Min_rad_vel + Min_rad_vel_val
+            Mass_all = Mass_all + Mass_all_val
+            Separation = Separation + Separation_val
             
         sorted_inds = np.argsort(Time_array)
         Time_array = list(np.array(Time_array)[sorted_inds])
-        Total_L = list(np.array(Total_L)[sorted_inds])
-        Total_L_spec = list(np.array(Total_L_spec)[sorted_inds])
-        Mean_L = list(np.array(Mean_L)[sorted_inds])
-        Mean_L_spec = list(np.array(Mean_L_spec)[sorted_inds])
+        Mean_mass = list(np.array(Mean_mass)[sorted_inds])
+        Mean_rel_kep = list(np.array(Mean_rel_kep)[sorted_inds])
+        Min_rel_kep = list(np.array(Min_rel_kep)[sorted_inds])
         Mean_rad_vel = list(np.array(Mean_rad_vel)[sorted_inds])
         Min_rad_vel = list(np.array(Min_rad_vel)[sorted_inds])
-        Mean_rel_vel = list(np.array(Mean_rel_vel)[sorted_inds])
-        Min_rel_vel = list(np.array(Min_rel_vel)[sorted_inds])
         Mass_all = list(np.array(Mass_all)[sorted_inds])
         Separation = list(np.array(Separation)[sorted_inds])
         
     file = open('gathered_profile.pkl', 'wb')
-    pickle.dump((R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation), file)
+    pickle.dump((R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation), file)
     file.close()
     
 sys.stdout.flush()
 CW.Barrier()
 
 file = open('gathered_profile.pkl', 'wb')
-pickle.dump((R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel,  Mean_rel_vel, Min_rel_vel, Mass_all, Separation), file)
+pickle.dump((R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation), file)
 file.close()
