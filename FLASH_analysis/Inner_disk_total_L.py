@@ -88,6 +88,7 @@ if args.make_movie_pickles == 'True':
                 
             sorted_inds = np.argsort(Time_array)
             Time_array = list(np.array(Time_array)[sorted_inds])
+            Total_mass = list(np.array(Total_mass)[sorted_inds])
             Mean_mass = list(np.array(Mean_mass)[sorted_inds])
             Mean_rel_kep = list(np.array(Mean_rel_kep)[sorted_inds])
             Min_rel_kep = list(np.array(Min_rel_kep)[sorted_inds])
@@ -173,7 +174,6 @@ if args.make_movie_pickles == 'True':
             R_sink = 2.5*np.min(disk['dx']).in_units('au')
             
             Radius_field = disk['radius'].in_units('AU')
-            Total_mass.append(np.sum(disk[args.profile_field]))
             if args.weight_field == None:
                 Mean_rel_kep.append(np.mean(disk[args.profile_field]))
             else:
@@ -182,7 +182,7 @@ if args.make_movie_pickles == 'True':
             #spec_field = args.profile_field.split('_cyl')[0] + '_spec'
             Total_mass.append(np.sum(disk['mass']))
             Mean_mass.append(np.mean(disk['mass']))
-            Mean_rel_kep.append(np.mean(disk[args.profile_field]))
+            #Mean_rel_kep.append(np.mean(disk[args.profile_field]))
             Min_rel_kep.append(np.min(disk[args.profile_field]))
             Mean_rad_vel.append(np.mean(disk['Radial_velocity_wrt_primary']))
             Min_rad_vel.append(np.min(disk['Radial_velocity_wrt_primary']))
@@ -233,6 +233,7 @@ if rank == 0:
             
         sorted_inds = np.argsort(Time_array)
         Time_array = list(np.array(Time_array)[sorted_inds])
+        Total_mass = list(np.array(Total_mass)[sorted_inds])
         Mean_mass = list(np.array(Mean_mass)[sorted_inds])
         Mean_rel_kep = list(np.array(Mean_rel_kep)[sorted_inds])
         Min_rel_kep = list(np.array(Min_rel_kep)[sorted_inds])
