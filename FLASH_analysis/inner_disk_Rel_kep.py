@@ -447,7 +447,7 @@ for mach_lab in Mach_labels:
             R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
 
-            axs.flatten()[plot_it].plot(Time_array, Mean_rad_vel, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array, Min_rad_vel, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
         else:
             print("Couldn't open", pickle_file)
