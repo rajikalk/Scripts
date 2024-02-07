@@ -91,7 +91,6 @@ for mach_lab in Mach_labels:
                 #secondary_form_time = yt.YTQuantity(2000, 'yr').in_units('s').value + sink_data[prime_id]['time'][0]
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
                 time_yr = yt.YTArray((sink_data[prime_id]['time']-sink_data[prime_id]['time'][0]), 's').in_units('yr')
-                end_window_time = sink_data[second_id]['time'][0] + yt.YTQuantity(1000, 'yr').in_units('s').value
                 end_window_ind = np.argmin(abs(sink_data[prime_id]['time'] - end_window_time))
                 
                 pre_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind-1]**2 + sink_data[prime_id]['angly'][secondary_form_ind-1]**2 + sink_data[prime_id]['anglz'][secondary_form_ind-1]**2)
@@ -103,6 +102,8 @@ for mach_lab in Mach_labels:
                 post_sec_L_val = post_sec_L[-1]
                 post_sec_L_spec_last = post_sec_L_spec[-1]
                 post_sec_L_spec_peak = np.max(post_sec_L_spec)
+                import pdb
+                pdb.set_trace()
                 post_sec_L_spec_ms = yt.YTArray(post_sec_L_spec, 'cm**2/s').in_units('m**2/s')
                 peak_time = time_yr[secondary_form_ind:end_window_ind][np.argmax(post_sec_L_spec_ms)]
                 peak_times[int(mach_lab.split('.')[-1])].append(peak_time)
