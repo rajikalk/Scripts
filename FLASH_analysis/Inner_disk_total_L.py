@@ -108,6 +108,7 @@ if args.make_movie_pickles == 'True':
     CW.Barrier()
 
     start_time = CW.bcast(start_time, root=0)
+    m_times = CW.bcast(m_times, root=0)
 
     sys.stdout.flush()
     CW.Barrier()
