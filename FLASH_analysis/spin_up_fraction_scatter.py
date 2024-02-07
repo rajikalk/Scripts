@@ -90,7 +90,8 @@ for mach_lab in Mach_labels:
                 secondary_form_time = sink_data[second_id]['time'][0] - yt.YTQuantity(500, 'yr').in_units('s').value
                 #secondary_form_time = yt.YTQuantity(2000, 'yr').in_units('s').value + sink_data[prime_id]['time'][0]
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
-                end_window_ind = np.argmin(abs(sink_data[prime_id]['time'] -(secondary_form_time + yt.YTQuantity(7500, 'yr').in_units('s').value)))
+                time_yr = yt.YTArray((sink_data[prime_id]['time']-sink_data[prime_id]['time'][0]), 's').in_units('yr')
+                end_window_ind = np.argmin(abs(time_yr - yt.YTQuantity(7500, 'yr')))
                 
                 pre_sec_L = np.sqrt(sink_data[prime_id]['anglx'][secondary_form_ind-1]**2 + sink_data[prime_id]['angly'][secondary_form_ind-1]**2 + sink_data[prime_id]['anglz'][secondary_form_ind-1]**2)
                 pre_sec_L_spec = pre_sec_L/sink_data[prime_id]['mass'][secondary_form_ind-1]
