@@ -98,7 +98,10 @@ if args.make_movie_pickles == 'True':
             Separation = list(np.array(Separation)[sorted_inds])
             
             m_times = sorted(list(set(m_times).difference(set(Time_array))))
-            start_time = np.min(m_times)
+            if len(m_times) >0:
+                start_time = np.min(m_times)
+            else:
+                start_time = args.end_time
         else:
             start_time = m_times[0]
     else:
