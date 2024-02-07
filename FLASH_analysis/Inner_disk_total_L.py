@@ -119,14 +119,17 @@ if args.make_movie_pickles == 'True':
     no_frames = len(m_times)
     #start_frame = m_times.index(start_time)
     #m_times = m_times[start_frame:]
-    usable_files = mym.find_files(m_times, files)
     
     sys.stdout.flush()
     CW.Barrier()
-    
-    usable_files = mym.find_files(m_times, files)
-    no_frames = len(usable_files)
-    print('found usable files for frames')
+    if len(m_times) > 0:
+        usable_files = mym.find_files(m_times, files)
+        no_frames = len(usable_files)
+        print('found usable files for frames')
+    else:
+        usable_files = []
+        no_frames = 0
+        print('completed everything!')
 
     #Now let's iterate over the files and get the images we want to plot
     ts = yt.DatasetSeries(usable_files)
