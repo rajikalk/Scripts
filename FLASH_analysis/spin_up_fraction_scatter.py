@@ -66,7 +66,7 @@ spin_val = [0.20, 0.25, 0.3, 0.35]
 spin_up = [[], [], []]
 spin_up_spec = [[], [], []]
 spin_up_spec_peak = [[], [], []]
-
+peak_times = [[], [], []]
 
 for mach_lab in Mach_labels:
     for spin_lab in Spin_labels:
@@ -104,10 +104,8 @@ for mach_lab in Mach_labels:
                 post_sec_L_spec_last = post_sec_L_spec[-1]
                 post_sec_L_spec_peak = np.max(post_sec_L_spec)
                 post_sec_L_spec_ms = yt.YTArray(post_sec_L_spec, 'cm**2/s').in_units('m**2/s')
-                import pdb
-                pdb.set_trace()
-                peak_spec_L_pos = np.argmax(post_sec_L_spec) + secondary_form_ind
-                peak_time = (sink_data[prime_id]['time'][peak_spec_L_pos]-secondary_form_time)/31557600.
+                peak_time = time_yr[secondary_form_ind:end_window_ind][np.argmax(post_sec_L_spec_ms)]
+                peak_times[int(mach_lab.split('.')[-1])].append(peak_time)
                 print("peak time =", peak_time)
                 
                 DL = post_sec_L_val - pre_sec_L
