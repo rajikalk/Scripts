@@ -91,7 +91,8 @@ for mach_lab in Mach_labels:
                 #secondary_form_time = yt.YTQuantity(2000, 'yr').in_units('s').value + sink_data[prime_id]['time'][0]
                 secondary_form_ind = np.argmin(abs(sink_data[prime_id]['time'] - secondary_form_time))
                 time_yr = yt.YTArray((sink_data[prime_id]['time']-sink_data[prime_id]['time'][0]), 's').in_units('yr')
-                end_window_ind = np.argmin(abs(time_yr - yt.YTQuantity(7500, 'yr')))
+                end_window_ind = sink_data[second_id]['time'][0] + yt.YTQuantity(1000, 'yr').in_units('s').value
+                #end_window_ind = np.argmin(abs(time_yr - yt.YTQuantity(7500, 'yr')))
                 if np.round(time_yr[end_window_ind]) != 7500.0:
                     import pdb
                     pdb.set_trace()
@@ -105,6 +106,7 @@ for mach_lab in Mach_labels:
                 post_sec_L_val = post_sec_L[-1]
                 post_sec_L_spec_last = post_sec_L_spec[-1]
                 post_sec_L_spec_peak = np.max(post_sec_L_spec)
+                post_sec_L_spec_ms = yt.YTArray(post_sec_L_spec, 'cm**2/s').in_units('m**2/s')
                 import pdb
                 pdb.set_trace()
                 peak_spec_L_pos = np.argmax(post_sec_L_spec) + secondary_form_ind
