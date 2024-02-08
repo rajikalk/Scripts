@@ -102,13 +102,18 @@ for mach_lab in Mach_labels:
                 post_sec_L_val = post_sec_L[-1]
                 post_sec_L_spec_last = post_sec_L_spec[-1]
                 post_sec_L_spec_peak = np.max(post_sec_L_spec)
-                
-                #Calculate gradient
-                grad_left = []
-                grad_right = []
                 time_shortened = time_yr[secondary_form_ind:end_window_ind]
+                peak_time = time_shortened[np.argmax(post_sec_L_spec)]
+                peak_times[int(mach_lab.split('.')[-1])].append(peak_time)
                 
-                smoothing_window = yt.YTQuantity(10, 'yr')
+                #TESTING
+                '''
+                test_start_ind = np.argmin(abs(time_yr - yt.YTQuantity(5000, 'yr')))
+                test_end_ind = np.argmin(abs(time_yr - yt.YTQuantity(5500, 'yr')))
+                post_sec_L_test = np.sqrt(sink_data[prime_id]['anglx'][test_start_ind:test_end_ind]**2 + sink_data[prime_id]['angly'][test_start_ind:test_end_ind]**2 + sink_data[prime_id]['anglz'][test_start_ind:test_end_ind]**2)
+                h_test = post_sec_L_test/sink_data[prime_id]['mass'][test_start_ind:test_end_ind]
+                
+                smoothing_window = yt.YTQuantity(100, 'yr')
                 t_smoothed = []
                 L_spec_smoothed = []
                 for time_it in range(len(time_shortened)):
@@ -152,9 +157,8 @@ for mach_lab in Mach_labels:
                 pdb.set_trace()
                 post_sec_L_spec_ms = yt.YTArray(post_sec_L_spec, 'cm**2/s').in_units('m**2/s')
                 peak_time = time_yr[secondary_form_ind:end_window_ind][np.argmax(post_sec_L_spec_ms)]
-                peak_times[int(mach_lab.split('.')[-1])].append(peak_time)
                 print("peak time =", peak_time)
-                
+                '''
                 DL = post_sec_L_val - pre_sec_L
                 spin_up_percentage = DL/pre_sec_L * 100
                 
