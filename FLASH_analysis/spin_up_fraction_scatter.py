@@ -107,7 +107,7 @@ for mach_lab in Mach_labels:
                 grad_left = []
                 grad_right = []
                 time_shortened = time_yr[secondary_form_ind:end_window_ind]
-                grad_window = yt.YTQuantity(5, 'yr')
+                grad_window = yt.YTQuantity(10, 'yr')
                 Left_grad_array = []
                 Right_grad_array = []
                 for time_it in range(len(time_shortened)):
