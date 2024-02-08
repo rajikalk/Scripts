@@ -112,8 +112,8 @@ for mach_lab in Mach_labels:
                 L_spec_smoothed = []
                 for time_it in range(len(time_shortened)):
                     curr_time = time_shortened[time_it]
-                    start_time = curr_time - grad_window
-                    end_time = curr_time + grad_window
+                    start_time = curr_time - smoothing_window/2
+                    end_time = curr_time + smoothing_window/2
                     left_it = np.argmin(abs(time_shortened - start_time))
                     right_it = np.argmin(abs(time_shortened - end_time))
                     import pdb
