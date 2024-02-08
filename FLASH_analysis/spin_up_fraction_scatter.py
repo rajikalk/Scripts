@@ -108,13 +108,31 @@ for mach_lab in Mach_labels:
                 grad_right = []
                 time_shortened = time_yr[secondary_form_ind:end_window_ind]
                 grad_window = yt.YTQuantity(1, 'yr')
+                Left_grad_array = []
+                Right_grad_array = []
                 for time_it in range(len(time_shortened)):
                     curr_time = time_shortened[time_it]
                     start_time = curr_time - grad_window
                     end_time = curr_time + grad_window
-                    import pdb
-                    pdb.set_trace()
-                    #CALCAULTE GRADIENT!
+                    if time_it == 0:
+                        left_grad = 0
+                        Left_grad_array.append(left_grad)
+                    else:
+                        left_it = np.argmin(abs(time_shortened - start_time))
+                        dt = curr_time - time_shortened[left_it]
+                        dh = post_sec_L_spec[time_it] - post_sec_L_spec[left_it]
+                        left_grad = dh/dt
+                        Left_grad_array.append(left_grad)
+                        
+                    if time_it == len(time_shortened)-1:
+                        right_grad = 0
+                        Right_grad_array.append(right_grad)
+                    else:
+                        right_it = np.argmin(abs(time_shortened - end_time))
+                        dt = time_shortened[right_it] - curr_time
+                        dh = post_sec_L_spec[right_it] - post_sec_L_spec[time_it]
+                        right_grad = dh/dt
+                        Right_grad_array.append(right_grad)
                     
                 dh_left = post_sec_L_spec[2:-2] - post_sec_L_spec[:-4]
                 dh_right = post_sec_L_spec[4:] - post_sec_L_spec[2:-2]
