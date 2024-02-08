@@ -50,6 +50,9 @@ Mach_labels = ['0.0', '0.1', '0.2']
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728',
               '#9467bd', '#8c564b', '#e377c2', '#7f7f7f',
               '#bcbd22', '#17becf']
+              
+spin_up_start = [[4500, 4500, 5250, 6750], [np.nan, 4000, np.nan, 5750], [3750, 3500, 4250, 4250]]
+spin_up_end = [[5250, 5400, 5700, 8000], [np.nan, 4500, np.nan, 7250], [5750, 5250, 5500, 5750]]
 #Define arguments
 
 plt.clf()
@@ -274,6 +277,7 @@ for spin_lab in Spin_labels:
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='5au', linestyle='--', color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
+            axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
         else:
             print("Couldn't open", pickle_file)
             
