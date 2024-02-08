@@ -107,6 +107,18 @@ for mach_lab in Mach_labels:
                 grad_left = []
                 grad_right = []
                 time_shortened = time_yr[secondary_form_ind:end_window_ind]
+                
+                smoothing_window = 10
+                L_spec_smoothed = []
+                for time_it in range(len(time_shortened)):
+                    curr_time = time_shortened[time_it]
+                    start_time = curr_time - grad_window
+                    end_time = curr_time + grad_window
+                    left_it = np.argmin(abs(time_shortened - start_time))
+                    right_it = np.argmin(abs(time_shortened - end_time))
+                    import pdb
+                    pdb.set_trace()
+                
                 grad_window = yt.YTQuantity(500, 'yr')
                 Left_grad_array = []
                 Right_grad_array = []
