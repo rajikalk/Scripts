@@ -385,15 +385,9 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-peak_times = [[unyt_quantity(6288.53350698, 'yr'),
-  unyt_quantity(5337.46225949, 'yr'),
-  unyt_quantity(5961.44966664, 'yr'),
-  unyt_quantity(7499.56279945, 'yr')],
- [np.nan, unyt_quantity(4396.31866809, 'yr'), np.nan, unyt_quantity(7239.5115915, 'yr')],
- [unyt_quantity(5684.37286105, 'yr'),
-  unyt_quantity(5479.48842751, 'yr'),
-  unyt_quantity(5771.10385454, 'yr'),
-  unyt_quantity(5758.7326983, 'yr')]]
+peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
+ [np.nan, 4396.31866809, np.nan, 7239.5115915],
+ [5684.37286105, 5479.48842751, 5771.10385454, 5758.7326983]]
 
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
