@@ -432,7 +432,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
-            axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, color=colors[Spin_labels.index(spin_lab)])
+            axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], linecolor=None)
         else:
             print("Couldn't open", single_pickle)
 
