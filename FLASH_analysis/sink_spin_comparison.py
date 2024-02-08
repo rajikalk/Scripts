@@ -385,6 +385,8 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
+spin_up_start = [[4500, 4500, 5250, 6750], [np.nan, 4000, np.nan, 5750], [3750, 3500, 4250, 4250]]
+spin_up_end = [[5250, 5400, 5700, 8000], [np.nan, 4500, np.nan, 7250], [5750, 5250, 5500, 5750]]
 peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
  [np.nan, 4396.31866809, np.nan, 7239.5115915],
  [5684.37286105, 5479.48842751, 5771.10385454, 5758.7326983]]
@@ -430,7 +432,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
-                axs.flatten()[plot_it].axvline(x=peak_times[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.3, linewidth=1)
+                axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.80, color=colors[Spin_labels.index(spin_lab)])
         else:
             print("Couldn't open", single_pickle)
 
