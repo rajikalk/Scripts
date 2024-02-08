@@ -107,7 +107,7 @@ for mach_lab in Mach_labels:
                 grad_left = []
                 grad_right = []
                 time_shortened = time_yr[secondary_form_ind:end_window_ind]
-                grad_window = yt.YTQuantity(1, 'yr')
+                grad_window = yt.YTQuantity(5, 'yr')
                 Left_grad_array = []
                 Right_grad_array = []
                 for time_it in range(len(time_shortened)):
@@ -133,13 +133,6 @@ for mach_lab in Mach_labels:
                         dh = post_sec_L_spec[right_it] - post_sec_L_spec[time_it]
                         right_grad = dh/dt
                         Right_grad_array.append(right_grad)
-                    
-                dh_left = post_sec_L_spec[2:-2] - post_sec_L_spec[:-4]
-                dh_right = post_sec_L_spec[4:] - post_sec_L_spec[2:-2]
-                dt_left = time_yr[secondary_form_ind:end_window_ind][2:-2] - time_yr[secondary_form_ind:end_window_ind][:-4]
-                dt_right = time_yr[secondary_form_ind:end_window_ind][4:] - time_yr[secondary_form_ind:end_window_ind][2:-2]
-                grad_left = dh_left/dt_left
-                grad_right = dh_right/dt_right
                 import pdb
                 pdb.set_trace()
                 post_sec_L_spec_ms = yt.YTArray(post_sec_L_spec, 'cm**2/s').in_units('m**2/s')
