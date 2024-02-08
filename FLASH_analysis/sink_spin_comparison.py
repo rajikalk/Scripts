@@ -385,6 +385,16 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
+peak_times = [[unyt_quantity(6288.53350698, 'yr'),
+  unyt_quantity(5337.46225949, 'yr'),
+  unyt_quantity(5961.44966664, 'yr'),
+  unyt_quantity(7499.56279945, 'yr')],
+ [np.nan, unyt_quantity(4396.31866809, 'yr'), np.nan, unyt_quantity(7239.5115915, 'yr')],
+ [unyt_quantity(5684.37286105, 'yr'),
+  unyt_quantity(5479.48842751, 'yr'),
+  unyt_quantity(5771.10385454, 'yr'),
+  unyt_quantity(5758.7326983, 'yr')]]
+
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
@@ -426,6 +436,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
+                axs.axvline(x=peak_times[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.3, linewidth=1)
         else:
             print("Couldn't open", single_pickle)
 
