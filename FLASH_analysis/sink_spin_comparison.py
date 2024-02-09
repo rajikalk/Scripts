@@ -440,7 +440,7 @@ for mach_lab in Mach_labels:
                     highlight_end_ind = np.argmin(abs(plot_time.value-highlight_end_time))
                     highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
                     highlight_max = np.min(plot_L[highlight_start_ind:highlight_end_ind])
-                    axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value, ymax=highlight_max.value, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
+                    axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value/1.5e15, ymax=highlight_max.value/1.5e15, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
                     plot_highlight = False
         else:
             print("Couldn't open", single_pickle)
@@ -459,7 +459,7 @@ for mach_lab in Mach_labels:
         #    plt.setp(xticklabels[-1], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim(bottom=0)
+axs.flatten()[plot_it-1].set_ylim([0, 1.5e15])
 
 axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
