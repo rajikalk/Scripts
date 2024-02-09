@@ -433,7 +433,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
-                if plot_highlight = True:
+                if plot_highlight == True:
                     highlight_start_time = spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
                     highlight_end_time = spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
                     highlight_start_ind = np.argmin(abs(plot_time.value-highlight_start_time))
