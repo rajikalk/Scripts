@@ -91,11 +91,11 @@ for mach_lab in Mach_labels:
                 t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
                 t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
                 t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
-                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_rel_kep)[t_start_ind:t_end_ind+1])
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
-            axs.flatten()[plot_it].plot(Time_array, Mean_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array, Mean_rel_kep, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
             
@@ -169,11 +169,11 @@ for mach_lab in Mach_labels:
                 t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
                 t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
                 t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
-                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_rel_kep)[t_start_ind:t_end_ind+1])
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
-            axs.flatten()[plot_it].plot(Time_array, Mean_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array, Mean_rel_kep, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
             
             axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
@@ -247,7 +247,7 @@ for spin_lab in Spin_labels:
                 t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
                 t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
                 t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
-                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_rel_kep)[t_start_ind:t_end_ind+1])
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
@@ -275,7 +275,7 @@ for spin_lab in Spin_labels:
                 t_start_ind = np.argmin(abs(np.array(Time_array)-t_start))
                 t_end_ind = np.argmin(abs(np.array(Time_array)-t_end))
                 t_smooth_val = np.mean(np.array(Time_array)[t_start_ind:t_end_ind+1])
-                rel_kep_smooth_val = np.mean(np.array(Mean_L)[t_start_ind:t_end_ind+1])
+                rel_kep_smooth_val = np.mean(np.array(Mean_rel_kep)[t_start_ind:t_end_ind+1])
                 T_smoothed.append(t_smooth_val)
                 Rel_kep_smoothed.append(rel_kep_smooth_val)
             
