@@ -75,7 +75,7 @@ for mach_lab in Mach_labels:
         
         if os.path.exists(pickle_file):
             file = open(pickle_file, 'rb')
-            R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             
             #Calculate smoothed arrays
@@ -153,7 +153,7 @@ for mach_lab in Mach_labels:
         
         if os.path.exists(pickle_file):
             file = open(pickle_file, 'rb')
-            R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             
             #Calculate smoothed arrays
@@ -231,7 +231,7 @@ for spin_lab in Spin_labels:
         
         if os.path.exists(pickle_file):
             file = open(pickle_file, 'rb')
-            R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             
             #Calculate smoothed arrays
@@ -259,7 +259,7 @@ for spin_lab in Spin_labels:
         
         if os.path.exists(pickle_file):
             file = open(pickle_file, 'rb')
-            R_sink, Time_array, Total_L, Total_L_spec, Mean_L, Mean_L_spec, Mean_rad_vel, Min_rad_vel, Mean_rel_vel, Min_rel_vel, Mass_all, Separation = pickle.load(file)
+            R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
             
             #Calculate smoothed arrays
