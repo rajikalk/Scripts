@@ -97,6 +97,7 @@ for mach_lab in Mach_labels:
             
             axs.flatten()[plot_it].plot(Time_array, Mean_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
+            axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
@@ -174,6 +175,8 @@ for mach_lab in Mach_labels:
             
             axs.flatten()[plot_it].plot(Time_array, Mean_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.1, linewidth=1)
             axs.flatten()[plot_it].plot(T_smoothed, Rel_kep_smoothed, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75, linewidth=1)
+            
+            axs.flatten()[plot_it].axvspan(spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)], alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
