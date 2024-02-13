@@ -386,7 +386,7 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
 spin_up_start = [[4500, 4500, 5250, 6750], [np.nan, 4000, np.nan, 5750], [3750, 3500, 4250, 4250]]
-spin_up_end = [[5250, 5400, 5700, 8000], [np.nan, 4500, np.nan, 7250], [5750, 5250, 5500, 5750]]
+spin_up_end = [[5500, 5400, 5700, 8000], [np.nan, 4500, np.nan, 7250], [5750, 5250, 5500, 5750]]
 peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
  [np.nan, 4396.31866809, np.nan, 7239.5115915],
  [5684.37286105, 5479.48842751, 5771.10385454, 5758.7326983]]
@@ -441,7 +441,7 @@ for mach_lab in Mach_labels:
                         highlight_end_ind = np.argmin(abs(plot_time.value-highlight_end_time))
                         highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
                         highlight_max = np.max(plot_L[highlight_start_ind:highlight_end_ind])
-                        axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value/1.5e15, ymax=highlight_max.value/1.5e15, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
+                        axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value/1.5e15, ymax=highlight_max.value/1.5e15, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
                     plot_highlight = False
         else:
             print("Couldn't open", single_pickle)
