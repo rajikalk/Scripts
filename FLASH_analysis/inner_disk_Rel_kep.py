@@ -333,7 +333,8 @@ plt.subplots_adjust(hspace=0.0)
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
-ymax = 0
+ymin = 0
+ymax = 0.025
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
     axs.flatten()[plot_it].set_title('Mach='+mach_lab, pad=-0.2)
@@ -346,9 +347,19 @@ for mach_lab in Mach_labels:
             file = open(pickle_file, 'rb')
             R_sink, Time_array, Total_mass, Mean_mass, Mean_rel_kep, Min_rel_kep, Mean_rad_vel, Min_rad_vel, Mass_all, Separation = pickle.load(file)
             file.close()
+            Disk_mass = np.array(Total_mass)/1.98841586e+33
 
-            axs.flatten()[plot_it].plot(Time_array, np.array(Total_mass)/1.98841586e+33, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
+            axs.flatten()[plot_it].plot(Time_array, Disk_mass, label='$\Omega t_{ff}$='+spin_lab, ls=line_styles[Spin_labels.index(spin_lab)], alpha=0.75, color=colors[Spin_labels.index(spin_lab)], linewidth=1)
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
+            
+            highlight_start_time = spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
+            if np.isnan(highlight_start_time) == False:
+                highlight_end_time = spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
+                highlight_start_ind = np.argmin(abs(np.array(Time_array)-highlight_start_time))
+                highlight_end_ind = np.argmin(abs(np.array(Time_array)-highlight_end_time))
+                highlight_min = np.min(Disk_mass[highlight_start_ind:highlight_end_ind])
+                highlight_max = np.max(Disk_mass[highlight_start_ind:highlight_end_ind])
+                axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=(highlight_min-ymin)/(ymax-ymin), ymax=(highlight_max-ymin)/(ymax-ymin), alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
         else:
             print("Couldn't open", pickle_file)
         
