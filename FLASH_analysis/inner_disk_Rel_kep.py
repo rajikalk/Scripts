@@ -144,9 +144,6 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 plt.savefig('Relative_kep_10_au.pdf', bbox_inches='tight', pad_inches=0.02)
 
-import pdb
-pdb.set_trace()
-
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -157,6 +154,7 @@ line_styles = ['-', '--', '-.', ':']
 smooth_window = 300
 plot_it = -1
 xmax= 0
+ymin = 0.6
 ymax = 0.75
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
@@ -230,11 +228,8 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.6, ymax])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 plt.savefig('Relative_kep_pro_5au.pdf', bbox_inches='tight', pad_inches=0.02)
-
-import pdb
-pdb.set_trace()
 
 #==============================================================================
 plt.clf()
