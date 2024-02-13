@@ -341,7 +341,7 @@ for mach_lab in Mach_labels:
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
 
-        pickle_file = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/gathered_profile.pkl'
+        pickle_file = '/home/kuruwira/fast/Analysis/Total_inner_disk_values/Spin_'+spin_lab+'/Mach_'+mach_lab+'/10au/Relative_keplerian_velocity/gathered_profile.pkl'
         
         if os.path.exists(pickle_file):
             file = open(pickle_file, 'rb')
