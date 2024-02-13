@@ -67,7 +67,7 @@ plt.subplots_adjust(hspace=0.0)
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
-ymax = 0
+ymax = 1
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
     axs.flatten()[plot_it].set_title('Mach='+mach_lab, pad=-0.2)
@@ -142,6 +142,9 @@ axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=Tr
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim([0.78, 1.0])
 plt.savefig('Relative_kep_10_au.pdf', bbox_inches='tight', pad_inches=0.02)
+
+import pdb
+pdb.set_trace()
 
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
@@ -229,6 +232,8 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim([0.6, ymax])
 plt.savefig('Relative_kep_pro_5au.pdf', bbox_inches='tight', pad_inches=0.02)
 
+import pdb
+pdb.set_trace()
 
 #==============================================================================
 plt.clf()
@@ -239,7 +244,7 @@ plt.subplots_adjust(hspace=0.0)
 
 plot_it = -1
 xmax= 0
-ymax = 0
+ymax = 1
 for spin_lab in Spin_labels:
     for mach_lab in Mach_labels:
         plot_it = plot_it + 1
