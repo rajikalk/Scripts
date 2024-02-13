@@ -67,6 +67,7 @@ plt.subplots_adjust(hspace=0.0)
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
+ymin = 0.78
 ymax = 1
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
@@ -108,7 +109,7 @@ for mach_lab in Mach_labels:
                 highlight_end_ind = np.argmin(abs(np.array(Time_array)-highlight_end_time))
                 highlight_min = np.min(Rel_kep_smoothed[highlight_start_ind:highlight_end_ind])
                 highlight_max = np.max(Rel_kep_smoothed[highlight_start_ind:highlight_end_ind])
-                axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min, ymax=highlight_max, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=(highlight_min-ymin)/(ymax-ymin), ymax=(highlight_max-ymin)/(ymax-ymin), alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
@@ -140,7 +141,7 @@ axs.flatten()[2].minorticks_on()
 axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0.78, 1.0])
+axs.flatten()[plot_it-1].set_ylim([ymin, ymax])
 plt.savefig('Relative_kep_10_au.pdf', bbox_inches='tight', pad_inches=0.02)
 
 import pdb
@@ -197,7 +198,7 @@ for mach_lab in Mach_labels:
                 highlight_end_ind = np.argmin(abs(np.array(Time_array)-highlight_end_time))
                 highlight_min = np.min(Rel_kep_smoothed[highlight_start_ind:highlight_end_ind])
                 highlight_max = np.max(Rel_kep_smoothed[highlight_start_ind:highlight_end_ind])
-                axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min/ymax, ymax=highlight_max/ymax, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=(highlight_min-ymin)/(ymax-ymin), ymax=(highlight_max-ymin)/(ymax-ymin), alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
             
             axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
             if mach_lab == '0.0':
