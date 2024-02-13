@@ -394,6 +394,8 @@ axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=Tr
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 #axs.flatten()[plot_it-1].set_ylim([0.6, 0.75])
 plt.savefig('Disk_mass.pdf', bbox_inches='tight', pad_inches=0.02)
+import pdb
+pdb.set_trace()
 
 #======================================================================================================================
 #Plotting disk mass and specific angular momentum
