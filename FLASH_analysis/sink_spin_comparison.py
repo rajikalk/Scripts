@@ -435,12 +435,13 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 if plot_highlight == True:
                     highlight_start_time = spin_up_start[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
-                    highlight_end_time = spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
-                    highlight_start_ind = np.argmin(abs(plot_time.value-highlight_start_time))
-                    highlight_end_ind = np.argmin(abs(plot_time.value-highlight_end_time))
-                    highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
-                    highlight_max = np.min(plot_L[highlight_start_ind:highlight_end_ind])
-                    axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value/1.5e15, ymax=highlight_max.value/1.5e15, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
+                    if np.isnan(highlight_start_time) == False:
+                        highlight_end_time = spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
+                        highlight_start_ind = np.argmin(abs(plot_time.value-highlight_start_time))
+                        highlight_end_ind = np.argmin(abs(plot_time.value-highlight_end_time))
+                        highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
+                        highlight_max = np.min(plot_L[highlight_start_ind:highlight_end_ind])
+                        axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=highlight_min.value/1.5e15, ymax=highlight_max.value/1.5e15, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)], edgecolor=None)
                     plot_highlight = False
         else:
             print("Couldn't open", single_pickle)
