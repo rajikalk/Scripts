@@ -335,6 +335,9 @@ if args.make_movie_frames == 'True':
                     part_vely = part_info['particle_velocities'][1][primary_ind]
                     velx = velx - part_velx.value
                     vely = vely - part_vely.value
+                    import pdb
+                    pdb.set_trace()
+                    
 
                 plt.clf()
                 fig, ax = plt.subplots()
