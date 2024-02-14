@@ -429,6 +429,8 @@ if args.make_movie_frames == 'True':
                     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
 
                 if len(part_info.keys())>0:
+                    import pdb
+                    pdb.set_trace()
                     if 'particle_form_time' in part_info.keys():
                         if len(part_info['particle_form_time']) > 1:
                             if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
@@ -437,6 +439,10 @@ if args.make_movie_frames == 'True':
                                 part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                                 part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                                 part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+                                import pdb
+                                pdb.set_trace()
+                                part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][primary_ind]
+                                part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][primary_ind]
                     else:
                         print("pickle doesn't have sink formation time")
                         os.remove(pickle_file)
