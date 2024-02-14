@@ -395,9 +395,6 @@ if args.make_movie_frames == 'True':
                 else:
                     stdvel = args.standard_vel
                 
-                if time_val > 0:
-                    import pdb
-                    pdb.set_trace()
                 
                 cmap=plt.cm.gist_heat
                 if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
