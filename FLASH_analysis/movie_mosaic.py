@@ -95,7 +95,7 @@ for frame_it in range(10025):
                     axs.flatten()[plot_it].set_xlim(xlim)
                     axs.flatten()[plot_it].set_ylim(ylim)
                     
-                    cbar_lims = [5.e-16, 5.e-14]
+                    cbar_lims = [1.e-15, 5.e-13]
 
                     plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
                     axs.flatten()[plot_it].set_aspect('equal')
