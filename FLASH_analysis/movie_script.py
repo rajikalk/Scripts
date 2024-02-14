@@ -335,8 +335,6 @@ if args.make_movie_frames == 'True':
                     part_vely = part_info['particle_velocities'][1][primary_ind]
                     velx = velx - part_velx.value
                     vely = vely - part_vely.value
-                    import pdb
-                    pdb.set_trace()
                     
 
                 plt.clf()
@@ -395,6 +393,10 @@ if args.make_movie_frames == 'True':
                         stdvel = 5
                 else:
                     stdvel = args.standard_vel
+                
+                if time_val > 0:
+                    import pdb
+                    pdb.set_trace()
                 
                 cmap=plt.cm.gist_heat
                 if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
