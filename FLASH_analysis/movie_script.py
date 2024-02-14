@@ -335,7 +335,8 @@ if args.make_movie_frames == 'True':
                     part_vely = part_info['particle_velocities'][1][primary_ind]
                     velx = velx - part_velx.value
                     vely = vely - part_vely.value
-                    
+                    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][primary_ind]
+                    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][primary_ind]                    #Update particle position
 
                 plt.clf()
                 fig, ax = plt.subplots()
@@ -444,8 +445,6 @@ if args.make_movie_frames == 'True':
                         os.remove(pickle_file)
                             
                     primary_ind = np.argmax(part_info['particle_mass'])
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][primary_ind]
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][primary_ind]                    #Update particle position
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
