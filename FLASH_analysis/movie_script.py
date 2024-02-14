@@ -67,7 +67,10 @@ if args.make_movie_pickles == 'True':
     if args.use_all_files == 'False':
         no_frames = len(m_times)
         m_times = m_times[args.start_frame:]
-        usable_files = mym.find_files(m_times, files)
+        if args.make_movie_pickles == 'True':
+            usable_files = mym.find_files(m_times, files)
+        else:
+            usable_files = []
         frames = list(range(args.start_frame, no_frames))
     elif args.use_all_files != 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
@@ -75,12 +78,18 @@ if args.make_movie_pickles == 'True':
         args.plot_time = None
         end_file = mym.find_files([args.end_time], files)
         end_index = files.index(end_file[0])
-        usable_files = files[start_index:end_index]
+        if args.make_movie_pickles == 'True':
+            usable_files = files[start_index:end_index]
+        else:
+            usable_files = []
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     else:
         start_file = mym.find_files([0], files)
-        usable_files = files[files.index(start_file[0]):]
+        if args.make_movie_pickles == 'True':
+            usable_files = files[files.index(start_file[0]):]
+        else:
+            usable_files = []
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     print('found usable files for frames')
