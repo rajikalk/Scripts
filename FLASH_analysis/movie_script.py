@@ -63,7 +63,7 @@ if args.make_movie_pickles == 'True':
     sys.stdout.flush()
     CW.Barrier()
     
-    if args.use_all_files == 'False':
+    if args.use_all_files == 'False' and  args.plot_time == None:
         no_frames = len(m_times)
         existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
         existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in existing_pickles]
