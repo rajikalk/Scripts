@@ -431,8 +431,8 @@ if args.make_movie_frames == 'True':
                                 part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                                 part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                                 part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-                                part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][0]
-                                part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][0]
+                                #part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][0]
+                                #part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][0]
                     else:
                         print("pickle doesn't have sink formation time")
                         os.remove(pickle_file)
