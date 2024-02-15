@@ -57,12 +57,16 @@ for plot_time in plot_times:
     plt.gca().set_aspect('equal')
 
     
-    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=8, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     
+    if plot_it == 0:
+        plot_velocity_legend = True
+    else:
+        plot_velocity_legend = False
     try:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=plot_velocity_legend, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
     except:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
 
     if len(part_info.keys())>0:
         if 'particle_form_time' in part_info.keys():
@@ -100,7 +104,7 @@ for plot_time in plot_times:
     '''
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
-    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (xlim[1]-0.03*(xlim[1]-xlim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (xlim[1]-0.07*(xlim[1]-xlim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     plt.savefig("Interesting_part.pdf", format='pdf', bbox_inches='tight')
 
