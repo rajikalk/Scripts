@@ -32,7 +32,7 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
-    pickle_file = 'time_'+str(plot_times[0])+'.0.pkl'
+    pickle_file = 'time_'+str(plot_time)+'.0.pkl'
     if os.path.exists(pickle_file) == False:
         subprocess.run("python3 /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /hits/fast/set/kuruwira/Protostellar_spin/Flash_2023/Spin_0.20/Single/Mach_0.2/Lref_9/ ./ -width 200 -thickness 100 -cmin 5.e-14 -cmax 5.e-12 -make_pickles True -pt " +str(plot_time) +" -pf 0 -stdv 10", shell=True)
     
@@ -57,7 +57,7 @@ for plot_time in plot_times:
     plt.gca().set_aspect('equal')
 
     
-    plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     
     try:
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
