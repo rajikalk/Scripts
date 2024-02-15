@@ -60,7 +60,7 @@ for plot_time in plot_times:
     plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     
     try:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
     except:
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
 
@@ -79,7 +79,7 @@ for plot_time in plot_times:
             os.remove(pickle_file)
                 
         primary_ind = np.argmax(part_info['particle_mass'])
-        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
+        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, xlim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
 
     plt.tick_params(axis='both', which='major')# labelsize=16)
     for line in ax.xaxis.get_ticklines():
@@ -100,7 +100,7 @@ for plot_time in plot_times:
     '''
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
-    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (xlim[1]-0.03*(xlim[1]-xlim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     plt.savefig("Interesting_part.pdf", format='pdf', bbox_inches='tight')
 
