@@ -57,7 +57,7 @@ for plot_time in plot_times:
     plt.gca().set_aspect('equal')
 
     
-    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=8, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     
     if plot_it == 0:
         plot_velocity_legend = True
