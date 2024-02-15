@@ -10,6 +10,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 import numpy as np
+import pickle
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
