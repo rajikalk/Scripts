@@ -41,8 +41,9 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
     file.close()
 
-    ax.set_xlim([-100, 100])
-    ax.set_ylim([-100, 100])
+    xlim = [-100, 100]
+    ax.set_xlim(xlim)
+    ax.set_ylim(xlim)
     
     cbar_lims = [5.e-14, 5.e-12]
     
@@ -61,7 +62,7 @@ for plot_time in plot_times:
     try:
         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
     except:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, xlim], Z_val=None, standard_vel=stdvel)
 
     if len(part_info.keys())>0:
         if 'particle_form_time' in part_info.keys():
