@@ -39,6 +39,7 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_vel", "--update_velocity_field", help="update velocity field to be wrt to primary", type=str, default='False')
+    parser.add_argument("-image_center", "--image_center_pos", help="0 means cennter of mass, and 1 means primary", type=int, default=0)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -159,6 +160,18 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
             #Load fields
             #del test_fields
+            if args.image_center_pos == 0:
+                center_pos = dd['CoM_full'].in_units('cm')
+                center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
+            elif args.image_center_pos == 1:
+                if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
+                    primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+                    center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
+                    center_vel = yt.YTArray([dd['all', 'particle_velx'][primary_ind].in_units('cm/s').value, dd['all', 'particle_vely'][primary_ind].in_units('cm/s').value, dd['all', 'particle_velz'][primary_ind].in_units('cm/s').value], 'cm/s')
+                else:
+                    center_pos = dd['CoM_full'].in_units('cm')
+                    center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
+            
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
                 part_mass = dd['particle_mass'].in_units('msun')
@@ -170,6 +183,12 @@ if args.make_movie_pickles == 'True':
                 part_vel_x = dd[part_vel_fields[0]].in_units('cm/s')
                 part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
+                
+                #Adjust for center:
+                
+                import pdb
+                pdb.set_trace()
+                
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'particle_velocities':velocities,
