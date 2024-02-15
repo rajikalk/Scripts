@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
+import numpy as np
 
 #get mpi size and ranks
 rank = CW.Get_rank()
