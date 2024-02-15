@@ -34,7 +34,7 @@ for plot_time in plot_times:
     plot_it = plot_it + 1
     pickle_file = 'time_'+str(plot_time)+'.0.pkl'
     if os.path.exists(pickle_file) == False:
-        subprocess.run("python3 /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /hits/fast/set/kuruwira/Protostellar_spin/Flash_2023/Spin_0.20/Single/Mach_0.2/Lref_9/ ./ -width 200 -thickness 100 -cmin 5.e-14 -cmax 5.e-12 -make_pickles True -pt " +str(plot_time) +" -pf 0 -stdv 10 -make_frames False -image_center 1", shell=True)
+        subprocess.run("python3 /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /hits/fast/set/kuruwira/Protostellar_spin/Flash_2023/Spin_0.20/Single/Mach_0.2/Lref_9/ ./ -width 200 -thickness 100 -cmin 1.e-14 -cmax 1.e-12 -make_pickles True -pt " +str(plot_time) +" -pf 0 -stdv 10 -make_frames False -image_center 1", shell=True)
     
     ax = axs.flatten()[plot_it]
     file = open(pickle_file, 'rb')
@@ -45,7 +45,7 @@ for plot_time in plot_times:
     ax.set_xlim(xlim)
     ax.set_ylim(xlim)
     
-    cbar_lims = [5.e-14, 5.e-12]
+    cbar_lims = [1.e-14, 1.e-12]
     
     stdvel = 10
     
