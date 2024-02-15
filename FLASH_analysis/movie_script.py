@@ -119,6 +119,7 @@ if args.make_movie_pickles == 'True':
         y_ind.append(int(val))
         counter = counter + 1
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+    thickness = yt.YTQuantity(args.proj_thickness, 'AU')
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
@@ -231,9 +232,9 @@ if args.make_movie_pickles == 'True':
             #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
             
 
-            thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            thickness_arr = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
-            fix_thickness = np.ones(np.shape(thickness_arr))*((plot_width/np.shape(thickness_arr)[0])**2*thickness).in_units('cm**3')
+            #thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            #thickness_arr = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
+            #fix_thickness = np.ones(np.shape(thickness_arr))*((plot_width/np.shape(thickness_arr)[0])**2*thickness).in_units('cm**3')
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
@@ -241,10 +242,10 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    if field[1] == 'L_gas_wrt_primary_density':
-                        proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
-                    else:
-                        proj_array = proj.frb.data[field].in_cgs()/thickness_arr
+                    #if field[1] == 'L_gas_wrt_primary_density':
+                    #    proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
+                    #else:
+                    proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
