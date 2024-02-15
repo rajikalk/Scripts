@@ -32,7 +32,6 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
-    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)
@@ -66,16 +65,17 @@ if args.make_movie_pickles == 'True':
     
     if args.use_all_files == 'False':
         no_frames = len(m_times)
-        m_times = m_times[args.start_frame:]
+        existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
+        existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in existing_pickles]
+        plot_time_inds = sorted(list(set(np.arange(len(m_times)).difference(set(existing_frames))))
         import pdb
         pdb.set_trace()
-        existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
-        existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in pickle_files]
         if args.make_movie_pickles == 'True':
             usable_files = mym.find_files(m_times, files)
         else:
             usable_files = []
-        frames = list(range(args.start_frame, no_frames))
+        #UPDATES THIS
+        frames = list(range(no_frames-len(m_times), no_frames))
     elif args.use_all_files != 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
         start_index = files.index(usable_files[0])
@@ -323,7 +323,7 @@ if args.make_movie_frames == 'True':
         if rit == size:
             rit = 0
         if rank == rit:
-            frame_no = int(pickle_file.split('_')[-1].split('.')[0]) + args.start_frame
+            frame_no = int(pickle_file.split('_')[-1].split('.')[0])
             if args.plot_time != None:
                 file_name = save_dir + "plot_time_" + ("%06d" % frame_no)
             else:
