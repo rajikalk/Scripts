@@ -25,7 +25,6 @@ plot_times = np.arange(3800, 5500, 200)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=3, figsize=(two_col_width, two_col_width), sharex=True, sharey=True)
-iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
