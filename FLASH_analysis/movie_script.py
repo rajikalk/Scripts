@@ -67,9 +67,8 @@ if args.make_movie_pickles == 'True':
         no_frames = len(m_times)
         existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
         existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in existing_pickles]
-        plot_time_inds = sorted(list(set(np.arange(len(m_times)).difference(set(existing_frames)))))
-        import pdb
-        pdb.set_trace()
+        plot_time_inds = np.array(sorted(set(np.arange(len(m_times))).difference(set(existing_frames))))
+        m_times = list(np.array(m_times)[plot_time_inds])
         if args.make_movie_pickles == 'True':
             usable_files = mym.find_files(m_times, files)
         else:
