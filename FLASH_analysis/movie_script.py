@@ -185,9 +185,14 @@ if args.make_movie_pickles == 'True':
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
                 
                 #Adjust for center:
-                
-                import pdb
-                pdb.set_trace()
+                positions[0] = positions[0] - center_pos[0].in_units('au')
+                velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
+                if args.axis == 'z':
+                    positions[1] = positions[1] - center_pos[1].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[1].in_units('cm/s')
+                else:
+                    positions[1] = positions[1] - center_pos[2].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
                 
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
@@ -195,10 +200,7 @@ if args.make_movie_pickles == 'True':
                          'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                          'particle_tag':dd['particle_tag'],
                          'particle_form_time':dd['particle_creation_time']}
-                primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-                center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
             else:
-                center_pos = yt.YTArray([0, 0, 0], 'cm')
                 has_particles = False
                 part_info = {}
                 
@@ -449,8 +451,6 @@ if args.make_movie_frames == 'True':
                             part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                             part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                             part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-                        part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][0]
-                        part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][0]
                     else:
                         print("pickle doesn't have sink formation time")
                         os.remove(pickle_file)
