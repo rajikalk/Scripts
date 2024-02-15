@@ -41,8 +41,8 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
     file.close()
 
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
+    ax.set_xlim([-100, 100])
+    ax.set_ylim([-100, 100])
     
     cbar_lims = [5.e-14, 5.e-12]
     
