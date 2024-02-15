@@ -11,6 +11,12 @@ import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 import numpy as np
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+mym.set_global_font_size(font_size)
+
 #get mpi size and ranks
 rank = CW.Get_rank()
 size = CW.Get_size()
