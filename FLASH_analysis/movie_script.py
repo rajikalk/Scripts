@@ -75,16 +75,8 @@ if args.make_movie_pickles == 'True':
             usable_files = []
         #UPDATES THIS
         frames = list(range(no_frames-len(m_times), no_frames))
-    elif args.use_all_files != 'False' and args.plot_time != None:
+    elif args.use_all_files == 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
-        start_index = files.index(usable_files[0])
-        args.plot_time = None
-        end_file = mym.find_files([args.end_time], files)
-        end_index = files.index(end_file[0])
-        if args.make_movie_pickles == 'True':
-            usable_files = files[start_index:end_index]
-        else:
-            usable_files = []
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     else:
