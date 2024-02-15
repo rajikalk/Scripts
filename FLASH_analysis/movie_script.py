@@ -67,6 +67,10 @@ if args.make_movie_pickles == 'True':
     if args.use_all_files == 'False':
         no_frames = len(m_times)
         m_times = m_times[args.start_frame:]
+        import pdb
+        pdb.set_trace()
+        existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
+        existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in pickle_files]
         if args.make_movie_pickles == 'True':
             usable_files = mym.find_files(m_times, files)
         else:
