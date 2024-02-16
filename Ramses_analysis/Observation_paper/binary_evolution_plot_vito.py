@@ -74,9 +74,9 @@ for pit in range(len(pickle_files)):
     axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
     axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
     
-    if labels[pit] == 'B1':
-        import pdb
-        pdb.set_trace()
+    #if labels[pit] == 'B1':
+    #    import pdb
+    #    pdb.set_trace()
 
 
 axs.flatten()[0].set_xlim([0, T_end])
