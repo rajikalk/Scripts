@@ -63,16 +63,16 @@ for pit in range(len(pickle_files)):
     else:
         end_time_ind = len(particle_data['time']) - 1
     
-    axs.flatten()[0].semilogy(particle_data['time'][:end_time_ind], particle_data['separation'][:end_time_ind], label=labels[pit], linestyle=linestyles[pit], color=colors[pit])
+    axs.flatten()[0].semilogy(particle_data['time'][:end_time_ind], particle_data['separation'][:end_time_ind], label=labels[pit], linestyle=linestyles[pit], color=colors[pit], linewidth=1)
     if labels[pit] != 'B2':
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
     else:
         mass_ratio = particle_data['mass'][0]/particle_data['mass'][1]
         T_end = particle_data['time'][-1]
     total_mass = np.nansum(particle_data['mass'][:2], axis=0)
-    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
-    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
-    axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit])
+    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
+    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
+    axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
     
     if labels[pit] == 'B1':
         import pdb
@@ -80,13 +80,32 @@ for pit in range(len(pickle_files)):
 
 
 axs.flatten()[0].set_xlim([0, T_end])
-axs.flatten()[0].set_ylabel('Separation (AU)')
-axs.flatten()[1].set_ylabel('Total Mass (M$_\odot$)')
+axs.flatten()[0].set_ylabel('Separation [AU]')
+axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[0].minorticks_on()
+axs.flatten()[0].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
+axs.flatten()[1].set_ylabel('Total Mass [M$_\odot$]')
 axs.flatten()[1].set_ylim(bottom=0)
 axs.flatten()[1].legend(loc='best')
-axs.flatten()[2].set_ylabel('Mass ratio (M$_s$/M$_p$)')
+axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[1].minorticks_on()
+axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
+axs.flatten()[2].set_ylabel('q [M$_s$/M$_p$]')
 axs.flatten()[2].set_ylim([0, 1.1])
+axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[2].minorticks_on()
+axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
 axs.flatten()[3].set_ylabel('Eccentricity')
 axs.flatten()[3].set_ylim([0.2, 1.1])
-axs.flatten()[3].set_xlabel('Time since Primary star formation (yr)')
+axs.flatten()[3].set_xlabel('Age [kyr]')
+axs.flatten()[3].tick_params(axis='x', direction='in', top=True)
+axs.flatten()[3].tick_params(axis='y', direction='in', right=True)
+axs.flatten()[3].minorticks_on()
+axs.flatten()[3].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 plt.savefig("system_evolution.pdf", bbox_inches='tight', pad_inches=0.02)
