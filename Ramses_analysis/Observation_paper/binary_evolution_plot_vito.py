@@ -70,9 +70,9 @@ for pit in range(len(pickle_files)):
         mass_ratio = particle_data['mass'][0]/particle_data['mass'][1]
         T_end = particle_data['time'][-1]
     total_mass = np.nansum(particle_data['mass'][:2], axis=0)
-    axs.flatten()[1].plot(particle_data['time'][:end_time_ind], total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
-    axs.flatten()[2].plot(particle_data['time'][:end_time_ind], mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
-    axs.flatten()[3].plot(particle_data['time'][:end_time_ind], particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
+    axs.flatten()[1].plot(particle_data['time'][:end_time_ind].in_units('kyr'), total_mass[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
+    axs.flatten()[2].plot(particle_data['time'][:end_time_ind].in_units('kyr'), mass_ratio[:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
+    axs.flatten()[3].plot(particle_data['time'][:end_time_ind].in_units('kyr'), particle_data['eccentricity'][:end_time_ind], linestyle=linestyles[pit], color=colors[pit], label=labels[pit], linewidth=1)
     
     #if labels[pit] == 'B1':
     #    import pdb
