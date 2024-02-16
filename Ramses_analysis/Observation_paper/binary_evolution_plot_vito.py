@@ -63,7 +63,7 @@ for pit in range(len(pickle_files)):
     else:
         end_time_ind = len(particle_data['time']) - 1
     
-    axs.flatten()[0].semilogy(particle_data['time'][:end_time_ind], particle_data['separation'][:end_time_ind], label=labels[pit], linestyle=linestyles[pit], color=colors[pit], linewidth=1)
+    axs.flatten()[0].semilogy(particle_data['time'][:end_time_ind].in_units('kyr'), particle_data['separation'][:end_time_ind], label=labels[pit], linestyle=linestyles[pit], color=colors[pit], linewidth=1)
     if labels[pit] != 'B2':
         mass_ratio = particle_data['mass'][1]/particle_data['mass'][0]
     else:
