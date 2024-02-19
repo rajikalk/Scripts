@@ -269,7 +269,7 @@ if args.make_movie_pickles == 'True':
                 #    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
-            print("Calculate Toomre Q from projections")
+            #print("Calculate Toomre Q from projections")
             #Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']/(2*np.pi*proj_dict['Distance_from_primary'])
             #Surface_density = proj_dict['dens']
             #Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
@@ -285,7 +285,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[2]], proj_dict[list(proj_dict.keys())[3]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
@@ -298,7 +298,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[2]], proj_dict[list(proj_dict.keys())[3]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
