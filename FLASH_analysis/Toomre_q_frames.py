@@ -207,13 +207,9 @@ if args.make_movie_pickles == 'True':
             del dd
             
             #make list of projection fields: density, velocity, magnetic field
-            proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens')]
+            proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             
             proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
-            
-            print("check is there is a plasma beta field")
-            import pdb
-            pdb.set_trace()
             
             
             #define projection region
@@ -255,7 +251,14 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 import pdb
                 pdb.set_trace()
-                proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
+                if args.weight_field == None and field != ('flash', 'dens'):
+                    #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
+                    #if field[1] == 'L_gas_wrt_primary_density':
+                    #    proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
+                    #else:
+                    proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
+                else:
+                    proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
                     proj_array = proj_array.T
                 #print(field, "projection =", proj_array)
