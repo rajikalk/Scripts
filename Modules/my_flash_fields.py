@@ -1089,10 +1089,8 @@ def _Toomre_Q(field, data):
         print("North vector =", north_vector)
     '''
     Angular_frequency = data['Tangential_velocity_wrt_primary'].in_units('cm/s')/(2*np.pi*data['Distance_from_primary'].in_units('cm'))
-    Surface_density = data['dens'].in_units('g/cm**3')/data['dz'].in_units('cm')
+    Surface_density = data['dens'].in_units('g/cm**3')*data['dz'].in_units('cm')
     Toomre_Q = (data['sound_speed'].in_units('cm/s') * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
-    import pdb
-    pdb.set_trace()
     return Toomre_Q
 
 yt.add_field("Toomre_Q", function=_Toomre_Q, units="", sampling_type="local")
