@@ -1079,3 +1079,30 @@ def _Proj_y_mag(field, data):
     return rv_mag
 
 yt.add_field("Proj_y_mag", function=_Proj_y_mag, units="gauss", sampling_type="local")
+
+
+def _Toomre_Q(field, data):
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    Angular_frequency = data['Tangential_velocity_wrt_primary'].in_units('cm/s')/(2*np.pi*data['Distance_from_primary'].in_units('cm'))
+    Surface_density = data['dens'].in_units('g/cm**3')/data['dz'].in_units('cm')
+    Toomre_Q = (data['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
+    return Toomre_Q
+
+yt.add_field("Toomre_Q", function=_Toomre_Q, units="", sampling_type="local")
+
+def _Toomre_Q_magnetic(field, data):
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/data['plasma_beta'])))
+    return Toomre_Q_magnetic
+
+yt.add_field("Toomre_Q_magnetic", function=_Toomre_Q_magnetic, units="", sampling_type="local")
