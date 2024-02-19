@@ -208,7 +208,8 @@ if args.make_movie_pickles == 'True':
             
             #make list of projection fields: density, velocity, magnetic field
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
-            proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
+            #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
+            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic')]
             
@@ -272,8 +273,19 @@ if args.make_movie_pickles == 'True':
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
             #print("Calculate Toomre Q from projections")
-            Radius = np.sqrt(X_image**2 + Y_image**2).in_units('cm')
-            Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']/(2*np.pi*Radius)
+            R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten()]).T
+            V_vec = yt.YTArray([proj_dict['velx'].flatten(), proj_dict['vely'].flatten()]).T
+            
+            R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
+            V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
+            
+            R_norm = (R_vec.T/np.sqrt(np.sum(R_vec**2, axis=1))).T
+            V_norm = (V_vec.T/V_mag).T
+            
+            V_tang = V_mag*np.sin(np.arccos(R_norm.T[0]*V_norm.T[0] + R_norm.T[1]*V_norm.T[1]))
+            V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
+            
+            Angular_frequency = V_tang/(2*np.pi*R_mag)
             Surface_density = proj_dict['dens']
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
