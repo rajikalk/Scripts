@@ -1102,7 +1102,7 @@ def _Toomre_Q_magnetic(field, data):
         pdb.set_trace()
         print("North vector =", north_vector)
     '''
-    Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/data['plasma_beta'])))
+    Toomre_Q_magnetic = data['Toomre_Q'] * np.sqrt((1 + (1/data['plasma_beta'])))
     return Toomre_Q_magnetic
 
 yt.add_field("Toomre_Q_magnetic", function=_Toomre_Q_magnetic, units="", sampling_type="local")
