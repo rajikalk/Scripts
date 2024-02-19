@@ -272,9 +272,8 @@ if args.make_movie_pickles == 'True':
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
             #print("Calculate Toomre Q from projections")
-            import pdb
-            pdb.set_trace()
-            Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']#/(2*np.pi*proj_dict['Distance_from_primary'])
+            Radius = np.sqrt(X_image**2 + Y_image**2).in_units('cm')
+            Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']/(2*np.pi*Radius)
             Surface_density = proj_dict['dens']
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
