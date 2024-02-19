@@ -359,7 +359,7 @@ if args.make_movie_frames == 'True':
                 X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
                 
-                image = Toomre_Q
+                image = Toomre_Q_magnetic
                 
                 if args.update_velocity_field != 'False' and len(part_info.keys())!=0:
                     primary_ind = np.argmin(part_info['particle_form_time'])
