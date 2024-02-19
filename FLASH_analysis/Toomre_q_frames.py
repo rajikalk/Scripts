@@ -285,7 +285,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[6]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
@@ -298,7 +298,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[6]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
