@@ -207,7 +207,8 @@ if args.make_movie_pickles == 'True':
             del dd
             
             #make list of projection fields: density, velocity, magnetic field
-            proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
+            #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
+            proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic')]
             
             proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
             
@@ -269,35 +270,35 @@ if args.make_movie_pickles == 'True':
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
             print("Calculate Toomre Q from projections")
-            Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']/(2*np.pi*proj_dict['Distance_from_primary'])
-            Surface_density = proj_dict['dens']
-            Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
-            Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
+            #Angular_frequency = proj_dict['Tangential_velocity_wrt_primary']/(2*np.pi*proj_dict['Distance_from_primary'])
+            #Surface_density = proj_dict['dens']
+            #Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
+            #Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
 
             if rank == proj_root_rank and size > 1:
-                proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[5]] - center_vel[0]
+                proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[2]] - center_vel[0]
                 if args.axis == 'z':
-                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[6]] - center_vel[1]
+                    proj_dict[list(proj_dict.keys())[3]] = proj_dict[list(proj_dict.keys())[3]] - center_vel[1]
                 else:
-                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[6]] - center_vel[2]
+                    proj_dict[list(proj_dict.keys())[3]] = proj_dict[list(proj_dict.keys())[3]] - center_vel[2]
             
-                velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[6]], no_of_quivers=args.quiver_arrows)
+                velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[2]], proj_dict[list(proj_dict.keys())[3]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
-                proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[5]] - center_vel[0]
+                proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[3]] - center_vel[0]
                 if args.axis == 'z':
-                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[6]] - center_vel[1]
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[3]] - center_vel[1]
                 else:
-                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[6]] - center_vel[2]
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[3]] - center_vel[2]
             
-                velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[5]], proj_dict[list(proj_dict.keys())[6]], no_of_quivers=args.quiver_arrows)
+                velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[2]], proj_dict[list(proj_dict.keys())[3]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[7]], proj_dict[list(proj_dict.keys())[8]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, proj_dict[list(proj_dict.keys())[4]], proj_dict[list(proj_dict.keys())[5]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
@@ -358,7 +359,7 @@ if args.make_movie_frames == 'True':
                 X_image, Y_image, Toomre_Q, Toomre_Q_magnetic, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
                 
-                image = Toomre_Q_magnetic
+                image = Toomre_Q
                 
                 if args.update_velocity_field != 'False' and len(part_info.keys())!=0:
                     primary_ind = np.argmin(part_info['particle_form_time'])
