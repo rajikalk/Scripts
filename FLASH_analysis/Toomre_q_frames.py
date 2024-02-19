@@ -426,13 +426,15 @@ if args.make_movie_frames == 'True':
                 
                 
                 cmap=plt.cm.gist_heat
-                if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
-                    plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.YlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                #if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.YlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                '''
                 else:
                     if np.isnan(cbar_lims[0]):
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
                     else:
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+                '''
                 plt.gca().set_aspect('equal')
 
                 if 'L_gas_wrt_primary_spec' in args.field or "Relative_keplerian_velocity_wrt_primary" in args.field:
