@@ -32,6 +32,7 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
+    parser.add_argument("-v_mag", "--use_v_mag", help="use v_mag instead of the tangential velocity", default='False', type=str)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)
@@ -284,6 +285,8 @@ if args.make_movie_pickles == 'True':
             
             V_tang = V_mag*np.sin(np.arccos(R_norm.T[0]*V_norm.T[0] + R_norm.T[1]*V_norm.T[1]))
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
+            if args.use_v_mag == 'True':
+                V_tang = V_mag
             
             Angular_frequency = V_tang/(2*np.pi*np.reshape(R_mag, np.shape(proj_dict['dens'])))
             Surface_density = proj_dict['dens']
