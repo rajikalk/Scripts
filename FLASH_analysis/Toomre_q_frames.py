@@ -249,8 +249,6 @@ if args.make_movie_pickles == 'True':
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
-                import pdb
-                pdb.set_trace()
                 if args.weight_field == None and field != ('flash', 'dens'):
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
                     #if field[1] == 'L_gas_wrt_primary_density':
@@ -270,6 +268,9 @@ if args.make_movie_pickles == 'True':
                 #    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
+            print("Calculate Toomre Q from projections")
+            import pdb
+            pdb.set_trace()
 
             if rank == proj_root_rank and size > 1:
                 proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[1]] - center_vel[0]
