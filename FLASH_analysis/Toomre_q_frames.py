@@ -301,11 +301,14 @@ if args.make_movie_pickles == 'True':
             E_kin = (0.5*Image_mass.in_units('g')*(np.reshape(V_mag, np.shape(proj_dict['dens']))).in_units('cm/s')**2).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
-            L_tot = Image_mass.in_units('g').T*r_x_v
+            L_tot = abs(Image_mass.in_units('g').T*r_x_v)
             h_val = L_tot/reduced_mass.in_units('g')
-            e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*Image_mass.in_units('g'))**2.))
+            e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')))**2.)
+            semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')*(1-e**2))).in_units('AU')
+            period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')))).in_units('yr')
+            Angular_frequency = 1/period
             
-            Angular_frequency = V_tang/(2*np.pi*R_mag)
+            #Angular_frequency = V_tang/(2*np.pi*R_mag)
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
             #Toomre_Q = proj_dict['Toomre_Q']
