@@ -275,13 +275,15 @@ if args.make_movie_pickles == 'True':
                 #    file.close()
             #print("Calculate Toomre Q from projections")
             R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten()]).T
-            V_vec = yt.YTArray([proj_dict['velx'].flatten(), proj_dict['vely'].flatten()]).T
+            V_vec = yt.YTArray([proj_dict['velx'].flatten()-center_vel[0], proj_dict['vely'].flatten()-center_vel[1]]).T
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
             
-            R_norm = (R_vec.T/np.sqrt(np.sum(R_vec**2, axis=1))).T
+            R_norm = (R_vec.T/R_mag).T
             V_norm = (V_vec.T/V_mag).T
+            
+            R_mag = np.reshape(R_mag, np.shape(proj_dict['dens']))
             
             V_tang = V_mag*np.sin(np.arccos(R_norm.T[0]*V_norm.T[0] + R_norm.T[1]*V_norm.T[1]))
             if args.use_v_mag == 'True':
@@ -291,8 +293,14 @@ if args.make_movie_pickles == 'True':
             if size == 1:
                 import pdb
                 pdb.set_trace()
-            Angular_frequency = V_tang/(2*np.pi*np.reshape(R_mag, np.shape(proj_dict['dens'])))
+            pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
             Surface_density = proj_dict['dens']
+            Image_mass = (Surface_density * pixel_area).in_units('msun')
+            reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
+            E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg')
+            #E_kin = np.sum((0.5*part_mass[primary_ind].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+            
+            Angular_frequency = V_tang/(2*np.pi*R_mag)
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
             #Toomre_Q = proj_dict['Toomre_Q']
