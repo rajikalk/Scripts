@@ -40,7 +40,7 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_vel", "--update_velocity_field", help="update velocity field to be wrt to primary", type=str, default='False')
-    parser.add_argument("-image_center", "--image_center_pos", help="0 means cennter of mass, and 1 means primary", type=int, default=0)
+    parser.add_argument("-image_center", "--image_center_pos", help="0 means cennter of mass, and 1 means primary", type=int, default=1)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
