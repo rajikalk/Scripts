@@ -1132,7 +1132,7 @@ def _Epsilon(field, data):
     Epsilon = (data['E_pot_wrt_Primary'] + data['E_kin_wrt_Primary'])/data['Reduced_mass_wrt_Primary'].in_units('g')
     return Epsilon
 
-yt.add_field("Epsilon", function=_Epsilon, units="erg", sampling_type="local")
+yt.add_field("Epsilon", function=_Epsilon, units="erg/g", sampling_type="local")
 
 def _H_val(field, data):
     h_val = data['L_gas_wrt_primary'].in_units('g*cm**2/s')/data['Reduced_mass_wrt_Primary'].in_units('g')
