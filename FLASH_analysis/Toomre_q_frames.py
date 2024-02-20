@@ -290,9 +290,6 @@ if args.make_movie_pickles == 'True':
                 V_tang = V_mag
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
                 
-            if size == 1:
-                import pdb
-                pdb.set_trace()
             pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
             Surface_density = proj_dict['dens']
             Image_mass = (Surface_density * pixel_area).in_units('msun')
