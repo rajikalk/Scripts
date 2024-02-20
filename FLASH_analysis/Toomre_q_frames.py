@@ -298,7 +298,12 @@ if args.make_movie_pickles == 'True':
             Image_mass = (Surface_density * pixel_area).in_units('msun')
             reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
             E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg')
-            #E_kin = np.sum((0.5*part_mass[primary_ind].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+            E_kin = (0.5*Image_mass.in_units('g')*(np.reshape(V_mag, np.shape(proj_dict['dens']))).in_units('cm/s')**2).in_units('erg')
+            epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+            r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
+            L_tot = Image_mass.in_units('g').T*r_x_v
+            h_val = L_tot/reduced_mass.in_units('g')
+            e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*Image_mass.in_units('g'))**2.))
             
             Angular_frequency = V_tang/(2*np.pi*R_mag)
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
