@@ -1080,6 +1080,106 @@ def _Proj_y_mag(field, data):
 
 yt.add_field("Proj_y_mag", function=_Proj_y_mag, units="gauss", sampling_type="local")
 
+def _Surface_Density(field, data):
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("North vector =", north_vector)
+    '''
+    Surface_density = data['dens'].in_units('g/cm**3')*data['dz'].in_units('cm')
+    return Surface_density
+
+yt.add_field("Surface_Density", function=_Surface_Density, units="g/cm**2", sampling_type="local")
+
+def _Reduced_mass_wrt_Primary(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        reduced_mass = (data['mass'].in_units('g')*Primary_mass)/(data['mass'].in_units('g')+Primary_mass)
+    else:
+        reduced_mass = data['mass'].in_units('g')
+    return reduced_mass
+
+yt.add_field("Reduced_mass_wrt_Primary", function=_Reduced_mass_wrt_Primary, units="g", sampling_type="local")
+
+def _E_pot_wrt_Primary(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        R = data['Distance_from_primary'].in_units('cm')
+        E_pot = (-1*(yt.units.gravitational_constant_cgs*((data['mass'].in_units('g') * Primary_mass).in_units('g**2')))/R.in_units('cm')).in_units('erg')
+    else:
+        E_pot = data['gpot'].in_units('erg')
+    return E_pot
+    
+yt.add_field("E_pot_wrt_Primary", function=_E_pot_wrt_Primary, units="erg", sampling_type="local")
+
+def _E_kin_wrt_Primary(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        v_vec = data['Velocity_wrt_primary']
+        v_mag = np.sqrt(v_vec[0]**2 + v_vec[1]**2 + v_vec[2]**2)
+    else:
+        v_mag = np.sqrt(data['velx']**2 + data['vely']**2 + data['velz']**2)
+    E_kin = (0.5 * data['mass'].in_units('g') * v_mag.in_units('cm/s')**2).in_units('erg')
+    return E_kin
+    
+yt.add_field("E_kin_wrt_Primary", function=_E_kin_wrt_Primary, units="erg", sampling_type="local")
+
+def _Epsilon(field, data):
+    Epsilon = (data['E_pot_wrt_Primary'] + data['E_kin_wrt_Primary'])/data['Reduced_mass_wrt_Primary'].in_units('g')
+    return Epsilon
+
+yt.add_field("Epsilon", function=_Epsilon, units="erg", sampling_type="local")
+
+def _H_val(field, data):
+    h_val = data['L_gas_wrt_primary'].in_units('g*cm**2/s')/data['Reduced_mass_wrt_Primary'].in_units('g')
+    return h_val
+
+yt.add_field("H_val", function=_H_val, units="cm**2/s", sampling_type="local")
+
+def _Eccentricity(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        e = np.sqrt(1 + (2.*data['Epsilon']*data['H_val']**2.)/((yt.units.gravitational_constant_cgs*(data['mass'].in_units('g')+Primary_mass).in_units('g')))**2.)
+    else:
+        e = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, '')
+    return e
+
+yt.add_field("Eccentricity", function=_Eccentricity, units="", sampling_type="local")
+
+def _Semimajor_axis(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        semimajor_a = ((data['H_val']**2)/(yt.units.gravitational_constant_cgs*(data['mass'].in_units('g')+Primary_mass).in_units('g')*(1-data['Eccentricity']**2))).in_units('AU')
+    else:
+        semimajor_a = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'au')
+    return semimajor_a
+
+yt.add_field("Semimajor_axis", function=_Semimajor_axis, units="au", sampling_type="local")
+
+def _Period(field, data):
+    if ('all', 'particle_mass') in data.ds.field_list:
+        dd = data.ds.all_data()
+        primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+        Primary_mass = dd['all', 'particle_mass'][primary_ind].in_units('g')
+        period = (2*np.pi*np.sqrt((data['Semimajor_axis'].in_units('AU')**3)/(yt.units.gravitational_constant_cgs*(data['mass'].in_units('g')+Primary_mass).in_units('g')))).in_units('yr')
+    else:
+        period = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'yr')
+
+yt.add_field("Period", function=_Period, units="yr", sampling_type="local")
+
+def _Angular_frequency(field, data):
+    freq = 1/data['Period']
+    return freq
+
+yt.add_field("Angular_frequency", function=_Angular_frequency, units="1/yr", sampling_type="local")
 
 def _Toomre_Q(field, data):
     '''
@@ -1088,8 +1188,8 @@ def _Toomre_Q(field, data):
         pdb.set_trace()
         print("North vector =", north_vector)
     '''
-    Angular_frequency = data['Tangential_velocity_wrt_primary'].in_units('cm/s')/(2*np.pi*data['Distance_from_primary'].in_units('cm'))
-    Surface_density = data['dens'].in_units('g/cm**3')*data['dz'].in_units('cm')
+    Angular_frequency = data['Angular_frequency'].in_units('1/s')
+    Surface_density = data['Surface_Density'].in_units('g/cm**2')
     Toomre_Q = (data['sound_speed'].in_units('cm/s') * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
     return Toomre_Q
 
