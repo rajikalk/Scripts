@@ -288,7 +288,9 @@ if args.make_movie_pickles == 'True':
                 V_tang = V_mag
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
                 
-            
+            if size == 1:
+                import pdb
+                pdb.set_trace()
             Angular_frequency = V_tang/(2*np.pi*np.reshape(R_mag, np.shape(proj_dict['dens'])))
             Surface_density = proj_dict['dens']
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
