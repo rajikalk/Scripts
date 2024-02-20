@@ -1172,6 +1172,7 @@ def _Period(field, data):
         period = (2*np.pi*np.sqrt((data['Semimajor_axis'].in_units('AU')**3)/(yt.units.gravitational_constant_cgs*(data['mass'].in_units('g')+Primary_mass).in_units('g')))).in_units('yr')
     else:
         period = yt.YTArray(np.ones(np.shape(data['flash','velx']))*np.nan, 'yr')
+    return period
 
 yt.add_field("Period", function=_Period, units="yr", sampling_type="local")
 
