@@ -274,7 +274,7 @@ if args.make_movie_pickles == 'True':
                 #    pickle.dump((field[1], proj_array), file)
                 #    file.close()
             #print("Calculate Toomre Q from projections")
-            '''
+            
             R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten()]).T
             V_vec = yt.YTArray([proj_dict['velx'].flatten()-center_vel[0], proj_dict['vely'].flatten()-center_vel[1]]).T
             
@@ -290,7 +290,16 @@ if args.make_movie_pickles == 'True':
             if args.use_v_mag == 'True':
                 V_tang = V_mag
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
-                
+            
+            import matplotlib as mpl
+            #mpl.rcParams['pdf.fonttype'] = 42
+            #mpl.rcParams['ps.fonttype'] = 42
+            import matplotlib.pyplot as plt
+            #plt.rcParams['figure.dpi'] = 300
+            from matplotlib.colors import LogNorm
+            import matplotlib.patheffects as path_effects
+            import my_flash_module as mym
+            
             pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
             Surface_density = proj_dict['dens']
             Image_mass = (Surface_density * pixel_area).in_units('msun')
@@ -309,9 +318,26 @@ if args.make_movie_pickles == 'True':
             #Angular_frequency = V_tang/(2*np.pi*R_mag)
             Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
+            
+            if size == 1:
+                plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic}
+                for plot_key in plot_variables.keys():
+                    plt.clf()
+                    fig, ax = plt.subplots()
+                    ax.set_xlabel('AU', labelpad=-1, fontsize=10)
+                    ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+                    xlim = [np.min(X_image).value, np.max(X_image).value]
+                    ylim = [np.min(Y_image).value, np.max(Y_image).value]
+                    ax.set_xlim(xlim)
+                    ax.set_ylim(ylim)
+                    plot = ax.pcolormesh(X_image, Y_image, plot_variables[plot_key], cmap=plt.cm.RdYlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                    plt.gca().set_aspect('equal')
+                    cbar = plt.colorbar(plot, pad=0.0)
+                    cbar.set_label(plot_key + " (" + str(plot_variables[plot_key].units)+")", rotation=270, labelpad=14, size=10)
+                    plt.savefig(plot_key + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
             #Toomre_Q = proj_dict['Toomre_Q']
             #Toomre_Q_magnetic = proj_dict['Toomre_Q_magnetic']
-            '''
+            
             if rank == proj_root_rank and size > 1:
                 proj_dict['velx'] = proj_dict['velx'] - center_vel[0]
                 if args.axis == 'z':
