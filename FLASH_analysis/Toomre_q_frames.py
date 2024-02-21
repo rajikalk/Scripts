@@ -309,7 +309,9 @@ if args.make_movie_pickles == 'True':
             #E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             #epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             
-            E_pot = (-1*(yt.units.gravitational_constant_cgs*((part_mass[primary_ind]).in_units('g')))/R_mag.in_units('cm')) + proj_dict['gpot'].flatten().in_units('cm**2/s**2')
+            E_pot_part = (-1*(yt.units.gravitational_constant_cgs*((part_mass[primary_ind]).in_units('g')))/R_mag.in_units('cm'))
+            E_pot_gas = proj_dict['gpot'].flatten().in_units('cm**2/s**2')
+            E_pot = E_pot_part + E_pot_gas
             E_kin = (0.5*(V_mag.in_units('cm/s')**2))
             epsilon = E_pot + E_kin
             #epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
@@ -333,7 +335,7 @@ if args.make_movie_pickles == 'True':
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             
             if size == 1:
-                plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'h_val':h_val, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic}
+                plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'h_val':h_val, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas}
                 for plot_key in plot_variables.keys():
                     plt.clf()
                     fig, ax = plt.subplots()
