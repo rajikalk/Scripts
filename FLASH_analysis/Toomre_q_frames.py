@@ -276,7 +276,7 @@ if args.make_movie_pickles == 'True':
             #print("Calculate Toomre Q from projections")
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
-            Use_2D = True
+            Use_2D = False
             if Use_2D == False:
                 V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
                 V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velx']).flatten()]).T
