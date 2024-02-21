@@ -347,7 +347,7 @@ if args.make_movie_pickles == 'True':
             Toomre_Q_magnetic_tang = Toomre_Q_tang * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             
             if size == 1:
-                plot_variables = {'R_mag':R_mag, 'V_mag_uncorrected':V_mag_uncorrected, 'V_mag':V_mag, 'V_tang':V_tang, 'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e_frac_top':e_frac_top, 'mu':mu, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'Angular_frequency_tang':Angular_frequency_tang, 'Toomre_Q_tang':Toomre_Q_tang, 'Toomre_Q_magnetic_tang':Toomre_Q_magnetic_tang}
+                plot_variables = {'R_mag':R_mag, 'V_mag_uncorrected':V_mag_uncorrected, 'V_mag':V_mag, 'V_tang':V_tang, 'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e_frac_top':e_frac_top, 'mu':mu, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'Angular_frequency_tang':Angular_frequency_tang, 'Toomre_Q_tang':Toomre_Q_tang, 'Toomre_Q_magnetic_tang':Toomre_Q_magnetic_tang, 'plasma_beta':proj_dict['plasma_beta']}
                 plot_it = 0
                 for plot_key in plot_variables.keys():
                     plot_it = plot_it + 1
