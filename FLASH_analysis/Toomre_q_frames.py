@@ -289,8 +289,8 @@ if args.make_movie_pickles == 'True':
                 V_tang = V_mag
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
             '''
-            R_mag = np.reshape(R_mag, np.shape(proj_dict['dens']))
-            V_mag = np.reshape(V_mag, np.shape(proj_dict['dens']))
+            #R_mag = np.reshape(R_mag, np.shape(proj_dict['dens']))
+            #V_mag = np.reshape(V_mag, np.shape(proj_dict['dens']))
             
             import matplotlib as mpl
             #mpl.rcParams['pdf.fonttype'] = 42
@@ -302,16 +302,16 @@ if args.make_movie_pickles == 'True':
             import my_flash_module as mym
             
             pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
-            Surface_density = proj_dict['dens']
+            Surface_density = proj_dict['dens'].flatten()
             Image_mass = (Surface_density * pixel_area).in_units('msun')
             reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
-            E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
+            E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].flatten().in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
-            r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
+            r_x_v = yt.YTArray(np.cross(R_vec.in_units('cm'),  V_vec), 'cm**2/s')
             L_tot = Image_mass.in_units('g')*r_x_v
             h_val = L_tot/reduced_mass.in_units('g')
-            e_frac_top = (2.*epsilon*(h_val**2.))
+            e_frac_top = (2.*epsilon.in_units('cm**2/s**2')*(h_val**2.))
             e_frac_bottom = (yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g'))**2
             e = np.sqrt((1 + e_frac_top/e_frac_bottom))
             semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')*(1-e**2))).in_units('AU')
@@ -333,7 +333,7 @@ if args.make_movie_pickles == 'True':
                     ylim = [np.min(Y_image).value, np.max(Y_image).value]
                     ax.set_xlim(xlim)
                     ax.set_ylim(ylim)
-                    plot = ax.pcolormesh(X_image, Y_image, plot_variables[plot_key], cmap=plt.cm.RdYlGn, rasterized=True, zorder=1)
+                    plot = ax.pcolormesh(X_image, Y_image, np.reshape(plot_variables[plot_key], np.shape(proj_dict['dens'])), cmap=plt.cm.RdYlGn, rasterized=True, zorder=1)
                     plt.gca().set_aspect('equal')
                     cbar = plt.colorbar(plot, pad=0.0)
                     cbar.set_label(plot_key + " (" + str(plot_variables[plot_key].units)+")", rotation=270, labelpad=14, size=10)
