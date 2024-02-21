@@ -275,7 +275,7 @@ if args.make_movie_pickles == 'True':
                 #    file.close()
             #print("Calculate Toomre Q from projections")
             
-            R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten(), np.zeros(np.shape(Y_image.flatten()))]).T
+            R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
             V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
