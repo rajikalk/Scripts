@@ -276,7 +276,7 @@ if args.make_movie_pickles == 'True':
             #print("Calculate Toomre Q from projections")
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
-            Use_2D = False
+            Use_2D = True
             if Use_2D == True:
                 V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
                 V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
@@ -319,7 +319,7 @@ if args.make_movie_pickles == 'True':
             
             E_pot_part = (-1*(yt.units.gravitational_constant_cgs*(Image_mass*part_mass[primary_ind].in_units('g')))/R_mag.in_units('cm'))
             E_pot_gas = Image_mass.in_units('g')*proj_dict['gpot'].flatten().in_units('cm**2/s**2')
-            E_pot = E_pot_part + E_pot_gas
+            E_pot = E_pot_gas # + E_pot_part
             
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2))
             #epsilon = E_pot + E_kin
