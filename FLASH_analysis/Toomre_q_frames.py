@@ -276,9 +276,13 @@ if args.make_movie_pickles == 'True':
             #print("Calculate Toomre Q from projections")
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
-            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
+            Use_2D = True
+            if Use_2D == True:
+                V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
+            else:
+                V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), proj_dict['velz']*0]).T
             
-            R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
+            R_mag = np.sqrt(np.sum(R_vec**2, axis=1)).in_units('cm')
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
             '''
             R_norm = (R_vec.T/R_mag).T
@@ -303,15 +307,17 @@ if args.make_movie_pickles == 'True':
             
             pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
             Surface_density = proj_dict['dens'].flatten()
-            Image_mass = (Surface_density * pixel_area).in_units('msun')
-            reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
+            Image_mass = (Surface_density * pixel_area).in_units('g')
+            reduced_mass = (Image_mass * part_mass[primary_ind].in_units('g'))/(Image_mass + part_mass[primary_ind].in_units('g'))
+            
             #E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].flatten().in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
             #E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             #epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             
-            E_pot_part = (-1*(yt.units.gravitational_constant_cgs*((Image_mass.in_units('g')*part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm'))
+            E_pot_part = (-1*(yt.units.gravitational_constant_cgs*(Image_mass*part_mass[primary_ind].in_units('g')))/R_mag.in_units('cm'))
             E_pot_gas = Image_mass.in_units('g')*proj_dict['gpot'].flatten().in_units('cm**2/s**2')
             E_pot = E_pot_part + E_pot_gas
+            
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2))
             #epsilon = E_pot + E_kin
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
@@ -324,7 +330,7 @@ if args.make_movie_pickles == 'True':
             h_val = L_tot/reduced_mass.in_units('g')
             #h_val = np.sqrt(np.sum(r_x_v**2, axis=1))
             e_frac_top = (2.*epsilon.in_units('cm**2/s**2')*(h_val**2.))
-            mu = (yt.units.gravitational_constant_cgs*(Image_mass.in_units('g')+part_mass[primary_ind]).in_units('g'))**2
+            mu = (yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g'))**2
             e = np.sqrt((1 + e_frac_top/mu))
             semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')*(1-e**2))).in_units('AU')
             period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')))).in_units('yr')
@@ -335,8 +341,10 @@ if args.make_movie_pickles == 'True':
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             
             if size == 1:
-                plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'h_val':h_val, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas}
+                plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e_frac_top':e_frac_top, 'mu':mu, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, }
+                plot_it = 0
                 for plot_key in plot_variables.keys():
+                plot_it = plot_it + 1
                     plt.clf()
                     fig, ax = plt.subplots()
                     ax.set_xlabel('AU', labelpad=-1, fontsize=10)
@@ -349,7 +357,12 @@ if args.make_movie_pickles == 'True':
                     plt.gca().set_aspect('equal')
                     cbar = plt.colorbar(plot, pad=0.0)
                     cbar.set_label(plot_key + " (" + str(plot_variables[plot_key].units)+")", rotation=270, labelpad=14, size=10)
-                    plt.savefig(plot_key + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+                    if Use_2D:
+                        filename = "2D_"+plot_key + ".jpg"
+                    else:
+                        filename = plot_key + ".jpg"
+                    filename = str(plot_it) + "_" + filename
+                    plt.savefig(filename, format='jpg', bbox_inches='tight', dpi=300)
             import pdb
             pdb.set_trace()
             #Toomre_Q = proj_dict['Toomre_Q']
