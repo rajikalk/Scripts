@@ -309,7 +309,7 @@ if args.make_movie_pickles == 'True':
             #E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             #epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             
-            E_pot_part = (-1*(yt.units.gravitational_constant_cgs*((Image_mass+part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm'))
+            E_pot_part = (-1*(yt.units.gravitational_constant_cgs*((Image_mass.in_units('g')+part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm'))
             E_pot_gas = Image_mass.in_units('g')*proj_dict['gpot'].flatten().in_units('g*cm**2/s**2')
             E_pot = E_pot_part + E_pot_gas
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2))
