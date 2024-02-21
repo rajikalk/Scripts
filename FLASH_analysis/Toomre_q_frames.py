@@ -309,7 +309,7 @@ if args.make_movie_pickles == 'True':
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
-            L_tot = Image_mass.in_units('g').T*r_x_v
+            L_tot = Image_mass.in_units('g')*r_x_v
             h_val = L_tot/reduced_mass.in_units('g')
             e_frac_top = (2.*epsilon*(h_val**2.))
             e_frac_bottom = (yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g'))**2
