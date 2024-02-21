@@ -210,7 +210,7 @@ if args.make_movie_pickles == 'True':
             #make list of projection fields: density, velocity, magnetic field
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
-            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta')]
+            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta'), ('flash', 'gpot')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q_magnetic')]
             
@@ -304,7 +304,7 @@ if args.make_movie_pickles == 'True':
             Surface_density = proj_dict['dens']
             Image_mass = (Surface_density * pixel_area).in_units('msun')
             reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
-            E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg')
+            E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
             E_kin = (0.5*Image_mass.in_units('g')*(np.reshape(V_mag, np.shape(proj_dict['dens']))).in_units('cm/s')**2).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
@@ -348,7 +348,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict['velx'], proj_dict['vely'], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, proj_dict['Toomre_Q_magnetic'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q_magnetic, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
@@ -361,7 +361,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict['velx'], proj_dict['vely'], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, proj_dict['Toomre_Q_magnetic'], proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q_magnetic, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
