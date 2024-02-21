@@ -330,7 +330,7 @@ if args.make_movie_pickles == 'True':
                     ylim = [np.min(Y_image).value, np.max(Y_image).value]
                     ax.set_xlim(xlim)
                     ax.set_ylim(ylim)
-                    plot = ax.pcolormesh(X_image, Y_image, plot_variables[plot_key], cmap=plt.cm.RdYlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                    plot = ax.pcolormesh(X_image, Y_image, plot_variables[plot_key], cmap=plt.cm.RdYlGn, rasterized=True, zorder=1)
                     plt.gca().set_aspect('equal')
                     cbar = plt.colorbar(plot, pad=0.0)
                     cbar.set_label(plot_key + " (" + str(plot_variables[plot_key].units)+")", rotation=270, labelpad=14, size=10)
