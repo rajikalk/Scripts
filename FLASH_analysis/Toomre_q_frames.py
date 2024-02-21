@@ -306,9 +306,7 @@ if args.make_movie_pickles == 'True':
             Image_mass = (Surface_density * pixel_area).in_units('msun')
             reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
             E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
-            E_kin = (0.5*Image_mass.in_units('g')*V_mag.in_units('cm/s')**2).in_units('erg')
-            import pdb
-            pdb.set_trace()
+            E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
             L_tot = Image_mass.in_units('g').T*r_x_v
@@ -340,6 +338,8 @@ if args.make_movie_pickles == 'True':
                     cbar = plt.colorbar(plot, pad=0.0)
                     cbar.set_label(plot_key + " (" + str(plot_variables[plot_key].units)+")", rotation=270, labelpad=14, size=10)
                     plt.savefig(plot_key + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+            import pdb
+            pdb.set_trace()
             #Toomre_Q = proj_dict['Toomre_Q']
             #Toomre_Q_magnetic = proj_dict['Toomre_Q_magnetic']
             
