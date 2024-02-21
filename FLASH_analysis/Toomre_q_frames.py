@@ -310,10 +310,11 @@ if args.make_movie_pickles == 'True':
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.cross(R_vec.in_units('cm'),  V_vec), 'cm**2/s')
             L_tot = Image_mass.in_units('g')*r_x_v
-            h_val = L_tot/reduced_mass.in_units('g')
+            #h_val = L_tot/reduced_mass.in_units('g')
+            h_val = r_x_v
             e_frac_top = (2.*epsilon.in_units('cm**2/s**2')*(h_val**2.))
-            e_frac_bottom = (yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g'))**2
-            e = np.sqrt((1 + e_frac_top/e_frac_bottom))
+            mu = (yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g'))**2
+            e = np.sqrt((1 + e_frac_top/mu))
             semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')*(1-e**2))).in_units('AU')
             period = (2*np.pi*np.sqrt((semimajor_a.in_units('AU')**3)/(yt.units.gravitational_constant_cgs*(Image_mass+part_mass[primary_ind]).in_units('g')))).in_units('yr')
             Angular_frequency = 1/period
