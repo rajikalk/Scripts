@@ -210,7 +210,7 @@ if args.make_movie_pickles == 'True':
             #make list of projection fields: density, velocity, magnetic field
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
-            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta'), ('flash', 'gpot')]
+            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta'), ('flash', 'gpot'), ('flash', 'velz')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q_magnetic')]
             
@@ -275,8 +275,8 @@ if args.make_movie_pickles == 'True':
                 #    file.close()
             #print("Calculate Toomre Q from projections")
             
-            R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten()]).T
-            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten()]).T
+            R_vec = yt.YTArray([X_image.flatten(), Y_image.flatten(), np.zeros(np.shape(Y_image.flatten()))]).T
+            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
@@ -309,6 +309,8 @@ if args.make_movie_pickles == 'True':
             E_kin = (0.5*Image_mass.in_units('g')*(V_mag.in_units('cm/s')**2)).in_units('erg')
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.cross(R_vec.in_units('cm'),  V_vec), 'cm**2/s')
+            import pdb
+            pdb.set_trace()
             L_tot = Image_mass.in_units('g')*r_x_v
             #h_val = L_tot/reduced_mass.in_units('g')
             h_val = r_x_v
