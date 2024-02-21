@@ -280,6 +280,8 @@ if args.make_movie_pickles == 'True':
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
+            import pdb
+            pdb.set_trace()
             '''
             R_norm = (R_vec.T/R_mag).T
             V_norm = (V_vec.T/V_mag).T
