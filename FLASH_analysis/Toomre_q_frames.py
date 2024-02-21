@@ -319,8 +319,8 @@ if args.make_movie_pickles == 'True':
             Angular_frequency = 1/period
             
             #Angular_frequency = V_tang/(2*np.pi*R_mag)
-            Toomre_Q = (proj_dict['sound_speed'] * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
-            Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'])))
+            Toomre_Q = (proj_dict['sound_speed'].flatten() * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
+            Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             
             if size == 1:
                 plot_variables = {'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'r_x_v':r_x_v}
