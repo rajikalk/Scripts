@@ -374,7 +374,6 @@ if args.make_movie_pickles == 'True':
             #Toomre_Q = proj_dict['Toomre_Q']
             #Toomre_Q_magnetic = proj_dict['Toomre_Q_magnetic']
             
-            
             if rank == proj_root_rank and size > 1:
                 proj_dict['velx'] = proj_dict['velx'] - center_vel[0]
                 if args.axis == 'z':
