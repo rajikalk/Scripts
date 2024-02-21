@@ -280,16 +280,17 @@ if args.make_movie_pickles == 'True':
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
-            
+            '''
             R_norm = (R_vec.T/R_mag).T
             V_norm = (V_vec.T/V_mag).T
-            
-            R_mag = np.reshape(R_mag, np.shape(proj_dict['dens']))
             
             V_tang = V_mag*np.sin(np.arccos(R_norm.T[0]*V_norm.T[0] + R_norm.T[1]*V_norm.T[1]))
             if args.use_v_mag == 'True':
                 V_tang = V_mag
             V_tang = np.reshape(V_tang, np.shape(proj_dict['dens']))
+            '''
+            R_mag = np.reshape(R_mag, np.shape(proj_dict['dens']))
+            V_mag = np.reshape(V_mag, np.shape(proj_dict['dens']))
             
             import matplotlib as mpl
             #mpl.rcParams['pdf.fonttype'] = 42
