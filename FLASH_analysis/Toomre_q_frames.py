@@ -210,7 +210,7 @@ if args.make_movie_pickles == 'True':
             #make list of projection fields: density, velocity, magnetic field
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
-            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta'), ('flash', 'gpot'), ('flash', 'velz')]
+            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q_magnetic')]
             
@@ -279,10 +279,10 @@ if args.make_movie_pickles == 'True':
             Use_2D = True
             if Use_2D == True:
                 V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
-                V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
-            else:
-                V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']*0).flatten()]).T
-                V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']*0).flatten()]).T
+                V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velx']*0).flatten()]).T
+            #else:
+            #    V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']*0).flatten()]).T
+            #    V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1)).in_units('cm')
             V_mag_uncorrected = np.sqrt(np.sum(V_vec_uncorrected**2, axis=1))
@@ -306,7 +306,7 @@ if args.make_movie_pickles == 'True':
             from matplotlib.colors import LogNorm
             import matplotlib.patheffects as path_effects
             import my_flash_module as mym
-            
+            '''
             pixel_area = (X_image[0][1:] - X_image[0][:-1])[0].in_units('cm')**2
             Surface_density = proj_dict['dens'].flatten()
             Image_mass = (Surface_density * pixel_area).in_units('g')
@@ -341,11 +341,13 @@ if args.make_movie_pickles == 'True':
             #Angular_frequency = V_tang/(2*np.pi*R_mag)
             Toomre_Q = (proj_dict['sound_speed'].flatten() * Angular_frequency)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
-            
+            '''
+            Surface_density = proj_dict['dens'].flatten()
             Angular_frequency_tang = V_tang/(2*np.pi*R_mag)
             Toomre_Q_tang = (proj_dict['sound_speed'].flatten() * Angular_frequency_tang)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic_tang = Toomre_Q_tang * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
-            
+            Toomre_Q_magnetic_tang = np.reshape(Toomre_Q_magnetic_tang, np.shape(proj_dict['dens']))
+            '''
             if size == 1:
                 plot_variables = {'R_mag':R_mag, 'V_mag_uncorrected':V_mag_uncorrected, 'V_mag':V_mag, 'V_tang':V_tang, 'Surface_density':Surface_density, 'Image_mass':Image_mass, 'reduced_mass':reduced_mass, 'E_pot_part':E_pot_part, 'E_pot_gas':E_pot_gas, 'E_pot':E_pot, 'E_kin':E_kin, 'epsilon':epsilon, 'L_tot':L_tot, 'h_val':h_val, 'e_frac_top':e_frac_top, 'mu':mu, 'e':e, 'semimajor_a':semimajor_a, 'period':period, 'Angular_frequency':Angular_frequency, 'Toomre_Q':Toomre_Q, 'Toomre_Q_magnetic':Toomre_Q_magnetic, 'Angular_frequency_tang':Angular_frequency_tang, 'Toomre_Q_tang':Toomre_Q_tang, 'Toomre_Q_magnetic_tang':Toomre_Q_magnetic_tang, 'plasma_beta':proj_dict['plasma_beta']}
                 plot_it = 0
@@ -371,6 +373,7 @@ if args.make_movie_pickles == 'True':
                     plt.savefig(filename, format='jpg', bbox_inches='tight', dpi=300)
             #Toomre_Q = proj_dict['Toomre_Q']
             #Toomre_Q_magnetic = proj_dict['Toomre_Q_magnetic']
+            '''
             
             if rank == proj_root_rank and size > 1:
                 proj_dict['velx'] = proj_dict['velx'] - center_vel[0]
@@ -382,7 +385,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict['velx'], proj_dict['vely'], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q_magnetic, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q_magnetic_tang, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
@@ -395,7 +398,7 @@ if args.make_movie_pickles == 'True':
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict['velx'], proj_dict['vely'], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
                 
-                pickle.dump((X_image, Y_image, Toomre_Q_magnetic, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+                pickle.dump((X_image, Y_image, Toomre_Q_magnetic_tang, proj_dict['magx'], proj_dict['magy'], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
                 print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
