@@ -280,8 +280,6 @@ if args.make_movie_pickles == 'True':
             
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
-            import pdb
-            pdb.set_trace()
             '''
             R_norm = (R_vec.T/R_mag).T
             V_norm = (V_vec.T/V_mag).T
@@ -309,6 +307,8 @@ if args.make_movie_pickles == 'True':
             reduced_mass = (Image_mass * part_mass[primary_ind])/(Image_mass + part_mass[primary_ind])
             E_pot = (-1*(yt.units.gravitational_constant_cgs*((Image_mass * part_mass[primary_ind]).in_units('g**2')))/R_mag.in_units('cm')).in_units('erg') + (proj_dict['gpot'].in_units('cm**2/s**2')*Image_mass.in_units('g')).in_units('erg')
             E_kin = (0.5*Image_mass.in_units('g')*V_mag.in_units('cm/s')**2).in_units('erg')
+            import pdb
+            pdb.set_trace()
             epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
             r_x_v = yt.YTArray(np.reshape(np.cross(R_vec.in_units('cm'),  V_vec), np.shape(proj_dict['dens'])), 'cm**2/s')
             L_tot = Image_mass.in_units('g').T*r_x_v
