@@ -277,8 +277,8 @@ if args.make_movie_pickles == 'True':
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
             Use_2D = True
-            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']*0).flatten()]).T
-            V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
+            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velx']*0).flatten()]).T
+            #V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
             '''
             if Use_2D == False:
                 V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
@@ -288,7 +288,7 @@ if args.make_movie_pickles == 'True':
                 V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
             '''
             R_mag = np.sqrt(np.sum(R_vec**2, axis=1)).in_units('cm')
-            V_mag_uncorrected = np.sqrt(np.sum(V_vec_uncorrected**2, axis=1))
+            #V_mag_uncorrected = np.sqrt(np.sum(V_vec_uncorrected**2, axis=1))
             V_mag = np.sqrt(np.sum(V_vec**2, axis=1))
             
             R_norm = (R_vec.T/R_mag).T
