@@ -285,11 +285,11 @@ for spin_val in spin_values:
         pdb.set_trace()
         pickle_file = 'Trigger_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
-            if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
+            if np.isnan(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)]):
                 end_time_string = '10000'
             else:
                 end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', 1]
+            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', '1']
             subprocess.Popen(cmd).wait()
             
             os.rename('time_'+end_time_string+'.0.pkl', pickle_file)
@@ -398,11 +398,11 @@ for spin_val in spin_values:
         pdb.set_trace()
         pickle_file = 'Trigger_end_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
-            if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
+            if np.isnan(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)):
                 end_time_string = '10000'
             else:
                 end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', 1]
+            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', '1']
             subprocess.Popen(cmd).wait()
             
             os.rename('time_'+end_time_string+'.0.pkl', pickle_file)
