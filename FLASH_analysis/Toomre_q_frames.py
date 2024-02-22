@@ -346,7 +346,7 @@ if args.make_movie_pickles == 'True':
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             '''
             Surface_density = proj_dict['dens'].flatten()
-            Angular_frequency_tang = V_tang/(2*np.pi*R_mag)
+            Angular_frequency_tang = V_mag/(2*np.pi*R_mag)
             Toomre_Q_tang = (proj_dict['sound_speed'].flatten() * Angular_frequency_tang)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic_tang = Toomre_Q_tang * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             Toomre_Q_magnetic_tang = np.reshape(Toomre_Q_magnetic_tang, np.shape(proj_dict['dens']))
