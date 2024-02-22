@@ -281,6 +281,8 @@ stdvel = 5
 
 for spin_val in spin_values:
     for mach_val in mach_values:
+        import pdb
+        pdb.set_trace()
         pickle_file = 'Trigger_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
             if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
@@ -392,6 +394,8 @@ stdvel = 5
 
 for spin_val in spin_values:
     for mach_val in mach_values:
+        import pdb
+        pdb.set_trace()
         pickle_file = 'Trigger_end_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
             if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
