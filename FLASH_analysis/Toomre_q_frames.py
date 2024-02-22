@@ -277,7 +277,8 @@ if args.make_movie_pickles == 'True':
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
             Use_2D = True
-            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
+            #V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
+            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']*0).flatten()]).T
             #V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
             '''
             if Use_2D == False:
@@ -346,7 +347,8 @@ if args.make_movie_pickles == 'True':
             Toomre_Q_magnetic = Toomre_Q * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             '''
             Surface_density = proj_dict['dens'].flatten()
-            Angular_frequency_tang = V_mag/(2*np.pi*R_mag)
+            #Angular_frequency_tang = V_mag/(2*np.pi*R_mag)
+            Angular_frequency_tang = V_mag/R_mag
             Toomre_Q_tang = (proj_dict['sound_speed'].flatten() * Angular_frequency_tang)/(np.pi * yt.units.gravitational_constant_cgs * Surface_density)
             Toomre_Q_magnetic_tang = Toomre_Q_tang * np.sqrt((1 + (1/proj_dict['plasma_beta'].flatten())))
             Toomre_Q_magnetic_tang = np.reshape(Toomre_Q_magnetic_tang, np.shape(proj_dict['dens']))
