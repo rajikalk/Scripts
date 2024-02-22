@@ -168,7 +168,7 @@ plt.subplots_adjust(hspace=-0.11)
 
 plot_it = -1
 width = 400
-stdvel = 5
+stdvel = 2
 
 for spin_val in spin_values:
     for mach_val in mach_values:
@@ -283,7 +283,7 @@ stdvel = 5
 
 for spin_val in spin_values:
     for mach_val in mach_values:
-        pickle_file = 'Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
+        pickle_file = 'Trigger_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
             runline = "python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_"+spin_val+"/Single/Mach_"+mach_val+"/Lref_9/ ./ -pt 10000 -width 300"
             if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
@@ -395,7 +395,7 @@ stdvel = 5
 
 for spin_val in spin_values:
     for mach_val in mach_values:
-        pickle_file = 'Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
+        pickle_file = 'Trigger_end_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
             runline = "python /home/kuruwira/Scripts/FLASH_analysis/movie_script.py /home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_"+spin_val+"/Single/Mach_"+mach_val+"/Lref_9/ ./ -pt 10000 -width 300"
             if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
