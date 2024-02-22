@@ -394,7 +394,7 @@ for spin_val in spin_values:
     for mach_val in mach_values:
         pickle_file = 'Trigger_end_Spin_'+spin_val+'_Mach_'+mach_val+'.pkl'
         if os.path.exists(pickle_file) == False:
-            if np.isnan(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)):
+            if np.isnan(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)]):
                 end_time_string = '10000'
             else:
                 end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
