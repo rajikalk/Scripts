@@ -210,7 +210,7 @@ if args.make_movie_pickles == 'True':
             #make list of projection fields: density, velocity, magnetic field
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Distance_from_primary'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'sound_speed'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
-            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta')]#, ('flash', 'velz'), ('flash', 'gpot')]
+            proj_field_list = [('gas', 'sound_speed'), ('flash', 'dens'), ('gas', 'plasma_beta'), ('flash', 'velz')]#, ('flash', 'gpot')]
             #proj_field_list = [('gas', 'Toomre_Q'), ('gas', 'Toomre_Q_magnetic'), ('gas', 'Tangential_velocity_wrt_primary'), ('flash', 'dens'), ('gas', 'plasma_beta')]
             #proj_field_list = [('gas', 'Toomre_Q_magnetic')]
             
@@ -277,7 +277,7 @@ if args.make_movie_pickles == 'True':
             
             R_vec = yt.YTArray([X_image.flatten().value, Y_image.flatten().value, np.zeros(np.shape(Y_image.flatten()))], 'AU').T
             Use_2D = True
-            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velx']*0).flatten()]).T
+            V_vec = yt.YTArray([(proj_dict['velx']-center_vel[0]).flatten(), (proj_dict['vely']-center_vel[1]).flatten(), (proj_dict['velz']-center_vel[2]).flatten()]).T
             #V_vec_uncorrected = yt.YTArray([(proj_dict['velx']).flatten(), (proj_dict['vely']).flatten(), (proj_dict['velz']).flatten()]).T
             '''
             if Use_2D == False:
