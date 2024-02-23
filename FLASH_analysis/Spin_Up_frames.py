@@ -77,9 +77,9 @@ for spin_val in spin_values:
         plot_times = [plot_times[0]-500] + list(plot_times) + [plot_times[-1]+500]
         
         for plot_time in plot_times:
-            plot_it = plot_it +1
+            plot_it = plot_it + 1
             if plot_it < n_frames:
-                pickle_file = 'Dens_Spin_' + spin_val + '_Mach_' + mach_val + '.pkl'
+                pickle_file = 'Dens_Spin_' + spin_val + '_Mach_' + mach_val + '_time_'+ str(plot_time) +'.pkl'
         
                 if os.path.exists(pickle_file) == False:
                     cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', '1']
