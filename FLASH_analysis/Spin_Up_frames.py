@@ -69,7 +69,7 @@ for spin_val in spin_values:
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
-        plt.subplots_adjust(hspace=-0.0)
+        plt.subplots_adjust(hspace=-0.01)
         
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
@@ -124,12 +124,12 @@ for spin_val in spin_values:
             if plot_it == len(plot_times)-2:
                 #Figure out colorbar
                 fig.subplots_adjust(bottom=0.07)
-                cbar_ax = fig.add_axes([0.125, 0.055, 0.39, 0.015])
+                cbar_ax = fig.add_axes([0.125, 0.056, 0.39, 0.015])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
                 fig.subplots_adjust(bottom=0.07)
-                cbar_ax = fig.add_axes([0.52, 0.055, 0.39, 0.015])
+                cbar_ax = fig.add_axes([0.52, 0.056, 0.39, 0.015])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
