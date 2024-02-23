@@ -120,13 +120,13 @@ for spin_val in spin_values:
             
             if plot_it == len(plot_times)-2:
                 #Figure out colorbar
-                fig.subplots_adjust(bottom=0.1)
-                cbar_ax = fig.add_axes([0.21, 0.05, 0.25, 0.02])
+                fig.subplots_adjust(bottom=0.0)
+                cbar_ax = fig.add_axes([0.16, 0.05, 0.26, 0.02])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
-                fig.subplots_adjust(bottom=0.1)
-                cbar_ax = fig.add_axes([0.6, 0.05, 0.25, 0.02])
+                fig.subplots_adjust(bottom=0.0)
+                cbar_ax = fig.add_axes([0.56, 0.05, 0.26, 0.02])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
@@ -167,12 +167,8 @@ for spin_val in spin_values:
             ax.yaxis.label.set_color('black')
             ax.tick_params(axis='both', labelsize=font_size)
                 
-            
-            #if plot_it > n_frames-1:
-            #    ax.set_xlabel('AU', labelpad=-1, fontsize=font_size)
-            #    if mach_val != '0.0':
-            #        xticklabels = ax.get_xticklabels()
-            #        plt.setp(xticklabels[0], visible=False)
+            xticklabels = ax.get_xticklabels()
+            plt.setp(xticklabels, visible=False)
             if np.remainder(plot_it, 2)==0:
                 ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
                 if spin_val != '0.20':
