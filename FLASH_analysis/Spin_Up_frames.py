@@ -121,12 +121,12 @@ for spin_val in spin_values:
                 #Figure out colorbar
                 fig.subplots_adjust(right=0.95)
                 cbar_ax = fig.add_axes([0.1, 0.1, 0.4, 0.02])
-                cbar = fig.colorbar(plot, cax=cbar_ax, location='bottom')
+                cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
                 fig.subplots_adjust(right=0.95)
                 cbar_ax = fig.add_axes([0.5, 0.1, 0.4, 0.02])
-                cbar = fig.colorbar(plot, cax=cbar_ax, location='bottom')
+                cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
             ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
