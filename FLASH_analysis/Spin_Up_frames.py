@@ -59,7 +59,7 @@ cmap=plt.cm.gist_heat
 
 width = 200
 stdvel = 5
-n_frames = 7
+n_frames = 5
 
 for spin_val in spin_values:
     for mach_val in mach_values:
@@ -75,6 +75,7 @@ for spin_val in spin_values:
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         plot_times = np.linspace(start_t, end_t, n_frames-2)
         plot_times = [plot_times[0]-500] + list(plot_times) + [plot_times[-1]+500]
+        plot_times = plot_times+plot_times
         
         for plot_time in plot_times:
             plot_it = plot_it + 1
@@ -87,7 +88,7 @@ for spin_val in spin_values:
             
                     os.rename('time_'+str(plot_time)+'.pkl', pickle_file)
                 
-                cbar_lims = [5.e-17, 5.e-15]
+                cbar_lims = [1.e-15, 1.e-13]
             else:
                 pickle_file = 'Toomre_Q_Spin_' + spin_val + '_Mach_' + mach_val + '.pkl'
         
@@ -149,26 +150,28 @@ for spin_val in spin_values:
             ax.tick_params(axis='both', labelsize=font_size)
                 
             
-            if plot_it > 6:
+            if plot_it > n_frames-1:
                 ax.set_xlabel('AU', labelpad=-1, fontsize=font_size)
                 if mach_val != '0.0':
                     xticklabels = ax.get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
-            if plot_it == 0 or plot_it == 7:
+            if plot_it == 0 or plot_it == n_frames:
                 ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
                 if spin_val != '0.20':
                     yticklabels = ax.get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
-            if plot_it == 6:
+            if plot_it == n_frames-1:
                 #Figure out colorbar
-                import pdb
-                pdb.set_trace()
+                fig.subplots_adjust(right=0.95)
+                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
+                cbar = fig.colorbar(plot, cax=cbar_ax)
+                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
+            elif plot_it == len(plot_times)-1:
+                fig.subplots_adjust(right=0.95)
+                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
+                cbar = fig.colorbar(plot, cax=cbar_ax)
+                cbar.set_label(r"Magnetic Toomre Q", rotation=270, labelpad=0, size=font_size)
             
             plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
-        
-fig.subplots_adjust(right=0.95)
-cbar_ax = fig.add_axes([0.951, 0.123, 0.02, 0.744])
-cbar = fig.colorbar(plot, cax=cbar_ax)
-cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
 plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight', dpi=300)
