@@ -90,7 +90,7 @@ for spin_val in spin_values:
                 
                 cbar_lims = [1.e-15, 1.e-13]
             else:
-                pickle_file = 'Toomre_Q_Spin_' + spin_val + '_Mach_' + mach_val + '.pkl'
+                pickle_file = 'Toomre_Q_Spin_' + spin_val + '_Mach_' + mach_val + '_time_'+ str(plot_time) + '.pkl'
         
                 if os.path.exists(pickle_file) == False:
                     cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/Toomre_q_frames.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel)]
