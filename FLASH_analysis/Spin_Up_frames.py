@@ -121,12 +121,12 @@ for spin_val in spin_values:
             if plot_it == len(plot_times)-2:
                 #Figure out colorbar
                 fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.1, 0.1, 0.4, 0.02])
+                cbar_ax = fig.add_axes([0.2, 0.05, 0.25, 0.02])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
                 fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.5, 0.1, 0.4, 0.02])
+                cbar_ax = fig.add_axes([0.65, 0.05, 0.25, 0.02])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
@@ -180,6 +180,3 @@ for spin_val in spin_values:
                     plt.setp(yticklabels[-1], visible=False)
             
             plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up.pdf", format='pdf', bbox_inches='tight')
-            if plot_it == 1:
-                import pdb
-                pdb.set_trace()
