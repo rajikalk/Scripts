@@ -85,7 +85,7 @@ for spin_val in spin_values:
                     cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', '1']
                     subprocess.Popen(cmd).wait()
             
-                    os.rename('time_'+str(plot_time)+'.0.pkl', pickle_file)
+                    os.rename('time_'+str(plot_time)+'.pkl', pickle_file)
                 
                 cbar_lims = [5.e-17, 5.e-15]
             else:
@@ -95,7 +95,7 @@ for spin_val in spin_values:
                     cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/Toomre_q_frames.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel)]
                     subprocess.Popen(cmd).wait()
             
-                    os.rename('time_'+str(plot_time)+'.0.pkl', pickle_file)
+                    os.rename('time_'+str(plot_time)+'.pkl', pickle_file)
                 
                 cbar_lims = [0.0, 2.0]
         
