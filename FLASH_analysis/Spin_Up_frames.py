@@ -69,7 +69,7 @@ for spin_val in spin_values:
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
-        plt.subplots_adjust(hspace=-0.01)
+        plt.subplots_adjust(hspace=-0.00)
         
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
@@ -174,8 +174,7 @@ for spin_val in spin_values:
             plt.setp(xticklabels, visible=False)
             if np.remainder(plot_it, 2)==0:
                 ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
-                if spin_val != '0.20':
-                    yticklabels = ax.get_yticklabels()
-                    plt.setp(yticklabels[-1], visible=False)
+                yticklabels = ax.get_yticklabels()
+                plt.setp(yticklabels[-1], visible=False)
             
             plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up.pdf", format='pdf', bbox_inches='tight')
