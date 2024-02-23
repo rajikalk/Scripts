@@ -80,7 +80,7 @@ for spin_val in spin_values:
             plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
             plot_times = np.array([plot_times, plot_times]).T.flatten()
         
-        fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.9)
+        fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.89)
         
         for plot_time in plot_times:
             plot_it = plot_it + 1
