@@ -74,7 +74,7 @@ for spin_val in spin_values:
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         plot_times = np.linspace(start_t, end_t, n_frames-2)
-        plot_times = [plot_times[0]-500] + list(plot_times) + [plot_times[-1]+500]
+        plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
         plot_times = np.array([plot_times, plot_times]).T.flatten()
         
         for plot_time in plot_times:
