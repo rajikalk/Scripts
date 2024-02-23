@@ -101,7 +101,7 @@ for spin_val in spin_values:
                 #cbar_lims = [1.e-1, 1.e1]
                 cbar_lims = [0, 2]
         
-            ax = axs.T.flatten()[plot_it]
+            ax = axs.flatten()[plot_it]
             file = open(pickle_file, 'rb')
             X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
@@ -180,3 +180,6 @@ for spin_val in spin_values:
                     plt.setp(yticklabels[-1], visible=False)
             
             plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up.pdf", format='pdf', bbox_inches='tight')
+            if plot_it == 1:
+                import pdb
+                pdb.set_trace()
