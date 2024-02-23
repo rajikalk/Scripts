@@ -69,7 +69,7 @@ for spin_val in spin_values:
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
-        plt.subplots_adjust(hspace=-0.11)
+        plt.subplots_adjust(hspace=-0.01)
         
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
@@ -124,12 +124,12 @@ for spin_val in spin_values:
             if plot_it == len(plot_times)-2:
                 #Figure out colorbar
                 fig.subplots_adjust(bottom=0.07)
-                cbar_ax = fig.add_axes([0.13, 0.06, 0.39, 0.015])
+                cbar_ax = fig.add_axes([0.125, 0.055, 0.39, 0.015])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
                 fig.subplots_adjust(bottom=0.07)
-                cbar_ax = fig.add_axes([0.51, 0.06, 0.39, 0.015])
+                cbar_ax = fig.add_axes([0.52, 0.055, 0.39, 0.015])
                 cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
@@ -147,10 +147,10 @@ for spin_val in spin_values:
                         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                         part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-            if np.remainder(plot_it, 2)==0:
+            if np.remainder(plot_it, 2) == 0:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
             else:
-                mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+                mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
             
             ax.tick_params(axis='both', which='major', labelsize=font_size)
             for line in ax.xaxis.get_ticklines():
