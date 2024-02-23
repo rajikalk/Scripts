@@ -174,7 +174,8 @@ for spin_val in spin_values:
             plt.setp(xticklabels, visible=False)
             if np.remainder(plot_it, 2)==0:
                 ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
-                yticklabels = ax.get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
+                if plot_it!= 0:
+                    yticklabels = ax.get_yticklabels()
+                    plt.setp(yticklabels[-1], visible=False)
             
             plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up.pdf", format='pdf', bbox_inches='tight')
