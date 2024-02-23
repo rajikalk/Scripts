@@ -120,7 +120,7 @@ for spin_val in spin_values:
                 plot_velocity_legend = True
             else:
                 plot_velocity_legend = False
-            mym.my_own_quiver_function(, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
             
             if len(part_info['particle_tag']) > 1:
                 if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
