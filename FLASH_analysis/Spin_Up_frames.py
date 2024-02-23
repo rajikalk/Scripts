@@ -65,7 +65,7 @@ for spin_val in spin_values:
     for mach_val in mach_values:
         plot_it = -1
         plt.clf()
-        fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.5*page_height), sharex=True, sharey=True)
+        fig, axs = plt.subplots(ncols=2, nrows=n_frames, figsize=(two_col_width, page_height), sharex=True, sharey=True)
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
@@ -75,11 +75,11 @@ for spin_val in spin_values:
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         plot_times = np.linspace(start_t, end_t, n_frames-2)
         plot_times = [plot_times[0]-500] + list(plot_times) + [plot_times[-1]+500]
-        plot_times = plot_times+plot_times
+        plot_times = np.array([plot_times, plot_times]).T.flatten()
         
         for plot_time in plot_times:
             plot_it = plot_it + 1
-            if plot_it < n_frames:
+            if np.remainder(plot_it, 2)==0:
                 pickle_file = 'Dens_Spin_' + spin_val + '_Mach_' + mach_val + '_time_'+ str(plot_time) +'.pkl'
         
                 if os.path.exists(pickle_file) == False:
@@ -116,20 +116,20 @@ for spin_val in spin_values:
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
             ax.set_aspect('equal')
             
-            if plot_it == n_frames-1:
+            if plot_it > len(plot_times)-3:
                 #Figure out colorbar
                 fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
-                cbar = fig.colorbar(plot, cax=cbar_ax)
-                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
+                cbar_ax = fig.add_axes([0.951, 0.6, 0.02, 0.22])
+                cbar = fig.colorbar(plot, cax=cbar_ax, location='bottom')
+                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             elif plot_it == len(plot_times)-1:
                 fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
-                cbar = fig.colorbar(plot, cax=cbar_ax)
-                cbar.set_label(r"Magnetic Toomre Q", rotation=270, labelpad=0, size=font_size)
+                cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.22])
+                cbar = fig.colorbar(plot, cax=cbar_ax, location='bottom')
+                cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
             ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-            if plot_it == 0:
+            if plot_it == 1:
                 plot_velocity_legend = True
             else:
                 plot_velocity_legend = False
@@ -142,7 +142,10 @@ for spin_val in spin_values:
                         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
                         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                         part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-            mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+            if np.remainder(plot_it, 2)==0:
+                mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+            else:
+                mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
             
             ax.tick_params(axis='both', which='major', labelsize=font_size)
             for line in ax.xaxis.get_ticklines():
@@ -150,10 +153,11 @@ for spin_val in spin_values:
             for line in ax.yaxis.get_ticklines():
                 line.set_color('white')
                 
-            time_string = "$t$="+str(int(time_val))+"yr"
-            time_string_raw = r"{}".format(time_string)
-            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
-            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            if np.remainder(plot_it, 2)==0:
+                time_string = "$t$="+str(int(time_val))+"yr"
+                time_string_raw = r"{}".format(time_string)
+                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+                time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
             ax.tick_params(axis='y', which='major', direction='in', color='w', right=True)
@@ -162,12 +166,12 @@ for spin_val in spin_values:
             ax.tick_params(axis='both', labelsize=font_size)
                 
             
-            if plot_it > n_frames-1:
-                ax.set_xlabel('AU', labelpad=-1, fontsize=font_size)
-                if mach_val != '0.0':
-                    xticklabels = ax.get_xticklabels()
-                    plt.setp(xticklabels[0], visible=False)
-            if plot_it == 0 or plot_it == n_frames:
+            #if plot_it > n_frames-1:
+            #    ax.set_xlabel('AU', labelpad=-1, fontsize=font_size)
+            #    if mach_val != '0.0':
+            #        xticklabels = ax.get_xticklabels()
+            #        plt.setp(xticklabels[0], visible=False)
+            if np.remainder(plot_it, 2)==0:
                 ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
                 if spin_val != '0.20':
                     yticklabels = ax.get_yticklabels()
