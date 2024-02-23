@@ -57,16 +57,16 @@ end_times = [[5400, np.nan, 5750], [5450, 4500, 5300], [5750, np.nan, 5500], [80
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 cmap=plt.cm.gist_heat
 
-width = 300
+width = 200
 stdvel = 5
-n_frames = 5
+n_frames = 7
 
 for spin_val in spin_values:
     for mach_val in mach_values:
         
         plot_it = -1
         plt.clf()
-        fig, axs = plt.subplots(ncols=n_frames, nrows=1, figsize=(two_col_width, 0.25*page_height), sharex=True, sharey=True)
+        fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.5*page_height), sharex=True, sharey=True)
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
@@ -74,9 +74,11 @@ for spin_val in spin_values:
         
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
-        plot_times = np.linspace(start_t, end_t, n_frames)
+        plot_times = np.linspace(start_t, end_t, n_frames-2)
+        import pdb
+        pdb.set_trace()
         
-        for plot_time in plot_times:
+        #for plot_time in plot_times:
         
         if os.path.exists(pickle_file) == False:
             if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
