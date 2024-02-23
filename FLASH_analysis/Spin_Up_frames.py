@@ -63,7 +63,6 @@ n_frames = 7
 
 for spin_val in spin_values:
     for mach_val in mach_values:
-        
         plot_it = -1
         plt.clf()
         fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.5*page_height), sharex=True, sharey=True)
@@ -75,92 +74,97 @@ for spin_val in spin_values:
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         plot_times = np.linspace(start_t, end_t, n_frames-2)
-        import pdb
-        pdb.set_trace()
+        plot_times = [plot_times[0]-500] + list(plot_times) + [plot_times[-1]+500]
         
-        #for plot_time in plot_times:
+        for plot_time in plot_times:
+            plot_it = plot_it +1
+            if plot_it < n_frames:
+                pickle_file = 'Dens_Spin_' + spin_val + '_Mach_' + mach_val + '.pkl'
         
-        if os.path.exists(pickle_file) == False:
-            if max_time[spin_values.index(spin_val)][mach_values.index(mach_val)] == None:
-                end_time_string = '10000'
+                if os.path.exists(pickle_file) == False:
+                    cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-image_center', '1']
+                    subprocess.Popen(cmd).wait()
+            
+                    os.rename('time_'+plot_time+'.0.pkl', pickle_file)
+                
+                cbar_lims = [5.e-17, 5.e-15]
             else:
-                end_time_string = str(max_time[spin_values.index(spin_val)][mach_values.index(mach_val)])
-            cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', end_time_string, '-width', str(width), '-thickness', '1000', '-no_quiv', '15', '-stdv', str(stdvel)]
-            subprocess.Popen(cmd).wait()
+                pickle_file = 'Toomre_Q_Spin_' + spin_val + '_Mach_' + mach_val + '.pkl'
+        
+                if os.path.exists(pickle_file) == False:
+                    cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/Toomre_q_frames.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(plot_time), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel)]
+                    subprocess.Popen(cmd).wait()
             
-            os.rename('time_'+end_time_string+'.0.pkl', pickle_file)
+                    os.rename('time_'+plot_time+'.0.pkl', pickle_file)
+                
+                cbar_lims = [0.0, 2.0]
         
-        plot_it = plot_it +1
-        file = open(pickle_file, 'rb')
-        X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
-        file.close()
-        
-        xlim = [-1*width/2, width/2]
-        ylim = [-1*width/2, width/2]
-        axs.flatten()[plot_it].set_xlim(xlim)
-        axs.flatten()[plot_it].set_ylim(ylim)
-        
-        cbar_lims = [5.e-17, 5.e-15]
-
-        plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-        axs.flatten()[plot_it].set_aspect('equal')
-        
-        axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-        if spin_val == '0.20' and mach_val == '0.0':
-            plot_velocity_legend = True
-        else:
-            plot_velocity_legend = False
-        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-        
-        if len(part_info['particle_tag']) > 1:
-            if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
-                    sort_inds = np.argsort(part_info['particle_form_time'])
-                    part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
-                    part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
-                    part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-                    part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-        mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
-        
-        axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
-        for line in axs.flatten()[plot_it].xaxis.get_ticklines():
-            line.set_color('white')
-        for line in axs.flatten()[plot_it].yaxis.get_ticklines():
-            line.set_color('white')
+            ax = axs.flatten()[plot_it]
+            file = open(pickle_file, 'rb')
+            X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+            file.close()
             
-        time_string = "$t$="+str(int(time_val))+"yr"
-        time_string_raw = r"{}".format(time_string)
-        time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
-        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        
-        axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
-        axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
-        axs.flatten()[plot_it].xaxis.label.set_color('black')
-        axs.flatten()[plot_it].yaxis.label.set_color('black')
-        axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
-        
-        if spin_val == '0.20':
-            #add mach labels:
-            mach_label = "$\mathcal{M}$="+str(mach_val)
-            title_text = axs.flatten()[plot_it].text((np.mean(xlim)+15), (ylim[1]-0.05*(ylim[1]-ylim[0])), mach_label, va="center", ha="center", color='w', fontsize=(font_size), bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-        if mach_val =='0.0':
-            spin_label = "$\Omega t_{\mathrm{ff}}$="+str(spin_val)
-            title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90, bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-            title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            xlim = [-1*width/2, width/2]
+            ylim = [-1*width/2, width/2]
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
             
-        
-        if spin_val == '0.35':
-            axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-            if mach_val != '0.0':
-                xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                plt.setp(xticklabels[0], visible=False)
-        if mach_val == '0.0':
-            axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
-            if spin_val != '0.20':
-                yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                plt.setp(yticklabels[-1], visible=False)
-        
-        plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
+            if plot_it < n_frames:
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+            else:
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+            ax.set_aspect('equal')
+            
+            ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            if plot_it == 0:
+                plot_velocity_legend = True
+            else:
+                plot_velocity_legend = False
+            mym.my_own_quiver_function(, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+            
+            if len(part_info['particle_tag']) > 1:
+                if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                        sort_inds = np.argsort(part_info['particle_form_time'])
+                        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                        part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                        part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                        part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+            mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+            
+            ax.tick_params(axis='both', which='major', labelsize=font_size)
+            for line in ax.xaxis.get_ticklines():
+                line.set_color('white')
+            for line in ax.yaxis.get_ticklines():
+                line.set_color('white')
+                
+            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
+            ax.tick_params(axis='y', which='major', direction='in', color='w', right=True)
+            ax.xaxis.label.set_color('black')
+            ax.yaxis.label.set_color('black')
+            ax.tick_params(axis='both', labelsize=font_size)
+                
+            
+            if plot_it > 6:
+                ax.set_xlabel('AU', labelpad=-1, fontsize=font_size)
+                if mach_val != '0.0':
+                    xticklabels = ax.get_xticklabels()
+                    plt.setp(xticklabels[0], visible=False)
+            if plot_it == 0 or plot_it == 7:
+                ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
+                if spin_val != '0.20':
+                    yticklabels = ax.get_yticklabels()
+                    plt.setp(yticklabels[-1], visible=False)
+            if plot_it == 6:
+                #Figure out colorbar
+                import pdb
+                pdb.set_trace()
+            
+            plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
         
 fig.subplots_adjust(right=0.95)
 cbar_ax = fig.add_axes([0.951, 0.123, 0.02, 0.744])
