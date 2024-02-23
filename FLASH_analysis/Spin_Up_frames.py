@@ -98,8 +98,8 @@ for spin_val in spin_values:
             
                     os.rename('time_'+str(plot_time)+'.pkl', pickle_file)
                 
-                cbar_lims = [1.e-1, 1.e1]
-                #cbar_lims = [0, 2]
+                #cbar_lims = [1.e-1, 1.e1]
+                cbar_lims = [0, 2]
         
             ax = axs.T.flatten()[plot_it]
             file = open(pickle_file, 'rb')
@@ -111,11 +111,11 @@ for spin_val in spin_values:
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             
-            if plot_it < n_frames:
+            if np.remainder(plot_it, 2)==0:
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
             else:
-                #plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                #plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
             ax.set_aspect('equal')
             
             if plot_it == len(plot_times)-2:
@@ -155,7 +155,7 @@ for spin_val in spin_values:
             for line in ax.yaxis.get_ticklines():
                 line.set_color('white')
                 
-            if np.remainder(plot_it, 2)==0:
+            if np.remainder(plot_it, 2) ==0:
                 time_string = "$t$="+str(int(time_val))+"yr"
                 time_string_raw = r"{}".format(time_string)
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
