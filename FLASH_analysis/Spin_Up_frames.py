@@ -69,7 +69,7 @@ for spin_val in spin_values:
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
-        plt.subplots_adjust(hspace=-0.044)
+        plt.subplots_adjust(hspace=-0.041)
         
         start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
         end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
