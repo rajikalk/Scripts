@@ -111,10 +111,22 @@ for spin_val in spin_values:
             ax.set_ylim(ylim)
             
             if plot_it < n_frames:
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
             else:
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
             ax.set_aspect('equal')
+            
+            if plot_it == n_frames-1:
+                #Figure out colorbar
+                fig.subplots_adjust(right=0.95)
+                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
+                cbar = fig.colorbar(plot, cax=cbar_ax)
+                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
+            elif plot_it == len(plot_times)-1:
+                fig.subplots_adjust(right=0.95)
+                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
+                cbar = fig.colorbar(plot, cax=cbar_ax)
+                cbar.set_label(r"Magnetic Toomre Q", rotation=270, labelpad=0, size=font_size)
             
             ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             if plot_it == 0:
@@ -160,17 +172,6 @@ for spin_val in spin_values:
                 if spin_val != '0.20':
                     yticklabels = ax.get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
-            if plot_it == n_frames-1:
-                #Figure out colorbar
-                fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
-                cbar = fig.colorbar(plot, cax=cbar_ax)
-                cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
-            elif plot_it == len(plot_times)-1:
-                fig.subplots_adjust(right=0.95)
-                cbar_ax = fig.add_axes([0.951, 0.5, 0.02, 0.25])
-                cbar = fig.colorbar(plot, cax=cbar_ax)
-                cbar.set_label(r"Magnetic Toomre Q", rotation=270, labelpad=0, size=font_size)
             
             plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight')
 
