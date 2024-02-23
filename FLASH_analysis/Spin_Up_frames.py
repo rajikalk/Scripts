@@ -155,7 +155,7 @@ for spin_val in spin_values:
             for line in ax.yaxis.get_ticklines():
                 line.set_color('white')
                 
-            if np.remainder(plot_it, 2) ==0:
+            if np.remainder(plot_it, 2) == 0:
                 time_string = "$t$="+str(int(time_val))+"yr"
                 time_string_raw = r"{}".format(time_string)
                 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
