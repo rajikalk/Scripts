@@ -98,7 +98,7 @@ for spin_val in spin_values:
             
                     os.rename('time_'+str(plot_time)+'.pkl', pickle_file)
                 
-                cbar_lims = [0.0, 2.0]
+                cbar_lims = [1.e-1, 1.e1]
         
             ax = axs.flatten()[plot_it]
             file = open(pickle_file, 'rb')
@@ -113,7 +113,8 @@ for spin_val in spin_values:
             if plot_it < n_frames:
                 plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
             else:
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                #plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
             ax.set_aspect('equal')
             
             if plot_it == len(plot_times)-2:
