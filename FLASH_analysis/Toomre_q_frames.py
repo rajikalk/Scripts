@@ -533,7 +533,7 @@ if args.make_movie_frames == 'True':
                 
                 cmap=plt.cm.gist_heat
                 #if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
-                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+                plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
                 '''
                 else:
                     if np.isnan(cbar_lims[0]):
