@@ -65,7 +65,7 @@ for spin_val in spin_values:
     for mach_val in mach_values:
         plot_it = -1
         plt.clf()
-        fig, axs = plt.subplots(ncols=2, nrows=n_frames, figsize=(0.6*two_col_width, page_height), sharex=True, sharey=True)
+        fig, axs = plt.subplots(ncols=2, nrows=n_frames, figsize=(0.59*two_col_width, page_height), sharex=True, sharey=True)
         for ax_it in axs.flatten():
             ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0.01)
