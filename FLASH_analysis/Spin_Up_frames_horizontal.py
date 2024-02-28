@@ -80,7 +80,7 @@ for spin_val in spin_values:
             plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
             plot_times = plot_times + plot_times
         
-        fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.95)
+        fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
         
         for plot_time in plot_times:
             plot_it = plot_it + 1
@@ -126,7 +126,7 @@ for spin_val in spin_values:
             if plot_it == n_frames-1:
                 #Figure out colorbar
                 #fig.subplots_adjust(bottom=0.0)
-                cbar_ax = fig.add_axes([0.90, 0.49, 0.015, 0.384])
+                cbar_ax = fig.add_axes([0.90, 0.495, 0.015, 0.384])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=20, rotation=270, size=font_size)
             elif plot_it == 2*n_frames-1:
@@ -163,7 +163,7 @@ for spin_val in spin_values:
             if plot_it < n_frames:
                 time_string = "$t$="+str(int(time_val))+"yr"
                 time_string_raw = r"{}".format(time_string)
-                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+                time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
                 time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
