@@ -126,12 +126,12 @@ for spin_val in spin_values:
             if plot_it == n_frames-1:
                 #Figure out colorbar
                 #fig.subplots_adjust(bottom=0.0)
-                cbar_ax = fig.add_axes([0.951, 0.50, 0.015, 0.385])
+                cbar_ax = fig.add_axes([0.85, 0.50, 0.015, 0.385])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, rotation=270, size=font_size)
             elif plot_it == 2*n_frames-1:
                 #fig.subplots_adjust(bottom=0.05)
-                cbar_ax = fig.add_axes([0.951, 0.094, 0.015, 0.385])
+                cbar_ax = fig.add_axes([0.90, 0.094, 0.015, 0.385])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=0, rotation=270, size=font_size)
             
