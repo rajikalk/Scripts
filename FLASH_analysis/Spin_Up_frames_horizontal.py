@@ -76,9 +76,7 @@ for spin_val in spin_values:
         if np.isnan(start_t) or np.isnan(end_t):
             plot_times = []
         else:
-            plot_times = np.linspace(start_t, end_t, n_frames-2)
-            plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
-            plot_times = np.array([plot_times, plot_times]).T.flatten()
+            plot_times = plot_times + plot_times
         
         fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.95)
         
