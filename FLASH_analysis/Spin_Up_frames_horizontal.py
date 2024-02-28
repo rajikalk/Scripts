@@ -176,12 +176,12 @@ for spin_val in spin_values:
                 xticklabels = ax.get_xticklabels()
                 plt.setp(xticklabels, visible=False)
             if np.remainder(plot_it, n_frames)==0:
-                ax.set_ylabel('AU', fontsize=font_size, labelpad=-20)
+                ax.set_ylabel('AU', fontsize=font_size, labelpad=-10)
                 if plot_it == n_frames:
                     yticklabels = ax.get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
             if plot_it >= n_frames:
-                ax.set_xlabel('AU', fontsize=font_size, labelpad=-20)
+                ax.set_xlabel('AU', fontsize=font_size, labelpad=-10)
             if np.remainder(plot_it, n_frames)!=0:
                 yticklabels = ax.get_yticklabels()
                 plt.setp(yticklabels, visible=False)
