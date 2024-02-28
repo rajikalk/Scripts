@@ -181,7 +181,7 @@ for spin_val in spin_values:
                     yticklabels = ax.get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
             else:
-                ticklabels = ax.get_yticklabels()
+                yticklabels = ax.get_yticklabels()
                 plt.setp(yticklabels, visible=False)
             
             plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up_horizontal.pdf", format='pdf', bbox_inches='tight')
