@@ -131,9 +131,10 @@ for spin_val in spin_values:
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=15, rotation=270, size=font_size)
             elif plot_it == 2*n_frames-1:
                 #fig.subplots_adjust(bottom=0.05)
-                cbar_ax = fig.add_axes([0.90, 0.116, 0.015, 0.385])
+                cbar_ax = fig.add_axes([0.90, 0.11, 0.015, 0.385])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
                 cbar.set_label(r"Magnetic Toomre Q", labelpad=15, rotation=270, size=font_size)
+                cbar_ticks = cbar.ax.xaxis.get_ticklabels()[-1].set_visible(False)
             
             ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             if plot_it == 0:
@@ -182,6 +183,9 @@ for spin_val in spin_values:
                     plt.setp(yticklabels[-1], visible=False)
             if plot_it >= n_frames:
                 ax.set_xlabel('AU', fontsize=font_size, labelpad=-10)
+                if plot_it > n_frames:
+                    xticklabels = ax.get_xticklabels()
+                    plt.setp(xticklabels[0], visible=False)
             if np.remainder(plot_it, n_frames)!=0:
                 yticklabels = ax.get_yticklabels()
                 plt.setp(yticklabels, visible=False)
