@@ -180,7 +180,7 @@ for spin_val in spin_values:
                 if plot_it!= 0:
                     yticklabels = ax.get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
-            if plot_it => n_frames:
+            if plot_it >= n_frames:
                 ax.set_xlabel('AU', fontsize=font_size, labelpad=-20)
             else:
                 yticklabels = ax.get_yticklabels()
