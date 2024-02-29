@@ -245,7 +245,7 @@ for mach_val in mach_values:
                 if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
-            plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", bbox_inches='tight')
+            plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".pdf", bbox_inches='tight')
         
     fig.subplots_adjust(right=0.95)
     cbar_ax = fig.add_axes([0.951, 0.11, 0.02, 0.77])
@@ -253,7 +253,7 @@ for mach_val in mach_values:
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
     
     #plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", format='png', bbox_inches='tight', dpi=300)
-    plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".pdf", format='pdf', bbox_inches='tight', dpi=300)
+    plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".pdf", bbox_inches='tight', dpi=300)
 
 '''
 plt.clf()
