@@ -252,7 +252,7 @@ for mach_val in mach_values:
     cbar = fig.colorbar(plot, cax=cbar_ax)
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
     
-    plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", format='png', bbox_inches='tight', dpi=300)
+    #plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", format='png', bbox_inches='tight', dpi=300)
     plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".pdf", format='pdf', bbox_inches='tight', dpi=300)
 
 '''
