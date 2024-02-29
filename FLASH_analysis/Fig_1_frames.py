@@ -58,6 +58,105 @@ width = 500
 stdvel = 5
 start_time = float(sys.argv[1])
 
+n_times = 5
+plot_times = np.linspace(start_time, 10000, n_times)
+for mach_val in mach_values:
+    plt.clf()
+    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.71*page_height), sharex=True, sharey=True)
+    for ax_it in axs.flatten():
+        ax_it.set_aspect('equal')
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.01)
+    
+    fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.9)
+    
+    plot_it = -1
+    for plot_time in plot_times:
+        for spin_val in spin_values:
+            plot_it = plot_it + 1
+            pickle_file = "Mach_"+mach_val+"_Spin_"+spin_val+"_time_"+str(int(plot_time))+".pkl"
+            if os.path.exists(pickle_file) == False:
+                cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(int(plot_time)), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-make_frames', 'False']
+                subprocess.Popen(cmd).wait()
+            
+                os.rename('time_'+str(int(plot_time))+'.0.pkl', pickle_file)
+                
+            file = open(pickle_file, 'rb')
+            X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+            file.close()
+            
+            xlim = [-1*width/2, width/2]
+            ylim = [-1*width/2, width/2]
+            axs.flatten()[plot_it].set_xlim(xlim)
+            axs.flatten()[plot_it].set_ylim(ylim)
+            
+            cbar_lims = [5.e-16, 5.e-14]
+
+            plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+            axs.flatten()[plot_it].set_aspect('equal')
+            
+            axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            if plot_it == 0:
+                plot_velocity_legend = True
+            else:
+                plot_velocity_legend = False
+            mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+            
+            if len(part_info['particle_tag']) > 1:
+                if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                        sort_inds = np.argsort(part_info['particle_form_time'])
+                        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                        part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                        part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                        part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+            mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+            
+            axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
+            for line in axs.flatten()[plot_it].xaxis.get_ticklines():
+                line.set_color('white')
+            for line in axs.flatten()[plot_it].yaxis.get_ticklines():
+                line.set_color('white')
+                
+            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
+            axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
+            axs.flatten()[plot_it].xaxis.label.set_color('black')
+            axs.flatten()[plot_it].yaxis.label.set_color('black')
+            axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
+            
+            if plot_it < n_times:
+                spin_label = "$\Omega t_{\mathrm{ff}}$="+str(spin_val)
+                title_text = axs.flatten()[plot_it].text((np.mean(xlim)+15), (ylim[1]-0.05*(ylim[1]-ylim[0])), spin_label, va="center", ha="center", color='w', fontsize=(font_size), bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
+                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                
+                axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-10)
+                if plot_it > 0:
+                    yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                    plt.setp(yticklabels[-1], visible=False)
+            else:
+                yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                plt.setp(yticklabels, visible=False)
+            
+            if spin_val == '0.35':
+                axs.flatten()[plot_it].set_xlabel('AU', labelpad=0, fontsize=font_size)
+                if np.remainder(plot_it, n_times) != 0:
+                    xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                    plt.setp(xticklabels[0], visible=False)
+            plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+"_tall.png", bbox_inches='tight')
+        
+    fig.subplots_adjust(right=0.95)
+    cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.8])
+    cbar = fig.colorbar(plot, cax=cbar_ax)
+    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
+    
+    plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+"_tall.png", format='png', bbox_inches='tight', dpi=300)
+    plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+"_tall.pdf", format='pdf', bbox_inches='tight', dpi=300)
+
+
 n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
