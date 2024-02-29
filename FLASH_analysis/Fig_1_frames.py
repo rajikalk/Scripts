@@ -49,13 +49,13 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 spin_values = ['0.20', '0.25', '0.30', '0.35']
-mach_values = ['0.0', '0.1', '0.2']
+mach_values = ['0.0', '0.2']
 max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 cmap=plt.cm.gist_heat
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, page_height), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(0.7*two_col_width, page_height), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.01)
@@ -159,7 +159,7 @@ plt.savefig("Fig_1_xz.pdf", format='pdf', bbox_inches='tight', dpi=300)
 
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(two_col_width, page_height), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(mach_values), nrows=len(spin_values), figsize=(0.7*two_col_width, page_height), sharex=True, sharey=True)
 for ax_it in axs.flatten():
     ax_it.set_aspect('equal')
 plt.subplots_adjust(wspace=0.01)
@@ -262,7 +262,7 @@ cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_
 plt.savefig("Fig_1.pdf", format='pdf', bbox_inches='tight', dpi=300)
 #================================================================================================================
 # Trigger
-
+'''
 #max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 max_time = [[4500, np.nan, 3750], [4500, 4000, 3500], [5250, np.nan, 4250], [6750, 5750, 4250]]
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
@@ -481,3 +481,4 @@ cbar = fig.colorbar(plot, cax=cbar_ax)
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
 
 plt.savefig("Trigger_end.pdf", format='pdf', bbox_inches='tight', dpi=300)
+'''
