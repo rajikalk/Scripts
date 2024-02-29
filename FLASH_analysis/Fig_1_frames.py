@@ -57,7 +57,7 @@ cmap=plt.cm.gist_heat
 width = 500
 stdvel = 5
 start_time = float(sys.argv[1])
-
+'''
 n_times = 5
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
@@ -155,7 +155,7 @@ for mach_val in mach_values:
     
     plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+"_tall.png", format='png', bbox_inches='tight', dpi=300)
     plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+"_tall.pdf", format='pdf', bbox_inches='tight', dpi=300)
-
+'''
 
 n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
