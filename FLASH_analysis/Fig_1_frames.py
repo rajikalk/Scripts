@@ -62,7 +62,7 @@ n_times = 5
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
     plt.clf()
-    fig, axs = plt.subplots(ncols=len(spin_values), nrows=n_times, figsize=(two_col_width, 0.71*page_height), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=len(spin_values), nrows=n_times, figsize=(two_col_width, page_height), sharex=True, sharey=True)
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
     plt.subplots_adjust(wspace=0.0)
