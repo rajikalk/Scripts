@@ -89,7 +89,8 @@ plt.ylim(bottom=0)
 plt.legend()
 plt.savefig('spin_comp_primary.png')
 '''
-Mach_labels = ['0.0', '0.1', '0.2']
+#Mach_labels = ['0.0', '0.1', '0.2']
+Mach_labels['0.0', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 '''
@@ -276,7 +277,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(single_col_width, 1.6*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -287,7 +288,7 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
-    axs.flatten()[plot_it].set_title('Mach='+mach_lab, pad=-0.2)
+    #axs.flatten()[plot_it].set_title('Mach='+mach_lab, pad=-0.2)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
