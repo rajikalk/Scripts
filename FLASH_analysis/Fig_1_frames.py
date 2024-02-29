@@ -62,13 +62,13 @@ n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
     plt.clf()
-    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.75*page_height), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.73*page_height), sharex=True, sharey=True)
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.01)
     
-    fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.87)
+    fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.89)
     
     plot_it = -1
     for spin_val in spin_values:
