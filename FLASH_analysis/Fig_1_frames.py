@@ -133,7 +133,7 @@ for mach_val in mach_values:
                 title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90, bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
-                axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
+                axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-10)
                 if plot_it > 0:
                     yticklabels = axs.flatten()[plot_it].get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
@@ -142,7 +142,7 @@ for mach_val in mach_values:
                 plt.setp(yticklabels, visible=False)
             
             if spin_val == '0.35':
-                axs.flatten()[plot_it].set_xlabel('AU', labelpad=10, fontsize=font_size)
+                axs.flatten()[plot_it].set_xlabel('AU', labelpad=0, fontsize=font_size)
                 if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
