@@ -62,7 +62,7 @@ n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
     plt.clf()
-    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.73*page_height), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.72*page_height), sharex=True, sharey=True)
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
     plt.subplots_adjust(wspace=0.0)
@@ -142,7 +142,7 @@ for mach_val in mach_values:
                 plt.setp(yticklabels, visible=False)
             
             if spin_val == '0.35':
-                axs.flatten()[plot_it].set_xlabel('AU', labelpad=5, fontsize=font_size)
+                axs.flatten()[plot_it].set_xlabel('AU', labelpad=10, fontsize=font_size)
                 if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
