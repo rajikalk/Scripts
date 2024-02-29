@@ -75,7 +75,7 @@ for mach_val in mach_values:
             plot_it = plot_it + 1
             pickle_file = "Mach_"+mach_val+"_Spin_"+spin_val+"_time_"+str(int(plot_time))+".pkl"
             if os.path.exists(pickle_file) == False:
-                cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(int(plot_time)), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel)]
+                cmd = ['python', '/home/kuruwira/Scripts/FLASH_analysis/movie_script.py', '/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/', './', '-pt', str(int(plot_time)), '-width', str(width), '-thickness', '200', '-no_quiv', '15', '-stdv', str(stdvel), '-make_frames', 'False']
                 subprocess.Popen(cmd).wait()
             
                 os.rename('time_'+str(int(plot_time))+'.0.pkl', pickle_file)
