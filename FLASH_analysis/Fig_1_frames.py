@@ -66,7 +66,7 @@ for mach_val in mach_values:
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.01)
+    plt.subplots_adjust(hspace=-0.11)
     
     fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.895)
     
@@ -149,7 +149,7 @@ for mach_val in mach_values:
             plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", bbox_inches='tight')
         
     fig.subplots_adjust(right=0.95)
-    cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.8])
+    cbar_ax = fig.add_axes([0.951, 0.2, 0.02, 0.6])
     cbar = fig.colorbar(plot, cax=cbar_ax)
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
     
