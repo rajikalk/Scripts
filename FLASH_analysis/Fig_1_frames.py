@@ -64,8 +64,8 @@ for mach_val in mach_values:
     fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, page_height), sharex=True, sharey=True)
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
-    plt.subplots_adjust(wspace=0.01)
-    plt.subplots_adjust(hspace=-0.11)
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.01)
     
     fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.895)
     
