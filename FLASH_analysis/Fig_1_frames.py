@@ -129,7 +129,7 @@ for mach_val in mach_values:
             axs.flatten()[plot_it].yaxis.label.set_color('black')
             axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
             
-            if np.remainer(plot_it, n_times) == 0:
+            if np.remainder(plot_it, n_times) == 0:
                 spin_label = "$\Omega t_{\mathrm{ff}}$="+str(spin_val)
                 title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), spin_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90, bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -144,7 +144,7 @@ for mach_val in mach_values:
             
             if spin_val == '0.35':
                 axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-                if np.remainer(plot_it, n_times) != 0:
+                if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
             plt.savefig("Mach_"+mach_val+".pdf", format='pdf', bbox_inches='tight')
