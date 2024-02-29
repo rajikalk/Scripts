@@ -62,7 +62,7 @@ n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
     plt.clf()
-    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.72*page_height), sharex=True, sharey=True)
+    fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, 0.71*page_height), sharex=True, sharey=True)
     for ax_it in axs.flatten():
         ax_it.set_aspect('equal')
     plt.subplots_adjust(wspace=0.0)
@@ -149,7 +149,7 @@ for mach_val in mach_values:
             plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", bbox_inches='tight')
         
     fig.subplots_adjust(right=0.95)
-    cbar_ax = fig.add_axes([0.951, 0.2, 0.02, 0.6])
+    cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.8])
     cbar = fig.colorbar(plot, cax=cbar_ax)
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
     
