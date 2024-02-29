@@ -167,7 +167,10 @@ for mach_val in mach_values:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.01)
     
-    fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.9)
+    if mach_val == '0.0':
+        fig.suptitle("No Turbulence ($\mathcal{M}$="+mach_val+")", y=0.9)
+    else:
+        fig.suptitle("With Turbulence ($\mathcal{M}$="+mach_val+")", y=0.9)
     
     plot_it = -1
     for spin_val in spin_values:
