@@ -56,9 +56,10 @@ cmap=plt.cm.gist_heat
 
 width = 500
 stdvel = 5
+start_time = sys.argv[1]
 
 n_times = 4
-plot_times = np.linspace(0,10000, n_times)
+plot_times = np.linspace(start_time, 10000, n_times)
 for mach_val in mach_values:
     plt.clf()
     fig, axs = plt.subplots(ncols=n_times, nrows=len(spin_values), figsize=(two_col_width, page_height), sharex=True, sharey=True)
