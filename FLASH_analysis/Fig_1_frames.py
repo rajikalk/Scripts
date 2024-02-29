@@ -134,7 +134,7 @@ for mach_val in mach_values:
                 title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
                 axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-10)
-                if np.remainder(plot_it, n_frames) == 0 and plot_it > 0:
+                if np.remainder(plot_it, n_times) == 0 and plot_it > 0:
                     yticklabels = axs.flatten()[plot_it].get_yticklabels()
                     plt.setp(yticklabels[-1], visible=False)
             else:
