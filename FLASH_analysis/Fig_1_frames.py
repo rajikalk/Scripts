@@ -248,7 +248,7 @@ for mach_val in mach_values:
             plt.savefig("Mach_"+mach_val+"_start_time_"+str(int(start_time))+".png", bbox_inches='tight')
         
     fig.subplots_adjust(right=0.95)
-    cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.8])
+    cbar_ax = fig.add_axes([0.951, 0.11, 0.02, 0.77])
     cbar = fig.colorbar(plot, cax=cbar_ax)
     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
     
