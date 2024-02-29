@@ -56,7 +56,7 @@ cmap=plt.cm.gist_heat
 
 width = 500
 stdvel = 5
-start_time = sys.argv[1]
+start_time = float(sys.argv[1])
 
 n_times = 4
 plot_times = np.linspace(start_time, 10000, n_times)
