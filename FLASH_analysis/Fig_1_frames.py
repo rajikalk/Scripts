@@ -43,7 +43,7 @@ matplotlib.rcParams['text.latex.preamble'] = [
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 10
+font_size = 8
 mym.set_global_font_size(font_size)
 
 
@@ -145,7 +145,7 @@ for mach_val in mach_values:
                 if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
-            plt.savefig("Mach_"+mach_val+".pdf", format='pdf', bbox_inches='tight')
+            plt.savefig("Mach_"+mach_val+".png", bbox_inches='tight')
         
     fig.subplots_adjust(right=0.95)
     cbar_ax = fig.add_axes([0.951, 0.1, 0.02, 0.8])
