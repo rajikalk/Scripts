@@ -80,8 +80,6 @@ for mach_val in mach_values:
             
                 os.rename('time_'+str(int(plot_time))+'.0.pkl', pickle_file)
                 
-            
-            plot_it = plot_it +1
             file = open(pickle_file, 'rb')
             X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
