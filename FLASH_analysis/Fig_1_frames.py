@@ -142,7 +142,7 @@ for mach_val in mach_values:
                 plt.setp(yticklabels, visible=False)
             
             if spin_val == '0.35':
-                axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
+                axs.flatten()[plot_it].set_xlabel('AU', labelpad=5, fontsize=font_size)
                 if np.remainder(plot_it, n_times) != 0:
                     xticklabels = axs.flatten()[plot_it].get_xticklabels()
                     plt.setp(xticklabels[0], visible=False)
