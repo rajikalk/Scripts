@@ -356,11 +356,11 @@ for mach_lab in Mach_labels:
     axs.flatten()[plot_it].set_ylabel('L ($10^{45}kg\,m^2/s$)', labelpad=-0.2)
     
     if mach_lab == '0.0':
-        mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(500, 0.85, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
-        mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(500, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
