@@ -459,7 +459,7 @@ for mach_lab in Mach_labels:
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='bottom right', ncol=2)
+axs.flatten()[0].legend(loc='lower right', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
