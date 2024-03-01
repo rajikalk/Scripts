@@ -93,7 +93,7 @@ plt.savefig('spin_comp_primary.png')
 #Mach_labels = ['0.0', '0.1', '0.2']
 Mach_labels = ['0.0', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
-
+"""
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.3*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -285,7 +285,7 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 #axs.flatten()[plot_it-1].set_ylim([5.e48, 5.e54])
 #axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi_'+args.refinment_level+'.pdf', bbox_inches='tight')
-
+"""
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -352,25 +352,19 @@ for mach_lab in Mach_labels:
             #Calculate pre spin adn post spin
         else:
             print("Couldn't open", single_pickle)
+    
+    axs.flatten()[plot_it].set_ylabel('L ($kg\,m^2/s$)', labelpad=-0.2)
+    
+    if mach_lab == '0.0':
+        mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.50, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+    else:
+        mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-        if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('L ($kg\,m^2/s$)', labelpad=-0.2)
-        else:
-            yticklabels = axs.flatten()[plot_it].get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            plt.setp(xticklabels[-1], visible=False)
-        #if mach_lab == '0.0' and spin_lab == '0.35':
-        #    xticklabels = axs.flatten()[plot_it].get_xticklabels()
-        #    plt.setp(xticklabels[-1], visible=False)
-
-axs.flatten()[0].legend(loc='upper left')
-axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim(bottom=0)
-
-axs.flatten()[0].legend(loc='upper left')
+axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -380,11 +374,12 @@ axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[1].minorticks_on()
 axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+axs.flatten()[1].set_xlabel('Time ($yr$)', labelpad=-0.2)
+yticklabels = axs.flatten()[1].get_yticklabels()
+plt.setp(yticklabels[-1], visible=False)
 
-axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
-axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
-axs.flatten()[2].minorticks_on()
-axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 
 plt.savefig('Spin_init_spin_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
@@ -394,10 +389,9 @@ iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-spin_up_start = [[4500, 4500, 5250, 6750], [np.nan, 4000, np.nan, 5750], [3750, 3500, 4250, 4250]]
-spin_up_end = [[5400, 5450, 5750, 8000], [np.nan, 4500, np.nan, 7250], [5750, 5300, 5500, 5750]]
+spin_up_start = [[4500, 4500, 5250, 6750], [3750, 3500, 4250, 4250]]
+spin_up_end = [[5400, 5450, 5750, 8000], [5750, 5300, 5500, 5750]]
 peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
- [np.nan, 4396.31866809, np.nan, 7239.5115915],
  [5684.37286105, 5479.48842751, 5771.10385454, 5758.7326983]]
 
 line_styles = ['-', '--', '-.', ':']
@@ -406,7 +400,6 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
-    axs.flatten()[plot_it].set_title("Mach = " + mach_lab, pad=-0.2)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
@@ -454,24 +447,19 @@ for mach_lab in Mach_labels:
                     plot_highlight = False
         else:
             print("Couldn't open", single_pickle)
+    
+    axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)', labelpad=-0.2)
+    
+    if mach_lab == '0.0':
+        mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.50, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+    else:
+        mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-        if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)', labelpad=-0.2)
-        else:
-            yticklabels = axs.flatten()[plot_it].get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab != '0.2' and spin_lab == Spin_labels[-1]:
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            plt.setp(xticklabels[-1], visible=False)
-        #if mach_lab == '0.0' and spin_lab == '0.35':
-        #    xticklabels = axs.flatten()[plot_it].get_xticklabels()
-        #    plt.setp(xticklabels[-1], visible=False)
-
-axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0, 1.5e15])
-
-axs.flatten()[0].legend(loc='upper left')
+axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -481,17 +469,17 @@ axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[1].minorticks_on()
 axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+axs.flatten()[1].set_xlabel('Time ($yr$)', labelpad=-0.2)
+yticklabels = axs.flatten()[1].get_yticklabels()
+plt.setp(yticklabels[-1], visible=False)
 
-axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
-axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
-axs.flatten()[2].minorticks_on()
-axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
-
-axs.flatten()[0].legend(loc='lower left')
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 
 plt.savefig('Spin_init_spin_spec_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
 #==========================================================================================================================
+"""
 plt.clf()
 fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=1, figsize=(two_col_width, 0.7*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
@@ -562,6 +550,6 @@ axs.flatten()[0].legend(loc='lower left')
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim([0.e15, 0.1e15])
 plt.savefig('d_spin_init_spin_spec_comp.pdf', bbox_inches='tight')
-
+"""
 
 
