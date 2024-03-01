@@ -286,8 +286,10 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 #axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('spin_comp_multi_'+args.refinment_level+'.pdf', bbox_inches='tight')
 """
+
+height_multiplier = 1.5
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.4*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, height_multiplier*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -362,7 +364,7 @@ for mach_lab in Mach_labels:
     else:
         mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 1.2, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[0].legend(loc='upper left', ncol=2)#, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
@@ -384,7 +386,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Spin_init_spin_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.3*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, height_multiplier*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
