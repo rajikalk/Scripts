@@ -152,7 +152,7 @@ for spin_val in spin_values:
                         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
                         part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
             if plot_it >= n_frames:
-                mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=3)
+                mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=2)
             else:
                 mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
             
@@ -191,4 +191,4 @@ for spin_val in spin_values:
                 yticklabels = ax.get_yticklabels()
                 plt.setp(yticklabels, visible=False)
             
-            plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up_horizontal.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02)
+            plt.savefig("Spin_"+spin_val+"_Mach_"+mach_val+"_Spin_up_horizontal.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
