@@ -331,10 +331,10 @@ for mach_lab in Mach_labels:
                     Total_accrete_mass = Total_accrete_mass + add_mass
             axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab)])
             
-            if mach_val == '0.0':
-                mach_string = "No Turbulence ($\mathcal{M}$="+mach_val+")"
+            if mach_lab == '0.0':
+                mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             else:
-                mach_string = "With Turbulence ($\mathcal{M}$="+mach_val+")"
+                mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             
             mach_string_raw = r"{}".format(mach_string)
             time_text = axs.flatten()[plot_it].text(500, 0.62, mach_string_raw, va="center", ha="left", color='w', fontsize=font_size)
