@@ -278,7 +278,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.1*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.5*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -347,7 +347,7 @@ for mach_lab in Mach_labels:
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(250, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='upper left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
