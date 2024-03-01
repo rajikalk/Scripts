@@ -278,7 +278,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.5*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.6*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -338,8 +338,8 @@ for mach_lab in Mach_labels:
                 mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(500, 0.62, mach_string_raw, va="center", ha="left", color='w', fontsize=font_size)
-            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            time_text = axs.flatten()[plot_it].text(500, 0.66, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+            #time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
         else:
             print("Couldn't open", single_pickle)
