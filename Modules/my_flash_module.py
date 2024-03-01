@@ -462,6 +462,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             '''
     if annotate_field is not None:
         if len(particle_tags) > split_threshold:
+            import pdb
+            pdb.set_trace()
             string_1 = p_t[:31]
             string_2 = p_t[32:]
             colors_1 = rainbow_text_colors[:9]
