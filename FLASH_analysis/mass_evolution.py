@@ -334,18 +334,7 @@ for mach_lab in Mach_labels:
         else:
             print("Couldn't open", single_pickle)
 
-        axs.flatten()[plot_it].set_xlabel('Time ($yr$)', labelpad=-0.2)
-        if mach_lab == '0.0':
-            axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
-        else:
-            yticklabels = axs.flatten()[plot_it].get_yticklabels()
-            plt.setp(yticklabels, visible=False)
-        if mach_lab != '0.2' and spin_lab == '0.35':
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            plt.setp(xticklabels[-1], visible=False)
-        if mach_lab == '0.0' and spin_lab == '0.35':
-            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-            #plt.setp(xticklabels[-1], visible=False)
+        axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
 
 axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
@@ -357,11 +346,14 @@ axs.flatten()[1].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[1].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[1].minorticks_on()
 axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+axs.flatten()[1].set_xlabel('Time ($yr$)', labelpad=-0.2)
+yticklabels = axs.flatten()[1].get_yticklabels()
+plt.setp(yticklabels[-1], visible=False)
 
-axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
-axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
-axs.flatten()[2].minorticks_on()
-axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+#axs.flatten()[2].tick_params(axis='x', direction='in', top=True)
+#axs.flatten()[2].tick_params(axis='y', direction='in', right=True)
+#axs.flatten()[2].minorticks_on()
+#axs.flatten()[2].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
