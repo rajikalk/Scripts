@@ -60,6 +60,7 @@ def parse_inputs():
 #---------------------------------------------------
 args = parse_inputs()
 Mach_labels = ['0.0', '0.1', '0.2']
+Mach_labels = ['0.0', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
 spin_val = [0.20, 0.25, 0.3, 0.35]
@@ -213,7 +214,11 @@ plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 axs.flatten()[0].grid()
 for mach_lab in Mach_labels:
-    axs.flatten()[0].plot(spin_val, spin_up[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
+    if mach_lab == '0.0':
+        label_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+    else:
+        label_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+    axs.flatten()[0].plot(spin_val, spin_up[int(mach_lab.split('.')[-1])], label=label_string, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[0].scatter(spin_val, spin_up[int(mach_lab.split('.')[-1])], color='k')
 axs.flatten()[0].set_ylabel('$\Delta L$ (%)')
 axs.flatten()[0].legend(loc='best')
