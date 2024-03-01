@@ -90,11 +90,12 @@ plt.ylim(bottom=0)
 plt.legend()
 plt.savefig('spin_comp_primary.png')
 '''
-Mach_labels = ['0.0', '0.1', '0.2']
+#Mach_labels = ['0.0', '0.1', '0.2']
+Mach_labels = ['0.0', '0.2']
 Spin_labels = ['0.20', '0.25', '0.30', '0.35']
 
 plt.clf()
-fig, axs = plt.subplots(ncols=len(Mach_labels), nrows=len(Spin_labels), figsize=(two_col_width, single_col_width*2.5), sharex=True, sharey='row')
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.3*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -102,8 +103,8 @@ plt.subplots_adjust(hspace=0.0)
 plot_it = 0
 xmax= 0
 ymax = 0
-for spin_lab in Spin_labels:
-    for mach_lab in Mach_labels:
+for mach_lab in Mach_labels:
+    for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_'+args.refinment_level+'.pkl'
@@ -138,6 +139,7 @@ for spin_lab in Spin_labels:
                 plot_time = time.in_units('yr')[:end_ind+1]
                 plot_L = L_tot[:end_ind+1]
                 axs.flatten()[plot_it].plot(plot_time, plot_L)
+                
         else:
             print("Couldn't open", single_pickle)
         '''
@@ -179,6 +181,14 @@ for spin_lab in Spin_labels:
                 plt.setp(xticklabels[-1], visible=False)
         
         plot_it = plot_it + 1
+    if mach_lab == '0.0':
+        mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.66*ymax, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+    else:
+        mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string_raw = r"{}".format(mach_string)
+        time_text = axs.flatten()[plot_it].text(500, 0.9*ymax, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('spin_comp_multi_specific.pdf', bbox_inches='tight')
@@ -288,7 +298,6 @@ xmax= 0
 ymax = 0
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
-    axs.flatten()[plot_it].set_title('Mach = ' + mach_lab, pad=-0.2)
     for spin_lab in Spin_labels:
         axs.flatten()[plot_it].grid()
         #single_pickle
