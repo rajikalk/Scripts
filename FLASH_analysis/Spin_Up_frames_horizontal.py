@@ -134,7 +134,7 @@ for spin_val in spin_values:
                 #fig.subplots_adjust(bottom=0.05)
                 cbar_ax = fig.add_axes([0.90, 0.11, 0.015, 0.385])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
-                cbar.set_label(r"Magnetic Toomre Q", labelpad=12, rotation=270, size=font_size)
+                cbar.set_label(r"Magnetic Toomre Q", labelpad=15, rotation=270, size=font_size)
                 cbar_ticks = cbar.ax.yaxis.get_ticklabels()[-1].set_visible(False)
             
             ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
