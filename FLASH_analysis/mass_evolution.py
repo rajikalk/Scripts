@@ -277,7 +277,7 @@ axs.flatten()[plot_it-1].set_ylim(bottom=0)
 plt.savefig('Mass_evol_spin_comp.pdf', bbox_inches='tight')
 '''
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.6*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.5*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -330,13 +330,22 @@ for mach_lab in Mach_labels:
                     add_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
                     Total_accrete_mass = Total_accrete_mass + add_mass
             axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab)])
+            
+            if mach_val == '0.0':
+                mach_string = "No Turbulence ($\mathcal{M}$="+mach_val+")"
+            else:
+                mach_string = "With Turbulence ($\mathcal{M}$="+mach_val+")"
+            
+            mach_string_raw = r"{}".format(mach_string)
+            time_text = axs.flatten()[plot_it].text(500, 0.62, mach_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
         else:
             print("Couldn't open", single_pickle)
 
         axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
 
-axs.flatten()[0].legend(loc='upper left')
+axs.flatten()[0].legend(loc='center left')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
