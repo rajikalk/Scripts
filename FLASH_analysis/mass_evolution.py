@@ -338,7 +338,7 @@ for mach_lab in Mach_labels:
                 mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(500, 0.75, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+            time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
             #time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
         else:
