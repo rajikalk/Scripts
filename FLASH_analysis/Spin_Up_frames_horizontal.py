@@ -129,9 +129,9 @@ for spin_val in spin_values:
                 cbar_ax = fig.add_axes([0.90, 0.495, 0.015, 0.384])
                 cbar = fig.colorbar(plot, cax=cbar_ax)
                 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-10, rotation=270, size=font_size)
-                cbar_ticks = cbar.ax.yaxis.get_ticklabels()[1].set_visible(False)
                 import pdb
                 pdb.set_trace()
+                cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
             elif plot_it == 2*n_frames-1:
                 #fig.subplots_adjust(bottom=0.05)
                 cbar_ax = fig.add_axes([0.90, 0.11, 0.015, 0.385])
