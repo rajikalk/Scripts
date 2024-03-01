@@ -334,11 +334,12 @@ for mach_lab in Mach_labels:
             
             if mach_lab == '0.0':
                 mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+                mach_string_raw = r"{}".format(mach_string)
+                time_text = axs.flatten()[plot_it].text(500, 0.45, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
             else:
                 mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
-            
-            mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+                mach_string_raw = r"{}".format(mach_string)
+                time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
             #time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
         else:
@@ -346,7 +347,7 @@ for mach_lab in Mach_labels:
 
         axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
 
-axs.flatten()[0].legend(loc='center left')
+axs.flatten()[0].legend(loc='upper left')
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
