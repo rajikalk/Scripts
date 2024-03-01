@@ -358,13 +358,13 @@ for mach_lab in Mach_labels:
     if mach_lab == '0.0':
         mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 0.85, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 0.85, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='upper left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs.flatten()[0].legend(loc='upper left', ncol=2)#, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -451,15 +451,15 @@ for mach_lab in Mach_labels:
     axs.flatten()[plot_it].set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2)
     
     if mach_lab == '0.0':
-        mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
-        mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+        mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='lower right', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
+axs.flatten()[0].legend(loc='lower right', ncol=2)#, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -471,7 +471,7 @@ axs.flatten()[1].minorticks_on()
 axs.flatten()[1].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 axs.flatten()[1].set_xlabel('Time ($yr$)', labelpad=-0.2)
 yticklabels = axs.flatten()[1].get_yticklabels()
-plt.setp(yticklabels[-1], visible=False)
+plt.setp(yticklabels[-2], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 axs.flatten()[plot_it-1].set_ylim(bottom=0)
