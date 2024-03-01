@@ -399,7 +399,7 @@ peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
-ymax = 1.5
+ymax = 1.5222669979520504
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
     for spin_lab in Spin_labels:
