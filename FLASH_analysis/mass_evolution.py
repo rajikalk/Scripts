@@ -12,6 +12,7 @@ import my_flash_module as mym
 import pickle
 import argparse
 import os
+import matplotlib.patheffects as path_effects
 
 #------------------------------------------------------
 #get mpi size and ranks
