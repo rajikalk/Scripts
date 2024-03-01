@@ -364,7 +364,7 @@ for mach_lab in Mach_labels:
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(500, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='upper left', ncol=2)
+axs.flatten()[0].legend(loc='upper left', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -379,7 +379,7 @@ yticklabels = axs.flatten()[1].get_yticklabels()
 plt.setp(yticklabels[-1], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0, 1.45])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 
 plt.savefig('Spin_init_spin_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
@@ -459,7 +459,7 @@ for mach_lab in Mach_labels:
         mach_string_raw = r"{}".format(mach_string)
         time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='lower right', ncol=2)
+axs.flatten()[0].legend(loc='lower right', ncol=2, fontsize=font_size, labelspacing=0.1, handletextpad=0.2, borderaxespad=0.2, borderpad=0.2, columnspacing=0.3)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
@@ -474,7 +474,7 @@ yticklabels = axs.flatten()[1].get_yticklabels()
 plt.setp(yticklabels[-1], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0, 1.6])
+axs.flatten()[plot_it-1].set_ylim(bottom=0)
 
 plt.savefig('Spin_init_spin_spec_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
