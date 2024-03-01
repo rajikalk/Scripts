@@ -49,10 +49,10 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 spin_values = ['0.20', '0.25', '0.30', '0.35']
-mach_values = ['0.0', '0.1', '0.2']
+mach_values = ['0.0', '0.2']
 
-start_times = [[4500, np.nan, 3750], [4500, 4000, 3500], [5250, np.nan, 4250], [6750, 5750, 4250]]
-end_times = [[5400, np.nan, 5750], [5450, 4500, 5300], [5750, np.nan, 5500], [8000, 7250, 5750]]
+start_times = [[4500, 3750], [4500, 3500], [5250, 4250], [6750, 4250]]
+end_times = [[5400, 5750], [5450, 5300], [5750, 5500], [8000, 5750]]
 
 directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Single/Mach_', '/Lref_9/']
 cmap=plt.cm.gist_heat
