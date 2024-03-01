@@ -347,7 +347,7 @@ for mach_lab in Mach_labels:
 
         axs.flatten()[plot_it].set_ylabel('Sink Mass (M$_\odot$)', labelpad=-0.2)
 
-axs.flatten()[0].legend(loc='upper left')
+axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
