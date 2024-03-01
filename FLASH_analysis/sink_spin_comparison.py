@@ -287,7 +287,7 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 plt.savefig('spin_comp_multi_'+args.refinment_level+'.pdf', bbox_inches='tight')
 """
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.3*single_col_width), sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=len(Mach_labels), figsize=(single_col_width, 1.4*single_col_width), sharex=True, sharey=True)
 iter_range = range(0, len(Spin_labels))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -327,7 +327,7 @@ for mach_lab in Mach_labels:
                     end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
                     end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                     plot_time = time.in_units('yr')[:end_ind+1]
-                    plot_L = L_tot.in_units('kg*m**2/s')[:end_ind+1]
+                    plot_L = L_tot.in_units('kg*m**2/s')[:end_ind+1]/1.e45
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
@@ -353,16 +353,16 @@ for mach_lab in Mach_labels:
         else:
             print("Couldn't open", single_pickle)
     
-    axs.flatten()[plot_it].set_ylabel('L ($kg\,m^2/s$)', labelpad=-0.2)
+    axs.flatten()[plot_it].set_ylabel('L ($10^{45}kg\,m^2/s$)', labelpad=-0.2)
     
     if mach_lab == '0.0':
         mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 0.50, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(500, 0.85, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(500, 1.25, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
@@ -430,7 +430,7 @@ for mach_lab in Mach_labels:
                     end_time = max_time[Spin_labels.index(spin_lab)][Mach_labels.index(mach_lab)]
                     end_ind = np.argmin(abs(time.in_units('yr').value - end_time))
                     plot_time = time.in_units('yr')[:end_ind+1]
-                    plot_L = L_tot.in_units('m**2/s')[:end_ind+1]
+                    plot_L = L_tot.in_units('m**2/s')[:end_ind+1]/1.e15
                 if sink_id == list(sink_data.keys())[0]:
                     axs.flatten()[plot_it].plot(plot_time, plot_L, label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)], alpha=0.75)
                 else:
@@ -448,18 +448,18 @@ for mach_lab in Mach_labels:
         else:
             print("Couldn't open", single_pickle)
     
-    axs.flatten()[plot_it].set_ylabel('h ($m^2/s$)', labelpad=-0.2)
+    axs.flatten()[plot_it].set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2)
     
     if mach_lab == '0.0':
         mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 0.50, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(500, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(500, 1.4, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
-axs.flatten()[0].legend(loc='upper left', ncol=2)
+axs.flatten()[0].legend(loc='bottom right', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
 axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
