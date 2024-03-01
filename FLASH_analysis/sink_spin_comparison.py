@@ -476,7 +476,7 @@ yticklabels = axs.flatten()[1].get_yticklabels()
 plt.setp(yticklabels[-3], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim([0, ymax])
+axs.flatten()[plot_it-1].set_ylim(bottom = 0)
 
 plt.savefig('Spin_init_spin_spec_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
