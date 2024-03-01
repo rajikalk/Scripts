@@ -399,7 +399,7 @@ peak_times = [[6288.53350698, 5337.46225949, 5961.44966664, 7499.56279945],
 line_styles = ['-', '--', '-.', ':']
 plot_it = -1
 xmax= 0
-ymax = 0
+ymax = 1.5
 for mach_lab in Mach_labels:
     plot_it = plot_it + 1
     for spin_lab in Spin_labels:
@@ -443,10 +443,9 @@ for mach_lab in Mach_labels:
                         highlight_end_time = spin_up_end[Mach_labels.index(mach_lab)][Spin_labels.index(spin_lab)]
                         highlight_start_ind = np.argmin(abs(plot_time.value-highlight_start_time))
                         highlight_end_ind = np.argmin(abs(plot_time.value-highlight_end_time))
-                        #highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
-                        #highlight_max = np.max(plot_L[highlight_start_ind:highlight_end_ind])
-                        #axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=float(highlight_min.value), ymax=float(highlight_min.value), alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
-                        axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
+                        highlight_min = np.min(plot_L[highlight_start_ind:highlight_end_ind])
+                        highlight_max = np.max(plot_L[highlight_start_ind:highlight_end_ind])
+                        axs.flatten()[plot_it].axvspan(highlight_start_time, highlight_end_time, ymin=float(highlight_min.value)/ymax, ymax=float(highlight_min.value)/ymax, alpha=0.30, facecolor=colors[Spin_labels.index(spin_lab)])
                     plot_highlight = False
         else:
             print("Couldn't open", single_pickle)
@@ -477,7 +476,7 @@ yticklabels = axs.flatten()[1].get_yticklabels()
 plt.setp(yticklabels[-3], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim(bottom=0)
+axs.flatten()[plot_it-1].set_ylim([0, ymax])
 
 plt.savefig('Spin_init_spin_spec_comp.pdf', bbox_inches='tight', pad_inches=0.02)
 
