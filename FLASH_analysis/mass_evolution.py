@@ -341,7 +341,7 @@ for mach_lab in Mach_labels:
     if mach_lab == '0.0':
         mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.45, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 0.5, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
