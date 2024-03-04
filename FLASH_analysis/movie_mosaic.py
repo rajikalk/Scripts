@@ -58,7 +58,7 @@ else:
     append_dir = 'XZ/'
 cmap=plt.cm.gist_heat
 
-width = 300
+width = 500
 stdvel = 2
 
 rit = -1
