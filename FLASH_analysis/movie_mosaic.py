@@ -49,7 +49,7 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 spin_values = ['0.20', '0.25', '0.30', '0.35']
-mach_values = ['0.0', '0.1', '0.2']
+mach_values = ['0.0','0.2']
 max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
 ax = sys.argv[1]
 if ax == 'xy':
@@ -71,7 +71,7 @@ for frame_it in range(10025):
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         if os.path.exists(savename) == False:
             plt.clf()
-            fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 1.19*two_col_width), sharex=True, sharey=True)
+            fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, two_col_width), sharex=True, sharey=True)
             for ax_it in axs.flatten():
                 ax_it.set_aspect('equal')
             plt.subplots_adjust(wspace=0)
