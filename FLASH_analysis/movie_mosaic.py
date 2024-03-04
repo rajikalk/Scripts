@@ -62,7 +62,7 @@ width = 500
 stdvel = 5
 
 rit = -1
-for frame_it in range(16, 17):
+for frame_it in range(16, 10025):
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -150,9 +150,9 @@ for frame_it in range(16, 17):
                         
                     if mach_val == '0.2':
                         axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-                        if spin_val != '0.20':
-                            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                            plt.setp(xticklabels[0], visible=False)
+                        #if spin_val != '0.20':
+                        #    xticklabels = axs.flatten()[plot_it].get_xticklabels()
+                        #    plt.setp(xticklabels[0], visible=False)
                     if spin_val == '0.20':
                         axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
                         if mach_val != '0.0':
@@ -162,7 +162,7 @@ for frame_it in range(16, 17):
                     plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.951, 0.1105, 0.02, 0.769])
+            cbar_ax = fig.add_axes([0.951, 0.111, 0.02, 0.767])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
                     
