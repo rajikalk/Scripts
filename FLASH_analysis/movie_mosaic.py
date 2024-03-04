@@ -59,7 +59,7 @@ else:
 cmap=plt.cm.gist_heat
 
 width = 500
-stdvel = 2
+stdvel = 5
 
 rit = -1
 for frame_it in range(10025):
