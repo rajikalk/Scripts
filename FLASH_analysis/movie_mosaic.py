@@ -159,7 +159,7 @@ for frame_it in range(16, 10025):
                             yticklabels = axs.flatten()[plot_it].get_yticklabels()
                             plt.setp(yticklabels[-1], visible=False)
                     
-                    plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+                    #plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
             
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.951, 0.111, 0.02, 0.767])
