@@ -62,7 +62,7 @@ width = 500
 stdvel = 5
 
 rit = -1
-for frame_it in range(15, 10015):
+for frame_it in range(16, 17):
     rit = rit + 1
     if rit == size:
         rit = 0
@@ -71,7 +71,7 @@ for frame_it in range(15, 10015):
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         if os.path.exists(savename) == False:
             plt.clf()
-            fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 0.9*two_col_width), sharex=True, sharey=True)
+            fig, axs = plt.subplots(ncols=len(spin_values), nrows=len(mach_values), figsize=(page_height, 0.8*two_col_width), sharex=True, sharey=True)
             for ax_it in axs.flatten():
                 ax_it.set_aspect('equal')
             plt.subplots_adjust(wspace=0)
