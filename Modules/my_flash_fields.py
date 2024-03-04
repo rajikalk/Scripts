@@ -1112,7 +1112,7 @@ def _E_pot_wrt_Primary(field, data):
         R = data['Distance_from_primary'].in_units('cm')
         E_pot = (-1*(yt.units.gravitational_constant_cgs*((data['mass'].in_units('g') * Primary_mass).in_units('g**2')))/R.in_units('cm')).in_units('erg')
     else:
-        E_pot = data['gpot'].in_units('erg')
+        E_pot = (data['gpot'].in_units('cm**2/s**2')*data['mass'].in_units('g')).in_units('erg')
     return E_pot
     
 yt.add_field("E_pot_wrt_Primary", function=_E_pot_wrt_Primary, units="erg", sampling_type="local")
