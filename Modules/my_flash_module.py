@@ -459,7 +459,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             '''
     if annotate_field is not None:
         if len(particle_tags) > split_threshold:
-            if en(particle_tags) > 5:
+            if len(particle_tags) > 5:
                 import pdb
                 pdb.set_trace()
             string_1 = ",".join(p_t.split(',')[:split_threshold])+","
