@@ -469,7 +469,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
             sub_colors[0] = ['white'] + sub_colors[0]
             
-            annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2, va="bottom", ha="right", color='w', fontsize=fontsize_global)
+            annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), sub_strings[0], va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             renderer = plt.gcf().canvas.get_renderer()
             bbox_text = annotate_text.get_window_extent(renderer=renderer).transformed(axis.transData.inverted())
