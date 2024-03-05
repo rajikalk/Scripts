@@ -478,7 +478,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             pf = plt.gcf()
             renderer = pf.canvas.get_renderer()
             bbox_text = annotate_text.get_window_extent(renderer=renderer).transformed(axis.transData.inverted())
-            indent_width = bbox_text.width
+            indent_width = bbox_text.width*0.9
             annotate_text.remove()
             
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
