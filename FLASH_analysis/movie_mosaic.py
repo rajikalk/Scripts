@@ -83,6 +83,8 @@ for frame_it in range(1025):
                 for spin_val in spin_values:
                     pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_'+("%06d" % frame_it)+'.pkl'
                     if os.path.exists(pickle_file) == False:
+                        import pdb
+                        pdb.set_trace()
                         pickle_file = sorted(glob.glob('/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_*.pkl'))[-1]
                     
                     plot_it = plot_it +1
