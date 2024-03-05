@@ -462,6 +462,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             if len(particle_tags) > 5:
                 import pdb
                 pdb.set_trace()
+                sub_strings = []
+                sub_colors = []
+                split_it = split_threshold
+                while split_it < len(particle_tags)+1:
+                    sub_strings.append(",".join(p_t.split(',')[split_it-split_threshold:split_it])+",")
+                    sub_colors.append(rainbow_text_colors[2*(split_it-split_threshold)+1:2*split_it+1])
+                    split_it = split_it + split_threshold
+                sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
+                
             string_1 = ",".join(p_t.split(',')[:split_threshold])+","
             string_2 = ",".join(p_t.split(',')[split_threshold:])
             colors_1 = rainbow_text_colors[:2*split_threshold+1]
