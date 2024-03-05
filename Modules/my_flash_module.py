@@ -459,8 +459,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             '''
     if annotate_field is not None:
         if len(particle_tags) > split_threshold:
-            #import pdb
-            #pdb.set_trace()
+            if en(particle_tags) > 5:
+                import pdb
+                pdb.set_trace()
             string_1 = ",".join(p_t.split(',')[:split_threshold])+","
             string_2 = ",".join(p_t.split(',')[split_threshold:])
             colors_1 = rainbow_text_colors[:2*split_threshold+1]
