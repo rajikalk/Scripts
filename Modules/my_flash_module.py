@@ -367,7 +367,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         arrow_center_pos = [box_center_pos[0], box_center_pos[1]+(0.75*text_height)]
         pos_start = [box_center_pos[0]-xvel_axis_scale/2, arrow_center_pos[1]]
         #set arrow pos to be 10% higher than text pos
-        axis.add_patch(mpatches.FancyArrowPatch(((pos_start[0]*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), (((pos_start[0]+xvel)*x_width - x_width/2), (pos_start[1]*(ymax-ymin)-(ymax-ymin)/2)), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
+        axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), ((pos_start[0]+xvel), pos_start[1]), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
         #axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, edgecolor = 'k', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0))
     return axis
 
