@@ -62,7 +62,7 @@ width = 500
 stdvel = 5
 
 rit = -1
-for frame_it in range(16, 10025):
+for frame_it in range(10025):
     rit = rit + 1
     if rit == size:
         rit = 0
