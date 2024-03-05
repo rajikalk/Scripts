@@ -59,10 +59,10 @@ else:
 cmap=plt.cm.gist_heat
 
 width = 500
-stdvel = 5
+stdvel = 10
 
 rit = -1
-for frame_it in range(1025):
+for frame_it in range(1050):
     rit = rit + 1
     if rit == size:
         rit = 0
