@@ -462,14 +462,14 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             sub_strings = []
             sub_colors = []
             split_it = split_threshold
-            while split_it < len(particle_tags)+1:
+            while split_it < len(particle_tags):
                 sub_strings.append(",".join(p_t.split(',')[split_it-split_threshold:split_it])+",")
                 sub_colors.append(rainbow_text_colors[2*(split_it-split_threshold)+1:2*split_it+1])
                 split_it = split_it + split_threshold
-            sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
-            sub_colors[0] = ['white'] + sub_colors[0]
             import pdb
             pdb.set_trace()
+            sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
+            sub_colors[0] = ['white'] + sub_colors[0]
             
             annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), sub_strings[0], va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
