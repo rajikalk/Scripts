@@ -459,22 +459,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             '''
     if annotate_field is not None:
         if len(particle_tags) > split_threshold:
-            if len(particle_tags) > 5:
-                import pdb
-                pdb.set_trace()
-                sub_strings = []
-                sub_colors = []
-                split_it = split_threshold
-                while split_it < len(particle_tags)+1:
-                    sub_strings.append(",".join(p_t.split(',')[split_it-split_threshold:split_it])+",")
-                    sub_colors.append(rainbow_text_colors[2*(split_it-split_threshold)+1:2*split_it+1])
-                    split_it = split_it + split_threshold
-                sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
-                
-            string_1 = ",".join(p_t.split(',')[:split_threshold])+","
-            string_2 = ",".join(p_t.split(',')[split_threshold:])
-            colors_1 = rainbow_text_colors[:2*split_threshold+1]
-            colors_2 = rainbow_text_colors[2*split_threshold:]
+            sub_strings = []
+            sub_colors = []
+            split_it = split_threshold
+            while split_it < len(particle_tags)+1:
+                sub_strings.append(",".join(p_t.split(',')[split_it-split_threshold:split_it])+",")
+                sub_colors.append(rainbow_text_colors[2*(split_it-split_threshold)+1:2*split_it+1])
+                split_it = split_it + split_threshold
+            sub_strings[-1] = sub_strings[-1]+'$M$_\\odot$'
+            sub_colors[0] = ['white'] + sub_colors[0]
             
             annotate_text = axis.text((xmin + 0.01*(box_size)), (ymin + 0.029*(ymax-ymin)), string_2, va="bottom", ha="right", color='w', fontsize=fontsize_global)
             annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
@@ -491,9 +484,13 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             indent_width = bbox_text.width*0.9
             annotate_text.remove()
             
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8*text_height)), string_1.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            for sub_it in range(len(sub_strings)):
+                if sub_it == 0:
+                    rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)+(0.8*(text_height*(len(sub_strings)-sub_it-1)))), sub_strings[sub_it].split(' '), sub_colors[sub_it], size=fontsize_global, zorder=10, ax=axis)
+                else:
+                    rainbow_text((xmin + 0.01*(box_size)+ indent_width), (ymin + 0.02*(ymax-ymin)+(0.8*(text_height*(len(sub_strings)-sub_it-1)))), sub_strings[sub_it].split(' '), sub_colors[sub_it], size=fontsize_global, zorder=10, ax=axis)
             
-            rainbow_text((xmin + 0.01*(box_size) + indent_width), (ymin + 0.02*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
+            #rainbow_text((xmin + 0.01*(box_size) + indent_width), (ymin + 0.02*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.02*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10, ax=axis)
