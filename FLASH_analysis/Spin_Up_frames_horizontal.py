@@ -111,6 +111,10 @@ for spin_val in spin_values:
             axes_1.set_xlim([time[plot_inds[0]].in_units('yr'), time[plot_inds[-1]].in_units('yr')])
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
             axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
+            axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
+            axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+            axes_1.xaxis.label.set_color('black')
+            axes_1.yaxis.label.set_color('black')
             axes_1.tick_params(axis='both', labelsize=font_size)
             
             for plot_time in plot_times:
