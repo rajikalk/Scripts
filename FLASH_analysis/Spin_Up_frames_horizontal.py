@@ -110,7 +110,8 @@ for spin_val in spin_values:
             axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
             axes_1.set_xlim([time[plot_inds[0]].in_units('yr'), time[plot_inds[-1]].in_units('yr')])
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
-            axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2)
+            axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
+            axes_1.tick_params(axis='both', labelsize=font_size)
             
             for plot_time in plot_times:
                 plot_it = plot_it + 1
@@ -158,13 +159,13 @@ for spin_val in spin_values:
                 if plot_it == n_frames-1:
                     #Figure out colorbar
                     #fig.subplots_adjust(bottom=0.0)
-                    cbar_ax = fig.add_axes([0.90, 0.495, 0.015, 0.384])
+                    cbar_ax = fig.add_axes([0.90, 0.367, 0.015, 0.257])
                     cbar = fig.colorbar(plot, cax=cbar_ax)
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
                     cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 elif plot_it == 2*n_frames-1:
                     #fig.subplots_adjust(bottom=0.05)
-                    cbar_ax = fig.add_axes([0.90, 0.11, 0.015, 0.385])
+                    cbar_ax = fig.add_axes([0.90, 0.11, 0.015, 0.257])
                     cbar = fig.colorbar(plot, cax=cbar_ax)
                     cbar.set_label(r"Magnetic Toomre Q", labelpad=14, rotation=270, size=font_size)
                     cbar_ticks = cbar.ax.yaxis.get_ticklabels()[-1].set_visible(False)
