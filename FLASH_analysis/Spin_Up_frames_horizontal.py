@@ -15,6 +15,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
+import matplotlib.gridspec as gridspec
 
 #------------------------------------------------------
 #get mpi size and ranks
