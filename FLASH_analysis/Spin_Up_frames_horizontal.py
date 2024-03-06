@@ -70,7 +70,7 @@ for spin_val in spin_values:
             plot_it = -1
             
             plt.clf()
-            plt.figure(figsize=(two_col_width, 0.6*two_col_width))
+            fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
             G = gridspec.GridSpec(3, n_frames)
             axes_1 = plt.subplot(G[0, :])
             #fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.4*two_col_width), sharex=True, sharey=True)
