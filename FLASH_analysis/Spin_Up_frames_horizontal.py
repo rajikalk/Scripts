@@ -67,7 +67,13 @@ for spin_val in spin_values:
     for mach_val in mach_values:
         if make_frame[spin_values.index(spin_val)][mach_values.index(mach_val)]:
             plot_it = -1
+            
             plt.clf()
+            plt.figure(figsize=(two_col_width, 0.6*two_col_width))
+            G = gridspec.GridSpec(3, n_frames)
+            axes_1 = plt.subplot(G[0, :])
+            import pdb
+            pdb.set_trace()
             fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.4*two_col_width), sharex=True, sharey=True)
             for ax_it in axs.flatten():
                 ax_it.set_aspect('equal')
