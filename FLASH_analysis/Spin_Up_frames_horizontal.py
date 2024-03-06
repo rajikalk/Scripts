@@ -79,6 +79,8 @@ for spin_val in spin_values:
             plt.subplots_adjust(wspace=0.01)
             plt.subplots_adjust(hspace=-0.00)
             
+            fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
+            
             start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
             end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
             if np.isnan(start_t) or np.isnan(end_t):
@@ -93,20 +95,22 @@ for spin_val in spin_values:
             file = open(sink_pickle, 'rb')
             sink_data, line_counter = pickle.load(file)
             file.close()
-            form_time = np.nan
-            import pdb
-            pdb.set_trace()
-            for sink_id in sink_data.keys():
-                #sink_id = list(sink_data.keys())[0]
-                if np.isnan(form_time):
-                    form_time = sink_data[sink_id]['time'][0]
-                mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
-                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
-                L_tot = yt.YTArray(L_tot/sink_data[sink_id]['mass'], 'cm**2/s')
-            import pdb
-            pdb.set_trace()
-            
-            fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
+            primary_ind = list(sink_data.keys())[0]
+            mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
+            L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
+            L_tot = yt.YTArray(L_tot/sink_data[primary_ind]['mass'], 'cm**2/s')
+            L_tot = L_tot.in_units('m**2/s')/1.e15
+            time = sink_data[primary_ind]['time'] - sink_data[primary_ind]['time'][0]
+            time = yt.YTArray(time, 's')
+            plot_inds = []
+            for plot_time in plot_times[:n_frames]:
+                plot_ind = np.argmin(abs(time.in_units('yr').value - plot_time))
+                plot_inds.append(plot_ind)
+            axes_1.plot(time[plot_inds[0]:plot_inds[-1]].in_units('yr'), L_tot[plot_inds[0]:plot_inds[-1]])
+            axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
+            axes_1.set_xlim([time[plot_inds[0]].in_units('yr'), time[plot_inds[-1]].in_units('yr')])
+            axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
+            axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2)
             
             for plot_time in plot_times:
                 plot_it = plot_it + 1
