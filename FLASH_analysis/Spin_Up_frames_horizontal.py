@@ -61,7 +61,7 @@ directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Sin
 cmap=plt.cm.gist_heat
 
 width = 200
-stdvel = 2
+stdvel = 10
 n_frames = 5
 
 for spin_val in spin_values:
