@@ -73,11 +73,9 @@ for spin_val in spin_values:
             plt.figure(figsize=(two_col_width, 0.6*two_col_width))
             G = gridspec.GridSpec(3, n_frames)
             axes_1 = plt.subplot(G[0, :])
-            import pdb
-            pdb.set_trace()
-            fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.4*two_col_width), sharex=True, sharey=True)
-            for ax_it in axs.flatten():
-                ax_it.set_aspect('equal')
+            #fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.4*two_col_width), sharex=True, sharey=True)
+            #for ax_it in axs.flatten():
+            #    ax_it.set_aspect('equal')
             plt.subplots_adjust(wspace=0.01)
             plt.subplots_adjust(hspace=-0.00)
             
@@ -89,6 +87,9 @@ for spin_val in spin_values:
                 plot_times = np.linspace(start_t, end_t, n_frames-2)
                 plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
                 plot_times = plot_times + plot_times
+            
+            import pdb
+            pdb.set_trace()
             
             fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
             
@@ -116,7 +117,9 @@ for spin_val in spin_values:
                     #cbar_lims = [1.e-1, 1.e1]
                     cbar_lims = [0, 2]
             
-                ax = axs.flatten()[plot_it]
+                #ax = axs.flatten()[plot_it]
+                ax = plt.subplot(G[int(plot_it/n_frames)+1:np.remainder(plot_it, n_frames)])
+                ax.set_aspect('equal')
                 file = open(pickle_file, 'rb')
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
