@@ -90,7 +90,7 @@ for spin_val in spin_values:
             
             #Plot spin up
             sink_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_val+'_Single_Mach_'+mach_val+'_Lref_9.pkl'
-            file = open(single_pickle, 'rb')
+            file = open(sink_pickle, 'rb')
             sink_data, line_counter = pickle.load(file)
             file.close()
             form_time = np.nan
