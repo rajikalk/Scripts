@@ -61,7 +61,7 @@ directory_base = ['/home/kuruwira/fast/Protostellar_spin/Flash_2023/Spin_','/Sin
 cmap=plt.cm.gist_heat
 
 width = 200
-stdvel = 2
+stdvel = 3
 n_frames = 5
 
 for spin_val in spin_values:
@@ -179,7 +179,7 @@ for spin_val in spin_values:
                     plot_velocity_legend = True
                 else:
                     plot_velocity_legend = False
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.5)
+                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
                 if len(part_info['particle_tag']) > 1:
                     if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
