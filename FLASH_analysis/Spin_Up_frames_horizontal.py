@@ -137,7 +137,7 @@ for spin_val in spin_values:
                     cbar_lims = [0, 2]
             
                 #ax = axs.flatten()[plot_it]
-                ax = plt.subplot(G[int(plot_it/n_frames)+1:np.remainder(plot_it, n_frames)])
+                ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
                 ax.set_aspect('equal')
                 file = open(pickle_file, 'rb')
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
