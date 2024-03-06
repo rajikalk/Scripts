@@ -88,6 +88,21 @@ for spin_val in spin_values:
                 plot_times = [plot_times[0]-1000] + list(plot_times) + [plot_times[-1]+1000]
                 plot_times = plot_times + plot_times
             
+            #Plot spin up
+            sink_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_val+'_Single_Mach_'+mach_val+'_Lref_9.pkl'
+            file = open(single_pickle, 'rb')
+            sink_data, line_counter = pickle.load(file)
+            file.close()
+            form_time = np.nan
+            import pdb
+            pdb.set_trace()
+            for sink_id in sink_data.keys():
+                #sink_id = list(sink_data.keys())[0]
+                if np.isnan(form_time):
+                    form_time = sink_data[sink_id]['time'][0]
+                mass = yt.YTArray(sink_data[sink_id]['mass'], 'g')
+                L_tot = np.sqrt(sink_data[sink_id]['anglx']**2 + sink_data[sink_id]['angly']**2 + sink_data[sink_id]['anglz']**2)
+                L_tot = yt.YTArray(L_tot/sink_data[sink_id]['mass'], 'cm**2/s')
             import pdb
             pdb.set_trace()
             
