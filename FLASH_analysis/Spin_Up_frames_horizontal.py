@@ -70,7 +70,7 @@ for spin_val in spin_values:
             plot_it = -1
             
             plt.clf()
-            fig, axs = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
+            plt.figure(figsize=(two_col_width, 0.6*two_col_width))
             G = gridspec.GridSpec(3, n_frames)
             axes_1 = plt.subplot(G[0, :])
             #fig, axs = plt.subplots(ncols=n_frames, nrows=2, figsize=(two_col_width, 0.4*two_col_width), sharex=True, sharey=True)
@@ -79,7 +79,7 @@ for spin_val in spin_values:
             plt.subplots_adjust(wspace=0.01)
             plt.subplots_adjust(hspace=-0.00)
             
-            fig.suptitle("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
+            axes_1.set_title("$\Omega t_{ff}$="+spin_val+", $\mathcal{M}$="+mach_val, y=0.94)
             
             start_t = start_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
             end_t = end_times[spin_values.index(spin_val)][mach_values.index(mach_val)]
