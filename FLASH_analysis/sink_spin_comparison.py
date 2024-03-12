@@ -285,6 +285,7 @@ for mach_lab in Mach_labels:
         form_time = sink_data[primary_ind]['time'][0]
         mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
         L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
+        L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
         time = sink_data[primary_ind]['time'] - form_time
         time = yt.YTArray(time, 's')
         end_ind = np.argmin(abs(time.in_units('yr').value - 10000))
