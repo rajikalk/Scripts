@@ -276,6 +276,8 @@ L_eff = [0.01, 0.055, 0.1]
 
 
 for mach_lab in Mach_labels:
+    axs.flatten()[6].axhline(y=2, color='k', linewidth=0.5)
+    axs.flatten()[7].axhline(y=2, color='k', linewidth=0.5)
     for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         file = open(single_pickle, 'rb')
@@ -333,7 +335,6 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, P_star_lower.in_units('day'), P_star_upper.in_units('day'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].set_xlabel('Time (yr)')
                 axs.flatten()[plot_it].set_ylim([0, 5])
-                axs.flatten()[plot_it].axhline(y=2, color='k')
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
                     
