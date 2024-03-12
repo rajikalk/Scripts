@@ -311,19 +311,19 @@ for mach_lab in Mach_labels:
                 l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 l_star_upper = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 l_star = ((l_star_lower + l_star_upper)/2)
-                axs.flatten()[plot_it].plot(plot_time, l_star.in_units('kg*m**2/s'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
-                axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s'), l_star_upper.in_units('kg*m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].plot(plot_time, l_star.in_units('kg*m**2/s')/1e44, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s')/1e44, l_star_upper.in_units('kg*m**2/s')/1e44, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$L_\star$ ($kgm^2/s$)')
+                    axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)')
                 axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'specific angular momentum':
                 h_star_lower = l_star_lower/m_star_upper
                 h_star_upper = l_star_upper/m_star_lower
                 h_star = ((h_star_lower + h_star_upper)/2)
-                axs.flatten()[plot_it].plot(plot_time, h_star.in_units('m**2/s'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
-                axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s'), h_star_upper.in_units('m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].plot(plot_time, h_star.in_units('m**2/s')/1e14, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s')/1e14, h_star_upper.in_units('m**2/s')/1e14, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($m^2/s$)')
+                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
                 axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'period':
                 P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
