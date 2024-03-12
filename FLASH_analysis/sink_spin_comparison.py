@@ -305,6 +305,7 @@ for mach_lab in Mach_labels:
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)')
                     axs.flatten()[plot_it].legend(loc='best', ncol=2)
+                axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'angular momentum':
                 l_star = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
@@ -313,6 +314,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s'), l_star_upper.in_units('kg*m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$L_\star$ ($kgm^2/s$)')
+                axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'specific angular momentum':
                 h_star = l_star/m_star
                 h_star_lower = l_star_lower/m_star_upper
@@ -321,6 +323,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s'), h_star_upper.in_units('m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($m^2/s$)')
+                axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'period':
                 P_star = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star
                 P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
