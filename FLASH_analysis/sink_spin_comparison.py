@@ -296,13 +296,13 @@ for mach_lab in Mach_labels:
         
         plot_it = Mach_labels.index(mach_lab) - 2
         if mach_lab == '0.0':
-            mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
+            mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
             time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         else:
-            mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
+            mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         for plot_q in plot_quantity:
             plot_it = plot_it + 2
             
@@ -322,6 +322,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].legend(loc='best', ncol=2, columnspacing=0.8)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'angular momentum':
                 l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 l_star_upper = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
@@ -332,6 +333,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)')
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(l_star_upper.in_units('kg*m**2/s')/1e44)])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'specific angular momentum':
                 h_star_lower = l_star_lower/m_star_upper
                 h_star_upper = l_star_upper/m_star_lower
@@ -342,6 +344,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(h_star_upper.in_units('m**2/s')/1e14)])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
             if plot_q == 'period':
                 P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
                 P_star_upper = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_lower
