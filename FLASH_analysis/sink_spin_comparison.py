@@ -271,8 +271,8 @@ line_styles = ['-', '--', '-.', ':']
 
 plot_quantity = ['mass', 'angular momentum', 'specific angular momentum', 'period']
 radius = yt.YTQuantity(2, 'rsun')
-M_eff = [0.6, 0.75, 0.9]
-L_eff = [0.1, 0.25, 0.4]
+M_eff = [0.7, 0.8, 0.9]
+L_eff = [0.1, 0.2, 0.3]
 
 
 for mach_lab in Mach_labels:
