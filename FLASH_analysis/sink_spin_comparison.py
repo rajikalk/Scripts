@@ -295,8 +295,22 @@ for mach_lab in Mach_labels:
         plot_time = time.in_units('yr')[:end_ind+1]
         
         plot_it = Mach_labels.index(mach_lab) - 2
+        if mach_lab == '0.0':
+            mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
+            mach_string_raw = r"{}".format(mach_string)
+            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        else:
+            mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
+            mach_string_raw = r"{}".format(mach_string)
+            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
         for plot_q in plot_quantity:
             plot_it = plot_it + 2
+            
+            axs.flatten()[plot_it].tick_params(axis='x', direction='in', top=True)
+            axs.flatten()[plot_it].tick_params(axis='y', direction='in', right=True)
+            axs.flatten()[plot_it].minorticks_on()
+            axs.flatten()[plot_it].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+            
             if plot_q == 'mass':
                 m_star_lower = M_eff[0] * mass.in_units('g')[:end_ind+1]
                 m_star_upper = M_eff[1] * mass.in_units('g')[:end_ind+1]
@@ -305,7 +319,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, m_star_lower.in_units('msun'), m_star_upper.in_units('msun'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)')
-                    axs.flatten()[plot_it].legend(loc='best', ncol=2)
+                    axs.flatten()[plot_it].legend(loc='best', ncol=2, columnspacing=0.8)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
             if plot_q == 'angular momentum':
@@ -338,11 +352,6 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].set_ylim([0, 5])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
-                    
-        axs.flatten()[plot_it].tick_params(axis='x', direction='in', top=True)
-        axs.flatten()[plot_it].tick_params(axis='y', direction='in', right=True)
-        axs.flatten()[plot_it].minorticks_on()
-        axs.flatten()[plot_it].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 
