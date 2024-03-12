@@ -320,8 +320,8 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($gm^2/s$)')
             if plot_q == 'period':
                 P_star = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star
-                P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_lower
-                P_star_upper = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
+                P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
+                P_star_upper = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_lower
                 axs.flatten()[plot_it].plot(plot_time, P_star.in_units('day'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, P_star_lower.in_units('day'), P_star_upper.in_units('day'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].set_xlabel('Time (yr)')
