@@ -273,7 +273,6 @@ plot_quantity = ['mass', 'angular momentum', 'specific angular momentum', 'perio
 radius = yt.YTQuantity(2, 'rsun')
 
 for mach_lab in Mach_labels:
-    plot_it = Mach_labels.index(mach_lab) -2
     for spin_lab in Spin_labels:
         single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
         file = open(single_pickle, 'rb')
@@ -291,9 +290,9 @@ for mach_lab in Mach_labels:
         end_ind = np.argmin(abs(time.in_units('yr').value - 10000))
         plot_time = time.in_units('yr')[:end_ind+1]
         
+        plot_it = Mach_labels.index(mach_lab) - 2
         for plot_q in plot_quantity:
             plot_it = plot_it + 2
-            
             if plot_q == 'mass':
                 m_star = 0.75 * mass.in_units('g')[:end_ind+1]
                 m_star_lower = 0.6 * mass.in_units('g')[:end_ind+1]
