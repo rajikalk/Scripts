@@ -271,6 +271,9 @@ line_styles = ['-', '--', '-.', ':']
 
 plot_quantity = ['mass', 'angular momentum', 'specific angular momentum', 'period']
 radius = yt.YTQuantity(2, 'rsun')
+M_eff = [0.6, 0.75, 0.9]
+L_eff = [0.1, 0.25, 0.4]
+
 
 for mach_lab in Mach_labels:
     for spin_lab in Spin_labels:
@@ -294,18 +297,18 @@ for mach_lab in Mach_labels:
         for plot_q in plot_quantity:
             plot_it = plot_it + 2
             if plot_q == 'mass':
-                m_star = 0.75 * mass.in_units('g')[:end_ind+1]
-                m_star_lower = 0.6 * mass.in_units('g')[:end_ind+1]
-                m_star_upper = 0.9 * mass.in_units('g')[:end_ind+1]
+                m_star = M_eff[1] * mass.in_units('g')[:end_ind+1]
+                m_star_lower = M_eff[0] * mass.in_units('g')[:end_ind+1]
+                m_star_upper = M_eff[2] * mass.in_units('g')[:end_ind+1]
                 axs.flatten()[plot_it].plot(plot_time, m_star.in_units('msun'), label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, m_star_lower.in_units('msun'), m_star_upper.in_units('msun'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)')
                     axs.flatten()[plot_it].legend(loc='best', ncol=2)
             if plot_q == 'angular momentum':
-                l_star = 0.25 * L_tot.in_units('g*cm**2/s')[:end_ind+1]
-                l_star_lower = 0.1 * L_tot.in_units('g*cm**2/s')[:end_ind+1]
-                l_star_upper = 0.4 * L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                l_star = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                l_star_upper = L_eff[2] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 axs.flatten()[plot_it].plot(plot_time, l_star.in_units('kg*m**2/s'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s'), l_star_upper.in_units('kg*m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
@@ -325,7 +328,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].plot(plot_time, P_star.in_units('day'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, P_star_lower.in_units('day'), P_star_upper.in_units('day'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].set_xlabel('Time (yr)')
-                axs.flatten()[plot_it].set_ylim([0, 10])
+                axs.flatten()[plot_it].set_ylim([0, 5])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
                     
