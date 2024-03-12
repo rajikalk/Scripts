@@ -319,7 +319,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].plot(plot_time, m_star.in_units('msun'), label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, m_star_lower.in_units('msun'), m_star_upper.in_units('msun'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)')
+                    axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)', labelpad=-0.2)
                     axs.flatten()[plot_it].legend(loc='best', ncol=2, columnspacing=0.8)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
@@ -331,7 +331,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].plot(plot_time, l_star.in_units('kg*m**2/s')/1e44, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s')/1e44, l_star_upper.in_units('kg*m**2/s')/1e44, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)')
+                    axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)', labelpad=-0.2)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(l_star_upper.in_units('kg*m**2/s')/1e44)])
                     axs.flatten()[plot_it].set_ylim(bottom=0)
@@ -342,7 +342,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].plot(plot_time, h_star.in_units('m**2/s')/1e14, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s')/1e14, h_star_upper.in_units('m**2/s')/1e14, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
+                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)', labelpad=-0.2)
                     if spin_lab == '0.35':
                         yticklabels = axs.flatten()[plot_it].get_yticklabels()
                         plt.setp(yticklabels[-2], visible=False)
@@ -355,7 +355,7 @@ for mach_lab in Mach_labels:
                 P_star = ((P_star_lower + P_star_upper)/2)
                 axs.flatten()[plot_it].plot(plot_time, P_star.in_units('day'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, P_star_lower.in_units('day'), P_star_upper.in_units('day'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
-                axs.flatten()[plot_it].set_xlabel('Time (yr)')
+                axs.flatten()[plot_it].set_xlabel('Time (yr)', labelpad=-0.2)
                 axs.flatten()[plot_it].set_ylim([0, 5])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
