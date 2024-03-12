@@ -297,11 +297,11 @@ for mach_lab in Mach_labels:
         if mach_lab == '0.0':
             mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[0].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[0].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         else:
             mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[1].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[1].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             
         plot_it = Mach_labels.index(mach_lab) - 2
         for plot_q in plot_quantity:
@@ -345,7 +345,7 @@ for mach_lab in Mach_labels:
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
                     if spin_lab == '0.35':
                         yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                        plt.setp(yticklabels[-1], visible=False)
+                        plt.setp(yticklabels[-2], visible=False)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(h_star_upper.in_units('m**2/s')/1e14)])
                     axs.flatten()[plot_it].set_ylim(bottom=0)
