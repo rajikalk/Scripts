@@ -294,15 +294,16 @@ for mach_lab in Mach_labels:
         end_ind = np.argmin(abs(time.in_units('yr').value - 10000))
         plot_time = time.in_units('yr')[:end_ind+1]
         
-        plot_it = Mach_labels.index(mach_lab) - 2
         if mach_lab == '0.0':
             mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[0].text(9500, 0.06, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         else:
             mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[plot_it].text(9500, 0.05, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[1].text(9500, 0.06, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            
+        plot_it = Mach_labels.index(mach_lab) - 2
         for plot_q in plot_quantity:
             plot_it = plot_it + 2
             
@@ -342,6 +343,8 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s')/1e14, h_star_upper.in_units('m**2/s')/1e14, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
+                    yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                    plt.setp(yticklabels[-1], visible=False)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(h_star_upper.in_units('m**2/s')/1e14)])
                     axs.flatten()[plot_it].set_ylim(bottom=0)
@@ -355,6 +358,8 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].set_ylim([0, 5])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
+                    yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                    plt.setp(yticklabels[-1], visible=False)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
 
