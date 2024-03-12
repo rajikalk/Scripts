@@ -306,7 +306,8 @@ for mach_lab in Mach_labels:
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)')
                     axs.flatten()[plot_it].legend(loc='best', ncol=2)
-                axs.flatten()[plot_it].set_ylim(bottom=0)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
             if plot_q == 'angular momentum':
                 l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
                 l_star_upper = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
@@ -315,7 +316,8 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s')/1e44, l_star_upper.in_units('kg*m**2/s')/1e44, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)')
-                axs.flatten()[plot_it].set_ylim(bottom=0)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(l_star_upper.in_units('kg*m**2/s')/1e44)])
             if plot_q == 'specific angular momentum':
                 h_star_lower = l_star_lower/m_star_upper
                 h_star_upper = l_star_upper/m_star_lower
@@ -324,7 +326,8 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s')/1e14, h_star_upper.in_units('m**2/s')/1e14, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)')
-                axs.flatten()[plot_it].set_ylim(bottom=0)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(h_star_upper.in_units('m**2/s')/1e14)])
             if plot_q == 'period':
                 P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
                 P_star_upper = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_lower
