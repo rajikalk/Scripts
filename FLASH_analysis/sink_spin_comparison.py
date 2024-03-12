@@ -327,4 +327,15 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].set_xlabel('Time (yr)')
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
+                    
+        axs.flatten()[plot_it].tick_params(axis='x', direction='in', top=True)
+        axs.flatten()[plot_it].tick_params(axis='y', direction='in', right=True)
+        axs.flatten()[plot_it].minorticks_on()
+        axs.flatten()[plot_it].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+axs.flatten()[plot_it-1].set_ylim(bottom = 0)
+
+plt.savefig('period.pdf', bbox_inches='tight', pad_inches=0.02)
+
             
