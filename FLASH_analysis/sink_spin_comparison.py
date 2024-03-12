@@ -317,7 +317,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].plot(plot_time, h_star.in_units('m**2/s'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
                 axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s'), h_star_upper.in_units('m**2/s'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
-                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($gm^2/s$)')
+                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($m^2/s$)')
             if plot_q == 'period':
                 P_star = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star
                 P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
@@ -334,7 +334,6 @@ for mach_lab in Mach_labels:
         axs.flatten()[plot_it].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
 axs.flatten()[plot_it-1].set_xlim([0, 10000])
-axs.flatten()[plot_it-1].set_ylim(bottom = 0)
 
 plt.savefig('period.pdf', bbox_inches='tight', pad_inches=0.02)
 
