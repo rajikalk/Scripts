@@ -341,11 +341,11 @@ for mach_lab in Mach_labels:
     if mach_lab == '0.0':
         mach_string = "No Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.35, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 0.35, mach_string_raw, va="top", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.45, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 0.45, mach_string_raw, va="top", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[0].legend(loc='upper left', ncol=2, columnspacing=0.8)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
