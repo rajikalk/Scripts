@@ -330,7 +330,7 @@ for mach_lab in Mach_labels:
                 else:
                     add_mass = np.concatenate((np.zeros(len(Total_accrete_mass) - len(mass.in_units('msun'))), mass.in_units('msun').value))
                     Total_accrete_mass = Total_accrete_mass + add_mass
-            axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab)])
+            #axs.flatten()[plot_it].plot(Total_time_arr, Total_accrete_mass, linewidth=3, alpha=0.25, linestyle=line_styles[Spin_labels.index(spin_lab)])
             #time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
         else:
@@ -341,11 +341,11 @@ for mach_lab in Mach_labels:
     if mach_lab == '0.0':
         mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.5, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        #time_text = axs.flatten()[plot_it].text(250, 0.5, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
     else:
         mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        #time_text = axs.flatten()[plot_it].text(250, 0.70, mach_string_raw, va="center", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[0].legend(loc='upper left', ncol=2)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
