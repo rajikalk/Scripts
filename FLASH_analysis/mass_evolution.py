@@ -345,7 +345,7 @@ for mach_lab in Mach_labels:
     else:
         mach_string = "With Turbulence \n($\mathcal{M}$="+mach_lab+")"
         mach_string_raw = r"{}".format(mach_string)
-        time_text = axs.flatten()[plot_it].text(250, 0.45, mach_string_raw, va="top", ha="left", color='k', fontsize=font_size)
+        time_text = axs.flatten()[plot_it].text(250, 0.46, mach_string_raw, va="top", ha="left", color='k', fontsize=font_size)
 
 axs.flatten()[0].legend(loc='upper left', ncol=2, columnspacing=0.8)
 axs.flatten()[0].tick_params(axis='x', direction='in', top=True)
