@@ -207,7 +207,7 @@ plt.ylabel('h spin up percentage (%)')
 plt.legend(loc='best')
 plt.savefig('spin_up_percentage_h_peak.pdf', bbox_inches='tight', pad_inches=0.02)
             
-linestyle = ['-', '--', '-.']
+linestyle = ['--', '-', '-.']
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey='row')
 plt.subplots_adjust(wspace=0.0)
