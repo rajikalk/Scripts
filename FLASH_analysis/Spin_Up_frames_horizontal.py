@@ -106,9 +106,12 @@ for spin_val in spin_values:
             for plot_time in plot_times[:n_frames]:
                 plot_ind = np.argmin(abs(time.in_units('yr').value - plot_time))
                 plot_inds.append(plot_ind)
-            axes_1.plot(time[plot_inds[0]:plot_inds[-1]].in_units('yr'), L_tot[plot_inds[0]:plot_inds[-1]])
+                
+            plot_start_time = np.argmin(abs(time.in_units('yr').value - (plot_times[0]-500)))
+            plot_end_time = np.argmin(abs(time.in_units('yr').value - (plot_times[n_frames-1]-500)))
+            axes_1.plot(time[plot_start_time:plot_end_time].in_units('yr'), L_tot[plot_inds[0]:plot_inds[-1]])
             axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
-            axes_1.set_xlim([time[plot_inds[0]].in_units('yr'), time[plot_inds[-1]].in_units('yr')])
+            axes_1.set_xlim([time[plot_start_time].in_units('yr'), time[plot_end_time].in_units('yr')])
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
             axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
             axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
