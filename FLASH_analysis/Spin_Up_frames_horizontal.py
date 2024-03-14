@@ -112,7 +112,7 @@ for spin_val in spin_values:
             axes_1.plot(time[plot_start_time:plot_end_time].in_units('yr'), L_tot[plot_start_time:plot_end_time])
             axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
             DL = np.max(L_tot[plot_start_time:plot_end_time]) - np.min(L_tot[plot_start_time:plot_end_time])
-            pos_offset = DL/8
+            pos_offset = DL/10
             for plot_ind in plot_inds:
                 panel_string = str(plot_inds.index(plot_ind)+1) + "."
                 panel_string_raw = r"{}".format(panel_string)
