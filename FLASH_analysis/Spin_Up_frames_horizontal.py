@@ -123,6 +123,7 @@ for spin_val in spin_values:
                 panel_text = axes_1.text(time[plot_ind].in_units('yr'), y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             
             axes_1.set_xlim([time[plot_start_time].in_units('yr'), time[plot_end_time].in_units('yr')])
+            axes_1.set_ylim(bottom=(np.min(L_tot[plot_start_time:plot_end_time])-0.01*DL))
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
             axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
             axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
