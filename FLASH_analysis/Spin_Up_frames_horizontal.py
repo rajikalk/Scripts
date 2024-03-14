@@ -120,7 +120,7 @@ for spin_val in spin_values:
                     y_pos_str = L_tot[plot_ind]+pos_offset
                 else:
                     y_pos_str = L_tot[plot_ind]-pos_offset
-                panelt_text = axs.flatten()[0].text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+                panelt_text = axes_1.text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
                     
             
             axes_1.set_xlim([time[plot_start_time].in_units('yr'), time[plot_end_time].in_units('yr')])
