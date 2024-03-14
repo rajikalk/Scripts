@@ -116,12 +116,12 @@ for spin_val in spin_values:
             for plot_ind in plot_inds:
                 panel_string = str(plot_inds.index(plot_ind)+1) + "."
                 panel_string_raw = r"{}".format(panel_string)
-                print("plotting panel string", panel_string_raw)
                 if plot_inds.index(plot_ind) < 2:
                     y_pos_str = L_tot[plot_ind]+pos_offset
-                    #else:
-                    #y_pos_str = L_tot[plot_ind]-pos_offset
-                    panel_text = axes_1.text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+                else:
+                    y_pos_str = L_tot[plot_ind]-pos_offset
+                print("plotting panel string", panel_string_raw, "in position", time[plot_ind], y_pos_str)
+                panel_text = axes_1.text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             import pdb
             pdb.set_trace()
             
