@@ -120,10 +120,7 @@ for spin_val in spin_values:
                     y_pos_str = L_tot[plot_ind]+pos_offset
                 else:
                     y_pos_str = L_tot[plot_ind]-pos_offset
-                print("plotting panel string", panel_string_raw, "in position", time[plot_ind], y_pos_str)
-                panel_text = axes_1.text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
-            import pdb
-            pdb.set_trace()
+                panel_text = axes_1.text(time[plot_ind].in_units('yr'), y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             
             axes_1.set_xlim([time[plot_start_time].in_units('yr'), time[plot_end_time].in_units('yr')])
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
