@@ -54,6 +54,7 @@ mach_values = ['0.0', '0.2']
 
 start_times = [[4500, 3750], [6750, 4250]]
 end_times = [[5400, 5750], [8000, 5750]]
+time_padding = [500, 250]
 
 make_frame = [[False, False], [True, False]]
 
@@ -107,8 +108,9 @@ for spin_val in spin_values:
                 plot_ind = np.argmin(abs(time.in_units('yr').value - plot_time))
                 plot_inds.append(plot_ind)
                 
-            plot_start_time = np.argmin(abs(time.in_units('yr').value - (plot_times[0]-500)))
-            plot_end_time = np.argmin(abs(time.in_units('yr').value - (plot_times[n_frames-1]+500)))
+            t_pad = time_padding[spin_values.index(spin_val)]
+            plot_start_time = np.argmin(abs(time.in_units('yr').value - (plot_times[0]-t_pad)))
+            plot_end_time = np.argmin(abs(time.in_units('yr').value - (plot_times[n_frames-1]+t_pad)))
             axes_1.plot(time[plot_start_time:plot_end_time].in_units('yr'), L_tot[plot_start_time:plot_end_time])
             axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
             DL = np.max(L_tot[plot_start_time:plot_end_time]) - np.min(L_tot[plot_start_time:plot_end_time])
