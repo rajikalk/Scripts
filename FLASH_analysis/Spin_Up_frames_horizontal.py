@@ -111,6 +111,18 @@ for spin_val in spin_values:
             plot_end_time = np.argmin(abs(time.in_units('yr').value - (plot_times[n_frames-1]+500)))
             axes_1.plot(time[plot_start_time:plot_end_time].in_units('yr'), L_tot[plot_start_time:plot_end_time])
             axes_1.scatter(time[np.array(plot_inds)].in_units('yr'), L_tot[np.array(plot_inds)])
+            DL = np.max(L_tot[plot_start_time:plot_end_time]) - np.min(L_tot[plot_start_time:plot_end_time])
+            pos_offset = DL/5
+            for plot_ind in plot_inds:
+                panel_string = str(plot_inds.index(plot_ind)) + "."
+                panel_string_raw = r"{}".format(panel_string)
+                if plot_inds.index(plot_ind) < 2:
+                    y_pos_str = L_tot[plot_ind]+pos_offset
+                else:
+                    y_pos_str = L_tot[plot_ind]-pos_offset
+                panelt_text = axs.flatten()[0].text(time[plot_ind], y_pos_str, panel_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+                    
+            
             axes_1.set_xlim([time[plot_start_time].in_units('yr'), time[plot_end_time].in_units('yr')])
             axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
             axes_1.set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
