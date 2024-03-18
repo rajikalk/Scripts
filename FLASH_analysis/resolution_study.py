@@ -4,6 +4,25 @@ import matplotlib.pyplot as plt
 import yt
 import sys
 
+#Ploting parameters
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = [
+       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+       r'\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+]
+
 r_sink_9 = yt.YTQuantity(4.89593797, 'AU')
 L_reference = int(sys.argv[1])
 r_scale = (1/(2**(L_reference-9)))*r_sink_9
@@ -713,7 +732,7 @@ axs.flatten()[2].set_ylabel("$h$ (m$^2$/s)", labelpad=-0.01)
 axs.flatten()[3].loglog(r_sink, T_rot_2500, lw=1, label='Rotation period')
 axs.flatten()[3].scatter(r_sink, T_rot_2500, label='Rotation period')
 axs.flatten()[3].axvline(x=R_proto.in_units('au').value, color='k', ls=':', alpha=0.5)
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)", labelpad=-0.01)
+axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.01)
 
 axs.flatten()[3].set_xlabel('$R_\mathrm{sink}$ (au)', labelpad=-0.02)
 
