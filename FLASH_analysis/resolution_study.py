@@ -4,25 +4,6 @@ import matplotlib.pyplot as plt
 import yt
 import sys
 
-#Ploting parameters
-matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.sf'] = 'Arial'
-matplotlib.rcParams['mathtext.default'] = 'regular'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
-matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = [
-       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
-       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-       r'\usepackage{helvet}',    # set the normal font here
-       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
-       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
-]
-
 r_sink_9 = yt.YTQuantity(4.89593797, 'AU')
 L_reference = int(sys.argv[1])
 r_scale = (1/(2**(L_reference-9)))*r_sink_9
@@ -145,7 +126,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width, 0.3*page_height))
 plt.semilogx(r_sink, comp_period)
 plt.xlabel('$R_{\mathrm{sink}}$ (au)')
-plt.ylabel('$T_{\mathrm{rot}}$ (days)')
+plt.ylabel('$P$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 '''
 #============Not scaled version============================
@@ -248,7 +229,7 @@ axs.flatten()[0].set_ylim(bottom=0)
 axs.flatten()[1].set_ylabel("$L$ (10$^{45}$kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim(bottom=0)
 axs.flatten()[2].set_ylabel("$h$ (10$^{15}$m$^2$/s)")
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)", labelpad=-0.3)
+axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
 axs.flatten()[3].set_ylim([3.e2, 5.e4])
@@ -281,7 +262,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width, 0.3*page_height))
 plt.semilogx(r_sink, comp_period)
 plt.xlabel('$R_{\mathrm{sink}}$ (au)')
-plt.ylabel('$T_{\mathrm{rot}}$ (days)')
+plt.ylabel('$P$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 
 #============Not scaled semilogy version============================
@@ -386,7 +367,7 @@ axs.flatten()[1].set_ylim(bottom=1.e42)
 axs.flatten()[2].set_ylabel("$h$ (m$^2$/s)", labelpad=-0.3)
 axs.flatten()[2].set_ylim(bottom=1.e14)
 
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)", labelpad=-0.3)
+axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 axs.flatten()[3].set_ylim([3.e2, 5.e4])
 
@@ -418,7 +399,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width, 0.3*page_height))
 plt.semilogx(r_sink, comp_period)
 plt.xlabel('$R_{\mathrm{sink}}$ (au)')
-plt.ylabel('$T_{\mathrm{rot}}$ (days)')
+plt.ylabel('$P$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 
 #============rough scale version============================
@@ -511,7 +492,7 @@ axs.flatten()[0].set_ylim(bottom=0)
 axs.flatten()[1].set_ylabel("$L$ (10$^{44}$kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim(bottom=0)
 axs.flatten()[2].set_ylabel("$h$ (10$^{14}$m$^2$/s)")
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)", labelpad=-0.3)
+axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
 #axs.flatten()[3].set_ylim([5.e3, 5.e4])
@@ -545,7 +526,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width, 0.3*page_height))
 plt.semilogx(r_sink, comp_period)
 plt.xlabel('$R_{\mathrm{sink}}$ (au)')
-plt.ylabel('$T_{\mathrm{rot}}$ (days)')
+plt.ylabel('$P$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 
 #============rough scale semilogy version============================
@@ -639,7 +620,7 @@ axs.flatten()[1].set_ylabel("$L$ (10$^{44}$kg$\,$m$^2$/s)")
 axs.flatten()[1].set_ylim([5.e-3, 5.e0])
 axs.flatten()[2].set_ylabel("$h$ (10$^{14}$m$^2$/s)")
 axs.flatten()[2].set_ylim([1.e-1, 5.e0])
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)", labelpad=-0.3)
+axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
 
 #axs.flatten()[3].set_ylim([5.e3, 5.e4])
@@ -672,7 +653,7 @@ plt.clf()
 plt.figure(figsize=(single_col_width, 0.3*page_height))
 plt.semilogx(r_sink, comp_period)
 plt.xlabel('$R_{\mathrm{sink}}$ (au)')
-plt.ylabel('$T_{\mathrm{rot}}$ (days)')
+plt.ylabel('$P$ (days)')
 plt.savefig("period_vs_r_sink.png", bbox_inches='tight')
 
 #=============Ploting values (2500) vs resolution
@@ -699,7 +680,7 @@ axs.flatten()[2].set_ylabel("$h$ (10$^{14}$m$^2$/s)")
 
 axs.flatten()[3].loglog(r_sink, T_rot_2500[:-1], lw=1, label='Rotation period')
 axs.flatten()[3].scatter(r_sink, T_rot_2500[:-1], label='Rotation period')
-axs.flatten()[3].set_ylabel("$T_{\mathrm{rot}}$ (days)")
+axs.flatten()[3].set_ylabel("$P$ (days)")
 
 axs.flatten()[3].set_xlabel('Sink particle accretion radius (au)')
 
@@ -745,6 +726,9 @@ def power(x, a, b, c):
     return a + b*x**c
 def power(x, b, c):
     return b*x**c
+    
+b_err = 0.1
+c_err = 0.1
 
 c_guess = (np.max(np.log10(Mass_2500[:-1])) - np.min(np.log10(Mass_2500[:-1])))/(np.max(np.log10(r_sink[:-1])) - np.min(np.log10(r_sink[:-1])))
 b_guess = 10**(np.log10(np.max(Mass_2500[:-1])) - c_guess*np.log10(np.max(r_sink[:-1])))
@@ -795,11 +779,16 @@ plt.savefig("testing_fits.png")
 
 axs.flatten()[2].loglog(x, power(x, *popt), lw=1)
 axs.flatten()[2].text(1.e-2, h_2500[1], '$y=('+'{:.2e}'.format(popt[0])+')x^{'+str(np.round(popt[1], decimals=2))+'}$')
-
+'''
 c_guess = (np.max(np.log10(T_rot_2500[:-1])) - np.min(np.log10(T_rot_2500[:-1])))/(np.max(np.log10(r_sink[:-1])) - np.min(np.log10(r_sink[:-1])))
 b_guess = 10**(np.log10(np.max(T_rot_2500[:-1])) - c_guess*np.log10(np.max(r_sink[:-1])))
 initial_guess = [b_guess, c_guess]
 popt, pcov = curve_fit(power, r_sink[:-1][::-1], T_rot_2500[:-1][::-1], p0=initial_guess, bounds=([10**(np.log10(b_guess)-b_err), c_guess-c_err], [10**(np.log10(b_guess)+b_err), c_guess+c_err]))
+'''
+c_guess = (np.max(np.log10(T_rot_2500)) - np.min(np.log10(T_rot_2500)))/(np.max(np.log10(r_sink)) - np.min(np.log10(r_sink)))
+b_guess = 10**(np.log10(np.max(T_rot_2500)) - c_guess*np.log10(np.max(r_sink)))
+initial_guess = [b_guess, c_guess]
+popt, pcov = curve_fit(power, r_sink[::-1], T_rot_2500[::-1], p0=initial_guess, bounds=([10**(np.log10(b_guess)-b_err), c_guess-c_err], [10**(np.log10(b_guess)+b_err), c_guess+c_err]))
 axs.flatten()[3].loglog(x, power(x, *popt), lw=1)
 axs.flatten()[3].text(1.e-2, T_rot_2500[1], '$y=('+str(np.round(popt[0], decimals=2))+') x^{'+str(np.round(popt[1], decimals=2))+'}$')
 

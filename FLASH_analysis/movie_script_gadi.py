@@ -6,7 +6,7 @@ import sys
 import argparse
 from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
-import pickle
+import  pickle
 import os
 import my_flash_module as mym
 import my_flash_fields as myf
@@ -32,7 +32,6 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
-    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default = 0, type=int)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=None)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=None)
@@ -40,6 +39,7 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_vel", "--update_velocity_field", help="update velocity field to be wrt to primary", type=str, default='False')
+    parser.add_argument("-image_center", "--image_center_pos", help="0 means cennter of mass, and 1 means primary", type=int, default=0)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -64,23 +64,29 @@ if args.make_movie_pickles == 'True':
     sys.stdout.flush()
     CW.Barrier()
     
-    if args.use_all_files == 'False':
+    if args.use_all_files == 'False' and  args.plot_time == None:
         no_frames = len(m_times)
-        m_times = m_times[args.start_frame:]
-        usable_files = mym.find_files(m_times, files)
-        frames = list(range(args.start_frame, no_frames))
-    elif args.use_all_files != 'False' and args.plot_time != None:
+        existing_pickles = sorted(glob.glob(save_dir + 'movie_frame*.pkl'))
+        existing_frames = [int(fit.split('_')[-1].split('.')[0]) for fit in existing_pickles]
+        if args.make_movie_frames == 'False':
+            plot_time_inds = np.array(sorted(set(np.arange(len(m_times))).difference(set(existing_frames))))
+            m_times = list(np.array(m_times)[plot_time_inds])
+        if args.make_movie_pickles == 'True':
+            usable_files = mym.find_files(m_times, files)
+        else:
+            usable_files = []
+        #UPDATES THIS
+        frames = list(range(no_frames-len(m_times), no_frames))
+    elif args.use_all_files == 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
-        start_index = files.index(usable_files[0])
-        args.plot_time = None
-        end_file = mym.find_files([args.end_time], files)
-        end_index = files.index(end_file[0])
-        usable_files = files[start_index:end_index]
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     else:
         start_file = mym.find_files([0], files)
-        usable_files = files[files.index(start_file[0]):]
+        if args.make_movie_pickles == 'True':
+            usable_files = files[files.index(start_file[0]):]
+        else:
+            usable_files = []
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     print('found usable files for frames')
@@ -110,6 +116,7 @@ if args.make_movie_pickles == 'True':
         y_ind.append(int(val))
         counter = counter + 1
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+    thickness = yt.YTQuantity(args.proj_thickness, 'AU')
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
@@ -154,6 +161,18 @@ if args.make_movie_pickles == 'True':
             dd = ds.all_data()
             #Load fields
             #del test_fields
+            if args.image_center_pos == 0:
+                center_pos = dd['CoM_full'].in_units('cm')
+                center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
+            elif args.image_center_pos == 1:
+                if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
+                    primary_ind = np.argmin(dd['all', 'particle_creation_time'])
+                    center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
+                    center_vel = yt.YTArray([dd['all', 'particle_velx'][primary_ind].in_units('cm/s').value, dd['all', 'particle_vely'][primary_ind].in_units('cm/s').value, dd['all', 'particle_velz'][primary_ind].in_units('cm/s').value], 'cm/s')
+                else:
+                    center_pos = dd['CoM_full'].in_units('cm')
+                    center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
+            
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
                 part_mass = dd['particle_mass'].in_units('msun')
@@ -165,16 +184,24 @@ if args.make_movie_pickles == 'True':
                 part_vel_x = dd[part_vel_fields[0]].in_units('cm/s')
                 part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
+                
+                #Adjust for center:
+                positions[0] = positions[0] - center_pos[0].in_units('au')
+                velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
+                if args.axis == 'z':
+                    positions[1] = positions[1] - center_pos[1].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[1].in_units('cm/s')
+                else:
+                    positions[1] = positions[1] - center_pos[2].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
+                
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'particle_velocities':velocities,
                          'accretion_rad':2.5*np.min(dd['dx'].in_units('au')),
                          'particle_tag':dd['particle_tag'],
                          'particle_form_time':dd['particle_creation_time']}
-                primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-                center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
             else:
-                center_pos = yt.YTArray([0, 0, 0], 'cm')
                 has_particles = False
                 part_info = {}
                 
@@ -222,9 +249,9 @@ if args.make_movie_pickles == 'True':
             #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
             
 
-            thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            thickness_arr = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
-            fix_thickness = np.ones(np.shape(thickness_arr))*((plot_width/np.shape(thickness_arr)[0])**2*thickness).in_units('cm**3')
+            #thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
+            #thickness_arr = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
+            #fix_thickness = np.ones(np.shape(thickness_arr))*((plot_width/np.shape(thickness_arr)[0])**2*thickness).in_units('cm**3')
             
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
@@ -232,10 +259,10 @@ if args.make_movie_pickles == 'True':
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    if field[1] == 'L_gas_wrt_primary_density':
-                        proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
-                    else:
-                        proj_array = proj.frb.data[field].in_cgs()/thickness_arr
+                    #if field[1] == 'L_gas_wrt_primary_density':
+                    #    proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
+                    #else:
+                    proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
                 if args.axis == 'y':
@@ -251,17 +278,31 @@ if args.make_movie_pickles == 'True':
                 #    file.close()
             
             if rank == proj_root_rank and size > 1:
+                proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[1]] - center_vel[0]
+                if args.axis == 'z':
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[2]] - center_vel[1]
+                else:
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[2]] - center_vel[2]
+            
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
+                
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_int, "on rank", rank)
+                print("created pickle", pickle_file, "for frame", file_int, "on rank", rank)
             elif size == 1:
+                proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[1]] - center_vel[0]
+                if args.axis == 'z':
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[2]] - center_vel[1]
+                else:
+                    proj_dict[list(proj_dict.keys())[2]] = proj_dict[list(proj_dict.keys())[2]] - center_vel[2]
+            
                 velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
                 file = open(pickle_file, 'wb')
+                
                 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
                 file.close()
-                print("created pickle for frame", file_int, "of", len(m_times))
+                print("created pickle", pickle_file, "for frame", file_int, "of", len(m_times))
 
     print("finished making movie frame pickles on rank", rank)
     
@@ -320,7 +361,7 @@ if args.make_movie_frames == 'True':
                 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
                 file.close()
                 
-                if args.update_velocity_field != 'False':
+                if args.update_velocity_field != 'False' and len(part_info.keys())!=0:
                     primary_ind = np.argmin(part_info['particle_form_time'])
                     part_velx = part_info['particle_velocities'][0][primary_ind]
                     part_vely = part_info['particle_velocities'][1][primary_ind]
@@ -384,6 +425,7 @@ if args.make_movie_frames == 'True':
                 else:
                     stdvel = args.standard_vel
                 
+                
                 cmap=plt.cm.gist_heat
                 if 'Relative_keplerian_velocity_wrt_primary' in args.field or cmin < 0:
                     plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.YlGn, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
@@ -394,12 +436,15 @@ if args.make_movie_frames == 'True':
                         plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
                 plt.gca().set_aspect('equal')
 
-                if 'L_gas_wrt_primary_spec' in args.field:
+                if 'L_gas_wrt_primary_spec' in args.field or "Relative_keplerian_velocity_wrt_primary" in args.field:
                     #make contour plot
-                    exp_min = np.log10(cbar_lims[0])
-                    exp_max = np.log10(cbar_lims[1])
                     n_level = 11#(exp_max-exp_min)*2 + 1
-                    contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+                    if 'L_gas_wrt_primary_spec' in args.field:
+                        exp_min = np.log10(cbar_lims[0])
+                        exp_max = np.log10(cbar_lims[1])
+                        contour_levels = np.logspace(exp_min, exp_max, int(n_level))
+                    else:
+                        contour_levels = np.linspace(cbar_lims[0], cbar_lims[1], int(n_level))
                     CS = ax.contour(X_image,Y_image,image, locator=plt.LogLocator(), linewidths=0.5, levels=contour_levels, colors='k')
                 else:
                     if frame_no > 0 or time_val > -1.0:
@@ -416,20 +461,16 @@ if args.make_movie_frames == 'True':
                 if len(part_info.keys())>0:
                     if 'particle_form_time' in part_info.keys():
                         if len(part_info['particle_form_time']) > 1:
-                            if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
-                                sort_inds = np.argsort(part_info['particle_form_time'])
-                                part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
-                                part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
-                                part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-                                part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+                            sort_inds = np.argsort(part_info['particle_form_time'])
+                            part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                            part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                            part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                            part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
                     else:
                         print("pickle doesn't have sink formation time")
                         os.remove(pickle_file)
                             
                     primary_ind = np.argmax(part_info['particle_mass'])
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][primary_ind]
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][primary_ind]
-                    
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=7)
 
                 plt.tick_params(axis='both', which='major')# labelsize=16)
