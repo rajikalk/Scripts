@@ -367,4 +367,113 @@ axs.flatten()[plot_it-1].set_xlim([0, 10000])
 
 plt.savefig('period.pdf', bbox_inches='tight', pad_inches=0.02)
 
+#=======================================================================================
+#From resolution study
+
+#Star stats
+plt.clf()
+fig, axs = plt.subplots(ncols=2, nrows=4, figsize=(two_col_width, 0.8*page_height), sharex=True, sharey='row')
+iter_range = range(0, len(Spin_labels))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
+line_styles = ['-', '--', '-.', ':']
+
+plot_quantity = ['mass', 'angular momentum', 'specific angular momentum', 'period']
+radius = yt.YTQuantity(2, 'rsun')
+M_eff = [0.05210517772546909, 0.20648041032355596]
+L_eff = [0.0015025174840462832, 0.0026032123125343766]
+
+for mach_lab in Mach_labels:
+    axs.flatten()[6].axhline(y=2, color='k', linewidth=0.5)
+    axs.flatten()[7].axhline(y=2, color='k', linewidth=0.5)
+    for spin_lab in Spin_labels:
+        single_pickle = '/home/kuruwira/fast/Analysis/Sink_evol_pickles/Flash_2023_Spin_'+spin_lab+'_Single_Mach_'+mach_lab+'_Lref_9.pkl'
+        file = open(single_pickle, 'rb')
+        sink_data, line_counter = pickle.load(file)
+        file.close()
+        form_time = np.nan
+
+        primary_ind = list(sink_data.keys())[0]
+        form_time = sink_data[primary_ind]['time'][0]
+        mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
+        L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
+        L_tot = yt.YTArray(L_tot, 'g*cm**2/s')
+        time = sink_data[primary_ind]['time'] - form_time
+        time = yt.YTArray(time, 's')
+        end_ind = np.argmin(abs(time.in_units('yr').value - 10000))
+        plot_time = time.in_units('yr')[:end_ind+1]
+        
+        if mach_lab == '0.0':
+            mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
+            mach_string_raw = r"{}".format(mach_string)
+            time_text = axs.flatten()[0].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        else:
+            mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
+            mach_string_raw = r"{}".format(mach_string)
+            time_text = axs.flatten()[1].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            
+        plot_it = Mach_labels.index(mach_lab) - 2
+        for plot_q in plot_quantity:
+            plot_it = plot_it + 2
+            
+            axs.flatten()[plot_it].tick_params(axis='x', direction='in', top=True)
+            axs.flatten()[plot_it].tick_params(axis='y', direction='in', right=True)
+            axs.flatten()[plot_it].minorticks_on()
+            axs.flatten()[plot_it].tick_params(which='both', direction='in', axis='both', right=True, top=True)
+            
+            if plot_q == 'mass':
+                m_star_lower = M_eff[0] * mass.in_units('g')[:end_ind+1]
+                m_star_upper = M_eff[1] * mass.in_units('g')[:end_ind+1]
+                m_star = ((m_star_lower + m_star_upper)/2)
+                axs.flatten()[plot_it].plot(plot_time, m_star.in_units('msun'), label='$\Omega t_{ff}$='+spin_lab, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, m_star_lower.in_units('msun'), m_star_upper.in_units('msun'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                if mach_lab == '0.0':
+                    axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)', labelpad=-0.2)
+                    axs.flatten()[plot_it].legend(loc='best', ncol=2, columnspacing=0.8)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
+            if plot_q == 'angular momentum':
+                l_star_lower = L_eff[0] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                l_star_upper = L_eff[1] * L_tot.in_units('g*cm**2/s')[:end_ind+1]
+                l_star = ((l_star_lower + l_star_upper)/2)
+                axs.flatten()[plot_it].plot(plot_time, l_star.in_units('kg*m**2/s')/1e44, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, l_star_lower.in_units('kg*m**2/s')/1e44, l_star_upper.in_units('kg*m**2/s')/1e44, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                if mach_lab == '0.0':
+                    axs.flatten()[plot_it].set_ylabel('$L_\star$ ($10^{44}kg\,m^2/s$)', labelpad=-0.2)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(l_star_upper.in_units('kg*m**2/s')/1e44)])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
+            if plot_q == 'specific angular momentum':
+                h_star_lower = l_star_lower/m_star_upper
+                h_star_upper = l_star_upper/m_star_lower
+                h_star = ((h_star_lower + h_star_upper)/2)
+                axs.flatten()[plot_it].plot(plot_time, h_star.in_units('m**2/s')/1e14, linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, h_star_lower.in_units('m**2/s')/1e14, h_star_upper.in_units('m**2/s')/1e14, alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                if mach_lab == '0.0':
+                    axs.flatten()[plot_it].set_ylabel('$h_\star$ ($10^{14}m^2/s$)', labelpad=-0.2)
+                    if spin_lab == '0.35':
+                        yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                        plt.setp(yticklabels[-2], visible=False)
+                if mach_lab == '0.2' and spin_lab == '0.20':
+                    axs.flatten()[plot_it].set_ylim([0, np.max(h_star_upper.in_units('m**2/s')/1e14)])
+                    axs.flatten()[plot_it].set_ylim(bottom=0)
+            if plot_q == 'period':
+                P_star_lower = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_upper
+                P_star_upper = ((4*np.pi)/5) * (radius.in_units('m')**2)/h_star_lower
+                P_star = ((P_star_lower + P_star_upper)/2)
+                axs.flatten()[plot_it].plot(plot_time, P_star.in_units('day'), linestyle=line_styles[Spin_labels.index(spin_lab)], color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].fill_between(plot_time, P_star_lower.in_units('day'), P_star_upper.in_units('day'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
+                axs.flatten()[plot_it].set_xlabel('Time (yr)', labelpad=-0.2)
+                axs.flatten()[plot_it].set_ylim([0, 5])
+                if mach_lab == '0.0':
+                    axs.flatten()[plot_it].set_ylabel('$P_\star$ (days)')
+                    if spin_lab == '0.35':
+                        yticklabels = axs.flatten()[plot_it].get_yticklabels()
+                        plt.setp(yticklabels[-1], visible=False)
+
+axs.flatten()[plot_it-1].set_xlim([0, 10000])
+
+plt.savefig('period_resolution_study.pdf', bbox_inches='tight', pad_inches=0.02)
             
