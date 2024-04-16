@@ -71,6 +71,9 @@ if len(Density_frames) != len(Toomre_Q_frames):
     import pdb
     pdb.set_trace()
 
+width = 200
+stdvel = 3
+
 rit = -1
 for frame_it in range(len(Density_frames)):
     rit = rit + 1
