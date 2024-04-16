@@ -139,6 +139,7 @@ for frame_it in range(len(Density_frames)):
             
             axs.flatten()[0].tick_params(axis='x', which='major', direction='in', color='w', top=True)
             axs.flatten()[0].tick_params(axis='y', which='major', direction='in', color='w', right=True)
+            axs.flatten()[0].set_ylabel('AU', fontsize=font_size, labelpad=-10)
             axs.flatten()[0].xaxis.label.set_color('black')
             axs.flatten()[0].yaxis.label.set_color('black')
             axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
