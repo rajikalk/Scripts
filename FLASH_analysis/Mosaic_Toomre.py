@@ -88,7 +88,7 @@ for frame_it in range(len(Density_frames)):
         if os.path.exists(savename) == False:
             density_pickle = Density_frames[frame_it]
             
-            file = open(pickle_file, 'rb')
+            file = open(density_pickle, 'rb')
             X_image, Y_image, image_dens, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
                     
@@ -145,7 +145,7 @@ for frame_it in range(len(Density_frames)):
             
             toomre_q_pickle = Toomre_Q_frames[frame_it]
 
-            file = open(pickle_file, 'rb')
+            file = open(toomre_q_pickle, 'rb')
             X_image, Y_image, image_tq, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val_tq = pickle.load(file)
             file.close()
             
