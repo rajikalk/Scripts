@@ -52,7 +52,10 @@ cmap=plt.cm.gist_heat
 sink_pickle = glob.glob("../*.pkl")[0]
 Density_frames = sorted(glob.glob("../Density/movie_frame*.pkl"))
 Toomre_Q_frames = sorted(glob.glob("../Toomre_Q/movie_frame*.pkl"))
-time_bounds = [2500, 7000]
+if 'Strong' in os.getcwd():
+    time_bounds = [2500, 7000]
+else:
+    time_bounds = [5250, 9250]
 
 file = open(sink_pickle, 'rb')
 sink_data, line_counter = pickle.load(file)
