@@ -48,122 +48,163 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-spin_values = ['0.20', '0.25', '0.30', '0.35']
-mach_values = ['0.0', '0.1', '0.2']
-max_time = [[10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000], [10000, 10000, 10000]]
-ax = sys.argv[1]
-if ax == 'xy':
-    append_dir = 'XY/250AU/Thickness_200AU/'
-else:
-    append_dir = 'XZ/'
 cmap=plt.cm.gist_heat
+sink_pickle = glob.glob("*.pkl")[0]
+Density_frames = sorted(glob.glob("../Density/movie_frame*.pkl"))
+Toomre_Q_frames = sorted(glob.glob("../Toomre_Q/movie_frame*.pkl"))
+time_bounds = [2500, 7000]
 
-width = 300
-stdvel = 2
+file = open(sink_pickle, 'rb')
+sink_data, line_counter = pickle.load(file)
+file.close()
+
+primary_ind = list(sink_data.keys())[0]
+mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
+L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
+L_tot = yt.YTArray(L_tot/sink_data[primary_ind]['mass'], 'cm**2/s')
+L_tot = L_tot.in_units('m**2/s')/1.e15
+time = sink_data[primary_ind]['time'] - sink_data[primary_ind]['time'][0]
+time = yt.YTArray(time, 's')
+bound_inds = [np.argmin(abs(time.in_units('yr')-time_bounds[0])), np.argmin(abs(time.in_units('yr')-time_bounds[1]))]
+
+if len(Density_frames) != len(Toomre_Q_frames):
+    import pdb
+    pdb.set_trace()
 
 rit = -1
-for frame_it in range(10000):
+for frame_it in range(len(Density_frames)):
     rit = rit + 1
     if rit == size:
         rit = 0
     if rank == rit:
         plot_it = -1
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
-        dens_pickle = 
+        plt.clf()
+        fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(0.5*two_col_width, two_col_width), sharex=False, sharey=False)
+        for ax_it in axs.flatten():
+            ax_it.set_aspect('equal')
+        plt.subplots_adjust(wspace=0)
+        plt.subplots_adjust(hspace=0)
         if os.path.exists(savename) == False:
-            plt.clf()
-            fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(0.5*two_col_width, two_col_width), sharex=True, sharey=True)
-            for ax_it in axs.flatten():
-                ax_it.set_aspect('equal')
-            plt.subplots_adjust(wspace=0)
-            plt.subplots_adjust(hspace=0)
-            #plt.subplots_adjust(wspace=0.01)
-            #plt.subplots_adjust(hspace=-0.11)
-        
-            for mach_val in mach_values:
-                for spin_val in spin_values:
-                    pickle_file = '/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_'+("%06d" % frame_it)+'.pkl'
-                    if os.path.exists(pickle_file) == False:
-                        pickle_file = sorted(glob.glob('/home/kuruwira/fast/Movie_frames/Flash_2023/Spin_'+spin_val+'/Single/Mach_'+mach_val+'/Lref_9/'+append_dir+'movie_frame_*.pkl'))[-1]
-                    
-                    plot_it = plot_it +1
-                    file = open(pickle_file, 'rb')
-                    X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
-                    file.close()
-                    
-                    xlim = [-1*width/2, width/2]
-                    ylim = [-1*width/2, width/2]
-                    axs.flatten()[plot_it].set_xlim(xlim)
-                    axs.flatten()[plot_it].set_ylim(ylim)
-                    
-                    cbar_lims = [1.e-15, 5.e-13]
-
-                    plot = axs.flatten()[plot_it].pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-                    axs.flatten()[plot_it].set_aspect('equal')
-                    
-                    axs.flatten()[plot_it].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-                    if spin_val == '0.35' and mach_val == '0.0':
-                        plot_velocity_legend = True
-                    else:
-                        plot_velocity_legend = False
-                    try:
-                        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-                    except:
-                        mym.my_own_quiver_function(axs.flatten()[plot_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-                    
-                    
-                    if 'particle_tag' in part_info.keys():
-                        if len(part_info['particle_tag']) > 1:
-                            if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
-                                    sort_inds = np.argsort(part_info['particle_form_time'])
-                                    part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
-                                    part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
-                                    part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-                                    part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
-                        mym.annotate_particles(axs.flatten()[plot_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
-                    
-                    axs.flatten()[plot_it].tick_params(axis='both', which='major', labelsize=font_size)
-                    for line in axs.flatten()[plot_it].xaxis.get_ticklines():
-                        line.set_color('white')
-                    for line in axs.flatten()[plot_it].yaxis.get_ticklines():
-                        line.set_color('white')
-                        
-                    time_string = "$t$="+str(int(time_val))+"yr"
-                    time_string_raw = r"{}".format(time_string)
-                    time_text = axs.flatten()[plot_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
-                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                    
-                    axs.flatten()[plot_it].tick_params(axis='x', which='major', direction='in', color='w', top=True)
-                    axs.flatten()[plot_it].tick_params(axis='y', which='major', direction='in', color='w', right=True)
-                    axs.flatten()[plot_it].xaxis.label.set_color('black')
-                    axs.flatten()[plot_it].yaxis.label.set_color('black')
-                    axs.flatten()[plot_it].tick_params(axis='both', labelsize=font_size)
-                    
-                    if mach_val =='0.0':
-                        #add mach labels:
-                        spin_label = "$\Omega t_{\mathrm{ff}}$="+str(spin_val)
-                        title_text = axs.flatten()[plot_it].text((np.mean(xlim)+15), (ylim[1]-0.05*(ylim[1]-ylim[0])), spin_label, va="center", ha="center", color='w', fontsize=(font_size), bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-                        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                    if spin_val == '0.20':
-                        mach_label = "$\mathcal{M}$="+str(mach_val)
-                        title_text = axs.flatten()[plot_it].text((xlim[0]+0.04*(xlim[1]-xlim[0])), np.mean(ylim), mach_label, va="center", ha="center", color='w', fontsize=(font_size), rotation = 90, bbox=dict(facecolor='none', edgecolor='white', boxstyle='round'))
-                        title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                        
-                    if mach_val == '0.2':
-                        axs.flatten()[plot_it].set_xlabel('AU', labelpad=-1, fontsize=font_size)
-                        if spin_val != '0.20':
-                            xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                            plt.setp(xticklabels[0], visible=False)
-                    if spin_val == '0.20':
-                        axs.flatten()[plot_it].set_ylabel('AU', fontsize=font_size, labelpad=-20)
-                        if mach_val != '0.0':
-                            yticklabels = axs.flatten()[plot_it].get_yticklabels()
-                            plt.setp(yticklabels[-1], visible=False)
+            density_pickle = Density_frames[frame_it]
             
-            fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.951, 0.1105, 0.02, 0.769])
-            cbar = fig.colorbar(plot, cax=cbar_ax)
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=font_size)
+            file = open(pickle_file, 'rb')
+            X_image, Y_image, image_dens, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+            file.close()
+                    
+            xlim = [-1*width/2, width/2]
+            ylim = [-1*width/2, width/2]
+            axs.flatten()[0].set_xlim(xlim)
+            axs.flatten()[0].set_ylim(ylim)
+                    
+            cbar_lims = [1.e-15, 5.e-13]
+
+            plot = axs.flatten()[0].pcolormesh(X_image, Y_image, image_dens, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+            axs.flatten()[0].set_aspect('equal')
+            
+            axs.flatten()[0].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            plot_velocity_legend = False
+            try:
+                mym.my_own_quiver_function(axs.flatten()[0], X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+            except:
+                mym.my_own_quiver_function(axs.flatten()[0], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+                    
+                    
+            if 'particle_tag' in part_info.keys():
+                if len(part_info['particle_tag']) > 1:
+                    if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                            sort_inds = np.argsort(part_info['particle_form_time'])
+                            part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                            part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                            part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                            part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+                mym.annotate_particles(axs.flatten()[0], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+                    
+            axs.flatten()[0].tick_params(axis='both', which='major', labelsize=font_size)
+            for line in axs.flatten()[0].xaxis.get_ticklines():
+                line.set_color('white')
+            for line in axs.flatten()[0].yaxis.get_ticklines():
+                line.set_color('white')
+                
+            time_string = "$t$="+str(int(time_val))+"yr"
+            time_string_raw = r"{}".format(time_string)
+            time_text = axs.flatten()[0].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.05*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
+            time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+            
+            axs.flatten()[0].tick_params(axis='x', which='major', direction='in', color='w', top=True)
+            axs.flatten()[0].tick_params(axis='y', which='major', direction='in', color='w', right=True)
+            axs.flatten()[0].xaxis.label.set_color('black')
+            axs.flatten()[0].yaxis.label.set_color('black')
+            axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
+            
+            cbar_ax = fig.add_axes([0.125, 0.094, 0.385, 0.015])
+            cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
+            
+            #=======================================================
+            
+            toomre_q_pickle = Toomre_Q_frames[frame_it]
+
+            file = open(pickle_file, 'rb')
+            X_image, Y_image, image_tq, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val_tq = pickle.load(file)
+            file.close()
+            
+            if time_val_tq != time_val:
+                import pdb
+                pdb.set_trace()
+                    
+            xlim = [-1*width/2, width/2]
+            ylim = [-1*width/2, width/2]
+            axs.flatten()[1].set_xlim(xlim)
+            axs.flatten()[1].set_ylim(ylim)
+                    
+            cbar_lims = [0, 2]
+
+            plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+            axs.flatten()[1].set_aspect('equal')
+            
+            axs.flatten()[1].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            plot_velocity_legend = True
+            try:
+                mym.my_own_quiver_function(axs.flatten()[1], X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+            except:
+                mym.my_own_quiver_function(axs.flatten()[1], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+                    
+            if 'particle_tag' in part_info.keys():
+                if len(part_info['particle_tag']) > 1:
+                    if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+                            sort_inds = np.argsort(part_info['particle_form_time'])
+                            part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+                            part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+                            part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+                            part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+                mym.annotate_particles(axs.flatten()[1], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None, particle_tags=part_info['particle_tag'], zorder=7, split_threshold=4)
+                    
+            axs.flatten()[1].tick_params(axis='both', which='major', labelsize=font_size)
+            for line in axs.flatten()[1].xaxis.get_ticklines():
+                line.set_color('white')
+            for line in axs.flatten()[1].yaxis.get_ticklines():
+                line.set_color('white')
+            
+            axs.flatten()[1].tick_params(axis='x', which='major', direction='in', color='w', top=True)
+            axs.flatten()[1].tick_params(axis='y', which='major', direction='in', color='w', right=True)
+            axs.flatten()[1].xaxis.label.set_color('black')
+            axs.flatten()[1].yaxis.label.set_color('black')
+            axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
+
+            #fig.subplots_adjust(bottom=0.05)
+            cbar_ax = fig.add_axes([0.515, 0.094, 0.385, 0.015])
+            cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
+            cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
+            
+            #=========================================
+            axs.flatten()[2].plot(time[np.array(bound_inds)].in_units('yr'))
+            curr_ind = np.argmin(abs(time.in_units('yr')-time_val))
+            axs.flatten()[2].scatter(time[curr_ind].in_units(yr), L_tot[curr_ind].in_units('m**2/s'))
+            axs.flatten()[2].set_xlabel('Time (yr)')
+            axs.flatten()[2].yaxis.set_label_position("right")
+            axs.flatten()[2].yaxis.tick_right()
+            axs.flatten()[2].set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
                     
             plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % frame_it) + ".jpg" + " on rank" + str(rank))

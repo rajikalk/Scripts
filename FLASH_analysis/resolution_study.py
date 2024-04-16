@@ -339,7 +339,7 @@ for pickle_file in pickle_files:
         #Calculate rotation Period
         r_sink_val = (1/(2**(L_ref-9)))*r_sink_9
         ang_vel = (5/2)*(plot_L_spec_tot.in_units('au**2/day')/(r_sink_val.in_units('au')**2))
-        Sink_period = 1/ang_vel
+        Sink_period = ((4*np.pi)/5) * ((r_sink_val.in_units('au')**2)/(plot_L_spec_tot.in_units('au**2/day')))
         if sink_id == primary_ind:
             ind_2000 = np.argmin(abs(plot_time.value-1500))
             ind_2500 = np.argmin(abs(plot_time.value-2500))
@@ -429,7 +429,7 @@ axs.flatten()[2].set_ylim(bottom=1.e14)
 
 axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.3)
 axs.flatten()[3].set_xlabel("time (yr)", labelpad=-0.1)
-axs.flatten()[3].set_ylim([3.e2, 5.e4])
+axs.flatten()[3].set_ylim([1.e3, 5.e6])
 
 axs.flatten()[2].set_xlim([0, 10000])
 axs.flatten()[0].legend(loc='lower right')
@@ -914,14 +914,14 @@ popt, pcov = curve_fit(power, r_sink[::-1], T_rot_2500[::-1], p0=initial_guess, 
 fit_err = np.sqrt(np.diag(pcov))
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
 #axs.flatten()[3].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
-#axs.flatten()[3].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')
-#axs.flatten()[3].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
+#axs.flatten()[3].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')#axs.flatten()[3].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
 
 ang_vel_upper = (5/2)*(yt.YTArray(h_upper, 'm**2/s').in_units('au**2/day')/(x**2))
-Sink_period_lower = 1/ang_vel_upper
+#Sink_period_lower = 1/ang_vel_upper
+Sink_period_lower = ((4*np.pi)/5) * ((x**2)/(yt.YTArray(h_upper, 'm**2/s').in_units('au**2/day')))
 
 ang_vel_lower = (5/2)*(yt.YTArray(h_lower, 'm**2/s').in_units('au**2/day')/(x**2))
-Sink_period_upper = 1/ang_vel_lower
+Sink_period_upper = ((4*np.pi)/5) * ((x**2)/(yt.YTArray(h_lower, 'm**2/s').in_units('au**2/day')))
 
 T_2rsun = [Sink_period_lower[0], Sink_period_upper[0]]
 T_eff = [T_2rsun[0]/(T_rot_2500[2]+T_rot_err[2]).value, T_2rsun[1]/(T_rot_2500[2]-T_rot_err[2]).value]
