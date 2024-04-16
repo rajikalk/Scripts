@@ -163,7 +163,7 @@ for frame_it in range(len(Density_frames)):
                     
             cbar_lims = [0, 2]
 
-            plot = axs.flatten()[1].pcolormesh(X_image, Y_image, image, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
+            plot = axs.flatten()[1].pcolormesh(X_image, Y_image, image_tq, cmap=plt.cm.RdYlBu, vmin=cbar_lims[0], vmax=cbar_lims[1], rasterized=True, zorder=1)
             axs.flatten()[1].set_aspect('equal')
             
             axs.flatten()[1].streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
