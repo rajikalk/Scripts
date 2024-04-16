@@ -65,7 +65,7 @@ L_tot = yt.YTArray(L_tot/sink_data[primary_ind]['mass'], 'cm**2/s')
 L_tot = L_tot.in_units('m**2/s')/1.e15
 time = sink_data[primary_ind]['time'] - sink_data[primary_ind]['time'][0]
 time = yt.YTArray(time, 's')
-bound_inds = [np.argmin(abs(time.in_units('yr')-time_bounds[0])), np.argmin(abs(time.in_units('yr')-time_bounds[1]))]
+bound_inds = [np.argmin(abs(time.in_units('yr').value-time_bounds[0])), np.argmin(abs(time.in_units('yr').value-time_bounds[1]))]
 
 if len(Density_frames) != len(Toomre_Q_frames):
     import pdb
