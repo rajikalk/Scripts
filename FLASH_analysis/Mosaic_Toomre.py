@@ -140,7 +140,10 @@ for frame_it in range(len(Density_frames)):
             axs.flatten()[0].yaxis.label.set_color('black')
             axs.flatten()[0].tick_params(axis='both', labelsize=font_size)
             
-            cbar_ax = fig.add_axes([0.125, 0.094, 0.385, 0.015])
+            xticklabels = axs.flatten()[0].get_xticklabels()
+            plt.setp(xticklabels, visible=False)
+            
+            cbar_ax = fig.add_axes([0.125, 0.094, 0.1925, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             
@@ -194,9 +197,12 @@ for frame_it in range(len(Density_frames)):
             axs.flatten()[1].xaxis.label.set_color('black')
             axs.flatten()[1].yaxis.label.set_color('black')
             axs.flatten()[1].tick_params(axis='both', labelsize=font_size)
+            
+            xticklabels = axs.flatten()[1].get_xticklabels()
+            plt.setp(xticklabels, visible=False)
 
             #fig.subplots_adjust(bottom=0.05)
-            cbar_ax = fig.add_axes([0.515, 0.094, 0.385, 0.015])
+            cbar_ax = fig.add_axes([0.515, 0.094, 0.1925, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
