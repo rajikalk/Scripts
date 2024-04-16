@@ -202,12 +202,12 @@ for frame_it in range(len(Density_frames)):
             plt.setp(xticklabels, visible=False)
 
             #fig.subplots_adjust(bottom=0.05)
-            cbar_ax = fig.add_axes([0.515, 0.094, 0.1925, 0.015])
+            cbar_ax = fig.add_axes([0.3225, 0.094, 0.1925, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
             #=========================================
-            axs.flatten()[2].plot(time[np.array(bound_inds)].in_units('yr'))
+            axs.flatten()[2].plot(time[bound_inds[0]:bound_inds[1]].in_units('yr'), L_tot[bound_inds[0]:bound_inds[1]].in_units('m**2/s'))
             curr_ind = np.argmin(abs(time.in_units('yr').value-time_val))
             axs.flatten()[2].scatter(time[curr_ind].in_units('yr'), L_tot[curr_ind].in_units('m**2/s'))
             axs.flatten()[2].set_xlabel('Time (yr)')
