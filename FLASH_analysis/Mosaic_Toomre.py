@@ -84,10 +84,10 @@ for frame_it in range(len(Density_frames)):
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         plt.clf()
         fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(0.5*two_col_width, two_col_width), sharex=False, sharey=False)
-        for ax_it in axs.flatten():
-            ax_it.set_aspect('equal')
         plt.subplots_adjust(wspace=0)
         plt.subplots_adjust(hspace=0)
+        axs.flatten()[0].set_aspect('equal')
+        axs.flatten()[1].set_aspect('equal')
         if os.path.exists(savename) == False:
             density_pickle = Density_frames[frame_it]
             
