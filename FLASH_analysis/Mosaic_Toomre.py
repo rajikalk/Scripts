@@ -217,7 +217,7 @@ for frame_it in range(len(Density_frames)):
             curr_ind = np.argmin(abs(time.in_units('yr').value-time_val))
             axs.flatten()[2].scatter(time[curr_ind].in_units('yr'), L_tot[curr_ind].in_units('m**2/s'))
             axs.flatten()[2].set_xlabel('Time (yr)', labelpad=-0.2)
-            axs.flatten()[2].set_xlim([2500, 7000])
+            axs.flatten()[2].set_xlim([time_bounds[0], time_bounds[1]])
             axs.flatten()[2].yaxis.set_label_position("right")
             axs.flatten()[2].yaxis.tick_right()
             axs.flatten()[2].set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
