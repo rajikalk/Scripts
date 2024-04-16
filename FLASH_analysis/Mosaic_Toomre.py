@@ -83,7 +83,7 @@ for frame_it in range(len(Density_frames)):
         plot_it = -1
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         plt.clf()
-        fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(two_col_width, 0.4*two_col_width), sharex=False, sharey=False)
+        fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(two_col_width, 0.35*two_col_width), sharex=False, sharey=False)
         plt.subplots_adjust(wspace=0)
         plt.subplots_adjust(hspace=0)
         axs.flatten()[0].set_aspect('equal')
@@ -143,7 +143,7 @@ for frame_it in range(len(Density_frames)):
             xticklabels = axs.flatten()[0].get_xticklabels()
             plt.setp(xticklabels, visible=False)
             
-            cbar_ax = fig.add_axes([0.125, 0.094, 0.33, 0.015])
+            cbar_ax = fig.add_axes([0.125, 0.094, 0.34, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=0, size=font_size)
             
@@ -152,7 +152,7 @@ for frame_it in range(len(Density_frames)):
             toomre_q_pickle = Toomre_Q_frames[frame_it]
 
             file = open(toomre_q_pickle, 'rb')
-            X_image, Y_image, image_tq, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val_tq = pickle.load(file)
+            X_image, Y_image, image_tq, magx, magy, X_vel_tq, Y_vel_tq, velx_tq, vely_tq, part_info, time_val_tq = pickle.load(file)
             file.close()
             
             if time_val_tq != time_val:
@@ -204,7 +204,7 @@ for frame_it in range(len(Density_frames)):
             plt.setp(yticklabels, visible=False)
 
             #fig.subplots_adjust(bottom=0.05)
-            cbar_ax = fig.add_axes([0.33, 0.094, 0.33, 0.015])
+            cbar_ax = fig.add_axes([0.4, 0.094, 0.25, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
