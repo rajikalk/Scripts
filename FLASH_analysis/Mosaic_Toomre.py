@@ -204,7 +204,7 @@ for frame_it in range(len(Density_frames)):
             plt.setp(yticklabels, visible=False)
 
             #fig.subplots_adjust(bottom=0.05)
-            cbar_ax = fig.add_axes([0.38, 0.094, 0.25, 0.015])
+            cbar_ax = fig.add_axes([0.385, 0.094, 0.25, 0.015])
             cbar = fig.colorbar(plot, cax=cbar_ax, orientation='horizontal')
             cbar.set_label(r"Magnetic Toomre Q", labelpad=0, size=font_size)
             
