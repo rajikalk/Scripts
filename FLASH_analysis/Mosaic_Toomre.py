@@ -203,7 +203,7 @@ for frame_it in range(len(Density_frames)):
             #=========================================
             axs.flatten()[2].plot(time[np.array(bound_inds)].in_units('yr'))
             curr_ind = np.argmin(abs(time.in_units('yr').value-time_val))
-            axs.flatten()[2].scatter(time[curr_ind].in_units(yr), L_tot[curr_ind].in_units('m**2/s'))
+            axs.flatten()[2].scatter(time[curr_ind].in_units('yr'), L_tot[curr_ind].in_units('m**2/s'))
             axs.flatten()[2].set_xlabel('Time (yr)')
             axs.flatten()[2].yaxis.set_label_position("right")
             axs.flatten()[2].yaxis.tick_right()
