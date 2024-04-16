@@ -218,6 +218,6 @@ for frame_it in range(len(Density_frames)):
             axs.flatten()[2].yaxis.tick_right()
             axs.flatten()[2].set_ylabel('h ($10^{15}m^2/s$)', labelpad=-0.2, fontsize=font_size)
                     
-            plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+            plt.savefig("movie_frame_" + ("%06d" % frame_it) + ".jpg", format='jpg', bbox_inches='tight', dpi=300, pad_inches=0.02)
             print("Made frame " + "movie_frame_" + ("%06d" % frame_it) + ".jpg" + " on rank" + str(rank))
 
