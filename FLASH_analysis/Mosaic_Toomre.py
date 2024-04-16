@@ -49,7 +49,7 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 cmap=plt.cm.gist_heat
-sink_pickle = glob.glob("*.pkl")[0]
+sink_pickle = glob.glob("../*.pkl")[0]
 Density_frames = sorted(glob.glob("../Density/movie_frame*.pkl"))
 Toomre_Q_frames = sorted(glob.glob("../Toomre_Q/movie_frame*.pkl"))
 time_bounds = [2500, 7000]
