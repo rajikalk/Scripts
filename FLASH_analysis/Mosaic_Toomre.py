@@ -83,7 +83,7 @@ for frame_it in range(len(Density_frames)):
         plot_it = -1
         savename = "movie_frame_" + ("%06d" % frame_it) + ".jpg"
         plt.clf()
-        fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(0.5*two_col_width, two_col_width), sharex=False, sharey=False)
+        fig, axs = plt.subplots(ncols=3, nrows=1, figsize=(0.2*two_col_width, two_col_width), sharex=False, sharey=False)
         plt.subplots_adjust(wspace=0)
         plt.subplots_adjust(hspace=0)
         axs.flatten()[0].set_aspect('equal')
