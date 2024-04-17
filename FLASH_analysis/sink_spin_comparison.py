@@ -526,11 +526,11 @@ for mach_lab in Mach_labels:
         if mach_lab == '0.0':
             mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[0].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[0].text(9500, 0.002, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         else:
             mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[1].text(9500, 0.04, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[1].text(9500, 0.002, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             
         plot_it = Mach_labels.index(mach_lab) - 2
         for plot_q in plot_quantity:
@@ -549,7 +549,7 @@ for mach_lab in Mach_labels:
                 axs.flatten()[plot_it].fill_between(plot_time, m_star_lower.in_units('msun'), m_star_upper.in_units('msun'), alpha=0.2, color=colors[Spin_labels.index(spin_lab)])
                 if mach_lab == '0.0':
                     axs.flatten()[plot_it].set_ylabel('$M_\star$ ($M_\odot$)', labelpad=-0.2)
-                    axs.flatten()[plot_it].legend(loc='best', ncol=2, columnspacing=0.8)
+                    axs.flatten()[plot_it].legend(loc='upper left', ncol=2, columnspacing=0.8)
                 if mach_lab == '0.2' and spin_lab == '0.20':
                     axs.flatten()[plot_it].set_ylim([0, np.max(m_star_upper.in_units('msun'))])
                     axs.flatten()[plot_it].set_ylim(bottom=0)
