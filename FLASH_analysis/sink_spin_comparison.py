@@ -526,11 +526,11 @@ for mach_lab in Mach_labels:
         if mach_lab == '0.0':
             mach_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[0].text(9500, 0.005, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[0].text(9750, 0.005, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         else:
             mach_string = "With Turbulence ($\mathcal{M}$="+mach_lab+")"
             mach_string_raw = r"{}".format(mach_string)
-            time_text = axs.flatten()[1].text(9500, 0.005, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+            time_text = axs.flatten()[1].text(9750, 0.005, mach_string_raw, va="center", ha="right", color='k', fontsize=font_size)
             
         plot_it = Mach_labels.index(mach_lab) - 2
         for plot_q in plot_quantity:
