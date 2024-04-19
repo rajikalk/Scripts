@@ -148,6 +148,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     bin_means = []
     bin_errs = []
     bin_stds = []
+    bin_stderrs = []
     
     bin_centers = (t_bin[1:] + t_bin[:-1])/2
     d_bin_center = bin_centers[1]-bin_centers[0]
@@ -156,18 +157,20 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         median = np.median(bin_val)
         mean = np.mean(bin_val)
         std = np.std(bin_val)
+        std_err = std/np.sqrt(len(bin_val))
         err = [median-(mean-std), (mean+std)-median]
         bin_means.append(mean)
         bin_medians.append(median)
         bin_stds.append(std)
+        bin_stderrs.append(std_err)
         bin_errs.append(err)
     
     periastron_mean = (bin_means[0]+bin_means[-1])/2
-    periastron_std = (bin_stds[0]+bin_stds[-1])/2
+    periastron_std = (bin_stderrs[0]+bin_stderrs[-1])/2
     #periastron_mean = bin_means[0]
     #periastron_std = bin_stds[0]
     apastron_mean = np.mean(bin_means[9:11])
-    apastron_std = np.mean(bin_stds[9:11])
+    apastron_std = np.mean(bin_stderrs[9:11])
     
     apastron_signif = abs((apastron_mean - periastron_mean)/periastron_std)
     periastron_signif = abs((apastron_mean - periastron_mean)/apastron_std)
@@ -188,12 +191,13 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
     bin_stds = [bin_stds[0]] + bin_stds + [bin_stds[-1]]
     bin_errs = [bin_errs[0]] + bin_errs + [bin_errs[-1]]
+    bin_stderrs = [bin_stderrs[0]] + bin_stderrs + [bin_stderrs[-1]]
             
     #if sink_inds ==('91','90'):
     #    print('bin_centers',bin_centers)
     #    print('bin_means',bin_means)
     #    print('error',np.array(bin_errs).T)
-    ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stds).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
+    ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stderrs).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
     ax[i+3].set_ylim(bottom=0)
     ax[i+3].set_xlim([0, 1])
     #plt.plot(bin_centers, bin_medians)
