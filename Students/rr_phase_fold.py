@@ -240,7 +240,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_errs.append(err)
         #print('Sink IDSS',sink_inds)
         
-    periastron_median = (periastron_median[0]+periastron_median[-1])/2
+    periastron_median = (bin_medians[0]+bin_medians[-1])/2
     periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
     apastron_median = np.mean(bin_medians[9:11])
     apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
