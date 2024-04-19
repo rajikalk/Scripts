@@ -35,12 +35,12 @@ path_to_pickle='/lustre/astro/vitot/ds_results/parameter_ds0.8_0.17.pkl'
 information=open(path_to_pickle,"rb")
 metadata=pickle.load(information,encoding='bytes')
 information.close()
-print(metadata.keys())
-print(vars(metadata['90']))
-print(len(metadata['90'].separation ))
-print(len(metadata['90'].disk_size ))
-print(len(metadata['91'].separation ))
-print(len(metadata['91'].disk_size ))
+#print(metadata.keys())
+#print(vars(metadata['90']))
+#print(len(metadata['90'].separation ))
+#print(len(metadata['90'].disk_size ))
+#print(len(metadata['91'].separation ))
+#print(len(metadata['91'].disk_size ))
 
 
 orb1 = 0
@@ -54,9 +54,9 @@ for key in metadata.keys():
         metadata[key].periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0] + 1
         metadata[key].apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0] + 1
         ds = metadata[key].disk_size[metadata[key].periastron_inds[orb1]:metadata[key].periastron_inds[orb2]]
-        print(' SINK ', key)
+        #print(' SINK ', key)
         #print(max(ds),min(ds),np.mean(ds),  np.std(ds), np.median(ds))
-        print('------')
+        #print('------')
         
 for sec, prim in [('91','90'),('48','49'),('165','164')]:
     
@@ -180,10 +180,10 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     bin_stds = [bin_stds[0]] + bin_stds + [bin_stds[-1]]
     bin_errs = [bin_errs[0]] + bin_errs + [bin_errs[-1]]
             
-    if sink_inds ==('91','90'):
-        print('bin_centers',bin_centers)
-        print('bin_means',bin_means)
-        print('error',np.array(bin_errs).T)
+    #if sink_inds ==('91','90'):
+    #    print('bin_centers',bin_centers)
+    #    print('bin_means',bin_means)
+    #    print('error',np.array(bin_errs).T)
     ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stds).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
     ax[i+3].set_ylim(bottom=0)
     ax[i+3].set_xlim([0, 1])
@@ -231,8 +231,8 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
                 bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
     #print(bin_sub_set)
     #print(np.shape(bin_sub_set))
-    if sink_inds ==('91','90'):
-        print('bin_median_vals',bin_median_vals)
+    #if sink_inds ==('91','90'):
+    #    print('bin_median_vals',bin_median_vals)
 
     bin_medians = []
     bin_means = []
