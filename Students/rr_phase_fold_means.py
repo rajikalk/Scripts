@@ -164,7 +164,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         print('bin_centers',bin_centers)
         print('bin_means',bin_means)
         print('error',np.array(bin_errs).T)
-    ax[i+3].errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
+    ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stds).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
     ax[i+3].set_ylim(bottom=0)
     #plt.plot(bin_centers, bin_medians)
 
@@ -230,7 +230,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_errs.append(err)
         #print('Sink IDSS',sink_inds)
 
-    ax[i].errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary',color='orangered')
+    ax[i].errorbar(bin_centers, bin_means, yerr=np.array(bin_stds).T, drawstyle='steps-mid', alpha=0.5, label='primary',color='orangered')
     if i == 0:
         anchored_text = AnchoredText('B1',
                         frameon=False, borderpad=0, pad=0.1,
@@ -258,5 +258,5 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     ax[i+3].set_xlabel(r'phase $(\phi) $')
     ax[0].set_ylabel(r'd [AU]')
     ax[3].set_ylabel(r'd [AU]')
-    plt.savefig('phasefolded_medians.pdf',dpi=350)
+    plt.savefig('phasefolded_means.pdf',dpi=350)
     #plt.savefig('/lustre/astro/vitot/20_MEANS_figure7_1_11.pdf',dpi=350)
