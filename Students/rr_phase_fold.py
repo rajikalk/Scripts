@@ -239,6 +239,17 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_errs.append(err)
         #print('Sink IDSS',sink_inds)
+        
+    periastron_median = (periastron_median[0]+periastron_median[-1])/2
+    periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
+    apastron_median = np.mean(bin_medians[9:11])
+    apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
+    
+    apastron_signif = (apastron_mean - periastron_mean)/periastron_std
+    periastron_signif = ((apastron_mean - periastron_mean))/apastron_std
+    
+    print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
+    print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
     
     bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
     bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
