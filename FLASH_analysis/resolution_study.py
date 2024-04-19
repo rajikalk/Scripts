@@ -318,7 +318,7 @@ L_upper = power(x, popt[0]+fit_err[0], popt[1]-fit_err[1])
 #pdb.set_trace()
 
 b_fit_string = '{:.2e}'.format(popt[0]).split('e')
-eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')e'+b_fit_string[1]+')x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
+eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')\\times 10^{ '+str(int(b_fit_string[1]))+'})x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
 
 #eqn_str = "-".join(("".join(eqn_str.split(' + '))).split(' - '))
 axs.flatten()[1].text(1.e-2, L_2500[1], eqn_str)
@@ -346,7 +346,7 @@ h_2rsun = [h_lower[0], h_upper[0]]
 h_eff = [h_2rsun[0]/(h_2500[2]+h_err[2]).value, h_2rsun[1]/(h_2500[2]-h_err[2]).value]
 
 b_fit_string = '{:.2e}'.format(popt[0]).split('e')
-eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')e'+b_fit_string[1]+')x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
+eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')\\times 10^{ '+str(int(b_fit_string[1]))+'})x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
 
 #eqn_str = "-".join(("".join(eqn_str.split(' + '))).split(' - '))
 
@@ -360,7 +360,7 @@ popt, pcov = curve_fit(power, r_sink[:-1][::-1], T_rot_2500[:-1][::-1], p0=initi
 fit_err = np.sqrt(np.diag(pcov))
 
 b_fit_string = '{:.2e}'.format(popt[0]).split('e')
-eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')e'+b_fit_string[1]+')x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
+eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')\\times 10^{ '+str(int(b_fit_string[1]))+'})x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
 
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
 axs.flatten()[3].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
