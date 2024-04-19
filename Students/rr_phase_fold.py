@@ -274,5 +274,5 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     ax[i+3].set_xlabel(r'phase $(\phi) $')
     ax[0].set_ylabel(r'd [AU]')
     ax[3].set_ylabel(r'd [AU]')
-    plt.savefig('phasefolded_means.pdf',dpi=350)
+    plt.savefig('phasefolded_medians.pdf',dpi=350)
     #plt.savefig('/lustre/astro/vitot/20_MEANS_figure7_1_11.pdf',dpi=350)
