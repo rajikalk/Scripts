@@ -151,7 +151,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     
     bin_centers = (t_bin[1:] + t_bin[:-1])/2
     d_bin_center = bin_centers[1]-bin_centers[0]
-    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[1]+d_bin_center]
+    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[-1]+d_bin_center]
     for bin_val in bin_median_vals:
         median = np.median(bin_val)
         mean = np.mean(bin_val)
@@ -228,7 +228,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     
     bin_centers = (t_bin[1:] + t_bin[:-1])/2
     d_bin_center = bin_centers[1]-bin_centers[0]
-    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[1]+d_bin_center]
+    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[-1]+d_bin_center]
     for bin_val in bin_median_vals:
         median = np.median(bin_val)
         mean = np.mean(bin_val)
