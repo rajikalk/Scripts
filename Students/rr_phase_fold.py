@@ -245,8 +245,8 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     apastron_median = np.mean(bin_medians[9:11])
     apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
     
-    apastron_signif = (apastron_mean - periastron_mean)/periastron_std
-    periastron_signif = ((apastron_mean - periastron_mean))/apastron_std
+    apastron_signif = (apastron_median - periastron_median)/periastron_err
+    periastron_signif = ((apastron_median - periastron_median))/apastron_err
     
     print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
     print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
