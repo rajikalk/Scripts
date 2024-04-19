@@ -162,15 +162,15 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_errs.append(err)
         
-    #periastron_median = (bin_medians[0]+bin_medians[-1])/2
-    #periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
-    periastron_median = bin_medians[0]
-    periastron_err = bin_errs[0][1]
+    periastron_median = (bin_medians[0]+bin_medians[-1])/2
+    periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
+    #periastron_median = bin_medians[0]
+    #periastron_err = bin_errs[0][1]
     apastron_median = np.mean(bin_medians[9:11])
     apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
     
-    apastron_signif = (apastron_median - periastron_median)/periastron_err
-    periastron_signif = ((apastron_median - periastron_median))/apastron_err
+    apastron_signif = abs((apastron_median - periastron_median)/periastron_err)
+    periastron_signif = abs((apastron_median - periastron_median))/apastron_err)
     
     if np.isinf(apastron_signif) or np.isnan(apastron_signif):
         import pdb
