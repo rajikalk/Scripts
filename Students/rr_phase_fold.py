@@ -150,6 +150,8 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     bin_stds = []
     
     bin_centers = (t_bin[1:] + t_bin[:-1])/2
+    d_bin_center = bin_centers[1]-bin_centers[0]
+    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[1]+d_bin_center]
     for bin_val in bin_median_vals:
         median = np.median(bin_val)
         mean = np.mean(bin_val)
@@ -159,6 +161,11 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_medians.append(median)
         bin_stds.append(std)
         bin_errs.append(err)
+        
+    bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
+    bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
+    bin_stds = [bin_stds[0]] + bin_stds + [bin_stds[-1]]
+    bin_errs = [bin_errs[0]] + bin_errs + [bin_errs[-1]]
             
     if sink_inds ==('91','90'):
         print('bin_centers',bin_centers)
@@ -166,6 +173,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         print('error',np.array(bin_errs).T)
     ax[i+3].errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
     ax[i+3].set_ylim(bottom=0)
+    ax[i+3].set_xlim([0, 1])
     #plt.plot(bin_centers, bin_medians)
 
     end_ind = 1200
@@ -216,9 +224,11 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     bin_medians = []
     bin_means = []
     bin_stds = []
-
     bin_errs = []
+    
     bin_centers = (t_bin[1:] + t_bin[:-1])/2
+    d_bin_center = bin_centers[1]-bin_centers[0]
+    bin_centers = [bin_centers[0]-d_bin_center] + bin_centers.tolist() + [bin_centers[1]+d_bin_center]
     for bin_val in bin_median_vals:
         median = np.median(bin_val)
         mean = np.mean(bin_val)
@@ -229,6 +239,11 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_errs.append(err)
         #print('Sink IDSS',sink_inds)
+    
+    bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
+    bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
+    bin_stds = [bin_stds[0]] + bin_stds + [bin_stds[-1]]
+    bin_errs = [bin_errs[0]] + bin_errs + [bin_errs[-1]]
 
     ax[i].errorbar(bin_centers, bin_medians, yerr=np.array(bin_errs).T, drawstyle='steps-mid', alpha=0.5, label='primary',color='orangered')
     if i == 0:
@@ -255,8 +270,9 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     ax[0].legend(loc='upper left')
     ax[3].legend(loc='upper left')
     ax[i].set_ylim(bottom=0)
+    ax[i].set_xlim([0, 1])
     ax[i+3].set_xlabel(r'phase $(\phi) $')
     ax[0].set_ylabel(r'd [AU]')
     ax[3].set_ylabel(r'd [AU]')
-    plt.savefig('phasefolded_medians.pdf',dpi=350)
+    plt.savefig('phasefolded_means.pdf',dpi=350)
     #plt.savefig('/lustre/astro/vitot/20_MEANS_figure7_1_11.pdf',dpi=350)
