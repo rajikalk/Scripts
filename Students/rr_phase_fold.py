@@ -162,6 +162,19 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_errs.append(err)
         
+    #periastron_median = (bin_medians[0]+bin_medians[-1])/2
+    #periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
+    periastron_median = bin_medians[0]
+    periastron_err = bin_errs[0][1]
+    apastron_median = np.mean(bin_medians[9:11])
+    apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
+    
+    apastron_signif = (apastron_median - periastron_median)/periastron_err
+    periastron_signif = ((apastron_median - periastron_median))/apastron_err
+    
+    print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
+    print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
+        
     bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
     bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
     bin_stds = [bin_stds[0]] + bin_stds + [bin_stds[-1]]
@@ -239,19 +252,6 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_errs.append(err)
         #print('Sink IDSS',sink_inds)
-        
-    #periastron_median = (bin_medians[0]+bin_medians[-1])/2
-    #periastron_err = (bin_errs[0][1]+bin_errs[-1][1])/2
-    periastron_median = bin_medians[0]
-    periastron_err = bin_errs[0][1]
-    apastron_median = np.mean(bin_medians[9:11])
-    apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
-    
-    apastron_signif = (apastron_median - periastron_median)/periastron_err
-    periastron_signif = ((apastron_median - periastron_median))/apastron_err
-    
-    print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
-    print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
     
     bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
     bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
