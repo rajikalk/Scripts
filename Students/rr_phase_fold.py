@@ -170,7 +170,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     apastron_err = np.mean(bin_errs[9:11], axis=0)[0]
     
     apastron_signif = abs((apastron_median - periastron_median)/periastron_err)
-    periastron_signif = abs((apastron_median - periastron_median))/apastron_err)
+    periastron_signif = abs((apastron_median - periastron_median)/apastron_err)
     
     if np.isinf(apastron_signif) or np.isnan(apastron_signif):
         import pdb
