@@ -61,7 +61,6 @@ file = open(sink_pickle, 'rb')
 sink_data, line_counter = pickle.load(file)
 file.close()
 
-primary_ind
 primary_ind = list(sink_data.keys())[0]
 mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
 L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
