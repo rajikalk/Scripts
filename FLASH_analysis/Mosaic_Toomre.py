@@ -61,6 +61,7 @@ file = open(sink_pickle, 'rb')
 sink_data, line_counter = pickle.load(file)
 file.close()
 
+primary_ind
 primary_ind = list(sink_data.keys())[0]
 mass = yt.YTArray(sink_data[primary_ind]['mass'], 'g')
 L_tot = np.sqrt(sink_data[primary_ind]['anglx']**2 + sink_data[primary_ind]['angly']**2 + sink_data[primary_ind]['anglz']**2)
@@ -97,9 +98,6 @@ for frame_it in range(len(Density_frames)):
             file = open(density_pickle, 'rb')
             X_image, Y_image, image_dens, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
-            
-            import pdb
-            pdb.set_trace()
                     
             xlim = [-1*width/2, width/2]
             ylim = [-1*width/2, width/2]
