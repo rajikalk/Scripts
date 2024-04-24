@@ -97,6 +97,9 @@ for frame_it in range(len(Density_frames)):
             file = open(density_pickle, 'rb')
             X_image, Y_image, image_dens, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
             file.close()
+            
+            import pdb
+            pdb.set_trace()
                     
             xlim = [-1*width/2, width/2]
             ylim = [-1*width/2, width/2]

@@ -235,26 +235,26 @@ fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, 0.7*page_he
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
-axs.flatten()[0].loglog(r_sink[:-1], Mass_2500[:-1], lw=1, label='Mass')
-axs.flatten()[0].errorbar(r_sink[:-1], np.array(Mass_2500[:-1]), label='Mass', yerr=np.array(Mass_err), marker='.')
+#axs.flatten()[0].loglog(r_sink[:-1], Mass_2500[:-1], lw=1, label='Mass')
+axs.flatten()[0].errorbar(r_sink[:-1], np.array(Mass_2500[:-1]), label='Mass', yerr=np.array(Mass_err), fmt='o', marker='.')
 axs.flatten()[0].errorbar(r_sink[-1], Mass_2500[-1], yerr=0.25*Mass_2500[-1], lolims=[True], marker='.', c='k', alpha=0.25, edgecolor=None)
 axs.flatten()[0].axvline(x=R_proto.in_units('au').value, color='k', ls=':', alpha=0.5)
 axs.flatten()[0].set_ylabel("Mass (M$_\odot$)", labelpad=-0.01)
 
-axs.flatten()[1].loglog(r_sink[:-1], L_2500[:-1], lw=1, label='Angular momentum')
-axs.flatten()[1].errorbar(r_sink[:-1], np.array(L_2500[:-1]), label='Angular momentum', yerr=np.array(L_err), marker='.')
+#axs.flatten()[1].loglog(r_sink[:-1], L_2500[:-1], lw=1, label='Angular momentum')
+axs.flatten()[1].errorbar(r_sink[:-1], np.array(L_2500[:-1]), label='Angular momentum', yerr=np.array(L_err), fmt='o', marker='.')
 axs.flatten()[1].errorbar(r_sink[-1], L_2500[-1], yerr=0.7*L_2500[-1], lolims=[True], marker='.', c='k', alpha=0.25, edgecolor=None)
 axs.flatten()[1].axvline(x=R_proto.in_units('au').value, color='k', ls=':', alpha=0.5)
 axs.flatten()[1].set_ylabel("$L$ (kg$\,$m$^2$/s)", labelpad=-0.01)
 
-axs.flatten()[2].loglog(r_sink[:-1], h_2500[:-1], lw=1, label='Specific Angular momentum')
-axs.flatten()[2].errorbar(r_sink[:-1], np.array(h_2500[:-1]), label='Specific Angular momentum', yerr=np.array(h_err), marker='.')
+#axs.flatten()[2].loglog(r_sink[:-1], h_2500[:-1], lw=1, label='Specific Angular momentum')
+axs.flatten()[2].errorbar(r_sink[:-1], np.array(h_2500[:-1]), label='Specific Angular momentum', yerr=np.array(h_err), fmt='o', marker='.')
 axs.flatten()[2].errorbar(r_sink[-1], h_2500[-1], yerr=0.4*h_2500[-1], lolims=[True], marker='.', c='k', alpha=0.25, edgecolor=None)
 axs.flatten()[2].axvline(x=R_proto.in_units('au').value, color='k', ls=':', alpha=0.5)
 axs.flatten()[2].set_ylabel("$h$ (m$^2$/s)", labelpad=-0.01)
 
-axs.flatten()[3].loglog(r_sink[:-1], T_rot_2500[:-1], lw=1, label='Rotation period')
-axs.flatten()[3].errorbar(r_sink[:-1], np.array(T_rot_2500[:-1]), label='Rotation period', yerr=np.array(T_rot_err), marker='.')
+#axs.flatten()[3].loglog(r_sink[:-1], T_rot_2500[:-1], lw=1, label='Rotation period')
+axs.flatten()[3].errorbar(r_sink[:-1], np.array(T_rot_2500[:-1]), label='Rotation period', yerr=np.array(T_rot_err), fmt='o', marker='.')
 axs.flatten()[3].errorbar(r_sink[-1], T_rot_2500[-1], yerr=0.25*T_rot_2500[-1], uplims=[True], marker='.', c='k', alpha=0.25, edgecolor=None)
 axs.flatten()[3].axvline(x=R_proto.in_units('au').value, color='k', ls=':', alpha=0.5)
 axs.flatten()[3].set_ylabel("$P$ (days)", labelpad=-0.01)
@@ -280,9 +280,10 @@ fit_err = np.sqrt(np.diag(pcov))
 
 
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
-axs.flatten()[0].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
-axs.flatten()[0].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')
-axs.flatten()[0].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
+axs.flatten()[0].loglog(x, power(x, popt[0], popt[1]), lw=1, color='#ff7f0e')
+axs.flatten()[0].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[0].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[0].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='#ff7f0e', alpha=0.15)
 M_2rsun = [power(x, popt[0]-fit_err[0], popt[1]+fit_err[1])[0], power(x, popt[0]+fit_err[0], popt[1]-fit_err[1])[0]]
 M_eff = [M_2rsun[0]/(Mass_2500[2]+Mass_err[2]).value, M_2rsun[1]/(Mass_2500[2]-Mass_err[2]).value]
 
@@ -305,9 +306,10 @@ popt, pcov = curve_fit(power, r_sink[:-1][::-1], L_2500[:-1][::-1], p0=initial_g
 fit_err = np.sqrt(np.diag(pcov))
 
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
-axs.flatten()[1].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
-axs.flatten()[1].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')
-axs.flatten()[1].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
+axs.flatten()[1].loglog(x, power(x, popt[0], popt[1]), lw=1, color='#ff7f0e')
+axs.flatten()[1].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[1].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[1].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='#ff7f0e', alpha=0.15)
 L_2rsun = [power(x, popt[0]-fit_err[0], popt[1]+fit_err[1])[0], power(x, popt[0]+fit_err[0], popt[1]-fit_err[1])[0]]
 L_eff = [L_2rsun[0]/(L_2500[2]+L_err[2]).value, L_2rsun[1]/(L_2500[2]-L_err[2]).value]
 
@@ -332,9 +334,10 @@ popt, pcov = curve_fit(power, r_sink[:-1][::-1], h_2500[:-1][::-1], p0=initial_g
 fit_err = np.sqrt(np.diag(pcov))
 
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
-axs.flatten()[2].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
-axs.flatten()[2].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')
-axs.flatten()[2].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
+axs.flatten()[2].loglog(x, power(x, popt[0], popt[1]), lw=1, color='#ff7f0e')
+axs.flatten()[2].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[2].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[2].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='#ff7f0e', alpha=0.15)
 
 h_lower = power(x, popt[0]-fit_err[0], popt[1]+fit_err[1])
 h_upper = power(x, popt[0]+fit_err[0], popt[1]-fit_err[1])
@@ -363,9 +366,10 @@ b_fit_string = '{:.2e}'.format(popt[0]).split('e')
 eqn_str = '$y=(('+b_fit_string[0]+'\pm' + str(np.around(fit_err[0]/(10**(int(b_fit_string[1]))), decimals=2))+')\\times 10^{ '+str(int(b_fit_string[1]))+'})x^{'+str(np.round(popt[1], decimals=2))+'\pm'+str(np.round(fit_err[1], decimals=2))+'}$'
 
 #axs.flatten()[0].loglog(x, power(x, *popt), lw=1)
-axs.flatten()[3].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=1, c='b')
-axs.flatten()[3].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=1, c='b')
-axs.flatten()[3].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='b', alpha=0.25)
+axs.flatten()[3].loglog(x, power(x, popt[0], popt[1]), lw=1, color='#ff7f0e')
+axs.flatten()[3].loglog(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[3].loglog(x, power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), lw=0.5, color='#ff7f0e')
+axs.flatten()[3].fill_between(x, power(x, popt[0]+fit_err[0], popt[1]-fit_err[1]), power(x, popt[0]-fit_err[0], popt[1]+fit_err[1]), color='#ff7f0e', alpha=0.15)
 
 #Sink_period_lower = 1/ang_vel_upper
 Sink_period_lower = power(x, popt[0]-fit_err[0], popt[1]+fit_err[1])
