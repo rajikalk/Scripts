@@ -165,8 +165,9 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stderrs.append(std_err)
         bin_errs.append(err)
         
-    import pdb
-    pdb.set_trace()
+    if sink_inds == ('165','164'):
+        import pdb
+        pdb.set_trace()
     
     periastron_mean = (bin_means[0]+bin_means[-1])/2
     periastron_std = (bin_stds[0]+bin_stds[-1])/2
