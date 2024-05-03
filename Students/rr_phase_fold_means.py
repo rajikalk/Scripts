@@ -175,17 +175,8 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     apastron_signif = abs((apastron_mean - periastron_mean)/periastron_std)
     periastron_signif = abs((apastron_mean - periastron_mean)/apastron_std)
     
-    if np.isinf(apastron_signif) or np.isnan(apastron_signif):
-        import pdb
-        pdb.set_trace()
-    else:
-        print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
-        
-    if np.isinf(periastron_signif) or np.isnan(periastron_signif):
-        import pdb
-        pdb.set_trace()
-    else:
-        print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
+    print("The secondary disk size at apastron is", apastron_signif, "sigma away from distribution at periastron")
+    print("The secondary disk size at periastron is", periastron_signif, "sigma away from distribution at apastron")
     
     bin_means = [bin_means[0]] + bin_means + [bin_means[-1]]
     bin_medians = [bin_medians[0]] + bin_medians + [bin_medians[-1]]
