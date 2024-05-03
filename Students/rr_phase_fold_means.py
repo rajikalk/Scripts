@@ -170,7 +170,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     #periastron_mean = bin_means[0]
     #periastron_std = bin_stds[0]
     apastron_mean = np.mean(bin_means[9:11])
-    apastron_std = np.mean(bin_stderrs[9:11])
+    apastron_std = np.mean(bin_stds[9:11])
     
     apastron_signif = abs((apastron_mean - periastron_mean)/periastron_std)
     periastron_signif = abs((apastron_mean - periastron_mean)/apastron_std)
