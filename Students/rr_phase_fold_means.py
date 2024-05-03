@@ -146,9 +146,6 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
                 bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
                 bin_std_vals[bin_it-1].append(np.std(bin_sub_set))
                 bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
-            else:
-                import pdb
-                pdb.set_trace()
 
     bin_medians = []
     bin_means = []
@@ -170,17 +167,13 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_stderrs.append(std_err)
         bin_errs.append(err)
-        
-    if sink_inds == ('165','164'):
-        import pdb
-        pdb.set_trace()
     
     periastron_mean = bin_means[np.argmin(bin_means)]
-    periastron_std = bin_stds[np.argmin(bin_means)]
+    periastron_std = bin_stderrs[np.argmin(bin_means)]
     #periastron_mean = bin_means[0]
     #periastron_std = bin_stds[0]
     apastron_mean = bin_means[np.argmax(bin_means)]
-    apastron_std = bin_stds[np.argmax(bin_means)]
+    apastron_std = bin_stderrs[np.argmax(bin_means)]
     
     apastron_signif = abs((apastron_mean - periastron_mean)/periastron_std)
     periastron_signif = abs((apastron_mean - periastron_mean)/apastron_std)
@@ -199,7 +192,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     #    print('bin_means',bin_means)
     #    print('error',np.array(bin_errs).T)
     #ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stderrs).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
-    ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stds).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
+    ax[i+3].errorbar(bin_centers, bin_means, yerr=np.array(bin_stderrs).T, drawstyle='steps-mid', alpha=0.5, label='secondary',color='blue')
     ax[i+3].set_ylim(bottom=0)
     ax[i+3].set_xlim([0, 1])
     #plt.plot(bin_centers, bin_medians)
