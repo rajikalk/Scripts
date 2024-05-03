@@ -100,7 +100,7 @@ page_height = 10.62472 #inches
 #Phasefold
 min_orb = 1
 max_orb = 11
-n_bins = 10
+n_bins = 20
 plt.clf()
 fig,axs = plt.subplots(2,3,tight_layout=True,figsize=(two_col_width,page_height/3))
 
