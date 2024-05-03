@@ -164,17 +164,13 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_stderrs.append(std_err)
         bin_errs.append(err)
-        
-    if sink_inds == ('165','164'):
-        import pdb
-        pdb.set_trace()
     
-    periastron_mean = (bin_means[0]+bin_means[-1])/2
-    periastron_std = (bin_stds[0]+bin_stds[-1])/2
+    periastron_mean = bin_means[np.argmin(bin_means)]
+    periastron_std = bin_stds[np.argmin(bin_means)]
     #periastron_mean = bin_means[0]
     #periastron_std = bin_stds[0]
-    apastron_mean = np.mean(bin_means[9:11])
-    apastron_std = np.mean(bin_stds[9:11])
+    apastron_mean = bin_means[np.argmax(bin_means)]
+    apastron_std = bin_stds[np.argmax(bin_means)]
     
     apastron_signif = abs((apastron_mean - periastron_mean)/periastron_std)
     periastron_signif = abs((apastron_mean - periastron_mean)/apastron_std)
