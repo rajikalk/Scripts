@@ -123,10 +123,12 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
     t_bin = np.linspace(0, 1, n_bins +1)
     bin_mean_vals = []
     bin_median_vals = []
+    bin_std_vals = []
     bins_all = []
     for bin_it in range(1, len(t_bin)):
         bin_mean_vals.append([])
         bin_median_vals.append([])
+        bin_std_vals.append([])
         bins_all.append([])
     for peri_ind in range(min_orb, len(periastron_inds[min_orb:max_orb])):
         
@@ -142,6 +144,7 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
             if np.isnan(np.median(bin_sub_set)) == False:
                 bin_mean_vals[bin_it-1].append(np.mean(bin_sub_set))
                 bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
+                bin_std_vals[bin_it-1].append(np.std(bin_sub_set))
                 bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
 
     bin_medians = []
@@ -164,6 +167,10 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
         bin_stds.append(std)
         bin_stderrs.append(std_err)
         bin_errs.append(err)
+        
+    if sink_inds == ('165','164'):
+        import pdb
+        pdb.set_trace()
     
     periastron_mean = bin_means[np.argmin(bin_means)]
     periastron_std = bin_stds[np.argmin(bin_means)]
