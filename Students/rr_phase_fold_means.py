@@ -146,6 +146,9 @@ for i,sink_inds in enumerate([('91','90'),('48','49'),('165','164')]):
                 bin_median_vals[bin_it-1].append(np.median(bin_sub_set))
                 bin_std_vals[bin_it-1].append(np.std(bin_sub_set))
                 bins_all[bin_it-1] = bins_all[bin_it-1] + bin_sub_set
+            else:
+                import pdb
+                pdb.set_trace()
 
     bin_medians = []
     bin_means = []
