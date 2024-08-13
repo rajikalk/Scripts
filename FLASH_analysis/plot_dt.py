@@ -48,7 +48,7 @@ import matplotlib.pyplot as plt
 plt.clf()
 plt.semilogy(step_number, dt)
 for chk_it in range(len(step_chk)):
-    plt.axvline(step_chk[chk_it])
+    plt.axvline(step_chk[chk_it], color='k', linestyle=':')
     plt.text(step_chk[chk_it]+1, np.mean(dt), str(chk_number[chk_it]), rotation=90)
 plt.xlabel('step number')
 plt.ylabel('dt (s)')
