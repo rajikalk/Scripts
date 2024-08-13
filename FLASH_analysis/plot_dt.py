@@ -23,6 +23,8 @@ with open(shell_out_file, 'r') as f:
                     if int(values[0]) == next_step:
                         step_number.append(next_step)
                         dt.append(float(values[2]))
+                        if np.remainder(step_number[-1], 1000) == 0:
+                            print('Read', step_number[-1], 'time steps')
                         next_step = next_step + 1
                 except:
                     pass
