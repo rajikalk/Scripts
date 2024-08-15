@@ -63,7 +63,7 @@ for pick_file in pickle_files:
     #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
     m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
     mass = yt.YTArray(particle_data['mass']).in_units('g')
-    L_acc = f_acc * (yt.units.G * mass * m_dot)/radius.in_units('cm')
+    L_acc = f_acc * (mass * m_dot * yt.units.G)/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
 
     for part in range(len(L_tot[t_start:t_end].T)):
