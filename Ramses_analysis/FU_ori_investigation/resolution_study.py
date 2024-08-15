@@ -29,6 +29,9 @@ def parse_inputs():
 
 pickle_files = ["/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L18.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L19.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L21.pkl"]#, "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20/Level_21/particle_data.pkl"]
 
+length_unit = yt.YTQuantity(4.0,"pc")
+r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
+
 label = ["Lvl=18 (3.15AU)", "Lvl=19 (1.57AU)", "Lvl=20 (0.79AU)", "Lvl=21 (0.39AU)"]
 
 two_col_width = 7.20472 #inches
@@ -85,9 +88,7 @@ for pick_file in pickle_files:
     '''
     axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Separation (au)')
-    axs.flatten()[1].axhline(y=1.5,c='k', alpha=0.5)
-    axs.flatten()[1].axhline(y=3, c='k', alpha=0.5)
-    axs.flatten()[1].axhline(y=6, c='k', alpha=0.5)
+    axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
     #axs.flatten()[1].set_ylim()
     
 
