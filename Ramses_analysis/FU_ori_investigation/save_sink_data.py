@@ -119,6 +119,8 @@ if args.update_pickle == 'True':
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
                 tags = np.arange(len(sink_data['u']))[sink_ind-1:sink_ind+1]
+                import pdb
+                pdb.set_trace()
                 for tag in tags:
                     if tag not in particle_data['particle_tag']:
                         particle_data['particle_tag'].append(tag)
