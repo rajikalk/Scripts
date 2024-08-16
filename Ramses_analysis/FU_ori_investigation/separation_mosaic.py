@@ -11,6 +11,7 @@ import csv
 import glob
 import pickle
 import argparse
+import so
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
@@ -23,7 +24,34 @@ def parse_inputs():
 #=======MAIN=======
 #def main():
 args = parse_inputs()
-prev_args = args
+
+'''
+print("read pickle", args.input_pickle)
+file_open = open(args.input_pickle, 'rb')
+particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+file_open.close()
+print("finished reading in pickle")
+'''
+
+no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
+
+fit = -1
+while fit < no_frames:
+    fit = fit + 1
+    if os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
+        
+        fig = plt.figure()
+        gs = fig.add_gridspec(2, 2, hspace=0, wspace=0)
+        (ax1, ax2), (ax3, ax4) = gs.subplots(sharex='col', sharey='row')
+    
+        yz_pickle = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl')
+        file = open(yz_pickle, 'rb')
+        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+        #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
+        file.close()
+        
+        time_val = args_dict['time_val']
+        
 
 # Read in directories:
 '''
