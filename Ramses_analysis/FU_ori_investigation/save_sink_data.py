@@ -11,6 +11,7 @@ import sys
 import os
 import yt
 import yt.units
+from yt.units import g, s, cm, Lsun
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
