@@ -44,7 +44,7 @@ while fit < no_frames:
         gs = fig.add_gridspec(2, 2, hspace=0, wspace=0)
         (ax1, ax2), (ax3, ax4) = gs.subplots(sharex='col', sharey='row')
     
-        yz_pickle = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl')
+        yz_pickle = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'
         file = open(yz_pickle, 'rb')
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
