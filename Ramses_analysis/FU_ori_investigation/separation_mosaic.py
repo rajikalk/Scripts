@@ -11,7 +11,7 @@ import csv
 import glob
 import pickle
 import argparse
-import so
+import os
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
