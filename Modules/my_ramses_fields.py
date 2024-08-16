@@ -355,7 +355,7 @@ def _Density(field,data):
     del density_unit
     return density_arr
 
-yt.add_field("Density", function=_Density, units=r"g/cm**3")
+yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local")
 
 def _cell_mass(field,data):
     """
@@ -364,7 +364,7 @@ def _cell_mass(field,data):
     cell_mass = data['Density'].in_units('g/cm**3')*data['cell_volume'].in_units('cm**3')
     return cell_mass
 
-yt.add_field("cell_mass", function=_cell_mass, units=r"g")
+yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local")
     
 #===========================CALCULATING RAMSES CENTERED MAGNETIC FIELDS======================================
 
@@ -381,7 +381,7 @@ def _magx(field,data):
             magx = yt.YTArray((data['hydro_B_left_x'].value + data['hydro_B_right_x'].value)/2., "G")
     return magx
     
-yt.add_field("magx", function=_magx, units=r"gauss")
+yt.add_field("magx", function=_magx, units=r"gauss", sampling_type="local")
 
 def _magy(field,data):
     """
@@ -396,7 +396,7 @@ def _magy(field,data):
             magy = yt.YTArray((data['hydro_B_left_y'].value + data['hydro_B_right_y'].value)/2., "G")
     return magy
     
-yt.add_field("magy", function=_magy, units=r"gauss")
+yt.add_field("magy", function=_magy, units=r"gauss", sampling_type="local")
 
 def _magz(field,data):
     """
@@ -411,7 +411,7 @@ def _magz(field,data):
             magz = yt.YTArray((data['hydro_B_left_z'].value + data['hydro_B_right_z'].value)/2., "G")
     return magz
     
-yt.add_field("magz", function=_magz, units=r"gauss")
+yt.add_field("magz", function=_magz, units=r"gauss", sampling_type="local")
 
 #===========================READING RAMSES PARTICLE DATA======================================
 
@@ -446,7 +446,7 @@ def _sink_particle_tag(field, data):
     particle_tag = yt.YTArray(np.array(particle_tag), "")
     return particle_tag
 
-yt.add_field("sink_particle_tag", function=_sink_particle_tag, units=r"")
+yt.add_field("sink_particle_tag", function=_sink_particle_tag, units=r"", sampling_type="local")
 
 def _sink_particle_posx(field, data):
     """
@@ -479,7 +479,7 @@ def _sink_particle_posx(field, data):
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     return particle_posx
 
-yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc")
+yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc", sampling_type="local")
 
 def _sink_particle_posy(field, data):
     """
@@ -512,7 +512,7 @@ def _sink_particle_posy(field, data):
         particle_posy = yt.YTArray(np.array(particle_posy), "pc")
     return particle_posy
 
-yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc")
+yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc", sampling_type="local")
 
 def _sink_particle_posz(field, data):
     """
@@ -545,7 +545,7 @@ def _sink_particle_posz(field, data):
         particle_posz = yt.YTArray(np.array(particle_posz), "pc")
     return particle_posz
 
-yt.add_field("sink_particle_posz", function=_sink_particle_posz, units=r"pc")
+yt.add_field("sink_particle_posz", function=_sink_particle_posz, units=r"pc", sampling_type="local")
 
 def _sink_particle_velx(field, data):
     """
@@ -578,7 +578,7 @@ def _sink_particle_velx(field, data):
         particle_velx = yt.YTArray(np.array(particle_velx), "km/s")
     return particle_velx
 
-yt.add_field("sink_particle_velx", function=_sink_particle_velx, units=r"km/s")
+yt.add_field("sink_particle_velx", function=_sink_particle_velx, units=r"km/s", sampling_type="local")
 
 def _sink_particle_vely(field, data):
     """
@@ -611,7 +611,7 @@ def _sink_particle_vely(field, data):
         particle_vely = yt.YTArray(np.array(particle_vely), "km/s")
     return particle_vely
 
-yt.add_field("sink_particle_vely", function=_sink_particle_vely, units=r"km/s")
+yt.add_field("sink_particle_vely", function=_sink_particle_vely, units=r"km/s", sampling_type="local")
 
 def _sink_particle_velz(field, data):
     """
@@ -644,7 +644,7 @@ def _sink_particle_velz(field, data):
         particle_velz = yt.YTArray(np.array(particle_velz), "km/s")
     return particle_velz
 
-yt.add_field("sink_particle_velz", function=_sink_particle_velz, units=r"km/s")
+yt.add_field("sink_particle_velz", function=_sink_particle_velz, units=r"km/s", sampling_type="local")
 
 def _sink_particle_speed(field, data):
     """
@@ -677,7 +677,7 @@ def _sink_particle_speed(field, data):
         particle_speed = yt.YTArray(np.array(particle_speed), "km/s")
     return particle_speed
 
-yt.add_field("sink_particle_speed", function=_sink_particle_speed, units=r"km/s")
+yt.add_field("sink_particle_speed", function=_sink_particle_speed, units=r"km/s", sampling_type="local")
 
 def _sink_particle_mass(field, data):
     """
@@ -710,7 +710,7 @@ def _sink_particle_mass(field, data):
         particle_mass = yt.YTArray(np.array(particle_mass), "Msun")
     return particle_mass
 
-yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun")
+yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun", sampling_type="local")
 
 def _sink_particle_accretion_rate(field, data):
     """
@@ -745,7 +745,7 @@ def _sink_particle_accretion_rate(field, data):
         particle_mdot = yt.YTArray(np.array(particle_mdot), "Msun/yr")
     return particle_mdot
 
-yt.add_field("sink_particle_accretion_rate", function=_sink_particle_accretion_rate, units=r"Msun/yr")
+yt.add_field("sink_particle_accretion_rate", function=_sink_particle_accretion_rate, units=r"Msun/yr", sampling_type="local")
 
 def _sink_particle_form_time(field, data):
     """
@@ -778,7 +778,7 @@ def _sink_particle_form_time(field, data):
         particle_form_time = yt.YTArray(np.array(particle_form_time), "yr")
     return particle_form_time
 
-yt.add_field("sink_particle_form_time", function=_sink_particle_form_time, units=r"yr")
+yt.add_field("sink_particle_form_time", function=_sink_particle_form_time, units=r"yr", sampling_type="local")
 
 def _sink_particle_age(field, data):
     """
@@ -812,7 +812,7 @@ def _sink_particle_age(field, data):
         particle_age = yt.YTArray(np.array(particle_age), "yr")
     return particle_age
 
-yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr")
+yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr", sampling_type="local")
 
 #===========================REPLACING YT PARTICLE FIELDS WITH RAMSES ONES======================================
 '''
@@ -888,7 +888,7 @@ def _Center_Position_Gas(field, data):
     center_pos_gas = com
     return com
     
-yt.add_field("Center_Position_Gas", function=_Center_Position_Gas, units=r"cm")
+yt.add_field("Center_Position_Gas", function=_Center_Position_Gas, units=r"cm", sampling_type="local")
 
 def _Center_Position_Particle(field, data):
     """
@@ -918,7 +918,7 @@ def _Center_Position_Particle(field, data):
     center_pos_part = com
     return com
     
-yt.add_field("Center_Position_Particle", function=_Center_Position_Particle, units=r"cm")
+yt.add_field("Center_Position_Particle", function=_Center_Position_Particle, units=r"cm", sampling_type="local")
 
 def _Center_Position(field, data):
     """
@@ -975,7 +975,7 @@ def _Center_Position(field, data):
     set_center_pos(center_pos)
     return center_pos
 
-yt.add_field("Center_Position", function=_Center_Position, units=r"cm")
+yt.add_field("Center_Position", function=_Center_Position, units=r"cm", sampling_type="local")
 
 def _Center_Velocity_Gas(field, data):
     """
@@ -993,7 +993,7 @@ def _Center_Velocity_Gas(field, data):
     center_vel_gas = com
     return com
     
-yt.add_field("Center_Velocity_Gas", function=_Center_Velocity_Gas, units=r"cm/s")
+yt.add_field("Center_Velocity_Gas", function=_Center_Velocity_Gas, units=r"cm/s", sampling_type="local")
 
 def _Center_Velocity_Particle(field, data):
     """
@@ -1023,7 +1023,7 @@ def _Center_Velocity_Particle(field, data):
     center_vel_part = com
     return com
 
-yt.add_field("Center_Velocity_Particle", function=_Center_Velocity_Particle, units=r"cm/s")
+yt.add_field("Center_Velocity_Particle", function=_Center_Velocity_Particle, units=r"cm/s", sampling_type="local")
 
 def _Center_Velocity(field, data):
     """
@@ -1081,7 +1081,7 @@ def _Center_Velocity(field, data):
     set_center_vel(center_vel)
     return center_vel
 
-yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s")
+yt.add_field("Center_Velocity", function=_Center_Velocity, units=r"cm/s", sampling_type="local")
 
 def _All_Particle_Positions(field, data):
     """
@@ -1099,7 +1099,7 @@ def _All_Particle_Positions(field, data):
     set_part_pos(pos)
     return pos
 
-yt.add_field("All_Particle_Positions", function=_All_Particle_Positions, units=r"cm")
+yt.add_field("All_Particle_Positions", function=_All_Particle_Positions, units=r"cm", sampling_type="local")
 
 def _All_Particle_Velocities(field, data):
     """
@@ -1117,7 +1117,7 @@ def _All_Particle_Velocities(field, data):
     set_part_vel(vel)
     return vel
 
-yt.add_field("All_Particle_Velocities", function=_All_Particle_Velocities, units=r"cm/s")
+yt.add_field("All_Particle_Velocities", function=_All_Particle_Velocities, units=r"cm/s", sampling_type="local")
 
 def _All_Particle_Masses(field, data):
     """
@@ -1134,7 +1134,7 @@ def _All_Particle_Masses(field, data):
     set_part_mass(mass)
     return mass
 
-yt.add_field("All_Particle_Masses", function=_All_Particle_Masses, units=r"g")
+yt.add_field("All_Particle_Masses", function=_All_Particle_Masses, units=r"g", sampling_type="local")
 
 def _dx_from_Center(field, data):
     """
@@ -1144,7 +1144,7 @@ def _dx_from_Center(field, data):
     dx = data['x'].in_units('cm')-center_pos[0].in_units('cm')
     return dx
 
-yt.add_field("dx_from_Center", function=_dx_from_Center, units=r"cm")
+yt.add_field("dx_from_Center", function=_dx_from_Center, units=r"cm", sampling_type="local")
 
 def _dy_from_Center(field, data):
     """
@@ -1154,7 +1154,7 @@ def _dy_from_Center(field, data):
     dy = data['y'].in_units('cm')-center_pos[1].in_units('cm')
     return dy
 
-yt.add_field("dy_from_Center", function=_dy_from_Center, units=r"cm")
+yt.add_field("dy_from_Center", function=_dy_from_Center, units=r"cm", sampling_type="local")
 
 def _dz_from_Center(field, data):
     """
@@ -1164,7 +1164,7 @@ def _dz_from_Center(field, data):
     dz = data['z'].in_units('cm')-center_pos[2].in_units('cm')
     return dz
 
-yt.add_field("dz_from_Center", function=_dz_from_Center, units=r"cm")
+yt.add_field("dz_from_Center", function=_dz_from_Center, units=r"cm", sampling_type="local")
 
 def _Distance_from_Center(field, data):
     """
@@ -1177,7 +1177,7 @@ def _Distance_from_Center(field, data):
         distance = np.sqrt((data['dx_from_Center'])**2. + (data['dy_from_Center'])**2. + (data['dz_from_Center'])**2.)
     return distance
 
-yt.add_field("Distance_from_Center", function=_Distance_from_Center, units=r"cm")
+yt.add_field("Distance_from_Center", function=_Distance_from_Center, units=r"cm", sampling_type="local")
 
 def _Corrected_velx(field, data):
     """
@@ -1188,7 +1188,7 @@ def _Corrected_velx(field, data):
     del center_vel
     return dvx
 
-yt.add_field("Corrected_velx", function=_Corrected_velx, units=r"cm/s")
+yt.add_field("Corrected_velx", function=_Corrected_velx, units=r"cm/s", sampling_type="local")
 
 def _Corrected_vely(field, data):
     """
@@ -1199,7 +1199,7 @@ def _Corrected_vely(field, data):
     del center_vel
     return dvy
 
-yt.add_field("Corrected_vely", function=_Corrected_vely, units=r"cm/s")
+yt.add_field("Corrected_vely", function=_Corrected_vely, units=r"cm/s", sampling_type="local")
 
 def _Corrected_velz(field, data):
     """
@@ -1210,7 +1210,7 @@ def _Corrected_velz(field, data):
     del center_vel
     return dvz
 
-yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s")
+yt.add_field("Corrected_velz", function=_Corrected_velz, units=r"cm/s", sampling_type="local")
 
 def _Corrected_vel_mag(field, data):
     """
@@ -1223,7 +1223,7 @@ def _Corrected_vel_mag(field, data):
         vmag = np.sqrt((data['Corrected_velx'])**2. + (data['Corrected_vely'])**2. + (data['Corrected_velz'])**2.)
     return vmag
 
-yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s")
+yt.add_field("Corrected_vel_mag", function=_Corrected_vel_mag, units=r"cm/s", sampling_type="local")
     
 def _magnetic_field_magnitude(field, data):
     """
@@ -1232,7 +1232,7 @@ def _magnetic_field_magnitude(field, data):
     B = np.sqrt(data['magx']**2. + data['magy']**2. + data['magz']**2.)
     return B
     
-yt.add_field("magnetic_field_magnitude", function=_magnetic_field_magnitude, units=r"G")
+yt.add_field("magnetic_field_magnitude", function=_magnetic_field_magnitude, units=r"G", sampling_type="local")
 
 def _Angular_Momentum_x(field, data):
     """
@@ -1241,7 +1241,7 @@ def _Angular_Momentum_x(field, data):
     L_x = data['cell_mass']*(data['Corrected_velz']*data['dy_from_Center']- data['Corrected_vely']*data['dz_from_Center'])
     return L_x
 
-yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s")
+yt.add_field("Angular_Momentum_x", function=_Angular_Momentum_x, units=r"g*cm**2/s", sampling_type="local")
 
 def _Angular_Momentum_y(field, data):
     """
@@ -1250,7 +1250,7 @@ def _Angular_Momentum_y(field, data):
     L_y = data['cell_mass']*(data['Corrected_velz']*data['dx_from_Center'] - data['Corrected_velx']*data['dz_from_Center'])
     return L_y
 
-yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s")
+yt.add_field("Angular_Momentum_y", function=_Angular_Momentum_y, units=r"g*cm**2/s", sampling_type="local")
 
 def _Angular_Momentum_z(field, data):
     """
@@ -1259,7 +1259,7 @@ def _Angular_Momentum_z(field, data):
     L_z = data['cell_mass']*(data['Corrected_vely']*data['dx_from_Center'] - data['Corrected_velx']*data['dy_from_Center'])
     return L_z
 
-yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s")
+yt.add_field("Angular_Momentum_z", function=_Angular_Momentum_z, units=r"g*cm**2/s", sampling_type="local")
 
 def _Angular_Momentum(field, data):
     """
@@ -1268,7 +1268,7 @@ def _Angular_Momentum(field, data):
     L = np.sqrt(data['Angular_Momentum_x']**2. + data['Angular_Momentum_y']**2. + data['Angular_Momentum_z']**2.)
     return L
 
-yt.add_field("Angular_Momentum", function=_Angular_Momentum, units=r"g*cm**2/s")
+yt.add_field("Angular_Momentum", function=_Angular_Momentum, units=r"g*cm**2/s", sampling_type="local")
 
 def _Orbital_Angular_Momentum_x(field, data):
     """
@@ -1300,7 +1300,7 @@ def _Orbital_Angular_Momentum_x(field, data):
         L_x = yt.YTArray(0.0, 'g*cm**2/s')
     return L_x
     
-yt.add_field("Orbital_Angular_Momentum_x", function=_Orbital_Angular_Momentum_x, units=r"g*cm**2/s")
+yt.add_field("Orbital_Angular_Momentum_x", function=_Orbital_Angular_Momentum_x, units=r"g*cm**2/s", sampling_type="local")
 
 def _Orbital_Angular_Momentum_y(field, data):
     """
@@ -1332,7 +1332,7 @@ def _Orbital_Angular_Momentum_y(field, data):
         L_y = yt.YTArray(0.0, 'g*cm**2/s')
     return L_y
     
-yt.add_field("Orbital_Angular_Momentum_y", function=_Orbital_Angular_Momentum_y, units=r"g*cm**2/s")
+yt.add_field("Orbital_Angular_Momentum_y", function=_Orbital_Angular_Momentum_y, units=r"g*cm**2/s", sampling_type="local")
 
 def _Orbital_Angular_Momentum_z(field, data):
     """
@@ -1364,7 +1364,7 @@ def _Orbital_Angular_Momentum_z(field, data):
         L_z = yt.YTArray(0.0, 'g*cm**2/s')
     return L_z
     
-yt.add_field("Orbital_Angular_Momentum_z", function=_Orbital_Angular_Momentum_z, units=r"g*cm**2/s")
+yt.add_field("Orbital_Angular_Momentum_z", function=_Orbital_Angular_Momentum_z, units=r"g*cm**2/s", sampling_type="local")
 
 def _Orbital_Angular_Momentum(field, data):
     """
@@ -1373,7 +1373,7 @@ def _Orbital_Angular_Momentum(field, data):
     L = np.sqrt(data['Orbital_Angular_Momentum_x']**2 + data['Orbital_Angular_Momentum_y']**2 + data['Orbital_Angular_Momentum_z']**2)
     return L
     
-yt.add_field("Orbital_Angular_Momentum", function=_Orbital_Angular_Momentum, units=r"g*cm**2/s")
+yt.add_field("Orbital_Angular_Momentum", function=_Orbital_Angular_Momentum, units=r"g*cm**2/s", sampling_type="local")
 
 def _Bulk_Velocity_Gas(field, data):
     """
@@ -1387,7 +1387,7 @@ def _Bulk_Velocity_Gas(field, data):
     center_vel_gas = com
     return com
 
-yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s")
+yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s", sampling_type="local")
 
 def _Number_Density(field, data):
     """
@@ -1396,7 +1396,7 @@ def _Number_Density(field, data):
     Number_Density = data['Density']/(2.34*yt.units.mp.in_units('g'))
     return Number_Density
 
-yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3")
+yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3", sampling_type="local")
 
 def _Radial_Velocity(field, data):
     global normal
@@ -1425,7 +1425,7 @@ def _Radial_Velocity(field, data):
         rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
     return rv_mag
 
-yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s")
+yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
 
 def _Proj_x_velocity(field, data):
     global east_vector
@@ -1451,7 +1451,7 @@ def _Proj_x_velocity(field, data):
     rv_mag = np.reshape(rv_mag, shape)
     return rv_mag
 
-yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s")
+yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s", sampling_type="local")
 
 def _Proj_y_velocity(field, data):
     global north_vector
@@ -1477,4 +1477,4 @@ def _Proj_y_velocity(field, data):
     rv_mag = np.reshape(rv_mag, shape)
     return rv_mag
 
-yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s")
+yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s", sampling_type="local")
