@@ -93,6 +93,7 @@ for pick_file in pickle_files:
     axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[1].set_ylabel('Separation (au)')
     axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
+    axs.flatten()[1].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
     #axs.flatten()[1].set_ylim()
     print("plotted separation")
     
