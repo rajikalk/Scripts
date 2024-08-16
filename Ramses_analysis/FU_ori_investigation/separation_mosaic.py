@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
-import os
-from subprocess import call
 rank = CW.Get_rank()
 size = CW.Get_size()
 import numpy as np
@@ -10,45 +8,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import csv
-import sys
 import glob
-import my_ramses_module as mym
 import pickle
-import matplotlib.patheffects as path_effects
-import yt
-import my_ramses_fields as myf
-import ast
-import matplotlib.gridspec as gridspec
-import argparse
-import traceback
-from PIL import Image
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-in_file", "--input_file", help="file in input data about the mosaic plot")
+    parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
+    parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str)
-    parser.add_argument("-sx", "--share_x", help="do you want to share the x axis?", default=False)
-    parser.add_argument("-sy", "--share_y", help="do you want to share the y axis?", default=True)
-    parser.add_argument("-sa", "--share_ax", help="do you want to share axes?", default=True)
-    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-plot_frame", "--plot_this_frame", help="Do you want to plot a particular frame?", type=int, default=None)
-    parser.add_argument("-plot_cbar", "--plot_colourbar", help="do you need to plot a colour bar and waste time playing our with grid limits?", type=str, default='False')
     args = parser.parse_args()
     return args
 
 #=======MAIN=======
 #def main():
-'''
-config_dir = mpl.get_configdir()
-if os.path.exists(".Process"+str(rank)) == False:
-    os.makedirs(".Process"+str(rank))
-os.system('export MPLCONFIGDIR=.Process'+str(rank))
-call('cp -r '+config_dir+'/* .Process'+str(rank)+'/.', shell=True)
-'''
 args = parse_inputs()
 prev_args = args
 
 # Read in directories:
+'''
 input_file = args.input_file
 
 # Read in input file
@@ -422,3 +399,4 @@ for fit in range(frame_no):
 
 
 print("completed making movie frames on rank", rank)
+'''
