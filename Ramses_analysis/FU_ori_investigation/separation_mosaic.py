@@ -15,7 +15,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
-    parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str)
+    parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     args = parser.parse_args()
     return args
 
@@ -289,10 +289,10 @@ for fit in range(frame_no):
                 del image
                 
                 '''
-                if frame_no > 0 or time_val > -1.0:
-                    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                else:
-                    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
+                #if frame_no > 0 or time_val > -1.0:
+                #    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                #else:
+                #    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
                 '''
                 del X
                 del Y
