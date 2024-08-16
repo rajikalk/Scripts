@@ -54,6 +54,7 @@ for pick_file in pickle_files:
     file_open = open(pick_file, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
+    print("finished reading in pickle")
 
     #find time bounds:
     t_start_yr = 3000
