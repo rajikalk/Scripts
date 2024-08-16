@@ -10,6 +10,7 @@ from pyramses import rsink
 import sys
 import os
 import yt
+import yt.units
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
