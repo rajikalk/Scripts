@@ -51,6 +51,10 @@ while fit < no_frames:
         file.close()
         
         time_val = args_dict['time_val']
+        import pdb
+        pdb.set_trace()
+        
+        
         
 
 # Read in directories:
