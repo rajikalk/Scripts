@@ -79,7 +79,10 @@ def sim_info(ds,args):
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
-    unit_string = str(dd[field[1]].in_cgs().units)
+    try:
+        unit_string = str(dd[field[1]].in_cgs().units)
+    except:
+        unit_string = str(dd[('gas', field[1])].in_cgs().units)
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
