@@ -49,6 +49,7 @@ proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 
 cit = -1
 t_end_yr = 9000 # None
 for pick_file in pickle_files:
+    print("read pickle", pick_file)
     cit = cit + 1
     file_open = open(pick_file, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
@@ -79,6 +80,7 @@ for pick_file in pickle_files:
     axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[0].set_ylim(bottom=1.e-9)
     axs.flatten()[0].legend()
+    print("plotted Accretion rate")
     
     '''
     for part in range(len(L_tot[t_start:t_end].T)):
@@ -90,6 +92,7 @@ for pick_file in pickle_files:
     axs.flatten()[1].set_ylabel('Separation (au)')
     axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
     #axs.flatten()[1].set_ylim()
+    print("plotted separation")
     
 
     for part in range(len(L_tot[t_start:t_end].T)):
@@ -98,4 +101,5 @@ for pick_file in pickle_files:
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
     axs.flatten()[2].set_ylabel('Mass (Msun)')
+    print("plotted Mass")
     plt.savefig('resolution_study_sink_'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
