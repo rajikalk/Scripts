@@ -361,7 +361,7 @@ def _cell_mass(field,data):
     """
     Overwrites cell mass field
     """
-    cell_mass = data['Density'].in_units('g/cm**3')*data['cell_volume'].in_units('cm**3')
+    cell_mass = data[('gas', 'Density')].in_units('g/cm**3')*data['cell_volume'].in_units('cm**3')
     return cell_mass
 
 yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local")
@@ -1393,7 +1393,7 @@ def _Number_Density(field, data):
     """
     Estimates number density
     """
-    Number_Density = data['Density']/(2.34*yt.units.mp.in_units('g'))
+    Number_Density = data[('gas', 'Density')]/(2.34*yt.units.mp.in_units('g'))
     return Number_Density
 
 yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3", sampling_type="local")
