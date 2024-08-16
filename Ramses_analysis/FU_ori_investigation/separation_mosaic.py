@@ -10,6 +10,7 @@ from matplotlib.colors import LogNorm
 import csv
 import glob
 import pickle
+import argparse
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
