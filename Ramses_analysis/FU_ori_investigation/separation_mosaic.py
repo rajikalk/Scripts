@@ -57,6 +57,16 @@ while fit < no_frames:
         
         xlim = args_dict['xlim']
         ylim = args_dict['ylim']
+        if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
+            shift_x = np.mean(X)
+            shift_y = np.mean(Y)
+            X = X - shift_x
+            Y = Y - shift_y
+            X_vel = X_vel - shift_x
+            Y_vel = Y_vel - shift_y
+            part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
+            part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+        
         xabel = args_dict['xabel']
         yabel = args_dict['yabel']
         cbar_min = args_dict['cbar_min']
