@@ -45,6 +45,24 @@ while fit < no_frames:
         fig = plt.figure()
         gs = fig.add_gridspec(2, 2, wspace=0, hspace=0)
         (ax1, ax2), (ax3, ax4) = gs.subplots()
+        
+        ax3.set_xlabel('Time since formation (yr)')
+        ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
+        ax3.set_xlim([0, particle_data['time'][-1]])
+        ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
+        aspect_val = 1/((np.max(particle_data['mdot']) - np.min(particle_data['mdot']))/(particle_data['time'][-1].value))
+        ax3.set_aspect(aspect_val)
+        
+        plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
+        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
+        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
+        ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+        
+        plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
+        import pdb
+        pdb.set_trace()
     
         yz_pickle = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'
         file = open(yz_pickle, 'rb')
@@ -194,23 +212,6 @@ while fit < no_frames:
         plt.setp(yticklabels, visible=False)
         
         plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
-        
-        ax3.set_xlabel('Time since formation (yr)')
-        ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
-        ax3.set_xlim([0, particle_data['time'][-1]])
-        ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
-        ax3.set_aspect(ax3.get_aspect())
-        
-        plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
-        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
-        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
-        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
-        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
-        ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
-        
-        plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
-        import pdb
-        pdb.set_trace()
         
         
 
