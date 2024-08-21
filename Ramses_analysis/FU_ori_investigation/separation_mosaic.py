@@ -116,7 +116,7 @@ while fit < no_frames:
         ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
         ax3.set_xlim([0, particle_data['time'][-1]])
         ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
-        ax3.set_aspect(get_aspect(ax3))
+        ax3.set_aspect(1.e3)
         
         plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
         ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
