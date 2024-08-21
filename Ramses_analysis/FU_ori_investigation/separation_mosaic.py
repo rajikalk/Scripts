@@ -18,6 +18,7 @@ def parse_inputs():
     parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
+    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     args = parser.parse_args()
     return args
 
