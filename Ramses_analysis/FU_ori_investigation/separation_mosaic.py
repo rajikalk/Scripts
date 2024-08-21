@@ -81,7 +81,7 @@ while fit < no_frames:
         
         cmap=plt.cm.gist_heat
         plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-        ax1.gca().set_aspect('equal')
+        ax1.set_aspect('equal')
         plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
         if fit > 0 or time_val > -1.0:
             # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
@@ -133,7 +133,7 @@ while fit < no_frames:
         
         cmap=plt.cm.gist_heat
         plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-        ax2.gca().set_aspect('equal')
+        ax2.set_aspect('equal')
         plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
         if fit > 0 or time_val > -1.0:
             # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
