@@ -67,26 +67,26 @@ while fit < no_frames:
         ax1.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
         ax1.set_xlim(xlim)
         ax1.set_ylim(ylim)
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_0.jpg", format='jpg', bbox_inches='tight')
         
         cmap=plt.cm.gist_heat
         plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
         if fit > 0 or time_val > -1.0:
             # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+            ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
         else:
-            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+            ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+        plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
         mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
         mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_4.jpg", format='jpg', bbox_inches='tight')
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
         time_text = ax1.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
         
-        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_5.jpg", format='jpg', bbox_inches='tight')
         import pdb
         pdb.set_trace()
         
