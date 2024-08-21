@@ -51,6 +51,26 @@ while fit < no_frames:
         file.close()
         
         time_val = args_dict['time_val']
+        
+        xlim = args_dict['xlim']
+        ylim = args_dict['ylim']
+        xabel = args_dict['xabel']
+        yabel = args_dict['yabel']
+        has_particles = args_dict['has_particles']
+        
+        ax1.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+        ax1.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+        ax1.set_xlim(xlim)
+        ax1.set_ylim(ylim)
+        
+        cmap=plt.cm.gist_heat
+        plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+        if fit > 0 or time_val > -1.0:
+            # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+        else:
+            plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
         import pdb
         pdb.set_trace()
         
