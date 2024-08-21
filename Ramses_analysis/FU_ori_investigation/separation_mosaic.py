@@ -57,6 +57,8 @@ while fit < no_frames:
         ylim = args_dict['ylim']
         xabel = args_dict['xabel']
         yabel = args_dict['yabel']
+        cbar_min = args_dict['cbar_min']
+        cbar_max = args_dict['cbar_max']
         has_particles = args_dict['has_particles']
         
         ax1.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
