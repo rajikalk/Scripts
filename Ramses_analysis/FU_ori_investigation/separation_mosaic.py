@@ -79,8 +79,12 @@ while fit < no_frames:
         ax1.set_ylim(ylim)
         plt.savefig("Mosaic_test_0.jpg", format='jpg', bbox_inches='tight')
         
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+        plt.savefig("Mosaic_test_0_5.jpg", format='jpg', bbox_inches='tight')
+        
         cmap=plt.cm.gist_heat
         plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+        plt.gca().set_aspect('equal')
         plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
         if fit > 0 or time_val > -1.0:
             # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
