@@ -24,20 +24,6 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     args = parser.parse_args()
     return args
-    
-from operator import sub
-def get_aspect(ax):
-    # Total figure size
-    figW, figH = ax.get_figure().get_size_inches()
-    # Axis size on figure
-    _, _, w, h = ax.get_position().bounds
-    # Ratio of display units
-    disp_ratio = (figH * h) / (figW * w)
-    # Ratio of data units
-    # Negative over negative because of the order of subtraction
-    data_ratio = sub(*ax.get_ylim()) / sub(*ax.get_xlim())
-
-    return disp_ratio / data_ratio
 
 #=======MAIN=======
 #def main():
