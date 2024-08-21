@@ -42,13 +42,13 @@ def get_aspect(ax):
 #=======MAIN=======
 #def main():
 args = parse_inputs()
-
+'''
 print("read pickle", args.input_pickle)
 file_open = open(args.input_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
-
+'''
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 
 fit = -1
@@ -112,23 +112,6 @@ while fit < no_frames:
         
         plt.savefig("Mosaic_test_0.jpg", format='jpg', bbox_inches='tight')
         
-        ax3.set_xlabel('Time since formation (yr)')
-        ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
-        ax3.set_xlim([0, particle_data['time'][-1]])
-        ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
-        ax3.set_aspect(1.e3)
-        
-        plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
-        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
-        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
-        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
-        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
-        ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
-        
-        plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
-        import pdb
-        pdb.set_trace()
-        
         xz_pickle = args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl'
         file = open(xz_pickle, 'rb')
         X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
@@ -178,6 +161,8 @@ while fit < no_frames:
         
         plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
 
+        import pdb
+        pdb.set_trace()
         
         xy_pickle = args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl'
         file = open(xy_pickle, 'rb')
@@ -226,6 +211,25 @@ while fit < no_frames:
         plt.setp(yticklabels, visible=False)
         
         plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
+        
+        '''
+        ax3.set_xlabel('Time since formation (yr)')
+        ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
+        ax3.set_xlim([0, particle_data['time'][-1]])
+        ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
+        ax3.set_aspect(1.e3)
+        
+        plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
+        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
+        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
+        ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+        
+        plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
+        '''
+        import pdb
+        pdb.set_trace()
         
         
 
