@@ -136,6 +136,7 @@ while fit < no_frames:
         else:
             ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
         mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
         
         xticklabels = ax2.get_xticklabels()
         plt.setp(xticklabels, visible=False)
@@ -187,6 +188,7 @@ while fit < no_frames:
             ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
         
         mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
         
         yticklabels = ax2.get_yticklabels()
         plt.setp(yticklabels, visible=False)
@@ -197,6 +199,7 @@ while fit < no_frames:
         ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
         ax3.set_xlim([0, particle_data['time'][-1]])
         ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
+        ax3.set_aspect(1)
         
         plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
         ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
@@ -206,6 +209,8 @@ while fit < no_frames:
         ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
         
         plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
+        import pdb
+        pdb.set_trace()
         
         
 
