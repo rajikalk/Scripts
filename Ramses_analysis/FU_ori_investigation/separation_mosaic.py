@@ -79,7 +79,8 @@ while fit < no_frames:
         ax1.set_ylim(ylim)
         plt.savefig("Mosaic_test_0.jpg", format='jpg', bbox_inches='tight')
         
-        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'])
+        #mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
         plt.savefig("Mosaic_test_0_5.jpg", format='jpg', bbox_inches='tight')
         
         cmap=plt.cm.gist_heat
