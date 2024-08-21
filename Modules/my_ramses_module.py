@@ -63,6 +63,8 @@ def rainbow_text(x, y, strings, colors, orientation='horizontal',
         All other keyword arguments are passed to plt.text(), so you can
         set the font size, family, etc.
     """
+    import pdb
+    pdb.set_trace()
     if ax is None:
         ax = plt.gca()
     t = ax.transData
