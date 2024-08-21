@@ -13,6 +13,7 @@ import pickle
 import argparse
 import os
 import my_ramses_module as mym
+import matplotlib.patheffects as path_effects
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
