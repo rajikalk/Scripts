@@ -471,6 +471,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     ymin = limits[1][0]
     ymax = limits[1][1]
     box_size = xmax - xmin
+    import pdb
+    pdb.set_trace()
     if accretion_rad/box_size < 0.05:
         line_rad = 0.005*box_size
     else:
