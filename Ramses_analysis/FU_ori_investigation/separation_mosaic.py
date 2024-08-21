@@ -196,9 +196,13 @@ while fit < no_frames:
         ax3.set_aspect('equal')
         ax3.set_xlabel('Time since formation (yr)')
         ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
+        ax3.set_xlim([0, particle_data['time'][-1]])
+        ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
         
         plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
-        ax3.plot(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind])
+        ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
+        ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
         ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
         ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
         
