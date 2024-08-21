@@ -463,8 +463,6 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
 def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4):
     global fontsize_global
     if annotate_field is not None and units is not None:
-        import pdb
-        pdb.set_trace()
         annotate_field = annotate_field.in_units(units)
     part_color = ['cyan','magenta','r','b','y','w','k']
     #part_color = ['r','r','r','b','y','w','k']
@@ -506,8 +504,6 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
         if annotate_field is not None:
-            import pdb
-            pdb.set_trace()
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
             if unit_string == "$\,$M$_\odot$":
@@ -526,8 +522,6 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
-        import pdb
-        pdb.set_trace()
         if len(particle_tags) > 3:
             string_l = p_t[:68]
             string_2 = p_t[69:]
@@ -537,7 +531,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
     return axis
