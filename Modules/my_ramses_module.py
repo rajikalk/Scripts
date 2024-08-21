@@ -283,11 +283,11 @@ def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
         zoom_cell = int((dim - dim/float(zoom_times))/2.)
     else:
         zoom_cell = 0
-    xmin = f['minmax_xyz'][0][0]/yt.units.au.in_units('cm').value
-    xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value
+    xmin = (f['minmax_xyz'][0][0]/yt.units.au).in_units('cm').value
+    xmax = (f['minmax_xyz'][0][1]/yt.units.au).in_units('cm').value
     cl = (xmax-xmin)/dim
-    xmin = f['minmax_xyz'][0][0]/yt.units.au.in_units('cm').value + zoom_cell*cl
-    xmax = f['minmax_xyz'][0][1]/yt.units.au.in_units('cm').value - zoom_cell*cl
+    xmin = (f['minmax_xyz'][0][0]/yt.units.au).in_units('cm').value + zoom_cell*cl
+    xmax = (f['minmax_xyz'][0][1]/yt.units.au).in_units('cm').value - zoom_cell*cl
     annotate_freq = ((xmax/cl) - (xmin/cl))/num_of_vectors
     x = np.arange(xmin+cl/2., xmax+cl/2., cl)
     #x = np.arange(xmin, xmax, cl)[:-1]
@@ -410,7 +410,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
         else:
             legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
-    standard_vel = yt.units.km.in_units('cm').value * standard_vel
+    standard_vel = (yt.units.km * standard_vel).in_units('cm').value
     if limits is None:
         xmin = np.min(X_pos)
         xmax = np.max(X_pos)
