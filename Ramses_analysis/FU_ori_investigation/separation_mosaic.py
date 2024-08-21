@@ -20,6 +20,7 @@ def parse_inputs():
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     args = parser.parse_args()
     return args
 
@@ -74,7 +75,7 @@ while fit < no_frames:
             plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
         else:
             plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-        mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
+        mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
         import pdb
         pdb.set_trace()
         
