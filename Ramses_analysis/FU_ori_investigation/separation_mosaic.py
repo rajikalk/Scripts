@@ -42,13 +42,13 @@ def get_aspect(ax):
 #=======MAIN=======
 #def main():
 args = parse_inputs()
-'''
+
 print("read pickle", args.input_pickle)
 file_open = open(args.input_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
-'''
+
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 
 fit = -1
@@ -167,11 +167,6 @@ while fit < no_frames:
             plt.setp(yticklabels, visible=False)
             
             ax2.tick_params(axis='both', direction='in', color='white', top=True, right=True)
-            
-            plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
-
-            import pdb
-            pdb.set_trace()
             
             xy_pickle = args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl'
             file = open(xy_pickle, 'rb')
