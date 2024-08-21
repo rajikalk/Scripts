@@ -57,7 +57,7 @@ while fit < no_frames:
     if os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
         
         fig = plt.figure()
-        gs = fig.add_gridspec(2, 2, wspace=-0.1, hspace=0)
+        gs = fig.add_gridspec(2, 2, wspace=-0.5, hspace=0)
         (ax1, ax2), (ax3, ax4) = gs.subplots()
         
     
