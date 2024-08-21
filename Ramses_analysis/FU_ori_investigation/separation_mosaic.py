@@ -76,6 +76,12 @@ while fit < no_frames:
         else:
             plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
         mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+        time_string = "$t$="+str(int(time_val))+"yr"
+        time_string_raw = r"{}".format(time_string)
+        time_text = ax1.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+        
+        plt.savefig("Mosaic_test.jpg", format='jpg', bbox_inches='tight')
         import pdb
         pdb.set_trace()
         
