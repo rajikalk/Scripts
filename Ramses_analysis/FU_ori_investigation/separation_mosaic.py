@@ -81,7 +81,10 @@ while fit < no_frames:
         
         #mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
         mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])#, annotate_field=part_info['particle_mass'])
-        plt.savefig("Mosaic_test_0_5.jpg", format='jpg', bbox_inches='tight')
+        plt.savefig("Mosaic_test_0_p1.jpg", format='jpg', bbox_inches='tight')
+        
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'], annotate_field=part_info['particle_mass'])
+        plt.savefig("Mosaic_test_0_p2.jpg", format='jpg', bbox_inches='tight')
         
         cmap=plt.cm.gist_heat
         plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
@@ -95,7 +98,7 @@ while fit < no_frames:
         plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
         mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
         plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
-        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7)
+        mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
         plt.savefig("Mosaic_test_4.jpg", format='jpg', bbox_inches='tight')
         time_string = "$t$="+str(int(time_val))+"yr"
         time_string_raw = r"{}".format(time_string)
