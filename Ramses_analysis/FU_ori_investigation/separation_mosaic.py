@@ -57,7 +57,7 @@ while fit < no_frames:
     if os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
         
         fig = plt.figure()
-        gs = fig.add_gridspec(2, 2, wspace=-0.39, hspace=0)
+        gs = fig.add_gridspec(2, 2, wspace=-0.4, hspace=0)
         (ax1, ax2), (ax3, ax4) = gs.subplots()
         
     
@@ -110,7 +110,7 @@ while fit < no_frames:
         xticklabels = ax1.get_xticklabels()
         plt.setp(xticklabels, visible=False)
         
-        ax1.tick_params(direction='in', color='white')
+        ax1.tick_params(axis='both', direction='in', color='white')
         
         plt.savefig("Mosaic_test_0.jpg", format='jpg', bbox_inches='tight')
         
@@ -161,7 +161,7 @@ while fit < no_frames:
         yticklabels = ax2.get_yticklabels()
         plt.setp(yticklabels, visible=False)
         
-        ax2.tick_params(direction='in', color='white')
+        ax2.tick_params(axis='both', direction='in', color='white')
         
         plt.savefig("Mosaic_test_1.jpg", format='jpg', bbox_inches='tight')
 
@@ -214,7 +214,7 @@ while fit < no_frames:
         yticklabels = ax2.get_yticklabels()
         plt.setp(yticklabels, visible=False)
         
-        ax4.tick_params(direction='in', color='white')
+        ax4.tick_params(axis='both', direction='in', color='white')
         
         plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
         
