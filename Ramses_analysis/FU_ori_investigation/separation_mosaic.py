@@ -193,7 +193,6 @@ while fit < no_frames:
         
         plt.savefig("Mosaic_test_2.jpg", format='jpg', bbox_inches='tight')
         
-        ax3.set_aspect('equal')
         ax3.set_xlabel('Time since formation (yr)')
         ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
         ax3.set_xlim([0, particle_data['time'][-1]])
@@ -207,10 +206,6 @@ while fit < no_frames:
         ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
         
         plt.savefig("Mosaic_test_3.jpg", format='jpg', bbox_inches='tight')
-        
-        import pdb
-        pdb.set_trace()
-        
         
         
 
