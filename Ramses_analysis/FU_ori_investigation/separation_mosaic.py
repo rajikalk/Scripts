@@ -250,7 +250,7 @@ while fit < no_frames:
             ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
-            ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+            #ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
             
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.825, 0.11, 0.02, 0.77])
