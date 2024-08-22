@@ -39,6 +39,7 @@ if rank == 0:
     print("finished reading in pickle")
 CW.Barrier()
 if size > 1:
+    particle_data = None
     particle_data = CW.bcast(particle_data, root=0)
 CW.Barrier()
 
