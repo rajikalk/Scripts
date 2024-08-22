@@ -30,6 +30,7 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
+'''
 if rank == 0:
     print("read pickle", args.input_pickle)
     file_open = open(args.input_pickle, 'rb')
@@ -42,7 +43,16 @@ if size > 1:
     particle_data = {}
 particle_data = CW.bcast(particle_data, root=0)
 print("On rank", rank, "particle_data.keys() =", particle_data.keys())
+'''
+print("read pickle", args.input_pickle)
+file_open = open(args.input_pickle, 'rb')
+particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+file_open.close()
+del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
+print("finished reading in pickle")
+
 CW.Barrier()
+
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 cmap=plt.cm.gist_heat
