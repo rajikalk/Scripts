@@ -28,12 +28,14 @@ def parse_inputs():
 #=======MAIN=======
 #def main():
 args = parse_inputs()
+'''
 print("read pickle", args.input_pickle)
 file_open = open(args.input_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 del counter, sink_ind, sink_form_time, particle_data['mass']
 print("finished reading in pickle")
+'''
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 cmap=plt.cm.gist_heat
 
@@ -189,7 +191,6 @@ while fit < no_frames:
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            del part_info
             
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
@@ -210,6 +211,7 @@ while fit < no_frames:
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
             ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+            del part_info
             
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.84, 0.111, 0.02, 0.77])
