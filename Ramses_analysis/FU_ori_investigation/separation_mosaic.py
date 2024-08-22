@@ -40,7 +40,8 @@ if rank == 0:
 CW.Barrier()
 if size > 1:
     particle_data = None
-particle_data = CW.bcast(particle_data, root=0)
+particle_data = CW.Bcast(particle_data, root=0)
+print("On rank", rank, "particle_data.keys() =", particle_data.keys())
 CW.Barrier()
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
