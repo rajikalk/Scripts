@@ -348,6 +348,7 @@ if args.make_frames_only == 'False':
                 make_pickle = True
         if usable_files[file_int] == usable_files[file_int-1]:
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+            print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
         if make_pickle == True:
             
             ds = yt.load(fn, units_override=units_override)
