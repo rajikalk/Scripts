@@ -236,7 +236,7 @@ while fit < no_frames:
             ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.83, 0.11, 0.02, 0.77])
+            cbar_ax = fig.add_axes([0.825, 0.11, 0.02, 0.77])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
