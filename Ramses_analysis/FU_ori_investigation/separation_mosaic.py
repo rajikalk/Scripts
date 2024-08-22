@@ -20,7 +20,7 @@ def parse_inputs():
     parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
-    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
+    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=8)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     args = parser.parse_args()
     return args
@@ -141,7 +141,7 @@ while fit < no_frames:
             del X, Y, magx, magy
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
-            mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
+            mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             del part_info
             
             xticklabels = ax2.get_xticklabels()
@@ -190,7 +190,7 @@ while fit < no_frames:
             del X, Y, magx, magy
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
-            mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
+            mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             del part_info
             
             yticklabels = ax2.get_yticklabels()
@@ -199,7 +199,7 @@ while fit < no_frames:
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.951, 0.111, 0.02, 0.767])
+            cbar_ax = fig.add_axes([0.8, 0.111, 0.02, 0.767])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
