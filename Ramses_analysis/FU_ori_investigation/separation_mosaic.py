@@ -39,6 +39,7 @@ print("finished reading in pickle")
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 cmap=plt.cm.gist_heat
+prev_primary_mass = np.nan
 
 fit = -1
 rit = -1
@@ -61,6 +62,13 @@ while fit < no_frames:
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
             del yz_pickle, simfo, velz
+            
+            if len(part_info['particle_tag']) == 2:
+                prev_primary_mass = np.max(part_info['particle_mass'])
+            else len(part_info['particle_tag']) == 1:
+                part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
+                part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
+                part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
             
             time_val = args_dict['time_val']
             
@@ -116,6 +124,13 @@ while fit < no_frames:
             file.close()
             del xz_pickle, simfo, velz
             
+            if len(part_info['particle_tag']) == 2:
+                prev_primary_mass = np.max(part_info['particle_mass'])
+            else len(part_info['particle_tag']) == 1:
+                part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
+                part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
+                part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
+            
             xlim = args_dict['xlim']
             ylim = args_dict['ylim']
             if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
@@ -159,8 +174,11 @@ while fit < no_frames:
             file = open(xy_pickle, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            if len(part_info['particle_tag']) == 1:
-                part_info['particle_mass'] = np.append(0, part_info['particle_mass'])
+            
+            if len(part_info['particle_tag']) == 2:
+                prev_primary_mass = np.max(part_info['particle_mass'])
+            else len(part_info['particle_tag']) == 1:
+                part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
             del xy_pickle, simfo, velz
