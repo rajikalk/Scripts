@@ -227,8 +227,8 @@ while fit < no_frames:
             
             #===================Accretion profile=====================
             
-            ax3.set_xlabel('Time since formation (yr)', labelpad=-5)
-            ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-5)
+            ax3.set_xlabel('Time since formation (yr)', labelpad=-1)
+            ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-1)
             ax3.set_xlim([0, particle_data['time'][-1]])
             ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
             ax3.set_aspect(1.e3)
