@@ -65,7 +65,7 @@ while fit < no_frames:
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
-            else len(part_info['particle_tag']) == 1:
+            elif len(part_info['particle_tag']) == 1:
                 part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
@@ -126,7 +126,7 @@ while fit < no_frames:
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
-            else len(part_info['particle_tag']) == 1:
+            elif len(part_info['particle_tag']) == 1:
                 part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
@@ -177,7 +177,7 @@ while fit < no_frames:
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
-            else len(part_info['particle_tag']) == 1:
+            elif len(part_info['particle_tag']) == 1:
                 part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
