@@ -117,7 +117,6 @@ while fit < no_frames:
             
             xlim = args_dict['xlim']
             ylim = args_dict['ylim']
-            del args_dict
             if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
                 shift_x = np.mean(X)
                 shift_y = np.mean(Y)
@@ -127,6 +126,7 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+            del args_dict
             
             ax2.set_xlim(xlim)
             ax2.set_ylim(ylim)
