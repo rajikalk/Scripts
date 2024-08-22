@@ -28,14 +28,12 @@ def parse_inputs():
 #=======MAIN=======
 #def main():
 args = parse_inputs()
-'''
 print("read pickle", args.input_pickle)
 file_open = open(args.input_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 del counter, sink_ind, sink_form_time, particle_data['mass']
 print("finished reading in pickle")
-'''
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
 cmap=plt.cm.gist_heat
 
@@ -198,16 +196,6 @@ while fit < no_frames:
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
-            fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.84, 0.111, 0.02, 0.77])
-            cbar = fig.colorbar(plot, cax=cbar_ax)
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
-            
-            plt.savefig("colourbar_test.jpg", format='jpg', bbox_inches='tight', dpi=300)
-            
-            import pdb
-            pdb.set_trace()
-            
             #===================Accretion profile=====================
             
             ax3.set_xlabel('Time since formation (yr)')
@@ -222,6 +210,16 @@ while fit < no_frames:
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
             ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+            
+            fig.subplots_adjust(right=0.95)
+            cbar_ax = fig.add_axes([0.84, 0.111, 0.02, 0.77])
+            cbar = fig.colorbar(plot, cax=cbar_ax)
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
+            
+            plt.savefig("colourbar_test.jpg", format='jpg', bbox_inches='tight', dpi=300)
+            
+            import pdb
+            pdb.set_trace()
             
             
             plt.savefig("movie_frame_" + ("%06d" % fit) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
