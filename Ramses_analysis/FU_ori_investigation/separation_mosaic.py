@@ -20,7 +20,7 @@ def parse_inputs():
     parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
-    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=8)
+    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     args = parser.parse_args()
     return args
@@ -28,6 +28,7 @@ def parse_inputs():
 #=======MAIN=======
 #def main():
 args = parse_inputs()
+mym.set_global_font_size(args.text_font)
 
 print("read pickle", args.input_pickle)
 file_open = open(args.input_pickle, 'rb')
@@ -50,7 +51,7 @@ while fit < no_frames:
         if rank == rit:
         
             fig = plt.figure()
-            gs = fig.add_gridspec(2, 2, wspace=-0.45, hspace=0)
+            gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
             (ax1, ax2), (ax3, ax4) = gs.subplots()
             
             #===================YZ proj=====================
@@ -158,6 +159,10 @@ while fit < no_frames:
             file = open(xy_pickle, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
+            if len(part_info['particle_tag']) == 1:
+                part_info['particle_mass'] = np.append(0, part_info['particle_mass'])
+                part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
+                part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
             del xy_pickle, simfo, velz
             
             xlim = args_dict['xlim']
@@ -211,10 +216,9 @@ while fit < no_frames:
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
             ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
-            del part_info
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.84, 0.111, 0.02, 0.77])
+            cbar_ax = fig.add_axes([0.83, 0.111, 0.02, 0.77])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
