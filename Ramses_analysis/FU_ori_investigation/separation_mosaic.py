@@ -89,7 +89,7 @@ while fit < no_frames:
             cbar_max = args_dict['cbar_max']
             del args_dict
             
-            ax1.set_ylabel(yabel, fontsize=args.text_font)#, labelpad=-20)
+            ax1.set_ylabel(yabel, fontsize=args.text_font, labelpad=-5)#, labelpad=-20)
             ax1.set_xlim(xlim)
             ax1.set_ylim(ylim)
             
@@ -222,7 +222,7 @@ while fit < no_frames:
             
             #===================Accretion profile=====================
             
-            ax3.set_xlabel('Time since formation (yr)')
+            ax3.set_xlabel('Time since formation (yr)', labelpad=-5)
             ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-5)
             ax3.set_xlim([0, particle_data['time'][-1]])
             ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
@@ -240,10 +240,7 @@ while fit < no_frames:
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
-            plt.savefig("colourbar_test.jpg", format='jpg', bbox_inches='tight', dpi=300)
-            
-            import pdb
-            pdb.set_trace()
+            ax3.tick_params(axis='both', direction='in', top=True, right=True)
             
             
             plt.savefig("movie_frame_" + ("%06d" % fit) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
