@@ -199,7 +199,7 @@ while fit < no_frames:
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.85, 0.111, 0.02, 0.77])
+            cbar_ax = fig.add_axes([0.83, 0.111, 0.02, 0.77])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
