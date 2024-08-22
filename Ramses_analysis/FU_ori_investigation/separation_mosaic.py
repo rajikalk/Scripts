@@ -201,7 +201,7 @@ while fit < no_frames:
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.951, 0.111, 0.02, 0.767])
             cbar = fig.colorbar(plot, cax=cbar_ax)
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)       ", rotation=270, labelpad=0, size=font_size)
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
             plt.savefig("colourbar_test.jpg", format='jpg', bbox_inches='tight', dpi=300)
             
