@@ -30,7 +30,7 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
-if rank == 0;
+if rank == 0:
     print("read pickle", args.input_pickle)
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
