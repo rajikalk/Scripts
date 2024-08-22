@@ -35,7 +35,7 @@ if rank == 0:
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
-    del counter, sink_ind, sink_form_time, particle_data['mass']
+    del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
 CW.Barrier()
 if size > 1:
