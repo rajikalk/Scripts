@@ -89,7 +89,7 @@ while fit < no_frames:
             cbar_max = args_dict['cbar_max']
             del args_dict
             
-            ax1.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+            ax1.set_ylabel(yabel, fontsize=args.text_font)#, labelpad=-20)
             ax1.set_xlim(xlim)
             ax1.set_ylim(ylim)
             
@@ -215,7 +215,7 @@ while fit < no_frames:
             del X_vel, Y_vel, velx, vely
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             
-            yticklabels = ax2.get_yticklabels()
+            yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
@@ -223,7 +223,7 @@ while fit < no_frames:
             #===================Accretion profile=====================
             
             ax3.set_xlabel('Time since formation (yr)')
-            ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)')
+            ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-5)
             ax3.set_xlim([0, particle_data['time'][-1]])
             ax3.set_ylim([np.min(particle_data['mdot']), np.max(particle_data['mdot'])])
             ax3.set_aspect(1.e3)
@@ -236,7 +236,7 @@ while fit < no_frames:
             ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.83, 0.111, 0.02, 0.77])
+            cbar_ax = fig.add_axes([0.83, 0.11, 0.02, 0.77])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
