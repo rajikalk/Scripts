@@ -30,7 +30,6 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
-'''
 if rank == 0:
     print("read pickle", args.input_pickle)
     file_open = open(args.input_pickle, 'rb')
@@ -38,9 +37,7 @@ if rank == 0:
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
-    
-CW.Barrier()
-if size > 1:
+else:
     particle_data = {}
 particle_data = CW.bcast(particle_data, root=0)
 print("On rank", rank, "particle_data.keys() =", particle_data.keys())
@@ -51,6 +48,7 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
 print("finished reading in pickle")
+'''
 CW.Barrier()
 
 
