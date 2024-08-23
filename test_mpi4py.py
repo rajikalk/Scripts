@@ -1,12 +1,7 @@
 #!/usr/bin/env python
-import mpi4py
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
-import glob
-import pickle
-from scipy.optimize import leastsq
-import matplotlib.pyplot as plt
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -21,6 +16,12 @@ CW.Barrier()
 if rank == 0:
     print("Number of processes =", size)
 print("Rank =", rank)
+rit = -1
+while rit < size:
+    rit = rit + 1
+    if rank == rit:
+        print("Rank =", rank)
+        
 
 #The confusing thing when writing scripts for parallelisation is that you need to be wear of what each individual rank sees. This can be confusing when playing with the same chuck of data.
 
