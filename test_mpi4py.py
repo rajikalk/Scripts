@@ -111,7 +111,7 @@ CW.Barrier()
 
 #You might have to do some testing of doing a task on one process and sending that to everyone else though. If you are sending big stuff it might take a while.
 #Something that is a litle bit different to broadcasting but still shares information on one node with others is scatter, which can scatter elements of a list, or array to all the process. This can be good with those independant tasks. So lets try scattering the pickle files:
-
+'''
 if rank == 0:
     pickle_file = glob.glob("test_data_*.pkl")
 else:
@@ -119,7 +119,7 @@ else:
 pickle_file = CW.scatter(pickle_file, root=0)
 
 print("(scatter) On rank", rank, "pickle_file =", pickle_file)
-
+'''
 CW.Barrier()
 
 #Now that each rank has a file, it can do it's own thing.
