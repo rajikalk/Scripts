@@ -32,24 +32,7 @@ def parse_inputs():
 #def main():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
-'''
-if rank == 0:
-    import time
-    t0 = time.time()
-    print("read pickle", args.input_pickle)
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
-    print("finished reading in pickle")
-    t1 = time.time()
-    print("It took", t1-t0, "seconds to read in the pickle")
-else:
-    particle_data = {}
-CW.Barrier()
-particle_data = CW.bcast(particle_data, root=0)
-print("On rank", rank, "particle_data.keys() =", particle_data.keys())
-'''
+
 if rank == 0:
     print("read pickle", args.input_pickle)
     sys.stdout.flush()
@@ -63,12 +46,14 @@ if rank == 0:
     while rit < size:
         rit = rit + 1
         CW.send(particle_data, dest=rit, tag=rit)
+    print("send particle data to other ranks")
 CW.Barrier()
 
 rit = 0
 while rit < size:
     if rank == rit:
         particle_data = CW.recv(source=0, tag=rit)
+        print("particle data received on rank", rank)
         
 CW.Barrier()
 #CW.Barrier()
@@ -283,6 +268,7 @@ while fit < no_frames:
             
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank" + str(rank))
+            sys.stdout.flush()
             
         
 
