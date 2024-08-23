@@ -29,7 +29,7 @@ def parse_inputs():
 #def main():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
-
+'''
 if rank == 0:
     import time
     t0 = time.time()
@@ -53,7 +53,7 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
 print("finished reading in pickle")
-'''
+
 CW.Barrier()
 
 
