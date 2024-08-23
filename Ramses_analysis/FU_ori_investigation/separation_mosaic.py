@@ -40,7 +40,7 @@ if rank == 0:
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
     t1 = time.time()
-    print("It took", t1, "seconds to read in the pickle")
+    print("It took", t1-t0, "seconds to read in the pickle")
 else:
     particle_data = {}
 CW.Barrier()
@@ -54,7 +54,7 @@ file_open.close()
 del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
 print("finished reading in pickle")
 
-CW.Barrier()
+#CW.Barrier()
 
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
