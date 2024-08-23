@@ -42,6 +42,9 @@ if rank == 0:
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
     sys.stdout.flush()
+
+CW.Barrier()
+if rank == 0:
     rit = 0
     while rit < size:
         rit = rit + 1
