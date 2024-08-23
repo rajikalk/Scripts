@@ -38,6 +38,7 @@ if rank == 0:
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
+    
 CW.Barrier()
 if size > 1:
     particle_data = {}

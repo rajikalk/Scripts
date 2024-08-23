@@ -77,7 +77,7 @@ if rank == 0:
 elif rank == 1:
     data = CW.recv(source=0, tag=11)
 
-print("On rank", rank, "data =", data)
+print("(recv) On rank", rank, "data =", data)
 
 CW.Barrier()
 
@@ -90,7 +90,7 @@ elif rank == 1:
     data = np.empty(100, dtype=np.float64)
     CW.Recv(data, source=0, tag=13)
     
-print("On rank", rank, "data =", data)
+print("(Recv) On rank", rank, "data =", data)
 
 CW.Barrier()
 
@@ -104,7 +104,7 @@ else:
 data = CW.bcast(data, root=0)
 # or CW.Bcast(data, root=0) for numpy arrays
 
-print("On rank", rank, "data =", data)
+print("(bcast) On rank", rank, "data =", data)
 
 CW.Barrier()
 
@@ -117,7 +117,7 @@ else:
     pickle_file = None
 pickle_file = CW.scatter(pickle_file, root=0)
 
-print("On rank", rank, "pickle_file =", pickle_file)
+print("(scatter) On rank", rank, "pickle_file =", pickle_file)
 
 CW.Barrier()
 
@@ -130,7 +130,7 @@ print("On rank", rank, "data =", data)
 CW.Barrier()
 
 data = CW.gather(data, root=0)
-print("On rank", rank, "data =", data)
+print("(gather) On rank", rank, "data =", data)
 
 CW.Barrier()
 
