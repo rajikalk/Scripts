@@ -62,7 +62,8 @@ fit = -1
 rit = -1
 while fit < no_frames:
     fit = fit + 1
-    if os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
+    frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
+    if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
         rit = rit + 1
         if rit == size:
             rit = 0
@@ -260,7 +261,7 @@ while fit < no_frames:
             ax3.tick_params(axis='both', direction='in', top=True, right=True)
             
             
-            plt.savefig("movie_frame_" + ("%06d" % fit) + ".jpg", format='jpg', bbox_inches='tight', dpi=300)
+            plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank" + str(rank))
             
         
