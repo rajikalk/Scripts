@@ -3,6 +3,7 @@ from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 rank = CW.Get_rank()
 size = CW.Get_size()
+print("size =", size)
 import numpy as np
 #from pylab import *
 import matplotlib.pyplot as plt
