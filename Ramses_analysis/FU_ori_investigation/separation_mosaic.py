@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
+import sys
 rank = CW.Get_rank()
 size = CW.Get_size()
 print("size =", size)
