@@ -47,13 +47,25 @@ CW.Barrier()
 particle_data = CW.bcast(particle_data, root=0)
 print("On rank", rank, "particle_data.keys() =", particle_data.keys())
 '''
-print("read pickle", args.input_pickle)
-file_open = open(args.input_pickle, 'rb')
-particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-file_open.close()
-del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
-print("finished reading in pickle")
+if rank == 0:
+    print("read pickle", args.input_pickle)
+    file_open = open(args.input_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
+    del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
+    print("finished reading in pickle")
+    rit = 0
+    while rit < size:
+        rit = rit + 1
+        CW.send(particle_data, dest=rit, tag=rit)
+CW.Barrier()
 
+rit = 0
+while rit < size:
+    if rank == rit:
+        particle_data = CW.recv(source=0, tag=rit)
+        
+CW.Barrier()
 #CW.Barrier()
 
 
