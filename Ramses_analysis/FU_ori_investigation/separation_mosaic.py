@@ -4,6 +4,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 rank = CW.Get_rank()
 size = CW.Get_size()
 print("size =", size)
+sys.stdout.flush()
 import numpy as np
 #from pylab import *
 import matplotlib.pyplot as plt
@@ -50,11 +51,13 @@ print("On rank", rank, "particle_data.keys() =", particle_data.keys())
 '''
 if rank == 0:
     print("read pickle", args.input_pickle)
+    sys.stdout.flush()
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
+    sys.stdout.flush()
     rit = 0
     while rit < size:
         rit = rit + 1
