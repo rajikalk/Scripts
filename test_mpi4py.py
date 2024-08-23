@@ -40,7 +40,7 @@ print("Rank", rank, ":")
 print(test_array)
 
 #If tasks are independant then it is easy to parallelise. You can send one independent task to each process, eg, calculate a for individual data sets?
-
+'''
 pickle_files = glob.glob("test_data_*.pkl")
 
 #read data:
@@ -66,7 +66,7 @@ plt.plot(x, data_first_guess, label='first guess')
 plt.plot(fine_t, data_fit, label='after fitting')
 plt.legend()
 plt.savefig("fit_for_rank_"+str(rank)+".png")
-
+'''
 #But if you can also communicate between processes. The simplest methods is to send and receive between specific ranks
 
 data = {}
