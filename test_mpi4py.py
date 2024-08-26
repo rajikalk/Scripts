@@ -2,31 +2,39 @@
 from mpi4py import MPI
 from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
+import sys
 
 rank = CW.Get_rank()
 size = CW.Get_size()
 
 print("Number of processes =", size)
+sys.stdout.flush()
 print("Rank =", rank)
+sys.stdout.flush()
 
 CW.Barrier()
 print("-------------------------------------")
+sys.stdout.flush()
 CW.Barrier()
 
 if rank == 0:
     print("Number of processes =", size)
+    sys.stdout.flush()
 print("Rank =", rank)
+sys.stdout.flush()
 rit = -1
 while rit < size:
     rit = rit + 1
     if rank == rit:
         print("Rank =", rank)
+        sys.stdout.flush()
         
 
 #The confusing thing when writing scripts for parallelisation is that you need to be wear of what each individual rank sees. This can be confusing when playing with the same chuck of data.
 
 test_array = np.zeros([4,5])
 print("Rank", rank, ":")
+sys.stdout.flush()
 print(test_array)
 
 CW.Barrier()
@@ -38,6 +46,7 @@ for rank_id in range(size):
 CW.Barrier()
 
 print("Rank", rank, ":")
+sys.stdout.flush()
 print(test_array)
 
 #If tasks are independant then it is easy to parallelise. You can send one independent task to each process, eg, calculate a for individual data sets?
@@ -79,6 +88,7 @@ elif rank == 1:
     data = CW.recv(source=0, tag=11)
 
 print("(recv) On rank", rank, "data =", data)
+sys.stdout.flush()
 
 CW.Barrier()
 
@@ -92,6 +102,7 @@ elif rank == 1:
     CW.Recv(data, source=0, tag=13)
     
 print("(Recv) On rank", rank, "data =", data)
+sys.stdout.flush()
 
 CW.Barrier()
 
@@ -106,6 +117,7 @@ data = CW.bcast(data, root=0)
 # or CW.Bcast(data, root=0) for numpy arrays
 
 print("(bcast) On rank", rank, "data =", data)
+sys.stdout.flush()
 
 CW.Barrier()
 
@@ -128,10 +140,12 @@ CW.Barrier()
 
 data = (rank+1)**2
 print("On rank", rank, "data =", data)
+sys.stdout.flush()
 CW.Barrier()
 
 data = CW.gather(data, root=0)
 print("(gather) On rank", rank, "data =", data)
+sys.stdout.flush()
 
 CW.Barrier()
 
