@@ -47,10 +47,10 @@ else:
 
 CW.Barrier()
 if size > 1:
-    print("going to start sending data to other ranks")
+    print("going to start sending data to other ranks (on rank)", rank)
     sys.stdout.flush()
     particle_data = CW.bcast(particle_data, root=0)
-    print("broadcasted particle data")
+    print("broadcasted particle data on rank", rank)
     sys.stdout.flush()
 CW.Barrier()
 '''
@@ -287,7 +287,7 @@ while fit < no_frames:
             
             
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
-            print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank" + str(rank))
+            print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
             sys.stdout.flush()
             
         
