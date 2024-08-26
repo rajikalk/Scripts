@@ -42,6 +42,8 @@ if rank == 0:
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     gc.collect()
+    particle_data['time'] = particle_data['time'][::4]
+    particle_data['mdot'] = particle_data['mdot'][::4]
     print("finished reading in pickle")
     sys.stdout.flush()
 else:
