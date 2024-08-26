@@ -44,7 +44,7 @@ if rank == 0:
     sys.stdout.flush()
 
 CW.Barrier()
-if rank == 0:
+if rank == 0 and size > 1:
     rit = 0
     while rit < size:
         rit = rit + 1
@@ -53,13 +53,14 @@ if rank == 0:
         sys.stdout.flush()
 CW.Barrier()
 
-rit = 0
-while rit < size:
-    rit = rit + 1
-    if rank == rit:
-        particle_data = CW.recv(source=0, tag=rit)
-        print("particle data received on rank", rank)
-        sys.stdout.flush()
+if size > 1:
+    rit = 0
+    while rit < size:
+        rit = rit + 1
+        if rank == rit:
+            particle_data = CW.recv(source=0, tag=rit)
+            print("particle data received on rank", rank)
+            sys.stdout.flush()
         
 CW.Barrier()
 #CW.Barrier()
