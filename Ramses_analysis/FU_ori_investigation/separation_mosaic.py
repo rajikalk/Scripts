@@ -154,12 +154,13 @@ while fit < no_frames:
             del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-            del part_info, xlim, ylim
+            del part_info
             gc.collect()
         
             time_string = "$t$="+str(int(time_val))+"yr"
             time_string_raw = r"{}".format(time_string)
             time_text = ax1.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+            del xlim, ylim
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             xticklabels = ax1.get_xticklabels()
