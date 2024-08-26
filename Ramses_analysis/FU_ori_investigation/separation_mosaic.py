@@ -17,6 +17,7 @@ import argparse
 import os
 import my_ramses_module as mym
 import matplotlib.patheffects as path_effects
+import gc
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
@@ -40,6 +41,7 @@ if rank == 0:
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
+    gc.collect()
     print("finished reading in pickle")
     sys.stdout.flush()
 else:
@@ -105,6 +107,7 @@ while fit < no_frames:
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
             del yz_pickle, simfo, velz
+            gc.collect()
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
@@ -131,6 +134,7 @@ while fit < no_frames:
             cbar_min = args_dict['cbar_min']
             cbar_max = args_dict['cbar_max']
             del args_dict
+            gc.collect()
             
             ax1.set_ylabel(yabel, fontsize=args.text_font, labelpad=-5)#, labelpad=-20)
             ax1.set_xlim(xlim)
@@ -138,16 +142,20 @@ while fit < no_frames:
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             del image
+            gc.collect()
             ax1.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             del X, Y, magx, magy
+            gc.collect()
             mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
+            gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
             del part_info
+            gc.collect()
         
             time_string = "$t$="+str(int(time_val))+"yr"
             time_string_raw = r"{}".format(time_string)
@@ -166,6 +174,7 @@ while fit < no_frames:
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
             del xz_pickle, simfo, velz
+            gc.collect()
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
@@ -186,22 +195,27 @@ while fit < no_frames:
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
             del args_dict
+            gc.collect()
             
             ax2.set_xlim(xlim)
             ax2.set_ylim(ylim)
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             del image
+            gc.collect()
             ax2.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             del X, Y, magx, magy
+            gc.collect()
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
+            gc.collect()
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             del part_info
+            gc.collect()
             
             xticklabels = ax2.get_xticklabels()
             plt.setp(xticklabels, visible=False)
@@ -225,6 +239,7 @@ while fit < no_frames:
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
             del xy_pickle, simfo, velz
+            gc.collect()
             
             xlim = args_dict['xlim']
             ylim = args_dict['ylim']
@@ -240,6 +255,7 @@ while fit < no_frames:
             
             xabel = args_dict['xabel']
             del args_dict
+            gc.collect()
             
             ax4.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
             ax4.set_xlim(xlim)
@@ -247,6 +263,7 @@ while fit < no_frames:
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             del image
+            gc.collect()
             ax4.set_aspect('equal')
             
             if fit > 0 or time_val > -1.0:
@@ -254,8 +271,10 @@ while fit < no_frames:
             else:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             del X, Y, magx, magy
+            gc.collect()
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
             del X_vel, Y_vel, velx, vely
+            gc.collect()
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             
             yticklabels = ax4.get_yticklabels()
