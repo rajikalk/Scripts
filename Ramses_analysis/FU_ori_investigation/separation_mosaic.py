@@ -141,7 +141,7 @@ while fit < no_frames:
             ax1.set_ylim(ylim)
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            del image, cbar_min, cbar_max
             gc.collect()
             ax1.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
@@ -154,7 +154,7 @@ while fit < no_frames:
             del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-            del part_info
+            del part_info, xlim, ylim
             gc.collect()
         
             time_string = "$t$="+str(int(time_val))+"yr"
@@ -201,7 +201,7 @@ while fit < no_frames:
             ax2.set_ylim(ylim)
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            del image, cbar_min, cbar_max
             gc.collect()
             ax2.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
@@ -214,7 +214,7 @@ while fit < no_frames:
             del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            del part_info
+            del part_info, xlim, ylim
             gc.collect()
             
             xticklabels = ax2.get_xticklabels()
@@ -262,7 +262,7 @@ while fit < no_frames:
             ax4.set_ylim(ylim)
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            del image, cbar_min, cbar_max
             gc.collect()
             ax4.set_aspect('equal')
             
@@ -276,6 +276,8 @@ while fit < no_frames:
             del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
+            del part_info, xlim, ylim
+            gc.collect()
             
             yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
@@ -295,7 +297,8 @@ while fit < no_frames:
             ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind])
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o')
             ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o')
-            #ax3.axhline(y=2*part_info['accretion_rad'], linestyle='--')
+            del time_val, plot_ind
+            gc.collect()
             
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.825, 0.11, 0.02, 0.77])
