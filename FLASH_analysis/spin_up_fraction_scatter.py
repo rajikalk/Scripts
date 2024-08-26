@@ -212,7 +212,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.5), sharex=True, sharey='row')
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
-axs.flatten()[0].grid()
+#axs.flatten()[0].grid()
 for mach_lab in Mach_labels:
     if mach_lab == '0.0':
         label_string = "No Turbulence ($\mathcal{M}$="+mach_lab+")"
@@ -228,7 +228,7 @@ axs.flatten()[0].tick_params(axis='y', direction='in', right=True)
 axs.flatten()[0].minorticks_on()
 axs.flatten()[0].tick_params(which='both', direction='in', axis='both', right=True, top=True)
 
-axs.flatten()[1].grid()
+#axs.flatten()[1].grid()
 for mach_lab in Mach_labels:
     axs.flatten()[1].plot(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], label='$\mathcal{M}=$'+mach_lab, ls=linestyle[Mach_labels.index(mach_lab)], color='k')
     axs.flatten()[1].scatter(spin_val, spin_up_spec_peak[int(mach_lab.split('.')[-1])], color='k')
