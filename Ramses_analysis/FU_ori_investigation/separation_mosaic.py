@@ -143,7 +143,7 @@ while fit < no_frames:
             ax1.set_ylim(ylim)
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image, cbar_min, cbar_max
+            del image
             gc.collect()
             ax1.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
@@ -204,7 +204,7 @@ while fit < no_frames:
             ax2.set_ylim(ylim)
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image, cbar_min, cbar_max
+            del image
             gc.collect()
             ax2.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
@@ -265,7 +265,7 @@ while fit < no_frames:
             ax4.set_ylim(ylim)
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image, cbar_min, cbar_max
+            del image
             gc.collect()
             ax4.set_aspect('equal')
             
