@@ -42,9 +42,18 @@ if rank == 0:
     del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
     print("finished reading in pickle")
     sys.stdout.flush()
+else:
+    particle_data = {}
 
 CW.Barrier()
-if rank == 0 and size > 1:
+if size > 1:
+    print("going to start sending data to other ranks")
+    sys.stdout.flush()
+    particle_data = CW.bcast(particle_data, root=0)
+    print("broadcasted particle data")
+    sys.stdout.flush()
+CW.Barrier()
+'''
     print("going to start sending data to other ranks")
     sys.stdout.flush()
     rit = 0
@@ -67,9 +76,7 @@ if size > 1:
             particle_data = CW.recv(source=0, tag=rit)
             print("particle data received on rank", rank)
             sys.stdout.flush()
-        
-CW.Barrier()
-#CW.Barrier()
+'''
 
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
