@@ -45,9 +45,15 @@ if rank == 0:
 
 CW.Barrier()
 if rank == 0 and size > 1:
+    print("going to start sending data to other ranks")
+    sys.stdout.flush()
     rit = 0
+    print("rit =", rit)
+    sys.stdout.flush()
     while rit < size:
         rit = rit + 1
+        print("rit =", rit)
+        sys.stdout.flush()
         CW.send(particle_data, dest=rit, tag=rit)
         print("send particle data to rank", rit)
         sys.stdout.flush()
