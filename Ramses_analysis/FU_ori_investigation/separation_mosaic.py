@@ -98,7 +98,6 @@ while fit < no_frames:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
         if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
     
-            plt.clf()
             fig = plt.figure()
             gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
             (ax1, ax2), (ax3, ax4) = gs.subplots()
@@ -328,3 +327,5 @@ while fit < no_frames:
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
             sys.stdout.flush()
+            plt.clf()
+            plt.close()
