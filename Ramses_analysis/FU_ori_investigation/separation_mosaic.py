@@ -10,7 +10,6 @@ import numpy as np
 #from pylab import *
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
-import csv
 import glob
 import pickle
 import argparse
@@ -40,7 +39,7 @@ if rank == 0:
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
-    del counter, sink_ind, sink_form_time, particle_data['mass'],  particle_data['separation'], particle_data['particle_tag']
+    del counter, sink_ind, sink_form_time, particle_data['mass'], particle_data['separation'], particle_data['particle_tag'], args.input_pickle
     gc.collect()
     particle_data['time'] = particle_data['time'][::5]
     particle_data['mdot'] = particle_data['mdot'][::5]
@@ -84,6 +83,7 @@ if size > 1:
 
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
+
 cmap=plt.cm.gist_heat
 prev_primary_mass = np.nan
 
@@ -98,17 +98,18 @@ while fit < no_frames:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
         if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
     
+            plt.clf()
             fig = plt.figure()
             gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
             (ax1, ax2), (ax3, ax4) = gs.subplots()
             
             #===================YZ proj=====================
         
-            yz_pickle = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'
-            file = open(yz_pickle, 'rb')
+            pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'
+            file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            del yz_pickle, simfo, velz
+            del pickle_file, simfo, velz, file
             gc.collect()
             
             if len(part_info['particle_tag']) == 2:
@@ -131,6 +132,8 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                del shift_x, shift_y
+                gc.collect()
             
             yabel = args_dict['yabel']
             cbar_min = args_dict['cbar_min']
@@ -167,16 +170,18 @@ while fit < no_frames:
             
             xticklabels = ax1.get_xticklabels()
             plt.setp(xticklabels, visible=False)
+            del xticklabels
+            gc.collect()
             
             ax1.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
             #===================XZ proj=====================
             
-            xz_pickle = args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl'
-            file = open(xz_pickle, 'rb')
+            pickle_file = args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl'
+            file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            del xz_pickle, simfo, velz
+            del pickle_file, simfo, velz, file
             gc.collect()
             
             if len(part_info['particle_tag']) == 2:
@@ -197,6 +202,8 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                del shift_x, shift_y
+                gc.collect()
             del args_dict
             gc.collect()
             
@@ -222,18 +229,24 @@ while fit < no_frames:
             
             xticklabels = ax2.get_xticklabels()
             plt.setp(xticklabels, visible=False)
+            del xticklabels
+            gc.collect()
             
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
+            del yticklabels
+            gc.collect()
             
             ax2.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
             #===================XY proj=====================
             
-            xy_pickle = args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl'
-            file = open(xy_pickle, 'rb')
+            pickle_file = args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl'
+            file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
+            del pickle_file, simfo, velz, file
+            gc.collect()
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
@@ -241,8 +254,6 @@ while fit < no_frames:
                 part_info['particle_mass'] = np.append(prev_primary_mass, part_info['particle_mass'])
                 part_info['particle_position'] = np.array([[0, part_info['particle_position'][0][0]], [0, part_info['particle_position'][1][0]]])
                 part_info['particle_tag'] = np.append(44, part_info['particle_tag'])
-            del xy_pickle, simfo, velz
-            gc.collect()
             
             xlim = args_dict['xlim']
             ylim = args_dict['ylim']
@@ -255,6 +266,8 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                del shift_x, shift_y
+                gc.collect()
             
             xabel = args_dict['xabel']
             del args_dict
@@ -284,6 +297,8 @@ while fit < no_frames:
             
             yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
+            del yticklabels
+            gc.collect()
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
@@ -310,12 +325,6 @@ while fit < no_frames:
             
             ax3.tick_params(axis='both', direction='in', top=True, right=True)
             
-            
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
             sys.stdout.flush()
-            plt.clf()
-            plt.cla()
-            
-        
-
