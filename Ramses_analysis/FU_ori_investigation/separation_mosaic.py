@@ -325,7 +325,7 @@ while fit < no_frames:
             ax3.tick_params(axis='both', direction='in', top=True, right=True)
             
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
-            print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
-            sys.stdout.flush()
             plt.clf()
             plt.close()
+            print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
+            sys.stdout.flush()
