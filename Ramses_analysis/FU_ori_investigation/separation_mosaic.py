@@ -329,3 +329,6 @@ while fit < no_frames:
             plt.close()
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
             sys.stdout.flush()
+            
+print("Finished making frames on rank " + str(rank))
+sys.stdout.flush()
