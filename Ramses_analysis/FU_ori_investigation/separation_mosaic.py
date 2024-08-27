@@ -314,6 +314,8 @@ while fit < no_frames:
             plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
             sys.stdout.flush()
+            plt.clf()
+            plt.cla()
             
         
 
