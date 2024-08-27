@@ -41,8 +41,8 @@ if rank == 0:
     file_open.close()
     del counter, sink_ind, sink_form_time, particle_data['mass'], particle_data['separation'], particle_data['particle_tag'], args.input_pickle
     gc.collect()
-    particle_data['time'] = particle_data['time'][::5]
-    particle_data['mdot'] = particle_data['mdot'][::5]
+    particle_data['time'] = np.array(particle_data['time'][::5])
+    particle_data['mdot'] = np.array(particle_data['mdot'][::5])
     print("finished reading in pickle")
     sys.stdout.flush()
 else:
@@ -310,10 +310,10 @@ while fit < no_frames:
             ax3.set_aspect(1.e3)
             
             plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
-            ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[0][:plot_ind], color='cyan')
-            ax3.semilogy(particle_data['time'][:plot_ind], np.array(particle_data['mdot']).T[1][:plot_ind], color='magenta')
-            ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[0][plot_ind], marker='o', color='cyan', s=5)
-            ax3.scatter(particle_data['time'][plot_ind], np.array(particle_data['mdot']).T[1][plot_ind], marker='o', color='magenta', s=5)
+            ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[0][:plot_ind], color='cyan')
+            ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[1][:plot_ind], color='magenta')
+            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[0][plot_ind], marker='o', color='cyan', s=5)
+            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[1][plot_ind], marker='o', color='magenta', s=5)
             del time_val, plot_ind
             gc.collect()
             
