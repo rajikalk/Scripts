@@ -173,6 +173,7 @@ while fit < no_frames:
             gc.collect()
             
             ax1.tick_params(axis='both', direction='in', color='white', top=True, right=True)
+            plt.savefig(frame_name, bbox_inches='tight', dpi=300)
             
             #===================XZ proj=====================
             
@@ -237,6 +238,7 @@ while fit < no_frames:
             gc.collect()
             
             ax2.tick_params(axis='both', direction='in', color='white', top=True, right=True)
+            plt.savefig(frame_name, bbox_inches='tight', dpi=300)
             
             #===================XY proj=====================
             
@@ -300,6 +302,7 @@ while fit < no_frames:
             gc.collect()
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
+            plt.savefig(frame_name, bbox_inches='tight', dpi=300)
             
             #===================Accretion profile=====================
             
