@@ -108,7 +108,7 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            del pickle_file, simfo, velz, file
+            #del pickle_file, simfo, velz, file
             gc.collect()
             
             if len(part_info['particle_tag']) == 2:
@@ -131,13 +131,13 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
-                del shift_x, shift_y
+                #del shift_x, shift_y
                 gc.collect()
             
             yabel = args_dict['yabel']
             cbar_min = args_dict['cbar_min']
             cbar_max = args_dict['cbar_max']
-            del args_dict
+            #del args_dict
             gc.collect()
             
             ax1.set_ylabel(yabel, fontsize=args.text_font, labelpad=-5)#, labelpad=-20)
@@ -145,31 +145,31 @@ while fit < no_frames:
             ax1.set_ylim(ylim)
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            #del image
             gc.collect()
             ax1.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            del X, Y, magx, magy
+            #del X, Y, magx, magy
             gc.collect()
             mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
-            del X_vel, Y_vel, velx, vely
+            #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-            del part_info
+            #del part_info
             gc.collect()
         
             time_string = "$t$="+str(int(time_val))+"yr"
             time_string_raw = r"{}".format(time_string)
             time_text = ax1.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
-            del xlim, ylim
+            #del xlim, ylim
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             xticklabels = ax1.get_xticklabels()
             plt.setp(xticklabels, visible=False)
-            del xticklabels
+            #del xticklabels
             gc.collect()
             
             ax1.tick_params(axis='both', direction='in', color='white', top=True, right=True)
@@ -180,7 +180,7 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            del pickle_file, simfo, velz, file
+            #del pickle_file, simfo, velz, file
             gc.collect()
             
             if len(part_info['particle_tag']) == 2:
@@ -203,37 +203,37 @@ while fit < no_frames:
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
                 del shift_x, shift_y
                 gc.collect()
-            del args_dict
+            #del args_dict
             gc.collect()
             
             ax2.set_xlim(xlim)
             ax2.set_ylim(ylim)
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            #del image
             gc.collect()
             ax2.set_aspect('equal')
             if fit > 0 or time_val > -1.0:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            del X, Y, magx, magy
+            #del X, Y, magx, magy
             gc.collect()
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
-            del X_vel, Y_vel, velx, vely
+            #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            del part_info, xlim, ylim
+            #del part_info, xlim, ylim
             gc.collect()
             
             xticklabels = ax2.get_xticklabels()
             plt.setp(xticklabels, visible=False)
-            del xticklabels
+            #del xticklabels
             gc.collect()
             
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-            del yticklabels
+            #del yticklabels
             gc.collect()
             
             ax2.tick_params(axis='both', direction='in', color='white', top=True, right=True)
@@ -244,7 +244,7 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            del pickle_file, simfo, velz, file
+            #del pickle_file, simfo, velz, file
             gc.collect()
             
             if len(part_info['particle_tag']) == 2:
@@ -265,11 +265,11 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
-                del shift_x, shift_y
+                #del shift_x, shift_y
                 gc.collect()
             
             xabel = args_dict['xabel']
-            del args_dict
+            #del args_dict
             gc.collect()
             
             ax4.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
@@ -277,7 +277,7 @@ while fit < no_frames:
             ax4.set_ylim(ylim)
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-            del image
+            #del image
             gc.collect()
             ax4.set_aspect('equal')
             
@@ -285,18 +285,18 @@ while fit < no_frames:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            del X, Y, magx, magy
+            #del X, Y, magx, magy
             gc.collect()
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
-            del X_vel, Y_vel, velx, vely
+            #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            del part_info, xlim, ylim
+            #del part_info, xlim, ylim
             gc.collect()
             
             yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-            del yticklabels
+            #del yticklabels
             gc.collect()
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
@@ -314,7 +314,7 @@ while fit < no_frames:
             ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[1][:plot_ind], color='magenta')
             ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[0][plot_ind], marker='o', color='cyan', s=5)
             ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[1][plot_ind], marker='o', color='magenta', s=5)
-            del time_val, plot_ind
+            #del time_val, plot_ind
             gc.collect()
             
             fig.subplots_adjust(right=0.95)
@@ -324,7 +324,7 @@ while fit < no_frames:
             
             ax3.tick_params(axis='both', direction='in', top=True, right=True)
             
-            plt.savefig(frame_name, format='jpg', bbox_inches='tight', dpi=300)
+            plt.savefig(frame_name, bbox_inches='tight', dpi=300)
             plt.clf()
             plt.close()
             print("Made frame " + "movie_frame_" + ("%06d" % fit) + ".jpg" + " on rank " + str(rank))
