@@ -312,8 +312,8 @@ while fit < no_frames:
             plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
             ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[0][:plot_ind], color='cyan', linewidth=0.5)
             ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[1][:plot_ind], color='magenta', linewidth=0.5)
-            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[0][plot_ind], marker='o', color='cyan', s=5)
-            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[1][plot_ind], marker='o', color='magenta', s=5)
+            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[0][plot_ind], marker='o', color='cyan', s=3)
+            ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[1][plot_ind], marker='o', color='magenta', s=3)
             #del time_val, plot_ind
             gc.collect()
             
