@@ -25,6 +25,7 @@ def parse_inputs():
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=2.0)
+    parser.add_argument("-cbar_lims", "--cbar_limits", help="if you don't want to use the limits from the pickles, you can redefine them", type=string, default=None)
     args = parser.parse_args()
     return args
 
@@ -135,8 +136,12 @@ while fit < no_frames:
                 gc.collect()
             
             yabel = args_dict['yabel']
-            cbar_min = args_dict['cbar_min']
-            cbar_max = args_dict['cbar_max']
+            if args.cbar_limits == None:
+                cbar_min = args_dict['cbar_min']
+                cbar_max = args_dict['cbar_max']
+            else:
+                cbar_min = eval(args.cbar_limits)[0]
+                cbar_max = eval(args.cbar_limits)[1]
             #del args_dict
             gc.collect()
             
