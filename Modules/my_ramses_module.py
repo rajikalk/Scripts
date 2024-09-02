@@ -402,7 +402,7 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         velz = velz
     return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3, color=None):
     global fontsize_global
     if plot_velocity_legend == 'False' or plot_velocity_legend == False:
         plot_velocity_legend = False
@@ -442,7 +442,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                 width_val = width_ceil
             try:
                 if Z_val == None:
-                    color = 'w'
+                    if color == None:
+                        color = 'w'
                     #color = 'k'
             except:
                 #cmap = 'idl06_r'
