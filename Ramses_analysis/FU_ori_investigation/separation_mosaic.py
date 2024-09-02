@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=2.0)
-    parser.add_argument("-cbar_lims", "--cbar_limits", help="if you don't want to use the limits from the pickles, you can redefine them", type=string, default=None)
+    parser.add_argument("-cbar_lims", "--cbar_limits", help="if you don't want to use the limits from the pickles, you can redefine them", type=str, default=None)
     args = parser.parse_args()
     return args
 
