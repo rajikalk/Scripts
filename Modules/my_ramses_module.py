@@ -441,8 +441,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             if width_val > width_ceil:
                 width_val = width_ceil
             try:
-                if Z_val == None:
-                    if color == None:
+                if Z_val == None and color == None:
                         color = 'w'
                     #color = 'k'
             except:
