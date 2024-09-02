@@ -137,12 +137,15 @@ while fit < no_frames:
                 gc.collect()
             
             yabel = args_dict['yabel']
-            if args.cbar_limits == None:
+            if args.cbar_min == None:
                 cbar_min = args_dict['cbar_min']
+            else:
+                cbar_min = args.cbar_min
+            
+            if args.cbar_max == None:
                 cbar_max = args_dict['cbar_max']
             else:
-                cbar_min = eval(args.cbar_limits)[0]
-                cbar_max = eval(args.cbar_limits)[1]
+                cbar_max = args.cbar_max
             #del args_dict
             gc.collect()
             
