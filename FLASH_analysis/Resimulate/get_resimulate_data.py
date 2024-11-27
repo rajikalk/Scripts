@@ -29,5 +29,15 @@ zmax = form_position[2] + box_length/2
 files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
 files = [ x for x in files if "_proj_" not in x ]
 form_file = mym.find_files([form_time.value], files)
+prev_ind = int(form_file[0].split('_')[-1]) - 1
+prev_file = form_file[0][:-4] + str(prev_ind)
+
+#Calculate bulk file
+part_file = 'part'.join(prev_file.split('plt_cnt'))
+ds = yt.load(prev_file, particle_filename=part_file)
+left_corner = yt.YTArray([xmin, ymin, zmin], 'cm')
+right_corner = yt.YTArray([xmax, ymax, zmax], 'cm')
+region = ds.box(left_corner, right_corner)
+
 import pdb
 pdb.set_trace()
