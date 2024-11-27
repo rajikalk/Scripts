@@ -44,7 +44,7 @@ def parse_inputs():
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
     parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
-    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn veloity?", type=str, default='True')
+    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn velocity?", type=str, default='True')
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
@@ -486,6 +486,7 @@ if args.make_frames_only == 'False':
             weight_field = args.weight_field
             
             myf.set_center_pos_ind(args.calculation_center)
+            myf.set_center_vel_ind(args.calculation_center)
 
             if args.image_center == 0 and args.use_gas_center_calc=='False':
                 #If not using the gas the calculate the Center posiiton and velocity in the fields

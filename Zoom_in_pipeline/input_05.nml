@@ -1,0 +1,149 @@
+&RUN_PARAMS
+hydro=.true.
+poisson=.true.
+!pic=.false.
+pic=.true. tracer=.true.
+nrestart=-1
+nremap=10
+!nsubcycle=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+nsubcycle=1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2
+!         7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
+!         9 0 1 2 3 4 5 6 7
+subcycle_factor=0.0
+nstepmax=100000000
+swap_domains=t overload=4
+verbose=f
+debug=f
+debug_level=1
+/
+
+&POISSON_PARAMS p_verbose=1 epsilon=1e-4 cg_levelmin=2 /
+
+&AMR_PARAMS
+a_verbose=0
+levelmin=7
+levelmax=18
+!ngridmax=5000000  !16 OMP in Marenostrum 
+ngridmax=2500000  !8 OMP in Marenostrum
+!ngridmax=1250000  !4 OMP in Marenostrum
+!ngridmax=2000000  !2 OMP in Marenostrum
+!ngridmax=1600000  !2 OMP in Marenostrum
+!ngridmax=250000  !1 OMP in Marenostrum
+npartmax=50000000
+!npartmax=0
+nexpand=1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2
+!       7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
+!       9 0 1 2 3 4 5 6 7
+boxlen=1.0
+/
+
+&INIT_PARAMS
+!filetype='tracer'
+nregion=1
+region_type(1)='square'
+d_region=1.0
+u_region=0.
+v_region=0.
+w_region=0.
+p_region=1.0
+C_region=2.0
+/
+
+&OUTPUT_PARAMS
+!delta_tout=0.01   !1/5 dynamical time
+!delta_tout=0.005   !1/10 dynamical time
+!delta_tout=0.0005 !1/50 dynamical time
+!delta_tout=0.000230105322308 ! 5000 yr cadence
+!delta_tout=0.00000460220474  ! 100 yr cadence
+delta_tout=0.00000230110237  ! 50 yr cadence
+fscratch=50 !every 50 main steps it will write a scratch snapshot to the next file number
+tend=4.0
+datadir='data'
+!nmpi_dump=60
+/
+
+&HYDRO_PARAMS
+h_verbose=1
+courant_factor=0.6 courant_type=1
+slope_type=3.5
+scheme='muscl'
+riemann='hlld' riemann2d='hlld'
+!cmax=30.
+cbmax=500.
+do_isothermal=t gamma=1.0001 temp_iso=10000.0
+! T = p_ini / rho_ini * 1 / (gamma - 1)
+do_polytropic=t
+smallr=1.0e-6 !minimum density
+smallc=0.5    !speed unit for minimum temperature
+!dlnp_max=-0.4
+!dlnr_max=0.4
+/
+
+&FORCE do_force=t do_helmh=t a_helmh=1. ampl_turb=10.0 t_turn=0.1 t_turb=0.0 iseed=-10 k1=1. k2=2. pk=0. /
+
+&STARS
+do_sink=t
+do_nbody=t
+do_refine=t
+max_distance = 8.0
+acc_fraction= 0.5 
+!rho_limit_factor = 13.0
+!rho_limit_factor = 52.0
+!rho_limit_factor = 1024.0
+rho_limit_factor = 2355.0 ! increase rho_limit_factor to account for polytropic EoS Levelmax=18
+!rho_limit_factor = 4710.0 ! increase rho_limit_factor to account for polytropic EoS Levelmax=20
+!rho_limit_factor = 471000.0 ! increase rho_limit_factor to account for polytropic EoS
+rho_cut=0.9 !0.9999
+rho_fraction=0.000000625
+acc_rate=0.2
+acc_efficiency = 1.0
+!twrite=0.0000001 !2 yr-ish cadence
+twrite=0.000000025 !0.5yr-ish cadence
+verbose=2
+do_sne=f
+radius_SN=4.0
+tabledir='/home3/ppadoan/codes/ramses/patch/mhd/troels/supernovae/'        ! must have / at the end! Uses Schaller
+center_star=18
+do_translate=t
+/
+
+&REFINE_PARAMS         ! These are reread upon "touch reread.flag" or "touch refine.flag"
+!rho_sph=10.
+!m_refine=1.0,0.5,0.25,0.125,0.0625,0.0312,0.0156,0.0078,0.0039
+rho_sph=0.15625
+!m_refine=0.00000001,0.0000001,1.0,0.5,0.25,0.125,0.0625,0.0312,0.0156,0.0078,0.0039
+!                 7         8   9  10   11    12     13     14     15     16     17
+!m_refine=1.0,1.0,1.0,0.5,0.25,0.125,0.0625,0.0312,0.0156,0.0078,0.0039,0.00195,0.001,0.0005,0.00025,0.000125
+!        7   8   9   10  11   12    13     14     15     16     17     18      19    20     21      22
+! LJ     115 58  28.8...............32       36   36   48        48         64        64        64         64         64
+m_refine=1.0,1.0,1.0,0.5,0.25,0.125,0.050625,0.02,0.01,0.0028125,0.00140625,0.0003955,0.0001978,0.00009888,0.00004944,0.00002472
+!        7   8   9   10  11   12    13       14   15   16        17         18        19        20         21         22
+floor_d=1.0
+interpol_type=1
+interpol_var=0
+x_refine=20*0.0094139263
+y_refine=20*0.15818525
+z_refine=20*0.77470273
+!r_refine=0.5,0.25,0.125,0.0625,0.03125,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424,0.02424 
+r_refine=0.43,0.36,0.3  ,0.2501,0.2085 ,0.1737 ,0.1448 ,0.1206 ,0.1005 ,0.08377,0.06981,0.05818,0.04848,0.04848,0.04848,0.04848 
+!        8    9    10    11     12      13      14      15      16      17      18      19      20      21      22      23
+! Refine in an area that is 40000 AU across and logarithmic shells increasing 20% each level from level 19
+/
+
+&PHYSICS_PARAMS Grho=100. cooling=f /
+
+&FOUNTAIN_PARAMS /
+&COOL /
+&SN_PARAMS /
+&BOUNDARY_PARAMS /
+
+&TRACER_PARAMS
+nregions = 1
+x_center = 0.0094139263
+y_center = 0.15818525
+z_center = 0.77470273
+r = 0.2424068406 ! 100,000 AU radius
+exp_region  = 2
+d_floor=0.00001
+mass_pp=3.335557038e-10
+/
