@@ -39,5 +39,18 @@ left_corner = yt.YTArray([xmin, ymin, zmin], 'cm')
 right_corner = yt.YTArray([xmax, ymax, zmax], 'cm')
 region = ds.box(left_corner, right_corner)
 
-import pdb
-pdb.set_trace()
+sim_velx_offset = -1 * np.mean(region['velx'])
+sim_vely_offset = -1 * np.mean(region['vely'])
+sim_velz_offset = -1 * np.mean(region['velz'])
+
+#Print results
+print("sim_input_file = ", prev_file)
+print("xmin = " + str(xmin))
+print("xmax = " + str(xmax))
+print("ymin = " + str(ymin))
+print("ymax = " + str(ymax))
+print("zmin = " + str(zmin))
+print("zmax = " + str(zmax))
+print("sim_velx_offset = ", sim_velx_offset)
+print("sim_vely_offset = ", sim_vely_offset)
+print("sim_velz_offset = ", sim_velz_offset)
