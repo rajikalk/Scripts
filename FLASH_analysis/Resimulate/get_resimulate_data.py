@@ -3,9 +3,12 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 import yt
+import glob
+import my_flash_module as mym
+
 sink_evol_pickle = sys.argv[1]
 zoom_in_sink = sys.argv[2]
-sim_dir = '/scratch/ek9/ccf100/sf_outflow/r1024mM5Ma2A1oh'
+sim_dir = '/scratch/ek9/ccf100/sf_outflow/r1024mM5Ma2A1oh/'
 
 file = open(sink_evol_pickle, 'rb')
 sink_data, prev_line_counter = pickle.load(file)
@@ -22,6 +25,8 @@ ymax = form_position[1] + box_length/2
 zmin = form_position[2] - box_length/2
 zmax = form_position[2] + box_length/2
 
+#Find simfile right before sink forms
+files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
+form_file = mym.find_files([form_time], files)
 import pdb
 pdb.set_trace()
-
