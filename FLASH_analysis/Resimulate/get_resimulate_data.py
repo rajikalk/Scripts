@@ -27,6 +27,7 @@ zmax = form_position[2] + box_length/2
 
 #Find simfile right before sink forms
 files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
+files = [ x for x in files if "dens_proj" not in x ]
 form_file = mym.find_files([form_time], files)
 import pdb
 pdb.set_trace()
