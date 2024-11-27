@@ -67,7 +67,7 @@ def generate_frame_times(files, dt, start_time=0, presink_frames=25, end_time=No
 def find_files(m_times, files):
     sink_form_time = find_sink_formation_time(files)
     if m_times[0] > 10e5:
-        m_times[0] = m_times[0]/yt.units.yr.in_units('s').value
+        m_times[0] = m_times[0]/yt.units.yr.base_value
     usable_files = []
     mit = 0
     min = 0
