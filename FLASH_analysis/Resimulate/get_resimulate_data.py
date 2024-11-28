@@ -103,7 +103,7 @@ part_info = {{'particle_mass':proj_region['particle_mass'].in_units('msun'),
              
 proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region, width=plot_width, weight_field=args.weight_field
+    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region)
     proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
     sto.result_id = field[1]
     sto.result = proj_array
