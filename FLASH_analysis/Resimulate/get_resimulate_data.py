@@ -107,7 +107,7 @@ for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
     sto.result_id = field[1]
     sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
+velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
 file = open('xy_proj.pkl', 'wb')
 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
