@@ -39,6 +39,16 @@ CoM_vel = (binary_velocities.T[0] * binary_masses[0] + binary_velocities.T[1] * 
 
 #Find frame before primary formation
 form_time = yt.YTArray(sink_data[primary_sink]['time'][0], 's')
+files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
+files = [ x for x in files if "_proj_" not in x ]
+form_file = mym.find_files([form_time.value], files)
+prev_ind = int(form_file[0].split('_')[-1]) - 1
+prev_file = form_file[0][:-4] + str(prev_ind)
+
+#Calculate bulk file
+part_file = 'part'.join(prev_file.split('plt_cnt'))
+ds = yt.load(prev_file, particle_filename=part_file)
+
 import pdb
 pdb.set_trace()
 
