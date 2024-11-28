@@ -99,6 +99,7 @@ while counter < 32:
     y_ind.append(int(val))
     counter = counter + 1
 X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+time_val = ds.current_time.in_units('yr').value
 
 
 proj_field_list = [('flash', 'dens')]
@@ -162,7 +163,7 @@ for line in ax.yaxis.get_ticklines():
     line.set_color('white')
     
 cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
-time_string = "$t$="+str(int(ds.current_time.in_units('yr').value))+"yr"
+time_string = "$t$="+str(int(time_val))+"yr"
 time_string_raw = r"{}".format(time_string)
 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
 time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
