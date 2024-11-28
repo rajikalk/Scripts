@@ -122,7 +122,7 @@ for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
     sto.result_id = field[1]
     sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
 file = open('xy_proj.pkl', 'wb')
 pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
@@ -167,5 +167,8 @@ time_string = "$t$="+str(int(time_val))+"yr"
 time_string_raw = r"{}".format(time_string)
 time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
 time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+square = patches.Rectangle((xmin.in_units('pc'), ymin.in_units('pc')), box_length, box_length, edgecolor='green', facecolor='none')
+ax.add_patch(square)
 
 plt.savefig("xy_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
