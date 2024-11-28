@@ -87,7 +87,9 @@ print("sim_velz_offset = ", sim_velz_offset)
 #Make projections
 x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
 X_image, Y_image = np.meshgrid(x_range, x_range)
-annotate_space = (ds.domain_right_edge[0].in_units('pc') - ds.domain_left_edge[0].in_units('pc'))/32
+x_image_min = ds.domain_left_edge[0].in_units('pc')
+x_image_max = ds.domain_right_edge[0].in_units('pc')
+annotate_space = (x_image_max - x_image_min)/32
 x_ind = []
 y_ind = []
 counter = 0
