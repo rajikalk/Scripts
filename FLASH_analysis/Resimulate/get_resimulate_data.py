@@ -94,12 +94,12 @@ proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'i
 proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
 proj_right_corner = yt.YTArray([ds.domain_right_edge[0], ds.domain_right_edge[1], shifted_CoM[2].in_units('cm')+box_length.in_units('cm')/2], 'cm')
 proj_region = ds.box(proj_left_corner, proj_right_corner)
-part_info = {{'particle_mass':proj_region['particle_mass'].in_units('msun'),
+part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
              'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posy'].in_units('pc')]),
              'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_vely'].in_units('cm/s')]),
              'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
              'particle_tag':proj_region['particle_tag'],
-             'particle_form_time':proj_region['particle_creation_time']}}
+             'particle_form_time':proj_region['particle_creation_time']}
              
 proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
