@@ -87,6 +87,18 @@ print("sim_velz_offset = ", sim_velz_offset)
 #Make projections
 x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
 X_image, Y_image = np.meshgrid(x_range, x_range)
+annotate_space = (x_image_max - x_image_min)/32
+x_ind = []
+y_ind = []
+counter = 0
+while counter < 32:
+    val = annotate_space*counter + annotate_space/2. + x_image_min
+    x_ind.append(int(val))
+    y_ind.append(int(val))
+    counter = counter + 1
+X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+
+
 proj_field_list = [('flash', 'dens')]
 proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
 
