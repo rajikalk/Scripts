@@ -88,7 +88,7 @@ print("sim_velz_offset = ", sim_velz_offset)
 x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
 X_image, Y_image = np.meshgrid(x_range, x_range)
 proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
+proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
 
 #For xy projection centred on z=shifted_CoM[3]
 proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
