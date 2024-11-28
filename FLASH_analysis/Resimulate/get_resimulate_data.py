@@ -139,7 +139,7 @@ try:
     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
 except:
     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-ax.scatter((particle_position[0], particle_position[1], color='c', s=0.5)
+ax.scatter(particle_position[0], particle_position[1], color='c', s=0.5)
 
 plt.tick_params(axis='both', which='major')# labelsize=16)
 for line in ax.xaxis.get_ticklines():
