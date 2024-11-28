@@ -42,8 +42,7 @@ form_time = yt.YTArray(sink_data[primary_sink]['time'][0], 's')
 files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
 files = [ x for x in files if "_proj_" not in x ]
 form_file = mym.find_files([form_time.value], files)
-prev_ind = int(form_file[0].split('_')[-1]) - 1
-prev_file = form_file[0][:-4] + str(prev_ind)
+prev_file = files[files.index(form_file[0])-1]
 
 #Calculate bulk file
 part_file = 'part'.join(prev_file.split('plt_cnt'))
