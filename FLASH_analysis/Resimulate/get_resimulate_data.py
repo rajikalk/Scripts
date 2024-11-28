@@ -14,7 +14,7 @@ sim_dir = '/scratch/ek9/ccf100/sf_outflow/r1024mM5Ma2A1oh/'
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-box", "--box_length", help="how big do you want your resimulate box?", tpe=float, default=0.1)
+    parser.add_argument("-box", "--box_length", help="how big do you want your resimulate box?", type=float, default=0.1)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
