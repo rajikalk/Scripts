@@ -79,4 +79,3 @@ print("zmax = " + str(zmax))
 print("sim_velx_offset = ", sim_velx_offset)
 print("sim_vely_offset = ", sim_vely_offset)
 print("sim_velz_offset = ", sim_velz_offset)
-'''
