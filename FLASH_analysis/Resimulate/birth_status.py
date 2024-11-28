@@ -66,7 +66,7 @@ for key in sink_data.keys():
         else:
             bound_sink_ids = []
         
-        birth_data = {'closest_separation': float(min_sep.value), 'closest_sink': str(closest_sink_id.value), 'bound_sink_ids': bound_sink_ids}
+        birth_data = {'closest_separation': float(min_sep.value), 'closest_sink': str(closest_sink_id.value), 'bound_sink_ids': bound_sink_ids, 'formation_time': yt.YTQuantity(form_time, 's').in_units('yr')}
         
         Birth_data.update({key: birth_data})
     else:

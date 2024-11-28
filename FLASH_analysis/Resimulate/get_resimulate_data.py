@@ -7,13 +7,26 @@ import glob
 import my_flash_module as mym
 
 sink_evol_pickle = sys.argv[1]
-zoom_in_sink = sys.argv[2]
+primary_sink = sys.argv[2]
+secondary_sink = sys.argv[3]
 sim_dir = '/scratch/ek9/ccf100/sf_outflow/r1024mM5Ma2A1oh/'
 
 file = open(sink_evol_pickle, 'rb')
 sink_data, prev_line_counter = pickle.load(file)
 file.close()
 
+#Get binary CoM when secondary have 0.2Msun
+
+secondary_mass_ind = np.argmin(abs(yt.YTArray(sink_data[secondary_sink]['mass'], 'g').in_units('Msun').value - 0.2))
+binary_masses = yt.YTArray([sink_data[primary_sink]['mass'][secondary_mass_ind], sink_data[secondary_sink]['mass'][secondary_mass_ind]], 'g')
+binary_positions = yt.YTArray([[sink_data[primary_sink]['posx'][secondary_mass_ind], sink_data[secondary_sink]['posx'][secondary_mass_ind]], [sink_data[primary_sink]['posy'][secondary_mass_ind], sink_data[secondary_sink]['posy'][secondary_mass_ind]], [sink_data[primary_sink]['posz'][secondary_mass_ind], sink_data[secondary_sink]['posz'][secondary_mass_ind]]], 'cm')
+binary_velocities = yt.YTArray([[sink_data[primary_sink]['velx'][secondary_mass_ind], sink_data[secondary_sink]['velx'][secondary_mass_ind]], [sink_data[primary_sink]['vely'][secondary_mass_ind], sink_data[secondary_sink]['vely'][secondary_mass_ind]], [sink_data[primary_sink]['velz'][secondary_mass_ind], sink_data[secondary_sink]['velz'][secondary_mass_ind]]], 'cm/s')
+
+import pdb
+pdb.set_trace()
+
+
+'''
 form_time = yt.YTArray(sink_data[zoom_in_sink]['time'][0], 's')
 form_position = yt.YTArray([sink_data[zoom_in_sink]['posx'][0], sink_data[zoom_in_sink]['posy'][1], sink_data[zoom_in_sink]['posy'][2]], 'cm')
 box_length = yt.YTQuantity(0.1, 'pc')
@@ -54,3 +67,4 @@ print("zmax = " + str(zmax))
 print("sim_velx_offset = ", sim_velx_offset)
 print("sim_vely_offset = ", sim_vely_offset)
 print("sim_velz_offset = ", sim_velz_offset)
+'''
