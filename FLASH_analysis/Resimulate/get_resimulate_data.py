@@ -94,45 +94,63 @@ proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'i
 proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
 proj_right_corner = yt.YTArray([ds.domain_right_edge[0], ds.domain_right_edge[1], shifted_CoM[2].in_units('cm')+box_length.in_units('cm')/2], 'cm')
 proj_region = ds.box(proj_left_corner, proj_right_corner)
-import pdb
-pdb.set_trace()
-'''
+part_info = {{'particle_mass':proj_region['particle_mass'].in_units('msun'),
+             'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posy'].in_units('pc')]),
+             'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_vely'].in_units('cm/s')]),
+             'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
+             'particle_tag':proj_region['particle_tag'],
+             'particle_form_time':proj_region['particle_creation_time']}}
+             
 proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region, width=plot_width, weight_field=args.weight_field
     proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
     sto.result_id = field[1]
     sto.result = proj_array
-    velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
-    
-    file = open('xy_proj.pkl', 'wb')
-    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
-    file.close()
+velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
 
-    file = open('xy_proj.pkl', 'rb')
-    X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
-    file.close()
+file = open('xy_proj.pkl', 'wb')
+pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+file.close()
+
+file = open('xy_proj.pkl', 'rb')
+X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+file.close()
+
+plt.clf()
+fig, ax = plt.subplots()
+ax.set_xlabel('AU', labelpad=-1, fontsize=10)
+ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+xlim = [np.min(X_image).value, np.max(X_image).value]
+ylim = [np.min(Y_image).value, np.max(Y_image).value]
+ax.set_xlim(xlim)
+ax.set_ylim(ylim)
+
+cmin = np.min(image)
+cmax = np.max(image)
+cbar_lims = [cmin, cmax]
+stdvel = 2
+cmap=plt.cm.gist_heat
+plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+plt.gca().set_aspect('equal')
+plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+cbar = plt.colorbar(plot, pad=0.0)
+try:
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+except:
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+ax.scatter((particle_position[0], particle_position[1], color='c', s=0.5)
+
+plt.tick_params(axis='both', which='major')# labelsize=16)
+for line in ax.xaxis.get_ticklines():
+    line.set_color('white')
+for line in ax.yaxis.get_ticklines():
+    line.set_color('white')
     
-    plt.clf()
-    fig, ax = plt.subplots()
-    ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-    ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
-    xlim = [np.min(X_image).value, np.max(X_image).value]
-    ylim = [np.min(Y_image).value, np.max(Y_image).value]
-    ax.set_xlim(xlim)
-    ax.set_ylim(ylim)
-    
-    cmin = np.min(image)
-    cmax = np.max(image)
-    cbar_lims = [cmin, cmax]
-    stdvel = 2
-    cmap=plt.cm.gist_heat
-    plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-    plt.gca().set_aspect('equal')
-    plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-    cbar = plt.colorbar(plot, pad=0.0)
-    try:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-    except:
-        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
-'''
+cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+time_string = "$t$="+str(int(ds.current_time.in_units('yr').value))+"yr"
+time_string_raw = r"{}".format(time_string)
+time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+plt.savefig("xy_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
