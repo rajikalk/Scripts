@@ -5,11 +5,22 @@ import matplotlib.pyplot as plt
 import yt
 import glob
 import my_flash_module as mym
+import argparse
 
 sink_evol_pickle = sys.argv[1]
 primary_sink = sys.argv[2]
 secondary_sink = sys.argv[3]
 sim_dir = '/scratch/ek9/ccf100/sf_outflow/r1024mM5Ma2A1oh/'
+
+def parse_inputs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-box", "--box_length", help="how big do you want your resimulate box?", tpe=float, default=0.1)
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
+args = parse_inputs()
+box_length = yt.YTQuantity(args.box_length, 'pc')
 
 file = open(sink_evol_pickle, 'rb')
 sink_data, prev_line_counter = pickle.load(file)
@@ -18,19 +29,20 @@ file.close()
 #Get binary CoM when secondary have 0.2Msun
 
 secondary_mass_ind = np.argmin(abs(yt.YTArray(sink_data[secondary_sink]['mass'], 'g').in_units('Msun').value - 0.2))
+binary_characteristic_time = yt.YTQuantity(sink_data[secondary_sink]['time'][secondary_mass_ind], 's')
 binary_masses = yt.YTArray([sink_data[primary_sink]['mass'][secondary_mass_ind], sink_data[secondary_sink]['mass'][secondary_mass_ind]], 'g')
 binary_positions = yt.YTArray([[sink_data[primary_sink]['posx'][secondary_mass_ind], sink_data[secondary_sink]['posx'][secondary_mass_ind]], [sink_data[primary_sink]['posy'][secondary_mass_ind], sink_data[secondary_sink]['posy'][secondary_mass_ind]], [sink_data[primary_sink]['posz'][secondary_mass_ind], sink_data[secondary_sink]['posz'][secondary_mass_ind]]], 'cm')
 binary_velocities = yt.YTArray([[sink_data[primary_sink]['velx'][secondary_mass_ind], sink_data[secondary_sink]['velx'][secondary_mass_ind]], [sink_data[primary_sink]['vely'][secondary_mass_ind], sink_data[secondary_sink]['vely'][secondary_mass_ind]], [sink_data[primary_sink]['velz'][secondary_mass_ind], sink_data[secondary_sink]['velz'][secondary_mass_ind]]], 'cm/s')
+CoM_pos = (binary_positions.T[0] * binary_masses[0] + binary_positions.T[1] * binary_masses[1])/np.sum(binary_masses)
+CoM_vel = (binary_velocities.T[0] * binary_masses[0] + binary_velocities.T[1] * binary_masses[1])/np.sum(binary_masses)
 
+
+#Find frame before primary formation
+form_time = yt.YTArray(sink_data[primary_sink]['time'][0], 's')
 import pdb
 pdb.set_trace()
 
-
 '''
-form_time = yt.YTArray(sink_data[zoom_in_sink]['time'][0], 's')
-form_position = yt.YTArray([sink_data[zoom_in_sink]['posx'][0], sink_data[zoom_in_sink]['posy'][1], sink_data[zoom_in_sink]['posy'][2]], 'cm')
-box_length = yt.YTQuantity(0.1, 'pc')
-
 xmin = form_position[0] - box_length/2
 xmax = form_position[0] + box_length/2
 ymin = form_position[1] - box_length/2
