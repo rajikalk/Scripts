@@ -6,6 +6,11 @@ import yt
 import glob
 import my_flash_module as mym
 import argparse
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+import matplotlib.patheffects as path_effects
+import my_flash_module as mym
 
 sink_evol_pickle = sys.argv[1]
 primary_sink = sys.argv[2]
@@ -48,27 +53,17 @@ prev_file = files[files.index(form_file[0])-1]
 part_file = 'part'.join(prev_file.split('plt_cnt'))
 ds = yt.load(prev_file, particle_filename=part_file)
 
-import pdb
-pdb.set_trace()
+dt = binary_characteristic_time.in_units('yr') - ds.current_time.in_units('yr')
+shifted_CoM = (CoM_pos + ((-1*CoM_vel)*dt.in_units('s'))).in_units('au')
 
-'''
-xmin = form_position[0] - box_length/2
-xmax = form_position[0] + box_length/2
-ymin = form_position[1] - box_length/2
-ymax = form_position[1] + box_length/2
-zmin = form_position[2] - box_length/2
-zmax = form_position[2] + box_length/2
+xmin = shifted_CoM[0] - box_length/2
+xmax = shifted_CoM[0] + box_length/2
+ymin = shifted_CoM[1] - box_length/2
+ymax = shifted_CoM[1] + box_length/2
+zmin = shifted_CoM[2] - box_length/2
+zmax = shifted_CoM[2] + box_length/2
 
-#Find simfile right before sink forms
-files = sorted(glob.glob(sim_dir + '*plt_cnt*'))
-files = [ x for x in files if "_proj_" not in x ]
-form_file = mym.find_files([form_time.value], files)
-prev_ind = int(form_file[0].split('_')[-1]) - 1
-prev_file = form_file[0][:-4] + str(prev_ind)
-
-#Calculate bulk file
-part_file = 'part'.join(prev_file.split('plt_cnt'))
-ds = yt.load(prev_file, particle_filename=part_file)
+#Calculate bulk velocity
 left_corner = yt.YTArray([xmin, ymin, zmin], 'cm')
 right_corner = yt.YTArray([xmax, ymax, zmax], 'cm')
 region = ds.box(left_corner, right_corner)
@@ -88,4 +83,56 @@ print("zmax = " + str(zmax))
 print("sim_velx_offset = ", sim_velx_offset)
 print("sim_vely_offset = ", sim_vely_offset)
 print("sim_velz_offset = ", sim_velz_offset)
+
+#Make projections
+x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
+X_image, Y_image = np.meshgrid(x_range, x_range)
+proj_field_list = [('flash', 'dens')]
+proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
+
+#For xy projection centred on z=shifted_CoM[3]
+proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
+proj_right_corner = yt.YTArray([ds.domain_right_edge[0], ds.domain_right_edge[1], shifted_CoM[2].in_units('cm')+box_length.in_units('cm')/2], 'cm')
+proj_region = ds.box(proj_left_corner, proj_right_corner)
+import pdb
+pdb.set_trace()
+'''
+proj_dict = {}
+for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region, width=plot_width, weight_field=args.weight_field
+    proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
+    sto.result_id = field[1]
+    sto.result = proj_array
+    velx, vely, velz = mym.get_quiver_arrays(0, 0, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=args.quiver_arrows)
+    
+    file = open('xy_proj.pkl', 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+    file.close()
+
+    file = open('xy_proj.pkl', 'rb')
+    X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+    file.close()
+    
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.set_xlabel('AU', labelpad=-1, fontsize=10)
+    ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+    xlim = [np.min(X_image).value, np.max(X_image).value]
+    ylim = [np.min(Y_image).value, np.max(Y_image).value]
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    
+    cmin = np.min(image)
+    cmax = np.max(image)
+    cbar_lims = [cmin, cmax]
+    stdvel = 2
+    cmap=plt.cm.gist_heat
+    plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+    plt.gca().set_aspect('equal')
+    plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+    cbar = plt.colorbar(plot, pad=0.0)
+    try:
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+    except:
+        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
 '''
