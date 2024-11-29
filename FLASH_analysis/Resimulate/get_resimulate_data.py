@@ -86,6 +86,27 @@ print("sim_velx_offset = ", sim_velx_offset)
 print("sim_vely_offset = ", sim_vely_offset)
 print("sim_velz_offset = ", sim_velz_offset)
 
+#Zoom plots
+x_range = np.linspace(xmin.in_units('pc'), xmax.in_units('pc'), 800)
+y_range = np.linspace(ymin.in_units('pc'), ymax.in_units('pc'), 800)
+X_image, Y_image = np.meshgrid(x_range, y_range)
+annotate_space = (x_range[-1] - x_range[0])/32
+x_ind = []
+y_ind = []
+counter = 0
+while counter < 32:
+    xval = annotate_space*counter + annotate_space/2. + x_range[0]
+    yval = annotate_space*counter + annotate_space/2. + y_range[0]
+    x_ind.append(float(xval))
+    y_ind.append(float(val))
+    counter = counter + 1
+X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+time_val = ds.current_time.in_units('yr').value
+
+
+
+
+
 #Make projections
 x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
 X_image, Y_image = np.meshgrid(x_range, x_range)
@@ -102,6 +123,93 @@ while counter < 32:
     counter = counter + 1
 X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 time_val = ds.current_time.in_units('yr').value
+
+proj_field_list = [('flash', 'dens')]
+proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
+
+part_info = {'particle_mass':region['particle_mass'].in_units('msun'),
+             'particle_position':yt.YTArray([region['particle_posx'].in_units('pc'),region['particle_posy'].in_units('pc')]),
+             'particle_velocities':yt.YTArray([region['particle_velx'].in_units('cm/s'),region['particle_vely'].in_units('cm/s')]),
+             'accretion_rad':2.5*np.min(region['dx'].in_units('pc')),
+             'particle_tag':region['particle_tag'],
+             'particle_form_time':region['particle_creation_time']}
+             
+proj_dict = {}
+for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=region)
+    proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+    sto.result_id = field[1]
+    sto.result = proj_array
+velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+
+file = open('xy_proj.pkl', 'wb')
+pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+file.close()
+
+file = open('xy_proj.pkl', 'rb')
+X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
+file.close()
+
+plt.clf()
+fig, ax = plt.subplots()
+ax.set_xlabel('x (AU)', labelpad=-1, fontsize=10)
+ax.set_ylabel('y (AU)', fontsize=10) #, labelpad=-20
+xlim = [np.min(X_image).value, np.max(X_image).value]
+ylim = [np.min(Y_image).value, np.max(Y_image).value]
+ax.set_xlim(xlim)
+ax.set_ylim(ylim)
+
+cmin = np.min(image)
+cmax = np.max(image)
+cbar_lims = [cmin, cmax]
+stdvel = 2
+cmap=plt.cm.gist_heat
+plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+plt.gca().set_aspect('equal')
+plt.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+cbar = plt.colorbar(plot, pad=0.0)
+try:
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx.value, vely.value, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+except:
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], Z_val=None, standard_vel=stdvel)
+ax.scatter(part_info['particle_position'][0], part_info['particle_position'][1], color='c', s=0.5)
+
+plt.tick_params(axis='both', which='major')# labelsize=16)
+for line in ax.xaxis.get_ticklines():
+    line.set_color('white')
+for line in ax.yaxis.get_ticklines():
+    line.set_color('white')
+    
+cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=10)
+time_string = "$t$="+str(int(time_val))+"yr"
+time_string_raw = r"{}".format(time_string)
+time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=10)
+time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+
+square = patches.Rectangle((xmin.in_units('pc'), ymin.in_units('pc')), box_length, box_length, edgecolor='green', facecolor='none')
+ax.add_patch(square)
+CS = ax.contour(X_image,X_image,image, locator=plt.LogLocator(), linewidths=0.5, colors='blue', levels=[1.e-18])
+
+plt.savefig("xy_proj_zoom.jpg", format='jpg', bbox_inches='tight', dpi=300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #For xy projection centred on z=shifted_CoM[2]
 proj_field_list = [('flash', 'dens')]
