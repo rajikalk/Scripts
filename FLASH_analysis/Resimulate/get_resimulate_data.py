@@ -261,6 +261,7 @@ proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     proj = yt.ProjectionPlot(ds, "y", field, method='integrate', data_source=proj_region)
     proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+    proj_array = proj_array.T
     sto.result_id = field[1]
     sto.result = proj_array
 velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
