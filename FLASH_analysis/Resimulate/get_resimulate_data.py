@@ -121,6 +121,7 @@ proj_dict = {}
 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
     proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region)
     proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+    proj_array = proj_array.T
     sto.result_id = field[1]
     sto.result = proj_array
 velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
@@ -135,8 +136,8 @@ file.close()
 
 plt.clf()
 fig, ax = plt.subplots()
-ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+ax.set_xlabel('x (AU)', labelpad=-1, fontsize=10)
+ax.set_ylabel('y (AU)', fontsize=10) #, labelpad=-20
 xlim = [np.min(X_image).value, np.max(X_image).value]
 ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
@@ -207,8 +208,8 @@ file.close()
 
 plt.clf()
 fig, ax = plt.subplots()
-ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+ax.set_xlabel('x (AU)', labelpad=-1, fontsize=10)
+ax.set_ylabel('z (AU)', fontsize=10) #, labelpad=-20
 xlim = [np.min(X_image).value, np.max(X_image).value]
 ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
@@ -278,8 +279,8 @@ file.close()
 
 plt.clf()
 fig, ax = plt.subplots()
-ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+ax.set_xlabel('y (AU)', labelpad=-1, fontsize=10)
+ax.set_ylabel('z (AU)', fontsize=10) #, labelpad=-20
 xlim = [np.min(X_image).value, np.max(X_image).value]
 ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
