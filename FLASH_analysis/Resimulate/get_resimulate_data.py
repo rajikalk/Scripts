@@ -100,7 +100,7 @@ while counter < 32:
     x_ind.append(float(val))
     y_ind.append(float(val))
     counter = counter + 1
-X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 time_val = ds.current_time.in_units('yr').value
 
 
