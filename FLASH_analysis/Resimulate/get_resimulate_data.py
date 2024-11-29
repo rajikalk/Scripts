@@ -69,7 +69,7 @@ zmax = shifted_CoM[2] + (box_length.in_units('au')/2)
 #Calculate bulk velocity
 left_corner = yt.YTArray([xmin, ymin, zmin], 'au')
 right_corner = yt.YTArray([xmax, ymax, zmax], 'au')
-region = ds.box(left_corner, right_corner)
+region = ds.box(left_corner.in_units('cm'), right_corner.in_units('cm'))
 
 sim_velx_offset = -1 * np.mean(region['velx'])
 sim_vely_offset = -1 * np.mean(region['vely'])
