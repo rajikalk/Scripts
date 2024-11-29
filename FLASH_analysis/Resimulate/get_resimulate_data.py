@@ -12,6 +12,7 @@ from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_flash_module as mym
 import matplotlib.patches as patches
+import os
 
 sink_evol_pickle = sys.argv[1]
 primary_sink = sys.argv[2]
