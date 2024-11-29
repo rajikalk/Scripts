@@ -142,8 +142,8 @@ ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 
-cmin = np.min(image)
-cmax = np.max(image)
+cmin = 1.e-23
+cmax = 1.e-17
 cbar_lims = [cmin, cmax]
 stdvel = 2
 cmap=plt.cm.gist_heat
@@ -215,10 +215,6 @@ ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 
-cmin = np.min(image)
-cmax = np.max(image)
-cbar_lims = [cmin, cmax]
-stdvel = 2
 cmap=plt.cm.gist_heat
 plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 plt.gca().set_aspect('equal')
@@ -286,10 +282,6 @@ ylim = [np.min(Y_image).value, np.max(Y_image).value]
 ax.set_xlim(xlim)
 ax.set_ylim(ylim)
 
-cmin = np.min(image)
-cmax = np.max(image)
-cbar_lims = [cmin, cmax]
-stdvel = 2
 cmap=plt.cm.gist_heat
 plot = ax.pcolormesh(X_image, Y_image, image, cmap=cmap, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 plt.gca().set_aspect('equal')
