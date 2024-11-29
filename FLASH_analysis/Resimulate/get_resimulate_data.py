@@ -56,17 +56,18 @@ ds = yt.load(prev_file, particle_filename=part_file)
 
 dt = binary_characteristic_time.in_units('yr') - ds.current_time.in_units('yr')
 shifted_CoM = (CoM_pos + ((-1*CoM_vel)*dt.in_units('s'))).in_units('au')
+shifted_CoM = yt.YTArray([sink_data[primary_sink]['posx'][0], sink_data[primary_sink]['posy'][0], sink_data[primary_sink]['posz'][0]], 'cm').in_units('au')
 
-xmin = shifted_CoM[0] - box_length/2
-xmax = shifted_CoM[0] + box_length/2
-ymin = shifted_CoM[1] - box_length/2
-ymax = shifted_CoM[1] + box_length/2
-zmin = shifted_CoM[2] - box_length/2
-zmax = shifted_CoM[2] + box_length/2
+xmin = shifted_CoM[0] - (box_length.in_units('au')/2)
+xmax = shifted_CoM[0] + (box_length.in_units('au')/2)
+ymin = shifted_CoM[1] - (box_length.in_units('au')/2)
+ymax = shifted_CoM[1] + (box_length.in_units('au')/2)
+zmin = shifted_CoM[2] - (box_length.in_units('au')/2)
+zmax = shifted_CoM[2] + (box_length.in_units('au')/2)
 
 #Calculate bulk velocity
-left_corner = yt.YTArray([xmin, ymin, zmin], 'cm')
-right_corner = yt.YTArray([xmax, ymax, zmax], 'cm')
+left_corner = yt.YTArray([xmin, ymin, zmin], 'au')
+right_corner = yt.YTArray([xmax, ymax, zmax], 'au')
 region = ds.box(left_corner, right_corner)
 
 sim_velx_offset = -1 * np.mean(region['velx'])
@@ -96,10 +97,10 @@ y_ind = []
 counter = 0
 while counter < 32:
     val = annotate_space*counter + annotate_space/2. + x_image_min
-    x_ind.append(int(val))
-    y_ind.append(int(val))
+    x_ind.append(float(val))
+    y_ind.append(float(val))
     counter = counter + 1
-X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
 time_val = ds.current_time.in_units('yr').value
 
 
