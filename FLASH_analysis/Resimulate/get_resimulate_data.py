@@ -251,8 +251,8 @@ plt.savefig("xz_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
 proj_field_list = [('flash', 'dens')]
 proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velx' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magx' not in field[1])]
 
-proj_left_corner = yt.YTArray([ds.domain_left_edge[0], shifted_CoM[1].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[2]], 'cm')
-proj_right_corner = yt.YTArray([ds.domain_right_edge[0], shifted_CoM[1].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[2]], 'cm')
+proj_left_corner = yt.YTArray([shifted_CoM[0].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[1], ds.domain_left_edge[2]], 'cm')
+proj_right_corner = yt.YTArray([shifted_CoM[1].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[1], ds.domain_right_edge[2]], 'cm')
 proj_region = ds.box(proj_left_corner, proj_right_corner)
 part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
              'particle_position':yt.YTArray([proj_region['particle_posy'].in_units('pc'),proj_region['particle_posz'].in_units('pc')]),
