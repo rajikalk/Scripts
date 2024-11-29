@@ -56,8 +56,8 @@ part_file = 'part'.join(prev_file.split('plt_cnt'))
 ds = yt.load(prev_file, particle_filename=part_file)
 
 dt = binary_characteristic_time.in_units('yr') - ds.current_time.in_units('yr')
-shifted_CoM = (CoM_pos + ((-1*CoM_vel)*dt.in_units('s'))).in_units('au')
-#shifted_CoM = yt.YTArray([sink_data[primary_sink]['posx'][0], sink_data[primary_sink]['posy'][0], sink_data[primary_sink]['posz'][0]], 'cm').in_units('au')
+#shifted_CoM = (CoM_pos + ((-1*CoM_vel)*dt.in_units('s'))).in_units('au')
+shifted_CoM = yt.YTArray([sink_data[primary_sink]['posx'][0], sink_data[primary_sink]['posy'][0], sink_data[primary_sink]['posz'][0]], 'cm').in_units('au')
 
 xmin = shifted_CoM[0] - (box_length.in_units('au')/2)
 xmax = shifted_CoM[0] + (box_length.in_units('au')/2)
