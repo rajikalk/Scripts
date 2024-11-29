@@ -98,7 +98,7 @@ while counter < 32:
     xval = annotate_space*counter + annotate_space/2. + x_range[0]
     yval = annotate_space*counter + annotate_space/2. + y_range[0]
     x_ind.append(float(xval))
-    y_ind.append(float(val))
+    y_ind.append(float(yval))
     counter = counter + 1
 X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
 time_val = ds.current_time.in_units('yr').value
