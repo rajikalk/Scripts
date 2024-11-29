@@ -108,45 +108,46 @@ time_val = ds.current_time.in_units('yr').value
 
 
 #Make projections
-x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
-X_image, Y_image = np.meshgrid(x_range, x_range)
-x_image_min = ds.domain_left_edge[0].in_units('pc')
-x_image_max = ds.domain_right_edge[0].in_units('pc')
-annotate_space = (x_image_max - x_image_min)/32
-x_ind = []
-y_ind = []
-counter = 0
-while counter < 32:
-    val = annotate_space*counter + annotate_space/2. + x_image_min
-    x_ind.append(float(val))
-    y_ind.append(float(val))
-    counter = counter + 1
-X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
-time_val = ds.current_time.in_units('yr').value
+if os.path.exists('xy_proj_zoom.pkl') == False:
+    x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
+    X_image, Y_image = np.meshgrid(x_range, x_range)
+    x_image_min = ds.domain_left_edge[0].in_units('pc')
+    x_image_max = ds.domain_right_edge[0].in_units('pc')
+    annotate_space = (x_image_max - x_image_min)/32
+    x_ind = []
+    y_ind = []
+    counter = 0
+    while counter < 32:
+        val = annotate_space*counter + annotate_space/2. + x_image_min
+        x_ind.append(float(val))
+        y_ind.append(float(val))
+        counter = counter + 1
+    X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+    time_val = ds.current_time.in_units('yr').value
 
-proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
+    proj_field_list = [('flash', 'dens')]
+    proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
 
-part_info = {'particle_mass':region['particle_mass'].in_units('msun'),
-             'particle_position':yt.YTArray([region['particle_posx'].in_units('pc'),region['particle_posy'].in_units('pc')]),
-             'particle_velocities':yt.YTArray([region['particle_velx'].in_units('cm/s'),region['particle_vely'].in_units('cm/s')]),
-             'accretion_rad':2.5*np.min(region['dx'].in_units('pc')),
-             'particle_tag':region['particle_tag'],
-             'particle_form_time':region['particle_creation_time']}
-             
-proj_dict = {}
-for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=region)
-    proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
-    sto.result_id = field[1]
-    sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+    part_info = {'particle_mass':region['particle_mass'].in_units('msun'),
+                 'particle_position':yt.YTArray([region['particle_posx'].in_units('pc'),region['particle_posy'].in_units('pc')]),
+                 'particle_velocities':yt.YTArray([region['particle_velx'].in_units('cm/s'),region['particle_vely'].in_units('cm/s')]),
+                 'accretion_rad':2.5*np.min(region['dx'].in_units('pc')),
+                 'particle_tag':region['particle_tag'],
+                 'particle_form_time':region['particle_creation_time']}
+                 
+    proj_dict = {}
+    for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+        proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=region)
+        proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+        sto.result_id = field[1]
+        sto.result = proj_array
+    velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
-file = open('xy_proj.pkl', 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
-file.close()
+    file = open('xy_proj_zoom.pkl', 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+    file.close()
 
-file = open('xy_proj.pkl', 'rb')
+file = open('xy_proj_zoom.pkl', 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
 file.close()
 
@@ -212,30 +213,31 @@ plt.savefig("xy_proj_zoom.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
 
 #For xy projection centred on z=shifted_CoM[2]
-proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
+if os.path.exists('xy_proj.pkl') == False:
+    proj_field_list = [('flash', 'dens')]
+    proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
 
-proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
-proj_right_corner = yt.YTArray([ds.domain_right_edge[0], ds.domain_right_edge[1], shifted_CoM[2].in_units('cm')+box_length.in_units('cm')/2], 'cm')
-proj_region = ds.box(proj_left_corner, proj_right_corner)
-part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
-             'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posy'].in_units('pc')]),
-             'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_vely'].in_units('cm/s')]),
-             'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
-             'particle_tag':proj_region['particle_tag'],
-             'particle_form_time':proj_region['particle_creation_time']}
-             
-proj_dict = {}
-for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-    proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region)
-    proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
-    sto.result_id = field[1]
-    sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+    proj_left_corner = yt.YTArray([ds.domain_left_edge[0], ds.domain_left_edge[1], shifted_CoM[2].in_units('cm')-box_length.in_units('cm')/2], 'cm')
+    proj_right_corner = yt.YTArray([ds.domain_right_edge[0], ds.domain_right_edge[1], shifted_CoM[2].in_units('cm')+box_length.in_units('cm')/2], 'cm')
+    proj_region = ds.box(proj_left_corner, proj_right_corner)
+    part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
+                 'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posy'].in_units('pc')]),
+                 'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_vely'].in_units('cm/s')]),
+                 'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
+                 'particle_tag':proj_region['particle_tag'],
+                 'particle_form_time':proj_region['particle_creation_time']}
+                 
+    proj_dict = {}
+    for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+        proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=proj_region)
+        proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+        sto.result_id = field[1]
+        sto.result = proj_array
+    velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
-file = open('xy_proj.pkl', 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
-file.close()
+    file = open('xy_proj.pkl', 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+    file.close()
 
 file = open('xy_proj.pkl', 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
@@ -285,31 +287,32 @@ plt.savefig("xy_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
 
 #For xz projection centred on y=shifted_CoM[1]
-proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vely' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magy' not in field[1])]
+if os.path.exists('xz_proj.pkl') == False:
+    proj_field_list = [('flash', 'dens')]
+    proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vely' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magy' not in field[1])]
 
-proj_left_corner = yt.YTArray([ds.domain_left_edge[0], shifted_CoM[1].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[2]], 'cm')
-proj_right_corner = yt.YTArray([ds.domain_right_edge[0], shifted_CoM[1].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[2]], 'cm')
-proj_region = ds.box(proj_left_corner, proj_right_corner)
-part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
-             'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posz'].in_units('pc')]),
-             'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_velz'].in_units('cm/s')]),
-             'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
-             'particle_tag':proj_region['particle_tag'],
-             'particle_form_time':proj_region['particle_creation_time']}
-             
-proj_dict = {}
-for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-    proj = yt.ProjectionPlot(ds, "y", field, method='integrate', data_source=proj_region)
-    proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
-    proj_array = proj_array.T
-    sto.result_id = field[1]
-    sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+    proj_left_corner = yt.YTArray([ds.domain_left_edge[0], shifted_CoM[1].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[2]], 'cm')
+    proj_right_corner = yt.YTArray([ds.domain_right_edge[0], shifted_CoM[1].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[2]], 'cm')
+    proj_region = ds.box(proj_left_corner, proj_right_corner)
+    part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
+                 'particle_position':yt.YTArray([proj_region['particle_posx'].in_units('pc'),proj_region['particle_posz'].in_units('pc')]),
+                 'particle_velocities':yt.YTArray([proj_region['particle_velx'].in_units('cm/s'),proj_region['particle_velz'].in_units('cm/s')]),
+                 'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
+                 'particle_tag':proj_region['particle_tag'],
+                 'particle_form_time':proj_region['particle_creation_time']}
+                 
+    proj_dict = {}
+    for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+        proj = yt.ProjectionPlot(ds, "y", field, method='integrate', data_source=proj_region)
+        proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+        proj_array = proj_array.T
+        sto.result_id = field[1]
+        sto.result = proj_array
+    velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
-file = open('xz_proj.pkl', 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
-file.close()
+    file = open('xz_proj.pkl', 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+    file.close()
 
 file = open('xz_proj.pkl', 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
@@ -354,30 +357,31 @@ ax.add_patch(square)
 plt.savefig("xz_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
 #For yz projection centred on y=shifted_CoM[0]
-proj_field_list = [('flash', 'dens')]
-proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velx' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magx' not in field[1])]
+if os.path.exists('yz_proj.pkl') == False:
+    proj_field_list = [('flash', 'dens')]
+    proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velx' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magx' not in field[1])]
 
-proj_left_corner = yt.YTArray([shifted_CoM[0].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[1], ds.domain_left_edge[2]], 'cm')
-proj_right_corner = yt.YTArray([shifted_CoM[0].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[1], ds.domain_right_edge[2]], 'cm')
-proj_region = ds.box(proj_left_corner, proj_right_corner)
-part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
-             'particle_position':yt.YTArray([proj_region['particle_posy'].in_units('pc'),proj_region['particle_posz'].in_units('pc')]),
-             'particle_velocities':yt.YTArray([proj_region['particle_vely'].in_units('cm/s'),proj_region['particle_velz'].in_units('cm/s')]),
-             'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
-             'particle_tag':proj_region['particle_tag'],
-             'particle_form_time':proj_region['particle_creation_time']}
-             
-proj_dict = {}
-for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-    proj = yt.ProjectionPlot(ds, "x", field, method='integrate', data_source=proj_region)
-    proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
-    sto.result_id = field[1]
-    sto.result = proj_array
-velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
+    proj_left_corner = yt.YTArray([shifted_CoM[0].in_units('cm')-box_length.in_units('cm')/2, ds.domain_left_edge[1], ds.domain_left_edge[2]], 'cm')
+    proj_right_corner = yt.YTArray([shifted_CoM[0].in_units('cm')+box_length.in_units('cm')/2, ds.domain_right_edge[1], ds.domain_right_edge[2]], 'cm')
+    proj_region = ds.box(proj_left_corner, proj_right_corner)
+    part_info = {'particle_mass':proj_region['particle_mass'].in_units('msun'),
+                 'particle_position':yt.YTArray([proj_region['particle_posy'].in_units('pc'),proj_region['particle_posz'].in_units('pc')]),
+                 'particle_velocities':yt.YTArray([proj_region['particle_vely'].in_units('cm/s'),proj_region['particle_velz'].in_units('cm/s')]),
+                 'accretion_rad':2.5*np.min(proj_region['dx'].in_units('pc')),
+                 'particle_tag':proj_region['particle_tag'],
+                 'particle_form_time':proj_region['particle_creation_time']}
+                 
+    proj_dict = {}
+    for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+        proj = yt.ProjectionPlot(ds, "x", field, method='integrate', data_source=proj_region)
+        proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
+        sto.result_id = field[1]
+        sto.result = proj_array
+    velx, vely, velz = mym.get_quiver_arrays(x_image_min.value, x_image_max.value, X_image, proj_dict[list(proj_dict.keys())[1]], proj_dict[list(proj_dict.keys())[2]], no_of_quivers=32)
 
-file = open('yz_proj.pkl', 'wb')
-pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
-file.close()
+    file = open('yz_proj.pkl', 'wb')
+    pickle.dump((X_image, Y_image, proj_dict[list(proj_dict.keys())[0]], proj_dict[list(proj_dict.keys())[3]], proj_dict[list(proj_dict.keys())[4]], X_image_vel, Y_image_vel, velx, vely, part_info, time_val), file)
+    file.close()
 
 file = open('yz_proj.pkl', 'rb')
 X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, part_info, time_val = pickle.load(file)
