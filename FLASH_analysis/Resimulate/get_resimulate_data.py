@@ -57,7 +57,7 @@ ds = yt.load(prev_file, particle_filename=part_file)
 
 dt = binary_characteristic_time.in_units('yr') - ds.current_time.in_units('yr')
 shifted_CoM = (CoM_pos + ((-1*CoM_vel)*dt.in_units('s'))).in_units('au')
-shifted_CoM = yt.YTArray([sink_data[primary_sink]['posx'][0], sink_data[primary_sink]['posy'][0], sink_data[primary_sink]['posz'][0]], 'cm').in_units('au')
+#shifted_CoM = yt.YTArray([sink_data[primary_sink]['posx'][0], sink_data[primary_sink]['posy'][0], sink_data[primary_sink]['posz'][0]], 'cm').in_units('au')
 
 xmin = shifted_CoM[0] - (box_length.in_units('au')/2)
 xmax = shifted_CoM[0] + (box_length.in_units('au')/2)
@@ -109,8 +109,9 @@ time_val = ds.current_time.in_units('yr').value
 
 
 #Make projections
+'''
 if os.path.exists('xy_proj_zoom.pkl') == False:
-    x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
+    x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 50)
     X_image, Y_image = np.meshgrid(x_range, x_range)
     x_image_min = ds.domain_left_edge[0].in_units('pc')
     x_image_max = ds.domain_right_edge[0].in_units('pc')
@@ -138,7 +139,7 @@ if os.path.exists('xy_proj_zoom.pkl') == False:
                  
     proj_dict = {}
     for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-        proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=region)
+        proj = yt.ProjectionPlot(ds, "z", field, method='integrate', data_source=region, buff_size=(2, 2))
         proj_array = proj.frb.data[field].in_cgs()/box_length.in_units('cm')
         sto.result_id = field[1]
         sto.result = proj_array
@@ -193,7 +194,7 @@ ax.add_patch(square)
 CS = ax.contour(X_image,X_image,image, locator=plt.LogLocator(), linewidths=0.5, colors='blue', levels=[1.e-18])
 
 plt.savefig("xy_proj_zoom.jpg", format='jpg', bbox_inches='tight', dpi=300)
-
+'''
 
 
 
