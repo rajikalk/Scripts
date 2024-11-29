@@ -87,46 +87,24 @@ print("sim_velx_offset = ", sim_velx_offset)
 print("sim_vely_offset = ", sim_vely_offset)
 print("sim_velz_offset = ", sim_velz_offset)
 
-#Zoom plots
-x_range = np.linspace(xmin.in_units('pc'), xmax.in_units('pc'), 800)
-y_range = np.linspace(ymin.in_units('pc'), ymax.in_units('pc'), 800)
-X_image, Y_image = np.meshgrid(x_range, y_range)
-annotate_space = (x_range[-1] - x_range[0])/32
-x_ind = []
-y_ind = []
-counter = 0
-while counter < 32:
-    xval = annotate_space*counter + annotate_space/2. + x_range[0]
-    yval = annotate_space*counter + annotate_space/2. + y_range[0]
-    x_ind.append(float(xval))
-    y_ind.append(float(yval))
-    counter = counter + 1
-X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
-time_val = ds.current_time.in_units('yr').value
-
-
-
-
-
 #Make projections
 '''
 if os.path.exists('xy_proj_zoom.pkl') == False:
-    x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 50)
-    X_image, Y_image = np.meshgrid(x_range, x_range)
-    x_image_min = ds.domain_left_edge[0].in_units('pc')
-    x_image_max = ds.domain_right_edge[0].in_units('pc')
-    annotate_space = (x_image_max - x_image_min)/32
+    x_range = np.linspace(xmin.in_units('pc'), xmax.in_units('pc'), 40)
+    y_range = np.linspace(ymin.in_units('pc'), ymax.in_units('pc'), 40)
+    X_image, Y_image = np.meshgrid(x_range, y_range)
+    annotate_space = (x_range[-1] - x_range[0])/32
     x_ind = []
     y_ind = []
     counter = 0
     while counter < 32:
-        val = annotate_space*counter + annotate_space/2. + x_image_min
-        x_ind.append(float(val))
-        y_ind.append(float(val))
+        xval = annotate_space*counter + annotate_space/2. + x_range[0]
+        yval = annotate_space*counter + annotate_space/2. + y_range[0]
+        x_ind.append(float(xval))
+        y_ind.append(float(yval))
         counter = counter + 1
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
     time_val = ds.current_time.in_units('yr').value
-
     proj_field_list = [('flash', 'dens')]
     proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
 
@@ -215,6 +193,23 @@ plt.savefig("xy_proj_zoom.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
 
 #For xy projection centred on z=shifted_CoM[2]
+
+x_range = np.linspace(ds.domain_left_edge[0].in_units('pc'), ds.domain_right_edge[0].in_units('pc'), 800)
+X_image, Y_image = np.meshgrid(x_range, x_range)
+x_image_min = ds.domain_left_edge[0].in_units('pc')
+x_image_max = ds.domain_right_edge[0].in_units('pc')
+annotate_space = (x_image_max - x_image_min)/32
+x_ind = []
+y_ind = []
+counter = 0
+while counter < 32:
+    val = annotate_space*counter + annotate_space/2. + x_image_min
+    x_ind.append(float(val))
+    y_ind.append(float(val))
+    counter = counter + 1
+X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
+time_val = ds.current_time.in_units('yr').value
+
 if os.path.exists('xy_proj.pkl') == False:
     proj_field_list = [('flash', 'dens')]
     proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('velz' not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('magz' not in field[1])]
