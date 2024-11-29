@@ -171,7 +171,7 @@ time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black')
 
 square = patches.Rectangle((xmin.in_units('pc'), ymin.in_units('pc')), box_length, box_length, edgecolor='green', facecolor='none')
 ax.add_patch(square)
-plt.contour([X_image.value, Y_image.value], image, [1.e-18])
+CS = ax.contour(X_image,X_image,image, locator=plt.LogLocator(), linewidths=0.5, colors='blue', levels=[1.e-18])
 
 plt.savefig("xy_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
@@ -241,7 +241,7 @@ time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black')
 
 square = patches.Rectangle((xmin.in_units('pc'), zmin.in_units('pc')), box_length, box_length, edgecolor='green', facecolor='none')
 ax.add_patch(square)
-plt.contour([X_image.value, Y_image.value], image, [1.e-18])
+#plt.contour([X_image.value, Y_image.value], image, [1.e-18])
 
 plt.savefig("xz_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
 
@@ -309,6 +309,6 @@ time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black')
 
 square = patches.Rectangle((ymin.in_units('pc'), zmin.in_units('pc')), box_length, box_length, edgecolor='green', facecolor='none')
 ax.add_patch(square)
-plt.contour([X_image.value, Y_image.value], image, [1.e-18])
+#plt.contour([X_image.value, Y_image.value], image, [1.e-18])
 
 plt.savefig("yz_proj.jpg", format='jpg', bbox_inches='tight', dpi=300)
