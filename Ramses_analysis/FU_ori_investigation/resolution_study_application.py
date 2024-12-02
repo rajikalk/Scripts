@@ -25,6 +25,7 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
+
 '''
 matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
