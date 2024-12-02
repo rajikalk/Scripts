@@ -118,6 +118,6 @@ for pick_file in pickle_files:
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].set_ylim(bottom=0)
     axs.flatten()[2].set_ylabel('Mass (Msun)')
-    print("plotted Mass")
-    plt.savefig('resolution_study_sink_'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
     '''
+    print("plotted", pick_file)
+    plt.savefig('resolution_study_sink_'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
