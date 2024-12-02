@@ -25,12 +25,7 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = [
-       r"\usepackage{siunitx}",   # i need upright \micro symbols, but you need...
-       "\sisetup{detect-all}",   # ...this to force siunitx to actually use your fonts
-       r"\usepackage{helvet}",    # set the normal font here
-       r"\usepackage{sansmath}",  # load up the sansmath so that math -> helvet
-       "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
+matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 ]
 def parse_inputs():
     import argparse
