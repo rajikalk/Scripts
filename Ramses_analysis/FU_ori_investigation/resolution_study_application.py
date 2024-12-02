@@ -12,8 +12,8 @@ import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
 
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
+#matplotlib.rcParams['pdf.fonttype'] = 42
+#matplotlib.rcParams['ps.fonttype'] = 42
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
@@ -25,8 +25,6 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
-
-'''
 matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
        r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
@@ -34,8 +32,6 @@ matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
-'''
-
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
