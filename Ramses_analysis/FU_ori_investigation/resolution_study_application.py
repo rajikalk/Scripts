@@ -45,7 +45,7 @@ pickle_files = ["/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_da
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
 
-label = ["Res=3.15AU", "Res=1.57AU", "Res=0.79AU", "Res=0.39AU"]
+label = ["3.15AU", "1.57AU", "0.79AU", "0.39AU"]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
