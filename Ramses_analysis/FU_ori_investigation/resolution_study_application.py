@@ -59,7 +59,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width0.7), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*0.7), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
