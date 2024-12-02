@@ -28,7 +28,7 @@ matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = [
        r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
        '\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-       '\usepackage{helvet}',    # set the normal font here
+       r'\usepackage{helvet}',    # set the normal font here
        '\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
        '\sansmath'               # <- tricky! -- gotta actually tell tex to use!
 ]
