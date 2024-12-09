@@ -11,7 +11,7 @@ file.close()
 
 for key in sink_data.keys():
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=2, sharex=True, sharey=False)
+    fig, axs = plt.subplots(ncols=1, nrows=3, sharex=True, sharey=False)
     time = sink_data[key]['time'] - sink_data[key]['time'][0]
     time = yt.YTArray(time, 's').in_units('yr')
     mass = yt.YTArray(sink_data[key]['mass'], 'g').in_units('Msun')
@@ -19,6 +19,9 @@ for key in sink_data.keys():
     time_mid = (time[:-1] + time[1:])/2
     m_dot_calc = (mass[1:]-mass[:-1])/(time[1:]-time[:-1])
     m_dot_calc[np.argwhere(m_dot_calc<0)] = np.nan
+    ang = np.sqrt(sink_data[key]['anglx']**2 + sink_data[key]['angly']**2 + sink_data[key]['anglz']**2)
+    spec_ang = ang/mass.value
+    
     
     axs[0].plot(time, mass)
     axs[0].set_title('Sink id:'+key)
@@ -28,7 +31,10 @@ for key in sink_data.keys():
     axs[1].plot(time_mid, m_dot_calc)
     axs[1].set_ylim(bottom=0)
     axs[1].set_ylabel('Mass accretion (M$_\odot$/yr)')
-    axs[1].set_xlabel('Time (yr)')
+    axs[2].plot(time, spec_ang)
+    axs[2].set_ylim(bottom=0)
+    axs[2].set_ylabel('Specific L')
+    axs[2].set_xlabel('Time (yr)')
     
     plt.savefig(key+'.png')
     print('saved '+key+'.png')

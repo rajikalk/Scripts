@@ -36,9 +36,9 @@ for key in sink_data.keys():
     dy = final_pos.T[1] - curr_pos[1]
     dz = final_pos.T[2] - curr_pos[2]
     separations = np.sqrt(dx**2 + dy**2 + dz**2)
-    if key == '65910':
-        import pdb
-        pdb.set_trace()
+    #if key == '65910':
+    #    import pdb
+    #    pdb.set_trace()
     min_ind = np.argsort(separations)[1]
     min_sep = separations.in_units('au')[min_ind]
     closest_sink_id = final_keys[min_ind]
@@ -64,3 +64,56 @@ for key in sink_data.keys():
     final_data = {'closest_separation': float(min_sep.value), 'closest_sink': closest_sink_id, 'bound_sink_ids': bound_sink_ids}
         
     Final_data.update({key: final_data})
+
+Masses = []
+Spec_angs = []
+Final_Accretion = []
+averaging_time = yt.YTQuantity(100, 'yr')
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=2, sharex=True, sharey=False)
+for key in sink_data.keys():
+    sim_time = yt.YTArray(sink_data[key]['time'], 's').in_units('yr')
+    time = sink_data[key]['time'] - sink_data[key]['time'][0]
+    time = yt.YTArray(time, 's').in_units('yr')
+    mass = yt.YTArray(sink_data[key]['mass'], 'g')
+    ang = np.sqrt(sink_data[key]['anglx']**2 + sink_data[key]['angly']**2 + sink_data[key]['anglz']**2)
+    spec_ang = ang/mass.in_units('g').value
+    axs[0].plot(sim_time, spec_ang)
+    axs[1].plot(sim_time, mass.in_units('msun'))
+
+axs[1].set_xlabel('Time since formation (yr)')
+axs[0].set_ylabel('specific angular momentum')
+axs[1].set_ylabel('mass (msun)')
+#axs[0].set_xlim(left=0)
+axs[0].set_ylim(bottom=0)
+axs[1].set_ylim(bottom=0)
+plt.savefig('all_spec_ang.png')
+
+
+for key in sink_data.keys():
+    ang_total = np.sqrt(sink_data[key]['anglx'][-1]**2 + sink_data[key]['angly'][-1]**2 + sink_data[key]['anglz'][-1]**2)
+    Mass_array = yt.YTArray(sink_data[key]['mass'], 'g')
+    Masses.append(Mass_array[-1].in_units('msun'))
+    Time_array = yt.YTArray(sink_data[key]['time'], 's')
+    average_start = Time_array[-1] - averaging_time.in_units('s')
+    average_start_ind = np.argmin(abs(Time_array - average_start))
+    dM = Mass_array[-1] - Mass_array[average_start_ind]
+    dt = Time_array[-1] - Time_array[average_start_ind]
+    accretion = dM.in_units('Msun')/dt.in_units('yr')
+    ang_spec = ang_total/sink_data[key]['mass'][-1]
+    Spec_angs.append(ang_spec)
+    Final_Accretion.append(accretion)
+    
+plt.clf()
+plt.scatter(Masses, Spec_angs)
+plt.xlabel('Mass (msun)')
+plt.ylabel('Specific angular momentum')
+plt.savefig('spin_distribution.png')
+
+plt.clf()
+plt.scatter(Final_Accretion, Spec_angs)
+plt.xlabel('Final_Accretion (Msun/yr)')
+plt.ylabel('Specific angular momentum')
+plt.savefig('accretion_vs_spin.png')
+    
