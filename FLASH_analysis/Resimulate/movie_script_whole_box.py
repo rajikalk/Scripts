@@ -29,7 +29,7 @@ def parse_inputs():
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
-    #parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
+    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
     parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
     parser.add_argument("-no_quiv", "--quiver_arrows", default=31., type=float)
@@ -100,8 +100,6 @@ if args.make_movie_pickles == 'True':
     fn = usable_files[-1]
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
-    import pdb
-    pdb.set_trace()
     x_image_min = yt.YTQuantity(-1*args.plot_width/2, 'au')
     x_image_max = yt.YTQuantity(args.plot_width/2, 'au')
     #x_image_min = -1*ds.domain_width.in_units('au')[0]/2
