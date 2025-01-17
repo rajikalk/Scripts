@@ -75,9 +75,9 @@ CoM_vel_x = np.sum(region['cell_mass']*region['velx'])/np.sum(region['cell_mass'
 CoM_vel_y = np.sum(region['cell_mass']*region['vely'])/np.sum(region['cell_mass'])
 CoM_vel_z = np.sum(region['cell_mass']*region['velz'])/np.sum(region['cell_mass'])
 
-sim_velx_offset = -1 * CoM_vel_x
-sim_vely_offset = -1 * CoM_vel_y
-sim_velz_offset = -1 * CoM_vel_z
+sim_velx_offset = np.sum(region['cell_mass']*region['velx'])/np.sum(region['cell_mass'])
+sim_vely_offset = np.sum(region['cell_mass']*region['vely'])/np.sum(region['cell_mass'])
+sim_velz_offset = np.sum(region['cell_mass']*region['velz'])/np.sum(region['cell_mass'])
 
 #Print results
 print("sim_input_file = ", prev_file)
