@@ -96,6 +96,8 @@ if args.make_movie_pickles == 'True':
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
     thickness = (ds.domain_right_edge.in_units('au') - ds.domain_left_edge.in_units('au'))[0]
+    center_pos = (ds.domain_right_edge.in_units('au')+ds.domain_left_edge.in_units('au'))/2
+    center_vel = yt.YTArray([0, 0, 0], 'cm/s')
     x_image_min = yt.YTQuantity(-1*thickness/2, 'au')
     x_image_max = yt.YTQuantity(thickness/2, 'au')
     x_range = np.linspace(x_image_min, x_image_max, 800)
@@ -155,6 +157,16 @@ if args.make_movie_pickles == 'True':
                 part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
                 
+                #Adjust for center:
+                positions[0] = positions[0] - center_pos[0].in_units('au')
+                velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
+                if args.axis == 'z':
+                    positions[1] = positions[1] - center_pos[1].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[1].in_units('cm/s')
+                else:
+                    positions[1] = positions[1] - center_pos[2].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
+                
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'particle_velocities':velocities,
@@ -182,7 +194,7 @@ if args.make_movie_pickles == 'True':
         
             #define projection region
             pdb.set_trace()
-            region = ds.box(left_corner, right_corner)
+            region = ds.box(ds.domain_left_edge.in_units('au'), ds.domain_au_edge.in_units('au'))
                 
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
             del test_fields
