@@ -90,9 +90,9 @@ if args.make_movie_pickles == 'True':
     fn = usable_files[-1]
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
-    plot_width = (ds.domain_right_edge.in_units('au') - ds.domain_left_edge.in_units('au'))[0]
-    x_image_min = yt.YTQuantity(-1*plot_width/2, 'au')
-    x_image_max = yt.YTQuantity(plot_width/2, 'au')
+    thickness = (ds.domain_right_edge.in_units('au') - ds.domain_left_edge.in_units('au'))[0]
+    x_image_min = yt.YTQuantity(-1*thickness/2, 'au')
+    x_image_max = yt.YTQuantity(thickness/2, 'au')
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
     annotate_space = (x_image_max - x_image_min)/args.quiver_arrows
@@ -105,7 +105,6 @@ if args.make_movie_pickles == 'True':
         y_ind.append(int(val))
         counter = counter + 1
     X_image_vel, Y_image_vel = np.meshgrid(x_ind, y_ind)
-    thickness = yt.YTQuantity(args.proj_thickness, 'AU')
 
     #Now let's iterate over the files and get the images we want to plot
     file_int = -1
@@ -192,7 +191,6 @@ if args.make_movie_pickles == 'True':
             proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
             #define projection region
-            plot_width = yt.YTQuantity(args.plot_width, 'au')
             pdb.set_trace()
             region = ds.box(left_corner, right_corner)
                 
@@ -207,7 +205,7 @@ if args.make_movie_pickles == 'True':
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
-                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
+                proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=thickness, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
                     proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
                 else:
