@@ -71,9 +71,13 @@ left_corner = yt.YTArray([xmin, ymin, zmin], 'au')
 right_corner = yt.YTArray([xmax, ymax, zmax], 'au')
 region = ds.box(left_corner.in_units('cm'), right_corner.in_units('cm'))
 
-sim_velx_offset = -1 * np.mean(region['velx'])
-sim_vely_offset = -1 * np.mean(region['vely'])
-sim_velz_offset = -1 * np.mean(region['velz'])
+CoM_vel_x = np.sum(region['cell_mass']*region['velx'])/np.sum(region['cell_mass'])
+CoM_vel_y = np.sum(region['cell_mass']*region['vely'])/np.sum(region['cell_mass'])
+CoM_vel_z = np.sum(region['cell_mass']*region['velz'])/np.sum(region['cell_mass'])
+
+sim_velx_offset = -1 * CoM_vel_x
+sim_vely_offset = -1 * CoM_vel_y
+sim_velz_offset = -1 * CoM_vel_z
 
 #Print results
 print("sim_input_file = ", prev_file)
