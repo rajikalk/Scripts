@@ -8,8 +8,9 @@ from mpi4py.MPI import COMM_WORLD as CW
 import numpy as np
 import pickle
 import os
-import my_flash_module_gadi as mym
+import my_flash_module as mym
 import my_flash_fields as myf
+import pdb
 
 #------------------------------------------------------
 #get mpi size and ranks
@@ -22,10 +23,7 @@ def parse_inputs():
     parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="z")
     parser.add_argument("-make_pickles", "--make_movie_pickles", type=str, default='True')
     parser.add_argument("-make_frames", "--make_movie_frames", type=str, default='True')
-    #parser.add_argument("-width", "--plot_width", type=float, default=2000)
-    #parser.add_argument("-thickness", "--proj_thickness", type=float, default=None)
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="dens", type=str)
-    #parser.add_argument("-cbar_lim", "-cbar_limits", type=str, default=[])
     
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
@@ -38,8 +36,6 @@ def parse_inputs():
     parser.add_argument("-weight", "--weight_field", help="set weight field?", type=str, default=None)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=None)
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
-    parser.add_argument("-update_vel", "--update_velocity_field", help="update velocity field to be wrt to primary", type=str, default='False')
-    parser.add_argument("-image_center", "--image_center_pos", help="0 means cennter of mass, and 1 means primary", type=int, default=0)
     
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
@@ -157,21 +153,7 @@ if args.make_movie_pickles == 'True':
                 dd = ds.all_data()
                 time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
             
-                        #Get particle data:
             dd = ds.all_data()
-            #Load fields
-            #del test_fields
-            if args.image_center_pos == 0:
-                center_pos = dd['CoM_full'].in_units('cm')
-                center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
-            elif args.image_center_pos == 1:
-                if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
-                    primary_ind = np.argmin(dd['all', 'particle_creation_time'])
-                    center_pos = yt.YTArray([dd['all', 'particle_posx'][primary_ind].in_units('cm').value, dd['all', 'particle_posy'][primary_ind].in_units('cm').value, dd['all', 'particle_posz'][primary_ind].in_units('cm').value], 'cm')
-                    center_vel = yt.YTArray([dd['all', 'particle_velx'][primary_ind].in_units('cm/s').value, dd['all', 'particle_vely'][primary_ind].in_units('cm/s').value, dd['all', 'particle_velz'][primary_ind].in_units('cm/s').value], 'cm/s')
-                else:
-                    center_pos = dd['CoM_full'].in_units('cm')
-                    center_vel = dd['CoM_Velocity_full'].in_units('cm/s')
             
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
                 has_particles = True
@@ -222,19 +204,8 @@ if args.make_movie_pickles == 'True':
         
             #define projection region
             plot_width = yt.YTQuantity(args.plot_width, 'au')
-            if args.axis == 'z':
-                if args.proj_thickness == None:
-                    thickness = yt.YTQuantity(args.plot_width/2, 'au')
-                else:
-                    thickness = yt.YTQuantity(args.proj_thickness, 'au')
-                
-                left_corner = yt.YTArray([center_pos[0].in_units('au')-((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')-((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[2].in_units('au')-(thickness.in_units('au')/2)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[2].in_units('au')+(thickness.in_units('au')/2)], 'AU')
-                region = ds.box(left_corner, right_corner)
-            else:
-                left_corner = yt.YTArray([center_pos[0].in_units('au')-((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')-(plot_width.in_units('au')/2), center_pos[2].in_units('au')-((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au'))], 'AU')
-                right_corner = yt.YTArray([center_pos[0].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au')), center_pos[1].in_units('au')+(plot_width.in_units('au')/2), center_pos[2].in_units('au')+((plot_width.in_units('au')/2)+yt.YTQuantity(100, 'au'))], 'AU')
-                region = ds.box(left_corner, right_corner)
+            pdb.set_trace()
+            region = ds.box(left_corner, right_corner)
                 
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
             del test_fields
