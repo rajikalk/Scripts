@@ -193,8 +193,7 @@ if args.make_movie_pickles == 'True':
             proj_field_list = proj_field_list + [field for field in ds.field_list if ('vel'in field[1])&(field[0]=='flash')&('vel'+args.axis not in field[1])] + [field for field in ds.field_list if ('mag'in field[1])&(field[0]=='flash')&('mag'+args.axis not in field[1])]
         
             #define projection region
-            pdb.set_trace()
-            region = ds.box(ds.domain_left_edge.in_units('au'), ds.domain_au_edge.in_units('au'))
+            region = ds.box(ds.domain_left_edge.in_units('au'), ds.domain_right_edge.in_units('au'))
                 
             test_fields = region['x'], region['y'], region['z'], region['velx'], region['vely'], region['velz'], region['mass']
             del test_fields
