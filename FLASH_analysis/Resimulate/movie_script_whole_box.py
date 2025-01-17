@@ -140,13 +140,7 @@ if args.make_movie_pickles == 'True':
             proj_root_rank = int(rank/5)*5
             part_file = 'part'.join(fn.split('plt_cnt'))
             ds = yt.load(fn, particle_filename=part_file)
-            if args.plot_time == None:
-                time_val = m_times[file_int]#ds.current_time.in_units('yr')
-            else:
-                dd = ds.all_data()
-                try:
-                    time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
-                
+            time_val = m_times[file_int]#ds.current_time.in_units('yr')
             dd = ds.all_data()
             
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
