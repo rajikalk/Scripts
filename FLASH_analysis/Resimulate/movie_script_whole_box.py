@@ -71,7 +71,6 @@ if args.make_movie_pickles == 'True':
             usable_files = mym.find_files(m_times, files)
         else:
             usable_files = []
-        #UPDATES THIS
         frames = list(range(no_frames-len(m_times), no_frames))
     elif args.use_all_files == 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
@@ -87,19 +86,13 @@ if args.make_movie_pickles == 'True':
         no_frames = len(usable_files)
     print('found usable files for frames')
 
-    #Get movie files
-    #movie_files = sorted(glob.glob(input_dir + '*plt_cnt*'))
-    #if rank == 1:
-    #    print("Movie files=", movie_files)
-
     #Calculate image grid:
     fn = usable_files[-1]
     part_file = 'part'.join(fn.split('plt_cnt'))
     ds = yt.load(fn, particle_filename=part_file)
-    x_image_min = yt.YTQuantity(-1*args.plot_width/2, 'au')
-    x_image_max = yt.YTQuantity(args.plot_width/2, 'au')
-    #x_image_min = -1*ds.domain_width.in_units('au')[0]/2
-    #x_image_max = ds.domain_width.in_units('au')[0]/2
+    plot_width = (ds.domain_right_edge.in_units('au') - ds.domain_left_edge.in_units('au'))[0]
+    x_image_min = yt.YTQuantity(-1*plot_width/2, 'au')
+    x_image_max = yt.YTQuantity(plot_width/2, 'au')
     x_range = np.linspace(x_image_min, x_image_max, 800)
     X_image, Y_image = np.meshgrid(x_range, x_range)
     annotate_space = (x_image_max - x_image_min)/args.quiver_arrows
@@ -139,11 +132,7 @@ if args.make_movie_pickles == 'True':
                 make_pickle = True
         if usable_files[file_int] == usable_files[file_int-1]:
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
-        #if os.path.isfile(pickle_file) == True:
-        #if len(glob.glob(pickle_file)) == 1:
-        #    make_pickle = False
         if make_pickle:
-            #print(fn, "is going to rank", rank)
             proj_root_rank = int(rank/5)*5
             part_file = 'part'.join(fn.split('plt_cnt'))
             ds = yt.load(fn, particle_filename=part_file)
@@ -215,24 +204,11 @@ if args.make_movie_pickles == 'True':
             del test_fields
             test_fields = region['Radial_velocity_wrt_primary']
             
-            #Make projections of each field
-            #proj_depth = yt.ProjectionPlot(ds, args.axis, [('flash', 'z'), ('gas', 'Neg_z'), ('flash', 'dz'), ('gas', 'Neg_dz')], width=(args.plot_width,'au'), weight_field=None, data_source=region, method='mip', center=(center_pos, 'AU'))
-            #thickness = ((proj_depth.frb.data[('gas', 'Neg_z')].in_units('cm') + proj_depth.frb.data[('gas', 'Neg_dz')].in_units('cm')/2.) + (proj_depth.frb.data[('flash', 'z')].in_units('cm') + proj_depth.frb.data[('flash', 'dz')].in_units('cm')/2.))
-            
-
-            #thickness_proj = yt.ProjectionPlot(ds, args.axis, ('gas', 'N_cells'), method='integrate', data_source=region, width=plot_width, weight_field=None, center=center_pos)
-            #thickness_arr = (thickness_proj.frb.data[('gas', 'N_cells')].in_cgs())
-            #fix_thickness = np.ones(np.shape(thickness_arr))*((plot_width/np.shape(thickness_arr)[0])**2*thickness).in_units('cm**3')
-            
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 #print("Projecting field", field, "on rank", rank)
                 proj = yt.ProjectionPlot(ds, args.axis, field, method='integrate', data_source=region, width=plot_width, weight_field=args.weight_field, center=center_pos)
                 if args.weight_field == None:
-                    #thickness = (proj.bounds[1] - proj.bounds[0]).in_cgs() #MIGHT HAVE TO UPDATE THIS LATER
-                    #if field[1] == 'L_gas_wrt_primary_density':
-                    #    proj_array = proj.frb.data[field].in_cgs()*fix_thickness/thickness_arr
-                    #else:
                     proj_array = proj.frb.data[field].in_cgs()/thickness.in_units('cm')
                 else:
                     proj_array = proj.frb.data[field].in_cgs()
@@ -241,12 +217,6 @@ if args.make_movie_pickles == 'True':
                 #print(field, "projection =", proj_array)
                 sto.result_id = field[1]
                 sto.result = proj_array
-                #if rank == proj_root_rank:
-                #    proj_dict[field[1]] = proj_array
-                #else:
-                #    file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_field_list.index(field)) + '.pkl', 'wb')
-                #    pickle.dump((field[1], proj_array), file)
-                #    file.close()
             
             if rank == proj_root_rank and size > 1:
                 proj_dict[list(proj_dict.keys())[1]] = proj_dict[list(proj_dict.keys())[1]] - center_vel[0]
