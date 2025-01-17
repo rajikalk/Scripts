@@ -74,6 +74,11 @@ if args.make_movie_pickles == 'True':
         frames = list(range(no_frames-len(m_times), no_frames))
     elif args.use_all_files == 'False' and args.plot_time != None:
         usable_files = mym.find_files([args.plot_time], files)
+        if args.plot_time == 0.0:
+            part_file = 'part'.join(usable_files[0].split('plt_cnt'))
+            ds = yt.load(usable_files[0], particle_filename=part_file)
+            if ('all', 'particle_mass') not in ds.field_list:
+                usable_files = [usable_files[0][:-4] +str(int(usable_files[0].split('_')[-1]) + 1)]
         frames = list(range(len(usable_files)))
         no_frames = len(usable_files)
     else:
@@ -139,8 +144,9 @@ if args.make_movie_pickles == 'True':
                 time_val = m_times[file_int]#ds.current_time.in_units('yr')
             else:
                 dd = ds.all_data()
-                time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
-            
+                try:
+                    time_val = int(yt.YTQuantity(ds.current_time.value - np.min(dd['particle_creation_time']).value, 's').in_units('yr').value)
+                
             dd = ds.all_data()
             
             if len([field for field in ds.field_list if 'particle_mass' in field[1]]) > 0:
