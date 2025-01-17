@@ -155,16 +155,6 @@ if args.make_movie_pickles == 'True':
                 part_vel_y = dd[part_vel_fields[1]].in_units('cm/s')
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
                 
-                #Adjust for center:
-                positions[0] = positions[0] - center_pos[0].in_units('au')
-                velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
-                if args.axis == 'z':
-                    positions[1] = positions[1] - center_pos[1].in_units('au')
-                    velocities[1] = velocities[1] - center_vel[1].in_units('cm/s')
-                else:
-                    positions[1] = positions[1] - center_pos[2].in_units('au')
-                    velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
-                
                 part_info = {'particle_mass':part_mass,
                          'particle_position':positions,
                          'particle_velocities':velocities,
