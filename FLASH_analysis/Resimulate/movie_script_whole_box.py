@@ -305,7 +305,7 @@ if args.make_movie_frames == 'True':
                 plt.clf()
                 fig, ax = plt.subplots()
                 ax.set_xlabel('AU', labelpad=-1, fontsize=10)
-                ax.set_ylabel('AU', fontsize=10) #, labelpad=-20
+                ax.set_ylabel('AU', fontsize=10, labelpad=-20
                 xlim = [np.min(X_image).value, np.max(X_image).value]
                 ylim = [np.min(Y_image).value, np.max(Y_image).value]
                 ax.set_xlim(xlim)
