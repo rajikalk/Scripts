@@ -31,7 +31,7 @@ for pick_file in pickle_files:
     file_open.close()
     print("finished reading in pickle")
     
-    primary_key = sink_data.keys()[0]
+    primary_key = pickle_files.keys()[0]
     time_arr = sink_data[primary_key]['time'] - sink_data[primary_key]['time'][0]
     time_arr = yt.YTArray(time_arr, 's')
     mass_arr = yt.YTArray(sink_data[primary_key]['mass'], 'g')
