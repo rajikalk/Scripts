@@ -39,9 +39,9 @@ for pick_file in pickle_files:
     L_tot_arr = yt.YTArray(L_tot, 'g*cm**2/s')
     L_spec = L_tot_arr.in_units('g*cm**2/s')/mass_arr.in_units('g')
     
-    axs.flatten()[0].semilogy(time_arr.in_units('yr'), mass_arr.in_units('msun'), label=label[sink_pickles.index(pick_file)], color=proj_colours[cit])
-    axs.flatten()[1].semilogy(time_arr.in_units('yr'), L_tot_arr.in_units('kg*m**2/s'), label=label[sink_pickles.index(pick_file)], color=proj_colours[cit])
-    axs.flatten()[2].semilogy(time_arr.in_units('yr'), L_spec.in_units('m**2/s'), label=label[sink_pickles.index(pick_file)], color=proj_colours[cit])
+    axs.flatten()[0].semilogy(time_arr.in_units('yr'), mass_arr.in_units('msun'), label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
+    axs.flatten()[1].semilogy(time_arr.in_units('yr'), L_tot_arr.in_units('kg*m**2/s'), label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
+    axs.flatten()[2].semilogy(time_arr.in_units('yr'), L_spec.in_units('m**2/s'), label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
     
     axs.flatten()[0].set_xlim(left=0)
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)')
