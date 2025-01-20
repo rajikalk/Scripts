@@ -97,8 +97,7 @@ if args.make_movie_pickles == 'True':
     ds = yt.load(fn, particle_filename=part_file)
     thickness = (ds.domain_right_edge.in_units('au') - ds.domain_left_edge.in_units('au'))[0]
     center_pos = (ds.domain_right_edge.in_units('au')+ds.domain_left_edge.in_units('au'))/2
-    pdb.set_trace()
-    center_vel = yt.YTArray([0, 0, 0], 'cm/s')
+    center_vel = yt.YTArray([np.sum(dd['velx']*dd['cell_mass'])/np.sum(dd['cell_mass']), np.sum(dd['vely']*dd['cell_mass'])/np.sum(dd['cell_mass']), np.sum(dd['velz']*dd['cell_mass'])/np.sum(dd['cell_mass'])], 'cm/s')
     x_image_min = yt.YTQuantity(-1*thickness/2, 'au')
     x_image_max = yt.YTQuantity(thickness/2, 'au')
     x_range = np.linspace(x_image_min, x_image_max, 800)
