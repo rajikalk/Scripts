@@ -7,7 +7,7 @@ import os
 from copy import deepcopy
 import yt
 
-sink_pickles = ['/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_11_2.50.pkl', '/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_12_1.25.pkl', '/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_13_0.63.pkl']
+pickle_files = ['/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_11_2.50.pkl', '/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_12_1.25.pkl', '/home/kuruwira/fast/Analysis/High_spin_resim/Sink_particle_pickles/Lref_13_0.63.pkl']
 label = ["Lvl=11 (2.50AU)", "Lvl=12 (1.25AU)", "Lvl=13 (0.63AU)"]
 
 two_col_width = 7.20472 #inches
@@ -23,7 +23,7 @@ plt.subplots_adjust(hspace=0.0)
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 
 cit = -1
-for pick_file in sink_pickles:
+for pick_file in pickle_files:
     print("read pickle", pick_file)
     cit = cit + 1
     file_open = open(pick_file, 'rb')
