@@ -49,5 +49,5 @@ for pick_file in sink_pickles:
     axs.flatten()[2].set_ylabel('h (m$^2$/s)')
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[0].legend()
-    plt.savefig("resolution_study.pdf" bbox_inches='tight', pad_inches=0.02)
+    plt.savefig("resolution_study.pdf", bbox_inches='tight', pad_inches=0.02)
     
