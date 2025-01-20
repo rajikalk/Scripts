@@ -348,7 +348,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     print("Max velocity =", max_length)
     if plot_velocity_legend:
         #print("plotting quiver legend")
-        pos_start = [xmax - 0.15*(xmax-xmin), ymin + 0.06*(ymax-ymin)]
+        pos_start = [xmax - 0.18*(xmax-xmin), ymin + 0.06*(ymax-ymin)]
         #pos_start = [xmax - 0.25*(xmax-xmin), ymin + (fontsize_global/100)*0.70*(ymax-ymin)]
         
         xvel = len_scale*(standard_vel/standard_vel)
