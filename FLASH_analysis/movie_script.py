@@ -56,6 +56,8 @@ mym.set_global_font_size(font_size)
 if args.make_movie_pickles == 'True':
     
     files = sorted(glob.glob(input_dir + '*plt_cnt*'))
+    import pdb
+    pdb.set_trace()
     if args.plot_time != None:
         m_times = [args.plot_time]
     else:
