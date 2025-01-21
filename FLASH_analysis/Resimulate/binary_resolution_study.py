@@ -32,7 +32,7 @@ for pick_file in pickle_files:
     
     if len(list(sink_data.keys())) != 2:
         print("Number fo sink != 2")
-    else len(list(sink_data.keys())) == 2:
+    else:
         sys_form_time = -1*np.inf
         for key in list(sink_data.keys()):
             if sink_data[key]['time'][0] > sys_form_time:
