@@ -186,12 +186,19 @@ if args.make_movie_pickles == 'True':
                 velocities = yt.YTArray([part_vel_x,part_vel_y])
                 
                 #Adjust for center:
-                positions[0] = positions[0] - center_pos[0].in_units('au')
-                velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
                 if args.axis == 'z':
+                    positions[0] = positions[0] - center_pos[0].in_units('au')
+                    velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
                     positions[1] = positions[1] - center_pos[1].in_units('au')
                     velocities[1] = velocities[1] - center_vel[1].in_units('cm/s')
+                elif args.axis == 'y':
+                    positions[0] = positions[0] - center_pos[0].in_units('au')
+                    velocities[0] = velocities[0] - center_vel[0].in_units('cm/s')
+                    positions[1] = positions[1] - center_pos[2].in_units('au')
+                    velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
                 else:
+                    positions[0] = positions[0] - center_pos[1].in_units('au')
+                    velocities[0] = velocities[0] - center_vel[1].in_units('cm/s')
                     positions[1] = positions[1] - center_pos[2].in_units('au')
                     velocities[1] = velocities[1] - center_vel[2].in_units('cm/s')
                 
