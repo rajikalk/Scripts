@@ -45,6 +45,8 @@ for pick_file in pickle_files:
         import pdb
         pdb.set_trace()
         
+        #KEEP EDITING HERE. PLOT THE BINARY SEPARATION.
+        
         primary_key = list(sink_data.keys())[0]
         time_arr = sink_data[primary_key]['time'] - sink_data[primary_key]['time'][0]
         time_arr = yt.YTArray(time_arr, 's')
