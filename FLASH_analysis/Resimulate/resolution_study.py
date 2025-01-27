@@ -44,6 +44,9 @@ for pick_file in pickle_files:
     axs.flatten()[2].semilogy(time_arr.in_units('yr'), L_spec.in_units('m**2/s'), label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
     
     axs.flatten()[0].set_xlim(left=0)
+    axs.flatten()[0].set_ylim(bottom=0)
+    axs.flatten()[1].set_ylim(bottom=1.e40)
+    axs.flatten()[2].set_ylim(bottom=1.e13)
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)')
     axs.flatten()[1].set_ylabel('L (kg$\,$m$^2$/s)')
     axs.flatten()[2].set_ylabel('h (m$^2$/s)')
