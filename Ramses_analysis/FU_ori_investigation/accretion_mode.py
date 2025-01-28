@@ -88,8 +88,11 @@ CW.Barrier()
 
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     ds = yt.load(fn, units_override=units_override)
-    dd = ds.all_data()
+    #dd = ds.all_data()
     has_particles = has_sinks(ds)
+    
+    if has_particles:
+        part_info = mym.get_particle_data(ds, sink_id=sink_id)
         
     #Get secondary position
     import pdb
