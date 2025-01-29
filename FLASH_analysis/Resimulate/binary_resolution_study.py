@@ -8,13 +8,14 @@ import yt
 
 pickle_files = ['/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L08.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L09.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L10.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L11.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L12.pkl']
 label = ["Lvl=8 (10.07AU)", "Lvl=9 (5.04AU)", "Lvl=10 (2.52AU)", "Lvl=11 (1.26AU)", "Lvl=12 (0.63AU)"]
+r_acc = 2.5*np.array([10.07, 5.04, 2.52, 1.26, 0.63])
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width*2), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*2), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -42,8 +43,19 @@ for pick_file in pickle_files:
         for key in list(sink_data.keys()):
             if key != secondary_key:
                 primary_key = key
-        import pdb
-        pdb.set_trace()
         
-        #KEEP EDITING HERE. PLOT THE BINARY SEPARATION.
+        form_ind = np.where(sink_data[primary_key]['time']==sys_form_time)[0][0]
+        dx = sink_data[primary_key]['posx'][form_ind:] - sink_data[secondary_key]['posx']
+        dy = sink_data[primary_key]['posy'][form_ind:] - sink_data[secondary_key]['posy']
+        dz = sink_data[primary_key]['posz'][form_ind:] - sink_data[secondary_key]['posz']
+        sep = np.sqrt(dx**2 + dy**2 + dz**2)
+        sep = yt.YTArray(sep, 'cm').in_units('au')
+        time = yt.YTArray((sink_data[secondary_key]['time'] - sys_form_time), 's').in_units('yr')
+        axs.flatten()[0].axhline(y=r_acc[cit], color=proj_colours[cit], linestyle='--')
+        axs.flatten()[0].semilogy(time, sep, color=proj_colours[cit], label=label[cit])
     
+axs.flatten()[0].set_xlabel('Time (yr)')
+axs.flatten()[0].set_ylabel('Separation (au)')
+axs.flatten()[0].legend()
+axs.flatten()[0].set_xlim(left=0)
+plt.savefig('separation_resolution.png', bbox_inches='tight', dpi=300)
