@@ -83,6 +83,8 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
+start_file = mym.find_files([0.0], usable_files, sink_form_time,sink_id)
+usable_files = usable_files[usable_files.index(start_file[0]):]
 del dd
     
 sys.stdout.flush()
@@ -94,8 +96,11 @@ if rank == 0:
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     ds = yt.load(fn, units_override=units_override)
     dd = ds.all_data()
-    if sink_id in dd['sink_particle_tag']:
-        #Get secondary position
-        import pdb
-        pdb.set_trace()
+    #Get secondary position
+    
+    particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+    
+    import pdb
+    pdb.set_trace()
+        
     del dd
