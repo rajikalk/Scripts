@@ -40,7 +40,7 @@ def _sink_particle_posx(field, data):
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     return particle_posx
 
-yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc")
+yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc", sampling_type="local")
 
 def _sink_particle_posy(field, data):
     """
@@ -75,7 +75,7 @@ def _sink_particle_posy(field, data):
         particle_posy = yt.YTArray(np.array(particle_posy), "pc")
     return particle_posy
 
-yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc")
+yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc", sampling_type="local")
 
 def _sink_particle_mass(field, data):
     """
@@ -110,4 +110,4 @@ def _sink_particle_mass(field, data):
         particle_mass = yt.YTArray(np.array(particle_mass), "Msun")
     return particle_mass
 
-yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun")
+yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun", sampling_type="local")
