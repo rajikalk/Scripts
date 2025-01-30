@@ -7,7 +7,7 @@ import numpy as np
 import sys
 import os
 import my_ramses_module as mym
-import my_ramses_fields as myf
+import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 
@@ -31,6 +31,26 @@ def has_sinks(ds):
     else:
         del dd
         return False
+        
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the projection of vecter projected onto vector
+    """
+    vector_units = vector.units
+    if len(proj_vector)>3:
+        #Calc vector.proj
+        v_dot_pv = vector.T[0]*proj_vector.T[0] + vector.T[1]*proj_vector.T[1] + vector.T[2]*proj_vector.T[2]
+        pv_dot_pv = proj_vector.T[0]**2 + proj_vector.T[1]**2 + proj_vector.T[2]**2
+        proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
+        proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
+        proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+    else:
+        proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+        proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+        proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
 
 #=======MAIN=======
 
@@ -73,7 +93,8 @@ if rank == 0:
 #find sink particle to center on and formation time
 del units_override['density_unit']
 ds = yt.load(usable_files[-1], units_override=units_override)
-#try:
+if rank == 0:
+    print("Doing initial ds.all_data() load")
 dd = ds.all_data()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
@@ -85,13 +106,14 @@ myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 start_file = mym.find_files([0.0], usable_files, sink_form_time,sink_id)
 usable_files = usable_files[usable_files.index(start_file[0]):]
+
+
+dx_min = np.min(dd['dx'].in_units('au'))
+sphere_radius = 4*dx_min
 del dd
     
 sys.stdout.flush()
 CW.Barrier()
-
-if rank == 0:
-    print("")
 
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     ds = yt.load(fn, units_override=units_override)
@@ -99,6 +121,24 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     #Get secondary position
     
     particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+    particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
+    measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
+    
+    #Let's measure the angular momentum vector.
+    sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
+    sph_dy = measuring_sphere['y'].in_units('cm') - particle_position[1].in_units('cm')
+    sph_dz = measuring_sphere['z'].in_units('cm') - particle_position[2].in_units('cm')
+    sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+    
+    sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
+    sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
+    sph_dvz = measuring_sphere['velocity_z'].in_units('cm/s') - particle_velocity[2].in_units('cm/s')
+    sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+    sph_specific_ang = yt.YTArray(np.cross(sph_radial_vector, sph_velocity_vector), 'cm**2/s')
+    sph_ang = (measuring_sphere['mass'].in_units('g')*sph_specific_ang.T).T
+    sph_total_ang = yt.YTArray([np.sum(sph_ang.T[0]), np.sum(sph_ang.T[1]), np.sum(sph_ang.T[2])])
+    sph_total_ang_mag = np.sqrt(np.sum(sph_total_ang**2))
+    sph_total_ang_unit = sph_total_ang/sph_total_ang_mag
     
     import pdb
     pdb.set_trace()
