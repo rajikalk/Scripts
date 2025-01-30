@@ -7,7 +7,7 @@ import numpy as np
 import sys
 import os
 import my_ramses_module as mym
-import my_ramses_fields as myf
+import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 
@@ -123,6 +123,7 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
     particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
     measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
+    del dd
     
     #Let's measure the angular momentum vector.
     sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
@@ -139,6 +140,9 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     sph_total_ang = yt.YTArray([np.sum(sph_ang.T[0]), np.sum(sph_ang.T[1]), np.sum(sph_ang.T[2])])
     sph_total_ang_mag = np.sqrt(np.sum(sph_total_ang**2))
     sph_total_ang_unit = sph_total_ang/sph_total_ang_mag
+    
+    #Calculate radial velocity
+    radial_velocity = projected_vector(sph_velocity_vector, sph_radial_vector)
     
     import pdb
     pdb.set_trace()
