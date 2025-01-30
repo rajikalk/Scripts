@@ -12,7 +12,7 @@ def _sink_particle_posx(field, data):
     Retrieve particle x position from .snktxt file
     """
     particle_posx = []
-    if np.shape(data['x']) == (16, 16, 16):ƒ
+    if np.shape(data['x']) == (16, 16, 16):
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
