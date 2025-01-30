@@ -15,6 +15,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
+    parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -66,7 +67,8 @@ scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velo
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 mym.set_units(units_override)
-
+if rank == 0:
+    print("set units")
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
@@ -85,6 +87,9 @@ del dd
     
 sys.stdout.flush()
 CW.Barrier()
+
+if rank == 0:
+    print("")
 
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     ds = yt.load(fn, units_override=units_override)
