@@ -102,7 +102,7 @@ else:
     sink_id = args.sink_number
 if rank == 0:
     print("CENTERED SINK ID:", sink_id)
-myf.set_centred_sink_id(sink_id)
+#myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 start_file = mym.find_files([0.0], usable_files, sink_form_time,sink_id)
 usable_files = usable_files[usable_files.index(start_file[0]):]
@@ -142,7 +142,17 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     sph_total_ang_unit = sph_total_ang/sph_total_ang_mag
     
     #Calculate radial velocity
-    radial_velocity = projected_vector(sph_velocity_vector, sph_radial_vector)
+    shape = np.shape(measuring_sphere['x'])
+    radial_vel_vec = projected_vector(sph_velocity_vector, sph_radial_vector)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
+    radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
+    sign = np.diag(np.dot(sph_radial_vector, radial_vel_unit.T))
+    
+    rv_mag = radial_vel_mag*sign
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    if np.inf in rv_mag.value or np.nan in rv_mag.value:
+        rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
     
     import pdb
     pdb.set_trace()

@@ -8,7 +8,7 @@ import yt
 
 pickle_files = ['/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L08.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L09.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L10.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L11.pkl', '/scratch/ek9/rlk100/Analyisis/Sink_particle_pickles/L12.pkl']
 label = ["Lvl=8 (10.07AU)", "Lvl=9 (5.04AU)", "Lvl=10 (2.52AU)", "Lvl=11 (1.26AU)", "Lvl=12 (0.63AU)"]
-r_acc = 2.5*np.array([10.07, 5.04, 2.52, 1.26, 0.63])
+r_acc = 5*np.array([10.07, 5.04, 2.52, 1.26, 0.63])
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -58,5 +58,5 @@ for pick_file in pickle_files:
 axs.set_xlabel('Time (yr)')
 axs.set_ylabel('Separation (au)')
 axs.legend()
-axs.set_xlim(left=0)
+axs.set_xlim([0, 40000)
 plt.savefig('separation_resolution.png', bbox_inches='tight', dpi=300)
