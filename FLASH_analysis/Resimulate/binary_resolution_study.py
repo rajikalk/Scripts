@@ -15,7 +15,7 @@ single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*2), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width*1.5), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -27,12 +27,13 @@ for pick_file in pickle_files:
     print("read pickle", pick_file)
     cit = cit + 1
     file_open = open(pick_file, 'rb')
+    file_open = open(pick_file, 'rb')
     sink_data, line_counter = pickle.load(file_open)
     file_open.close()
     print("finished reading in pickle")
     
     if len(list(sink_data.keys())) != 2:
-        print("Number fo sink != 2")
+        print("Number of sink != 2")
     else:
         sys_form_time = -1*np.inf
         for key in list(sink_data.keys()):
