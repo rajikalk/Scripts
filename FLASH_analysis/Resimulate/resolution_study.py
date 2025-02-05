@@ -54,6 +54,12 @@ for pick_file in pickle_files:
     axs.flatten()[0].legend()
     plt.savefig("resolution_study.pdf", bbox_inches='tight', pad_inches=0.02)
     
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width*2), sharex=True)#, sharey=True)
+iter_range = range(0, len(pickle_files))
+plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(hspace=0.0)
+
 cit = -1
 for pick_file in pickle_files:
     print("read pickle", pick_file)
