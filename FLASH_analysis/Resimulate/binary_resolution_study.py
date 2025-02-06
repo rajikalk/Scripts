@@ -59,5 +59,5 @@ for pick_file in pickle_files:
 axs.set_xlabel('Time (yr)')
 axs.set_ylabel('Separation (au)')
 axs.legend()
-axs.set_xlim([0, 40000])
+axs.set_xlim([0, 50000])
 plt.savefig('separation_resolution.png', bbox_inches='tight', dpi=300)
