@@ -18,7 +18,7 @@ def _Density(field,data):
     del density_unit
     return density_arr
 
-yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local")
+yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local", force_override=True)
 
 def _cell_mass(field,data):
     """
@@ -27,7 +27,7 @@ def _cell_mass(field,data):
     cell_mass = data[('gas', 'Density')].in_units('g/cm**3')*data['cell_volume'].in_units('cm**3')
     return cell_mass
 
-yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local")
+yt.add_field("cell_mass", function=_cell_mass, units=r"g", sampling_type="local", force_override=True)
     
 #===========================CALCULATING RAMSES CENTERED MAGNETIC FIELDS======================================
 
@@ -44,7 +44,7 @@ def _magx(field,data):
             magx = yt.YTArray((data['hydro_B_left_x'].value + data['hydro_B_right_x'].value)/2., "G")
     return magx
     
-yt.add_field("magx", function=_magx, units=r"gauss", sampling_type="local")
+yt.add_field("magx", function=_magx, units=r"gauss", sampling_type="local", force_override=True)
 
 def _magy(field,data):
     """
@@ -59,7 +59,7 @@ def _magy(field,data):
             magy = yt.YTArray((data['hydro_B_left_y'].value + data['hydro_B_right_y'].value)/2., "G")
     return magy
     
-yt.add_field("magy", function=_magy, units=r"gauss", sampling_type="local")
+yt.add_field("magy", function=_magy, units=r"gauss", sampling_type="local", force_override=True)
 
 def _magz(field,data):
     """
@@ -74,7 +74,7 @@ def _magz(field,data):
             magz = yt.YTArray((data['hydro_B_left_z'].value + data['hydro_B_right_z'].value)/2., "G")
     return magz
     
-yt.add_field("magz", function=_magz, units=r"gauss", sampling_type="local")
+yt.add_field("magz", function=_magz, units=r"gauss", sampling_type="local", force_override=True)
 
 #===========================READING RAMSES PARTICLE DATA======================================
 
@@ -109,7 +109,7 @@ def _sink_particle_tag(field, data):
     particle_tag = yt.YTArray(np.array(particle_tag), "")
     return particle_tag
 
-yt.add_field("sink_particle_tag", function=_sink_particle_tag, units=r"", sampling_type="local")
+yt.add_field("sink_particle_tag", function=_sink_particle_tag, units=r"", sampling_type="local", force_override=True)
 
 def _sink_particle_posx(field, data):
     """
@@ -142,7 +142,7 @@ def _sink_particle_posx(field, data):
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     return particle_posx
 
-yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc", sampling_type="local")
+yt.add_field("sink_particle_posx", function=_sink_particle_posx, units=r"pc", sampling_type="local", force_override=True)
 
 def _sink_particle_posy(field, data):
     """
@@ -175,7 +175,7 @@ def _sink_particle_posy(field, data):
         particle_posy = yt.YTArray(np.array(particle_posy), "pc")
     return particle_posy
 
-yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc", sampling_type="local")
+yt.add_field("sink_particle_posy", function=_sink_particle_posy, units=r"pc", sampling_type="local", force_override=True)
 
 def _sink_particle_posz(field, data):
     """
@@ -208,7 +208,7 @@ def _sink_particle_posz(field, data):
         particle_posz = yt.YTArray(np.array(particle_posz), "pc")
     return particle_posz
 
-yt.add_field("sink_particle_posz", function=_sink_particle_posz, units=r"pc", sampling_type="local")
+yt.add_field("sink_particle_posz", function=_sink_particle_posz, units=r"pc", sampling_type="local", force_override=True)
 
 def _sink_particle_velx(field, data):
     """
@@ -241,7 +241,7 @@ def _sink_particle_velx(field, data):
         particle_velx = yt.YTArray(np.array(particle_velx), "km/s")
     return particle_velx
 
-yt.add_field("sink_particle_velx", function=_sink_particle_velx, units=r"km/s", sampling_type="local")
+yt.add_field("sink_particle_velx", function=_sink_particle_velx, units=r"km/s", sampling_type="local", force_override=True)
 
 def _sink_particle_vely(field, data):
     """
@@ -274,7 +274,7 @@ def _sink_particle_vely(field, data):
         particle_vely = yt.YTArray(np.array(particle_vely), "km/s")
     return particle_vely
 
-yt.add_field("sink_particle_vely", function=_sink_particle_vely, units=r"km/s", sampling_type="local")
+yt.add_field("sink_particle_vely", function=_sink_particle_vely, units=r"km/s", sampling_type="local", force_override=True)
 
 def _sink_particle_velz(field, data):
     """
@@ -307,7 +307,7 @@ def _sink_particle_velz(field, data):
         particle_velz = yt.YTArray(np.array(particle_velz), "km/s")
     return particle_velz
 
-yt.add_field("sink_particle_velz", function=_sink_particle_velz, units=r"km/s", sampling_type="local")
+yt.add_field("sink_particle_velz", function=_sink_particle_velz, units=r"km/s", sampling_type="local", force_override=True)
 
 def _sink_particle_speed(field, data):
     """
@@ -340,7 +340,7 @@ def _sink_particle_speed(field, data):
         particle_speed = yt.YTArray(np.array(particle_speed), "km/s")
     return particle_speed
 
-yt.add_field("sink_particle_speed", function=_sink_particle_speed, units=r"km/s", sampling_type="local")
+yt.add_field("sink_particle_speed", function=_sink_particle_speed, units=r"km/s", sampling_type="local", force_override=True)
 
 def _sink_particle_mass(field, data):
     """
@@ -373,7 +373,7 @@ def _sink_particle_mass(field, data):
         particle_mass = yt.YTArray(np.array(particle_mass), "Msun")
     return particle_mass
 
-yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun", sampling_type="local")
+yt.add_field("sink_particle_mass", function=_sink_particle_mass, units=r"Msun", sampling_type="local", force_override=True)
 
 def _sink_particle_accretion_rate(field, data):
     """
@@ -408,7 +408,7 @@ def _sink_particle_accretion_rate(field, data):
         particle_mdot = yt.YTArray(np.array(particle_mdot), "Msun/yr")
     return particle_mdot
 
-yt.add_field("sink_particle_accretion_rate", function=_sink_particle_accretion_rate, units=r"Msun/yr", sampling_type="local")
+yt.add_field("sink_particle_accretion_rate", function=_sink_particle_accretion_rate, units=r"Msun/yr", sampling_type="local", force_override=True)
 
 def _sink_particle_form_time(field, data):
     """
@@ -441,7 +441,7 @@ def _sink_particle_form_time(field, data):
         particle_form_time = yt.YTArray(np.array(particle_form_time), "yr")
     return particle_form_time
 
-yt.add_field("sink_particle_form_time", function=_sink_particle_form_time, units=r"yr", sampling_type="local")
+yt.add_field("sink_particle_form_time", function=_sink_particle_form_time, units=r"yr", sampling_type="local", force_override=True)
 
 def _sink_particle_age(field, data):
     """
@@ -475,4 +475,4 @@ def _sink_particle_age(field, data):
         particle_age = yt.YTArray(np.array(particle_age), "yr")
     return particle_age
 
-yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr", sampling_type="local")
+yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr", sampling_type="local", force_override=True)
