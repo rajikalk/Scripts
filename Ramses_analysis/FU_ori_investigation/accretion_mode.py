@@ -115,46 +115,105 @@ del dd
 sys.stdout.flush()
 CW.Barrier()
 
+xmin = np.nan
+xmax = np.nan
+ymin = np.nan
+ymax = np.nan
+file_int = -1
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
-    ds = yt.load(fn, units_override=units_override)
-    dd = ds.all_data()
-    #Get secondary position
+    if size > 1:
+        file_int = usable_files.index(fn)
+    else:
+        file_int = file_int + 1
+        if usable_files[file_int] == usable_files[file_int-1]:
+            os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
+    make_pickle = False
+    if args.plot_time is None:
+        pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+    else:
+        pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
+    if os.path.isfile(pickle_file) == False:
+        make_pickle = True
+    if make_pickle:
+        ds = yt.load(fn, units_override=units_override)
+        time_val = ds.current_time.in_units('yr') - sink_form_time
+        dd = ds.all_data()
+        #Get secondary position
+        
+        particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+        particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
+        measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
+        print("Got particle position and velocity")
+        del dd
+        
+        #Let's measure the angular momentum vector.
+        sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
+        sph_dy = measuring_sphere['y'].in_units('cm') - particle_position[1].in_units('cm')
+        sph_dz = measuring_sphere['z'].in_units('cm') - particle_position[2].in_units('cm')
+        sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+        sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
+        sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
+        
+        sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
+        sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
+        sph_dvz = measuring_sphere['velocity_z'].in_units('cm/s') - particle_velocity[2].in_units('cm/s')
+        sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+        
+        #Calculate radial velocity
+        shape = np.shape(measuring_sphere['x'])
+        radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('au')).value, 'km/s')
+        radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
+        radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
+        sign = np.diag(np.dot(sph_radial_vector_unit.in_units('au'), radial_vel_unit.T))
+        sign = np.sign(sign)
+        
+        rv_mag = radial_vel_mag*sign
+        rv_mag = np.reshape(rv_mag, shape)
+        if np.inf in rv_mag.value or np.nan in rv_mag.value:
+            rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'km/s')
+            
+        #Calcualte radial momentum
+        radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
+        
+        file = open(pickle_file, 'wb')
+        pickle.dump((time_val, measuring_sphere['density'], radial_momentum), file)
+        file.close()
+        print("wrote file", pickle_file)
     
-    particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
-    particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
-    measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
-    del dd
     
-    #Let's measure the angular momentum vector.
-    sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
-    sph_dy = measuring_sphere['y'].in_units('cm') - particle_position[1].in_units('cm')
-    sph_dz = measuring_sphere['z'].in_units('cm') - particle_position[2].in_units('cm')
-    sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+
+#Plotting
+'''
+    if np.isnan(xmin):
+        xmin = np.min(measuring_sphere['density'])
+    elif np.min(measuring_sphere['density']) < xmin:
+        xmin = np.min(measuring_sphere['density'])
     
-    sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
-    sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
-    sph_dvz = measuring_sphere['velocity_z'].in_units('cm/s') - particle_velocity[2].in_units('cm/s')
-    sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
-    sph_specific_ang = yt.YTArray(np.cross(sph_radial_vector, sph_velocity_vector), 'cm**2/s')
-    sph_ang = (measuring_sphere['mass'].in_units('g')*sph_specific_ang.T).T
-    sph_total_ang = yt.YTArray([np.sum(sph_ang.T[0]), np.sum(sph_ang.T[1]), np.sum(sph_ang.T[2])])
-    sph_total_ang_mag = np.sqrt(np.sum(sph_total_ang**2))
-    sph_total_ang_unit = sph_total_ang/sph_total_ang_mag
+    if np.isnan(xmin):
+        xmax = np.max(measuring_sphere['density'])
+    elif np.max(measuring_sphere['density']) > xmax:
+        xmax = np.max(measuring_sphere['density'])
+        
+    if np.isnan(ymin):
+        ymin = np.min(radial_momentum)
+    elif np.min(radial_momentum) < ymin:
+        ymin = np.min(radial_momentum)
     
-    #Calculate radial velocity
-    shape = np.shape(measuring_sphere['x'])
-    radial_vel_vec = projected_vector(sph_velocity_vector, sph_radial_vector)
-    radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
-    radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
-    sign = np.diag(np.dot(sph_radial_vector, radial_vel_unit.T))
+    if np.isnan(ymax):
+        ymax = np.max(radial_momentum)
+    elif np.max(radial_momentum) > ymin:
+        ymax = np.max(radial_momentum)
     
-    rv_mag = radial_vel_mag*sign
-    rv_mag = yt.YTArray(rv_mag, 'cm/s')
-    rv_mag = np.reshape(rv_mag, shape)
-    if np.inf in rv_mag.value or np.nan in rv_mag.value:
-        rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
-    
-    import pdb
-    pdb.set_trace()
+    #Plot figure
+    plt.clf()
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.scatter(measuring_sphere['density'], radial_momentum)
+    plt.xlim([xmin,xmax])
+    plt.ylim([ymin,ymax])
+    plt.xlabel('density (g/cm$^3$)')
+    plt.ylabel('radial momentum (cm$\,$g/s)')
+
         
     del dd
+'''
