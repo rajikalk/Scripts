@@ -126,10 +126,7 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
         if usable_files[file_int] == usable_files[file_int-1]:
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
     make_pickle = False
-    if args.plot_time is None:
-        pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-    else:
-        pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
+    pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
     if os.path.isfile(pickle_file) == False:
         make_pickle = True
     if make_pickle:
