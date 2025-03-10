@@ -53,7 +53,6 @@ def projected_vector(vector, proj_vector):
     return proj_v
 
 #=======MAIN=======
-
 rank = CW.Get_rank()
 size = CW.Get_size()
 if rank == 0:
@@ -106,7 +105,6 @@ if rank == 0:
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 start_file = mym.find_files([0.0], usable_files, sink_form_time,sink_id)
 usable_files = usable_files[usable_files.index(start_file[0]):]
-
 
 dx_min = np.min(dd['dx'].in_units('au'))
 sphere_radius = 4*dx_min
