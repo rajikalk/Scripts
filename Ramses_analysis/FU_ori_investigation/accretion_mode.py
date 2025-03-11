@@ -192,43 +192,45 @@ if args.make_plot_figures == "True":
     ymin = np.nan
     ymax = np.nan
     rit = -1
-    fit = -1
+    fit = 0
     while fit < len(pickle_files):
-        fit = fit + 1
-        plot_pickle = pickle_files[fit]
-        file = open(plot_pickle, 'rb')
-        time_val, density, radial_momentum = pickle.load(file)
-        file.close()
-        
-        if np.isnan(xmin):
-            xmin = np.min(density)
-        elif np.min(density) < xmin:
-            xmin = np.min(density)
-        
-        if np.isnan(xmax):
-            xmax = np.max(density)
-        elif np.max(density) > xmax:
-            xmax = np.max(density)
+        rit = rit + 1
+        if rank == rit:
+            plot_pickle = pickle_files[fit]
+            file = open(plot_pickle, 'rb')
+            time_val, density, radial_momentum = pickle.load(file)
+            file.close()
             
-        if np.isnan(ymin):
-            ymin = np.min(radial_momentum)
-        elif np.min(radial_momentum) < ymin:
-            ymin = np.min(radial_momentum)
-        
-        if np.isnan(ymax):
-            ymax = np.max(radial_momentum)
-        elif np.max(radial_momentum) > ymin:
-            ymax = np.max(radial_momentum)
-        
-        #Plot figure
-        plt.clf()
-        plt.xscale('log')
-        plt.yscale('log')
-        plt.scatter(density, radial_momentum)
-        plt.xlim([xmin,xmax])
-        plt.ylim([ymin,ymax])
-        plt.xlabel('density (g/cm$^3$)')
-        plt.ylabel('radial momentum (cm$\,$g/s)')
+            if np.isnan(xmin):
+                xmin = np.min(density)
+            elif np.min(density) < xmin:
+                xmin = np.min(density)
+            
+            if np.isnan(xmax):
+                xmax = np.max(density)
+            elif np.max(density) > xmax:
+                xmax = np.max(density)
+                
+            if np.isnan(ymin):
+                ymin = np.min(radial_momentum)
+            elif np.min(radial_momentum) < ymin:
+                ymin = np.min(radial_momentum)
+            
+            if np.isnan(ymax):
+                ymax = np.max(radial_momentum)
+            elif np.max(radial_momentum) > ymin:
+                ymax = np.max(radial_momentum)
+            
+            #Plot figure
+            plt.clf()
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.scatter(density, radial_momentum)
+            plt.xlim([xmin,xmax])
+            plt.ylim([ymin,ymax])
+            plt.xlabel('density (g/cm$^3$)')
+            plt.ylabel('radial momentum (cm$\,$g/s)')
 
-        file_name = save_dir + "movie_frame_" + ("%06d" % fit + ".jpg")
-        print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
+            file_name = save_dir + "movie_frame_" + ("%06d" % fit + ".jpg")
+            print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
+        fit = fit + 1
