@@ -238,6 +238,7 @@ if args.make_plot_figures == "True":
                 plt.scatter(density.value, radial_momentum.value)
                 plt.xlim([xmin,xmax])
                 plt.ylim([ymin,ymax])
+                plt.title("Time:"+str(np.round(time_val)))
                 plt.xlabel('density (g/cm$^3$)')
                 plt.ylabel('radial momentum (cm$\,$g/s)')
 
