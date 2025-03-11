@@ -232,5 +232,6 @@ if args.make_plot_figures == "True":
             plt.ylabel('radial momentum (cm$\,$g/s)')
 
             file_name = save_dir + "movie_frame_" + ("%06d" % fit + ".jpg")
+            plt.savefig(file_name, bbox_inches='tight', dpi=300)
             print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
         fit = fit + 1
