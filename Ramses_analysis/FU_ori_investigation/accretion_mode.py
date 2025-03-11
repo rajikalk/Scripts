@@ -224,7 +224,7 @@ if args.make_plot_figures == "True":
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
                 plt.scatter(density, radial_momentum)
-                plt.xlim([xmin,xmax])
+                plt.xlim([xmin.value,xmax.value])
                 plt.xlabel('density (g/cm$^3$)')
                 plt.ylabel('radial momentum (cm$\,$g/s)')
 
