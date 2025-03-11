@@ -198,9 +198,9 @@ if args.make_plot_figures == "True":
         if rit == size:
             rit = 0
         if rank == rit:
-            file_name = save_dir + "movie_frame_" + ("%06d" % fit + ".jpg")
+            plot_pickle = pickle_files[fit]
+            file_name = save_dir + plot_pickle[:-3]+'jpg'
             if os.path.isfile(file_name) == False:
-                plot_pickle = pickle_files[fit]
                 file = open(plot_pickle, 'rb')
                 time_val, density, radial_momentum = pickle.load(file)
                 file.close()
