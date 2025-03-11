@@ -205,14 +205,14 @@ if args.make_plot_figures == "True":
                 file.close()
                 
                 if np.isnan(xmin):
-                    xmin = np.min(density)
-                elif np.min(density) < xmin:
-                    xmin = np.min(density)
+                    xmin = np.min(density.value)
+                elif np.min(density.value) < xmin:
+                    xmin = np.min(density.value)
                 
                 if np.isnan(xmax):
-                    xmax = np.max(density)
-                elif np.max(density) > xmax:
-                    xmax = np.max(density)
+                    xmax = np.max(density.value)
+                elif np.max(density.value) > xmax:
+                    xmax = np.max(density.value)
                     
                 if np.isnan(lin_thresh):
                     lin_thresh = np.min(np.abs(radial_momentum))
@@ -223,8 +223,8 @@ if args.make_plot_figures == "True":
                 plt.clf()
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
-                plt.scatter(density, radial_momentum)
-                plt.xlim([xmin.value,xmax.value])
+                plt.scatter(density.value, radial_momentum)
+                plt.xlim([xmin,xmax])
                 plt.xlabel('density (g/cm$^3$)')
                 plt.ylabel('radial momentum (cm$\,$g/s)')
 
