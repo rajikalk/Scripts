@@ -189,8 +189,7 @@ if args.make_plot_figures == "True":
     pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
     xmin = np.nan
     xmax = np.nan
-    ymin = np.nan
-    ymax = np.nan
+    lin_thresh = np.nan
     rit = -1
     fit = 0
     while fit < len(pickle_files):
@@ -215,23 +214,17 @@ if args.make_plot_figures == "True":
                 elif np.max(density) > xmax:
                     xmax = np.max(density)
                     
-                if np.isnan(ymin):
-                    ymin = np.min(radial_momentum)
-                elif np.min(radial_momentum) < ymin:
-                    ymin = np.min(radial_momentum)
-                
-                if np.isnan(ymax):
-                    ymax = np.max(radial_momentum)
-                elif np.max(radial_momentum) > ymin:
-                    ymax = np.max(radial_momentum)
-                
+                if np.isnan(lin_thresh):
+                    lin_thresh = np.min(np.abs(radial_momentum))
+                elif np.min(np.abs(radial_momentum)) < lin_thresh:
+                    lin_thresh = np.min(np.abs(radial_momentum))
+                    
                 #Plot figure
                 plt.clf()
                 plt.xscale('log')
-                plt.yscale('log')
+                plt.yscale('symlog', linthresh=lin_thresh)
                 plt.scatter(density, radial_momentum)
                 plt.xlim([xmin,xmax])
-                plt.ylim([ymin,ymax])
                 plt.xlabel('density (g/cm$^3$)')
                 plt.ylabel('radial momentum (cm$\,$g/s)')
 
