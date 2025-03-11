@@ -223,7 +223,7 @@ if args.make_plot_figures == "True":
                     
                 if np.isnan(ymax):
                     ymax = np.max(radial_momentum.value)
-                elif np.min(radial_momentum.value) > ymax:
+                elif np.max(radial_momentum.value) > ymax:
                     ymax = np.max(radial_momentum.value)
                     
                 if np.isnan(lin_thresh):
