@@ -205,7 +205,7 @@ if args.make_plot_figures == "True":
         elif np.min(density) < xmin:
             xmin = np.min(density)
         
-        if np.isnan(xmin):
+        if np.isnan(xmax):
             xmax = np.max(density)
         elif np.max(density) > xmax:
             xmax = np.max(density)
