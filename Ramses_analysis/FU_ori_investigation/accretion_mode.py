@@ -201,14 +201,14 @@ if args.make_plot_figures == "True":
         file.close()
         
         if np.isnan(xmin):
-            xmin = np.min(measuring_sphere['density'])
-        elif np.min(measuring_sphere['density']) < xmin:
-            xmin = np.min(measuring_sphere['density'])
+            xmin = np.min(density)
+        elif np.min(density) < xmin:
+            xmin = np.min(density)
         
         if np.isnan(xmin):
-            xmax = np.max(measuring_sphere['density'])
-        elif np.max(measuring_sphere['density']) > xmax:
-            xmax = np.max(measuring_sphere['density'])
+            xmax = np.max(density)
+        elif np.max(density) > xmax:
+            xmax = np.max(density)
             
         if np.isnan(ymin):
             ymin = np.min(radial_momentum)
