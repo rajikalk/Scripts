@@ -195,6 +195,8 @@ if args.make_plot_figures == "True":
     fit = 0
     while fit < len(pickle_files):
         rit = rit + 1
+        if rit == size:
+            rit = 0
         if rank == rit:
             plot_pickle = pickle_files[fit]
             file = open(plot_pickle, 'rb')
