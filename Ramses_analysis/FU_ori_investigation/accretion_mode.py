@@ -113,11 +113,8 @@ del dd
 sys.stdout.flush()
 CW.Barrier()
 
-xmin = np.nan
-xmax = np.nan
-ymin = np.nan
-ymax = np.nan
 file_int = -1
+no_files = len(usable_files)
 for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     if size > 1:
         file_int = usable_files.index(fn)
@@ -173,12 +170,30 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
         file = open(pickle_file, 'wb')
         pickle.dump((time_val, measuring_sphere['density'], radial_momentum), file)
         file.close()
-        print("wrote file", pickle_file)
-    
-    
+        print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+
+sys.stdout.flush()
+CW.Barrier()
+
+import matplotlib.pyplot as plt
+#plt.rcParams['figure.dpi'] = 300
+from matplotlib.colors import LogNorm
 
 #Plotting
-'''
+pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
+xmin = np.nan
+xmax = np.nan
+ymin = np.nan
+ymax = np.nan
+rit = -1
+fit = -1
+while fit < len(pickle_files):
+    fit = fit + 1
+    plot_pickle = pickle_files[fit]
+    file = open(plot_pickle, 'rb')
+    time_val, density, radial_momentum = pickle.load(file)
+    file.close()
+    
     if np.isnan(xmin):
         xmin = np.min(measuring_sphere['density'])
     elif np.min(measuring_sphere['density']) < xmin:
@@ -203,12 +218,11 @@ for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
     plt.clf()
     plt.xscale('log')
     plt.yscale('log')
-    plt.scatter(measuring_sphere['density'], radial_momentum)
+    plt.scatter(density, radial_momentum)
     plt.xlim([xmin,xmax])
     plt.ylim([ymin,ymax])
     plt.xlabel('density (g/cm$^3$)')
     plt.ylabel('radial momentum (cm$\,$g/s)')
 
-        
-    del dd
-'''
+    file_name = save_dir + "movie_frame_" + ("%06d" % fit + ".jpg")
+    print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
