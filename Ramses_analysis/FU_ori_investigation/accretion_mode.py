@@ -152,6 +152,7 @@ if args.make_pickle_files == "True":
             sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
             sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
             sph_dvz = measuring_sphere['velocity_z'].in_units('cm/s') - particle_velocity[2].in_units('cm/s')
+            v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
             sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
             
             #Calculate radial velocity
@@ -169,11 +170,11 @@ if args.make_pickle_files == "True":
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
-            import pdb
-            pdb.set_trace()
+            tv_mag = np.sqrt(v_mag**2 - rv_mag.in_units('cm/s')**2)
+            radial_velocity_fraction = rv_mag.in_units('cm/s')/v_mag
             
             file = open(pickle_file, 'wb')
-            pickle.dump((time_val, measuring_sphere['density'], radial_momentum), file)
+            pickle.dump((time_val, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
@@ -205,7 +206,7 @@ if args.make_plot_figures == "True":
             file_name = save_dir + plot_pickle[:-3]+'jpg'
             if os.path.isfile(file_name) == False:
                 file = open(plot_pickle, 'rb')
-                time_val, density, radial_momentum = pickle.load(file)
+                time_val, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
                 
                 if np.isnan(xmin):
