@@ -118,7 +118,7 @@ if args.make_pickle_files == "True":
 
     file_int = -1
     no_files = len(usable_files)
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -170,7 +170,6 @@ if args.make_pickle_files == "True":
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
-            tv_mag = np.sqrt(v_mag**2 - rv_mag.in_units('cm/s')**2)
             radial_velocity_fraction = rv_mag.in_units('cm/s')/v_mag
             
             file = open(pickle_file, 'wb')
