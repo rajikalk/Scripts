@@ -239,7 +239,7 @@ if args.make_plot_figures == "True":
                 plt.clf()
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
-                plt.scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
+                plot = plt.scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
                 cbar = plt.colorbar(plot, pad=0.0)
                 cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
                 plt.xlim([xmin,xmax])
