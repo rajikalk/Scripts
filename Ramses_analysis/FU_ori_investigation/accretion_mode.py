@@ -148,12 +148,14 @@ if args.make_pickle_files == "True":
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
             sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
+            del sph_dx, sph_dy, sph_dz
             
             sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
             sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
             sph_dvz = measuring_sphere['velocity_z'].in_units('cm/s') - particle_velocity[2].in_units('cm/s')
             v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
             sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+            del sph_dvx, sph_dvy, sph_dvz
             
             #Calculate radial velocity
             shape = np.shape(measuring_sphere['x'])
@@ -176,7 +178,6 @@ if args.make_pickle_files == "True":
             pickle.dump((time_val, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
-
 
 
 sys.stdout.flush()
