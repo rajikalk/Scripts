@@ -148,10 +148,10 @@ if args.make_pickle_files == "True":
             
             #Calculate radial velocity
             shape = np.shape(measuring_sphere['x'])
-            radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('au')).value, 'km/s')
+            radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
             radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
             radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
-            sign = np.diag(np.dot(sph_radial_vector_unit.in_units('au'), radial_vel_unit.T))
+            sign = np.diag(np.dot(sph_radial_vector_unit.in_units('km'), radial_vel_unit.T))
             sign = np.sign(sign)
             
             rv_mag = radial_vel_mag*sign
@@ -162,9 +162,6 @@ if args.make_pickle_files == "True":
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
             radial_velocity_fraction = rv_mag.in_units('cm/s')/v_mag.in_units('cm/s')
-            if size == 1:
-                import pdb
-                pdb.set_trace()
             del shape, radial_vel_vec, radial_vel_mag, radial_vel_unit, sign, rv_mag
             
             file = open(pickle_file, 'wb')
