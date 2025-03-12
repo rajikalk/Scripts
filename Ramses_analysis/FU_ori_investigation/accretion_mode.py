@@ -137,7 +137,7 @@ if args.make_pickle_files == "True":
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
             sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
-            del sph_dx, sph_dy, sph_dz
+            del sph_dx, sph_dy, sph_dz, sph_radial_vector_mag
             
             sph_dvx = measuring_sphere['velocity_x'].in_units('cm/s') - particle_velocity[0].in_units('cm/s')
             sph_dvy = measuring_sphere['velocity_y'].in_units('cm/s') - particle_velocity[1].in_units('cm/s')
@@ -162,6 +162,7 @@ if args.make_pickle_files == "True":
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
             radial_velocity_fraction = rv_mag.in_units('cm/s')/v_mag
+            del shape, radial_vel_vec, radial_vel_mag, radial_vel_unit, sign, rv_mag
             
             file = open(pickle_file, 'wb')
             pickle.dump((time_val, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
