@@ -187,6 +187,7 @@ if args.make_plot_figures == "True":
     import matplotlib.pyplot as plt
     #plt.rcParams['figure.dpi'] = 300
     from matplotlib.colors import LogNorm
+    cm = plt.cm.get_cmap('seismic')
 
     #Plotting
     pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
@@ -238,7 +239,9 @@ if args.make_plot_figures == "True":
                 plt.clf()
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
-                plt.scatter(density.value, radial_momentum.value)
+                plt.scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
+                cbar = plt.colorbar(plot, pad=0.0)
+                cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
                 plt.xlim([xmin,xmax])
                 plt.ylim([ymin,ymax])
                 plt.title("Time:"+str(np.round(time_val)))
