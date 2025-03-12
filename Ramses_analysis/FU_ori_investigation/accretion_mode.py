@@ -18,21 +18,10 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
+    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=4)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
-
-def has_sinks(ds):
-    '''
-    Checks particle file to see if particles exists, or tries the plot file.
-    '''
-    dd = ds.all_data()
-    if len(dd['sink_particle_tag'][myf.get_centred_sink_id():].astype(int)) != 0:
-        del dd
-        return True
-    else:
-        del dd
-        return False
         
 def projected_vector(vector, proj_vector):
     """
@@ -98,6 +87,8 @@ if args.make_pickle_files == "True":
     if rank == 0:
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
+    dx_min = np.min(dd['dx'].in_units('au'))
+    sphere_radius = args.sphere_radius_cells*dx_min
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
@@ -106,12 +97,9 @@ if args.make_pickle_files == "True":
         print("CENTERED SINK ID:", sink_id)
     #myf.set_centred_sink_id(sink_id)
     sink_form_time = dd['sink_particle_form_time'][sink_id]
+    del dd
     start_file = mym.find_files([0.0], usable_files, sink_form_time,sink_id)
     usable_files = usable_files[usable_files.index(start_file[0]):]
-
-    dx_min = np.min(dd['dx'].in_units('au'))
-    sphere_radius = 4*dx_min
-    del dd
         
     sys.stdout.flush()
     CW.Barrier()
@@ -137,9 +125,10 @@ if args.make_pickle_files == "True":
             
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
+            del dd
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
             print("Got particle position and velocity")
-            del dd
+            
             
             #Let's measure the angular momentum vector.
             sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
@@ -178,7 +167,6 @@ if args.make_pickle_files == "True":
             pickle.dump((time_val, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
-
 
 sys.stdout.flush()
 CW.Barrier()
