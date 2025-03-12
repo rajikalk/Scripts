@@ -169,6 +169,8 @@ if args.make_pickle_files == "True":
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
+            import pdb
+            pdb.set_trace()
             
             file = open(pickle_file, 'wb')
             pickle.dump((time_val, measuring_sphere['density'], radial_momentum), file)
