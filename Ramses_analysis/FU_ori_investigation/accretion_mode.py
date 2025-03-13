@@ -192,6 +192,7 @@ if args.make_plot_figures == "True":
     #radial fraction
     time_arr = []
     rv_frac_median = []
+    rv_frac_density_weighted_mean = []
     rv_frac_low = []
     rv_frac_high = []
     rv_frac_min = []
@@ -226,6 +227,8 @@ if args.make_plot_figures == "True":
                 time_arr.append(time_val)
                 neg_inds = np.where(radial_momentum<0)[0]
                 rv_frac_median.append(np.median(radial_velocity_fraction[neg_inds]))
+                density_weighted_mean = np.sum(density[neg_inds]*radial_velocity_fraction[neg_inds])/np.sum(density[neg_inds])
+                rv_frac_density_weighted_mean.append(density_weighted_mean)
                 rv_frac_low.append(np.mean(radial_velocity_fraction)-np.std(radial_velocity_fraction[neg_inds]))
                 rv_frac_high.append(np.mean(radial_velocity_fraction)+np.std(radial_velocity_fraction[neg_inds]))
                 rv_frac_min.append(np.min(radial_velocity_fraction[neg_inds]))
@@ -283,6 +286,7 @@ if args.make_plot_figures == "True":
     #Plot radial fraction evolution
     plt.clf()
     plt.plot(time_arr, rv_frac_median)
+    plt.plto(time_arr, rv_frac_density_weighted_mean, 'k--')
     plt.plot(time_arr, rv_frac_min)
     plt.plot(time_arr, rv_frac_max)
     plt.fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
