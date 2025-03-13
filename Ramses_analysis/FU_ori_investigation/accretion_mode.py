@@ -189,6 +189,14 @@ if args.make_plot_figures == "True":
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
 
+    #radial fraction
+    time_arr = []
+    rv_frac_median = []
+    rv_frac_low = []
+    rv_frac_high = []
+    rv_frac_min = []
+    rv_frac_max = []
+
     #Plotting
     pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
     xmin = np.nan
@@ -214,6 +222,13 @@ if args.make_plot_figures == "True":
                 file = open(plot_pickle, 'rb')
                 time_val, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
+                
+                time_arr.append(time_val)
+                rv_frac_median.append(np.median(radial_velocity_fraction))
+                rv_frac_low.append(np.mean(radial_velocity_fraction)-np.std(radial_velocity_fraction))
+                rv_frac_high.append(np.mean(radial_velocity_fraction)+np.std(radial_velocity_fraction))
+                rv_frac_min.append(np.min(radial_velocity_fraction))
+                rv_frac_max.append(np.max(radial_velocity_fraction))
                 
                 if np.isnan(xmin):
                     xmin = np.min(density.value)
@@ -263,3 +278,13 @@ if args.make_plot_figures == "True":
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
         fit = fit + 1
+
+    #Plot radial fraction evolution
+    plt.clf()
+    plt.plot(time_arr, rv_frac_median)
+    plt.plot(time_arr, rv_frac_min)
+    plt.plot(time_arr, rv_frac_max)
+    plt.fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
+    plt.xlabel('Time (yr)')
+    plt.ylabel('v$_{radial}$/v$_{magnitude}$')
+    plt.savefig('rv_frac_evolution.jpg', bbox_inches='tight', dpi=300)
