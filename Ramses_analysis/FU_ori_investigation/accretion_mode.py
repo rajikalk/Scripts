@@ -224,11 +224,12 @@ if args.make_plot_figures == "True":
                 file.close()
                 
                 time_arr.append(time_val)
-                rv_frac_median.append(np.median(radial_velocity_fraction))
-                rv_frac_low.append(np.mean(radial_velocity_fraction)-np.std(radial_velocity_fraction))
-                rv_frac_high.append(np.mean(radial_velocity_fraction)+np.std(radial_velocity_fraction))
-                rv_frac_min.append(np.min(radial_velocity_fraction))
-                rv_frac_max.append(np.max(radial_velocity_fraction))
+                neg_inds = np.where(radial_momentum<0)[0]
+                rv_frac_median.append(np.median(radial_velocity_fraction[neg_inds]))
+                rv_frac_low.append(np.mean(radial_velocity_fraction)-np.std(radial_velocity_fraction[neg_inds]))
+                rv_frac_high.append(np.mean(radial_velocity_fraction)+np.std(radial_velocity_fraction[neg_inds]))
+                rv_frac_min.append(np.min(radial_velocity_fraction[neg_inds]))
+                rv_frac_max.append(np.max(radial_velocity_fraction[neg_inds]))
                 
                 if np.isnan(xmin):
                     xmin = np.min(density.value)
