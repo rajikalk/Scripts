@@ -247,6 +247,8 @@ if args.make_plot_figures == "True":
                 axs[0].scatter(particle_data['time'][time_ind], particle_data['separation'][time_ind])
                 axs[0].set_xlim([np.min(particle_data['time']), np.max(particle_data['time'])])
                 axs[0].set_ylim([np.min(particle_data['separation']), np.max(particle_data['separation'])])
+                axs[0].set_xlabel('Time (yr)')
+                axs[0].set_ylabel('Separation (au)')
                 
                 axs[1].set_xscale('log')
                 axs[1].set_yscale('symlog', linthresh=lin_thresh)
