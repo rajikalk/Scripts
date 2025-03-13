@@ -182,6 +182,7 @@ if args.make_plot_figures == "True":
     single_col_width = 3.50394 #inches
     page_height = 10.62472 #inches
     font_size = 10
+    r_acc = np.round(length_unit.in_units('au')/(2**20)*4, decimals=2)
     
     sink_pickle = "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl"
     file_open = open(sink_pickle, 'rb')
@@ -240,19 +241,22 @@ if args.make_plot_figures == "True":
                     lin_thresh = np.min(np.abs(radial_momentum.value))
                     
                 #Plot figure
-                import pdb
-                pdb.set_trace()
+                axs[0].semilogy(particle_data['time'], particle_data['separation'])
+                axs[0].axhline(y=r_acc*2, alpha=0.5, linestyle='--')
+                time_ind = np.argmin(abs(yt.YTArray(particle_data['time']) - time_val))
+                axs[0].scatter(particle_data['time'][time_ind], particle_data['separation'][time_ind])
+                axs[0].set_xlim([np.min(particle_data['time']), np.max(particle_data['time'])])
+                axs[0].set_ylim([np.min(particle_data['separation']), np.max(particle_data['separation'])])
                 
-                plt.xscale('log')
-                plt.yscale('symlog', linthresh=lin_thresh)
-                plot = plt.scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
+                axs[1].set_xscale('log')
+                axs[1].set_yscale('symlog', linthresh=lin_thresh)
+                plot = axs[1].scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
                 cbar = plt.colorbar(plot, pad=0.0)
                 cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
-                plt.xlim([xmin,xmax])
-                plt.ylim([ymin,ymax])
-                plt.title("Time:"+str(np.round(time_val)))
-                plt.xlabel('density (g/cm$^3$)')
-                plt.ylabel('radial momentum (cm$\,$g/s)')
+                axs[1].set_xlim([xmin,xmax])
+                axs[1].set_ylim([ymin,ymax])
+                axs[1].set_xlabel('density (g/cm$^3$)')
+                axs[1].set_ylabel('radial momentum (cm$\,$g/s)')
 
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
