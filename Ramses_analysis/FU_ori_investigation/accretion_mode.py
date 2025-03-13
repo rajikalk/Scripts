@@ -161,7 +161,7 @@ if args.make_pickle_files == "True":
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
-            radial_velocity_fraction = rv_mag.in_units('cm/s')/v_mag.in_units('cm/s')
+            radial_velocity_fraction = abs(rv_mag.in_units('cm/s'))/v_mag.in_units('cm/s')
             del shape, radial_vel_vec, radial_vel_mag, radial_vel_unit, sign, rv_mag
             
             file = open(pickle_file, 'wb')
