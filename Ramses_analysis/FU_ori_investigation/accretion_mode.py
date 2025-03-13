@@ -182,7 +182,7 @@ if args.make_plot_figures == "True":
     single_col_width = 3.50394 #inches
     page_height = 10.62472 #inches
     font_size = 10
-    r_acc = np.round(length_unit.in_units('au')/(2**20)*4, decimals=2)
+    r_acc = np.round(yt.YTQuantity(4.0,"pc").in_units('au')/(2**20)*4, decimals=2)
     
     sink_pickle = "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl"
     file_open = open(sink_pickle, 'rb')
