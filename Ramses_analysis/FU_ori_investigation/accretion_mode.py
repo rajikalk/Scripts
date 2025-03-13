@@ -177,6 +177,16 @@ if args.make_plot_figures == "True":
     #plt.rcParams['figure.dpi'] = 300
     from matplotlib.colors import LogNorm
     cm = plt.cm.get_cmap('seismic')
+    
+    two_col_width = 7.20472 #inches
+    single_col_width = 3.50394 #inches
+    page_height = 10.62472 #inches
+    font_size = 10
+    
+    sink_pickle = "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl"
+    file_open = open(sink_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
 
     #Plotting
     pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
@@ -195,6 +205,11 @@ if args.make_plot_figures == "True":
             plot_pickle = pickle_files[fit]
             file_name = save_dir + plot_pickle[:-3]+'jpg'
             if os.path.isfile(file_name) == False:
+                plt.clf()
+                fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(two_col_width, single_col_width*1.4))#, sharey=True)
+                plt.subplots_adjust(wspace=0.0)
+                plt.subplots_adjust(hspace=0.0)
+            
                 file = open(plot_pickle, 'rb')
                 time_val, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
@@ -225,7 +240,9 @@ if args.make_plot_figures == "True":
                     lin_thresh = np.min(np.abs(radial_momentum.value))
                     
                 #Plot figure
-                plt.clf()
+                import pdb
+                pdb.set_trace()
+                
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
                 plot = plt.scatter(density.value, radial_momentum.value, c=radial_velocity_fraction, cmap=cm, vmin=0, vmax=1, edgecolor='k')
