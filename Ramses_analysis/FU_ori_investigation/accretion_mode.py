@@ -207,9 +207,9 @@ if args.make_plot_figures == "True":
             file_name = save_dir + plot_pickle[:-3]+'jpg'
             if os.path.isfile(file_name) == False:
                 plt.clf()
-                fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(two_col_width, single_col_width*1.4))#, sharey=True)
+                fig, axs = plt.subplots(ncols=2, nrows=1, figsize=(two_col_width, 0.8*single_col_width))#, sharey=True)
                 plt.subplots_adjust(wspace=0.0)
-                plt.subplots_adjust(hspace=0.0)
+                #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
                 time_val, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
