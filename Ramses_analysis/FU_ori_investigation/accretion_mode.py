@@ -132,7 +132,6 @@ if args.make_pickle_files == "True":
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
             print("Got particle position and velocity")
             
-            
             #Let's measure the angular momentum vector.
             sph_dx = measuring_sphere['x'].in_units('cm') - particle_position[0].in_units('cm')
             sph_dy = measuring_sphere['y'].in_units('cm') - particle_position[1].in_units('cm')
@@ -141,7 +140,7 @@ if args.make_pickle_files == "True":
             sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
             import pdb
             pdb.set_trace()
-            acc_inds = np.where(sph_radial_vector_mag < r_acc)[0]
+            acc_inds = np.where(sph_radial_vector_mag < r_acc.in_units('cm').value)[0]
             sph_radial_vector_mag[acc_inds] = np.nan
             #find cells in the sink particle accretion radius
             sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
@@ -163,7 +162,7 @@ if args.make_pickle_files == "True":
             
             rv_mag = radial_vel_mag*sign
             rv_mag = np.reshape(rv_mag, shape)
-            rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'km/s')
+            #rv_mag = yt.YTArray(rv_mag.value, 'km/s')
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
