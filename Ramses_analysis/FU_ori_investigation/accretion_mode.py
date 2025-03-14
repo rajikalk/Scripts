@@ -138,6 +138,9 @@ if args.make_pickle_files == "True":
             sph_dz = measuring_sphere['z'].in_units('cm') - particle_position[2].in_units('cm')
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
+            import pdb
+            pdb.set_trace()
+            #find cells in the sink particle accretion radius
             sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
             del sph_dx, sph_dy, sph_dz, sph_radial_vector_mag
             
