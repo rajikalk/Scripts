@@ -483,6 +483,11 @@ if args.make_frames_only == 'False':
             '''
             if args.use_angular_momentum != 'False':
                 region = yt.disk(center_pos, L, (np.sqrt((0.5*x_width)**2 + (0.5*y_width)), 'AU'), (args.slice_thickness/2, 'AU'))
+                
+            if args.weight_field == 'None':
+                weight_field = None
+            else:
+                weight_field = ('gas', args.weight_field)
             
             myf.set_center_pos_ind(args.calculation_center)
             myf.set_center_vel_ind(args.calculation_center)

@@ -89,6 +89,7 @@ if args.make_pickle_files == "True":
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
     sphere_radius = args.sphere_radius_cells*dx_min
+    r_acc = 4*dx_min
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
@@ -140,6 +141,8 @@ if args.make_pickle_files == "True":
             sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
             import pdb
             pdb.set_trace()
+            acc_inds = np.where(sph_radial_vector_mag < r_acc)[0]
+            sph_radial_vector_mag[acc_inds] = np.nan
             #find cells in the sink particle accretion radius
             sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
             del sph_dx, sph_dy, sph_dz, sph_radial_vector_mag
