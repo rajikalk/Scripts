@@ -157,8 +157,7 @@ if args.make_pickle_files == "True":
             
             rv_mag = radial_vel_mag*sign
             rv_mag = np.reshape(rv_mag, shape)
-            if np.inf in rv_mag.value or np.nan in rv_mag.value:
-                rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'km/s')
+            rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'km/s')
                 
             #Calcualte radial momentum
             radial_momentum = rv_mag.in_units('cm/s') * measuring_sphere['mass'].in_units('g')
@@ -295,13 +294,13 @@ if args.make_plot_figures == "True":
     fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, 1.4*single_col_width), sharex=True)
     plt.subplots_adjust(hspace=0.0)
     axs[0].semilogy(time_arr, sep_arr)
-    axs[0].set_xlim([0, 8000])
+    axs[0].set_xlim([0, 9000])
     axs[0].set_ylabel('Separation (au)')
     
     axs[1].plot(time_arr, rv_frac_median)
     axs[1].plot(time_arr, rv_frac_density_weighted_mean, 'k--')
-    axs[1].plot(time_arr, rv_frac_min)
-    axs[1].plot(time_arr, rv_frac_max)
+    #axs[1].plot(time_arr, rv_frac_min)
+    #axs[1].plot(time_arr, rv_frac_max)
     axs[1].fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
     axs[1].set_xlabel('Time (yr)')
     axs[1].set_ylabel('v$_{radial}$/v$_{magnitude}$')

@@ -1454,8 +1454,7 @@ def _Radial_Velocity_wrt_Center(field, data):
     
     rv_mag = radial_vel_mag*sign
     rv_mag = np.reshape(rv_mag, shape)
-    if np.inf in rv_mag.value or np.nan in rv_mag.value:
-        rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
+    rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
     return rv_mag
 
 yt.add_field("Radial_Velocity_wrt_Center", function=_Radial_Velocity_wrt_Center, units="cm/s", sampling_type="local")
