@@ -1437,21 +1437,20 @@ def _Radial_Velocity_wrt_Center(field, data):
         pdb.set_trace()
         print("Normal vector =", normal)
     '''
-    sph_radial_vector = yt.YTArray([data['dx_from_Center'], data['dy_from_Center'], data['dz_from_Center']]).in_units('cm')
-    sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
-    normal = yt.YTArray([data['dx_from_Center']/sph_radial_vector_mag, data['dy_from_Center']/sph_radial_vector_mag, data['dz_from_Center']/sph_radial_vector_mag]).T
-    
     shape = np.shape(data['x'])
-    gas_velx = data['Corrected_velx'].in_units('cm/s')
-    gas_vely = data['Corrected_vely'].in_units('cm/s')
-    gas_velz = data['Corrected_velz'].in_units('cm/s')
+    sph_radial_vector = yt.YTArray([data['dx_from_Center'].flatten(), data['dy_from_Center'].flatten(), data['dz_from_Center'].flatten()]).in_units('cm')
+    sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=0)).value
+    normal = yt.YTArray([data['dx_from_Center'].flatten()/sph_radial_vector_mag, data['dy_from_Center'].flatten()/sph_radial_vector_mag, data['dz_from_Center'].flatten()/sph_radial_vector_mag]).T
+    
+    gas_velx = data['Corrected_velx'].in_units('cm/s').flatten()
+    gas_vely = data['Corrected_vely'].in_units('cm/s').flatten()
+    gas_velz = data['Corrected_velz'].in_units('cm/s').flatten()
     cell_vel = yt.YTArray([gas_velx,gas_vely,gas_velz]).T
     
     radial_vel = projected_vector(cell_vel,normal)
     radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
-    sign = np.diag(np.dot(normal.in_units('cm'), radial_vel_unit.T))
-    sign = np.sign(sign)
+    sign = np.diag(np.dot(normal.in_units('cm'), radial_vel_unit.T)).value
     
     rv_mag = radial_vel_mag*sign
     rv_mag = np.reshape(rv_mag, shape)

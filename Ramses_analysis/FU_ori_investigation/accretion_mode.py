@@ -153,8 +153,7 @@ if args.make_pickle_files == "True":
             radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
             radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
             radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
-            sign = np.diag(np.dot(sph_radial_vector_unit.in_units('km'), radial_vel_unit.T))
-            sign = np.sign(sign)
+            sign = np.diag(np.dot(sph_radial_vector_unit.in_units('km'), radial_vel_unit.T)).value
             
             rv_mag = radial_vel_mag*sign
             rv_mag = np.reshape(rv_mag, shape)
