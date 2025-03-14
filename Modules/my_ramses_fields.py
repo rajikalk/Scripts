@@ -1427,6 +1427,38 @@ def _Radial_Velocity(field, data):
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
 
+def _Radial_Velocity_wrt_Center(field, data):
+    global center_pos
+    global center_vel
+    '''
+    if np.shape(data['x']) != (16,16,16):
+        import pdb
+        pdb.set_trace()
+        print("Normal vector =", normal)
+    '''
+    normal = data['Distance_from_Center']
+    KEEP EDITTING HERE
+
+    shape = np.shape(data['x'])
+    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
+    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
+    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
+    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    
+    radial_vel = projected_vector(cell_vel,normal)
+    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
+    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    sign = np.dot(normal, radial_vel_unit.T)
+    
+    rv_mag = radial_vel_mag*sign
+    rv_mag = yt.YTArray(rv_mag, 'cm/s')
+    rv_mag = np.reshape(rv_mag, shape)
+    if np.inf in rv_mag.value or np.nan in rv_mag.value:
+        rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
+    return rv_mag
+
+yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
+
 def _Proj_x_velocity(field, data):
     global east_vector
     '''

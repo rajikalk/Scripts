@@ -304,7 +304,7 @@ if args.make_frames_only == 'False':
             weight_field = None
             pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
         else:
-            weight_field = args.weight_field
+            weight_field = ('gas', args.weight_field)
             pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
            
     sys.stdout.flush()
