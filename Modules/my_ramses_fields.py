@@ -1439,7 +1439,7 @@ def _Radial_Velocity_wrt_Center(field, data):
     '''
     sph_radial_vector = yt.YTArray([data['dx_from_Center'], data['dy_from_Center'], data['dz_from_Center']]).in_units('cm')
     sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
-    normal = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
+    normal = yt.YTArray([data['dx_from_Center']/sph_radial_vector_mag, data['dy_from_Center']/sph_radial_vector_mag, data['dz_from_Center']/sph_radial_vector_mag]).T
     
     shape = np.shape(data['x'])
     gas_velx = data['Corrected_velx'].in_units('cm/s')
