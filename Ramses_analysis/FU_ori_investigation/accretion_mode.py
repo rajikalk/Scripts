@@ -123,7 +123,9 @@ if args.make_pickle_files == "True":
             dd = ds.all_data()
             #Get secondary position
             
+            primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            separation = np.sqrt(np.sum((particle_position - primary_position)**2))
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
             del dd
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
@@ -165,7 +167,7 @@ if args.make_pickle_files == "True":
             del shape, radial_vel_vec, radial_vel_mag, radial_vel_unit, sign, rv_mag
             
             file = open(pickle_file, 'wb')
-            pickle.dump((time_val, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
+            pickle.dump((time_val, separation.in_units('au'), measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
@@ -191,6 +193,7 @@ if args.make_plot_figures == "True":
 
     #radial fraction
     time_arr = []
+    sep_arr = []
     rv_frac_median = []
     rv_frac_density_weighted_mean = []
     rv_frac_low = []
@@ -221,10 +224,11 @@ if args.make_plot_figures == "True":
                 #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
-                time_val, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
+                time_val, separation, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
                 
                 time_arr.append(time_val)
+                sep_arr.append(separation)
                 neg_inds = np.where(radial_momentum<0)[0]
                 rv_frac_median.append(np.median(radial_velocity_fraction[neg_inds]))
                 density_weighted_mean = np.sum(density[neg_inds]*radial_velocity_fraction[neg_inds])/np.sum(density[neg_inds])
@@ -284,12 +288,22 @@ if args.make_plot_figures == "True":
         fit = fit + 1
 
     #Plot radial fraction evolution
+    file = open("radial_vel_evol.pkl", 'wb')
+    pickle.dump((time_arr, sep_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
+    file.close()
+    
     plt.clf()
-    plt.plot(time_arr, rv_frac_median)
-    plt.plot(time_arr, rv_frac_density_weighted_mean, 'k--')
-    plt.plot(time_arr, rv_frac_min)
-    plt.plot(time_arr, rv_frac_max)
-    plt.fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
-    plt.xlabel('Time (yr)')
-    plt.ylabel('v$_{radial}$/v$_{magnitude}$')
+    fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, 1.4*single_col_width), sharex=True)
+    plt.subplots_adjust(hspace=0.0)
+    axs[0].semilogy(time_arr, sep_arr)
+    axs[0].set_xlim([0, 8000])
+    axs[0].set_ylabel('Separation (au)')
+    
+    axs[1].plot(time_arr, rv_frac_median)
+    axs[1].plot(time_arr, rv_frac_density_weighted_mean, 'k--')
+    axs[1].plot(time_arr, rv_frac_min)
+    axs[1].plot(time_arr, rv_frac_max)
+    axs[1].fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
+    axs[1].set_xlabel('Time (yr)')
+    axs[1].set_ylabel('v$_{radial}$/v$_{magnitude}$')
     plt.savefig('rv_frac_evolution.jpg', bbox_inches='tight', dpi=300)
