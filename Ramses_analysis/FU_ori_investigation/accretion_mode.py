@@ -286,7 +286,7 @@ if args.make_plot_figures == "True":
     #Plot radial fraction evolution
     plt.clf()
     plt.plot(time_arr, rv_frac_median)
-    plt.plto(time_arr, rv_frac_density_weighted_mean, 'k--')
+    plt.plot(time_arr, rv_frac_density_weighted_mean, 'k--')
     plt.plot(time_arr, rv_frac_min)
     plt.plot(time_arr, rv_frac_max)
     plt.fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
