@@ -1427,7 +1427,7 @@ def _Radial_Velocity(field, data):
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
 
-'''
+"""
 def _Radial_Velocity_wrt_Center(field, data):
     global center_pos
     global center_vel
@@ -1459,7 +1459,7 @@ def _Radial_Velocity_wrt_Center(field, data):
     return rv_mag
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
-'''
+"""
 def _Proj_x_velocity(field, data):
     global east_vector
     '''
