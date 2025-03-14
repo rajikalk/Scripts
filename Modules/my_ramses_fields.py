@@ -1427,7 +1427,7 @@ def _Radial_Velocity(field, data):
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
 
-"""
+
 def _Radial_Velocity_wrt_Center(field, data):
     global center_pos
     global center_vel
@@ -1437,29 +1437,38 @@ def _Radial_Velocity_wrt_Center(field, data):
         pdb.set_trace()
         print("Normal vector =", normal)
     '''
-    normal = data['Distance_from_Center']
-    KEEP EDITTING HERE
-
+    sph_radial_vector = yt.YTArray([data['dx_from_Center'], data['dy_from_Center'], data['dz_from_Center']]).in_units('cm')
+    sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1)).value
+    normal = yt.YTArray([sph_dx/sph_radial_vector_mag, sph_dy/sph_radial_vector_mag, sph_dz/sph_radial_vector_mag]).T
+    
     shape = np.shape(data['x'])
-    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
-    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
-    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
-    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+    gas_velx = data['Corrected_velx'].in_units('cm/s')
+    gas_vely = data['Corrected_vely'].in_units('cm/s')
+    gas_velz = data['Corrected_velz'].in_units('cm/s')
+    cell_vel = yt.YTArray([gas_velx,gas_vely,gas_velz]).T
     
     radial_vel = projected_vector(cell_vel,normal)
     radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
-    sign = np.dot(normal, radial_vel_unit.T)
+    sign = np.diag(np.dot(normal.in_units('cm'), radial_vel_unit.T))
+    sign = np.sign(sign)
     
     rv_mag = radial_vel_mag*sign
-    rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
     if np.inf in rv_mag.value or np.nan in rv_mag.value:
         rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
     return rv_mag
 
-yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
-"""
+yt.add_field("Radial_Velocity_wrt_Center", function=_Radial_Velocity_wrt_Center, units="cm/s", sampling_type="local")
+
+def _Radial_Momentum(field, data):
+    rv_mag = data['Radial_Velocity_wrt_Center'].in_units('cm/s')
+    mass = data['mass'].in_units('g')
+    radial_momentum = rv_mag*mass
+    return radial_momentum
+
+yt.add_field("Radial_Momentum", function=_Radial_Momentum, units="g*cm/s", sampling_type="local")
+
 def _Proj_x_velocity(field, data):
     global east_vector
     '''

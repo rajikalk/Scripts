@@ -224,7 +224,7 @@ if args.make_plot_figures == "True":
                 #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
-                time_val, separation density, radial_momentum, radial_velocity_fraction = pickle.load(file)
+                time_val, separation, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
                 
                 time_arr.append(time_val)
