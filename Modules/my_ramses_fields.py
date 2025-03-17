@@ -427,22 +427,6 @@ def _sink_particle_tag(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_tag = np.arange(float(len(loaded_sink_data['x'])))
-        '''
-        #particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        #csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        #time_val = None
-        #with open(particle_file[0], 'r') as f:
-        #    reader = csv.reader(f, dialect='dat')
-        #    for row in reader:
-        #        if time_val == None:
-        #            time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-        #            continue
-        #        try:
-        #            dummy = float(row[0])
-        #            particle_tag.append(float(row[0]))
-        #        except:
-        #            continue
-        '''
     particle_tag = yt.YTArray(np.array(particle_tag), "")
     return particle_tag
 
@@ -460,22 +444,6 @@ def _sink_particle_posx(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posx = loaded_sink_data['x']*data.ds.length_unit.in_units("pc").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_posx.append(float(row[1])*data.ds.length_unit.value)
-                except:
-                    continue
-        '''
         particle_posx = yt.YTArray(np.array(particle_posx), "pc")
     return particle_posx
 
@@ -493,22 +461,6 @@ def _sink_particle_posy(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posy = loaded_sink_data['y']*data.ds.length_unit.in_units("pc").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_posy.append(float(row[2])*data.ds.length_unit.value)
-                except:
-                    continue
-        '''
         particle_posy = yt.YTArray(np.array(particle_posy), "pc")
     return particle_posy
 
@@ -526,22 +478,6 @@ def _sink_particle_posz(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posz = loaded_sink_data['z']*data.ds.length_unit.in_units("pc").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_posz.append(float(row[3])*data.ds.length_unit.value)
-                except:
-                    continue
-        '''
         particle_posz = yt.YTArray(np.array(particle_posz), "pc")
     return particle_posz
 
@@ -559,22 +495,6 @@ def _sink_particle_velx(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_velx = loaded_sink_data['ux']*data.ds.velocity_unit.in_units("km/s").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_velx.append(float(row[4])*data.ds.velocity_unit.value)
-                except:
-                    continue
-        '''
         particle_velx = yt.YTArray(np.array(particle_velx), "km/s")
     return particle_velx
 
@@ -592,22 +512,6 @@ def _sink_particle_vely(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_vely = loaded_sink_data['uy']*data.ds.velocity_unit.in_units("km/s").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_vely.append(float(row[5])*data.ds.velocity_unit.value)
-                except:
-                    continue
-        '''
         particle_vely = yt.YTArray(np.array(particle_vely), "km/s")
     return particle_vely
 
@@ -625,22 +529,6 @@ def _sink_particle_velz(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_velz = loaded_sink_data['uz']*data.ds.velocity_unit.in_units("km/s").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_velz.append(float(row[6])*data.ds.velocity_unit.value)
-                except:
-                    continue
-        '''
         particle_velz = yt.YTArray(np.array(particle_velz), "km/s")
     return particle_velz
 
@@ -658,22 +546,6 @@ def _sink_particle_speed(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_speed = loaded_sink_data['u']*data.ds.velocity_unit.in_units("km/s").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_velz.append(float(row[6])*data.ds.velocity_unit.value)
-                except:
-                    continue
-        '''
         particle_speed = yt.YTArray(np.array(particle_speed), "km/s")
     return particle_speed
 
@@ -691,22 +563,6 @@ def _sink_particle_mass(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_mass = loaded_sink_data['m']*data.ds.mass_unit.in_units("Msun").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_mass.append(float(row[7])*data.ds.mass_unit.value)
-                except:
-                    continue
-        '''
         particle_mass = yt.YTArray(np.array(particle_mass), "Msun")
     return particle_mass
 
@@ -726,22 +582,6 @@ def _sink_particle_accretion_rate(field, data):
         numerator = loaded_sink_data['dm']*data.ds.mass_unit.in_units("Msun").value
         denominator = (loaded_sink_data['snapshot_time'] - loaded_sink_data['tflush'])*data.ds.time_unit.in_units("yr").value
         particle_mdot = numerator/denominator
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_mass.append(float(row[7])*data.ds.mass_unit.value)
-                except:
-                    continue
-        '''
         particle_mdot = yt.YTArray(np.array(particle_mdot), "Msun/yr")
     return particle_mdot
 
@@ -759,22 +599,6 @@ def _sink_particle_form_time(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_form_time = loaded_sink_data['tcreate']*data.ds.time_unit.in_units("yr").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    particle_form_time.append(float(row[10])*data.ds.time_unit.value)
-                except:
-                    continue
-        '''
         particle_form_time = yt.YTArray(np.array(particle_form_time), "yr")
     return particle_form_time
 
@@ -792,86 +616,12 @@ def _sink_particle_age(field, data):
         datadir = data.ds.directory.split('output_')[0]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_age = (loaded_sink_data['snapshot_time']-loaded_sink_data['tcreate'])*data.ds.time_unit.in_units("yr").value
-        '''
-        particle_file = glob.glob(data.ds.directory + '/*.snktxt')
-        csv.register_dialect('dat', delimiter=' ', skipinitialspace=True)
-        time_val = None
-        with open(particle_file[0], 'r') as f:
-            reader = csv.reader(f, dialect='dat')
-            for row in reader:
-                if time_val == None:
-                    time_val = yt.YTQuantity(float(row[1])*data.ds.time_unit.value, 's')
-                    continue
-                try:
-                    dummy = float(row[0])
-                    age = time_val.in_units('s').value - float(row[10])*data.ds.time_unit.value
-                    particle_age.append(age)
-                except:
-                    continue
-        '''
         particle_age = yt.YTArray(np.array(particle_age), "yr")
     return particle_age
 
 yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr", sampling_type="local")
 
 #===========================REPLACING YT PARTICLE FIELDS WITH RAMSES ONES======================================
-'''
-def _particle_identity(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_tag']
-    
-yt.add_field("particle_tag", function=_particle_tag, units=r"")
-
-def _particle_position_x(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_posx'].in_units('cm')
-    
-yt.add_field("particle_position_x", function=_particle_position_x, units=r"cm")
-
-def _particle_position_y(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_posy'].in_units('cm')
-    
-yt.add_field("particle_position_y", function=_particle_position_y, units=r"cm")
-
-def _particle_position_z(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_posz'].in_units('cm')
-    
-yt.add_field("particle_position_z", function=_particle_position_z, units=r"cm")
-
-def _particle_velocity_x(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_velx'].in_units('cm/s')
-    
-yt.add_field("particle_velocity_x", function=_particle_velocity_x, units=r"cm/s")
-
-def _particle_velocity_y(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_vely'].in_units('cm/s')
-    
-yt.add_field("particle_velocity_y", function=_particle_velocity_y, units=r"cm/s")
-
-def _particle_velocity_z(field, data):
-    """
-    replacing yt particle fields
-    """
-    return data['particle_velz'].in_units('cm/s')
-    
-yt.add_field("particle_velocity_z", function=_particle_velocity_z, units=r"cm/s")
-'''
 def _Center_Position_Gas(field, data):
     """
     Calculates the CoM of gas
@@ -1401,12 +1151,6 @@ yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3", sampli
 def _Radial_Velocity(field, data):
     global normal
     global center_vel
-    '''
-    if np.shape(data['x']) != (16,16,16):
-        import pdb
-        pdb.set_trace()
-        print("Normal vector =", normal)
-    '''
     shape = np.shape(data['x'])
     gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
     gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
@@ -1431,12 +1175,7 @@ yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", samplin
 def _Radial_Velocity_wrt_Center(field, data):
     global center_pos
     global center_vel
-    '''
-    if np.shape(data['x']) != (16,16,16):
-        import pdb
-        pdb.set_trace()
-        print("Normal vector =", normal)
-    '''
+
     shape = np.shape(data['x'])
     sph_radial_vector = yt.YTArray([data['dx_from_Center'].flatten(), data['dy_from_Center'].flatten(), data['dz_from_Center'].flatten()]).in_units('cm')
     sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=0)).value
@@ -1469,12 +1208,7 @@ yt.add_field("Radial_Momentum", function=_Radial_Momentum, units="g*cm/s", sampl
 
 def _Proj_x_velocity(field, data):
     global east_vector
-    '''
-    if np.shape(data['x']) != (16,16,16):
-        import pdb
-        pdb.set_trace()
-        print("East vector =", east_vector)
-    '''
+
     shape = np.shape(data['x'])
     gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
     gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
@@ -1495,12 +1229,7 @@ yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s", samplin
 
 def _Proj_y_velocity(field, data):
     global north_vector
-    '''
-    if np.shape(data['x']) != (16,16,16):
-        import pdb
-        pdb.set_trace()
-        print("North vector =", north_vector)
-    '''
+
     shape = np.shape(data['x'])
     gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
     gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()

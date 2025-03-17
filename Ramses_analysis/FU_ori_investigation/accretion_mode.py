@@ -250,19 +250,19 @@ if args.make_plot_figures == "True":
                     xmax = np.max(density.value)
                     
                 if np.isnan(ymin):
-                    ymin = np.min(radial_momentum.value)
-                elif np.min(radial_momentum.value) < ymin:
-                    ymin = np.min(radial_momentum.value)
+                    ymin = np.nanmin(radial_momentum.value)
+                elif np.nanmin(radial_momentum.value) < ymin:
+                    ymin = np.nanmin(radial_momentum.value)
                     
                 if np.isnan(ymax):
-                    ymax = np.max(radial_momentum.value)
-                elif np.max(radial_momentum.value) > ymax:
-                    ymax = np.max(radial_momentum.value)
+                    ymax = np.nanmax(radial_momentum.value)
+                elif np.nanmax(radial_momentum.value) > ymax:
+                    ymax = np.nanmax(radial_momentum.value)
                     
                 if np.isnan(lin_thresh):
-                    lin_thresh = np.min(np.abs(radial_momentum.value))
-                elif np.min(np.abs(radial_momentum.value)) < lin_thresh:
-                    lin_thresh = np.min(np.abs(radial_momentum.value))
+                    lin_thresh = np.nanmin(np.abs(radial_momentum.value))
+                elif np.nanmin(np.abs(radial_momentum.value)) < lin_thresh:
+                    lin_thresh = np.nanmin(np.abs(radial_momentum.value))
                     
                 #Plot figure
                 axs[0].semilogy(particle_data['time'], particle_data['separation'])
@@ -289,9 +289,18 @@ if args.make_plot_figures == "True":
         fit = fit + 1
 
     #Plot radial fraction evolution
-    file = open("radial_vel_evol.pkl", 'wb')
-    pickle.dump((time_arr, sep_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
-    file.close()
+    evol_pickle = "radial_vel_evol_"+str(rank)+".pkl"
+    if os.path.isfile(evol_pickle):
+        file = open(evol_pickle, 'rb')
+        time_arr_pick, sep_arr_pick, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
+        file.close()
+        
+        CONTINUE EDITTING HERE
+        
+    else:
+        file = open("radial_vel_evol_"+str(rank)+".pkl", 'wb')
+        pickle.dump((time_arr, sep_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
+        file.close()
     
     plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, 1.4*single_col_width), sharex=True)
