@@ -124,6 +124,8 @@ if args.make_pickle_files == "True":
             dd = ds.all_data()
             #Get secondary position
             
+            import pdb
+            pdb.set_trace()
             primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             separation = np.sqrt(np.sum((particle_position - primary_position)**2))
