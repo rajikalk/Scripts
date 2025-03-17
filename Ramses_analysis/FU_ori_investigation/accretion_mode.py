@@ -231,13 +231,13 @@ if args.make_plot_figures == "True":
                 time_arr.append(time_val)
                 sep_arr.append(separation)
                 neg_inds = np.where(radial_momentum<0)[0]
-                rv_frac_median.append(np.median(radial_velocity_fraction[neg_inds]))
+                rv_frac_median.append(np.nanmedian(radial_velocity_fraction[neg_inds]))
                 density_weighted_mean = np.sum(density[neg_inds]*radial_velocity_fraction[neg_inds])/np.sum(density[neg_inds])
                 rv_frac_density_weighted_mean.append(density_weighted_mean)
-                rv_frac_low.append(np.mean(radial_velocity_fraction)-np.std(radial_velocity_fraction[neg_inds]))
-                rv_frac_high.append(np.mean(radial_velocity_fraction)+np.std(radial_velocity_fraction[neg_inds]))
-                rv_frac_min.append(np.min(radial_velocity_fraction[neg_inds]))
-                rv_frac_max.append(np.max(radial_velocity_fraction[neg_inds]))
+                rv_frac_low.append(np.nanmean(radial_velocity_fraction[neg_inds])-np.nanstd(radial_velocity_fraction[neg_inds]))
+                rv_frac_high.append(np.nanmean(radial_velocity_fraction[neg_inds])+np.nanstd(radial_velocity_fraction[neg_inds]))
+                rv_frac_min.append(np.nanmin(radial_velocity_fraction[neg_inds]))
+                rv_frac_max.append(np.nanmax(radial_velocity_fraction[neg_inds]))
                 
                 if np.isnan(xmin):
                     xmin = np.min(density.value)
