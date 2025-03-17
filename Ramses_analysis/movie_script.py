@@ -359,15 +359,15 @@ if args.make_frames_only == 'False':
             center_pos = dd['Center_Position'].in_units('au').value
             if args.axis == 'xy':
                 axis_ind = 2
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
+                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.75*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.75*args.slice_thickness)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
             elif args.axis == 'xz':
                 axis_ind = 1
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.5*args.slice_thickness), center_pos[2]-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.5*args.slice_thickness), center_pos[2]+(0.55*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*args.slice_thickness), center_pos[2]-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*args.slice_thickness), center_pos[2]+(0.75*y_width)], 'AU')
                 region = ds.box(left_corner, right_corner)
 
                 del left_corner
