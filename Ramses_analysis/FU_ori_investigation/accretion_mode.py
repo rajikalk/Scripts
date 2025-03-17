@@ -127,6 +127,7 @@ if args.make_pickle_files == "True":
             primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             separation = np.sqrt(np.sum((particle_position - primary_position)**2))
+            accretion_rate = dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr')
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
             del dd
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
@@ -168,7 +169,7 @@ if args.make_pickle_files == "True":
             del shape, radial_vel_vec, radial_vel_mag, radial_vel_unit, sign, rv_mag
             
             file = open(pickle_file, 'wb')
-            pickle.dump((time_val, separation.in_units('au'), measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
+            pickle.dump((time_val, separation.in_units('au'), accretion_rate, measuring_sphere['density'], radial_momentum, radial_velocity_fraction), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
@@ -195,6 +196,7 @@ if args.make_plot_figures == "True":
     #radial fraction
     time_arr = []
     sep_arr = []
+    acc_arr = []
     mean_dens_array = []
     rv_frac_median = []
     rv_frac_density_weighted_mean = []
@@ -226,11 +228,12 @@ if args.make_plot_figures == "True":
                 #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
-                time_val, separation, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
+                time_val, separation, accretion_rate, density, radial_momentum, radial_velocity_fraction = pickle.load(file)
                 file.close()
                 
                 time_arr.append(time_val)
                 sep_arr.append(separation)
+                acc_arr.append(accretion_rate)
                 neg_inds = np.where(radial_momentum<0)[0]
                 mean_dens_array.append(np.nanmean(density[neg_inds]))
                 rv_frac_median.append(np.nanmedian(radial_velocity_fraction[neg_inds]))
