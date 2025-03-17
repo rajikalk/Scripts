@@ -515,15 +515,16 @@ if args.make_frames_only == 'False':
                     for field_name in proj_field_list:
                         weight_name = field_name[1] + '_' + weight_field[1]
                         unit_string = str((region[field_name]*region[weight_field]).in_cgs().units)
+                        function_name = '_' + weight_name
                         
-                        def '_'+weight_name(field,data):
+                        def function_name(field,data):
                             """
                             Calculated the centred z-component of the megnatic field
                             """
                             weight_field = data[field_name]*data[weight_field]
                             return weight_field
                         
-                        ds.add_field(weight_name, function="_"+weight_name, units=unit_string, sampling_type="local")
+                        ds.add_field(weight_name, function=function_name, units=unit_string, sampling_type="local")
                         
                         weight_field_list.append(('gas', weight_name))
                     
