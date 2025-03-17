@@ -458,29 +458,6 @@ if args.make_frames_only == 'False':
                     part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
             
             #print("initialised fields")
-            '''
-            if args.axis == 'xy':
-                axis_ind = 2
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.5*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.5*args.slice_thickness)], 'AU')
-                region = ds.box(left_corner, right_corner)
-                del left_corner
-                del right_corner
-            elif args.axis == 'xz':
-                axis_ind = 1
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.5*args.slice_thickness), center_pos[2]-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.5*args.slice_thickness), center_pos[2]+(0.55*y_width)], 'AU')
-                region = ds.box(left_corner, right_corner)
-                del left_corner
-                del right_corner
-            elif args.axis == 'yz':
-                axis_ind = 0
-                left_corner = yt.YTArray([center_pos[0]-(0.5*args.slice_thickness), center_pos[1]-(0.75*x_width), center_pos[2]-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.5*args.slice_thickness), center_pos[1]+(0.75*x_width), center_pos[2]+(0.75*y_width)], 'AU')
-                region = ds.box(left_corner, right_corner)
-                del left_corner
-                del right_corner
-            '''
             if args.use_angular_momentum != 'False':
                 region = yt.disk(center_pos, L, (np.sqrt((0.5*x_width)**2 + (0.5*y_width)), 'AU'), (args.slice_thickness/2, 'AU'))
                 
@@ -521,6 +498,8 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
+                import pdb
+                pdb.set_trace()
                 vel1_field = args.axis[0] + '-velocity'
                 vel2_field = args.axis[1] + '-velocity'
                 vel3_field = perp_vel + '-velocity'
@@ -542,8 +521,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
                             else:
@@ -561,8 +538,6 @@ if args.make_frames_only == 'False':
                                 else:
                                     proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
                             else:
@@ -574,8 +549,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs())
                             else:
