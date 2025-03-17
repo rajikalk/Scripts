@@ -617,12 +617,16 @@ if args.make_frames_only == 'False':
                         if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             proj_array = np.array(proj.frb.data[field].in_units('gauss'))
                     else:
                        if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                        else:
-                           proj_array = np.array(proj.frb.data[field].in_cgs())
+                            import pdb
+                            pdb.set_trace()
+                            proj_array = np.array(proj.frb.data[field].in_cgs())
                     if rank == proj_root_rank:
                         proj_dict[field[1]] = proj_array
                     else:

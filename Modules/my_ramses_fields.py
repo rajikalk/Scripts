@@ -1198,13 +1198,13 @@ def _Radial_Velocity_wrt_Center(field, data):
 
 yt.add_field("Radial_Velocity_wrt_Center", function=_Radial_Velocity_wrt_Center, units="cm/s", sampling_type="local")
 
-def _Radial_Momentum(field, data):
+def _Radial_Momentum_wrt_Center(field, data):
     rv_mag = data['Radial_Velocity_wrt_Center'].in_units('cm/s')
     mass = data['mass'].in_units('g')
     radial_momentum = rv_mag*mass
     return radial_momentum
 
-yt.add_field("Radial_Momentum", function=_Radial_Momentum, units="g*cm/s", sampling_type="local")
+yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
 
 def _Proj_x_velocity(field, data):
     global east_vector
