@@ -542,6 +542,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
                             else:
@@ -559,6 +561,8 @@ if args.make_frames_only == 'False':
                                 else:
                                     proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
                             else:
@@ -570,6 +574,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs())
                             else:
