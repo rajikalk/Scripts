@@ -498,21 +498,49 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
-                import pdb
-                pdb.set_trace()
                 vel1_field = args.axis[0] + '-velocity'
                 vel2_field = args.axis[1] + '-velocity'
                 vel3_field = perp_vel + '-velocity'
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
                 proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
+                
+                
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                
+                #Defined weighted fields?
+                if args.weight_field != None:
+                    weight_field_list = []
+                    for field_name in proj_field_list:
+                        weight_name = field_name[1] + '_' + weight_field[1]
+                        unit_string = str((region[field_name]*region[weight_field]).in_cgs().units)
+                        
+                        def '_'+weight_name(field,data):
+                            """
+                            Calculated the centred z-component of the megnatic field
+                            """
+                            weight_field = data[field_name]*data[weight_field]
+                            return weight_field
+                        
+                        ds.add_field(weight_name, function="_"+weight_name, units=unit_string, sampling_type="local")
+                        
+                        weight_field_list.append(('gas', weight_name))
+                    
+                    import pdb
+                    pdb.set_trace()
+                    
+                    proj_field_list = weight_field_list
+                    
+                    proj = yt.ProjectionPlot(ds, axis_ind, weight_field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
+                    proj.set_buff_size([args.resolution, args.resolution])
+                    weight_proj = proj.frb.data[field].in_cgs()
+                    
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
@@ -521,6 +549,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
                             else:
@@ -533,6 +563,8 @@ if args.make_frames_only == 'False':
                                 else:
                                     proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit+"*cm"))
                             else:
+                                import pdb
+                                pdb.set_trace()
                                 if args.divide_by_proj_thickness == "True":
                                     proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
                                 else:
@@ -549,6 +581,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs())
                             else:
