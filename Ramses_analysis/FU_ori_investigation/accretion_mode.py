@@ -87,8 +87,6 @@ if args.make_pickle_files == "True":
     if rank == 0:
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
-    import pdb
-    pdb.set_trace()
     dx_min = np.min(dd['dx'].in_units('au'))
     sphere_radius = args.sphere_radius_cells*dx_min
     r_acc = 4*dx_min
