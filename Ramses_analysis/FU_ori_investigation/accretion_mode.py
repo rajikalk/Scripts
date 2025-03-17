@@ -87,6 +87,8 @@ if args.make_pickle_files == "True":
     if rank == 0:
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
+    import pdb
+    pdb.set_trace()
     dx_min = np.min(dd['dx'].in_units('au'))
     sphere_radius = args.sphere_radius_cells*dx_min
     r_acc = 4*dx_min
@@ -122,10 +124,8 @@ if args.make_pickle_files == "True":
             ds = yt.load(fn, units_override=units_override)
             time_val = ds.current_time.in_units('yr') - sink_form_time
             dd = ds.all_data()
-            #Get secondary position
             
-            import pdb
-            pdb.set_trace()
+            #Get secondary position
             primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             separation = np.sqrt(np.sum((particle_position - primary_position)**2))
