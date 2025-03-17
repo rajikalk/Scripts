@@ -295,7 +295,9 @@ if args.make_plot_figures == "True":
         time_arr_pick, sep_arr_pick, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
         file.close()
         
-        CONTINUE EDITTING HERE
+        #CONTINUE EDITTING HERE
+        import pdb
+        pdb.set_trace()
         
     else:
         file = open("radial_vel_evol_"+str(rank)+".pkl", 'wb')
