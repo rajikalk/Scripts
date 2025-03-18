@@ -297,7 +297,7 @@ if args.make_plot_figures == "True":
     evol_pickle = "radial_vel_evol_"+str(rank)+".pkl"
     if os.path.isfile(evol_pickle):
         file = open(evol_pickle, 'rb')
-        time_arr_pick, sep_arr_pick, dens_array, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
+        time_arr_pick, sep_arr_pick, dens_array, acc_arr, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
         file.close()
         
         #CONTINUE EDITTING HERE
@@ -306,7 +306,7 @@ if args.make_plot_figures == "True":
         
     else:
         file = open("radial_vel_evol_"+str(rank)+".pkl", 'wb')
-        pickle.dump((time_arr, sep_arr, dens_array, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
+        pickle.dump((time_arr, sep_arr, dens_array, acc_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
         file.close()
     
     plt.clf()
