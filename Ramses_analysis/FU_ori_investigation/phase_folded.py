@@ -119,7 +119,7 @@ ylim = [0, 7]
 sig_thres = 3
 for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
-    Mag_orb = mdot[pre_inds[orb_it-1]: end_inds[orb_it]].in_units('msun/yr')
+    Mag_orb = m_dot[pre_inds[orb_it-1]: end_inds[orb_it]].in_units('msun/yr')
     Mag_orb_bounds = Mag_orb
     Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
     mag_low = np.nanmax(Mag_orb_bounds)
@@ -135,8 +135,8 @@ for orb_it in range(1, len(pre_inds)):
     #        ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
         
     Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
-    plt.plot(time_orb, Mag_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
-    plt.plot(time_orb, Mag_orb.T[1], color=colors[orb_it])
+    plt.semilogy(time_orb, Mag_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
+    plt.semilogy(time_orb, Mag_orb.T[1], color=colors[orb_it])
     
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Accretion rate (msun/yr)")
