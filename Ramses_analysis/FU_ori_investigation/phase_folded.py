@@ -84,7 +84,11 @@ apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
 
 #Make diagnostic plot
 plt.clf()
-plt.plot()
+plt.semilogy(particle_data['time'], particle_data['separation'])
+for peri_ind in periastron_inds:
+    plt.axvline(x=np.array(particle_data['time'])[peri_ind+1])
+plt.xlim([3500, 8700])
+plt.savefig('periastrons.png')
 
 #Find pre-peri time
 pre_time = 10
