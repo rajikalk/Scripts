@@ -507,7 +507,7 @@ if args.make_frames_only == 'False':
                 
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
-                
+                '''
                 #Defined weighted fields?
                 if args.weight_field != None:
                     weight_field_list = []
@@ -535,6 +535,7 @@ if args.make_frames_only == 'False':
                     proj = yt.ProjectionPlot(ds, axis_ind, weight_field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj.set_buff_size([args.resolution, args.resolution])
                     weight_proj = proj.frb.data[field].in_cgs()
+                    '''
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
