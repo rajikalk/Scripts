@@ -564,13 +564,13 @@ if args.make_frames_only == 'False':
                                 else:
                                     proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit+"*cm"))
                             else:
-                                import pdb
-                                pdb.set_trace()
                                 if args.divide_by_proj_thickness == "True":
                                     proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
                                 else:
                                     proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
                         else:
+                            import pdb
+                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
                             else:

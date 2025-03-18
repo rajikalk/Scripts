@@ -100,7 +100,7 @@ for peri_ind in periastron_inds:
 plt.clf()
 ylim = [0, 7]
 sig_thres = 3
-for orb_it in range(3, len(pre_inds)):
+for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
     Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
     Mag_orb_bounds = Mag_orb
@@ -140,7 +140,7 @@ if mag_sig > sig_thres:
     
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
-plt.ylim(ylim)
+#plt.ylim(ylim)
 plt.gca().invert_yaxis()
 plt.xlim([-1*pre_time, 100])
 plt.legend(loc='best')
