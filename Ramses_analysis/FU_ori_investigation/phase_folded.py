@@ -28,6 +28,7 @@ def parse_inputs():
     
 #================================================================================
 args = parse_inputs()
+colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
 path = sys.argv[1]
 save_dir = sys.argv[2]
@@ -118,25 +119,8 @@ for orb_it in range(1, len(pre_inds)):
             ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
         
         Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
-        plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it))
-time_orb = time[pre_inds[orb_it]:] - time[periastron_inds[orb_it]]
-Mag_orb = Mag[pre_inds[orb_it]:]
-Mag_orb_bounds = Mag_orb
-Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
-mag_low = np.nanmax(Mag_orb_bounds)
-mag_std = np.nanstd(Mag_orb_bounds)
-mag_median = np.nanmedian(Mag_orb_bounds)
-mag_mean = np.nanmean(Mag_orb_bounds)
-mag_sig = (mag_low - mag_median)/mag_std
-mag_sig = (mag_low - mag_mean)/mag_std
-if mag_sig > sig_thres:
-    if np.nanmin(Mag_orb_bounds) < np.min(ylim):
-        ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
-    if np.nanmax(Mag_orb_bounds) > np.max(ylim):
-        ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
-    
-    #Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.nanmax(Mag_orb_bounds)
-    plt.plot(time_orb, Mag_orb, label="Orbit "+str(orb_it+1))
+        plt.plot(time_orb, Mag_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
+        plt.plot(time_orb, Mag_orb.T[1], color=colors[orb_it])
     
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
