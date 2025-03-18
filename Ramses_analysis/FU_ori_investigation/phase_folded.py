@@ -112,15 +112,15 @@ for orb_it in range(1, len(pre_inds)):
     mag_mean = np.nanmean(Mag_orb_bounds)
     mag_sig = (mag_low - mag_median)/mag_std
     mag_sig = (mag_low - mag_mean)/mag_std
-    if mag_sig > sig_thres:
-        if np.nanmin(Mag_orb_bounds) < np.min(ylim):
-            ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
-        if np.nanmax(Mag_orb_bounds) > np.max(ylim):
-            ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
+    #if mag_sig > sig_thres:
+    #    if np.nanmin(Mag_orb_bounds) < np.min(ylim):
+    #        ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
+    #    if np.nanmax(Mag_orb_bounds) > np.max(ylim):
+    #        ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
         
-        Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
-        plt.plot(time_orb, Mag_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
-        plt.plot(time_orb, Mag_orb.T[1], color=colors[orb_it])
+    Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
+    plt.plot(time_orb, Mag_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
+    plt.plot(time_orb, Mag_orb.T[1], color=colors[orb_it])
     
 plt.xlabel("Time releative to periastron (yr)")
 plt.ylabel("Magnitude")
