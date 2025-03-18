@@ -117,10 +117,10 @@ for peri_ind in periastron_inds:
 plt.clf()
 ylim = [0, 7]
 sig_thres = 3
-for orb_it in range(1, len(pre_inds)):
-    time_orb = time[periastron_inds[curr_it]:periastron_inds[curr_it+1]]
+for orb_it in range(len(periastron_inds-1)):
+    time_orb = time[periastron_inds[orb_it]:periastron_inds[orb_it+1]]
     phase_orb = (time_orb - time_orb[0])/(time_orb - time_orb[0])[-1]
-    acc_orb = m_dot[periastron_inds[curr_it]:periastron_inds[curr_it+1]].in_units('msun/yr')
+    acc_orb = m_dot[periastron_inds[orb_it]:periastron_inds[orb_it+1]].in_units('msun/yr')
 
     '''
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
