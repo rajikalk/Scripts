@@ -119,7 +119,7 @@ ylim = [0, 7]
 sig_thres = 3
 for orb_it in range(1, len(pre_inds)):
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
-    Mag_orb = Mag[pre_inds[orb_it-1]: end_inds[orb_it]]
+    Mag_orb = mdot[pre_inds[orb_it-1]: end_inds[orb_it]].in_units('msun/yr')
     Mag_orb_bounds = Mag_orb
     Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
     mag_low = np.nanmax(Mag_orb_bounds)
