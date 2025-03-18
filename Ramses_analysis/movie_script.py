@@ -553,8 +553,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_units('gauss'))
                             else:
@@ -583,8 +581,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs())
                             else:
@@ -866,20 +862,26 @@ for pickle_file in pickle_files:
             plt.gca().set_aspect('equal')
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
-            if frame_no > 0 or time_val > -1.0:
-                # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-            else:
-                plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+            try:
+                if frame_no > 0 or time_val > -1.0:
+                    # plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                    plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+                else:
+                    plt.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
+            except:
+                pass
             if args.debug_plotting != 'False':
                 plt.savefig("Test_790.jpg", format='jpg', bbox_inches='tight')
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            if args.plot_z_velocities == 'False':
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
-            else:
-                mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+            try:
+                if args.plot_z_velocities == 'False':
+                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+                else:
+                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+            except:
+                pass
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
