@@ -139,7 +139,7 @@ for orb_it in range(1, len(pre_inds)):
     plt.plot(time_orb, Mag_orb.T[1], color=colors[orb_it])
     
 plt.xlabel("Time releative to periastron (yr)")
-plt.ylabel("Magnitude")
+plt.ylabel("Accretion rate (msun/yr)")
 #plt.ylim(ylim)
 #plt.gca().invert_yaxis()
 plt.xlim([-1*pre_time, 100])
