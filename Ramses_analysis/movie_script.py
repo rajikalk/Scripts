@@ -498,9 +498,12 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
-                vel1_field = args.axis[0] + '-velocity'
-                vel2_field = args.axis[1] + '-velocity'
-                vel3_field = perp_vel + '-velocity'
+                #vel1_field = args.axis[0] + '-velocity'
+                #vel2_field = args.axis[1] + '-velocity'
+                #vel3_field = perp_vel + '-velocity'
+                vel1_field = 'velocity_' + args.axis[0]
+                vel2_field = 'velocity_' + args.axis[1]
+                vel3_field = 'velocity_' + perp_vel
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
                 proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}

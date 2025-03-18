@@ -81,6 +81,11 @@ ds_left = (separation[1:-1] - separation[:-2])/(time[1:-1] - time[:-2])
 ds_right = (separation[2:] - separation[1:-1])/(time[2:] - time[1:-1])
 periastron_inds = np.argwhere((ds_left<0)&(ds_right>0)).T[0]
 apastron_inds = np.argwhere((ds_left>0)&(ds_right<0)).T[0]
+
+#Make diagnostic plot
+plt.clf()
+plt.plot()
+
 #Find pre-peri time
 pre_time = 10
 pre_inds = []
@@ -110,8 +115,8 @@ for orb_it in range(1, len(pre_inds)):
     mag_std = np.nanstd(Mag_orb_bounds)
     mag_median = np.nanmedian(Mag_orb_bounds)
     mag_mean = np.nanmean(Mag_orb_bounds)
-    mag_sig = (mag_low - mag_median)/mag_std
-    mag_sig = (mag_low - mag_mean)/mag_std
+    #mag_sig = (mag_low - mag_median)/mag_std
+    #mag_sig = (mag_low - mag_mean)/mag_std
     #if mag_sig > sig_thres:
     #    if np.nanmin(Mag_orb_bounds) < np.min(ylim):
     #        ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
