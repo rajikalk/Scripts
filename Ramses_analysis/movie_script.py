@@ -541,7 +541,7 @@ if args.make_frames_only == 'False':
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:

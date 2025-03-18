@@ -297,7 +297,7 @@ if args.make_plot_figures == "True":
     evol_pickle = "radial_vel_evol_"+str(rank)+".pkl"
     if os.path.isfile(evol_pickle):
         file = open(evol_pickle, 'rb')
-        time_arr_pick, sep_arr_pick, dens_array, acc_arr, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
+        time_arr_pick, sep_arr_pick, mean_dens_array_pick, acc_arr_pick, rv_frac_median_pick, rv_frac_density_weighted_mean_pick, rv_frac_low_pick, rv_frac_high_pick = pickle.load(file)
         file.close()
         
         #CONTINUE EDITTING HERE
@@ -306,25 +306,30 @@ if args.make_plot_figures == "True":
         
     else:
         file = open("radial_vel_evol_"+str(rank)+".pkl", 'wb')
-        pickle.dump((time_arr, sep_arr, dens_array, acc_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
+        pickle.dump((time_arr, sep_arr, mean_dens_array, acc_arr, rv_frac_median, rv_frac_density_weighted_mean, rv_frac_low, rv_frac_high), file)
         file.close()
     
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 2.5*single_col_width), sharex=True)
+    fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(single_col_width, 1.5*single_col_width), sharex=True)
     plt.subplots_adjust(hspace=0.0)
     axs[0].semilogy(time_arr, sep_arr)
     axs[0].set_xlim([0, 9000])
     axs[0].set_ylabel('Separation (au)')
     
-    axs[1].plot(time_arr, dens_arr)
+    axs[1].semilogy(time_arr, acc_arr)
     axs[1].set_xlim([0, 9000])
-    axs[1].set_ylabel('Density (g/cm$^3$)')
+    axs[1].set_ylabel('Accretion rate (msun/yr)')
+    
     
     axs[2].plot(time_arr, rv_frac_median)
     axs[2].plot(time_arr, rv_frac_density_weighted_mean, 'k--')
     #axs[1].plot(time_arr, rv_frac_min)
     #axs[1].plot(time_arr, rv_frac_max)
     axs[2].fill_between(time_arr, rv_frac_low, rv_frac_high, alpha=0.2)
-    axs[2].set_xlabel('Time (yr)')
     axs[2].set_ylabel('v$_{radial}$/v$_{magnitude}$')
+    
+    axs[3].semilogy(time_arr, mean_dens_array)
+    axs[3].set_xlim([0, 9000])
+    axs[3].set_ylabel('Density (g/cm$^3$)')
+    axs[3].set_xlabel('Time (yr)')
     plt.savefig('rv_frac_evolution.jpg', bbox_inches='tight', dpi=300)
