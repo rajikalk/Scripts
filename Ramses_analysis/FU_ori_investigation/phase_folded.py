@@ -103,7 +103,7 @@ pre_inds = []
 end_inds = []
 for peri_ind in periastron_inds:
     target_time_start = time[peri_ind] - pre_time
-    target_time_end = time[peri_ind] + 100
+    target_time_end = time[peri_ind] + 1000
     try:
         if target_time_end > time[peri_ind + 1]:
             target_time_end = time[peri_ind+1]
@@ -115,13 +115,15 @@ for peri_ind in periastron_inds:
     end_inds.append(end_ind)
 
 plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width))
 ylim = [0, 7]
 sig_thres = 3
-for orb_it in range(5):
+plot_orbits = [1, 3, 4, 5]
+for orb_it in plot_orbits: #range(5):
     time_orb = time[periastron_inds[orb_it]:periastron_inds[orb_it+1]]
     phase_orb = (time_orb - time_orb[0])/(time_orb - time_orb[0])[-1]
     acc_orb = m_dot[periastron_inds[orb_it]:periastron_inds[orb_it+1]].T[1].in_units('msun/yr')
-    scaled_acc = acc_orb/np.max(acc_orb)
+    scaled_acc = acc_orb/np.max(acc_orb[:int(len(acc_orb)/2)])
 
     '''
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
@@ -149,7 +151,48 @@ plt.xlabel("Phase")
 plt.ylabel("Mdot/Mdot_max")
 plt.ylim([1.e-2, 1])
 #plt.gca().invert_yaxis()
-plt.xlim([0, 1])
+plt.xlim([0, 0.5])
 plt.legend(loc='best')
-plt.savefig('burst_over_orbits.png')
+plt.savefig('accretion_over_phase.png', bbox_inches='tight', dpi=300, pad_inches=0.02)
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width))
+ylim = [0, 7]
+sig_thres = 3
+plot_orbits = [1, 3, 4, 5]
+for orb_it in plot_orbits: #range(5):
+    time_orb = time[pre_inds[orb_it]:end_inds[orb_it]]
+    time_orb = time_orb - time_orb[0]
+    acc_orb = m_dot[pre_inds[orb_it]:end_inds[orb_it]].T[1].in_units('msun/yr')
+    scaled_acc = acc_orb/np.max(acc_orb)
+
+    '''
+    time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
+    Mag_orb = m_dot[pre_inds[orb_it-1]: end_inds[orb_it]].in_units('msun/yr')
+    Mag_orb_bounds = Mag_orb
+    Mag_orb_bounds[np.where(Mag_orb_bounds==np.inf)] = np.nan
+    mag_low = np.nanmax(Mag_orb_bounds)
+    mag_std = np.nanstd(Mag_orb_bounds)
+    mag_median = np.nanmedian(Mag_orb_bounds)
+    mag_mean = np.nanmean(Mag_orb_bounds)
+    #mag_sig = (mag_low - mag_median)/mag_std
+    #mag_sig = (mag_low - mag_mean)/mag_std
+    #if mag_sig > sig_thres:
+    #    if np.nanmin(Mag_orb_bounds) < np.min(ylim):
+    #        ylim = [np.nanmin(Mag_orb_bounds), ylim[1]]
+    #    if np.nanmax(Mag_orb_bounds) > np.max(ylim):
+    #        ylim = [ylim[0], np.nanmax(Mag_orb_bounds)]
+        
+    Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
+    '''
+    plt.semilogy(time_orb, scaled_acc, label="Orbit "+str(orb_it+1), color=colors[orb_it])
+    #plt.semilogy(phase_orb, acc_orb.T[1], color=colors[orb_it])
+    
+plt.xlabel("Phase")
+plt.ylabel("Mdot/Mdot_max")
+plt.ylim([1.e-2, 1])
+#plt.gca().invert_yaxis()
+plt.xlim([-10, 1000])
+plt.legend(loc='best')
+plt.savefig('accretion_over_time.png', bbox_inches='tight', dpi=300, pad_inches=0.02)
     
