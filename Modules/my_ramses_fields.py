@@ -1178,21 +1178,26 @@ def _Radial_Velocity_wrt_Center(field, data):
     sph_radial_vector = yt.YTArray([data['dx_from_Center'].flatten(), data['dy_from_Center'].flatten(), data['dz_from_Center'].flatten()]).in_units('cm')
     sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=0)).value
     normal = yt.YTArray([data['dx_from_Center'].flatten()/sph_radial_vector_mag, data['dy_from_Center'].flatten()/sph_radial_vector_mag, data['dz_from_Center'].flatten()/sph_radial_vector_mag]).T
+    del sph_radial_vector, sph_radial_vector_mag
     
     gas_velx = data['Corrected_velx'].in_units('cm/s').flatten()
     gas_vely = data['Corrected_vely'].in_units('cm/s').flatten()
     gas_velz = data['Corrected_velz'].in_units('cm/s').flatten()
     cell_vel = yt.YTArray([gas_velx,gas_vely,gas_velz]).T
+    del gas_velx, gas_vely, gas_velz
     
     radial_vel = projected_vector(cell_vel,normal)
     radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
+    del radial_vel, cell_vel
     dot_normx_radvelx = normal.T[0].in_units('cm')*radial_vel_unit.T[0]
     dot_normy_radvely = normal.T[1].in_units('cm')*radial_vel_unit.T[1]
     dot_normz_radvelz = normal.T[2].in_units('cm')*radial_vel_unit.T[2]
     sign = (dot_normx_radvelx + dot_normy_radvely + dot_normz_radvelz).value
+    del dot_normx_radvelx, dot_normy_radvely, dot_normz_radvelz, normal, radial_vel_unit
     
     rv_mag = radial_vel_mag*sign
+    del radial_vel_mag, sign
     rv_mag = np.reshape(rv_mag, shape)
     rv_mag = yt.YTArray(np.nan_to_num(rv_mag.value), 'cm/s')
     return rv_mag
@@ -1203,6 +1208,7 @@ def _Radial_Momentum_wrt_Center(field, data):
     rv_mag = data['Radial_Velocity_wrt_Center'].in_units('cm/s')
     mass = data['mass'].in_units('g')
     radial_momentum = rv_mag*mass
+    del rv_mag, mass
     return radial_momentum
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
