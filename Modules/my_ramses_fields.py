@@ -1173,8 +1173,6 @@ yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", samplin
 
 
 def _Radial_Velocity_wrt_Center(field, data):
-    global center_pos
-    global center_vel
 
     shape = np.shape(data['x'])
     sph_radial_vector = yt.YTArray([data['dx_from_Center'].flatten(), data['dy_from_Center'].flatten(), data['dz_from_Center'].flatten()]).in_units('cm')
@@ -1189,7 +1187,10 @@ def _Radial_Velocity_wrt_Center(field, data):
     radial_vel = projected_vector(cell_vel,normal)
     radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
-    sign = np.diag(np.dot(normal.in_units('cm'), radial_vel_unit.T)).value
+    dot_normx_radvelx = normal.T[0].in_units('cm')*radial_vel_unit.T[0]
+    dot_normy_radvely = normal.T[1].in_units('cm')*radial_vel_unit.T[1]
+    dot_normz_radvelz = normal.T[2].in_units('cm')*radial_vel_unit.T[2]
+    sign = (dot_normx_radvelx + dot_normy_radvely + dot_normz_radvelz).value
     
     rv_mag = radial_vel_mag*sign
     rv_mag = np.reshape(rv_mag, shape)
