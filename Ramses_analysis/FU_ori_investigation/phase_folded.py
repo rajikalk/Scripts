@@ -103,7 +103,7 @@ pre_inds = []
 end_inds = []
 for peri_ind in range(len(periastron_inds)):
     target_time_start = time[periastron_inds[peri_ind]] - pre_time
-    target_time_end = time[periastron_inds[peri_ind]] + 1000
+    target_time_end = time[periastron_inds[peri_ind]] + 300
     try:
         if target_time_end > time[periastron_inds[peri_ind+1]]:
             target_time_end = time[periastron_inds[peri_ind+1]]
