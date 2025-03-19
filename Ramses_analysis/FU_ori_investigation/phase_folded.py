@@ -117,10 +117,11 @@ for peri_ind in periastron_inds:
 plt.clf()
 ylim = [0, 7]
 sig_thres = 3
-for orb_it in range(len(periastron_inds-1)):
+for orb_it in range(len(periastron_inds)-1):
     time_orb = time[periastron_inds[orb_it]:periastron_inds[orb_it+1]]
     phase_orb = (time_orb - time_orb[0])/(time_orb - time_orb[0])[-1]
-    acc_orb = m_dot[periastron_inds[orb_it]:periastron_inds[orb_it+1]].in_units('msun/yr')
+    acc_orb = m_dot[periastron_inds[orb_it]:periastron_inds[orb_it+1]].T[1].in_units('msun/yr')
+    scaled_acc = acc_orb/np.max(acc_orb)
 
     '''
     time_orb = time[pre_inds[orb_it-1]: end_inds[orb_it]] - time[periastron_inds[orb_it-1]]
@@ -141,12 +142,12 @@ for orb_it in range(len(periastron_inds-1)):
         
     Mag_orb[np.where(np.isnan(Mag_orb) == True)] = np.inf
     '''
-    plt.semilogy(phase_orb, acc_orb.T[0], label="Orbit "+str(orb_it), color=colors[orb_it])
-    plt.semilogy(phase_orb, acc_orb.T[1], color=colors[orb_it])
+    plt.semilogy(phase_orb, scaled_acc, label="Orbit "+str(orb_it), color=colors[orb_it])
+    #plt.semilogy(phase_orb, acc_orb.T[1], color=colors[orb_it])
     
-plt.xlabel("Time releative to periastron (yr)")
-plt.ylabel("Accretion rate (msun/yr)")
-#plt.ylim(ylim)
+plt.xlabel("Phase")
+plt.ylabel("Mdot/Mdot_max")
+plt.ylim([1.e-2, 1])
 #plt.gca().invert_yaxis()
 plt.xlim([0, 1])
 plt.legend(loc='best')
