@@ -40,6 +40,7 @@ def parse_inputs():
     parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default='True')
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
     parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
+    parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
@@ -223,7 +224,7 @@ del dd
 if args.plot_time != None:
     m_times = [args.plot_time]
 else:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time)
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=args.start_time)
     
 no_frames = len(m_times)
 m_times = m_times[args.start_frame:]

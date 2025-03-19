@@ -159,8 +159,8 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(single_col_width, single_col_width))
 ylim = [0, 7]
 sig_thres = 3
-plot_orbits = [1, 3, 4, 5]
-for orb_it in plot_orbits: #range(5):
+#plot_orbits = [1, 3, 4, 5]
+for orb_it in range(5): #plot_orbits: #range(5):
     time_orb = time[pre_inds[orb_it]:end_inds[orb_it]]
     time_orb = time_orb - time_orb[0]
     acc_orb = m_dot[pre_inds[orb_it]:end_inds[orb_it]].T[1].in_units('msun/yr')
@@ -190,9 +190,25 @@ for orb_it in plot_orbits: #range(5):
     
 plt.xlabel("Phase")
 plt.ylabel("Mdot/Mdot_max")
-plt.ylim([1.e-2, 1])
+plt.ylim([1.e-3, 1])
 #plt.gca().invert_yaxis()
-plt.xlim([-10, 1000])
+plt.xlim([-10, 300])
 plt.legend(loc='best')
 plt.savefig('accretion_over_time.png', bbox_inches='tight', dpi=300, pad_inches=0.02)
     
+plot_orbits = [1, 3, 4, 5]
+burst_time = [[5670, 5700], [7320, 7350], [7855, 7900], [8275, 8295]]
+suppression_event = [[5575, 5700], [7290, 7350], [7850, 7900], [8265, 8295]]
+for orb_it in range(len(plot_orbits)):
+    plt.clf()
+    time_orb = time[pre_inds[plot_orbits[orb_it]]:end_inds[plot_orbits[orb_it]]]
+    #time_orb = time_orb - time_orb[0]
+    acc_orb = m_dot[pre_inds[plot_orbits[orb_it]]:end_inds[plot_orbits[orb_it]]].T[1].in_units('msun/yr')
+    scaled_acc = acc_orb/np.max(acc_orb)
+    plt.semilogy(time_orb, scaled_acc)
+    plt.axvspan(burst_time[orb_it][0], burst_time[orb_it][1], alpha=0.5)
+    plt.axvspan(suppression_event[orb_it][0], suppression_event[orb_it][1], alpha=0.5)
+    plt.xlabel("time since primary formation (yr)")
+    plt.ylabel("scaled accretion")
+    plt.xlim([time_orb[0], time_orb[-1]])
+    plt.savefig('orbit_'+str(plot_orbits[orb_it]+1)+'.png', bbox_inches='tight', dpi=300, pad_inches=0.02)
