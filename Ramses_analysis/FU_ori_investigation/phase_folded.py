@@ -118,6 +118,9 @@ plt.clf()
 ylim = [0, 7]
 sig_thres = 3
 for orb_it in range(len(periastron_inds)-1):
+    if orb_it == 2:
+        import pdb
+        pdb.set_trace()
     time_orb = time[periastron_inds[orb_it]:periastron_inds[orb_it+1]]
     phase_orb = (time_orb - time_orb[0])/(time_orb - time_orb[0])[-1]
     acc_orb = m_dot[periastron_inds[orb_it]:periastron_inds[orb_it+1]].T[1].in_units('msun/yr')
