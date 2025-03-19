@@ -101,12 +101,12 @@ plt.savefig('periastrons.pdf')
 pre_time = 10
 pre_inds = []
 end_inds = []
-for peri_ind in periastron_inds:
-    target_time_start = time[peri_ind] - pre_time
-    target_time_end = time[peri_ind] + 1000
+for peri_ind in range(len(periastron_inds)):
+    target_time_start = time[periastron_inds[peri_ind]] - pre_time
+    target_time_end = time[periastron_inds[peri_ind]] + 1000
     try:
-        if target_time_end > time[peri_ind + 1]:
-            target_time_end = time[peri_ind+1]
+        if target_time_end > time[periastron_inds[peri_ind+1]]:
+            target_time_end = time[periastron_inds[peri_ind+1]]
     except:
         pass
     pre_ind = np.argmin(abs(time - target_time_start))
