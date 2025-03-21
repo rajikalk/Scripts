@@ -224,7 +224,7 @@ del dd
 if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
-else:
+elif args.use_all_files == 'False':
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=args.start_time)
     
     no_frames = len(m_times)
