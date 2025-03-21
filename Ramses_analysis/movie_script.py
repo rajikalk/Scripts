@@ -223,11 +223,12 @@ sink_form_time = dd['sink_particle_form_time'][sink_id]
 del dd
 if args.plot_time != None:
     m_times = [args.plot_time]
+    no_frames = len(m_times)
 else:
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=args.start_time)
     
-no_frames = len(m_times)
-m_times = m_times[args.start_frame:]
+    no_frames = len(m_times)
+    m_times = m_times[args.start_frame:]
 
 if args.make_frames_only == 'False':
     """
@@ -307,11 +308,6 @@ if args.make_frames_only == 'False':
         else:
             weight_field = ('gas', args.weight_field)
             pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + ".pkl"
-           
-    sys.stdout.flush()
-    CW.Barrier()
-
-    frames = list(range(args.start_frame, no_frames))
         
     sys.stdout.flush()
     CW.Barrier()
@@ -320,9 +316,18 @@ if args.make_frames_only == 'False':
         verbatim = False
         if rank == 0:
             verbatim = True
-        usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+        if args.use_all_files == 'False':
+            usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+        else:
+            usable_files = files
         del sink_form_time
         del files
+        
+    sys.stdout.flush()
+    CW.Barrier()
+
+    no_frames = len(usable_files)
+    frames = list(range(args.start_frame, no_frames))
     
 sys.stdout.flush()
 CW.Barrier()
