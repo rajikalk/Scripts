@@ -317,10 +317,9 @@ if args.make_frames_only == 'False':
         if rank == 0:
             verbatim = True
         if args.use_all_files == 'False':
-            usable_files = mym.find_files(m_times, files, sink_form_time,sink_id, verbatim=False)
+            usable_files = mym.find_files(m_times, files, sink_form_time, sink_id, verbatim=False)
         else:
             usable_files = files
-        del sink_form_time
         del files
         
     sys.stdout.flush()
