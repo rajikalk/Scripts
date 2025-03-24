@@ -213,8 +213,8 @@ mym.set_units(units_override)
 
 
 #find sink particle to center on and formation time
-#del units_override['density_unit']
-#gc.collect()
+del units_override['density_unit']
+gc.collect()
 ds = yt.load(files[-1], units_override=units_override)
 #try:
 dd = ds.all_data()
