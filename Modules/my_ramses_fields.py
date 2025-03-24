@@ -984,6 +984,7 @@ def _magnetic_field_magnitude(field, data):
     
 yt.add_field("magnetic_field_magnitude", function=_magnetic_field_magnitude, units=r"G", sampling_type="local")
 
+'''
 def _Angular_Momentum_x(field, data):
     """
     Calculates the angular momentum in the x_direction about current set center.
@@ -1138,7 +1139,7 @@ def _Bulk_Velocity_Gas(field, data):
     return com
 
 yt.add_field("Bulk_Velocity_Gas", function=_Bulk_Velocity_Gas, units=r"cm/s", sampling_type="local")
-
+'''
 def _Number_Density(field, data):
     """
     Estimates number density
@@ -1148,6 +1149,7 @@ def _Number_Density(field, data):
 
 yt.add_field("Number_Density", function=_Number_Density, units=r"cm**-3", sampling_type="local")
 
+'''
 def _Radial_Velocity(field, data):
     global normal
     global center_vel
@@ -1170,7 +1172,7 @@ def _Radial_Velocity(field, data):
     return rv_mag
 
 yt.add_field("Radial_Velocity", function=_Radial_Velocity, units="cm/s", sampling_type="local")
-
+'''
 
 def _Radial_Velocity_wrt_Center(field, data):
 
@@ -1213,6 +1215,7 @@ def _Radial_Momentum_wrt_Center(field, data):
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
 
+'''
 def _Proj_x_velocity(field, data):
     global east_vector
 
@@ -1254,3 +1257,4 @@ def _Proj_y_velocity(field, data):
     return rv_mag
 
 yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s", sampling_type="local")
+'''
