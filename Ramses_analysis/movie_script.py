@@ -397,7 +397,6 @@ if args.make_frames_only == 'False':
             except:
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
-                del sink_creation_time
                 del time_real
                 
             if args.use_angular_momentum != 'False':
