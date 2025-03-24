@@ -224,7 +224,10 @@ else:
     sink_id = args.sink_number
 if rank == 0:
     print("CENTERED SINK ID:", sink_id)
-myf.set_centred_sink_id(sink_id)
+try:
+    myf.set_centred_sink_id(sink_id)
+except:
+    pass
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 #del dd
 #gc.collect()
@@ -296,12 +299,15 @@ if args.make_frames_only == 'False':
     myf.set_center_pos_ind(args.image_center)
 
     #Set to make sure that particles aren't used to calculate the center velocity
-    myf.set_com_vel_use_part(False)
+    try:
+        myf.set_com_vel_use_part(False)
 
-    if args.use_gas_center_calc == 'True':
-        myf.set_com_pos_use_gas(True)
-    else:
-        myf.set_com_pos_use_gas(False)
+        if args.use_gas_center_calc == 'True':
+            myf.set_com_pos_use_gas(True)
+        else:
+            myf.set_com_pos_use_gas(False)
+    except:
+        pass
         
     #Make sure to only use gas when calculating the center velocity
 
@@ -370,7 +376,11 @@ if args.make_frames_only == 'False':
             has_particles = has_sinks(ds)
             
             #Define box:
-            center_pos = dd['Center_Position'].in_units('au')
+            try:
+                center_pos = dd['Center_Position'].in_units('au')
+            except:
+                if args.image_center != 1:
+                    center_pos = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
             if args.axis == 'xy':
                 axis_ind = 2
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
