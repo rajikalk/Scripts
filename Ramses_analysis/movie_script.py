@@ -333,6 +333,8 @@ sys.stdout.flush()
 CW.Barrier()
 
 if args.make_frames_only == 'False':
+    if rank == 0:
+        print("starting to make projections")
     #Trying yt parallelism
     file_int = -1
     for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
