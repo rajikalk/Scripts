@@ -277,6 +277,7 @@ if args.make_frames_only == 'False':
         y_ind.append(int(val))
         counter = counter + 1
     X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+    '''
     if args.projection_orientation != None:
         y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
         L = [1.0, y_val, 0.0]
@@ -288,6 +289,7 @@ if args.make_frames_only == 'False':
         elif args.axis == 'yz':
             L = [1.0, 0.0, 0.0]
     myf.set_normal(L)
+    '''
     xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
     if args.ax_lim != None:
         xlim = [-1*args.ax_lim, args.ax_lim]
@@ -296,10 +298,10 @@ if args.make_frames_only == 'False':
     y_width = (ylim[1] -ylim[0])
     thickness = yt.YTQuantity(args.slice_thickness, 'AU')
     #Sets center for calculating center position and velocity
-    myf.set_center_pos_ind(args.image_center)
-
-    #Set to make sure that particles aren't used to calculate the center velocity
     try:
+        myf.set_center_pos_ind(args.image_center)
+
+        #Set to make sure that particles aren't used to calculate the center velocity
         myf.set_com_vel_use_part(False)
 
         if args.use_gas_center_calc == 'True':
