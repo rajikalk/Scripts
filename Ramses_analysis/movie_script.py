@@ -9,6 +9,7 @@ import my_ramses_module as mym
 import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import gc
 
 def parse_inputs():
     import argparse
@@ -111,6 +112,7 @@ def sim_info(ds,args):
     del smoothing
     del unit_string
     del dd
+    gc.collect()
     return sim_info
 
 def image_properties(X, Y, args, sim_info):
@@ -137,9 +139,11 @@ def has_sinks(ds):
     dd = ds.all_data()
     if len(dd['sink_particle_tag'][myf.get_centred_sink_id():].astype(int)) != 0:
         del dd
+        gc.collect()
         return True
     else:
         del dd
+        gc.collect()
         return False
 
 #=======MAIN=======
@@ -209,6 +213,7 @@ mym.set_units(units_override)
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
+gc.collect()
 ds = yt.load(files[-1], units_override=units_override)
 #try:
 dd = ds.all_data()
@@ -221,6 +226,7 @@ if rank == 0:
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
 del dd
+gc.collect()
 if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
@@ -371,6 +377,7 @@ if args.make_frames_only == 'False':
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
+                gc.collect()
             elif args.axis == 'xz':
                 axis_ind = 1
                 left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*args.slice_thickness), center_pos[2]-(0.75*y_width)], 'AU')
@@ -379,6 +386,7 @@ if args.make_frames_only == 'False':
 
                 del left_corner
                 del right_corner
+                gc.collect()
             elif args.axis == 'yz':
                 axis_ind = 0
                 left_corner = yt.YTArray([center_pos[0]-(0.5*args.slice_thickness), center_pos[1]-(0.75*x_width), center_pos[2]-(0.75*y_width)], 'AU')
@@ -386,6 +394,7 @@ if args.make_frames_only == 'False':
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
+                gc.collect()
             
             if has_particles:
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
@@ -398,6 +407,7 @@ if args.make_frames_only == 'False':
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
                 del time_real
+                gc.collect()
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
@@ -416,6 +426,7 @@ if args.make_frames_only == 'False':
                     del L_x
                     del L_y
                     del L_z
+                    gc.collect()
                 else:
                     L_x = np.sum(dd['Orbital_Angular_Momentum_x'].value)
                     L_y = np.sum(dd['Orbital_Angular_Momentum_y'].value)
@@ -486,6 +497,7 @@ if args.make_frames_only == 'False':
                 del x_top
                 del y_top
                 del z_top
+                gc.collect()
                 #del com_vel
             else:
                 center_vel = region['Center_Velocity'].in_units('cm/s').value
@@ -709,6 +721,7 @@ if args.make_frames_only == 'False':
                 del velx_full
                 del vely_full
                 del velz_full
+                gc.collect()
 
                 args_dict = {}
                 if args.annotate_time == "True":
@@ -739,6 +752,7 @@ if args.make_frames_only == 'False':
                 del vely
                 del velz
                 del args_dict
+                gc.collect()
             del has_particles
             del time_val
             del center_vel
@@ -747,6 +761,7 @@ if args.make_frames_only == 'False':
             del Y_image
             del X_image_vel
             del Y_image_vel
+            gc.collect()
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
 
