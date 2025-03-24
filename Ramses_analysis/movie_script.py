@@ -370,19 +370,19 @@ if args.make_frames_only == 'False':
             has_particles = has_sinks(ds)
             
             #Define box:
-            center_pos = dd['Center_Position'].in_units('au').value
+            center_pos = dd['Center_Position'].in_units('au')
             if args.axis == 'xy':
                 axis_ind = 2
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*y_width), center_pos[2]-(0.75*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*y_width), center_pos[2]+(0.75*args.slice_thickness)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.75*args.slice_thickness)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
                 gc.collect()
             elif args.axis == 'xz':
                 axis_ind = 1
-                left_corner = yt.YTArray([center_pos[0]-(0.75*x_width), center_pos[1]-(0.75*args.slice_thickness), center_pos[2]-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.75*x_width), center_pos[1]+(0.75*args.slice_thickness), center_pos[2]+(0.75*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
                 region = ds.box(left_corner, right_corner)
 
                 del left_corner
@@ -390,8 +390,8 @@ if args.make_frames_only == 'False':
                 gc.collect()
             elif args.axis == 'yz':
                 axis_ind = 0
-                left_corner = yt.YTArray([center_pos[0]-(0.5*args.slice_thickness), center_pos[1]-(0.75*x_width), center_pos[2]-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0]+(0.5*args.slice_thickness), center_pos[1]+(0.75*x_width), center_pos[2]+(0.75*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
@@ -563,7 +563,7 @@ if args.make_frames_only == 'False':
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=(center_pos, 'AU'))
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
