@@ -212,8 +212,8 @@ mym.set_units(units_override)
 
 
 #find sink particle to center on and formation time
-del units_override['density_unit']
-gc.collect()
+#del units_override['density_unit']
+#gc.collect()
 ds = yt.load(files[-1], units_override=units_override)
 #try:
 dd = ds.all_data()
@@ -225,8 +225,8 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
-del dd
-gc.collect()
+#del dd
+#gc.collect()
 if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
