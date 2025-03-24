@@ -343,7 +343,7 @@ def projected_vector(vector, proj_vector):
     return proj_v
 
 #===========================OVERWRITING DENSITY FIELD BECAUSE DENSITY UNIT DOESN'T GET OVERWRITTEN======================================
-'''
+
 def _Density(field,data):
     """
     Overwrites density field
@@ -356,7 +356,7 @@ def _Density(field,data):
     return density_arr
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local")
-'''
+
 def _cell_mass(field,data):
     """
     Overwrites cell mass field
