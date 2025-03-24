@@ -515,18 +515,19 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
-                #vel1_field = args.axis[0] + '-velocity'
-                #vel2_field = args.axis[1] + '-velocity'
-                #vel3_field = perp_vel + '-velocity'
-                vel1_field = 'Corrected_vel' + args.axis[0]
-                vel2_field = 'Corrected_vel' + args.axis[1]
-                vel3_field = 'Corrected_vel' + perp_vel
+                vel1_field = args.axis[0] + '-velocity'
+                vel2_field = args.axis[1] + '-velocity'
+                vel3_field = perp_vel + '-velocity'
+                #vel1_field = 'Corrected_vel' + args.axis[0]
+                #vel2_field = 'Corrected_vel' + args.axis[1]
+                #vel3_field = 'Corrected_vel' + perp_vel
                 mag1_field = 'mag' + args.axis[0]
                 mag2_field = 'mag' + args.axis[1]
                 proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
                 
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                 '''
                 #Defined weighted fields?
                 if args.weight_field != None:
@@ -720,7 +721,7 @@ if args.make_frames_only == 'False':
                     part_info['particle_position'] = positions
             
             if rank == proj_root_rank:
-                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=yt.YTArray([0, 0, 0], 'cm/s'), velz_full=velz_full, axis=args.axis)
+                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
                 del velx_full
                 del vely_full
                 del velz_full
