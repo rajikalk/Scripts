@@ -386,7 +386,7 @@ if args.make_frames_only == 'False':
             try:
                 center_pos = dd['Center_Position'].in_units('au')
             except:
-                if args.image_center != 1:
+                if args.image_center != 0:
                     center_pos = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
             if args.axis == 'xy':
                 axis_ind = 2
