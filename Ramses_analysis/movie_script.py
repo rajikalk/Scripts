@@ -848,7 +848,7 @@ for pickle_file in pickle_files:
         
         time_val = args_dict['time_val']
         
-        if len(m_times) > 1:
+        if args.plot_time != None:
             if args.output_filename == None:
                 file_name = save_dir + "movie_frame_" + ("%06d" % frame_no)
             else:
