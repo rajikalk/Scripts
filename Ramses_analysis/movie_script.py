@@ -384,7 +384,7 @@ if args.make_frames_only == 'False':
             
             #Define box::
             if args.image_center == 1:
-                center_pos = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au').value, dd['sink_particle_vely'][sink_id].in_units('au').value, dd['sink_particle_velz'][sink_id].in_units('au').value], 'au')
+                center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au').value, dd['sink_particle_posy'][sink_id].in_units('au').value, dd['sink_particle_posz'][sink_id].in_units('au').value], 'au')
             else:
                 center_pos = dd['Center_Position'].in_units('au')
             if args.axis == 'xy':
