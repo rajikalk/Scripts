@@ -459,20 +459,20 @@ if args.make_frames_only == 'False':
             #Update X and Y to be centered on center position
             if args.update_ax_lim == 'True':
                 if args.axis == 'xy':
-                    X_image = X + center_pos[0]
-                    Y_image = Y + center_pos[1]
-                    X_image_vel = X_vel + center_pos[0]
-                    Y_image_vel = Y_vel + center_pos[1]
+                    X_image = X + center_pos[0].value
+                    Y_image = Y + center_pos[1].value
+                    X_image_vel = X_vel + center_pos[0].value
+                    Y_image_vel = Y_vel + center_pos[1].value
                 elif args.axis == 'xz':
-                    X_image = X + center_pos[0]
-                    Y_image = Y + center_pos[2]
-                    X_image_vel = X_vel + center_pos[0]
-                    Y_image_vel = Y_vel + center_pos[2]
+                    X_image = X + center_pos[0].value
+                    Y_image = Y + center_pos[2].value
+                    X_image_vel = X_vel + center_pos[0].value
+                    Y_image_vel = Y_vel + center_pos[2].value
                 elif args.axis == 'yz':
-                    X_image = X + center_pos[1]
-                    Y_image = Y + center_pos[2]
-                    X_image_vel = X_vel + center_pos[1]
-                    Y_image_vel = Y_vel + center_pos[2]
+                    X_image = X + center_pos[1].value
+                    Y_image = Y + center_pos[2].value
+                    X_image_vel = X_vel + center_pos[1].value
+                    Y_image_vel = Y_vel + center_pos[2].value
             else:
                 X_image = X
                 Y_image = Y
