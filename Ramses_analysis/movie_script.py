@@ -481,14 +481,14 @@ if args.make_frames_only == 'False':
             
             if args.update_ax_lim == 'False':
                 if args.axis == 'xy':
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1]
+                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0].value
+                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[1].value
                 elif args.axis == 'xz':
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0]
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[0].value
+                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
                 elif args.axis == 'yz':
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1]
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2]
+                    part_info['particle_position'][0] = part_info['particle_position'][0] - center_pos[1].value
+                    part_info['particle_position'][1] = part_info['particle_position'][1] - center_pos[2].value
             
             #print("initialised fields")
             if args.use_angular_momentum != 'False':
