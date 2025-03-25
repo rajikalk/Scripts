@@ -239,6 +239,8 @@ elif args.use_all_files == 'False':
     
     no_frames = len(m_times)
     m_times = m_times[args.start_frame:]
+else:
+    no_frames = len(files)
 
 if args.make_frames_only == 'False':
     """
