@@ -499,8 +499,11 @@ if args.make_frames_only == 'False':
             else:
                 weight_field = ('gas', args.weight_field)
             
-            myf.set_center_pos_ind(args.calculation_center)
-            myf.set_center_vel_ind(args.calculation_center)
+            try:
+                myf.set_center_pos_ind(args.calculation_center)
+                myf.set_center_vel_ind(args.calculation_center)
+            except:
+                pass
 
             if args.image_center == 0 and args.use_gas_center_calc=='False':
                 #If not using the gas the calculate the Center posiiton and velocity in the fields
