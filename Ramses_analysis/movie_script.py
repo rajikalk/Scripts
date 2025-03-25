@@ -375,7 +375,10 @@ if args.make_frames_only == 'False':
             
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
-            has_particles = has_sinks(ds)
+            try:
+                has_particles = has_sinks(ds)
+            except:
+                has_particles = True
             
             #Define box:
             try:
