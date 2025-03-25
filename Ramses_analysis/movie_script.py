@@ -382,12 +382,11 @@ if args.make_frames_only == 'False':
             except:
                 has_particles = True
             
-            #Define box:
-            try:
+            #Define box::
+            if args.image_center == 1:
+                center_pos = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au').value, dd['sink_particle_vely'][sink_id].in_units('au').value, dd['sink_particle_velz'][sink_id].in_units('au').value], 'au')
+            else:
                 center_pos = dd['Center_Position'].in_units('au')
-            except:
-                if args.image_center != 0:
-                    center_pos = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('au'), dd['sink_particle_vely'][sink_id].in_units('au'), dd['sink_particle_velz'][sink_id].in_units('au')])
             if args.axis == 'xy':
                 axis_ind = 2
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
