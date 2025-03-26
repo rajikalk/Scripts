@@ -89,6 +89,20 @@ no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(
 cmap=plt.cm.gist_heat
 prev_primary_mass = np.nan
 
+#get start and end time
+pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % 0) +'.pkl'
+file = open(pickle_file, 'rb')
+X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+file.close()
+time_start = args_dict['time_val']
+
+pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
+file = open(pickle_file, 'rb')
+X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+file.close()
+time_end = args_dict['time_val']
+
+
 fit = -1
 rit = -1
 while fit < no_frames:
@@ -314,7 +328,7 @@ while fit < no_frames:
             
             ax3.set_xlabel('Time since formation (yr)', labelpad=-1)
             ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-1)
-            ax3.set_xlim([0, particle_data['time'][-1]])
+            ax3.set_xlim([time_start, time_end])
             ax3.set_ylim([1.e-9, 1.e-4])
             ax3.set_aspect(1.74e3)
             
