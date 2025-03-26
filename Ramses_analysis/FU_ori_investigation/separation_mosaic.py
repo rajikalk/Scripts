@@ -117,6 +117,7 @@ while fit < no_frames:
             fig = plt.figure()
             gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
             (ax1, ax2), (ax3, ax4) = gs.subplots()
+            plt.axis('square')
             
             #===================YZ proj=====================
         
@@ -330,7 +331,7 @@ while fit < no_frames:
             ax3.set_ylabel('Accretion Rate (M$_\odot$/yr)', labelpad=-1)
             ax3.set_xlim([time_start, time_end])
             ax3.set_ylim([1.e-9, 1.e-4])
-            ax.set_aspect('equal', adjustable='box')
+            ax3.set_aspect('equal', adjustable='box')
             
             plot_ind = np.argmin(abs(np.array(particle_data['time']) - time_val))
             ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[0][:plot_ind], color='cyan', linewidth=0.5)
