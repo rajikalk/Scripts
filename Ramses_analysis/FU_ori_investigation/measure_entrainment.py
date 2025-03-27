@@ -157,7 +157,7 @@ if args.make_pickle_files == "True":
             dvy = measuring_sphere['y-velocity'][cone_inds].in_units('km/s') - particle_velocity[1]
             dvz = measuring_sphere['z-velocity'][cone_inds].in_units('km/s') - particle_velocity[2]
             gas_velocity = yt.YTArray([dvx, dvy, dvz]).T
-            del dvx, dyx, dvz
+            del dvx, dvx, dvz
             radial_vel = projected_vector(gas_velocity, gas_position_unit[cone_inds])
             radial_sign = np.sign(np.diag(np.dot(gas_velocity, gas_position_unit[cone_inds].T)))
             radial_speed = np.sqrt(np.sum(radial_vel**2, axis=1)) * radial_sign
@@ -173,4 +173,6 @@ if args.make_pickle_files == "True":
 
 sys.stdout.flush()
 CW.Barrier()
+
+#read pickles and make frames!
 
