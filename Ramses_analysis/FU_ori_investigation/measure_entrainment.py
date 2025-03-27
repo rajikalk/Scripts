@@ -126,8 +126,10 @@ if args.make_pickle_files == "True":
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
             accretion_rate = dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr')
+            del dd
             particle_speed = np.sqrt(np.sum(particle_velocity**2))
             particle_velocity_unit = particle_velocity/particle_speed
+            del particle_speed
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
             print("Got particle position and velocity")
             
@@ -139,10 +141,13 @@ if args.make_pickle_files == "True":
             dy = measuring_sphere['y'] - particle_position[1]
             dz = measuring_sphere['z'] - particle_position[2]
             gas_position =yt.YTArray([dx, dy, dz])
+            del dx, dy, dz
             separations = np.sqrt(np.sum(gas_position**2, axis=0))
             gas_position_unit = (gas_position/separations).T
+            del separations
             angles = np.rad2deg(np.arccos(np.dot(gas_position_unit, entrainment_vector)))
             cone_inds = np.where(angles<=cone_angle)[0]
+            del angles
             
             #Save arrays
             cone_densities = measuring_sphere[('gas','Density')][cone_inds]
@@ -152,9 +157,11 @@ if args.make_pickle_files == "True":
             dvy = measuring_sphere['y-velocity'][cone_inds].in_units('km/s') - particle_velocity[1]
             dvz = measuring_sphere['z-velocity'][cone_inds].in_units('km/s') - particle_velocity[2]
             gas_velocity = yt.YTArray([dvx, dvy, dvz]).T
+            del dvx, dyx, dvz
             radial_vel = projected_vector(gas_velocity, gas_position_unit[cone_inds])
             radial_sign = np.sign(np.diag(np.dot(gas_velocity, gas_position_unit[cone_inds].T)))
             radial_speed = np.sqrt(np.sum(radial_vel**2, axis=1)) * radial_sign
+            del radial_vel, radial_sign
             radial_speed = yt.YTArray(radial_speed, 'km/s')
             radial_momentum = radial_speed * measuring_sphere['mass'][cone_inds].in_units('g')
             
