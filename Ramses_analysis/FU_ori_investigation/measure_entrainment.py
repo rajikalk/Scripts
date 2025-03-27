@@ -165,7 +165,7 @@ if args.make_pickle_files == "True":
             radial_speed = yt.YTArray(radial_speed, 'km/s')
             radial_momentum = radial_speed * measuring_sphere['mass'][cone_inds].in_units('g')
             
-            write_dict = {'time':time_val, 'mdot':accretion_rate, 'density':cone_densities, 'radial_speed':radial_speed, radial_momentum:'radial_momentum'}
+            write_dict = {'time':time_val, 'mdot':accretion_rate, 'density':cone_densities, 'radial_speed':radial_speed, 'radial_momentum':radial_momentum}
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
             file.close()
