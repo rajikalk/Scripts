@@ -90,7 +90,7 @@ if args.make_pickle_files == "True":
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
     sphere_radius = yt.YTQuantity(args.sphere_radius_cells, 'au')
-    cone_angle = yt.YTQuantity(arg.entrainment_cone_angle, '')
+    cone_angle = yt.YTQuantity(args.entrainment_cone_angle, '')
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
