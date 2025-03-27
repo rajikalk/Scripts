@@ -18,7 +18,8 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
-    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=20)
+    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=10)
+    parser.add_argument("-cone_angle", "--entrainment_cone_angle", type=float, default=30)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -89,6 +90,7 @@ if args.make_pickle_files == "True":
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
     sphere_radius = yt.YTQuantity(args.sphere_radius_cells, 'au')
+    cone_angle = yt.YTQuantity(arg.entrainment_cone_angle, '')
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
@@ -123,12 +125,44 @@ if args.make_pickle_files == "True":
             #Get secondary position
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
+            accretion_rate = dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr')
+            particle_speed = np.sqrt(np.sum(particle_velocity**2))
+            particle_velocity_unit = particle_velocity/particle_speed
             measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
             print("Got particle position and velocity")
             
-            #Let's measure the angular momentum vector.
-            import pdb
-            pdb.set_trace()
+            #Let's calculate the entrainment vector.
+            entrainment_vector = -1*particle_velocity_unit
+            
+            #Calcalate relative positions to particle
+            dx = measuring_sphere['x'] - particle_position[0]
+            dy = measuring_sphere['y'] - particle_position[1]
+            dz = measuring_sphere['z'] - particle_position[2]
+            gas_position =yt.YTArray([dx, dy, dz])
+            separations = np.sqrt(np.sum(gas_position**2, axis=0))
+            gas_position_unit = (gas_position/separations).T
+            angles = np.rad2deg(np.arccos(np.dot(gas_position_unit, entrainment_vector)))
+            cone_inds = np.where(angles<=cone_angle)[0]
+            
+            #Save arrays
+            cone_densities = measuring_sphere[('gas','Density')][cone_inds]
+            
+            #Relative_velocities
+            dvx = measuring_sphere['x-velocity'][cone_inds].in_units('km/s') - particle_velocity[0]
+            dvy = measuring_sphere['y-velocity'][cone_inds].in_units('km/s') - particle_velocity[1]
+            dvz = measuring_sphere['z-velocity'][cone_inds].in_units('km/s') - particle_velocity[2]
+            gas_velocity = yt.YTArray([dvx, dvy, dvz]).T
+            radial_vel = projected_vector(gas_velocity, gas_position_unit[cone_inds])
+            radial_sign = np.sign(np.diag(np.dot(gas_velocity, gas_position_unit[cone_inds].T)))
+            radial_speed = np.sqrt(np.sum(radial_vel**2, axis=1)) * radial_sign
+            radial_speed = yt.YTArray(radial_speed, 'km/s')
+            radial_momentum = radial_speed * measuring_sphere['mass'][cone_inds].in_units('g')
+            
+            write_dict = {'time':time_val, 'mdot':accretion_rate, 'density':cone_densities, 'radial_speed':radial_speed, radial_momentum:'radial_momentum'}
+            file = open(pickle_file, 'wb')
+            pickle.dump((write_dict), file)
+            file.close()
+            print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
 sys.stdout.flush()
 CW.Barrier()
