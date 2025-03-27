@@ -18,7 +18,7 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
-    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=4)
+    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=20)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -88,8 +88,7 @@ if args.make_pickle_files == "True":
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
-    sphere_radius = args.sphere_radius_cells*dx_min
-    r_acc = 4*dx_min
+    sphere_radius = yt.YTQuantity(args.sphere_radius_cells, 'au')
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
