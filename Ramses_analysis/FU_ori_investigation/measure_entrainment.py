@@ -314,17 +314,18 @@ pickle.dump((time_arr, acc_arr, mean_dens_array), file)
 file.close()
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 3*single_col_width), sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 
 axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
+axs[0].set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
 axs[0].set_ylabel('Separation (au)')
 
 axs[1].semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
 axs[1].set_ylabel('Accretion (msun/yr)')
 
-axs[2].semilogy(time_arr, acc_arr)
+axs[2].semilogy(time_arr, mean_dens_array)
 axs[2].set_ylabel('Mean_density (g/cm$^3$)')
 axs[2].set_xlabel('Time (yr)')
 
-plt.savefig('Mean_density.png')
+plt.savefig('Mean_density.png', bbox_inches='tight')
