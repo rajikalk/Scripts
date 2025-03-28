@@ -245,15 +245,15 @@ if args.make_plot_figures == "True":
                 elif np.nanmin(np.abs(write_dict['radial_momentum'].value)) < lin_thresh:
                     lin_thresh = np.nanmin(np.abs(write_dict['radial_momentum'].value))
 
-                axs[0].set_xscale('log')
-                axs[0].set_yscale('symlog', linthresh=lin_thresh)
-                plot = axs[0].scatter(write_dict['density'], write_dict['radial_momentum'])
+                axs.set_xscale('log')
+                axs.set_yscale('symlog', linthresh=lin_thresh)
+                plot = axs.scatter(write_dict['density'], write_dict['radial_momentum'])
                 cbar = plt.colorbar(plot, pad=0.0)
                 cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
-                axs[0].set_xlim([xmin,xmax])
-                axs[0].set_ylim([ymin,ymax])
-                axs[0].set_xlabel('density (g/cm$^3$)')
-                axs[0].set_ylabel('radial momentum (cm$\,$g/s)')
+                axs.set_xlim([xmin,xmax])
+                axs.set_ylim([ymin,ymax])
+                axs.set_xlabel('density (g/cm$^3$)')
+                axs.set_ylabel('radial momentum (cm$\,$g/s)')
 
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
