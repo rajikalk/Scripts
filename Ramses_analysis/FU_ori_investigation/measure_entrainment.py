@@ -307,3 +307,19 @@ if args.make_plot_figures == "True":
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
         fit = fit + 1
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 3*single_col_width), sharey=True)
+plt.subplots_adjust(hspace=0.0)
+
+axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
+axs[0].set_ylabel('Separation (au)')
+
+axs[1].semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
+axs[1].set_ylabel('Accretion (msun/yr)')
+
+axs[2].semilogy(time_arr, acc_arr)
+axs[2].set_ylabel('Mean_density (g/cm^3)')
+axs[2].set_xlabel('Time (yr)')
+
+plt.savefig('Mean_density.png')
