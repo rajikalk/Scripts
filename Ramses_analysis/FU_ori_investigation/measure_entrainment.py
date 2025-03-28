@@ -203,7 +203,7 @@ if args.make_plot_figures == "True":
     write_dict = pickle.load(file)
     file.close()
     end_time = write_dict['time']
-    end_ind = np.argmin(abs(particle_data['time'] - start_time))
+    end_ind = np.argmin(abs(particle_data['time'] - end_time))
     
     time_arr = []
     acc_arr = []
