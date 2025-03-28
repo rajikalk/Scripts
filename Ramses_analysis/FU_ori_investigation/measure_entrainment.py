@@ -208,6 +208,8 @@ if args.make_plot_figures == "True":
     time_arr = []
     acc_arr = []
     mean_dens_array = []
+    mean_radial_velocity = []
+    mean_radial_momentum = []
     
     xmin = np.nan
     xmax = np.nan
@@ -239,6 +241,8 @@ if args.make_plot_figures == "True":
                 time_arr.append(write_dict['time'])
                 acc_arr.append(write_dict['mdot'])
                 mean_dens_array.append(np.mean(write_dict['density']))
+                mean_radial_velocity.append(np.mean(write_dict['radial_speed']))
+                mean_radial_momentum.append(np.mean(write_dict['radial_momentum']))
                 
                 if np.isnan(xmin):
                     xmin = np.min(write_dict['density'].value)
@@ -309,8 +313,9 @@ if args.make_plot_figures == "True":
                 
         fit = fit + 1
 
+means_dict = {'time': time_arr, 'mdot': acc_arr, 'density':mean_dens_array, 'radial_speed':mean_radial_velocity, 'radial_momentum':mean_radial_momentum}
 file = open(save_dir+"entrainment.pkl", 'wb')
-pickle.dump((time_arr, acc_arr, mean_dens_array), file)
+pickle.dump((means_dict), file)
 file.close()
 
 plt.clf()
