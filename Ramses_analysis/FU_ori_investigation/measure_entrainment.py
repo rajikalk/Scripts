@@ -306,7 +306,12 @@ if args.make_plot_figures == "True":
 
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
+                
         fit = fit + 1
+
+file = open(save_dir+"entrainment.pkl", 'wb')
+pickle.dump((time_arr, acc_arr, mean_dens_array), file)
+file.close()
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 3*single_col_width), sharey=True)
