@@ -184,9 +184,26 @@ if args.make_plot_figures == "True":
     single_col_width = 3.50394 #inches
     page_height = 10.62472 #inches
     font_size = 10
+    
+    sink_pickle = "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl"
+    file_open = open(sink_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
 
     #read pickles and make frames!
     pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
+    #Get start and end time
+    file = open(pickle_files[0], 'rb')
+    write_dict = pickle.load(file)
+    file.close()
+    start_time = write_dict['time']
+    start_ind = np.argmin(abs(particle_data['time'] - start_time))
+    
+    file = open(pickle_files[-1], 'rb')
+    write_dict = pickle.load(file)
+    file.close()
+    end_time = write_dict['time']
+    end_ind = np.argmin(abs(particle_data['time'] - start_time))
     
     time_arr = []
     acc_arr = []
@@ -208,13 +225,16 @@ if args.make_plot_figures == "True":
             file_name = save_dir + plot_pickle[:-3]+'jpg'
             if os.path.isfile(file_name) == False:
                 plt.clf()
-                fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, 0.8*single_col_width))#, sharey=True)
+                plt.figure(figsize=(12,8))
+                #fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 2.4*single_col_width))#, sharey=True)
                 #plt.subplots_adjust(wspace=0.0)
                 #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
                 write_dict = pickle.load(file)
                 file.close()
+                
+                curr_it = np.argmin(abs(particle_data['time'] - write_dict['time']))
                 
                 time_arr.append(write_dict['time'])
                 acc_arr.append(write_dict['mdot'])
@@ -245,6 +265,33 @@ if args.make_plot_figures == "True":
                 elif np.nanmin(np.abs(write_dict['radial_momentum'].value)) < lin_thresh:
                     lin_thresh = np.nanmin(np.abs(write_dict['radial_momentum'].value))
 
+
+                plt.subplot(2,2,1)
+                plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
+                plt.scatter(particle_data['time'][curr_it], particle_data['separation'][curr_it])
+                plt.xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
+                plt.ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
+                plt.xlabel('Time (yr)')
+                plt.ylabel('Separation (au)')
+                
+                plt.subplot(2,2,3)
+                plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
+                plt.scatter(particle_data['time'][curr_it], particle_data['mdot'][curr_it])
+                plt.xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
+                plt.ylim([np.min(particle_data['mdot'][start_ind:end_ind]), np.max(particle_data['mdot'][start_ind:end_ind])])
+                plt.xlabel('Time (yr)')
+                plt.ylabel('Separation (au)')
+                
+                plt.subplot(4,4,(4,4))
+                plt.xscale('log')
+                plt.yscale('symlog', linthresh=lin_thresh)
+                plot = plt.scatter(write_dict['density'], write_dict['radial_momentum'])
+                plt.xlim([xmin,xmax])
+                plt.ylim([ymin,ymax])
+                plt.xlabel('density (g/cm$^3$)')
+                plt.ylabel('radial momentum (cm$\,$g/s)')
+                
+                '''
                 axs.set_xscale('log')
                 axs.set_yscale('symlog', linthresh=lin_thresh)
                 plot = axs.scatter(write_dict['density'], write_dict['radial_momentum'])
@@ -254,6 +301,7 @@ if args.make_plot_figures == "True":
                 axs.set_ylim([ymin,ymax])
                 axs.set_xlabel('density (g/cm$^3$)')
                 axs.set_ylabel('radial momentum (cm$\,$g/s)')
+                '''
 
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
