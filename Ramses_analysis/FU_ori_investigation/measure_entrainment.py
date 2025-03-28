@@ -283,7 +283,7 @@ if args.make_plot_figures == "True":
                 plt.xlabel('Time (yr)')
                 plt.ylabel('Separation (au)')
                 
-                plt.subplot(4,4,(4,4))
+                plt.subplot(2,2,(4,4))
                 plt.xscale('log')
                 plt.yscale('symlog', linthresh=lin_thresh)
                 plot = plt.scatter(write_dict['density'], write_dict['radial_momentum'])
