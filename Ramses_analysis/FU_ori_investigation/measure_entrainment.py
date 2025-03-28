@@ -276,7 +276,8 @@ if args.make_plot_figures == "True":
                 
                 plt.subplot(2,2,3)
                 plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
-                plt.scatter(particle_data['time'][curr_it], particle_data['mdot'][curr_it])
+                plt.scatter(particle_data['time'][curr_it], particle_data['mdot'][curr_it][0])
+                plt.scatter(particle_data['time'][curr_it], particle_data['mdot'][curr_it][1])
                 plt.xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
                 plt.ylim([np.min(particle_data['mdot'][start_ind:end_ind]), np.max(particle_data['mdot'][start_ind:end_ind])])
                 plt.xlabel('Time (yr)')
