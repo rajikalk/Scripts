@@ -324,7 +324,7 @@ axs[1].semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][
 axs[1].set_ylabel('Accretion (msun/yr)')
 
 axs[2].semilogy(time_arr, acc_arr)
-axs[2].set_ylabel('Mean_density (g/cm^3)')
+axs[2].set_ylabel('Mean_density (g/cm$^3$)')
 axs[2].set_xlabel('Time (yr)')
 
 plt.savefig('Mean_density.png')
