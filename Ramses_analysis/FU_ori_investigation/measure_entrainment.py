@@ -174,5 +174,87 @@ if args.make_pickle_files == "True":
 sys.stdout.flush()
 CW.Barrier()
 
-#read pickles and make frames!
+if args.make_plot_figures == "True":
+    import matplotlib.pyplot as plt
+    #plt.rcParams['figure.dpi'] = 300
+    from matplotlib.colors import LogNorm
+    cm = plt.cm.get_cmap('seismic')
+    
+    two_col_width = 7.20472 #inches
+    single_col_width = 3.50394 #inches
+    page_height = 10.62472 #inches
+    font_size = 10
 
+    #read pickles and make frames!
+    pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
+    
+    time_arr = []
+    acc_arr = []
+    mean_dens_array = []
+    
+    xmin = np.nan
+    xmax = np.nan
+    ymin = np.nan
+    ymax = np.nan
+    lin_thresh = np.nan
+    rit = -1
+    fit = 0
+    while fit < len(pickle_files):
+        rit = rit + 1
+        if rit == size:
+            rit = 0
+        if rank == rit:
+            plot_pickle = pickle_files[fit]
+            file_name = save_dir + plot_pickle[:-3]+'jpg'
+            if os.path.isfile(file_name) == False:
+                plt.clf()
+                fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, 0.8*single_col_width))#, sharey=True)
+                #plt.subplots_adjust(wspace=0.0)
+                #plt.subplots_adjust(hspace=0.0)
+            
+                file = open(plot_pickle, 'rb')
+                write_dict = pickle.load(file)
+                file.close()
+                
+                time_arr.append(write_dict['time'])
+                acc_arr.append(write_dict['mdot'])
+                mean_dens_array.append(np.mean(write_dict['density']))
+                
+                if np.isnan(xmin):
+                    xmin = np.min(write_dict['density'].value)
+                elif np.min(write_dict['density'].value) < xmin:
+                    xmin = np.min(write_dict['density'].value)
+                
+                if np.isnan(xmax):
+                    xmax = np.max(write_dict['density'].value)
+                elif np.max(write_dict['density'].value) > xmax:
+                    xmax = np.max(write_dict['density'].value)
+                    
+                if np.isnan(ymin):
+                    ymin = np.nanmin(write_dict['radial_momentum'].value)
+                elif np.nanmin(write_dict['radial_momentum'].value) < ymin:
+                    ymin = np.nanmin(write_dict['radial_momentum'].value)
+                    
+                if np.isnan(ymax):
+                    ymax = np.nanmax(write_dict['radial_momentum'].value)
+                elif np.nanmax(write_dict['radial_momentum'].value) > ymax:
+                    ymax = np.nanmax(write_dict['radial_momentum'].value)
+                    
+                if np.isnan(lin_thresh):
+                    lin_thresh = np.nanmin(np.abs(write_dict['radial_momentum'].value))
+                elif np.nanmin(np.abs(write_dict['radial_momentum'].value)) < lin_thresh:
+                    lin_thresh = np.nanmin(np.abs(write_dict['radial_momentum'].value))
+
+                axs[0].set_xscale('log')
+                axs[0].set_yscale('symlog', linthresh=lin_thresh)
+                plot = axs[0].scatter(write_dict['density'], write_dict['radial_momentum'])
+                cbar = plt.colorbar(plot, pad=0.0)
+                cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
+                axs[0].set_xlim([xmin,xmax])
+                axs[0].set_ylim([ymin,ymax])
+                axs[0].set_xlabel('density (g/cm$^3$)')
+                axs[0].set_ylabel('radial momentum (cm$\,$g/s)')
+
+                plt.savefig(file_name, bbox_inches='tight', dpi=300)
+                print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
+        fit = fit + 1
