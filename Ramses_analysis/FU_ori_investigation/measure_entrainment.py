@@ -212,12 +212,18 @@ if args.make_plot_figures == "True":
         means_dict = pickle.load(file)
         file.close()
         
-        time_arr = means_dict['time']
-        acc_arr = means_dict['mdot']
-        mean_dens_array = means_dict['density']
-        mean_radial_velocity = means_dict['radial_speed']
-        mean_radial_momentum = means_dict['radial_momentum']
-    
+        try:
+            time_arr = means_dict['time']
+            acc_arr = means_dict['mdot']
+            mean_dens_array = means_dict['density']
+            mean_radial_velocity = means_dict['radial_speed']
+            mean_radial_momentum = means_dict['radial_momentum']
+        except:
+            time_arr = means_dict[0]
+            acc_arr = means_dict[1]
+            mean_dens_array = means_dict[2]
+            mean_radial_velocity = means_dict[3]
+            mean_radial_momentum = means_dict[4]
     else:
         time_arr = []
         acc_arr = []
