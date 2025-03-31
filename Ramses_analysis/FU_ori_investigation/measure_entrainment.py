@@ -205,11 +205,25 @@ if args.make_plot_figures == "True":
     end_time = write_dict['time']
     end_ind = np.argmin(abs(particle_data['time'] - end_time))
     
-    time_arr = []
-    acc_arr = []
-    mean_dens_array = []
-    mean_radial_velocity = []
-    mean_radial_momentum = []
+    means_pickle = save_dir+"entrainment.pkl"
+    
+    if os.path.isfile(means_pickle):
+        file = open(plot_pickle, 'rb')
+        means_dict = pickle.load(file)
+        file.close()
+        
+        time_arr = means_dict['time']
+        acc_arr = means_dict['mdot']
+        mean_dens_array = means_dict['density']
+        mean_radial_velocity = means_dict['radial_speed']
+        mean_radial_momentum = means_dict['radial_momentum']
+    
+    else:
+        time_arr = []
+        acc_arr = []
+        mean_dens_array = []
+        mean_radial_velocity = []
+        mean_radial_momentum = []
     
     xmin = np.nan
     xmax = np.nan
@@ -228,9 +242,6 @@ if args.make_plot_figures == "True":
             if os.path.isfile(file_name) == False:
                 plt.clf()
                 plt.figure(figsize=(12,8))
-                #fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 2.4*single_col_width))#, sharey=True)
-                #plt.subplots_adjust(wspace=0.0)
-                #plt.subplots_adjust(hspace=0.0)
             
                 file = open(plot_pickle, 'rb')
                 write_dict = pickle.load(file)
@@ -295,18 +306,6 @@ if args.make_plot_figures == "True":
                 plt.ylim([ymin,ymax])
                 plt.xlabel('density (g/cm$^3$)')
                 plt.ylabel('radial momentum (cm$\,$g/s)')
-                
-                '''
-                axs.set_xscale('log')
-                axs.set_yscale('symlog', linthresh=lin_thresh)
-                plot = axs.scatter(write_dict['density'], write_dict['radial_momentum'])
-                cbar = plt.colorbar(plot, pad=0.0)
-                cbar.set_label(r"v$_{radial}$/v$_{magnitude}$", rotation=270, labelpad=14)
-                axs.set_xlim([xmin,xmax])
-                axs.set_ylim([ymin,ymax])
-                axs.set_xlabel('density (g/cm$^3$)')
-                axs.set_ylabel('radial momentum (cm$\,$g/s)')
-                '''
 
                 plt.savefig(file_name, bbox_inches='tight', dpi=300)
                 print("Plotted", file_name, "for pickle", fit, "of", len(pickle_files))
@@ -337,7 +336,6 @@ axs[3].set_ylabel('Mean_radial_velocity (km/s)')
 
 axs[4].semilogy(time_arr, mean_radial_momentum)
 axs[4].set_ylabel('Mean_radial_momenutm (g*km/s)')
-
 axs[4].set_xlabel('Time (yr)')
 
 plt.savefig('Mean_density.png', bbox_inches='tight')
