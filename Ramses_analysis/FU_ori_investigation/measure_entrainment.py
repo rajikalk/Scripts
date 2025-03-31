@@ -208,7 +208,7 @@ if args.make_plot_figures == "True":
     means_pickle = save_dir+"entrainment.pkl"
     
     if os.path.isfile(means_pickle):
-        file = open(plot_pickle, 'rb')
+        file = open(means_pickle, 'rb')
         means_dict = pickle.load(file)
         file.close()
         
