@@ -319,7 +319,7 @@ pickle.dump((means_dict), file)
 file.close()
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, 2*single_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 
 axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
@@ -331,6 +331,13 @@ axs[1].set_ylabel('Accretion (msun/yr)')
 
 axs[2].semilogy(time_arr, mean_dens_array)
 axs[2].set_ylabel('Mean_density (g/cm$^3$)')
-axs[2].set_xlabel('Time (yr)')
+
+axs[3].semilogy(time_arr, mean_radial_velocity)
+axs[3].set_ylabel('Mean_radial_velocity (km/s)')
+
+axs[4].semilogy(time_arr, mean_radial_momentum)
+axs[4].set_ylabel('Mean_radial_momenutm (g*km/s)')
+
+axs[4].set_xlabel('Time (yr)')
 
 plt.savefig('Mean_density.png', bbox_inches='tight')
