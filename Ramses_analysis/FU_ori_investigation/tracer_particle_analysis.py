@@ -53,7 +53,7 @@ if args.make_pickle_files == "True":
                 if read_number:
                     N_particle.append(int(row[0]))
                     read_number = False
-                elif "dark matter" in row:
+                elif "dark matter" in row[0]:
                     read_number = True
         f.close()
 
