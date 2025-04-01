@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 #In this script we are trying to learn how mass is primarily being accreted
-import yt
-yt.enable_parallelism()
 import glob
 import numpy as np
 import sys
 import os
-import my_ramses_module as mym
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import csv
 
 def parse_inputs():
     import argparse
@@ -44,68 +42,13 @@ CW.Barrier()
 
 if args.make_pickle_files == "True":
     #File files
-    usable_files = sorted(glob.glob(input_dir+"*/info*.txt"))
-
-    sys.stdout.flush()
-    CW.Barrier()
-
-    #Define units to override:
-    units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-    units_override.update({"mass_unit":(2998,"Msun")})
-    units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
-        
-    scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
-    scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
-    scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-    scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
-    mym.set_units(units_override)
-    if rank == 0:
-        print("set units")
-
-    #find sink particle to center on and formation time
-    del units_override['density_unit']
-    ds = yt.load(usable_files[-1], units_override=units_override)
-    if rank == 0:
-        print("Doing initial ds.all_data() load")
-    dd = ds.all_data()
-    dx_min = np.min(dd['dx'].in_units('au'))
-    if args.sink_number == None:
-        sink_id = np.argmin(dd['sink_particle_speed'])
-    else:
-        sink_id = args.sink_number
-    if rank == 0:
-        print("CENTERED SINK ID:", sink_id)
-    #myf.set_centred_sink_id(sink_id)
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
-    del dd
-        
-    sys.stdout.flush()
-    CW.Barrier()
+    usable_files = sorted(glob.glob(input_dir+"*/header*.txt"))
     
-    Time_array = []
-    N_tracer_particles = []
-
-    file_int = -1
-    no_files = len(usable_files)
-    for fn in yt.parallel_objects(usable_files, njobs=int(size)):
-        ds = yt.load(fn, units_override=units_override)
-        time_val = ds.current_time.in_units('yr') - sink_form_time
-        dd = ds.all_data()
-        
-        Time_array.append(time_val)
-        N_tracer_particles.append(len(dd['particle_identity']))
-        del dd
-        
-        print("Read particle file", fn)
-            
-            #Get secondary position
-            
-    pickle_file = save_dir + "tracer_data_" + str(rank)+".pkl"
-    write_dict = {'Time':Time_array, 'N_tracer_particles':N_tracer_particles}
-    file = open(pickle_file, 'wb')
-    pickle.dump((write_dict), file)
-    file.close()
-    print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+    for file in usable_files:
+        with open(file, 'rU') as f:
+            reader = csv.reader(f)
+            import pdb
+            pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
