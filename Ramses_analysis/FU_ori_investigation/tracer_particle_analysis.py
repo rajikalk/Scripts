@@ -47,8 +47,9 @@ if args.make_pickle_files == "True":
     for file in usable_files:
         with open(file, 'rU') as f:
             reader = csv.reader(f)
-            import pdb
-            pdb.set_trace()
+            for row in reader:
+                import pdb
+                pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
