@@ -44,12 +44,20 @@ if args.make_pickle_files == "True":
     #File files
     usable_files = sorted(glob.glob(input_dir+"*/header*.txt"))
     
+    N_particle = []
     for file in usable_files:
+        read_number = False
         with open(file, 'rU') as f:
             reader = csv.reader(f)
             for row in reader:
-                import pdb
-                pdb.set_trace()
+                if read_number:
+                    N_particle.append(int(row[0]))
+                    read_number = False
+                elif "dark matter" in row:
+                    read_number = True
+                else:
+                    pass
+        f.close()
 
 sys.stdout.flush()
 CW.Barrier()
