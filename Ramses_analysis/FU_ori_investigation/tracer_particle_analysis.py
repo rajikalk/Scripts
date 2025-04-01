@@ -7,7 +7,6 @@ import numpy as np
 import sys
 import os
 import my_ramses_module as mym
-import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 
@@ -95,6 +94,7 @@ if args.make_pickle_files == "True":
         
         Time_array.append(time_val)
         N_tracer_particles.append(len(dd['particle_identity']))
+        del dd
         
         print("Read particle file", fn)
             
