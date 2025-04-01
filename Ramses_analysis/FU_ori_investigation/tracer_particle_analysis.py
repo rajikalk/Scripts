@@ -55,8 +55,6 @@ if args.make_pickle_files == "True":
                     read_number = False
                 elif "dark matter" in row:
                     read_number = True
-                else:
-                    pass
         f.close()
 
 sys.stdout.flush()
