@@ -18,31 +18,10 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
-    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=10)
-    parser.add_argument("-cone_angle", "--entrainment_cone_angle", type=float, default=30)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
-        
-def projected_vector(vector, proj_vector):
-    """
-    Calculates the projection of vecter projected onto vector
-    """
-    vector_units = vector.units
-    if len(proj_vector)>3:
-        #Calc vector.proj
-        v_dot_pv = vector.T[0]*proj_vector.T[0] + vector.T[1]*proj_vector.T[1] + vector.T[2]*proj_vector.T[2]
-        pv_dot_pv = proj_vector.T[0]**2 + proj_vector.T[1]**2 + proj_vector.T[2]**2
-        proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
-        proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
-        proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
-        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
-    else:
-        proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
-        proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
-        proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
-        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
-    return proj_v
+    
 
 #=======MAIN=======
 rank = CW.Get_rank()
@@ -91,8 +70,6 @@ if args.make_pickle_files == "True":
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
-    sphere_radius = yt.YTQuantity(args.sphere_radius_cells, 'au')
-    cone_angle = yt.YTQuantity(args.entrainment_cone_angle, '')
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
@@ -105,77 +82,33 @@ if args.make_pickle_files == "True":
         
     sys.stdout.flush()
     CW.Barrier()
+    
+    Time_array = []
+    N_tracer_particles = []
 
     file_int = -1
     no_files = len(usable_files)
     for fn in yt.parallel_objects(usable_files, njobs=int(size)):
-        if size > 1:
-            file_int = usable_files.index(fn)
-        else:
-            file_int = file_int + 1
-            if usable_files[file_int] == usable_files[file_int-1]:
-                os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
-        make_pickle = False
-        pickle_file = save_dir + "movie_frame_" + ("%06d" % file_int + ".pkl")
-        if os.path.isfile(pickle_file) == False:
-            make_pickle = True
         if make_pickle:
             ds = yt.load(fn, units_override=units_override)
             time_val = ds.current_time.in_units('yr') - sink_form_time
             dd = ds.all_data()
             
+            Time_array.append(time_val)
+            N_tracer_particles.append(len(dd['particle_identity']))
+            
             #Get secondary position
-            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
-            particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
-            accretion_rate = dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr')
-            del dd
-            particle_speed = np.sqrt(np.sum(particle_velocity**2))
-            particle_velocity_unit = particle_velocity/particle_speed
-            del particle_speed
-            measuring_sphere = ds.sphere(particle_position.in_units('au'), sphere_radius)
-            print("Got particle position and velocity")
             
-            #Let's calculate the entrainment vector.
-            entrainment_vector = -1*particle_velocity_unit
-            
-            #Calcalate relative positions to particle
-            dx = measuring_sphere['x'] - particle_position[0]
-            dy = measuring_sphere['y'] - particle_position[1]
-            dz = measuring_sphere['z'] - particle_position[2]
-            gas_position =yt.YTArray([dx, dy, dz])
-            del dx, dy, dz
-            separations = np.sqrt(np.sum(gas_position**2, axis=0))
-            gas_position_unit = (gas_position/separations).T
-            del separations
-            angles = np.rad2deg(np.arccos(np.dot(gas_position_unit, entrainment_vector)))
-            cone_inds = np.where(angles<=cone_angle)[0]
-            del angles
-            
-            #Save arrays
-            cone_densities = measuring_sphere[('gas','Density')][cone_inds]
-            
-            #Relative_velocities
-            dvx = measuring_sphere['x-velocity'][cone_inds].in_units('km/s') - particle_velocity[0]
-            dvy = measuring_sphere['y-velocity'][cone_inds].in_units('km/s') - particle_velocity[1]
-            dvz = measuring_sphere['z-velocity'][cone_inds].in_units('km/s') - particle_velocity[2]
-            gas_velocity = yt.YTArray([dvx, dvy, dvz]).T
-            del dvx, dvy, dvz
-            radial_vel = projected_vector(gas_velocity, gas_position_unit[cone_inds])
-            radial_sign = np.sign(np.diag(np.dot(gas_velocity, gas_position_unit[cone_inds].T)))
-            radial_speed = np.sqrt(np.sum(radial_vel**2, axis=1)) * radial_sign
-            del radial_vel, radial_sign
-            radial_speed = yt.YTArray(radial_speed, 'km/s')
-            radial_momentum = radial_speed * measuring_sphere['mass'][cone_inds].in_units('g')
-            
-            write_dict = {'time':time_val, 'mdot':accretion_rate, 'density':cone_densities, 'radial_speed':radial_speed, 'radial_momentum':radial_momentum}
-            file = open(pickle_file, 'wb')
-            pickle.dump((write_dict), file)
-            file.close()
-            print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+    pickle_file = save_dir + "tracer_data_" + str(rank)+".pkl"
+    write_dict = {'Time':Time_array, 'N_tracer_particles':N_tracer_particles}
+    file = open(pickle_file, 'wb')
+    pickle.dump((write_dict), file)
+    file.close()
+    print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
 sys.stdout.flush()
 CW.Barrier()
-
+'''
 if args.make_plot_figures == "True":
     import matplotlib.pyplot as plt
     #plt.rcParams['figure.dpi'] = 300
@@ -341,3 +274,4 @@ axs[4].set_ylabel('- Mean_radial_momenutm (g*km/s)')
 axs[4].set_xlabel('Time (yr)')
 
 plt.savefig('Mean_density.png', bbox_inches='tight')
+'''
