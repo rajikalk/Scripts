@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 #In this script we are trying to learn how mass is primarily being accreted
+import yt
+yt.enable_parallelism()
 import glob
 import numpy as np
 import sys
 import os
+import my_ramses_module as mym
+import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import csv
 
 def parse_inputs():
     import argparse
@@ -41,21 +44,72 @@ sys.stdout.flush()
 CW.Barrier()
 
 if args.make_pickle_files == "True":
-    #File files
-    usable_files = sorted(glob.glob(input_dir+"*/header*.txt"))
+    usable_files = sorted(glob.glob(input_dir+"*/info*.txt"))
+
+    sys.stdout.flush()
+    CW.Barrier()
+
+    #Define units to override:
+    units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+    units_override.update({"mass_unit":(2998,"Msun")})
+    units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+        
+    scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+    scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+    scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+    scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+    mym.set_units(units_override)
+    if rank == 0:
+        print("set units")
+
+    #find sink particle to center on and formation time
+    del units_override['density_unit']
+    ds = yt.load(usable_files[-1], units_override=units_override)
+    if rank == 0:
+        print("Doing initial ds.all_data() load")
+    dd = ds.all_data()
+    if args.sink_number == None:
+        sink_id = np.argmin(dd['sink_particle_speed'])
+    else:
+        sink_id = args.sink_number
+    if rank == 0:
+        print("CENTERED SINK ID:", sink_id)
+    #myf.set_centred_sink_id(sink_id)
+    sink_form_time = dd['sink_particle_form_time'][sink_id]
     
-    N_particle = []
-    for file in usable_files:
-        read_number = False
-        with open(file, 'rU') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                if read_number:
-                    N_particle.append(int(row[0]))
-                    read_number = False
-                elif "dark matter" in row[0]:
-                    read_number = True
-        f.close()
+    #Get accreted tracer particle IDS
+    accreted_inds = np.where(dd['particle_mass'] == (-1*(sink_id+1)))[0]
+    del dd
+        
+    sys.stdout.flush()
+    CW.Barrier()
+
+    file_int = -1
+    no_files = len(usable_files)
+    for fn in yt.parallel_objects(usable_files, njobs=int(size)):
+        if size > 1:
+            file_int = usable_files.index(fn)
+        else:
+            file_int = file_int + 1
+        make_pickle = False
+        pickle_file = save_dir + "movie_frame_" + ("%06d" % file_int + ".pkl")
+        if os.path.isfile(pickle_file) == False:
+            make_pickle = True
+        if make_pickle:
+            ds = yt.load(fn, units_override=units_override)
+            time_val = ds.current_time.in_units('yr') - sink_form_time
+            dd = ds.all_data()
+            
+            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            relx = dd['particle_position_x'][accreted_inds].in_units('au') - particle_position[0].in_units('au')
+            rely = dd['particle_position_y'][accreted_inds].in_units('au') - particle_position[1].in_units('au')
+            relz = dd['particle_position_z'][accreted_inds].in_units('au') - particle_position[2].in_units('au')
+            
+            write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
+            file = open(pickle_file, 'wb')
+            pickle.dump((write_dict), file)
+            file.close()
+            print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
 
 sys.stdout.flush()
 CW.Barrier()
