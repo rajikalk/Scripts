@@ -89,13 +89,14 @@ if args.make_pickle_files == "True":
     file_int = -1
     no_files = len(usable_files)
     for fn in yt.parallel_objects(usable_files, njobs=int(size)):
-        if make_pickle:
-            ds = yt.load(fn, units_override=units_override)
-            time_val = ds.current_time.in_units('yr') - sink_form_time
-            dd = ds.all_data()
-            
-            Time_array.append(time_val)
-            N_tracer_particles.append(len(dd['particle_identity']))
+        ds = yt.load(fn, units_override=units_override)
+        time_val = ds.current_time.in_units('yr') - sink_form_time
+        dd = ds.all_data()
+        
+        Time_array.append(time_val)
+        N_tracer_particles.append(len(dd['particle_identity']))
+        
+        print("Read particle file", fn)
             
             #Get secondary position
             
