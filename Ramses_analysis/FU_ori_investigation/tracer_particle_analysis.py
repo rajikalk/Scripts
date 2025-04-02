@@ -92,13 +92,11 @@ if args.make_pickle_files == "True":
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
+            pp_code = particle_position.in_units('pc')/scale_l
             
-            import pdb
-            pdb.set_trace()
-            
-            relx = dd['particle_position_x'][accreted_inds].value*scale_l.in_units('au') - particle_position[0].in_units('au')
-            rely = dd['particle_position_y'][accreted_inds].value*scale_l.in_units('au') - particle_position[1].in_units('au')
-            relz = dd['particle_position_z'][accreted_inds].value*scale_l.in_units('au') - particle_position[2].in_units('au')
+            relx = (dd['particle_position_x'][accreted_inds].value - pp_code[0].value)*scale_l
+            rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
+            relz = (dd['particle_position_z'][accreted_inds].value - pp_code[2].value)*scale_l
             
             write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
             
