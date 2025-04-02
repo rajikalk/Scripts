@@ -82,7 +82,7 @@ if args.make_pickle_files == "True":
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         if make_pickle:
-            ds = yt.load(fn, units_override=units_override)
+            ds = yt.load(fn)
             time_val = ds.current_time.value*scale_t - sink_form_time
             dd = ds.all_data()
             
@@ -94,9 +94,6 @@ if args.make_pickle_files == "True":
             relz = dd['particle_position_z'][accreted_inds].value*scale_l.in_units('au') - particle_position[2].in_units('au')
             
             write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
-            
-            import pdb
-            pdb.set_trace()
             
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
