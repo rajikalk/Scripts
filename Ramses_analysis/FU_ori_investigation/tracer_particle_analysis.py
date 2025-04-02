@@ -49,7 +49,7 @@ if args.make_pickle_files == "True":
     CW.Barrier()
 
     #Define units to override:
-    scale_l = yt.YTQuantity(4, 'pc')
+    scale_l = yt.YTQuantity(4, 'pc').in_units('au')
     scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
     if rank == 0:
         print("set units")
@@ -89,6 +89,9 @@ if args.make_pickle_files == "True":
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
+            
+            import pdb
+            pdb.set_trace()
             
             relx = dd['particle_position_x'][accreted_inds].value*scale_l.in_units('au') - particle_position[0].in_units('au')
             rely = dd['particle_position_y'][accreted_inds].value*scale_l.in_units('au') - particle_position[1].in_units('au')
