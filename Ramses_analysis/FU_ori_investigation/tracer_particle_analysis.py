@@ -78,6 +78,7 @@ if args.make_pickle_files == "True":
     sink_form_time = dd['sink_particle_form_time'][sink_id]
     
     #Get accreted tracer particle IDS
+    
     accreted_inds = np.where(dd['particle_mass'] == (-1*(sink_id+1)))[0]
     import pdb
     pdb.set_trace()
