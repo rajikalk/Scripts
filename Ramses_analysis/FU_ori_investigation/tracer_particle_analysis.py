@@ -101,6 +101,9 @@ if args.make_pickle_files == "True":
             dd = ds.all_data()
             
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            
+            import pdb
+            pbd.set_trace()
             relx = dd['particle_position_x'][accreted_inds].in_units('au') - particle_position[0].in_units('au')
             rely = dd['particle_position_y'][accreted_inds].in_units('au') - particle_position[1].in_units('au')
             relz = dd['particle_position_z'][accreted_inds].in_units('au') - particle_position[2].in_units('au')
