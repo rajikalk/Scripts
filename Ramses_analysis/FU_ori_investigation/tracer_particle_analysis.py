@@ -6,8 +6,6 @@ import glob
 import numpy as np
 import sys
 import os
-import my_ramses_module as mym
-import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 
@@ -16,6 +14,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
+    parser.add_argument("-in_pickle","--input_pickle", default='/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl')
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("files", nargs='*')
@@ -50,39 +49,23 @@ if args.make_pickle_files == "True":
     CW.Barrier()
 
     #Define units to override:
-    units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-    units_override.update({"mass_unit":(2998,"Msun")})
-    units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
-        
-    scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
-    scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
-    scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-    scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
-    mym.set_units(units_override)
+    scale_l = yt.YTQuantity(4, 'pc')
+    scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
     if rank == 0:
         print("set units")
 
     #find sink particle to center on and formation time
-    del units_override['density_unit']
-    ds = yt.load(usable_files[-1], units_override=units_override)
-    if rank == 0:
-        print("Doing initial ds.all_data() load")
-    dd = ds.all_data()
-    if args.sink_number == None:
-        sink_id = np.argmin(dd['sink_particle_speed'])
-    else:
-        sink_id = args.sink_number
-    if rank == 0:
-        print("CENTERED SINK ID:", sink_id)
-    #myf.set_centred_sink_id(sink_id)
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
+    print("read pickle", args.input_pickle)
+    sys.stdout.flush()
+    file_open = open(args.input_pickle, 'rb')
+    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+    file_open.close()
     
     #Get accreted tracer particle IDS
+    ds = yt.load(usable_files[-1])
+    dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
-    scale_m = min_mass/(np.min(dd['particle_mass'].value))
-    tracer_masses = dd['particle_mass'] * scale_m
-    accreted_inds = np.where(tracer_masses == min_mass)[0]
-    del min_mass, scale_m, tracer_masses
+    accreted_inds = np.where(dd['particle_mass'] == min_mass)[0]
     
     sys.stdout.flush()
     CW.Barrier()
@@ -100,18 +83,20 @@ if args.make_pickle_files == "True":
             make_pickle = True
         if make_pickle:
             ds = yt.load(fn, units_override=units_override)
-            time_val = ds.current_time.in_units('yr') - sink_form_time
+            time_val = ds.current_time.value*scale_t - sink_form_time
             dd = ds.all_data()
             
-            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            t_ind = np.argmin(abs(particle_data['time'] - time_val))
+            particle_position = particle_data['secondary_position'][t_ind]
+            
+            relx = dd['particle_position_x'][accreted_inds].value*scale_l.in_units('au') - particle_position[0].in_units('au')
+            rely = dd['particle_position_y'][accreted_inds].value*scale_l.in_units('au') - particle_position[1].in_units('au')
+            relz = dd['particle_position_z'][accreted_inds].value*scale_l.in_units('au') - particle_position[2].in_units('au')
+            
+            write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
             
             import pdb
             pdb.set_trace()
-            relx = dd['particle_position_x'][accreted_inds].in_units('au') - particle_position[0].in_units('au')
-            rely = dd['particle_position_y'][accreted_inds].in_units('au') - particle_position[1].in_units('au')
-            relz = dd['particle_position_z'][accreted_inds].in_units('au') - particle_position[2].in_units('au')
-            
-            write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
             
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
