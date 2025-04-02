@@ -60,6 +60,7 @@ if args.make_pickle_files == "True":
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
     file_open.close()
+    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     
     #Get accreted tracer particle IDS
     ds = yt.load(usable_files[-1])
