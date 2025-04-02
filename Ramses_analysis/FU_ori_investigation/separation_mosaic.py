@@ -249,7 +249,7 @@ while fit < no_frames:
             if os.path.isfile(tracer_file):
                 depth_lim = args_dict['xlim']
                 plot_inds = np.where((tracer_data['rely'].value>args_dict['xlim'][0])&(tracer_data['rely'].value<args_dict['xlim'][1]))[0]
-                ax1.scatter(tracer_data['relx'], tracer_data['relz'], marker='.', s=1, c='magenta', edgecolors=None)
+                ax2.scatter(tracer_data['relx'], tracer_data['relz'], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
             ax2.set_aspect('equal')
@@ -320,7 +320,7 @@ while fit < no_frames:
             if os.path.isfile(tracer_file):
                 depth_lim = args_dict['xlim']
                 plot_inds = np.where((tracer_data['relz'].value>args_dict['xlim'][0])&(tracer_data['relz'].value<args_dict['xlim'][1]))[0]
-                ax1.scatter(tracer_data['relx'], tracer_data['rely'], marker='.', s=1, c='magenta', edgecolors=None)
+                ax4.scatter(tracer_data['relx'], tracer_data['rely'], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
             ax4.set_aspect('equal')
