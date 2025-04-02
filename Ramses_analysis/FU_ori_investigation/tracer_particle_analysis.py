@@ -67,6 +67,7 @@ if args.make_pickle_files == "True":
     dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
     accreted_inds = np.where(dd['particle_mass'] == min_mass)[0]
+    accreted_ids = dd['particle_identity'][accreted_inds]
     
     sys.stdout.flush()
     CW.Barrier()
@@ -91,13 +92,13 @@ if args.make_pickle_files == "True":
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
             
-            relx = (dd['particle_position_x'][accreted_inds].value - pp_code[0].value)*scale_l
-            rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
-            relz = (dd['particle_position_z'][accreted_inds].value - pp_code[2].value)*scale_l
-            
             if size == 1:
                 import pdb
                 pdb.set_trace()
+            
+            relx = (dd['particle_position_x'][accreted_inds].value - pp_code[0].value)*scale_l
+            rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
+            relz = (dd['particle_position_z'][accreted_inds].value - pp_code[2].value)*scale_l
             
             write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
             
