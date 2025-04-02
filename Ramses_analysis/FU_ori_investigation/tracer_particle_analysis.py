@@ -68,9 +68,6 @@ if args.make_pickle_files == "True":
     min_mass = (-1*(sink_id+1))
     accreted_inds = np.where(dd['particle_mass'] == min_mass)[0]
     
-    import pdb
-    pdb.set_trace()
-    
     sys.stdout.flush()
     CW.Barrier()
 
