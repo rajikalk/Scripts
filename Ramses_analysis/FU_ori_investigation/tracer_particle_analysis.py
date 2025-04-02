@@ -78,12 +78,12 @@ if args.make_pickle_files == "True":
     sink_form_time = dd['sink_particle_form_time'][sink_id]
     
     #Get accreted tracer particle IDS
+    min_mass = (-1*(sink_id+1))
+    scale_m = min_mass/(np.min(dd['particle_mass'].value))
+    tracer_masses = dd['particle_mass'] * scale_m
+    accreted_inds = np.where(tracer_masses == min_mass)[0]
+    del dd, min_mass, scale_m, tracer_masses
     
-    accreted_inds = np.where(dd['particle_mass'] == (-1*(sink_id+1)))[0]
-    import pdb
-    pdb.set_trace()
-    del dd
-        
     sys.stdout.flush()
     CW.Barrier()
 
