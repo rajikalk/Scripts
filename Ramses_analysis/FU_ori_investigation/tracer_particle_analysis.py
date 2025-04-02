@@ -92,9 +92,7 @@ if args.make_pickle_files == "True":
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
             
-            if size == 1:
-                import pdb
-                pdb.set_trace()
+            accreted_inds = np.in1d(dd['particle_identity'].value, accreted_ids.value).nonzero()[0]
             
             relx = (dd['particle_position_x'][accreted_inds].value - pp_code[0].value)*scale_l
             rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
