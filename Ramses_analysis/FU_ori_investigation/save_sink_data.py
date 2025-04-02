@@ -101,6 +101,7 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
+        particle_data.update({'secondary_position':[]})
         
         counter = 0
         sink_form_time = 0
@@ -126,6 +127,9 @@ if args.update_pickle == 'True':
                         particle_data['particle_tag'].append(tag)
                 pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
                 pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
+                
+                particle_data['secondary_position'].append(pos_second)
+                
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
                 particle_data['separation'].append(separation)
                 if sink_form_time == 0:

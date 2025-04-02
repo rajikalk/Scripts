@@ -82,7 +82,7 @@ if args.make_pickle_files == "True":
     scale_m = min_mass/(np.min(dd['particle_mass'].value))
     tracer_masses = dd['particle_mass'] * scale_m
     accreted_inds = np.where(tracer_masses == min_mass)[0]
-    del dd, min_mass, scale_m, tracer_masses
+    del min_mass, scale_m, tracer_masses
     
     sys.stdout.flush()
     CW.Barrier()
@@ -106,7 +106,7 @@ if args.make_pickle_files == "True":
             particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
             
             import pdb
-            pbd.set_trace()
+            pdb.set_trace()
             relx = dd['particle_position_x'][accreted_inds].in_units('au') - particle_position[0].in_units('au')
             rely = dd['particle_position_y'][accreted_inds].in_units('au') - particle_position[1].in_units('au')
             relz = dd['particle_position_z'][accreted_inds].in_units('au') - particle_position[2].in_units('au')
