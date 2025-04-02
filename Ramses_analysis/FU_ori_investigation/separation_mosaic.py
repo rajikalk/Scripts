@@ -22,6 +22,7 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-in_dir", "--input_dir", help="Path to movie pickles")
     parser.add_argument("-in_pickle", "--input_pickle", help="Path to sink pickle")
+    parser.add_argument("-in_tracer", "--in_tracer_data", help="where tracer particle data is saved")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=2.0)
@@ -113,6 +114,14 @@ while fit < no_frames:
     if rank == rit:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
         if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
+        
+            tracer_file = args.in_tracer_data+'/movie_frame_' + ("%06d" % fit) +'.pkl'
+            if os.path.isfile(tracer_file):
+                file = open(tracer_file, 'rb')
+                tracer_data = pickle.load(file)
+                file.close()
+            else:
+                print(tracer_file, "doesn't exist")
     
             fig = plt.figure()
             gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
@@ -168,6 +177,8 @@ while fit < no_frames:
             ax1.set_ylim(ylim)
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+            if os.path.isfile(tracer_file):
+                ax1.scatter(tracer_data['rely'], tracer_data['relz'], size=1, color='magenta', edgecolor=None)
             #del image
             gc.collect()
             ax1.set_aspect('equal')
@@ -233,6 +244,8 @@ while fit < no_frames:
             ax2.set_ylim(ylim)
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+            if os.path.isfile(tracer_file):
+                ax1.scatter(tracer_data['relx'], tracer_data['relz'], size=1, color='magenta', edgecolor=None)
             #del image
             gc.collect()
             ax2.set_aspect('equal')
@@ -300,6 +313,8 @@ while fit < no_frames:
             ax4.set_ylim(ylim)
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+            if os.path.isfile(tracer_file):
+                ax1.scatter(tracer_data['relx'], tracer_data['rely'], size=1, color='magenta', edgecolor=None)
             #del image
             gc.collect()
             ax4.set_aspect('equal')

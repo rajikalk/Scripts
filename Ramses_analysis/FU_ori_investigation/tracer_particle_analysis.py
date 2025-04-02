@@ -106,6 +106,7 @@ if args.make_pickle_files == "True":
             relz = dd['particle_position_z'][accreted_inds].in_units('au') - particle_position[2].in_units('au')
             
             write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
+            
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
             file.close()
