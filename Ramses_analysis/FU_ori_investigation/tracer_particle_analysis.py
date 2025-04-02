@@ -95,6 +95,10 @@ if args.make_pickle_files == "True":
             rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
             relz = (dd['particle_position_z'][accreted_inds].value - pp_code[2].value)*scale_l
             
+            if size == 1:
+                import pdb
+                pdb.set_trace()
+            
             write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
             
             file = open(pickle_file, 'wb')
