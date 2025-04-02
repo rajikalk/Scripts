@@ -178,6 +178,8 @@ while fit < no_frames:
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
+                import pdb
+                pdb.set_trace()
                 ax1.scatter(tracer_data['rely'], tracer_data['relz'], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
