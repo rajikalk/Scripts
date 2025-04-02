@@ -178,9 +178,9 @@ while fit < no_frames:
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
-                import pdb
-                pdb.set_trace()
-                ax1.scatter(tracer_data['rely'], tracer_data['relz'], marker='.', s=1, c='magenta', edgecolors=None)
+                depth_lim = args_dict['xlim']
+                plot_inds = np.where((tracer_data['relx'].value>args_dict['xlim'][0])&(tracer_data['relx'].value<args_dict['xlim'][1]))[0]
+                ax1.scatter(tracer_data['rely'][plot_inds], tracer_data['relz'][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
             ax1.set_aspect('equal')
@@ -247,6 +247,8 @@ while fit < no_frames:
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
+                depth_lim = args_dict['xlim']
+                plot_inds = np.where((tracer_data['rely'].value>args_dict['xlim'][0])&(tracer_data['rely'].value<args_dict['xlim'][1]))[0]
                 ax1.scatter(tracer_data['relx'], tracer_data['relz'], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
@@ -316,6 +318,8 @@ while fit < no_frames:
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
+                depth_lim = args_dict['xlim']
+                plot_inds = np.where((tracer_data['relz'].value>args_dict['xlim'][0])&(tracer_data['relz'].value<args_dict['xlim'][1]))[0]
                 ax1.scatter(tracer_data['relx'], tracer_data['rely'], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
