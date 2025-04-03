@@ -15,6 +15,7 @@ def parse_inputs():
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-in_pickle","--input_pickle", default='/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl')
+    parser.add_argument("-end_time", "--end_burst_time", type=float)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("files", nargs='*')
@@ -31,19 +32,25 @@ if rank == 0:
 #Get input and output directories
 args = parse_inputs()
 
-time_bounds = [[5575, 5700], [6570, 6750], [7290, 7350], [7850, 7900]]
+time_bounds = [[5575, 5700], [6570, 6720], [7290, 7365], [7850, 7900]]
 
 #Define relevant directories
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
 if os.path.exists(save_dir) == False:
     os.makedirs(save_dir)
+    
+if args.end_burst_time != None:
+    end_time = args.end_burst_time
+else:
+    event_id = input_dir.split('Event_')[-1][0] - 2
+    end_time = time_bounds[event_id][-1]
 
 sys.stdout.flush()
 CW.Barrier()
 
 if args.make_pickle_files == "True":
-    usable_files = sorted(glob.glob(input_dir+"*/info*.txt"))
+    files = sorted(glob.glob(input_dir+"*/info*.txt"))
 
     sys.stdout.flush()
     CW.Barrier()
@@ -63,7 +70,9 @@ if args.make_pickle_files == "True":
     del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     
     #Get accreted tracer particle IDS
-    ds = yt.load(usable_files[-1])
+    last_file = mym.find_files([], files, sink_form_time, sink_id, verbatim=False)
+    usable_files = files[:files.index(last_file[0])+1]
+    ds = yt.load(last_file[0])
     dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
     accreted_inds = np.where(dd['particle_mass'] == min_mass)[0]
