@@ -70,13 +70,22 @@ if args.make_pickle_files == "True":
     del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     
     #Get accreted tracer particle IDS
-    last_file = mym.find_files([], files, sink_form_time, sink_id, verbatim=False)
-    usable_files = files[:files.index(last_file[0])+1]
-    ds = yt.load(last_file[0])
+    end_burst_file = mym.find_files([], files, sink_form_time, sink_id, verbatim=False)[0]
+    usable_files = files[:files.index(end_burst_file)+1]
+    ds = yt.load(end_burst_file)
     dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
-    accreted_inds = np.where(dd['particle_mass'] == min_mass)[0]
-    accreted_ids = dd['particle_identity'][accreted_inds]
+    accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
+    accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+    
+    end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
+    ds = yt.load(end_sim_file)
+    dd = ds.all_data()
+    accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
+    accreted_ids_all = dd['particle_identity'][accreted_inds_burst]
+    
+    accrete_ids_other = yt.YTArray(list(set(accreted_ids_all) - set(accreted_ids_burst)), '')
+    not_accreted_ids = yt.YTArray(list(set(dd['particle_identity']) - set(accreted_ids_all)), '')
     
     sys.stdout.flush()
     CW.Barrier()
@@ -101,13 +110,29 @@ if args.make_pickle_files == "True":
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
             
-            accreted_inds = np.in1d(dd['particle_identity'].value, accreted_ids.value).nonzero()[0]
+            accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]
+            accrete_inds_other = np.in1d(dd['particle_identity'].value, accrete_ids_other.value).nonzero()[0]
+            not_accreted_inds = np.in1d(dd['particle_identity'].value, not_accreted_ids.value).nonzero()[0]
             
-            relx = (dd['particle_position_x'][accreted_inds].value - pp_code[0].value)*scale_l
-            rely = (dd['particle_position_y'][accreted_inds].value - pp_code[1].value)*scale_l
-            relz = (dd['particle_position_z'][accreted_inds].value - pp_code[2].value)*scale_l
+            relx = (dd['particle_position_x'][accreted_inds_burst].value - pp_code[0].value)*scale_l
+            rely = (dd['particle_position_y'][accreted_inds_burst].value - pp_code[1].value)*scale_l
+            relz = (dd['particle_position_z'][accreted_inds_burst].value - pp_code[2].value)*scale_l
             
-            write_dict = {'time':time_val, 'relx':relx, 'rely':rely, 'relz':relz}
+            burst_positions = [relx, rely, relz]
+            
+            relx = (dd['particle_position_x'][accrete_inds_other].value - pp_code[0].value)*scale_l
+            rely = (dd['particle_position_y'][accrete_inds_other].value - pp_code[1].value)*scale_l
+            relz = (dd['particle_position_z'][accrete_inds_other].value - pp_code[2].value)*scale_l
+            
+            other_positions = [relx, rely, relz]
+            
+            relx = (dd['particle_position_x'][not_accreted_inds].value - pp_code[0].value)*scale_l
+            rely = (dd['particle_position_y'][not_accreted_inds].value - pp_code[1].value)*scale_l
+            relz = (dd['particle_position_z'][not_accreted_inds].value - pp_code[2].value)*scale_l
+            
+            not_accreted_positions = [relx, rely, relz]
+            
+            write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions}
             
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
