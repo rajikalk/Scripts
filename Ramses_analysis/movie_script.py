@@ -613,9 +613,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
