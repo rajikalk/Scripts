@@ -61,7 +61,7 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
-time_bounds = [[3770, 4950],[5575, 5700], [6570, 6720], [7290, 7365], [7850, 7900]]
+time_bounds = [[3770, 4950],[5575, 5700], [6570, 6730], [7290, 7340], [7850, 7900]]
 
 
 file_open = open(pickle_file, 'rb')
@@ -85,10 +85,10 @@ for t_bound in time_bounds:
     axs.flatten()[e_it].tick_params(axis='both', direction='in')
     
     ax2 = axs.flatten()[e_it].twinx()
-    ax2.semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
+    ax2.plot(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
     ax2.set_ylabel('Separation (AU)')
     
-axs.flatten()[4].set_ylabel('Time (yr)', size=font_size)
+axs.flatten()[4].set_xlabel('Time (yr)', size=font_size)
     
 plt.savefig('suppression_events'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 print("plot suppressino events")
