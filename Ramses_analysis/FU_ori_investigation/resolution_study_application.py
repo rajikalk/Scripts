@@ -49,7 +49,7 @@ else:
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
 
-label = ["3.15AU", "1.57AU", "0.79AU", "0.39AU"]
+label = ["$\Delta x=3.15\,\mathrm{AU}", "$\Delta x=1.57AU\,\mathrm{AU}", "$\Delta x=0.79AU\,\mathrm{AU}", "$\Delta x=0.39AU\,\mathrm{AU}"]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -92,7 +92,7 @@ for pick_file in pickle_files:
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
+            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls="--")
         else:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
@@ -101,7 +101,7 @@ for pick_file in pickle_files:
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
+            axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls="--")
         else:
             axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
@@ -118,7 +118,7 @@ for pick_file in pickle_files:
     axs.flatten()[2].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[2].set_ylabel('Separation (au)', size=font_size)
     #axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
-    axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
+    axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle=':')
     axs.flatten()[2].set_xlabel('Time (yr)', size=font_size)
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     #axs.flatten()[1].set_ylim()
