@@ -109,7 +109,7 @@ if args.make_pickle_files == "True":
 
     file_int = -1
     no_files = len(usable_files)
-    pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl")
+    pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     for fn in yt.parallel_objects(usable_files, njobs=int(size)):
         ds = yt.load(fn, units_override=units_override)
         time_val = ds.current_time.in_units('yr') - sink_form_time
