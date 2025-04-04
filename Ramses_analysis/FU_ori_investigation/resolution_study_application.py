@@ -95,7 +95,7 @@ for pick_file in pickle_files:
             axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
     axs.flatten()[0].legend(loc='best', fontsize=font_size)
-    axs.flatten()[0].ylim(lower=0)
+    axs.flatten()[0].set_ylim(bottom=0)
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:

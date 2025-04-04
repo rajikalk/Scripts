@@ -43,7 +43,7 @@ if os.path.exists(save_dir) == False:
 if args.end_burst_time != None:
     end_time = args.end_burst_time
 else:
-    event_id = input_dir.split('Event_')[-1][0] - 2
+    event_id = int(input_dir.split('Event_')[-1][0]) - 2
     end_time = time_bounds[event_id][-1]
 
 sys.stdout.flush()
