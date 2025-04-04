@@ -184,7 +184,7 @@ while fit < no_frames:
                 ax1.scatter(tracer_data['not_accreted_positions'][1][plot_inds], tracer_data['not_accreted_positions'][2][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['other_positions'][0].value>depth_lim[0])&(tracer_data['other_positions'][0].value<depth_lim[1]))[0]
-                ax1.scatter(tracer_data['other_positions'][1][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='darkorchid', edgecolors=None)
+                ax1.scatter(tracer_data['other_positions'][1][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['burst_positions'][0].value>depth_lim[0])&(tracer_data['burst_positions'][0].value<depth_lim[1]))[0]
                 ax1.scatter(tracer_data['burst_positions'][1][plot_inds], tracer_data['burst_positions'][2][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
@@ -261,7 +261,7 @@ while fit < no_frames:
                 ax2.scatter(tracer_data['not_accreted_positions'][0][plot_inds], tracer_data['not_accreted_positions'][2][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['other_positions'][1].value>depth_lim[0])&(tracer_data['other_positions'][1].value<depth_lim[1]))[0]
-                ax2.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='darkorchid', edgecolors=None)
+                ax2.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['burst_positions'][1].value>depth_lim[0])&(tracer_data['burst_positions'][1].value<depth_lim[1]))[0]
                 ax2.scatter(tracer_data['burst_positions'][0][plot_inds], tracer_data['burst_positions'][2][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
@@ -339,7 +339,7 @@ while fit < no_frames:
                 ax4.scatter(tracer_data['not_accreted_positions'][0][plot_inds], tracer_data['not_accreted_positions'][1][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['other_positions'][2].value>depth_lim[0])&(tracer_data['other_positions'][2].value<depth_lim[1]))[0]
-                ax4.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][1][plot_inds], marker='.', s=1, c='darkorchid', edgecolors=None)
+                ax4.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][1][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
                 
                 plot_inds = np.where((tracer_data['burst_positions'][2].value>depth_lim[0])&(tracer_data['burst_positions'][2].value<depth_lim[1]))[0]
                 ax4.scatter(tracer_data['burst_positions'][0][plot_inds], tracer_data['burst_positions'][1][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
