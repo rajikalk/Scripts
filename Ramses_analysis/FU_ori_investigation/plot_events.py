@@ -88,7 +88,7 @@ for t_bound in time_bounds:
     ax2.semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
     ax2.set_ylabel('Separation (AU)')
     
-axs.flatten()[e_it].set_ylabel('Time (yr)', size=font_size)
+axs.flatten()[4].set_ylabel('Time (yr)', size=font_size)
     
 plt.savefig('suppression_events'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 print("plot suppressino events")
