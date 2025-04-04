@@ -8,6 +8,7 @@ import sys
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import my_ramses_module as mym
 
 def parse_inputs():
     import argparse
@@ -70,7 +71,7 @@ if args.make_pickle_files == "True":
     del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     
     #Get accreted tracer particle IDS
-    end_burst_file = mym.find_files([], files, sink_form_time, sink_id, verbatim=False)[0]
+    end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
     usable_files = files[:files.index(end_burst_file)+1]
     ds = yt.load(end_burst_file)
     dd = ds.all_data()
