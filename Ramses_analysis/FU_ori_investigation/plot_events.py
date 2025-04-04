@@ -64,7 +64,7 @@ plt.subplots_adjust(wspace=0.0)
 time_bounds = [[3770, 4950],[5575, 5700], [6570, 6720], [7290, 7365], [7850, 7900]]
 
 
-file_open = open(pick_file, 'rb')
+file_open = open(pickle_file, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
