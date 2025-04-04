@@ -92,7 +92,7 @@ for pick_file in pickle_files:
         if part == 0:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
         else:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
+            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
     axs.flatten()[0].legend(loc='best', fontsize=font_size)
     axs.flatten()[0].set_ylim(bottom=0)

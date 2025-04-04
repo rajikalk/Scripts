@@ -9,6 +9,7 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
+import gc
 
 def parse_inputs():
     import argparse
@@ -69,6 +70,7 @@ if args.make_pickle_files == "True":
     particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
     file_open.close()
     del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
+    gc.collect()
     
     #Get accreted tracer particle IDS
     end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
@@ -79,6 +81,7 @@ if args.make_pickle_files == "True":
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
     del dd
+    gc.collect()
     
     end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
     ds = yt.load(end_sim_file)
@@ -132,6 +135,7 @@ if args.make_pickle_files == "True":
             rely = (dd['particle_position_y'][not_accreted_inds].value - pp_code[1].value)*scale_l
             relz = (dd['particle_position_z'][not_accreted_inds].value - pp_code[2].value)*scale_l
             del dd
+            gc.collect()
             
             not_accreted_positions = [relx, rely, relz]
             
