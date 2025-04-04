@@ -136,6 +136,15 @@ while fit < no_frames:
             #del pickle_file, simfo, velz, file
             gc.collect()
             
+            if os.path.isfile(tracer_file):
+                depth_lim = args_dict['xlim']
+                
+                plot_inds_burst = np.where((tracer_data['burst_positions'][0].value>depth_lim[0])&(tracer_data['burst_positions'][0].value<depth_lim[1])&(tracer_data['burst_positions'][1].value>depth_lim[0])&(tracer_data['burst_positions'][1].value<depth_lim[1])&(tracer_data['burst_positions'][2].value>depth_lim[0])&(tracer_data['burst_positions'][2].value<depth_lim[1]))[0]
+                
+                plot_inds_other = np.where((tracer_data['other_positions'][0].value>depth_lim[0])&(tracer_data['other_positions'][0].value<depth_lim[1])&(tracer_data['other_positions'][1].value>depth_lim[0])&(tracer_data['other_positions'][1].value<depth_lim[1])&(tracer_data['other_positions'][2].value>depth_lim[0])&(tracer_data['other_positions'][2].value<depth_lim[1]))[0]
+                
+                plot_inds_not_accreted = np.where((tracer_data['not_accreted_positions'][0].value>depth_lim[0])&(tracer_data['not_accreted_positions'][0].value<depth_lim[1])&(tracer_data['not_accreted_positions'][1].value>depth_lim[0])&(tracer_data['not_accreted_positions'][1].value<depth_lim[1])&(tracer_data['not_accreted_positions'][2].value>depth_lim[0])&(tracer_data['not_accreted_positions'][2].value<depth_lim[1]))[0]
+            
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
             elif len(part_info['particle_tag']) == 1:
@@ -178,16 +187,11 @@ while fit < no_frames:
             
             plot = ax1.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
-                depth_lim = args_dict['xlim']
+                ax1.scatter(tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], tracer_data['not_accreted_positions'][2][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.5)
                 
-                plot_inds = np.where((tracer_data['not_accreted_positions'][0].value>depth_lim[0])&(tracer_data['not_accreted_positions'][0].value<depth_lim[1]))[0]
-                ax1.scatter(tracer_data['not_accreted_positions'][1][plot_inds], tracer_data['not_accreted_positions'][2][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
+                ax1.scatter(tracer_data['other_positions'][1][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
-                plot_inds = np.where((tracer_data['other_positions'][0].value>depth_lim[0])&(tracer_data['other_positions'][0].value<depth_lim[1]))[0]
-                ax1.scatter(tracer_data['other_positions'][1][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
-                
-                plot_inds = np.where((tracer_data['burst_positions'][0].value>depth_lim[0])&(tracer_data['burst_positions'][0].value<depth_lim[1]))[0]
-                ax1.scatter(tracer_data['burst_positions'][1][plot_inds], tracer_data['burst_positions'][2][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
+                ax1.scatter(tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
             
             #del image
             gc.collect()
@@ -255,16 +259,11 @@ while fit < no_frames:
             
             plot = ax2.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
-                depth_lim = args_dict['xlim']
+                ax1.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][2][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.5)
                 
-                plot_inds = np.where((tracer_data['not_accreted_positions'][1].value>depth_lim[0])&(tracer_data['not_accreted_positions'][1].value<depth_lim[1]))[0]
-                ax2.scatter(tracer_data['not_accreted_positions'][0][plot_inds], tracer_data['not_accreted_positions'][2][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
+                ax1.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
-                plot_inds = np.where((tracer_data['other_positions'][1].value>depth_lim[0])&(tracer_data['other_positions'][1].value<depth_lim[1]))[0]
-                ax2.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][2][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
-                
-                plot_inds = np.where((tracer_data['burst_positions'][1].value>depth_lim[0])&(tracer_data['burst_positions'][1].value<depth_lim[1]))[0]
-                ax2.scatter(tracer_data['burst_positions'][0][plot_inds], tracer_data['burst_positions'][2][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
+                ax1.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
             ax2.set_aspect('equal')
@@ -333,16 +332,11 @@ while fit < no_frames:
            
             plot = ax4.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
             if os.path.isfile(tracer_file):
-                depth_lim = args_dict['xlim']
+                ax1.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.5)
                 
-                plot_inds = np.where((tracer_data['not_accreted_positions'][2].value>depth_lim[0])&(tracer_data['not_accreted_positions'][2].value<depth_lim[1]))[0]
-                ax4.scatter(tracer_data['not_accreted_positions'][0][plot_inds], tracer_data['not_accreted_positions'][1][plot_inds], marker='.', s=1, c='blue', edgecolors=None)
+                ax1.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][1][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
-                plot_inds = np.where((tracer_data['other_positions'][2].value>depth_lim[0])&(tracer_data['other_positions'][2].value<depth_lim[1]))[0]
-                ax4.scatter(tracer_data['other_positions'][0][plot_inds], tracer_data['other_positions'][1][plot_inds], marker='.', s=1, c='orange', edgecolors=None)
-                
-                plot_inds = np.where((tracer_data['burst_positions'][2].value>depth_lim[0])&(tracer_data['burst_positions'][2].value<depth_lim[1]))[0]
-                ax4.scatter(tracer_data['burst_positions'][0][plot_inds], tracer_data['burst_positions'][1][plot_inds], marker='.', s=1, c='magenta', edgecolors=None)
+                ax1.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
             #del image
             gc.collect()
             ax4.set_aspect('equal')
