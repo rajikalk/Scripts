@@ -49,7 +49,7 @@ else:
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
 
-label = ["$\Delta x=3.15\,\mathrm{AU}", "$\Delta x=1.57AU\,\mathrm{AU}", "$\Delta x=0.79AU\,\mathrm{AU}", "$\Delta x=0.39AU\,\mathrm{AU}"]
+label = ["$\Delta x=3.15\,\mathrm{AU}$", "$\Delta x=1.57AU\,\mathrm{AU}$", "$\Delta x=0.79AU\,\mathrm{AU}$", "$\Delta x=0.39AU\,\mathrm{AU}$"]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
