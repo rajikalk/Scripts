@@ -40,7 +40,7 @@ def parse_inputs():
     
     
 #================================================================================
-
+args = parse_inputs()
 if args.personal_computer == 'True':
     pickle_files = ["/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L18.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L19.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L21.pkl"]
 else:
