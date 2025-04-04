@@ -74,7 +74,8 @@ if args.make_pickle_files == "True":
     
     #Get accreted tracer particle IDS
     end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
-    usable_files = files[:files.index(end_burst_file)+1]
+    end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+    usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_burst_file)
     dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
