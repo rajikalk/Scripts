@@ -97,7 +97,7 @@ for pick_file in pickle_files:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
     axs.flatten()[0].legend(loc='best', fontsize=font_size)
-    axs.flatten()[0].set_ylim(bottom=0)
+    axs.flatten()[0].set_ylim(bottom=0.03)
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
@@ -106,7 +106,7 @@ for pick_file in pickle_files:
             axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
     #axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
-    axs.flatten()[1].set_ylim(bottom=1.e-9)
+    axs.flatten()[1].set_ylim([1.e-9, 1.e-4])
     print("plotted Accretion rate")
     
     '''
