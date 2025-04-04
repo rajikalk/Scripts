@@ -78,15 +78,15 @@ for t_bound in time_bounds:
     t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
     t_end = np.argmin(abs(np.array(particle_data['time']) - t_end_yr))
     
+    ax2 = axs.flatten()[e_it].twinx()
+    ax2.plot(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
+    ax2.set_ylabel('Separation (AU)')
     #axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[0])
     axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[1])
     axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot$/yr)', size=font_size)
     axs.flatten()[e_it].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[e_it].tick_params(axis='both', direction='in')
-    
-    ax2 = axs.flatten()[e_it].twinx()
-    ax2.plot(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
-    ax2.set_ylabel('Separation (AU)')
+
     
 axs.flatten()[4].set_xlabel('Time (yr)', size=font_size)
     
