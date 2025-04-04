@@ -57,7 +57,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.8), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*1.7), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -96,7 +96,7 @@ for pick_file in pickle_files:
         else:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
-    axs.flatten()[0].legend(loc=(0.5, 0.15), fontsize=font_size)
+    axs.flatten()[0].legend(loc=(0.5, 0.14), fontsize=font_size)
     axs.flatten()[0].set_ylim(bottom=0.03)
     axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
     
