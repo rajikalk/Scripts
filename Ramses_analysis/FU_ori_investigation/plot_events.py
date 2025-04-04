@@ -55,19 +55,19 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-
-plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*2.5))#, sharey=True)
-plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
-
-time_bounds = [[3770, 4950],[5575, 5700], [6570, 6730], [7290, 7340], [7850, 7900]]
-
 
 file_open = open(pickle_file, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*2.5))#, sharey=True)
+plt.subplots_adjust(wspace=0.0)
+
+time_bounds = [[3810, 4950],[5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
+burst_bounds = [[], [[5679, 5689]], [[6625, 6635]], [[7309, 7319], [7327, 7337]], [[7858, 7868]]]
 
 e_it = -1
 for t_bound in time_bounds:
@@ -81,15 +81,22 @@ for t_bound in time_bounds:
     ax2 = axs.flatten()[e_it].twinx()
     ax2.plot(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color='k', ls="--")
     ax2.set_ylabel('Separation (AU)')
+    ax2.tick_params(axis='both', direction='in', top=True)
     #axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[0])
     axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[1])
+    
+    for burst in burst_bounds[e_it]:
+        axs.flatten()[e_it].axvspan(burst[0], burst[1], alpha=0.25, color='b')
+    
     axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot$/yr)', size=font_size)
     #axs.flatten()[e_it].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
     axs.flatten()[e_it].set_xlim([t_start_yr,t_end_yr])
-    axs.flatten()[e_it].tick_params(axis='both', direction='in')
-    axs.flatten()[e_it].set_title("Event "+str(e_it+1), labelpad=-14)
+    axs.flatten()[e_it].tick_params(axis='both', direction='in', top=True)
+    if e_it == 0:
+        axs.flatten()[e_it].set_title("Event "+str(e_it+1), x=0.33, y=1.0, pad=-14)
+    else:
+        axs.flatten()[e_it].set_title("Event "+str(e_it+1), y=1.0, pad=-14)
 
-    
 axs.flatten()[4].set_xlabel('Time (yr)', size=font_size)
     
 plt.savefig('suppression_events'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
