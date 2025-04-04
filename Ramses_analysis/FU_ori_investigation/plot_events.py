@@ -78,7 +78,8 @@ for t_bound in time_bounds:
     t_start = np.argmin(abs(np.array(particle_data['time']) - t_start_yr))
     t_end = np.argmin(abs(np.array(particle_data['time']) - t_end_yr))
     
-    axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part])
+    axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[0])
+    axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[1])
     axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot/yr$)', size=font_size)
     axs.flatten()[e_it].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[e_it].tick_params(axis='both', direction='in')
