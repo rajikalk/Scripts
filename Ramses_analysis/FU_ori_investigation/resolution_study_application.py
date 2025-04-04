@@ -33,7 +33,7 @@ def parse_inputs():
     parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
     parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
-    parser.add_arguemtn("-pc", "--personal_computer", default='False')
+    parser.add_argument("-pc", "--personal_computer", default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
