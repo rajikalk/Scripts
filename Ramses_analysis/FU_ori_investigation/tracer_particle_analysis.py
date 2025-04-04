@@ -91,6 +91,8 @@ if args.make_pickle_files == "True":
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
     not_accreted_ids = yt.YTArray(list(set(dd['particle_identity'].value) - set(accreted_ids_all.value)), '')
+    del dd
+    gc.collect()
     
     sys.stdout.flush()
     CW.Barrier()
