@@ -18,7 +18,7 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
-    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=4)
+    parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float, default=10)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -88,7 +88,7 @@ if args.make_pickle_files == "True":
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
     dx_min = np.min(dd['dx'].in_units('au'))
-    sphere_radius = args.sphere_radius_cells*dx_min
+    sphere_radius = yt.YTQuantity(args.sphere_radius_cells, 'au')
     r_acc = 4*dx_min
     if args.sink_number == None:
         sink_id = np.argmin(dd['sink_particle_speed'])
@@ -125,7 +125,13 @@ if args.make_pickle_files == "True":
             
             #Get secondary position
             primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
-            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            secondary_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            
+            measuring_sphere_primary = ds.sphere(particle_position.in_units('au'), primary_position)
+            measuring_sphere_secondary = ds.sphere(particle_position.in_units('au'), secondary_position)
+            
+            UPDATE FOR MEASURING KEPLERIAN MASS
+            
             separation = np.sqrt(np.sum((particle_position - primary_position)**2))
             accretion_rate = dd['sink_particle_accretion_rate'][sink_id].in_units('msun/yr')
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])

@@ -40,7 +40,9 @@ def parse_inputs():
     
 #================================================================================
 
-pickle_files = ["/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L18.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L19.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L21.pkl"]#, "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20/Level_21/particle_data.pkl"]
+pickle_files = ["/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L18.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L19.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl", "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L21.pkl"]
+
+#pickle_files = ["/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L18.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L19.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl", "/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L21.pkl"]#, "/groups/astro/rlk/rlk/FU_ori_investigation/Accretion_evolution/Sink_45/Level_19/Restart/Level_20/Level_21/particle_data.pkl"]
 
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
@@ -53,7 +55,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(single_col_width, single_col_width*1.4), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
@@ -85,16 +87,24 @@ for pick_file in pickle_files:
     mass = yt.YTArray(particle_data['mass']).in_units('g')
     L_acc = f_acc * (mass * m_dot * yt.units.gravitational_constant_cgs)/radius.in_units('cm')
     L_tot = L_acc.in_units('Lsun')
-
+    
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit])
+            axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
         else:
-            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit])
-    axs.flatten()[0].set_ylabel('Accretion rate (Msun/yr)', size=font_size)
+            axs.flatten()[0].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
+    axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
+    axs.flatten()[0].legend(loc='best', fontsize=font_size)
+    axs.flatten()[0].ylim(lower=0)
+    
+    for part in range(len(L_tot[t_start:t_end].T)):
+        if part == 0:
+            axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], label=label[pickle_files.index(pick_file)], color=proj_colours[cit], ls=":")
+        else:
+            axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
+    axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
     #axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
-    axs.flatten()[0].set_ylim(bottom=1.e-9)
-    axs.flatten()[0].legend(loc='lower left')
+    axs.flatten()[1].set_ylim(bottom=1.e-9)
     print("plotted Accretion rate")
     
     '''
@@ -103,12 +113,12 @@ for pick_file in pickle_files:
     axs.flatten()[1].set_ylabel('Accretion rate (Msun/yr)')
     axs.flatten()[1].set_ylim(bottom=1.e-9)
     '''
-    axs.flatten()[1].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
-    axs.flatten()[1].set_ylabel('Separation (au)', size=font_size)
+    axs.flatten()[2].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
+    axs.flatten()[2].set_ylabel('Separation (au)', size=font_size)
     #axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
-    axs.flatten()[1].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
-    axs.flatten()[1].set_xlabel('Time (yr)', size=font_size)
-    axs.flatten()[1].set_xlim([t_start_yr,t_end_yr])
+    axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle='--')
+    axs.flatten()[2].set_xlabel('Time (yr)', size=font_size)
+    axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     #axs.flatten()[1].set_ylim()
     print("plotted separation")
     
