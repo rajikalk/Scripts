@@ -78,15 +78,16 @@ if args.make_pickle_files == "True":
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+    del dd
     
     end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
     ds = yt.load(end_sim_file)
     dd = ds.all_data()
     accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
-    accreted_ids_all = dd['particle_identity'][accreted_inds_burst]
+    accreted_ids_all = dd['particle_identity'][accreted_inds_all]
     
-    accrete_ids_other = yt.YTArray(list(set(accreted_ids_all) - set(accreted_ids_burst)), '')
-    not_accreted_ids = yt.YTArray(list(set(dd['particle_identity']) - set(accreted_ids_all)), '')
+    accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
+    not_accreted_ids = yt.YTArray(list(set(dd['particle_identity'].value) - set(accreted_ids_all.value)), '')
     
     sys.stdout.flush()
     CW.Barrier()
@@ -130,6 +131,7 @@ if args.make_pickle_files == "True":
             relx = (dd['particle_position_x'][not_accreted_inds].value - pp_code[0].value)*scale_l
             rely = (dd['particle_position_y'][not_accreted_inds].value - pp_code[1].value)*scale_l
             relz = (dd['particle_position_z'][not_accreted_inds].value - pp_code[2].value)*scale_l
+            del dd
             
             not_accreted_positions = [relx, rely, relz]
             
