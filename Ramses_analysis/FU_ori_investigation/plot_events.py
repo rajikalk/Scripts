@@ -57,7 +57,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*2), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, single_col_width*2))#, sharey=True)
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
@@ -80,13 +80,15 @@ for t_bound in time_bounds:
     
     axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[0])
     axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[1])
-    axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot/yr$)', size=font_size)
+    axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot$/yr)', size=font_size)
     axs.flatten()[e_it].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[e_it].tick_params(axis='both', direction='in')
     
     ax2 = axs.flatten()[e_it].twinx()
     ax2.semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), ls="--")
     ax2.set_ylabel('Separation (AU)')
+    
+axs.flatten()[e_it].set_ylabel('Time (yr)', size=font_size)
     
 plt.savefig('suppression_events'+str(sink_ind)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 print("plot suppressino events")
