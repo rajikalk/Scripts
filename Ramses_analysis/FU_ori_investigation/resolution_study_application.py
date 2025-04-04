@@ -98,6 +98,7 @@ for pick_file in pickle_files:
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
     axs.flatten()[0].legend(loc=(0.5, 0.15), fontsize=font_size)
     axs.flatten()[0].set_ylim(bottom=0.03)
+    axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
     
     for part in range(len(L_tot[t_start:t_end].T)):
         if part == 0:
@@ -107,6 +108,7 @@ for pick_file in pickle_files:
     axs.flatten()[1].set_ylabel('Accretion rate (M$_\odot$/yr)', size=font_size)
     #axs.flatten()[0].set_title('Sink no ' + str(sink_ind))
     axs.flatten()[1].set_ylim([1.e-9, 1.e-4])
+    axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
     print("plotted Accretion rate")
     
     '''
@@ -121,6 +123,7 @@ for pick_file in pickle_files:
     axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle=':')
     axs.flatten()[2].set_xlabel('Time (yr)', size=font_size)
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
+    axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
     #axs.flatten()[1].set_ylim()
     print("plotted separation")
     
