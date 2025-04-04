@@ -81,7 +81,7 @@ for t_bound in time_bounds:
     axs.flatten()[e_it].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['mdot'][t_start:t_end]).T[part])
     axs.flatten()[e_it].set_ylabel('$\dot \mathrm{M}$ (M$_\odot/yr$)', size=font_size)
     axs.flatten()[e_it].set_xlim([t_start_yr,t_end_yr])
-    axs.flatten()[e_it]tick_params(axis='both', direction='in')
+    axs.flatten()[e_it].tick_params(axis='both', direction='in')
     
     ax2 = axs.flatten()[e_it].twinx()
     ax2.semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), ls="--")
