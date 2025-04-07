@@ -123,7 +123,6 @@ if args.make_pickle_files == "True":
         if arg.sphere_radius_cells == None:
             separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
             sphere_radius = 0.5 * separation.in_units('au')
-            
         
         primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
         secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
@@ -263,6 +262,10 @@ if args.make_plot_figures == "True":
     
     #Plot figure
     axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
+    if args.sphere_radius_cells != None:
+        axs[0].axhline(y=args.sphere_radius_cells, ls='--')
+    else:
+        axs[0].semilogy(particle_data['time'][start_ind:end_ind], 0.5*particle_data['separation'][start_ind:end_ind], ls='--')
     axs[0].set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
     axs[0].set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     axs[0].set_ylabel('Separation (au)')
