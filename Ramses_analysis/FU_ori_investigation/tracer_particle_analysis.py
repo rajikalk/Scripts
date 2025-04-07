@@ -34,7 +34,7 @@ if rank == 0:
 #Get input and output directories
 args = parse_inputs()
 
-time_bounds = [[5575, 5700], [6570, 6720], [7290, 7365], [7850, 7900]]
+time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
 
 #Define relevant directories
 input_dir = sys.argv[1]
@@ -45,7 +45,7 @@ if os.path.exists(save_dir) == False:
 if args.end_burst_time != None:
     end_time = args.end_burst_time
 else:
-    event_id = int(input_dir.split('Event_')[-1][0]) - 2
+    event_id = int(input_dir.split('Event_')[-1][0]) - 1
     end_time = time_bounds[event_id][-1]
 
 sys.stdout.flush()
