@@ -124,8 +124,10 @@ if args.make_pickle_files == "True":
         if args.sphere_radius_cells == None:
             separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
             sphere_radius = 0.5 * separation.in_units('au')
+            '''
             if sphere_radius.value > args.max_radius:
                 sphere_radius = yt.YTQuantity(args.max_radius, 'au')
+            '''
         
         primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
         secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
@@ -158,6 +160,9 @@ if args.make_pickle_files == "True":
         radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
         radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
         radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
+        if size == 1:
+            import pdb
+            pdb.set_trace()
         sign = np.diag(np.dot(sph_radial_vector_unit.in_units('km'), radial_vel_unit.T)).value
         
         rv_mag = radial_vel_mag*sign
