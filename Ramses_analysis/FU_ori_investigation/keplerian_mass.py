@@ -120,7 +120,7 @@ if args.make_pickle_files == "True":
         primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
         secondary_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
         
-        if arg.sphere_radius_cells == None:
+        if args.sphere_radius_cells == None:
             separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
             sphere_radius = 0.5 * separation.in_units('au')
         
