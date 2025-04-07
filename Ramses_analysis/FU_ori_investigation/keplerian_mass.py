@@ -19,6 +19,7 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float)
+    parser.add_argument("-max_rad", "--max_radius", type=float, default=50)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -123,6 +124,8 @@ if args.make_pickle_files == "True":
         if args.sphere_radius_cells == None:
             separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
             sphere_radius = 0.5 * separation.in_units('au')
+            if sphere_radius.value > args.max_radius:
+                sphere_radius = yt.YTQuantity(args.max_radius, 'au')
         
         primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
         secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
