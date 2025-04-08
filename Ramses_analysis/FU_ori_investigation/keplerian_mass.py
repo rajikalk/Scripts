@@ -271,7 +271,7 @@ if args.make_plot_figures == "True":
     if args.sphere_radius_cells != None:
         axs[0].axhline(y=args.sphere_radius_cells, ls='--')
     else:
-        axs[0].semilogy(particle_data['time'][start_ind:end_ind], 0.5 * np.array(particle_data['separation'][start_ind:end_ind]), ls='--')
+        axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['L1'][start_ind:end_ind], ls='--')
     axs[0].set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
     axs[0].set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     axs[0].set_ylabel('Separation (au)')
