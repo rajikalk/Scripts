@@ -241,6 +241,7 @@ if args.make_plot_figures == "True":
     time_arr = []
     Kep_mass_primary = []
     Kep_mass_secondary = []
+    L1_arr = []
     
     pickle_files = sorted(glob.glob(save_dir + "kepl_mass_*.pkl"))
     
@@ -252,11 +253,13 @@ if args.make_plot_figures == "True":
         time_arr = time_arr + save_dict['time']
         Kep_mass_primary = Kep_mass_primary + save_dict['Kep_mass_primary']
         Kep_mass_secondary = Kep_mass_secondary + save_dict['Kep_mass_secondary']
+        L1_arr = L1_arr + save_dict['L1']
         
     sort_inds = np.argsort(time_arr)
     time_arr = np.array(time_arr)[sort_inds]
     Kep_mass_primary = np.array(Kep_mass_primary)[sort_inds]
     Kep_mass_secondary = np.array(Kep_mass_secondary)[sort_inds]
+    L1_arr = np.array(L1_arr)[sort_inds]
     
     start_ind = np.argmin(abs(particle_data['time'] - time_arr[0]))
     end_ind = np.argmin(abs(particle_data['time'] - time_arr[-1]))
@@ -271,7 +274,7 @@ if args.make_plot_figures == "True":
     if args.sphere_radius_cells != None:
         axs[0].axhline(y=args.sphere_radius_cells, ls='--')
     else:
-        axs[0].semilogy(particle_data['time'][start_ind:end_ind], particle_data['L1'][start_ind:end_ind], ls='--')
+        axs[0].semilogy(time_arr, L1_arr, ls='--')
     axs[0].set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
     axs[0].set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     axs[0].set_ylabel('Separation (au)')
