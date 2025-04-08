@@ -19,7 +19,6 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float)
-    parser.add_argument("-use_L1", "--ues_lagrange_point_1", type=str, default=False)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -107,7 +106,7 @@ if args.make_pickle_files == "True":
     sys.stdout.flush()
     CW.Barrier()
     
-    save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[]}
+    save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[]}
 
     file_int = -1
     no_files = len(usable_files)
@@ -121,29 +120,22 @@ if args.make_pickle_files == "True":
         primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
         secondary_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
         
-        if args.sphere_radius_cells == None:
-            separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
-            sphere_radius = 0.5 * separation.in_units('au')
-        
-        
         primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
         secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
         
         primary_mass = dd['sink_particle_mass'][sink_id-1].in_units('g')
         secondary_mass = dd['sink_particle_mass'][sink_id].in_units('g')
-        if size == 1:
-            import pdb
-            pdb.set_trace()
-            
-            '''
-            if sphere_radius.value > args.max_radius:
-                sphere_radius = yt.YTQuantity(args.max_radius, 'au')
-            '''
         
+        if args.sphere_radius_cells == None:
+            separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
+            #sphere_radius = 0.5 * separation.in_units('au')
+            
+            sphere_radius_1 = separation.in_units('au')/(np.sqrt(secondary_mass/primary_mass) +1)
+            sphere_radius_2 = separation.in_units('au') - sphere_radius_1
         del dd
         
-        measuring_sphere_primary = ds.sphere(primary_position.in_units('au'), sphere_radius)
-        measuring_sphere_secondary = ds.sphere(secondary_position.in_units('au'), sphere_radius)
+        measuring_sphere_primary = ds.sphere(primary_position.in_units('au'), sphere_radius_1)
+        measuring_sphere_secondary = ds.sphere(secondary_position.in_units('au'), sphere_radius_2)
         
         #UPDATE FOR MEASURING KEPLERIAN MASS
         #For primary:
@@ -219,6 +211,7 @@ if args.make_pickle_files == "True":
         save_dict['time'].append(time_val)
         save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
         save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
+        save_dict['L1'].append(sphere_radius_1)
         
         file = open(pickle_file, 'wb')
         pickle.dump((save_dict), file)
