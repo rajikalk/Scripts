@@ -81,6 +81,9 @@ if args.make_pickle_files == "True":
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+    if size == 1:
+        import pdb
+        pdb.set_trace()
     del dd
     gc.collect()
     
