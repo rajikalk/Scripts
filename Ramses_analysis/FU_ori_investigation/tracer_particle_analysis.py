@@ -51,6 +51,16 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+units_override.update({"mass_unit":(2998,"Msun")})
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+scale_l = yt.YTQuantity(4, 'pc').in_units('au')
+scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
+mym.set_units(units_override)
+
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
 
@@ -58,8 +68,6 @@ if args.make_pickle_files == "True":
     CW.Barrier()
 
     #Define units to override:
-    scale_l = yt.YTQuantity(4, 'pc').in_units('au')
-    scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
     if rank == 0:
         print("set units")
 
@@ -81,9 +89,6 @@ if args.make_pickle_files == "True":
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
-    if size == 1:
-        import pdb
-        pdb.set_trace()
     del dd
     gc.collect()
     
