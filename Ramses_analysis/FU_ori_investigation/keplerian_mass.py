@@ -173,6 +173,10 @@ if args.make_pickle_files == "True":
         near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
         near_kep_mass_primary = np.sum(measuring_sphere_primary['mass'][near_kep_inds].in_units('msun'))
         
+        if size==1:
+            import pdb
+            pdb.set_trace()
+        
         #Secondary mass
         sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
         sph_dy = measuring_sphere_secondary['y'].in_units('cm') - secondary_position[1].in_units('cm')
