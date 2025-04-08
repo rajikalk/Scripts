@@ -19,7 +19,7 @@ def parse_inputs():
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
     parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("-sphere_radius", "--sphere_radius_cells", type=float)
-    parser.add_argument("-max_rad", "--max_radius", type=float, default=50)
+    parser.add_argument("-use_L1", "--ues_lagrange_point_1", type=str, default=False)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -124,16 +124,22 @@ if args.make_pickle_files == "True":
         if args.sphere_radius_cells == None:
             separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
             sphere_radius = 0.5 * separation.in_units('au')
-            '''
-            if sphere_radius.value > args.max_radius:
-                sphere_radius = yt.YTQuantity(args.max_radius, 'au')
-            '''
+        
         
         primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
         secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
         
         primary_mass = dd['sink_particle_mass'][sink_id-1].in_units('g')
         secondary_mass = dd['sink_particle_mass'][sink_id].in_units('g')
+        if size == 1:
+            import pdb
+            pdb.set_trace()
+            
+            '''
+            if sphere_radius.value > args.max_radius:
+                sphere_radius = yt.YTQuantity(args.max_radius, 'au')
+            '''
+        
         del dd
         
         measuring_sphere_primary = ds.sphere(primary_position.in_units('au'), sphere_radius)
@@ -272,7 +278,7 @@ if args.make_plot_figures == "True":
     if args.sphere_radius_cells != None:
         axs[0].axhline(y=args.sphere_radius_cells, ls='--')
     else:
-        axs[0].semilogy(particle_data['time'][start_ind:end_ind], 0.5*particle_data['separation'][start_ind:end_ind], ls='--')
+        axs[0].semilogy(particle_data['time'][start_ind:end_ind], 0.5 * np.array(particle_data['separation'][start_ind:end_ind]), ls='--')
     axs[0].set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
     axs[0].set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     axs[0].set_ylabel('Separation (au)')
