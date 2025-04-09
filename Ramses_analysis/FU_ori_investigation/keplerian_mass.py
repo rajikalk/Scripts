@@ -10,6 +10,10 @@ import my_ramses_module as mym
 import my_ramses_fields_short as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
+import matplotlib.pyplot as plt
+#plt.rcParams['figure.dpi'] = 300
+from matplotlib.colors import LogNorm
+cm = plt.cm.get_cmap('seismic')
 
 def parse_inputs():
     import argparse
@@ -176,6 +180,16 @@ if args.make_pickle_files == "True":
         if size==1:
             import pdb
             pdb.set_trace()
+        bin_size = 1
+        rad_bins_primary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
+        bin_centers_primary = (rad_bins_primary[1:] + rad_bins_primary[:-1])/2
+        rit = 1
+        Mass_profile_primary = []
+        while rit < len(rad_bins_primary):
+            bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_primary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_primary[rit]))[0]
+            m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+            Mass_profile_primary.append(m_shell)
+            rit = rit + 1
         
         #Secondary mass
         sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
@@ -212,6 +226,30 @@ if args.make_pickle_files == "True":
         near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
         near_kep_mass_secondary = np.sum(measuring_sphere_secondary['mass'][near_kep_inds].in_units('msun'))
         
+        rad_bins_secondary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
+        bin_centers_secondary = (rad_bins_secondary[1:] + rad_bins_secondary[:-1])/2
+        rit = 1
+        Mass_profile_secondary = []
+        while rit < len(rad_bins_secondary):
+            bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_secondary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_secondary[rit]))[0]
+            m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+            Mass_profile_secondary.append(m_shell)
+            rit = rit + 1
+            
+        frame_name = save_dir + "movie_frame_" + ("%06d" % usable_files.index(fn)) + ".jpg"
+        xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
+        ymin = np.min([np.min(Mass_profile_primary), np.min(Mass_profile_secondary)])
+        ymax = np.max([np.max(Mass_profile_primary), np.max(Mass_profile_secondary)])
+        plt.clf()
+        plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
+        plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
+        plt.xlim([0, xmax])
+        plt.ylim([ymin, ymax])
+        plt.legend(loc='best')
+        plt.xlabel("Radius (au)")
+        plt.ylabel("Mass (msun)")
+        plt.savefig(frame_name)
+        
         save_dict['time'].append(time_val)
         save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
         save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
@@ -220,16 +258,12 @@ if args.make_pickle_files == "True":
         file = open(pickle_file, 'wb')
         pickle.dump((save_dict), file)
         file.close()
-        print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+        print("wrote file", pickle_file)
 
 sys.stdout.flush()
 CW.Barrier()
 
 if args.make_plot_figures == "True":
-    import matplotlib.pyplot as plt
-    #plt.rcParams['figure.dpi'] = 300
-    from matplotlib.colors import LogNorm
-    cm = plt.cm.get_cmap('seismic')
     
     two_col_width = 7.20472 #inches
     single_col_width = 3.50394 #inches
