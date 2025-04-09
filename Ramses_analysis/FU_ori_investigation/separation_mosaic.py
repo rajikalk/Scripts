@@ -117,15 +117,12 @@ while fit < no_frames:
         rit = 0
     if rank == rit:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
-        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl'):
+        tracer_file = args.in_tracer_data+'/movie_frame_' + ("%06d" % fit) +'.pkl'
+        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(tracer_file):
         
-            tracer_file = args.in_tracer_data+'/movie_frame_' + ("%06d" % fit) +'.pkl'
-            if os.path.isfile(tracer_file):
-                file = open(tracer_file, 'rb')
-                tracer_data = pickle.load(file)
-                file.close()
-            else:
-                print(tracer_file, "doesn't exist")
+            file = open(tracer_file, 'rb')
+            tracer_data = pickle.load(file)
+            file.close()
     
             fig = plt.figure()
             gs = fig.add_gridspec(2, 2, wspace=-0.46, hspace=0)
