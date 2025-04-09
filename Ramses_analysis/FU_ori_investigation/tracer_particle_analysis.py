@@ -129,7 +129,8 @@ if args.make_pickle_files == "True":
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
-            pv_code =
+            particle_velocity = particle_data['secondary_velocity'][t_ind]
+            pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
             accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(dd['particle_identity'].value, accrete_ids_other.value).nonzero()[0]
@@ -142,7 +143,11 @@ if args.make_pickle_files == "True":
             burst_positions = [relx, rely, relz]
             
             #Get burst velocity
-            rel_vx = (dd['particle_velocity_x'][accreted_inds_burst].value*scale_v.in_units('km/s'))
+            rel_vx = (dd['particle_velocity_x'][accreted_inds_burst].value - pv_code[0].value)*scale_v.in_units('km/s')
+            rel_vy = (dd['particle_velocity_y'][accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
+            rel_vz = (dd['particle_velocity_z'][accreted_inds_burst].value - pv_code[2].value)*scale_v.in_units('km/s')
+            
+            burst_velocity = [rel_vx, rel_vy, rel_vz]
             
             relx = (dd['particle_position_x'][accrete_inds_other].value - pp_code[0].value)*scale_l
             rely = (dd['particle_position_y'][accrete_inds_other].value - pp_code[1].value)*scale_l
@@ -158,7 +163,7 @@ if args.make_pickle_files == "True":
             
             not_accreted_positions = [relx, rely, relz]
             
-            write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions}
+            write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions, 'burst_velocity':burst_velocity}
             
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
