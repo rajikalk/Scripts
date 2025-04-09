@@ -128,9 +128,9 @@ if args.update_pickle == 'True':
                         particle_data['particle_tag'].append(tag)
                 pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
                 pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
-                import pdb
-                pdb.set_trace()
+                vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                 particle_data['secondary_position'].append(pos_second)
+                particle_data['secondary_velocity'].append(vel_second)
                 
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
