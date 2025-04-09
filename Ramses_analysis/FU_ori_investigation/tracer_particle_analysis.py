@@ -95,7 +95,7 @@ if args.make_pickle_files == "True":
     gc.collect()
     
     #end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
-    end_sim_file = usable_files[-1]
+    end_sim_file = files[-1]
     usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
     dd = ds.all_data()
