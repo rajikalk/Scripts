@@ -55,7 +55,7 @@ units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "tim
 units_override.update({"mass_unit":(2998,"Msun")})
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
 
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s')         # 0.18 km/s == sound speed
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
@@ -83,7 +83,6 @@ if args.make_pickle_files == "True":
     #Get accreted tracer particle IDS
     end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
     end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
-    usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_burst_file)
     dd = ds.all_data()
     min_mass = (-1*(sink_id+1))
@@ -95,7 +94,9 @@ if args.make_pickle_files == "True":
     del dd
     gc.collect()
     
-    end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
+    #end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
+    end_sim_file = usable_files[-1]
+    usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
     dd = ds.all_data()
     accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
@@ -128,6 +129,7 @@ if args.make_pickle_files == "True":
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
+            pv_code =
             
             accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(dd['particle_identity'].value, accrete_ids_other.value).nonzero()[0]
@@ -136,8 +138,11 @@ if args.make_pickle_files == "True":
             relx = (dd['particle_position_x'][accreted_inds_burst].value - pp_code[0].value)*scale_l
             rely = (dd['particle_position_y'][accreted_inds_burst].value - pp_code[1].value)*scale_l
             relz = (dd['particle_position_z'][accreted_inds_burst].value - pp_code[2].value)*scale_l
-            
+
             burst_positions = [relx, rely, relz]
+            
+            #Get burst velocity
+            rel_vx = (dd['particle_velocity_x'][accreted_inds_burst].value*scale_v.in_units('km/s'))
             
             relx = (dd['particle_position_x'][accrete_inds_other].value - pp_code[0].value)*scale_l
             rely = (dd['particle_position_y'][accrete_inds_other].value - pp_code[1].value)*scale_l
