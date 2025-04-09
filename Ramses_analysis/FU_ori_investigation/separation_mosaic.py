@@ -28,6 +28,7 @@ def parse_inputs():
     parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=2.0)
     parser.add_argument("-cmin", "--cbar_min", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
     parser.add_argument("-cmax", "--cbar_max", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
+    parser.add_argument("-end_time", "--end_burst_time", type=float)
     args = parser.parse_args()
     return args
 
@@ -97,11 +98,14 @@ X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, s
 file.close()
 time_start = args_dict['time_val']
 
-pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
-file = open(pickle_file, 'rb')
-X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
-file.close()
-time_end = args_dict['time_val']
+if args.end_burst_time == None:
+    pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
+    file = open(pickle_file, 'rb')
+    X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+    file.close()
+    time_end = args_dict['time_val']
+else:
+    time_end = args.end_burst_time
 
 
 fit = -1
