@@ -292,6 +292,10 @@ if args.make_plot_figures == "True":
     Kep_mass_primary = []
     Kep_mass_secondary = []
     L1_arr = []
+    bin_centers_primary = []
+    Mass_profile_primary = []
+    bin_centers_secondary = []
+    Mass_profile_secondary = []
     
     pickle_files = sorted(glob.glob(save_dir + "kepl_mass_*.pkl"))
     
@@ -304,6 +308,10 @@ if args.make_plot_figures == "True":
         Kep_mass_primary = Kep_mass_primary + save_dict['Kep_mass_primary']
         Kep_mass_secondary = Kep_mass_secondary + save_dict['Kep_mass_secondary']
         L1_arr = L1_arr + save_dict['L1']
+        bin_centers_primary = bin_centers_primary + save_dict['bin_centers_primary']
+        Mass_profile_primary = Mass_profile_primary + save_dict['Mass_profile_primary']
+        bin_centers_secondary = bin_centers_secondary + save_dict['bin_centers_secondary']
+        Mass_profile_secondary = Mass_profile_secondary + save_dict['Mass_profile_secondary']
         
     sort_inds = np.argsort(time_arr)
     time_arr = np.array(time_arr)[sort_inds]
@@ -338,3 +346,16 @@ if args.make_plot_figures == "True":
     file_name = save_dir+"Keplerian_mass.pdf"
     plt.savefig(file_name, bbox_inches='tight', dpi=300)
     print("Plotted", file_name)
+    
+    for time_it in np.range(len(time_arr)):
+        frame_name = save_dir + "movie_frame_" + ("%06d" % str(time_it)) + ".jpg"
+        plt.clf()
+        plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
+        plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
+        plt.xlim([0, xmax])
+        plt.ylim([1.e-5, 1.e-9])
+        plt.legend(loc='best')
+        plt.title("Time:"+str(time_val))
+        plt.xlabel("Radius (au)")
+        plt.ylabel("Mass (msun)")
+        plt.savefig(frame_name)

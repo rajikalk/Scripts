@@ -394,9 +394,9 @@ if args.make_frames_only == 'False':
             measuring_sphere_primary = ds.sphere(center_pos, yt.YTQuantity(args.active_radius, 'au'))
             cell_mass = measuring_sphere_primary['mass'].in_units('g')
             
-            sph_dx = measuring_sphere_primary['x'].in_units('cm') - primary_position[0].in_units('cm')
-            sph_dy = measuring_sphere_primary['y'].in_units('cm') - primary_position[1].in_units('cm')
-            sph_dz = measuring_sphere_primary['z'].in_units('cm') - primary_position[2].in_units('cm')
+            sph_dx = measuring_sphere_primary['x'].in_units('cm') - center_pos[0].in_units('cm')
+            sph_dy = measuring_sphere_primary['y'].in_units('cm') - center_pos[1].in_units('cm')
+            sph_dz = measuring_sphere_primary['z'].in_units('cm') - center_pos[2].in_units('cm')
             
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             
