@@ -21,8 +21,8 @@ plt.rcParams["text.usetex"] = False
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Number_Density")
-    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="cm**-3")
+    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
+    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**-3")
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 100., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
@@ -226,12 +226,12 @@ elif args.simulation_density_id == 'G400':
 else:
     units_override.update({"mass_unit":(2998,"Msun")})
 
-units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+#units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
     
 scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
 scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
 scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
+#scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 mym.set_units(units_override)
 
 #find sink particle to center on and formation time
