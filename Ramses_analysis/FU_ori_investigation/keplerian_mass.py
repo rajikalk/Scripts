@@ -110,155 +110,167 @@ if args.make_pickle_files == "True":
     sys.stdout.flush()
     CW.Barrier()
     
-    save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[]}
+    pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
+    if len(glog.glob(pickle_file[:-4]+"*")) == 0:
+        save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[]}
+    else:
+        import pdb
+        pdb.set_trace()
 
     file_int = -1
     no_files = len(usable_files)
-    pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     for fn in yt.parallel_objects(usable_files, njobs=int(size)):
-        ds = yt.load(fn, units_override=units_override)
-        time_val = ds.current_time.in_units('yr') - sink_form_time
-        dd = ds.all_data()
-        
-        #Get secondary position
-        primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
-        secondary_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
-        
-        primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
-        secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
-        
-        primary_mass = dd['sink_particle_mass'][sink_id-1].in_units('g')
-        secondary_mass = dd['sink_particle_mass'][sink_id].in_units('g')
-        
-        if args.sphere_radius_cells == None:
-            separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
-            #sphere_radius = 0.5 * separation.in_units('au')
-            
-            sphere_radius_1 = separation.in_units('au')/(np.sqrt(secondary_mass/primary_mass) +1)
-            sphere_radius_2 = separation.in_units('au') - sphere_radius_1
-        del dd
-        
-        measuring_sphere_primary = ds.sphere(primary_position.in_units('au'), sphere_radius_1)
-        measuring_sphere_secondary = ds.sphere(secondary_position.in_units('au'), sphere_radius_2)
-        
-        #UPDATE FOR MEASURING KEPLERIAN MASS
-        #For primary:
-        sph_dx = measuring_sphere_primary['x'].in_units('cm') - primary_position[0].in_units('cm')
-        sph_dy = measuring_sphere_primary['y'].in_units('cm') - primary_position[1].in_units('cm')
-        sph_dz = measuring_sphere_primary['z'].in_units('cm') - primary_position[2].in_units('cm')
-        
-        sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
-        sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1))
-        sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag.value, sph_dy/sph_radial_vector_mag.value, sph_dz/sph_radial_vector_mag.value]).T
-        
-        sph_dvx = measuring_sphere_primary['velocity_x'].in_units('cm/s') - primary_velocity[0].in_units('cm/s')
-        sph_dvy = measuring_sphere_primary['velocity_y'].in_units('cm/s') - primary_velocity[1].in_units('cm/s')
-        sph_dvz = measuring_sphere_primary['velocity_z'].in_units('cm/s') - primary_velocity[2].in_units('cm/s')
-        
-        v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
-        sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
-        
-        shape = np.shape(measuring_sphere_primary['x'])
-        radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
-        radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
-        radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
-        dot_product = sph_radial_vector_unit.in_units('km').T[0]*radial_vel_unit.T[0] + sph_radial_vector_unit.in_units('km').T[1]*radial_vel_unit.T[1] + sph_radial_vector_unit.in_units('km').T[2]*radial_vel_unit.T[2]
-        sign = np.sign(dot_product)
-        
-        rv_mag = radial_vel_mag*sign
-        rv_mag = np.reshape(rv_mag, shape)
-        
-        tang_vel = np.sqrt(v_mag.in_units('km/s')**2 - rv_mag**2)
-        
-        #v_kep_pot = np.sqrt(abs(measuring_sphere_primary['Potential'])).in_units('km/s')
-        v_kep = np.sqrt((primary_mass*yt.units.gravitational_constant.in_cgs())/sph_radial_vector_mag.in_units('km')).in_units('km/s')
-        
-        rel_kep = tang_vel/v_kep
-        near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
-        near_kep_mass_primary = np.sum(measuring_sphere_primary['mass'][near_kep_inds].in_units('msun'))
-        
-        if size==1:
-            import pdb
-            pdb.set_trace()
-        bin_size = 1
-        rad_bins_primary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
-        bin_centers_primary = (rad_bins_primary[1:] + rad_bins_primary[:-1])/2
-        rit = 1
-        Mass_profile_primary = []
-        while rit < len(rad_bins_primary):
-            bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_primary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_primary[rit]))[0]
-            m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
-            Mass_profile_primary.append(m_shell)
-            rit = rit + 1
-        
-        #Secondary mass
-        sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
-        sph_dy = measuring_sphere_secondary['y'].in_units('cm') - secondary_position[1].in_units('cm')
-        sph_dz = measuring_sphere_secondary['z'].in_units('cm') - secondary_position[2].in_units('cm')
-        
-        sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
-        sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1))
-        sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag.value, sph_dy/sph_radial_vector_mag.value, sph_dz/sph_radial_vector_mag.value]).T
-        
-        sph_dvx = measuring_sphere_secondary['velocity_x'].in_units('cm/s') - secondary_velocity[0].in_units('cm/s')
-        sph_dvy = measuring_sphere_secondary['velocity_y'].in_units('cm/s') - secondary_velocity[1].in_units('cm/s')
-        sph_dvz = measuring_sphere_secondary['velocity_z'].in_units('cm/s') - secondary_velocity[2].in_units('cm/s')
-        
-        v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
-        sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
-        
-        shape = np.shape(measuring_sphere_secondary['x'])
-        radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
-        radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
-        radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
-        dot_product = sph_radial_vector_unit.in_units('km').T[0]*radial_vel_unit.T[0] + sph_radial_vector_unit.in_units('km').T[1]*radial_vel_unit.T[1] + sph_radial_vector_unit.in_units('km').T[2]*radial_vel_unit.T[2]
-        sign = np.sign(dot_product)
-        
-        rv_mag = radial_vel_mag*sign
-        rv_mag = np.reshape(rv_mag, shape)
-        
-        tang_vel = np.sqrt(v_mag.in_units('km/s')**2 - rv_mag**2)
-        
-        #v_kep_pot = np.sqrt(abs(measuring_sphere_primary['Potential'])).in_units('km/s')
-        v_kep = np.sqrt((secondary_mass*yt.units.gravitational_constant.in_cgs())/sph_radial_vector_mag.in_units('km')).in_units('km/s')
-        
-        rel_kep = tang_vel/v_kep
-        near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
-        near_kep_mass_secondary = np.sum(measuring_sphere_secondary['mass'][near_kep_inds].in_units('msun'))
-        
-        rad_bins_secondary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
-        bin_centers_secondary = (rad_bins_secondary[1:] + rad_bins_secondary[:-1])/2
-        rit = 1
-        Mass_profile_secondary = []
-        while rit < len(rad_bins_secondary):
-            bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_secondary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_secondary[rit]))[0]
-            m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
-            Mass_profile_secondary.append(m_shell)
-            rit = rit + 1
-            
         frame_name = save_dir + "movie_frame_" + ("%06d" % usable_files.index(fn)) + ".jpg"
-        xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
-        ymin = np.min([np.min(Mass_profile_primary), np.min(Mass_profile_secondary)])
-        ymax = np.max([np.max(Mass_profile_primary), np.max(Mass_profile_secondary)])
-        plt.clf()
-        plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
-        plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
-        plt.xlim([0, xmax])
-        plt.ylim([ymin, ymax])
-        plt.legend(loc='best')
-        plt.xlabel("Radius (au)")
-        plt.ylabel("Mass (msun)")
-        plt.savefig(frame_name)
-        
-        save_dict['time'].append(time_val)
-        save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
-        save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
-        save_dict['L1'].append(sphere_radius_1)
-        
-        file = open(pickle_file, 'wb')
-        pickle.dump((save_dict), file)
-        file.close()
-        print("wrote file", pickle_file)
+        if os.path.isfile(frame_name) == False:
+            ds = yt.load(fn, units_override=units_override)
+            time_val = ds.current_time.in_units('yr') - sink_form_time
+            dd = ds.all_data()
+            
+            #Get secondary position
+            primary_position = yt.YTArray([dd['sink_particle_posx'][sink_id-1], dd['sink_particle_posy'][sink_id-1], dd['sink_particle_posz'][sink_id-1]])
+            secondary_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+            
+            primary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id-1], dd['sink_particle_vely'][sink_id-1], dd['sink_particle_velz'][sink_id-1]])
+            secondary_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]])
+            
+            primary_mass = dd['sink_particle_mass'][sink_id-1].in_units('g')
+            secondary_mass = dd['sink_particle_mass'][sink_id].in_units('g')
+            
+            if args.sphere_radius_cells == None:
+                separation = np.sqrt(np.sum((primary_position - secondary_position)**2))
+                #sphere_radius = 0.5 * separation.in_units('au')
+                
+                sphere_radius_1 = separation.in_units('au')/(np.sqrt(secondary_mass/primary_mass) +1)
+                sphere_radius_2 = separation.in_units('au') - sphere_radius_1
+            del dd
+            
+            measuring_sphere_primary = ds.sphere(primary_position.in_units('au'), sphere_radius_1)
+            measuring_sphere_secondary = ds.sphere(secondary_position.in_units('au'), sphere_radius_2)
+            
+            #UPDATE FOR MEASURING KEPLERIAN MASS
+            #For primary:
+            sph_dx = measuring_sphere_primary['x'].in_units('cm') - primary_position[0].in_units('cm')
+            sph_dy = measuring_sphere_primary['y'].in_units('cm') - primary_position[1].in_units('cm')
+            sph_dz = measuring_sphere_primary['z'].in_units('cm') - primary_position[2].in_units('cm')
+            
+            sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+            sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1))
+            sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag.value, sph_dy/sph_radial_vector_mag.value, sph_dz/sph_radial_vector_mag.value]).T
+            
+            sph_dvx = measuring_sphere_primary['velocity_x'].in_units('cm/s') - primary_velocity[0].in_units('cm/s')
+            sph_dvy = measuring_sphere_primary['velocity_y'].in_units('cm/s') - primary_velocity[1].in_units('cm/s')
+            sph_dvz = measuring_sphere_primary['velocity_z'].in_units('cm/s') - primary_velocity[2].in_units('cm/s')
+            
+            v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
+            sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+            
+            shape = np.shape(measuring_sphere_primary['x'])
+            radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
+            radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
+            radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
+            dot_product = sph_radial_vector_unit.in_units('km').T[0]*radial_vel_unit.T[0] + sph_radial_vector_unit.in_units('km').T[1]*radial_vel_unit.T[1] + sph_radial_vector_unit.in_units('km').T[2]*radial_vel_unit.T[2]
+            sign = np.sign(dot_product)
+            
+            rv_mag = radial_vel_mag*sign
+            rv_mag = np.reshape(rv_mag, shape)
+            
+            tang_vel = np.sqrt(v_mag.in_units('km/s')**2 - rv_mag**2)
+            
+            #v_kep_pot = np.sqrt(abs(measuring_sphere_primary['Potential'])).in_units('km/s')
+            v_kep = np.sqrt((primary_mass*yt.units.gravitational_constant.in_cgs())/sph_radial_vector_mag.in_units('km')).in_units('km/s')
+            
+            rel_kep = tang_vel/v_kep
+            near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
+            near_kep_mass_primary = np.sum(measuring_sphere_primary['mass'][near_kep_inds].in_units('msun'))
+            
+            if size==1:
+                import pdb
+                pdb.set_trace()
+            bin_size = 1
+            rad_bins_primary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
+            bin_centers_primary = (rad_bins_primary[1:] + rad_bins_primary[:-1])/2
+            rit = 1
+            Mass_profile_primary = []
+            while rit < len(rad_bins_primary):
+                bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_primary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_primary[rit]))[0]
+                m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                Mass_profile_primary.append(m_shell)
+                rit = rit + 1
+            
+            save_dict['radius_primary'].append(bin_centers_primary)
+            save_dict['mass_profile_primary'].append(bin_centers_primary)
+            
+            #Secondary mass
+            sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
+            sph_dy = measuring_sphere_secondary['y'].in_units('cm') - secondary_position[1].in_units('cm')
+            sph_dz = measuring_sphere_secondary['z'].in_units('cm') - secondary_position[2].in_units('cm')
+            
+            sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+            sph_radial_vector_mag = np.sqrt(np.sum(sph_radial_vector**2, axis=1))
+            sph_radial_vector_unit = yt.YTArray([sph_dx/sph_radial_vector_mag.value, sph_dy/sph_radial_vector_mag.value, sph_dz/sph_radial_vector_mag.value]).T
+            
+            sph_dvx = measuring_sphere_secondary['velocity_x'].in_units('cm/s') - secondary_velocity[0].in_units('cm/s')
+            sph_dvy = measuring_sphere_secondary['velocity_y'].in_units('cm/s') - secondary_velocity[1].in_units('cm/s')
+            sph_dvz = measuring_sphere_secondary['velocity_z'].in_units('cm/s') - secondary_velocity[2].in_units('cm/s')
+            
+            v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
+            sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+            
+            shape = np.shape(measuring_sphere_secondary['x'])
+            radial_vel_vec = yt.YTArray(projected_vector(sph_velocity_vector.in_units('km/s'), sph_radial_vector_unit.in_units('km')).value, 'km/s')
+            radial_vel_mag = np.sqrt(np.sum(radial_vel_vec**2, axis=1))
+            radial_vel_unit = (radial_vel_vec.T/radial_vel_mag).T
+            dot_product = sph_radial_vector_unit.in_units('km').T[0]*radial_vel_unit.T[0] + sph_radial_vector_unit.in_units('km').T[1]*radial_vel_unit.T[1] + sph_radial_vector_unit.in_units('km').T[2]*radial_vel_unit.T[2]
+            sign = np.sign(dot_product)
+            
+            rv_mag = radial_vel_mag*sign
+            rv_mag = np.reshape(rv_mag, shape)
+            
+            tang_vel = np.sqrt(v_mag.in_units('km/s')**2 - rv_mag**2)
+            
+            #v_kep_pot = np.sqrt(abs(measuring_sphere_primary['Potential'])).in_units('km/s')
+            v_kep = np.sqrt((secondary_mass*yt.units.gravitational_constant.in_cgs())/sph_radial_vector_mag.in_units('km')).in_units('km/s')
+            
+            rel_kep = tang_vel/v_kep
+            near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
+            near_kep_mass_secondary = np.sum(measuring_sphere_secondary['mass'][near_kep_inds].in_units('msun'))
+            
+            rad_bins_secondary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
+            bin_centers_secondary = (rad_bins_secondary[1:] + rad_bins_secondary[:-1])/2
+            rit = 1
+            Mass_profile_secondary = []
+            while rit < len(rad_bins_secondary):
+                bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_secondary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_secondary[rit]))[0]
+                m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                Mass_profile_secondary.append(m_shell)
+                rit = rit + 1
+            
+            save_dict['radius_secondary'].append(bin_centers_primary)
+            save_dict['mass_profile_secondary'].append(bin_centers_primary)
+                
+            xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
+            ymin = np.min([np.min(Mass_profile_primary), np.min(Mass_profile_secondary)])
+            ymax = np.max([np.max(Mass_profile_primary), np.max(Mass_profile_secondary)])
+            plt.clf()
+            plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
+            plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
+            plt.xlim([0, xmax])
+            plt.ylim([ymin, ymax])
+            plt.legend(loc='best')
+            plt.title("Time:"+time_val)
+            plt.xlabel("Radius (au)")
+            plt.ylabel("Mass (msun)")
+            plt.savefig(frame_name)
+            
+            save_dict['time'].append(time_val)
+            save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
+            save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
+            save_dict['L1'].append(sphere_radius_1)
+            
+            file = open(pickle_file, 'wb')
+            pickle.dump((save_dict), file)
+            file.close()
+            print("wrote file", pickle_file)
 
 sys.stdout.flush()
 CW.Barrier()
