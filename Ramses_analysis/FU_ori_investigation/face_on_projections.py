@@ -306,9 +306,6 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
-sink_form_companion = dd['sink_particle_form_time'][sink_id+1]
-if args.start_frame == 0 and args.plot_time == None:
-    args.start_frame = int((sink_form_companion - sink_form_time)/(args.time_step))+1
 del dd
 
 if rank == 0:

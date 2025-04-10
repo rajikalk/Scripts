@@ -255,7 +255,7 @@ if args.make_pickle_files == "True":
             plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
             plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
             plt.xlim([0, xmax])
-            plt.ylim([ymin, ymax])
+            plt.ylim([1.e-5, 1.e-9])
             plt.legend(loc='best')
             plt.title("Time:"+str(time_val))
             plt.xlabel("Radius (au)")
