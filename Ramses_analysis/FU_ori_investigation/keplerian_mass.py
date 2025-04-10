@@ -257,7 +257,7 @@ if args.make_pickle_files == "True":
             plt.xlim([0, xmax])
             plt.ylim([ymin, ymax])
             plt.legend(loc='best')
-            plt.title("Time:"+time_val)
+            plt.title("Time:"+str(time_val))
             plt.xlabel("Radius (au)")
             plt.ylabel("Mass (msun)")
             plt.savefig(frame_name)
