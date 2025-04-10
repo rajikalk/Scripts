@@ -400,9 +400,9 @@ if args.make_frames_only == 'False':
             
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             
-            sph_dvx = measuring_sphere_primary['velocity_x'].in_units('cm/s') - primary_velocity[0].in_units('cm/s')
-            sph_dvy = measuring_sphere_primary['velocity_y'].in_units('cm/s') - primary_velocity[1].in_units('cm/s')
-            sph_dvz = measuring_sphere_primary['velocity_z'].in_units('cm/s') - primary_velocity[2].in_units('cm/s')
+            sph_dvx = measuring_sphere_primary['velocity_x'].in_units('cm/s') - center_vel[0].in_units('cm/s')
+            sph_dvy = measuring_sphere_primary['velocity_y'].in_units('cm/s') - center_vel[1].in_units('cm/s')
+            sph_dvz = measuring_sphere_primary['velocity_z'].in_units('cm/s') - center_vel[2].in_units('cm/s')
             
             sph_radial_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
             
