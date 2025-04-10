@@ -308,10 +308,10 @@ if args.make_plot_figures == "True":
         Kep_mass_primary = Kep_mass_primary + save_dict['Kep_mass_primary']
         Kep_mass_secondary = Kep_mass_secondary + save_dict['Kep_mass_secondary']
         L1_arr = L1_arr + save_dict['L1']
-        bin_centers_primary = bin_centers_primary + save_dict['bin_centers_primary']
-        Mass_profile_primary = Mass_profile_primary + save_dict['Mass_profile_primary']
-        bin_centers_secondary = bin_centers_secondary + save_dict['bin_centers_secondary']
-        Mass_profile_secondary = Mass_profile_secondary + save_dict['Mass_profile_secondary']
+        bin_centers_primary = bin_centers_primary + save_dict['radius_primary']
+        Mass_profile_primary = Mass_profile_primary + save_dict['mass_profile_primary']
+        bin_centers_secondary = bin_centers_secondary + save_dict['radius_secondary']
+        Mass_profile_secondary = Mass_profile_secondary + save_dict['mass_profile_secondary']
         
     sort_inds = np.argsort(time_arr)
     time_arr = np.array(time_arr)[sort_inds]
