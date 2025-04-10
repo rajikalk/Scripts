@@ -376,9 +376,9 @@ if args.make_frames_only == 'False':
         else:
             make_pickle = True
         if args.plot_time is None:
-            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/"
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int])
         else:
-            pickle_file = save_dir + "time_" + (str(int(args.plot_time))) + "/"
+            pickle_file = save_dir + "time_" + (str(int(args.plot_time)))
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
@@ -414,6 +414,7 @@ if args.make_frames_only == 'False':
             L_mag = np.sqrt(np.sum(L_tot**2))
             L_unit = L_tot/L_mag
             
+            field = simfo['field']
             proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'))#data_source=rv_cut_region
             if args.resolution != 800:
                 proj.set_buff_size([args.resolution, args.resolution])
@@ -451,9 +452,9 @@ if args.make_frames_only == 'False':
             args_dict.update({'xlim':xlim})
             args_dict.update({'ylim':ylim})
             args_dict.update({'has_particles':has_particles})
-            args_dict.update({'proj_vector': proj_vector_unit})
+            args_dict.update({'proj_vector': L_unit})
             
-            pickle_file = pickle_file + 'projection_' + str(proj_it) + '.pkl'
+            pickle_file = pickle_file + '.pkl'
             file = open(pickle_file, 'wb')
             pickle.dump((X, Y, image, None, X_vel, Y_vel, None, None, part_info, args_dict, simfo, None), file)
             file.close()
@@ -464,18 +465,9 @@ CW.Barrier()
 #Section to plot figures:
 print("Finished generating projection pickles")
 if args.plot_time is None:
-    pickle_files = sorted(glob.glob(save_dir+"*/*projection*.pkl"))
-    start_pickle = save_dir + "movie_frame_" + ("%06d" % (args.start_frame+1)) + "/projection_0.pkl"
-    try:
-        start_ind = pickle_files.index(start_pickle)
-    except:
-        start_ind = 0
-    pickle_files = pickle_files[start_ind:]
+    pickle_files = sorted(glob.glob(save_dir + "movie_frame_*.pkl"))
 else:
-    pickle_files = sorted(glob.glob(save_dir+"time_" + str(int(args.plot_time)) + "/projection*.pkl"))
-    start_pickle = save_dir+"time_" + str(int(args.plot_time)) + "/projection_0.pkl"
-    start_ind = pickle_files.index(start_pickle)
-    pickle_files = pickle_files[start_ind:]
+    pickle_files = [save_dir + "time_" + (str(int(args.plot_time)))+".pkl"]
 #if rank==0:
 #    print("pickle_files =", pickle_files)
 rit = -1
@@ -493,9 +485,9 @@ for pickle_file in pickle_files:
             if args.output_filename != None:
                 file_name = args.output_filename
             else:
-                file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + pickle_file.split('.pkl')[0][-1]
-        if os.path.exists(file_name + ".jpg") and os.path.exists(file_name + "_rv.jpg") and args.skip_made == 'True':
-            if os.stat(file_name + ".jpg").st_size == 0 or os.stat(file_name + "_rv.jpg").st_size == 0:
+                file_name = save_dir + "time_" + str(int(args.plot_time))
+        if os.path.exists(file_name + ".jpg") and args.skip_made == 'True':
+            if os.stat(file_name + ".jpg").st_size == 0:
                 make_frame = True
             else:
                 make_frame = False
@@ -514,12 +506,6 @@ for pickle_file in pickle_files:
             else:
                 xlim = args_dict['xlim'] + np.mean(X)
                 ylim = args_dict['ylim'] + np.mean(Y)
-            if args.convolve == 'True':
-                res = (args_dict['xlim'][1] - args_dict['xlim'][0])/np.shape(vel_rad)[0]
-                beam_rad = np.sqrt(12*27)/2.355
-                beam_rad_pixel = beam_rad/res
-                image = gaussian_filter(image,sigma=beam_rad_pixel)
-                vel_rad = gaussian_filter(vel_rad,sigma=beam_rad_pixel)
             has_particles = args_dict['has_particles']
             time_val = args_dict['time_val']
             xabel = args_dict['xabel']
@@ -542,7 +528,7 @@ for pickle_file in pickle_files:
             plt.gca().set_aspect('equal')
             cbar = plt.colorbar(plot, pad=0.0)
             
-            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+            #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
             if has_particles:
                 if size > 1:
@@ -557,14 +543,6 @@ for pickle_file in pickle_files:
                     cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
                 else:
                     cbar.set_label(r"Column Density (g$\,$cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
-            elif 'Number_Density' in simfo['field']:
-                if args.divide_by_proj_thickness == 'True':
-                    cbar.set_label(r"Number Density (cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
-                else:
-                    cbar.set_label(r"Column Density (cm$^{-2}$)", rotation=270, labelpad=14, size=args.text_font)
-            else:
-                label_string = simfo['field'][1] + ' ($' + args.field_unit + '$)'
-                cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
 
             if len(title) > 0:
                 title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
@@ -604,109 +582,5 @@ for pickle_file in pickle_files:
                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
                 plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
-                
-            #Created RV Plot:
-            plt.clf()
-            fig, ax = plt.subplots()
-            ax.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-            ax.set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
-            ax.set_xlim(xlim)
-            ax.set_ylim(ylim)
-            #title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
-            #ax.set_title(title_str)
-            
-            if len(m_times) > 1:
-                if args.output_filename == None:
-                    file_name = pickle_file.split('.pkl')[0] + "_rv"
-                else:
-                    file_name = args.output_filename + "_" + str(int(time_val)) + "_rv"
-            else:
-                if args.output_filename != None:
-                    file_name = args.output_filename +"_rv"
-                else:
-                    file_name = save_dir + "time_" + str(int(args.plot_time)) + "/time_" + str(args.plot_time) + "_proj_" + proj_number +"_rv"
-            
-            bool_den_array = image>args.density_threshold
-            vel_rad = vel_rad*bool_den_array #bool_den_array*np.nan*vel_rad
-            vel_rad[vel_rad == 0] = np.nan
-            
-            
-            v_std = np.std(vel_rad/100000)
-            v_cbar_min = -1 #center_vel_rv.in_units('km/s').value - 5
-            v_cbar_max = 1#center_vel_rv.in_units('km/s').value + 5
-            #plot = ax.pcolormesh(X, Y, vel_rad/100000, cmap=plt.cm.seismic_r, rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
-            plot = ax.pcolormesh(X, Y, vel_rad/100000, cmap='idl06_r', rasterized=True, vmin=v_cbar_min, vmax=v_cbar_max)
-            fmt = ticker.LogFormatterSciNotation()
-            fmt.create_dummy_axis()
-            if args.density_threshold != 0.0:
-                exp_min = np.log10(args.density_threshold)
-            else:
-                exp_min = np.log10(cbar_min)
-            exp_max = np.log10(cbar_max)
-            n_level = (exp_max-exp_min)*2 + 1
-            contour_levels = np.logspace(exp_min, exp_max, int(n_level))
-            CS = ax.contour(X,Y,image, locator=plt.LogLocator(), linewidths=0.5, colors='k', levels=contour_levels)
-            #'{:.1e}'.format(your_num)
-            def func(x):
-                s = "%.0g" % x
-                if "e" in s:
-                    tup = s.split('e')
-                    significand = tup[0].rstrip('0').rstrip('.')
-                    sign = tup[1][0].replace('+', '')
-                    exponent = tup[1][1:].lstrip('0')
-                    s = ('%se%s%s' % (significand, sign, exponent)).rstrip('e')
-                return s
-            #ax.clabel(CS,CS.levels,fmt=func)
-
-            plt.gca().set_aspect('equal')
-            cbar = plt.colorbar(plot, pad=0.0)
-            
-            if has_particles:
-                if args.annotate_particles_mass == True:
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-                else:
-                    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
-
-            label_string = 'Radial Velocity ($km/s$)'
-            cbar.set_label(r"{}".format(label_string), rotation=270, labelpad=14, size=args.text_font)
-
-            if len(title) > 0:
-                title_text = ax.text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+4))
-                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-
-            plt.tick_params(axis='both', which='major')# labelsize=16)
-            for line in ax.xaxis.get_ticklines():
-                line.set_color('white')
-            for line in ax.yaxis.get_ticklines():
-                line.set_color('white')
-
-            if args.annotate_time == "True":
-                #time_string = "t="+str(int(time_val))+"yr"
-                #ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string, va="center", ha="left", color='w', fontsize=args.text_font)
-                try:
-                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                    #time_string = "t="+str(int(time_val))+"yr"
-                    time_string = "$t$="+str(int(time_val))+"yr"
-                    time_string_raw = r"{}".format(time_string)
-                    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string, va="center", ha="left", color='w', fontsize=args.text_font)
-                    try:
-                        plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                    except:
-                        print("Couldn't outline time string")
-                except:
-                    print("Couldn't plot time string")
-                        
-            if size > 1:
-                try:
-                    plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-                    print('Created frame of radial velocity', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
-                except:
-                    print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
-            else:
-                plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-                print('Created frame of radial velocity', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
 print("Completed making frames on rank", rank)
