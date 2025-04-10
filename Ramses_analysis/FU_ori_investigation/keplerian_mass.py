@@ -349,6 +349,7 @@ if args.make_plot_figures == "True":
     
     for time_it in np.range(len(time_arr)):
         frame_name = save_dir + "movie_frame_" + ("%06d" % str(time_it)) + ".jpg"
+        xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
         plt.clf()
         plt.semilogy(bin_centers_primary, Mass_profile_primary, label="Primary")
         plt.semilogy(bin_centers_secondary, Mass_profile_secondary, label="Secondary")
@@ -359,3 +360,4 @@ if args.make_plot_figures == "True":
         plt.xlabel("Radius (au)")
         plt.ylabel("Mass (msun)")
         plt.savefig(frame_name)
+        print("made frame", frame_name)
