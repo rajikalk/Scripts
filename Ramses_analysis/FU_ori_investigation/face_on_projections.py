@@ -414,7 +414,7 @@ if args.make_frames_only == 'False':
             L_mag = np.sqrt(np.sum(L_tot**2))
             L_unit = L_tot/L_mag
             
-            proj = yt.OffAxisProjectionPlot(ds, proj_vector_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'))#data_source=rv_cut_region
+            proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'))#data_source=rv_cut_region
             if args.resolution != 800:
                 proj.set_buff_size([args.resolution, args.resolution])
             if args.field in str(field):
