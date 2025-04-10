@@ -111,7 +111,7 @@ if args.make_pickle_files == "True":
     CW.Barrier()
     
     pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
-    if len(glog.glob(pickle_file[:-4]+"*")) == 0:
+    if len(glob.glob(pickle_file[:-4]+"*")) == 0:
         save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[]}
     else:
         import pdb
