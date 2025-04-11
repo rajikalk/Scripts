@@ -349,15 +349,16 @@ if args.make_plot_figures == "True":
     
     for time_it in np.arange(len(time_arr)):
         frame_name = save_dir + "movie_frame_" + ("%06d" % time_it) + ".jpg"
-        xmax = np.max([bin_centers_primary[time_it][-1], bin_centers_secondary[time_it][-1]])
-        plt.clf()
-        plt.semilogy(bin_centers_primary[time_it], Mass_profile_primary[time_it], label="Primary")
-        plt.semilogy(bin_centers_secondary[time_it], Mass_profile_secondary[time_it], label="Secondary")
-        plt.xlim([0, xmax])
-        plt.ylim([1.e-5, 1.e-9])
-        plt.legend(loc='best')
-        plt.title("Time:"+str(time_arr[time_it]))
-        plt.xlabel("Radius (au)")
-        plt.ylabel("Mass (msun)")
-        plt.savefig(frame_name)
-        print("made frame", frame_name)
+        if os.path.isfile(frame_name) == False:
+            xmax = np.max([bin_centers_primary[time_it][-1], bin_centers_secondary[time_it][-1]])
+            plt.clf()
+            plt.semilogy(bin_centers_primary[time_it], Mass_profile_primary[time_it], label="Primary")
+            plt.semilogy(bin_centers_secondary[time_it], Mass_profile_secondary[time_it], label="Secondary")
+            plt.xlim([0, xmax])
+            plt.ylim([1.e-5, 1.e-9])
+            plt.legend(loc='best')
+            plt.title("Time:"+str(time_arr[time_it]))
+            plt.xlabel("Radius (au)")
+            plt.ylabel("Mass (msun)")
+            plt.savefig(frame_name)
+            print("made frame", frame_name)
