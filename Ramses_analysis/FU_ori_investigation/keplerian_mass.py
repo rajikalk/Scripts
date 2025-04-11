@@ -350,6 +350,8 @@ if args.make_plot_figures == "True":
     for time_it in np.arange(len(time_arr)):
         frame_name = save_dir + "movie_frame_" + ("%06d" % time_it) + ".jpg"
         if os.path.isfile(frame_name) == False:
+            import pdb
+            pdb.set_trace()
             xmax = np.max([bin_centers_primary[time_it][-1], bin_centers_secondary[time_it][-1]])
             plt.clf()
             plt.semilogy(bin_centers_primary[time_it], Mass_profile_primary[time_it], label="Primary")
