@@ -356,30 +356,12 @@ if args.make_frames_only == 'False':
             '''
             #if usable_files[file_int] == usable_files[file_int-1]:
                 #os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
-            '''
-        if args.plot_time != None:
-            if os.path.exists(save_dir + "time_" + (str(int(args.plot_time)))) == False:
-                try:
-                    os.makedirs(save_dir + "time_" + (str(int(args.plot_time))))
-                except:
-                    print(save_dir + "time_" + (str(int(args.plot_time))), "Already exists")
-        
-        else:
-            if os.path.exists(save_dir + "movie_frame_" + ("%06d" % frames[file_int])) == False:
-                try:
-                    os.makedirs(save_dir + "movie_frame_" + ("%06d" % frames[file_int]))
-                except:
-                    print(save_dir + "movie_frame_" + ("%06d" % frames[file_int]), "Already exists")
-        if len(glob.glob(save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + "/*.pkl")) == 8:
-            make_pickle = False
-            print("All projections for this time have been made")
-        else:
-            make_pickle = True
+            ''':
         if args.plot_time is None:
             pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int])
         else:
             pickle_file = save_dir + "time_" + (str(int(args.plot_time)))
-        if make_pickle == True:
+        if os.path.isfile(pickle_file) == False:
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
             
