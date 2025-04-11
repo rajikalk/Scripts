@@ -198,7 +198,7 @@ if args.make_pickle_files == "True":
                 rit = rit + 1
             
             save_dict['radius_primary'].append(bin_centers_primary)
-            save_dict['mass_profile_primary'].append(bin_centers_primary)
+            save_dict['mass_profile_primary'].append(Mass_profile_primary)
             
             #Secondary mass
             sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
@@ -245,8 +245,8 @@ if args.make_pickle_files == "True":
                 Mass_profile_secondary.append(m_shell)
                 rit = rit + 1
             
-            save_dict['radius_secondary'].append(bin_centers_primary)
-            save_dict['mass_profile_secondary'].append(bin_centers_primary)
+            save_dict['radius_secondary'].append(bin_centers_secondary)
+            save_dict['mass_profile_secondary'].append(Mass_profile_secondary)
                 
             xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
             ymin = np.min([np.min(Mass_profile_primary), np.min(Mass_profile_secondary)])
@@ -350,8 +350,6 @@ if args.make_plot_figures == "True":
     for time_it in np.arange(len(time_arr)):
         frame_name = save_dir + "movie_frame_" + ("%06d" % time_it) + ".jpg"
         if os.path.isfile(frame_name) == False:
-            import pdb
-            pdb.set_trace()
             xmax = np.max([bin_centers_primary[time_it][-1], bin_centers_secondary[time_it][-1]])
             plt.clf()
             plt.semilogy(bin_centers_primary[time_it], Mass_profile_primary[time_it], label="Primary")
