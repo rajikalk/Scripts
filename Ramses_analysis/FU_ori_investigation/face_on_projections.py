@@ -346,7 +346,7 @@ CW.Barrier()
 if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
-    for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size/(8*4))):
+    for fn_it in yt.parallel_objects(range(len(usable_files)), njobs=int(size)):
         fn = usable_files[fn_it]
         print("File", fn, "is going to rank", rank)
         if size > 1:
