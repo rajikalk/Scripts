@@ -247,7 +247,7 @@ if args.make_pickle_files == "True":
                 bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_secondary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_secondary[rit]))[0]
                 try:
                     m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
-                else:
+                except:
                     m_shell = np.nan
                 Mass_profile_secondary.append(m_shell)
                 rit = rit + 1
