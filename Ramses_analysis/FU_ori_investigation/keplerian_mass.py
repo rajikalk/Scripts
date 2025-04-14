@@ -113,7 +113,7 @@ if args.make_pickle_files == "True":
     
     pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     if len(glob.glob(pickle_file[:-4]+"*")) == 0:
-        save_dict = {'time':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[]}
+        save_dict = {'time':[], 'Total_mass_primary':[], 'Total_secondary_mass':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[]}
     else:
         import pdb
         pdb.set_trace()
@@ -183,6 +183,7 @@ if args.make_pickle_files == "True":
             rel_kep = tang_vel/v_kep
             near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
             near_kep_mass_primary = np.sum(measuring_sphere_primary['mass'][near_kep_inds].in_units('msun'))
+            primary_total_mass = np.sum(measuring_sphere_primary['mass'].in_units('msun'))
             
             bin_size = 1
             rad_bins_primary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
@@ -235,6 +236,7 @@ if args.make_pickle_files == "True":
             rel_kep = tang_vel/v_kep
             near_kep_inds = np.where((rel_kep>0.8)&(rel_kep<1.2))[0]
             near_kep_mass_secondary = np.sum(measuring_sphere_secondary['mass'][near_kep_inds].in_units('msun'))
+            secondary_total_mass = np.sum(measuring_sphere_secondary['mass'].in_units('msun'))
             
             rad_bins_secondary = np.arange(0, np.max(sph_radial_vector_mag.in_units('au')).value+bin_size, bin_size)
             bin_centers_secondary = (rad_bins_secondary[1:] + rad_bins_secondary[:-1])/2
@@ -269,6 +271,8 @@ if args.make_pickle_files == "True":
             save_dict['time'].append(time_val)
             save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
             save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
+            save_dict['Total_mass_primary'].append(primary_total_mass)
+            save_dict['Total_mass_secondary'].append(secondary_total_mass)
             save_dict['L1'].append(sphere_radius_1)
             
             file = open(pickle_file, 'wb')
@@ -295,6 +299,8 @@ if args.make_plot_figures == "True":
     time_arr = []
     Kep_mass_primary = []
     Kep_mass_secondary = []
+    Total_mass_primary = []
+    Total_mass_secondary = []
     L1_arr = []
     bin_centers_primary = []
     Mass_profile_primary = []
@@ -311,6 +317,8 @@ if args.make_plot_figures == "True":
         time_arr = time_arr + save_dict['time']
         Kep_mass_primary = Kep_mass_primary + save_dict['Kep_mass_primary']
         Kep_mass_secondary = Kep_mass_secondary + save_dict['Kep_mass_secondary']
+        Total_mass_primary = Total_mass_primary + save_dict['Total_mass_primary']
+        Total_mass_secondary = Total_mass_secondary + save_dict['Total_mass_secondary']
         L1_arr = L1_arr + save_dict['L1']
         bin_centers_primary = bin_centers_primary + save_dict['radius_primary']
         Mass_profile_primary = Mass_profile_primary + save_dict['mass_profile_primary']
@@ -321,6 +329,8 @@ if args.make_plot_figures == "True":
     time_arr = np.array(time_arr)[sort_inds]
     Kep_mass_primary = np.array(Kep_mass_primary)[sort_inds]
     Kep_mass_secondary = np.array(Kep_mass_secondary)[sort_inds]
+    Total_mass_primary = np.array(Total_mass_primary)[sort_inds]
+    Total_mass_secondary = np.array(Total_mass_secondary)[sort_inds]
     L1_arr = np.array(L1_arr)[sort_inds]
     
     start_ind = np.argmin(abs(particle_data['time'] - time_arr[0]))
@@ -342,8 +352,10 @@ if args.make_plot_figures == "True":
     ax2.set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     ax2.set_ylabel('Separation (AU)')
     
-    axs[0].semilogy(time_arr,Kep_mass_primary, label="Primary")
-    axs[0].semilogy(time_arr,Kep_mass_secondary, label="Secondary")
+    axs[0].semilogy(time_arr,Kep_mass_primary, label="Primary", color='blue')
+    axs[0].semilogy(time_arr,Total_mass_primary, color='blue', alpha=0.5)
+    axs[0].semilogy(time_arr,Kep_mass_secondary, label="Secondary", color='orange')
+    axs[0].semilogy(time_arr,Total_mass_secondary, color='orange', alpha=0.5)
     axs[0].legend()
     axs[0].set_xlabel('Time (yr)')
     axs[0].set_ylabel('Keplerian mass (M$_\odot$)')
