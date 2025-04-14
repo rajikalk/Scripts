@@ -218,7 +218,7 @@ if args.make_pickle_files == "True":
             bulk_vx = np.mean(measuring_sphere_secondary['velocity_x'].in_units('cm/s'))
             bulk_vy = np.mean(measuring_sphere_secondary['velocity_y'].in_units('cm/s'))
             bulk_vz = np.mean(measuring_sphere_secondary['velocity_z'].in_units('cm/s'))
-            bulk_v = yt.YTArray([bulk_vx, bulk_vy, bulk_vz]) - secondary_velocity.in_units('cm/s')
+            bulk_v = yt.YTArray([bulk_vx, bulk_vy, bulk_vz])
             
             v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
             sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
@@ -279,7 +279,7 @@ if args.make_pickle_files == "True":
             save_dict['Total_mass_primary'].append(primary_total_mass)
             save_dict['Total_mass_secondary'].append(secondary_total_mass)
             save_dict['Secondary_velocity'].append(secondary_velocity)
-            save_dict['Relative_velocity_to_medium'].append(bulk_v)
+            save_dict['Bulk_velocity'].append(bulk_v)
             save_dict['L1'].append(sphere_radius_1)
             
             file = open(pickle_file, 'wb')
