@@ -194,7 +194,10 @@ if args.make_pickle_files == "True":
             Mass_profile_primary = []
             while rit < len(rad_bins_primary):
                 bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_primary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_primary[rit]))[0]
-                m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                try:
+                    m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                except:
+                    m_shell = np.nan
                 Mass_profile_primary.append(m_shell)
                 rit = rit + 1
             
@@ -242,7 +245,10 @@ if args.make_pickle_files == "True":
             Mass_profile_secondary = []
             while rit < len(rad_bins_secondary):
                 bin_inds = np.where((sph_radial_vector_mag.in_units('au')>rad_bins_secondary[rit-1])&(sph_radial_vector_mag.in_units('au')<rad_bins_secondary[rit]))[0]
-                m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                try:
+                    m_shell = np.mean(measuring_sphere_primary['mass'][bin_inds].in_units('msun'))
+                else:
+                    m_shell = np.nan
                 Mass_profile_secondary.append(m_shell)
                 rit = rit + 1
             
