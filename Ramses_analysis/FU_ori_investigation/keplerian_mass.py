@@ -113,7 +113,7 @@ if args.make_pickle_files == "True":
     
     pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     if len(glob.glob(pickle_file[:-4]+"*")) == 0:
-        save_dict = {'time':[], 'Total_mass_primary':[], 'Total_secondary_mass':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[]}
+        save_dict = {'time':[], 'Total_mass_primary':[], 'Total_secondary_mass':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[], 'Secondary_velocity':[], 'Relative_velocity_to_medium':[]}
     else:
         import pdb
         pdb.set_trace()
@@ -215,6 +215,11 @@ if args.make_pickle_files == "True":
             sph_dvy = measuring_sphere_secondary['velocity_y'].in_units('cm/s') - secondary_velocity[1].in_units('cm/s')
             sph_dvz = measuring_sphere_secondary['velocity_z'].in_units('cm/s') - secondary_velocity[2].in_units('cm/s')
             
+            bulk_vx = np.mean(measuring_sphere_secondary['velocity_x'].in_units('cm/s'))
+            bulk_vy = np.mean(measuring_sphere_secondary['velocity_y'].in_units('cm/s'))
+            bulk_vz = np.mean(measuring_sphere_secondary['velocity_z'].in_units('cm/s'))
+            bulk_v = yt.YTArray([bulk_vx, bulk_vy, bulk_vz]) - secondary_velocity.in_units('cm/s')
+            
             v_mag = np.sqrt(sph_dvx**2 + sph_dvy**2 + sph_dvz**2)
             sph_velocity_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
             
@@ -273,6 +278,8 @@ if args.make_pickle_files == "True":
             save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
             save_dict['Total_mass_primary'].append(primary_total_mass)
             save_dict['Total_mass_secondary'].append(secondary_total_mass)
+            save_dict['Secondary_velocity'].append(secondary_velocity)
+            save_dict['Relative_velocity_to_medium'].append(bulk_v)
             save_dict['L1'].append(sphere_radius_1)
             
             file = open(pickle_file, 'wb')
