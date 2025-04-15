@@ -499,7 +499,7 @@ for pickle_file in pickle_files:
             ax.set_xlim(xlim)
             ax.set_ylim(ylim)
             #title_str = "proj vec:["+str(np.round(args_dict['proj_vector'][0].value*100)/100)+ "," + str(np.round(args_dict['proj_vector'][1].value*100)/100) +"," +str(np.round(args_dict['proj_vector'][2].value*100)/100)+"], companion LOS pos:"+str(int(part_info['particle_position_z'][1]))+"AU"
-            #ax.set_title(title_str)
+            ax.set_title("Time:"+time_val+"yr")
             
             if None in (cbar_min, cbar_max):
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.magma, rasterized=True)
@@ -556,13 +556,13 @@ for pickle_file in pickle_files:
             if size > 1:
                 try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                    plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                    #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                     print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
                 except:
                     print("couldn't save for the dviread.py problem. Make frame " + str(proj_number) + " on ipython")
             else:
                 plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
-                plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
+                #plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
                 print('Created frame of projection', proj_number, 'of 8 on rank', rank, 'at time of', str(time_val), 'to save_dir:', file_name + '.jpg')
 
 print("Completed making frames on rank", rank)
