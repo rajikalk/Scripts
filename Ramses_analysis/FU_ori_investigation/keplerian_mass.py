@@ -113,7 +113,7 @@ if args.make_pickle_files == "True":
     
     pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     if len(glob.glob(pickle_file[:-4]+"*")) == 0:
-        save_dict = {'time':[], 'Total_mass_primary':[], 'Total_secondary_mass':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'radius_primary':[], 'mass_profile_primary':[], 'radius_secondary':[], 'mass_profile_secondary':[], 'Secondary_velocity':[], 'Relative_velocity_to_medium':[]}
+        save_dict = {'Time':[], 'Total_mass_primary':[], 'Total_mass_secondary':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'Radius_primary':[], 'Mass_profile_primary':[], 'Radius_secondary':[], 'Mass_profile_secondary':[], 'Secondary_velocity':[], 'Relative_velocity_to_medium':[]}
     else:
         import pdb
         pdb.set_trace()
@@ -199,8 +199,8 @@ if args.make_pickle_files == "True":
                 Mass_profile_primary.append(m_shell)
                 rit = rit + 1
             
-            save_dict['radius_primary'].append(bin_centers_primary)
-            save_dict['mass_profile_primary'].append(Mass_profile_primary)
+            save_dict['Radius_primary'].append(bin_centers_primary)
+            save_dict['Mass_profile_primary'].append(Mass_profile_primary)
             
             #Secondary mass
             sph_dx = measuring_sphere_secondary['x'].in_units('cm') - secondary_position[0].in_units('cm')
@@ -256,8 +256,8 @@ if args.make_pickle_files == "True":
                 Mass_profile_secondary.append(m_shell)
                 rit = rit + 1
             
-            save_dict['radius_secondary'].append(bin_centers_secondary)
-            save_dict['mass_profile_secondary'].append(Mass_profile_secondary)
+            save_dict['Radius_secondary'].append(bin_centers_secondary)
+            save_dict['Mass_profile_secondary'].append(Mass_profile_secondary)
                 
             xmax = np.max([bin_centers_primary[-1], bin_centers_secondary[-1]])
             ymin = np.min([np.min(Mass_profile_primary), np.min(Mass_profile_secondary)])
@@ -273,7 +273,7 @@ if args.make_pickle_files == "True":
             plt.ylabel("Mass (msun)")
             plt.savefig(frame_name)
             
-            save_dict['time'].append(time_val)
+            save_dict['Time'].append(time_val)
             save_dict['Kep_mass_primary'].append(near_kep_mass_primary)
             save_dict['Kep_mass_secondary'].append(near_kep_mass_secondary)
             save_dict['Total_mass_primary'].append(primary_total_mass)
