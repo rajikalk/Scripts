@@ -113,7 +113,7 @@ if args.make_pickle_files == "True":
     
     pickle_file = save_dir + "kepl_mass_" + str(rank) + ".pkl"
     if len(glob.glob(pickle_file[:-4]+"*")) == 0:
-        save_dict = {'Time':[], 'Total_mass_primary':[], 'Total_mass_secondary':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'Radius_primary':[], 'Mass_profile_primary':[], 'Radius_secondary':[], 'Mass_profile_secondary':[], 'Secondary_velocity':[], 'Relative_velocity_to_medium':[]}
+        save_dict = {'Time':[], 'Total_mass_primary':[], 'Total_mass_secondary':[], 'Kep_mass_primary':[], 'Kep_mass_secondary':[], 'L1':[], 'Radius_primary':[], 'Mass_profile_primary':[], 'Radius_secondary':[], 'Mass_profile_secondary':[], 'Secondary_velocity':[], 'Bulk_velocity':[]}
     else:
         import pdb
         pdb.set_trace()
