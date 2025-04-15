@@ -313,6 +313,8 @@ if args.make_plot_figures == "True":
     Mass_profile_primary = []
     bin_centers_secondary = []
     Mass_profile_secondary = []
+    Secondary_velocity = []
+    Bulk_velocity = []
     
     pickle_files = sorted(glob.glob(save_dir + "kepl_mass_*.pkl"))
     
@@ -331,6 +333,8 @@ if args.make_plot_figures == "True":
         Mass_profile_primary = Mass_profile_primary + save_dict['Mass_profile_primary']
         bin_centers_secondary = bin_centers_secondary + save_dict['Radius_secondary']
         Mass_profile_secondary = Mass_profile_secondary + save_dict['Mass_profile_secondary']
+        Secondary_velocity = Secondary_velocity + save_dict['Secondary_velocity']
+        Bulk_velocity = Bulk_velocity + save_dict['Bulk_velocity']
         
     sort_inds = np.argsort(time_arr)
     time_arr = np.array(time_arr)[sort_inds]
@@ -339,6 +343,9 @@ if args.make_plot_figures == "True":
     Total_mass_primary = np.array(Total_mass_primary)[sort_inds]
     Total_mass_secondary = np.array(Total_mass_secondary)[sort_inds]
     L1_arr = np.array(L1_arr)[sort_inds]
+    Secondary_velocity = np.array(Secondary_velocity)[sort_inds]
+    Bulk_velocity = np.array(Bulk_velocity)[sort_inds]
+    
     
     start_ind = np.argmin(abs(particle_data['time'] - time_arr[0]))
     end_ind = np.argmin(abs(particle_data['time'] - time_arr[-1]))
@@ -346,26 +353,40 @@ if args.make_plot_figures == "True":
     #Plotting
 
     plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width), sharex=True)
+    fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
     
     #Plot figure
     ax2 = axs[0].twinx()
-    ax2.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='k')
+    ax2.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='k', alpha=0.25)
     if args.sphere_radius_cells != None:
-        ax2.axhline(y=args.sphere_radius_cells, ls='--')
+        ax2.axhline(y=args.sphere_radius_cells, ls='--', alpha=0.25, color='k')
     else:
-        ax2.semilogy(time_arr, L1_arr, ls='--')
+        ax2.semilogy(time_arr, L1_arr, ls='--', alpha=0.25, color='k')
     ax2.set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
     ax2.set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
     ax2.set_ylabel('Separation (AU)')
     
-    axs[0].semilogy(time_arr,Kep_mass_primary, label="Primary", color='blue')
-    axs[0].semilogy(time_arr,Total_mass_primary, color='blue', alpha=0.5)
-    axs[0].semilogy(time_arr,Kep_mass_secondary, label="Secondary", color='orange')
-    axs[0].semilogy(time_arr,Total_mass_secondary, color='orange', alpha=0.5)
+    axs[0].semilogy(time_arr,Kep_mass_primary, label="Keplerian mass", color='blue')
+    axs[0].semilogy(time_arr,Total_mass_primary, label="Total mass", color='blue', alpha=0.5)
+    axs[0].set_ylabel('Sphere Mass (M$_\odot$)')
     axs[0].legend()
-    axs[0].set_xlabel('Time (yr)')
-    axs[0].set_ylabel('Keplerian mass (M$_\odot$)')
+    axs[0].set_title("Primary", y=1.0, pad=-14)
+    
+    ax3 = axs[1].twinx()
+    ax3.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='k', alpha=0.25)
+    if args.sphere_radius_cells != None:
+        ax3.axhline(y=args.sphere_radius_cells, ls='--', alpha=0.25, color='k')
+    else:
+        ax3.semilogy(time_arr, L1_arr, ls='--', alpha=0.25, color='k')
+    ax3.set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
+    ax3.set_ylim([np.min(particle_data['separation'][start_ind:end_ind]), np.max(particle_data['separation'][start_ind:end_ind])])
+    ax3.set_ylabel('Separation (AU)')
+    axs[1].semilogy(time_arr,Kep_mass_secondary, label="Keplerian mass", color='orange')
+    axs[1].semilogy(time_arr,Total_mass_secondary, label="Total mass", color='orange', alpha=0.5)
+    axs[1].legend(loc='upper right')
+    axs[1].set_title("Primary", y=1.0, pad=-14)
+    axs[1].set_xlabel('Time (yr)')
+    axs[1].set_ylabel('Sphere mass (M$_\odot$)')
 
     file_name = save_dir+"Keplerian_mass.pdf"
     plt.savefig(file_name, bbox_inches='tight', dpi=300)
