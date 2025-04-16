@@ -346,9 +346,49 @@ if args.make_plot_figures == "True":
     Secondary_velocity = np.array(Secondary_velocity)[sort_inds]
     Bulk_velocity = np.array(Bulk_velocity)[sort_inds]
     
-    
     start_ind = np.argmin(abs(particle_data['time'] - time_arr[0]))
     end_ind = np.argmin(abs(particle_data['time'] - time_arr[-1]))
+    
+    #Calcualte gravitational Radius
+    dx = Bulk_velocity.T[0] - Secondary_velocity.T[0]
+    dy = Bulk_velocity.T[1] - Secondary_velocity.T[1]
+    dz = Bulk_velocity.T[2] - Secondary_velocity.T[2]
+    rel_vel = np.sqrt(dx**2 + dy**2 + dz**2)/1.e4
+    
+    Secondary_mass = []
+    for time_val in time_arr:
+        time_ind = np.argmin(abs(particle_data['time'] - time_val))
+        Secondary_mass.append(np.array(particle_data['mass']).T[1][time_ind])
+    
+    Secondary_mass = yt.YTArray(Secondary_mass, 'msun')
+    rel_vel = yt.YTArray(rel_vel, 'km/s')
+    
+    R_grav = yt.units.gravitational_constant.in_cgs()*Secondary_mass/rel_vel**2
+    
+    y_lim = [np.min(R_grav.in_units('au')), np.max(particle_data['separation'])]
+    
+    plt.clf()
+    fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, single_col_width), sharex=True)
+    ax2 = axs[0].twinx()
+    ax3 = axs[1].twinx()
+    
+    ax2.semilogy(particle_data['time'], particle_data['separation'], color='k', alpha=0.25)
+    ax3.semilogy(particle_data['time'], particle_data['separation'], color='k', alpha=0.25)
+    ax2.set_ylabel('Separation (AU)')
+    ax3.set_ylabel('Separation (AU)')
+    ax2.set_ylim(y_lim)
+    ax3.set_ylim(y_lim)
+    
+    axs[0].plot(time_arr, rel_vel)
+    axs[0].set_ylim(bottom=0)
+    axs[1].semilogy(time_arr, R_grav.in_units('au'))
+    axs[1].set_ylim(y_lim)
+    ax2.set_xlim([particle_data['time'][start_ind], particle_data['time'][end_ind]])
+    axs[0].set_ylabel('V$_{rel}$ (km/s)')
+    axs[1].set_ylabel('R$_{grav}$ (AU)')
+    axs[1].set_xlabel('Time (yr)')
+    file_name = save_dir+"Gravitational_radius.pdf"
+    plt.savefig(file_name, bbox_inches='tight', dpi=300)
 
     #Plotting
 
@@ -383,7 +423,7 @@ if args.make_plot_figures == "True":
     ax3.set_ylabel('Separation (AU)')
     axs[1].semilogy(time_arr,Kep_mass_secondary, label="Keplerian mass", color='orange')
     axs[1].semilogy(time_arr,Total_mass_secondary, label="Total mass", color='orange', alpha=0.5)
-    axs[1].legend(loc='upper right')
+    axs[1].legend(loc='upper left')
     axs[1].set_title("Primary", y=1.0, pad=-14)
     axs[1].set_xlabel('Time (yr)')
     axs[1].set_ylabel('Sphere mass (M$_\odot$)')
