@@ -79,7 +79,7 @@ for file_it in range(len(files)):
     
     if file_it > 3:
         axs.flatten()[file_it].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-    if np.remainder(file_it,4) = 0:
+    if np.remainder(file_it,4) == 0:
         axs.flatten()[file_it].set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
     axs.flatten()[file_it].set_xlim(xlim)
     axs.flatten()[file_it].set_ylim(ylim)
