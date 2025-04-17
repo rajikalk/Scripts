@@ -95,3 +95,5 @@ for file_it in range(len(files)):
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[file_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+
+    plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
