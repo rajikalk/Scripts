@@ -98,7 +98,7 @@ for file_it in range(len(files)):
         plot_velocity_legend = True
     mym.my_own_quiver_function(axs.flatten()[file_it], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)
 
-    mym.annotate_particles(axs.flatten()[file_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, ylabel_scale=0.3)
+    mym.annotate_particles(axs.flatten()[file_it], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, ylabel_scale=0.03)
 
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
