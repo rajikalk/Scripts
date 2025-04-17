@@ -34,7 +34,7 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
-files = sorted(glob.glob(args.in_dir + 'time_*.pkl'))
+files = sorted(glob.glob(args.input_dir + 'time_*.pkl'))
 
 cmap=plt.cm.gist_heat
 two_col_width = 7.20472 #inches
