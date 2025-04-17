@@ -116,6 +116,9 @@ for file_it in range(len(files)):
     axs.flatten()[file_it].tick_params(axis='both', direction='in', color='white', top=True, right=True)
 
     if file_it == 7:
+        fig.subplots_adjust(right=0.8)
+        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        fig.colorbar(plot, cax=cbar_ax)
         plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
     else:
         plt.savefig(args.save_directory + 'Mosaic.jpg', bbox_inches='tight', dpi=300)
