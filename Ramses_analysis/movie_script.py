@@ -364,12 +364,12 @@ if args.make_frames_only == 'False':
             if usable_files[file_int] == usable_files[file_int-1]:
                 os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
         make_pickle = False
-        if args.plot_time is None:
-            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-        elif args.plot_time != None:
+        if args.plot_time != None:
             pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
         elif len(args.movie_times) > 0:
             pickle_file = save_dir + "time_" + str(m_times[file_int]) +".pkl"
+        else args.plot_time is None:
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         elif os.path.isfile(pickle_file) == True:
