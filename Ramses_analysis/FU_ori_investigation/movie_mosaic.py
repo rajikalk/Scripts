@@ -51,8 +51,8 @@ for file_it in range(len(files)):
     #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
     file.close()
     
-    import pdb
-    pdb.set_trace()
+    cbar_min = args_dict['cbar_min']
+    cbar_max = args_dict['cbar_max']
     
     time_val = args_dict['time_val']
     
