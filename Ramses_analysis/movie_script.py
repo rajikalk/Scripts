@@ -235,9 +235,7 @@ if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
 elif len(args.movie_times) > 0:
-    import pdb
-    pdb.set_trace()
-    m_times = args.movie_times
+    m_times = eval(args.movie_times)
     no_frames = len(m_times)
 elif args.use_all_files == 'False':
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=args.start_time)
