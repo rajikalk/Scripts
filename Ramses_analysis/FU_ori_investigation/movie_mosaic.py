@@ -44,7 +44,11 @@ font_size = 10
 plot_velocity_legend = True
 
 plt.clf()
-fig, axs = plt.subplots(ncols=4, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+#fig, axs = plt.subplots(ncols=4, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
+
+fig = plt.figure()
+gs = fig.add_gridspec(2, 4, wspace=-0.46, hspace=0)
+axs = gs.subplots()
 
 for file_it in range(len(files)):
     file = open(files[file_it], 'rb')
@@ -73,8 +77,10 @@ for file_it in range(len(files)):
     xabel = args_dict['xabel']
     yabel = args_dict['yabel']
     
-    axs.flatten()[file_it].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-    axs.flatten()[file_it].set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+    if file_it > 3:
+        axs.flatten()[file_it].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+    if np.remainder(file_it,4) = 0:
+        axs.flatten()[file_it].set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
     axs.flatten()[file_it].set_xlim(xlim)
     axs.flatten()[file_it].set_ylim(ylim)
     
@@ -97,3 +103,4 @@ for file_it in range(len(files)):
     time_text = axs.flatten()[file_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
 
     plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
+    print("plotting file it", file_it)
