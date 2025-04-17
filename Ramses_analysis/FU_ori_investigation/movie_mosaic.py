@@ -41,7 +41,7 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
-plot_velocity_legend = True
+plot_velocity_legend = False
 
 plt.clf()
 #fig, axs = plt.subplots(ncols=4, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
