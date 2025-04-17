@@ -46,7 +46,7 @@ plot_velocity_legend = False
 plt.clf()
 #fig, axs = plt.subplots(ncols=4, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
 
-fig = plt.figure(figsize=(two_col_width, 0.4*two_col_width))
+fig = plt.figure(figsize=(two_col_width, 0.5*two_col_width))
 gs = fig.add_gridspec(2, 4, wspace=0, hspace=0)
 axs = gs.subplots()
 
