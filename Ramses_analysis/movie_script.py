@@ -31,7 +31,7 @@ def parse_inputs():
     parser.add_argument("-wr", "--working_rank", default=0, type=int)
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
-    parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=list, default=[])
+    parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=str, default="")
     parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-16)
     parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-14)
     parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
@@ -235,6 +235,8 @@ if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
 elif len(args.movie_times) > 0:
+    import pdb
+    pdb.set_trace()
     m_times = args.movie_times
     no_frames = len(m_times)
 elif args.use_all_files == 'False':
