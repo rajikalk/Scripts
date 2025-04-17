@@ -89,7 +89,8 @@ for file_it in range(len(files)):
     else:
         cmap=plt.cm.gist_heat
         plot = axs.flatten()[file_it].pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
-    plt.gca().set_aspect('equal')
+    axs.flatten()[file_it].set_aspect('equal')
+    #plt.gca().set_aspect('equal')
     
     axs.flatten()[file_it].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     if file_it ==  7:
@@ -112,5 +113,8 @@ for file_it in range(len(files)):
             
     axs.flatten()[file_it].tick_params(axis='both', direction='in', color='white', top=True, right=True)
 
-    plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
+    if file_it == 7:
+        plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
+    else:
+        plt.savefig(args.save_directory + 'Mosaic.jpg', bbox_inches='tight', dpi=300)
     print("plotting file it", file_it)
