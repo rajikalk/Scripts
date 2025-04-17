@@ -49,6 +49,7 @@ plt.clf()
 fig = plt.figure()
 gs = fig.add_gridspec(2, 4, wspace=0, hspace=0)
 axs = gs.subplots()
+plt.figure(figsize=(two_col_width, 0.4*two_col_width))
 
 for file_it in range(len(files)):
     file = open(files[file_it], 'rb')
