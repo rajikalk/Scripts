@@ -47,7 +47,7 @@ plt.clf()
 #fig, axs = plt.subplots(ncols=4, nrows=2, figsize=(two_col_width, single_col_width), sharex=True, sharey=True)
 
 fig = plt.figure()
-gs = fig.add_gridspec(2, 4, wspace=-0.46, hspace=0)
+gs = fig.add_gridspec(2, 4, wspace=0, hspace=0)
 axs = gs.subplots()
 
 for file_it in range(len(files)):
@@ -101,6 +101,16 @@ for file_it in range(len(files)):
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[file_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+    
+    if file_it < 4:
+        xticklabels = axs.flatten()[file_it].get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+
+    if np.remainder(file_it, 4) > 0:
+        yticklabels = axs.flatten()[file_it].get_yticklabels()
+        plt.setp(yticklabels, visible=False)
+            
+    axs.flatten()[file_it].tick_params(axis='both', direction='in', color='white', top=True, right=True)
 
     plt.savefig(args.save_directory + 'Mosaic.pdf', bbox_inches='tight', dpi=300)
     print("plotting file it", file_it)
