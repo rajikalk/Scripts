@@ -102,6 +102,7 @@ for file_it in range(len(files)):
     time_string = "$t$="+str(int(time_val))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = axs.flatten()[file_it].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     
     if file_it < 4:
         xticklabels = axs.flatten()[file_it].get_xticklabels()
