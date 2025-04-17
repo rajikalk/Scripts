@@ -424,7 +424,7 @@ if args.make_plot_figures == "True":
     axs[1].semilogy(time_arr,Kep_mass_secondary, label="Keplerian mass", color='orange')
     axs[1].semilogy(time_arr,Total_mass_secondary, label="Total mass", color='orange', alpha=0.5)
     axs[1].legend(loc='upper left')
-    axs[1].set_title("Primary", y=1.0, pad=-14)
+    axs[1].set_title("Secondary", y=1.0, pad=-14)
     axs[1].set_xlabel('Time (yr)')
     axs[1].set_ylabel('Sphere mass (M$_\odot$)')
 
