@@ -367,7 +367,7 @@ if args.make_frames_only == 'False':
         if args.plot_time != None:
             pickle_file = save_dir + "time_" + str(args.plot_time) +".pkl"
         elif len(args.movie_times) > 0:
-            pickle_file = save_dir + "time_" + str(m_times[file_int]) +".pkl"
+            pickle_file = save_dir + "time_" + str(float(m_times[file_int])) +".pkl"
         else:
             pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
         if os.path.isfile(pickle_file) == False:
