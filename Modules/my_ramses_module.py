@@ -462,7 +462,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025):
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
@@ -529,11 +529,11 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             string_2 = p_t[69:]
             colors_1 = rainbow_text_colors[:9]
             colors_2 = rainbow_text_colors[9:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
             #try:
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + 0.025*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
+            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
     return axis
