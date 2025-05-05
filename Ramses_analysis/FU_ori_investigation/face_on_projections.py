@@ -312,6 +312,9 @@ if rank == 0:
     print("Finding times")
 if args.plot_time != None:
     m_times = [args.plot_time]
+elif len(args.movie_times) > 0:
+    m_times = eval(args.movie_times)
+    no_frames = len(m_times)
 else:
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
 if rank == 0:
