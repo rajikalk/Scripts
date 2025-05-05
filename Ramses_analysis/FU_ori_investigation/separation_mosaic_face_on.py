@@ -92,14 +92,14 @@ prev_primary_mass = np.nan
 #get start and end time
 pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % 0) +'.pkl'
 file = open(pickle_file, 'rb')
-X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
 file.close()
 time_start = args_dict['time_val']
 
 if args.end_burst_time == None:
     pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
     file = open(pickle_file, 'rb')
-    X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+    X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
     file.close()
     time_end = args_dict['time_val']
 else:
