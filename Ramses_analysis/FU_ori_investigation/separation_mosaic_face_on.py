@@ -166,7 +166,7 @@ while fit < no_frames:
             #del args_dict
             gc.collect()
             
-            ax2.set_ylabel(yabel, fontsize=args.text_font, labelpad=-5)#, labelpad=-20)
+            ax2.set_xlabel(yabel, fontsize=args.text_font, labelpad=-1)#, labelpad=-20)
             ax2.set_xlim(xlim)
             ax2.set_ylim(ylim)
             
@@ -189,8 +189,8 @@ while fit < no_frames:
             #del xlim, ylim
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
-            xticklabels = ax2.get_xticklabels()
-            plt.setp(xticklabels, visible=False)
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
             #del xticklabels
             gc.collect()
             
@@ -214,7 +214,7 @@ while fit < no_frames:
             gc.collect()
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.825, 0.11, 0.02, 0.77])
+            cbar_ax = fig.add_axes([0.95, 0.11, 0.02, 0.66])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
