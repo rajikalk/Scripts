@@ -191,8 +191,8 @@ while fit < no_frames:
             
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-            xticklabels = ax2.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
+            #xticklabels = ax2.get_xticklabels()
+            #plt.setp(xticklabels[0], visible=False)
             #del xticklabels
             gc.collect()
             
@@ -218,7 +218,7 @@ while fit < no_frames:
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.95, 0.22, 0.02, 0.55])
             cbar = fig.colorbar(plot, cax=cbar_ax)
-            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=20, size=args.text_font)
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=15, size=args.text_font)
             
             ax1.tick_params(axis='both', direction='in', top=True, right=True)
             
