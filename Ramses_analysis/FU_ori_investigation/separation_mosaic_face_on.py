@@ -85,20 +85,19 @@ if size > 1:
 '''
 
 
-no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
-
+no_frames = len(glob.glob(args.input_dir + 'movie_frame*pkl'))
 cmap=plt.cm.gist_heat
 prev_primary_mass = np.nan
 
 #get start and end time
-pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % 0) +'.pkl'
+pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % 0) +'.pkl'
 file = open(pickle_file, 'rb')
 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
 file.close()
 time_start = args_dict['time_val']
 
 if args.end_burst_time == None:
-    pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
+    pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
     file = open(pickle_file, 'rb')
     X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
@@ -117,7 +116,7 @@ while fit < no_frames:
     if rank == rit:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
         tracer_file = args.in_tracer_data+'/movie_frame_' + ("%06d" % fit) +'.pkl'
-        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/XY/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/XZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(args.input_dir+'/YZ/movie_frame_' + ("%06d" % fit) +'.pkl') and os.path.isfile(tracer_file):
+        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/movie_frame_' + ("%06d" % fit) +'.pkl'):
         
             file = open(tracer_file, 'rb')
             tracer_data = pickle.load(file)
@@ -129,7 +128,7 @@ while fit < no_frames:
             
             #===================YZ proj=====================
         
-            pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Face_on_disc/movie_frame_' + ("%06d" % fit) +'.pkl'
+            pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % fit) +'.pkl'
             file = open(pickle_file, 'rb')
             X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
             file.close()
