@@ -177,7 +177,6 @@ while fit < no_frames:
             ax2.set_aspect('equal')
             #del X, Y, magx, magy
             gc.collect()
-            mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
             #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
