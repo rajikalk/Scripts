@@ -90,14 +90,14 @@ cmap=plt.cm.gist_heat
 prev_primary_mass = np.nan
 
 #get start and end time
-pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % 0) +'.pkl'
+pickle_file = args.input_dir+'movie_frame_' + ("%06d" % 0) +'.pkl'
 file = open(pickle_file, 'rb')
 X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
 file.close()
 time_start = args_dict['time_val']
 
 if args.end_burst_time == None:
-    pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
+    pickle_file = args.input_dir+'movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
     file = open(pickle_file, 'rb')
     X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
     file.close()
@@ -115,7 +115,7 @@ while fit < no_frames:
         rit = 0
     if rank == rit:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
-        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/movie_frame_' + ("%06d" % fit) +'.pkl'):
+        if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'movie_frame_' + ("%06d" % fit) +'.pkl'):
     
             fig = plt.figure()
             gs = fig.add_gridspec(1, 2, wspace=-0.46, hspace=0)
@@ -123,7 +123,7 @@ while fit < no_frames:
             
             #===================YZ proj=====================
         
-            pickle_file = args.input_dir+'/movie_frame_' + ("%06d" % fit) +'.pkl'
+            pickle_file = args.input_dir+'movie_frame_' + ("%06d" % fit) +'.pkl'
             file = open(pickle_file, 'rb')
             X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
             file.close()
