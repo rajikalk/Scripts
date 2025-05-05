@@ -214,7 +214,7 @@ while fit < no_frames:
             gc.collect()
             
             fig.subplots_adjust(right=0.95)
-            cbar_ax = fig.add_axes([0.95, 0.11, 0.02, 0.66])
+            cbar_ax = fig.add_axes([0.95, 0.22, 0.02, 0.55])
             cbar = fig.colorbar(plot, cax=cbar_ax)
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=0, size=args.text_font)
             
