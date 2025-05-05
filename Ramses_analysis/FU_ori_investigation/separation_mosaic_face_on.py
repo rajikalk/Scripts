@@ -118,7 +118,7 @@ while fit < no_frames:
         if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'movie_frame_' + ("%06d" % fit) +'.pkl'):
     
             fig = plt.figure()
-            gs = fig.add_gridspec(1, 2, wspace=-0.46, hspace=0)
+            gs = fig.add_gridspec(1, 2, wspace=0, hspace=0)
             ax1, ax2 = gs.subplots()
             
             #===================YZ proj=====================
