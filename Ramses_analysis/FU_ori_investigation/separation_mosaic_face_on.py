@@ -115,12 +115,7 @@ while fit < no_frames:
         rit = 0
     if rank == rit:
         frame_name = args.save_directory + "movie_frame_" + ("%06d" % fit) + ".jpg"
-        tracer_file = args.in_tracer_data+'/movie_frame_' + ("%06d" % fit) +'.pkl'
         if os.path.isfile(frame_name) == False and os.path.isfile(args.input_dir+'/movie_frame_' + ("%06d" % fit) +'.pkl'):
-        
-            file = open(tracer_file, 'rb')
-            tracer_data = pickle.load(file)
-            file.close()
     
             fig = plt.figure()
             gs = fig.add_gridspec(1, 2, wspace=-0.46, hspace=0)
