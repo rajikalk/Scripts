@@ -175,10 +175,6 @@ while fit < no_frames:
             #del image
             gc.collect()
             ax2.set_aspect('equal')
-            if fit > 0 or time_val > -1.0:
-                ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-            else:
-                ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             #del X, Y, magx, magy
             gc.collect()
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
