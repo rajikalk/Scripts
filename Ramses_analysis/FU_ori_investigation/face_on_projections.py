@@ -522,7 +522,7 @@ for pickle_file in pickle_files:
                 if size > 1:
                     args.annotate_particles_mass = False
                 if args.annotate_particles_mass == True:
-                    mym.annotate_particles(ax, np.array([[0], [0]]), part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
+                    mym.annotate_particles(ax, np.array([[0], [0]]), part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'][0])
                 else:
                     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
 
