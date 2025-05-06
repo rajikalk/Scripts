@@ -402,6 +402,12 @@ if args.make_frames_only == 'False':
             L_mag = np.sqrt(np.sum(L_tot**2))
             L_unit = L_tot/L_mag
             
+            if size == 1:
+                import pdb
+                pdb.set_trace()
+            
+            ##CALCULCATE NORTH VECTOR!!
+            
             field = simfo['field']
             proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'))#data_source=rv_cut_region
             if args.resolution != 800:
