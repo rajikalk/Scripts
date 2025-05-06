@@ -548,7 +548,10 @@ for pickle_file in pickle_files:
                 try:
                     plt.savefig(file_name + ".jpg", format='jpg', bbox_inches='tight')
                     #time_string = "t="+str(int(time_val))+"yr"
-                    time_string = "$t$="+str(int(time_val))+"yr"
+                    if part_info['particle_tag'][0].value == 44:
+                        time_string = "$t$="+str(int(time_val-6392.938049569999))+"yr"
+                    else:
+                        time_string = "$t$="+str(int(time_val))+"yr"
                     time_string_raw = r"{}".format(time_string)
                     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string, va="center", ha="left", color='w', fontsize=args.text_font)
                     try:
