@@ -298,6 +298,9 @@ sys.stdout.flush()
 CW.Barrier()
 
 dd = ds.all_data()
+if size == 1:
+    import pdb
+    pdb.set_trace()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
 else:
