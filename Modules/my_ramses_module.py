@@ -272,7 +272,8 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     part_info = {'particle_mass':part_mass,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
-                 'particle_tag':part_tags}
+                 'particle_tag':part_tags,
+                 'formation_time':dd['sink_particle_form_time'][usable_sinks]}
     return part_info
 
 def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
