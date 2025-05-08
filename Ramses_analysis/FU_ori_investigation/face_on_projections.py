@@ -430,6 +430,30 @@ if args.make_frames_only == 'False':
             myf.set_east_vector(east_unit)
             myf.set_north_vector(north_unit)
             
+            #Calculate particle positions
+            
+            part_posx = dd['sink_particle_posx'][sink_id:].in_units('AU') - center_pos[0]
+            part_posy = dd['sink_particle_posy'][sink_id:].in_units('AU') - center_pos[1]
+            part_posz = dd['sink_particle_posz'][sink_id:].in_units('AU') - center_pos[2]
+            pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
+            
+            projected_particle_posy = projected_vector(pos_array, north_unit)
+            proj_part_y_mag = np.sqrt(np.sum((projected_particle_posy**2), axis=1))
+            proj_part_y_unit = (projected_particle_posy.T/proj_part_y_mag).T
+            north_sign = np.dot(north_unit, proj_part_y_unit.T)
+            proj_part_y = proj_part_y_mag*north_sign
+            proj_part_y = np.nan_to_num(proj_part_y)
+            
+            projected_particle_posx = projected_vector(pos_array, east_unit)
+            proj_part_x_mag = np.sqrt(np.sum((projected_particle_posx**2), axis=1))
+            proj_part_x_unit = (projected_particle_posx.T/proj_part_x_mag).T
+            east_sign = np.dot(east_unit, proj_part_x_unit.T)
+            proj_part_x = proj_part_x_mag*east_sign
+            proj_part_x = np.nan_to_num(proj_part_x)
+            
+            part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[1].value],[proj_part_y[0].value, proj_part_y[1].value]])
+            
+            
             center_vel_proj_y = projected_vector(center_vel, north_unit)
             center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
             
@@ -438,7 +462,7 @@ if args.make_frames_only == 'False':
             
             center_vel_image = np.array([center_vel_x, center_vel_y])
             
-            field_list = [simfo['field'], ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
+            proj_field_list = [simfo['field'], ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
             proj_dict = {simfo['field'][1]:[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
                     
             proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
