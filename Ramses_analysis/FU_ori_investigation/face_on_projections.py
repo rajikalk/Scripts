@@ -298,9 +298,6 @@ sys.stdout.flush()
 CW.Barrier()
 
 dd = ds.all_data()
-if size == 1:
-    import pdb
-    pdb.set_trace()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
 else:
@@ -402,57 +399,105 @@ if args.make_frames_only == 'False':
             L_mag = np.sqrt(np.sum(L_tot**2))
             L_unit = L_tot/L_mag
             
-            if size == 1:
-                import pdb
-                pdb.set_trace()
-            
             ##CALCULCATE NORTH VECTOR!!
+            Primary_pos = yt.YTArray([dd['sink_particle_posx'][44], dd['sink_particle_posy'][44], dd['sink_particle_posz'][44]])
+            Secondary_pos = yt.YTArray([dd['sink_particle_posx'][45], dd['sink_particle_posy'][45], dd['sink_particle_posz'][45]])
+            if sink_id == 45:
+                sep_vec = Primary_pos - Secondary_pos
+            elif sink_id == 44:
+                sep_vec = Secondary_pos - Primary_pos
+            sep_unit = sep_vec/np.sqrt(np.sum(sep_vec**2))
+            L_sep_ang = np.rad2deg(np.arccos(np.dot(L_unit, sep_unit)))
+            sep_north_ang = 90 - L_sep_ang
             
-            field = simfo['field']
-            proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'))#data_source=rv_cut_region
-            if args.resolution != 800:
-                proj.set_buff_size([args.resolution, args.resolution])
-            if args.field in str(field):
-                if weight_field == None:
-                    if args.divide_by_proj_thickness == "True":
-                        proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
-                    else:
-                        proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
-                else:
-                    if args.divide_by_proj_thickness == "True":
-                        proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
-                    else:
-                        proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
-            else:
-                if weight_field == None:
-                    proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
-                else:
-                    proj_array = np.array(proj.frb.data[field].in_cgs())
+            L_proj_sep = projected_vector(L_tot, sep_unit)
+            L_proj_sep_mag = np.sqrt(np.sum(L_proj_sep**2))
+            L_proj_sep_unit = L_proj_sep/L_proj_sep_mag
+            
+            sep_orth_L = L_tot - L_proj_sep
+            sep_orth_L_unit = sep_orth_L/np.sqrt(np.sum(sep_orth_L**2))
+            sep_orth_L_length = L_mag*np.sin(np.deg2rad(L_sep_ang))
+            sep_orth_n_length = L_proj_sep_mag*np.tan(np.deg2rad(sep_north_ang))
+            
+            north_modifier = (sep_orth_n_length+sep_orth_L_length)/sep_orth_L_length
+            L_north_hypot = north_modifier*sep_orth_L
+            
+            north_vec = L_tot - L_north_hypot
+            north_unit = north_vec/np.sqrt(np.sum(north_vec**2))
+            east_unit = np.cross(north_unit, L_unit)
+            
+            myf.set_normal(L_unit)
+            myf.set_east_vector(east_unit)
+            myf.set_north_vector(north_unit)
+            
+            center_vel_proj_y = projected_vector(center_vel, north_unit)
+            center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
+            
+            center_vel_proj_x = projected_vector(center_vel, east_unit)
+            center_vel_x = np.sqrt(center_vel_proj_x.T[0]**2 + center_vel_proj_x.T[1]**2 + center_vel_proj_x.T[2]**2).in_units('cm/s')
+            
+            center_vel_image = np.array([center_vel_x, center_vel_y])
+            
+            field_list = [simfo['field'], ('gas', 'Proj_x_velocity'), ('gas', 'Proj_y_velocity')]
+            proj_dict = {simfo['field'][1]:[], 'Proj_x_velocity':[], 'Proj_y_velocity':[]}
                     
-            image = proj_array
+            proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
             
-            args_dict = {}
-            if args.annotate_time == "True":
-                args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
-            args_dict.update({'field':simfo['field']})
-            args_dict.update({'annotate_velocity': args.plot_velocity_legend})
-            args_dict.update({'time_val': time_val})
-            args_dict.update({'cbar_min': cbar_min})
-            args_dict.update({'cbar_max': cbar_max})
-            args_dict.update({'title': title})
-            args_dict.update({'xabel': xabel})
-            args_dict.update({'yabel': yabel})
-            args_dict.update({'axlim':args.ax_lim})
-            args_dict.update({'xlim':xlim})
-            args_dict.update({'ylim':ylim})
-            args_dict.update({'has_particles':has_particles})
-            args_dict.update({'proj_vector': L_unit})
+            proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
+            proj_dict = {}
+            for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+                proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)#data_source=rv_cut_region
+                if args.resolution != 800:
+                    proj.set_buff_size([args.resolution, args.resolution])
+                if args.field in str(field):
+                    if weight_field == None:
+                        if args.divide_by_proj_thickness == "True":
+                            proj_array = np.array((proj.frb.data[field]/thickness.in_units('cm')).in_units(args.field_unit))
+                        else:
+                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit+"*cm"))
+                    else:
+                        if args.divide_by_proj_thickness == "True":
+                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                        else:
+                            proj_array = np.array(proj.frb.data[field].in_units(args.field_unit)*thickness.in_units('cm'))
+                else:
+                    if weight_field == None:
+                        proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
+                    else:
+                        proj_array = np.array(proj.frb.data[field].in_cgs())
+                        
+                sto.result_id = field[1]
+                sto.result = proj_array
             
-            pickle_file = pickle_file + '.pkl'
-            file = open(pickle_file, 'wb')
-            pickle.dump((X, Y, image, None, X_vel, Y_vel, None, None, part_info, args_dict, simfo, None), file)
-            file.close()
-            print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+            if rank == proj_root_rank:
+                image = proj_dict[proj_dict_keys[0]]
+                velx_full = proj_dict[proj_dict_keys[1]]
+                vely_full = proj_dict[proj_dict_keys[2]]
+                
+                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
+            
+                args_dict = {}
+                if args.annotate_time == "True":
+                    args_dict.update({'annotate_time': '$t$='+str(int(time_val))+'yr'})
+                args_dict.update({'field':simfo['field']})
+                args_dict.update({'annotate_velocity': args.plot_velocity_legend})
+                args_dict.update({'time_val': time_val})
+                args_dict.update({'cbar_min': cbar_min})
+                args_dict.update({'cbar_max': cbar_max})
+                args_dict.update({'title': title})
+                args_dict.update({'xabel': xabel})
+                args_dict.update({'yabel': yabel})
+                args_dict.update({'axlim':args.ax_lim})
+                args_dict.update({'xlim':xlim})
+                args_dict.update({'ylim':ylim})
+                args_dict.update({'has_particles':has_particles})
+                args_dict.update({'proj_vector': L_unit})
+                
+                pickle_file = pickle_file + '.pkl'
+                file = open(pickle_file, 'wb')
+                pickle.dump((X, Y, image, None, None, X_vel, Y_vel, None, None, part_info, args_dict, simfo, None), file)
+                file.close()
+                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
 sys.stdout.flush()
 CW.Barrier()
 
