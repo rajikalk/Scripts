@@ -432,9 +432,9 @@ if args.make_frames_only == 'False':
             
             #Calculate particle positions
             
-            part_posx = dd['sink_particle_posx'][sink_id:].in_units('AU') - center_pos[0]
-            part_posy = dd['sink_particle_posy'][sink_id:].in_units('AU') - center_pos[1]
-            part_posz = dd['sink_particle_posz'][sink_id:].in_units('AU') - center_pos[2]
+            part_posx = dd['sink_particle_posx'][-2:].in_units('AU') - center_pos[0]
+            part_posy = dd['sink_particle_posy'][-2:].in_units('AU') - center_pos[1]
+            part_posz = dd['sink_particle_posz'][-2:].in_units('AU') - center_pos[2]
             pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
             
             projected_particle_posy = projected_vector(pos_array, north_unit)
@@ -470,7 +470,7 @@ if args.make_frames_only == 'False':
             proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
             proj_dict = {}
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
-                proj = yt.OffAxisProjectionPlot(ds, L_unit, simfo['field'], width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)#data_source=rv_cut_region
+                proj = yt.OffAxisProjectionPlot(ds, L_unit, field, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)#data_source=rv_cut_region
                 if args.resolution != 800:
                     proj.set_buff_size([args.resolution, args.resolution])
                 if args.field in str(field):
