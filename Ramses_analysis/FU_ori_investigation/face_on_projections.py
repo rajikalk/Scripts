@@ -519,7 +519,7 @@ if args.make_frames_only == 'False':
                 
                 pickle_file = pickle_file + '.pkl'
                 file = open(pickle_file, 'wb')
-                pickle.dump((X, Y, image, None, None, X_vel, Y_vel, None, None, part_info, args_dict, simfo, None), file)
+                pickle.dump((X, Y, image, None, X_vel, Y_vel, None, None, part_info, args_dict, simfo, None), file)
                 file.close()
                 print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
 sys.stdout.flush()
@@ -562,6 +562,7 @@ for pickle_file in pickle_files:
             print("on rank", rank, "using pickle_file", pickle_file)
             file = open(pickle_file, 'rb')
             X, Y, image, vel_rad, X_vel, Y_vel, velx, vely, part_info, args_dict, simfo, center_vel_rv = pickle.load(file)
+            file.close()
             
             if np.round(np.mean(args_dict['xlim'])) == np.round(np.mean(X)):
                 xlim = args_dict['xlim']
