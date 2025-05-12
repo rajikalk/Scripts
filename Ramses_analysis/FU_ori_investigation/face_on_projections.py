@@ -15,7 +15,6 @@ from matplotlib.colors import LogNorm
 from matplotlib import transforms
 import matplotlib.patheffects as path_effects
 from matplotlib import ticker
-from scipy.ndimage import gaussian_filter
 plt.rcParams["text.usetex"] = False
 
 def parse_inputs():
@@ -592,7 +591,7 @@ for pickle_file in pickle_files:
             plt.gca().set_aspect('equal')
             cbar = plt.colorbar(plot, pad=0.0)
             
-            #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
+            mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel)
 
             if has_particles:
                 if size > 1:
