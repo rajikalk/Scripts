@@ -72,6 +72,11 @@ def sim_info(ds,args):
     dd = ds.all_data()
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
     field = ds.derived_field_list[field_it]
+    if args.weight_field != None:
+        wf_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.weight_field][0]
+        weight_field = ds.derived_field_list[wf_it]
+    else:
+        weight_field = None
     dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
@@ -100,7 +105,8 @@ def sim_info(ds,args):
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
                 'smoothing': smoothing,
-                'unit_string': unit_string
+                'unit_string': unit_string,
+                'weight_field': weight_field
                 }
     del field_it
     del field
@@ -280,17 +286,12 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
-if args.weight_field == 'None':
-    weight_field = None
-else:
-    weight_field = args.weight_field
+weight_field = simfo['weight_field']
 
 if args.plot_time != None:
     if args.weight_field == 'None':
-        weight_field = None
         pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
     else:
-        weight_field = args.weight_field
         pickle_file = save_dir + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "/"
        
 sys.stdout.flush()
