@@ -1229,6 +1229,9 @@ def _Proj_x_velocity(field, data):
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
     sign = np.dot(east_vector, radial_vel_unit.T)
     
+    import pdb
+    pdb.set_trace()
+    
     rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
     rv_mag = np.reshape(rv_mag, shape)
@@ -1249,6 +1252,9 @@ def _Proj_y_velocity(field, data):
     radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
     radial_vel_unit = (radial_vel.T/radial_vel_mag).T
     sign = np.dot(north_vector, radial_vel_unit.T)
+    
+    import pdb
+    pdb.set_trace()
     
     rv_mag = np.sqrt(np.sum((radial_vel**2), axis=1))
     rv_mag = yt.YTArray(rv_mag, 'cm/s')
