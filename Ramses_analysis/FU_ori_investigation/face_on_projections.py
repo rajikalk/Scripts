@@ -429,6 +429,10 @@ if args.make_frames_only == 'False':
             myf.set_east_vector(east_unit)
             myf.set_north_vector(north_unit)
             
+            if size == 1:
+                import pdb
+                pdb.set_trace()
+            
             #Calculate particle positions
             
             part_posx = dd['sink_particle_posx'][-2:].in_units('AU') - center_pos[0]
@@ -452,7 +456,6 @@ if args.make_frames_only == 'False':
             
             part_info['particle_position'] = np.array([[proj_part_x[0].value, proj_part_x[1].value],[proj_part_y[0].value, proj_part_y[1].value]])
             
-            
             center_vel_proj_y = projected_vector(center_vel, north_unit)
             center_vel_y = np.sqrt(center_vel_proj_y.T[0]**2 + center_vel_proj_y.T[1]**2 + center_vel_proj_y.T[2]**2).in_units('cm/s')
             
@@ -468,6 +471,11 @@ if args.make_frames_only == 'False':
             
             proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
             proj_dict = {}
+            
+            if size == 1:
+                import pdb
+                pdb.set_trace()
+            
             for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
                 proj = yt.OffAxisProjectionPlot(ds, L_unit, field, width=(x_width, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos.value, 'AU'), depth=(args.slice_thickness, 'AU'), north_vector=north_unit)#data_source=rv_cut_region
                 if args.resolution != 800:
