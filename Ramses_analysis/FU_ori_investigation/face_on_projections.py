@@ -374,6 +374,8 @@ if args.make_frames_only == 'False':
             
             center_pos = dd['Center_Position'].in_units('AU')
             center_vel = dd['Center_Velocity'].in_units('cm/s')
+            myf.set_center_vel(center_vel)
+            myf.set_center_pos(center_pos)
             
             measuring_sphere_primary = ds.sphere(center_pos, yt.YTQuantity(args.active_radius, 'au'))
             cell_mass = measuring_sphere_primary['mass'].in_units('g')
