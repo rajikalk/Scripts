@@ -500,7 +500,7 @@ if args.make_frames_only == 'False':
                 velx_full = proj_dict[proj_dict_keys[1]]
                 vely_full = proj_dict[proj_dict_keys[2]]
                 
-                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image)
+                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel_image, no_of_quivers=args.velocity_annotation_frequency)
             
                 args_dict = {}
                 if args.annotate_time == "True":
