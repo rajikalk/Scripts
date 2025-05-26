@@ -306,6 +306,11 @@ if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
 sink_form_time = dd['sink_particle_form_time'][sink_id]
+if args.image_center == 2:
+    secondary_form_time = dd['sink_particle_form_time'][sink_id+1]
+    start_time = secondary_form_time - sink_form_time
+else:
+    start_time = 0
 del dd
 
 if rank == 0:
@@ -316,7 +321,7 @@ elif len(args.movie_times) > 0:
     m_times = eval(args.movie_times)
     no_frames = len(m_times)
 else:
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
+    m_times = mym.generate_frame_times(files, args.time_step, start_time=start_time, presink_frames=0, end_time=args.end_time, form_time=sink_form_time)
 if rank == 0:
     print("Found times")
     
