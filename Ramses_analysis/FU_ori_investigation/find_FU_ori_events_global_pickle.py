@@ -61,6 +61,6 @@ for time_it in range(len(age)):
 plt.clf()
 plt.plot(time_arr, L_diff_arr)
 plt.xlabel('age (yr)')
-plt.ylabel('max L diff over 100 yr (log)')
-plt.savefig('L_diff_Sink_'+sink_file.split('sink_')[-1].split('/')[0]+'.png')
+plt.ylabel('max L diff over 80 yr (log)')
+plt.savefig('L_diff.png')
 print("plotted L diff history for sink", sink_file.split('sink_')[-1].split('/')[0], "on rank", rank)
