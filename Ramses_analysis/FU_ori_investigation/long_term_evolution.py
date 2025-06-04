@@ -32,7 +32,6 @@ font_size = 10
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, two_col_width), sharey=True)#, sharey=True)
-iter_range = range(0, len(pickle_files))
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
