@@ -31,20 +31,27 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, two_col_width), sharey=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
 axs.flatten()[0].semilogy(particle_data['time'], particle_data['lacc'])
-axs.flatten()[0].set_xlim([0, 25000])
+axs.flatten()[0].set_xlim([0, 15000])
 axs.flatten()[0].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
 axs.flatten()[1].semilogy(particle_data['time'], particle_data['lacc'])
-axs.flatten()[1].set_xlim([25000, 50000])
+axs.flatten()[1].set_xlim([15000, 30000])
 axs.flatten()[1].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
 axs.flatten()[2].semilogy(particle_data['time'], particle_data['lacc'])
-axs.flatten()[2].set_xlim([50000, 75000])
+axs.flatten()[2].set_xlim([30000, 45000])
 axs.flatten()[2].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
-axs.flatten()[2].set_ylim([1.e-2, 1.e1])
+axs.flatten()[3].semilogy(particle_data['time'], particle_data['lacc'])
+axs.flatten()[3].set_xlim([45000, 60000])
+axs.flatten()[3].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
+axs.flatten()[4].semilogy(particle_data['time'], particle_data['lacc'])
+axs.flatten()[4].set_xlim([60000, 75000])
+axs.flatten()[4].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
+axs.flatten()[4].set_xlabel("Time (yr)")
+axs.flatten()[4].set_ylim([5.e-2, 2.e1])
 
 plt.savefig('long_term_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
 
