@@ -148,3 +148,8 @@ m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
 mass = yt.YTArray(particle_data['mass']).in_units('g')
 L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
+particle_data['lacc'] = L_tot
+
+file = open(save_dir+'particle_data.pkl', 'wb')
+pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+file.close()
