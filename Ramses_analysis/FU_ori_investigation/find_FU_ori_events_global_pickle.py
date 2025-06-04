@@ -29,11 +29,11 @@ for time_it in range(len(age)):
     useable_times = age[time_it:end_it]
     useable_L = lacc[time_it:end_it]
     if len(useable_L) > 0:
-        L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
+        #L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
+        L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
         L_diff_arr.append(L_diff)
         time_arr.append(age[time_it])
         useable_L = np.log10(useable_L)
-        #L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
