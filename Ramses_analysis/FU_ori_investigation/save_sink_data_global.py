@@ -97,6 +97,7 @@ if args.update_pickle == 'True':
             
         particle_data = {}
         particle_data.update({'time':[]})
+        particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         counter = 0
         sink_form_time = 0
@@ -119,13 +120,18 @@ if args.update_pickle == 'True':
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                particle_data['time'].append(time_val)
-                
-                d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
-                d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-                acc_val = d_mass/d_time
-                acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
+                if time_val < yt.YTQuantity(10500, 'yr'):
+                    particle_data['time'].append(time_val)
+                    particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
+                    
+                    d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
+                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                    acc_val = d_mass/d_time
+                    acc_val[np.where(acc_val == 0)[0]]=1.e-12
+                    particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
+                else:
+                    break
+        print("Finished saving Sink 45 data")
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
