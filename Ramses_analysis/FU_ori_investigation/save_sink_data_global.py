@@ -99,6 +99,7 @@ if args.update_pickle == 'True':
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
+        particle_data.update({'separation':[]})
         counter = 0
         sink_form_time = 0
         
@@ -121,6 +122,11 @@ if args.update_pickle == 'True':
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 if time_val < yt.YTQuantity(75000, 'yr'):
+                    pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
+                    pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
+                    separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
+                    particle_data['separation'].append(separation)
+                    
                     particle_data['time'].append(time_val)
                     particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
                     
