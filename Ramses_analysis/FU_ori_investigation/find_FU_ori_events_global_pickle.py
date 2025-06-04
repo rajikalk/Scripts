@@ -14,7 +14,7 @@ time_window = yt.YTQuantity(80, 'yr')
 global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-file.close()
+file_open.close()
 
 age = yt.YTArray(particle_data['time'])
 lacc = yt.YTArray(particle_data['lacc']).T[1]
