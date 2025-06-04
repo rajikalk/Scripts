@@ -44,7 +44,7 @@ axs.flatten()[1].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
 axs.flatten()[2].semilogy(particle_data['time'], particle_data['lacc'])
 axs.flatten()[2].set_xlim([50000, 75000])
 axs.flatten()[2].set_ylabel("L$_{acc}$ (M$_\odot$/yr)")
-axs.flatten()[2].set_ylim(bottom=1.e-3)
+axs.flatten()[2].set_ylim([1.e-2, 1.e1])
 
 plt.savefig('long_term_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
 
