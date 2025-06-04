@@ -19,6 +19,12 @@ file_open.close()
 age = yt.YTArray(particle_data['time'])
 lacc = yt.YTArray(particle_data['lacc']).T[1]
 
+#Plot long term evolution
+plt.clf()
+plt.semilogy(particle_data['time'], particle_data['lacc'])
+plt.xlim(left=0)
+plt.ylim(bottom=1.e-3)
+
 rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
