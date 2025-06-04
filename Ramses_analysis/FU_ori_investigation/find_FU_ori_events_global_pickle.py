@@ -19,12 +19,6 @@ file_open.close()
 age = yt.YTArray(particle_data['time'])
 lacc = yt.YTArray(particle_data['lacc']).T[1]
 
-#Plot long term evolution
-plt.clf()
-plt.semilogy(particle_data['time'], particle_data['lacc'])
-plt.xlim(left=0)
-plt.ylim(bottom=1.e-3)
-
 rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
@@ -44,7 +38,7 @@ for time_it in range(len(age)):
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
-        if L_diff>1 and np.median(cor)>66.6 and mass[time_it] > 0.1:
+        if np.median(cor)>66.6 and mass[time_it] > 0.1: #L_diff>1 and
             plt.clf()
             fig, ax1 = plt.subplots()
 
