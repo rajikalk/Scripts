@@ -31,7 +31,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
