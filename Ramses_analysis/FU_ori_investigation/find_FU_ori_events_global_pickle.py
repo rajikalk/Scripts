@@ -8,7 +8,7 @@ import pickle
 import yt
 
 FU_temp = np.concatenate((np.zeros(25), np.ones(75)))
-time_window = yt.YTQuantity(80, 'yr')
+time_window = yt.YTQuantity(100, 'yr')
 
 global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 file_open = open(global_pickle, 'rb')
@@ -105,8 +105,8 @@ for time_it in range(len(age)):
         cor = np.correlate(scaled_L,FU_temp,'same')
         cor_arr.append(np.nanmax(cor))
         if L_diff>100:
-            import pdb
-            pdb.set_trace()
+            plt.plot(scaled_T, scaled_L)
+            plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
