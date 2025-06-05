@@ -85,7 +85,7 @@ lacc = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.i
 ltot = lacc.in_units('lsun') + lstar_baraffe
 plt.clf()
 plt.semilogy(age, ltot, label='Total', alpha=0.5)
-plt.semilogy(age, lacc, label='Acc', alpha=0.5)
+plt.semilogy(age, lacc.in_units('lsun'), label='Acc', alpha=0.5)
 plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
 plt.legend()
 plt.savefig('L_evol.png')
@@ -109,6 +109,9 @@ for time_it in range(len(age)):
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
         cor_arr.append(np.nanmax(cor))
+        if L_diff>10:
+            import pdb
+            pdb.set_trace()
         if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
