@@ -96,7 +96,7 @@ for time_it in range(len(age)):
     useable_times = age[time_it:end_it]
     useable_L = ltot[time_it:end_it]
     if len(useable_L) > 0:
-        L_diff = np.max(useable_L)/np.min(useable_L)
+        L_diff = np.max(useable_L)/useable_L[0]
         L_diff_arr.append(L_diff)
         time_arr.append(age[time_it])
         scaled_T = useable_times - useable_times[0]
