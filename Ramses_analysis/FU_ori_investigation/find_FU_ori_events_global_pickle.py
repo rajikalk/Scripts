@@ -24,6 +24,7 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
 time_arr = []
+cor_arr = []
 for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
@@ -37,9 +38,7 @@ for time_it in range(len(age)):
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
-        if L_diff > 1000:
-            import pdb
-            pdb.set_trace()
+        cor_arr.append(cor)
         if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
