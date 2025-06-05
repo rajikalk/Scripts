@@ -105,6 +105,7 @@ for time_it in range(len(age)):
         cor = np.correlate(scaled_L,FU_temp,'same')
         cor_arr.append(np.nanmax(cor))
         if L_diff>100:
+            plt.clf()
             plt.plot(scaled_T, scaled_L)
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
