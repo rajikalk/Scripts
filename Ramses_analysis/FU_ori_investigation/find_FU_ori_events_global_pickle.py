@@ -72,8 +72,14 @@ for mass_val in mass:
         logL = gradient*mass_val.value + y_intercept
         lstar_baraffe.append(10**logL)
 
-import pdb
-pdb.set_trace()
+lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
+ltot = lacc + lstar_baraffe
+plt.clf()
+plt.semilogy(age, ltot, label='Total', alpha=0.5)
+plt.semilogy(age, lacc, label='Acc', alpha=0.5)
+plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
+plt.legend()
+plt.savefig('L_evol.png')
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -84,7 +90,7 @@ for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
     useable_times = age[time_it:end_it]
-    useable_L = lacc[time_it:end_it]
+    useable_L = ltot[time_it:end_it]
     if len(useable_L) > 0:
         L_diff = np.max(useable_L)/np.min(useable_L)
         L_diff_arr.append(L_diff)
