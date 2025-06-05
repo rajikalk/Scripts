@@ -7,7 +7,6 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
-lsun = 3.828e26*1e7 # solar luminosity in erg
 FU_temp = np.concatenate((np.zeros(25), np.ones(75)))
 time_window = yt.YTQuantity(80, 'yr')
 
@@ -17,13 +16,9 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
 age = yt.YTArray(particle_data['time'])
-#lacc = yt.YTArray(particle_data['lacc']).T[1]
 mass = yt.YTArray(particle_data['mass']).T[1]
 mdot = yt.YTArray(particle_data['mdot']).T[1]
-#lstar = yt.YTArray(0.23*(mass**2.3).value, 'lsun')
 facc = 0.5
-#lstar_offner = 31.3*facc*(mdot/1.e-6)
-#ltot = lacc + lstar
 
 #M/Ms      log t(yr)    Teff     L/Ls    g    R/Rs  Log(Li/Li0) log Tc  log ROc   Mrad     Rrad       k2conv      k2rad
 #0.010     5.695210     2388.  -2.469  3.372  0.341   0.0000   5.417   0.2639  0.0000   0.000E+00  4.535E-01  0.000E+00
@@ -109,7 +104,7 @@ for time_it in range(len(age)):
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
         cor_arr.append(np.nanmax(cor))
-        if L_diff>10:
+        if L_diff>100:
             import pdb
             pdb.set_trace()
         if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
