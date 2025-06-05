@@ -122,8 +122,6 @@ if args.update_pickle == 'True':
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 if time_val < yt.YTQuantity(75000, 'yr'):
-                    import pdb
-                    pdb.set_trace()
                     pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
                     pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
                     separation = np.sqrt(np.sum((pos_second - pos_prim)**2))

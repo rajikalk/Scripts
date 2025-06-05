@@ -17,13 +17,13 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
 age = yt.YTArray(particle_data['time'])
-lacc = yt.YTArray(particle_data['lacc']).T[1]
+#lacc = yt.YTArray(particle_data['lacc']).T[1]
 mass = yt.YTArray(particle_data['mass']).T[1]
 mdot = yt.YTArray(particle_data['mdot']).T[1]
-lstar = yt.YTArray(0.23*(mass**2.3).value, 'lsun')
+#lstar = yt.YTArray(0.23*(mass**2.3).value, 'lsun')
 facc = 0.5
-lstar_offner = 31.3*facc*(mdot/1.e-6)
-ltot = lacc + lstar
+#lstar_offner = 31.3*facc*(mdot/1.e-6)
+#ltot = lacc + lstar
 
 #M/Ms      log t(yr)    Teff     L/Ls    g    R/Rs  Log(Li/Li0) log Tc  log ROc   Mrad     Rrad       k2conv      k2rad
 #0.010     5.695210     2388.  -2.469  3.372  0.341   0.0000   5.417   0.2639  0.0000   0.000E+00  4.535E-01  0.000E+00
@@ -57,8 +57,10 @@ ltot = lacc + lstar
 #1.300     5.694626     4596.   0.688  3.466  3.488   0.0000   6.462  -0.5799  0.0000   0.000E+00  4.485E-01  0.000E+00
 #1.400     5.692977     4647.   0.740  3.466  3.621   0.0000   6.478  -0.5965  0.0000   0.000E+00  4.486E-01  0.000E+00
 
-Baraffe_mass = np.array([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400])
-Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
+Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
+Baraffe_logL = yt.YTArray([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740], 'lsun')
+Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
+lacc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/Baraffe_radius.in_units('cm')
 
 #Derive a stellar luminosity
 lstar_baraffe = []
