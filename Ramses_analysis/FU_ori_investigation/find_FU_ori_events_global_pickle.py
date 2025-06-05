@@ -31,6 +31,9 @@ for time_it in range(len(age)):
     if len(useable_L) > 0:
         #L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
         L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
+        if np.max(useable_L)/np.min(useable_L) >= 10:
+            import pdb
+            pdb.set_trace()
         L_diff_arr.append(L_diff)
         time_arr.append(age[time_it])
         scaled_T = useable_times - useable_times[0]
