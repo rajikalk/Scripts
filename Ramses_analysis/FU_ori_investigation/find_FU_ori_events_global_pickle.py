@@ -29,18 +29,14 @@ for time_it in range(len(age)):
     useable_times = age[time_it:end_it]
     useable_L = lacc[time_it:end_it]
     if len(useable_L) > 0:
-        #L_diff = np.log10(useable_L[-1]) - np.log10(useable_L[0])
-        L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
-        if np.max(useable_L)/np.min(useable_L) >= 1000:
-            import pdb
-            pdb.set_trace()
+        L_diff = np.max(useable_L)/np.min(useable_L)
         L_diff_arr.append(L_diff)
         time_arr.append(age[time_it])
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
-        if np.median(cor)>66.6 and mass[time_it] > 0.1: #L_diff>1 and
+        if np.median(cor)>66.6 and mass[time_it] > 0.1 and L_diff>10:
             plt.clf()
             fig, ax1 = plt.subplots()
 
