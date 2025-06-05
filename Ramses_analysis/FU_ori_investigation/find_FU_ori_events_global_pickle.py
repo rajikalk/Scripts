@@ -60,21 +60,29 @@ facc = 0.5
 Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
 Baraffe_logL = yt.YTArray([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740], 'lsun')
 Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
-lacc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/Baraffe_radius.in_units('cm')
 
 #Derive a stellar luminosity
 lstar_baraffe = []
+rstar_barrafe = []
 for mass_val in mass:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe.append(10**Baraffe_logL[0])
+        rstar_barrafe.append(Baraffe_radius[0])
     else:
         closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val.value))[:2])
         gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
         y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
         logL = gradient*mass_val.value + y_intercept
         lstar_baraffe.append(10**logL)
+        
+        gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+        y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+        radius = gradient*mass_val.value + y_intercept
+        rstar_barrafe.append(radius)
 
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
+rstar_barrafe = yt.YTArray(rstar_barrafe, 'Rsun')
+lacc = facc * (yt.units.gravitational_constant_cgs * mass * mdot)/Baraffe_radius.in_units('cm')
 ltot = lacc + lstar_baraffe
 plt.clf()
 plt.semilogy(age, ltot, label='Total', alpha=0.5)
