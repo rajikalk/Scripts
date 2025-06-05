@@ -19,6 +19,12 @@ file_open.close()
 age = yt.YTArray(particle_data['time'])
 lacc = yt.YTArray(particle_data['lacc']).T[1]
 mass = yt.YTArray(particle_data['mass']).T[1]
+mdot = yt.YTArray(particle_data['mdot']).T[1]
+lstar = yt.YTArray(0.23*(mass**2.3).value, 'lsun')
+facc = 0.5
+lstar_offner = 31.3*facc*(mdot/1.e-6)
+ltot = lacc + lstar
+
 
 rank = CW.Get_rank()
 size = CW.Get_size()

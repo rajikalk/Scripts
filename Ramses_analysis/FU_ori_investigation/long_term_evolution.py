@@ -25,6 +25,10 @@ file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
+mdot = yt.YTArray(particle_data['mdot'])
+facc = 0.5
+lstar_offner = 31.3*facc*(mdot/1.e-6)
+
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
