@@ -85,7 +85,7 @@ ax4.set_ylabel('Separation (AU)')
 ax4.set_ylim([5,1000])
 ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time (yr)")
-axs.flatten()[4].set_ylim([5.e-2, 2.e1])
+axs.flatten()[4].set_ylim([1.e-1, 2.e1])
 
 plt.savefig('long_term_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
 
