@@ -104,6 +104,9 @@ for time_it in range(len(age)):
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
         cor_arr.append(np.nanmax(cor))
+        if age[time_it] == 29445.61678659171:
+            import pdb
+            pdb.set_trace()
         if L_diff>100:
             plt.clf()
             plt.plot(scaled_T, scaled_L)
