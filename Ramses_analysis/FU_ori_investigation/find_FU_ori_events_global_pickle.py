@@ -89,6 +89,8 @@ plt.semilogy(age, lacc, label='Acc', alpha=0.5)
 plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
 plt.legend()
 plt.savefig('L_evol.png')
+import pdb
+pdb.set_trace()
 
 rank = CW.Get_rank()
 size = CW.Get_size()
