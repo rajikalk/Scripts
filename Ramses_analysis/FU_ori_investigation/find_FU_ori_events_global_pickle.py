@@ -72,12 +72,12 @@ for mass_val in mass:
         closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
         gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
         y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-        logL = gradient*mass_val.value + y_intercept
+        logL = gradient*mass_val + y_intercept
         lstar_baraffe.append(10**logL)
         
         gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
         y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-        radius = gradient*mass_val.value + y_intercept
+        radius = gradient*mass_val + y_intercept
         rstar_barrafe.append(radius)
 
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
