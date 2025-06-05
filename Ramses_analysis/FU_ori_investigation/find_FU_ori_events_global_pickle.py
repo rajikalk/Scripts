@@ -18,6 +18,7 @@ file_open.close()
 
 age = yt.YTArray(particle_data['time'])
 lacc = yt.YTArray(particle_data['lacc']).T[1]
+mass = yt.YTArray(particle_data['mass']).T[1]
 
 rank = CW.Get_rank()
 size = CW.Get_size()
