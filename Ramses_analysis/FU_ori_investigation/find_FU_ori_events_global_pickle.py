@@ -72,6 +72,9 @@ for mass_val in mass:
         logL = gradient*mass_val.value + y_intercept
         lstar_baraffe.append(10**logL)
 
+import pdb
+pdb.set_trace()
+
 rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
