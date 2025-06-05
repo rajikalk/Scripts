@@ -81,16 +81,14 @@ for mass_val in mass:
         rstar_barrafe.append(radius)
 
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
-lacc = facc * (yt.units.gravitational_constant_cgs * mass * mdot)/Baraffe_radius.in_units('cm')
-ltot = lacc + lstar_baraffe
+lacc = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe).in_units('cm')
+ltot = lacc.in_units('lsun') + lstar_baraffe
 plt.clf()
 plt.semilogy(age, ltot, label='Total', alpha=0.5)
 plt.semilogy(age, lacc, label='Acc', alpha=0.5)
 plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
 plt.legend()
 plt.savefig('L_evol.png')
-import pdb
-pdb.set_trace()
 
 rank = CW.Get_rank()
 size = CW.Get_size()
