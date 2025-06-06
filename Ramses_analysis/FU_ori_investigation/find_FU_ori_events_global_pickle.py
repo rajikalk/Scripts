@@ -124,6 +124,8 @@ for time_it in range(len(age)):
         cor = np.correlate(scaled_L,FU_temp_inv,'same')
         cor_arr.append(np.nanmax(cor))
         if L_diff>5 and useable_L[0]>5:
+            import pdb
+            pdb.set_trace()
             plt.clf()
             plt.plot(scaled_T, scaled_L)
             plt.plot(np.linspace(0, scaled_T[-1], 100), FU_temp_inv)
