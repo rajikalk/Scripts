@@ -124,7 +124,7 @@ for time_it in range(len(age)):
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
-        cor = np.correlate(scaled_L,FU_temp_inv,'same')
+        cor = np.correlate(scaled_L,FU_temp_inv,'full')
         scaled_cor = (cor/7) * 100
         median_cor = np.median(scaled_cor[np.where(scaled_cor>0)[0]])
         cor_arr.append(median_cor)
@@ -147,7 +147,7 @@ for time_it in range(len(age)):
 
             ax2 = ax1.twinx()
             ax1.plot(useable_times, scaled_L, label="scaled L_acc", color='b')
-            ax1.plot(useable_times, cor/np.max(cor), label="correlation", color='r')
+            ax1.plot(np.linspace(0, scaled_T[-1], len(cor)), cor/np.max(cor), label="correlation", color='r')
             
             ax2.plot(useable_times, useable_L, color='b')
 
