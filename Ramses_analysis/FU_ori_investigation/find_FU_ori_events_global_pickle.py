@@ -124,7 +124,7 @@ for time_it in range(len(age)):
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
-        cor = np.correlate(scaled_L,FU_temp_inv,'same')
+        cor = np.correlate(scaled_L,FU_temp_inv,'full')
         cor_arr.append(np.nanmax(cor))
         if L_diff>5 and useable_L[0]>5:
             #import pdb
@@ -135,7 +135,7 @@ for time_it in range(len(age)):
             plt.title('Max cor ='+ str(np.nanmax(cor)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
-        if np.median(cor)>66.6 and L_diff>10: #and mass[time_it] > 0.1
+        if np.median(cor)>66.6 and L_diff>5: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
 
