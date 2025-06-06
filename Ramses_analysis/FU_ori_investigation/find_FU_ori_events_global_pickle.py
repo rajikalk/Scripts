@@ -7,7 +7,8 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
-FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
+FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
+FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
 time_window = yt.YTQuantity(100, 'yr')
 
 global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
@@ -87,11 +88,21 @@ plt.legend()
 plt.savefig('L_evol.png')
 
 plt.clf()
-plt.plot(age, ltot)
+plt.plot(age, magnitude)
 plt.gca().invert_yaxis()
+plt.xlim([9000, 11500])
+plt.ylim([8,3])
 plt.xlabel('Time (yr)')
 plt.ylabel('Magnitude')
 plt.savefig('Magnitude_evol.png')
+
+plt.clf()
+plt.plot(age, ltot)
+plt.xlim([9000, 11500])
+plt.ylim([0, 4])
+plt.xlabel('Time (yr)')
+plt.ylabel('Ltot')
+plt.savefig('Ltot_evol_zoom.png')
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -104,17 +115,14 @@ for time_it in range(len(age)):
     useable_times = age[time_it:end_it]
     useable_L = magnitude[time_it:end_it]
     if len(useable_L) > 0:
-        L_diff = np.max(useable_L)/useable_L[0]
+        L_diff = np.max(useable_L) - np.min(useable_L)
         L_diff_arr.append(L_diff)
         time_arr.append(age[time_it])
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
-        cor = np.correlate(scaled_L,FU_temp,'same')
+        cor = np.correlate(scaled_L,FU_temp_inv,'same')
         cor_arr.append(np.nanmax(cor))
-        if age[time_it] == 29445.61678659171:
-            import pdb
-            pdb.set_trace()
         if L_diff>5:
             import pdb
             pdb.set_trace()
