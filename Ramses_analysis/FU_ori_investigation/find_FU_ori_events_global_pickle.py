@@ -7,7 +7,7 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
-FU_temp = np.concatenate((np.zeros(25), np.ones(75)))
+FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
 time_window = yt.YTQuantity(100, 'yr')
 
 global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
@@ -78,12 +78,20 @@ for mass_val in mass:
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
 lacc = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe).in_units('cm')
 ltot = lacc.in_units('lsun') + lstar_baraffe
+magnitude = -2.5 * np.log10(ltot.in_units('watt')/3.0128e28)
 plt.clf()
 plt.semilogy(age, ltot, label='Total', alpha=0.5)
 plt.semilogy(age, lacc.in_units('lsun'), label='Acc', alpha=0.5)
 plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
 plt.legend()
 plt.savefig('L_evol.png')
+
+plt.clf()
+plt.plot(age, ltot)
+plt.gca().invert_yaxis()
+plt.xlabel('Time (yr)')
+plt.ylabel('Magnitude')
+plt.savefig('Magnitude_evol.png')
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -94,7 +102,7 @@ for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
     useable_times = age[time_it:end_it]
-    useable_L = ltot[time_it:end_it]
+    useable_L = magnitude[time_it:end_it]
     if len(useable_L) > 0:
         L_diff = np.max(useable_L)/useable_L[0]
         L_diff_arr.append(L_diff)
@@ -107,7 +115,9 @@ for time_it in range(len(age)):
         if age[time_it] == 29445.61678659171:
             import pdb
             pdb.set_trace()
-        if L_diff>100:
+        if L_diff>5:
+            import pdb
+            pdb.set_trace()
             plt.clf()
             plt.plot(scaled_T, scaled_L)
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
