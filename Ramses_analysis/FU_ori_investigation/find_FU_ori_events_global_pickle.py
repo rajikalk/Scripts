@@ -131,7 +131,7 @@ for time_it in range(len(age)):
             #pdb.set_trace()
             plt.clf()
             plt.plot(scaled_T, scaled_L)
-            plt.plot(np.linspace(0, scaled_T[-1], 100), FU_temp_inv)
+            plt.plot(np.linspace(0, scaled_T[-1], 50), FU_temp_inv)
             plt.title('Max cor ='+ str(np.nanmax(cor)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
