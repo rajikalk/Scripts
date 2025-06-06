@@ -140,7 +140,7 @@ for time_it in range(len(age)):
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         '''
-        if np.nanmedian(scaled_cor)>20 and L_diff>5: #and mass[time_it] > 0.1
+        if np.nanmedian(scaled_cor)>20: #and mass[time_it] > 0.1
             import pdb
             pdb.set_trace()
             plt.clf()
