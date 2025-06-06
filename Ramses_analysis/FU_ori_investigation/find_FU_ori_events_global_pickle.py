@@ -160,7 +160,7 @@ for time_it in range(len(age)):
         
             ax1.legend()
             plt.savefig('Best_match_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
-            print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
+            print("Found potential match at age", age[time_it])
 plt.clf()
 plt.plot(time_arr, L_diff_arr)
 plt.xlabel('age (yr)')
