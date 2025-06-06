@@ -133,7 +133,7 @@ for time_it in range(len(age)):
             right_ax = plt.twinx()
             plt.plot(scaled_T, scaled_L)
             plt.plot(np.linspace(0, scaled_T[-1], 50), FU_temp_inv)
-            right_ax.plot(np.linspace(0, scaled_T[-1], 50), cor)
+            right_ax.plot(np.linspace(0, scaled_T[-1], len(cor)), cor)
             plt.title('Max cor ='+ str(np.nanmax(cor)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
