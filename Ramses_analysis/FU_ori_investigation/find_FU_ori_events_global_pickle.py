@@ -7,8 +7,11 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
-FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
-FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
+#FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
+#FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
+FU_temp = np.concatenate((np.zeros(7), np.ones(43)))
+FU_temp_inv = np.concatenate((np.ones(7), np.zeros(43)))
+
 time_window = yt.YTQuantity(100, 'yr')
 
 global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
@@ -124,8 +127,8 @@ for time_it in range(len(age)):
         cor = np.correlate(scaled_L,FU_temp_inv,'same')
         cor_arr.append(np.nanmax(cor))
         if L_diff>5 and useable_L[0]>5:
-            import pdb
-            pdb.set_trace()
+            #import pdb
+            #pdb.set_trace()
             plt.clf()
             plt.plot(scaled_T, scaled_L)
             plt.plot(np.linspace(0, scaled_T[-1], 100), FU_temp_inv)
