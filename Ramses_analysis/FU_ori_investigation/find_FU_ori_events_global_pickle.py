@@ -141,7 +141,7 @@ for time_it in range(len(age)):
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         
-        if median_cor>40 and L_diff > 5: #and mass[time_it] > 0.1
+        if median_cor>30 and L_diff > 5: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
 
