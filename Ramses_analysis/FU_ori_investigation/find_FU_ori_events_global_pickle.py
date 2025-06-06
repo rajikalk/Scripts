@@ -141,9 +141,7 @@ for time_it in range(len(age)):
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         
-        if median_cor>20 and L_diff > 5: #and mass[time_it] > 0.1
-            import pdb
-            pdb.set_trace()
+        if median_cor>50 and L_diff > 5: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
 
@@ -157,7 +155,7 @@ for time_it in range(len(age)):
             ax1.set_ylabel('scaled L_acc and correlation')
             ax2.set_ylabel('Total log Luminosity')
             
-            ax1.set_ylim([0, 1])
+            ax1.set_ylim([1, 0])
             ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
             ax1.legend()
