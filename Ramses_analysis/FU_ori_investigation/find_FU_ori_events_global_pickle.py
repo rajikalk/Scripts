@@ -146,11 +146,10 @@ for time_it in range(len(age)):
             fig, ax1 = plt.subplots()
 
             ax2 = ax1.twinx()
-            plt.gca().invert_yaxis()
-            ax1.plot(useable_times, scaled_L, label="scaled L_acc", color='b')
-            ax1.plot(useable_times[0]+np.linspace(0, scaled_T[-1], len(cor)), cor/np.max(cor), label="correlation", color='r')
+            ax1.invert_yaxis()
+            ax1.plot(useable_times, useable_L, label="scaled L_acc", color='b')
             
-            ax2.plot(useable_times, useable_L, color='b')
+            ax2.plot(useable_times[0]+np.linspace(0, scaled_T[-1], len(cor)), cor/np.max(cor), label="correlation", color='r')
 
             ax1.set_xlabel('Time (yr)')
             ax1.set_ylabel('scaled L_acc and correlation')
