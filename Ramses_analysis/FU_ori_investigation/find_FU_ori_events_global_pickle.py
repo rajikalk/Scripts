@@ -142,6 +142,8 @@ for time_it in range(len(age)):
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         
         if median_cor>20 and L_diff > 5: #and mass[time_it] > 0.1
+            import pdb
+            pdb.set_trace()
             plt.clf()
             fig, ax1 = plt.subplots()
 
