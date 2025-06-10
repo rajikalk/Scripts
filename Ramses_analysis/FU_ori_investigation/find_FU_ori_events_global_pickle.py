@@ -175,7 +175,7 @@ for time_it in range(len(age)):
                 plt.setp(yticklabels, visible=False)
             if plot_it == 9:
                 xticklabels = axs.flatten()[plot_it].get_xticklabels()
-                plt.setp(xticklabels[-1], visible=False)
+                plt.setp(xticklabels[-2], visible=False)
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (kyr)")
             axs.flatten()[plot_it].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
