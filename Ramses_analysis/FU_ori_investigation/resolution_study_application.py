@@ -121,7 +121,11 @@ for pick_file in pickle_files:
     axs.flatten()[2].semilogy(particle_data['time'][t_start:t_end], np.array(particle_data['separation'][t_start:t_end]), color=proj_colours[cit])
     axs.flatten()[2].set_ylabel('Separation (AU)', size=font_size)
     #axs.flatten()[1].axhline(y=r_acc[cit],c=proj_colours[cit], alpha=0.5)
-    axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle=':')
+    if cit == 0:
+        axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle=':', label='$2r_\mathrm{acc}$')
+        axs.flatten()[2].legend(loc='upper right')
+    else:
+        axs.flatten()[2].axhline(y=r_acc[cit]*2,c=proj_colours[cit], alpha=0.75, linestyle=':')
     axs.flatten()[2].set_xlabel('Time (yr)', size=font_size)
     axs.flatten()[2].set_xlim([t_start_yr,t_end_yr])
     axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
