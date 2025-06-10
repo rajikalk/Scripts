@@ -149,7 +149,7 @@ for time_it in range(len(age)):
             plt.plot(scaled_T, scaled_L)
             plt.plot(np.linspace(0, scaled_T[-1], len(FU_temp)), FU_temp)
             right_ax.plot(np.linspace(0, scaled_T[-1], len(cor_L)), cor_L)
-            plt.title('Max cor ='+ str(np.nanmax(cor)))
+            plt.title('Max cor ='+ str(np.nanmax(cor_L)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
         '''
