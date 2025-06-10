@@ -129,7 +129,8 @@ L_diff_arr = []
 M_diff_arr = []
 time_arr = []
 cor_arr = []
-L_lims = [0, 0]
+L_lims = [-1.7, 0.8]
+M_lims = [5,3]
 for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
@@ -162,15 +163,26 @@ for time_it in range(len(age)):
             if np.remainder(plot_it, 3) == 0:
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
             if np.remainder(plot_it, 3) == 2:
-                axs.flatten()[plot_it].set_ylabel("Magnitude")
+                right_ax.set_ylabel("Magnitude")
+            else:
+                yticklabels = right_ax.get_yticklabels()
+                plt.setp(yticklabels, visible=False)
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (yr)")
+            '''
             if np.min(np.log10(useable_L)) < L_lims[0]:
                 L_lims[0] = np.min(np.log10(useable_L))
             if np.max(np.log10(useable_L)) > L_lims[1]:
                 L_lims[1] = np.max(np.log10(useable_L))
+            '''
+            if np.max(useable_M) > M_lims[0]:
+                M_lims[0] = np.max(useable_M)
+            if np.min(useable_M) < M_lims[1]:
+                M_lims[1] = np.min(useable_M)
             axs.flatten()[plot_it].set_ylim(L_lims)
+            right_ax.set_ylim(M_lims)
             axs.flatten()[plot_it].tick_params(axis='both', direction='in', top=True)
+            right_ax.tick_params(axis='both', direction='in')
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
             print("updated multiplot with time", age[time_it])
             
