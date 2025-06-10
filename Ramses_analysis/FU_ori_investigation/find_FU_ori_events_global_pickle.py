@@ -135,15 +135,12 @@ for time_it in range(len(age)):
         scaled_L = scaled_L/np.max(scaled_L)
         scaled_M = useable_M - np.min(useable_M)
         scaled_M = scaled_M/np.max(scaled_M)
-        cor_M = np.correlate(scaled_M,FU_temp_inv,'full')
-        cor_L = np.correlate(scaled_L,FU_temp,'full')
+        cor_M = np.correlate(scaled_M,FU_temp_inv,'same')
+        cor_L = np.correlate(scaled_L,FU_temp,'same')
         median_cor_L = np.median(cor_L[np.where(cor_L>0)[0]])
         median_cor_M = np.median(cor_M[np.where(cor_M>0)[0]])
         cor_arr.append([median_cor_L, median_cor_M])
-        if age[time_it] == 11756.091800119728:
-            import pdb
-            pdb.set_trace()
-        if L_diff>5 and useable_L[0]>4:
+        if L_diff>2 and M_diff>5 and median_cor_L>15:
             #import pdb
             #pdb.set_trace()
             plt.clf()
@@ -155,7 +152,7 @@ for time_it in range(len(age)):
             plt.title('Max cor ='+ str(np.nanmax(cor)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
-        
+        '''
         if median_cor_L>30 and median_cor_M>30 and L_diff > 5: #and mass[time_it] > 0.1
             plt.clf()
             fig, ax1 = plt.subplots()
@@ -176,6 +173,7 @@ for time_it in range(len(age)):
             ax1.legend()
             plt.savefig('Best_match_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
             print("Found potential match at age", age[time_it])
+        '''
 plt.clf()
 plt.plot(time_arr, L_diff_arr)
 plt.xlabel('age (yr)')
