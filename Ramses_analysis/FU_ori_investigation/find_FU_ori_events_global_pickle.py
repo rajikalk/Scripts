@@ -140,16 +140,18 @@ for time_it in range(len(age)):
         median_cor_L = np.median(cor_L[np.where(cor_L>0)[0]])
         median_cor_M = np.median(cor_M[np.where(cor_M>0)[0]])
         cor_arr.append([median_cor_L, median_cor_M])
-        if L_diff>2 and M_diff>5 and median_cor_L>15:
+        if L_diff>2 and M_diff>5 and median_cor_L>30:
             #import pdb
             #pdb.set_trace()
             plt.clf()
             fig, left_ax = plt.subplots(ncols=1, nrows=1)
             right_ax = left_ax.twinx()
-            left_ax.plot(scaled_T, scaled_L)
+            left_ax.plot(scaled_T, scaled_L, c='b')
+            left_ax.plot(scaled_T, scaled_L, c='b', ls="--")
             left_ax.plot(np.linspace(0, scaled_T[-1], len(FU_temp)), FU_temp)
             left_ax.set_ylim([0,1.05])
             right_ax.plot(np.linspace(0, scaled_T[-1], len(cor_L)), cor_L, c='g')
+            right_ax.plot(np.linspace(0, scaled_T[-1], len(cor_M)), cor_M, c='g', ls="--")
             right_ax.set_ylim(bottom=0)
             plt.title('Max cor ='+ str(np.nanmax(cor_L)))
             plt.show()
