@@ -115,6 +115,7 @@ plt.savefig('Ltot_evol_zoom.png')
 rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
+M_diff_arr = []
 time_arr = []
 cor_arr = []
 for time_it in range(len(age)):
@@ -124,8 +125,10 @@ for time_it in range(len(age)):
     useable_M = magnitude[time_it:end_it]
     useable_L = ltot[time_it:end_it]
     if len(useable_L) > 0:
-        L_diff = np.max(useable_L) - np.min(useable_L)
+        L_diff = np.max(np.log10(useable_L)) - np.min(np.log10(useable_L))
         L_diff_arr.append(L_diff)
+        M_diff = np.max(useable_M) - np.min(useable_M)
+        M_diff_arr.append(M_diff)
         time_arr.append(age[time_it])
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
