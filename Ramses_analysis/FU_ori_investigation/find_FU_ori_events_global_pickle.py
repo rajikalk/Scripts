@@ -130,7 +130,7 @@ M_diff_arr = []
 time_arr = []
 cor_arr = []
 L_lims = [-1.7, 0.8]
-M_lims = [5,3]
+M_lims = [9,3]
 for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
@@ -159,7 +159,7 @@ for time_it in range(len(age)):
             axs.flatten()[plot_it].set_xlim([useable_times[0], useable_times[-1]])
             right_ax = axs.flatten()[plot_it].twinx()
             right_ax.invert_yaxis()
-            axs.flatten()[plot_it].plot(useable_times, useable_M, c='orange', ls='--')
+            right_ax.plot(useable_times, useable_M, c='orange', ls='--')
             if np.remainder(plot_it, 3) == 0:
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
             if np.remainder(plot_it, 3) == 2:
@@ -175,10 +175,12 @@ for time_it in range(len(age)):
             if np.max(np.log10(useable_L)) > L_lims[1]:
                 L_lims[1] = np.max(np.log10(useable_L))
             '''
+            '''
             if np.max(useable_M) > M_lims[0]:
                 M_lims[0] = np.max(useable_M)
             if np.min(useable_M) < M_lims[1]:
                 M_lims[1] = np.min(useable_M)
+            '''
             axs.flatten()[plot_it].set_ylim(L_lims)
             right_ax.set_ylim(M_lims)
             axs.flatten()[plot_it].tick_params(axis='both', direction='in', top=True)
