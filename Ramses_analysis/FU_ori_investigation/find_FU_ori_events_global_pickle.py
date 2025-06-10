@@ -7,10 +7,10 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
-#FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
-#FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
-FU_temp = np.concatenate((np.zeros(7), np.ones(43)))
-FU_temp_inv = np.concatenate((np.ones(7), np.zeros(43)))
+FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
+FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
+#FU_temp = np.concatenate((np.zeros(7), np.ones(43)))
+#FU_temp_inv = np.concatenate((np.ones(7), np.zeros(43)))
 
 time_window = yt.YTQuantity(100, 'yr')
 
@@ -88,7 +88,12 @@ plt.semilogy(age, ltot, label='Total', alpha=0.5)
 plt.semilogy(age, lacc.in_units('lsun'), label='Acc', alpha=0.5)
 plt.semilogy(age, lstar_baraffe, label='Star', alpha=0.5)
 plt.legend()
-plt.savefig('L_evol.png')
+plt.savefig('L_component_evol.png')
+
+plt.clf()
+plt.semilogy(age, ltot, label='Total')
+plt.legend()
+plt.savefig('L_tot_evol.png')
 
 plt.clf()
 plt.plot(age, magnitude)
