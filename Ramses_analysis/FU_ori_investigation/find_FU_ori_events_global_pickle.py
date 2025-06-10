@@ -133,6 +133,9 @@ for time_it in range(len(age)):
         scaled_cor = (cor/7) * 100
         median_cor = np.median(scaled_cor[np.where(scaled_cor>0)[0]])
         cor_arr.append(median_cor)
+        if age[time_it] == 11756.091800119728:
+            import pdb
+            pdb.set_trace()
         if L_diff>5 and useable_L[0]>4:
             #import pdb
             #pdb.set_trace()
