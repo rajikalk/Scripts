@@ -7,6 +7,11 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
+
 FU_temp = np.concatenate((np.zeros(15), np.ones(85)))
 FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
 #FU_temp = np.concatenate((np.zeros(7), np.ones(43)))
