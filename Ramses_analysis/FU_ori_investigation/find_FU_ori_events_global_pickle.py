@@ -112,6 +112,12 @@ plt.xlabel('Time (yr)')
 plt.ylabel('Ltot')
 plt.savefig('Ltot_evol_zoom.png')
 
+plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.016646496952, 13379.528082296252, 13908.540377408266, 14625.588010121137, 15691.680855810642, 15893.586252618581, 17353.72329491377, 26899.01125465706, 29443.443914979696]
+
+plt.clf()
+fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(two_col_width, 1.5*two_col_width), sharey=True)
+plt.subplots_adjust(wspace=0.0)
+
 rank = CW.Get_rank()
 size = CW.Get_size()
 L_diff_arr = []
@@ -140,6 +146,18 @@ for time_it in range(len(age)):
         median_cor_L = np.median(cor_L[np.where(cor_L>0)[0]])
         median_cor_M = np.median(cor_M[np.where(cor_M>0)[0]])
         cor_arr.append([median_cor_L, median_cor_M])
+        if age[time_it] in plot_times:
+            plot_it = plot_times.index(age[time_it])
+            axs.flatten()[plot_it].plot(useable_times, np.log10(useable_L))
+            axs.flatten()[plot_it].set_xlim([useable_times[0], useable_times[-1]])
+            if np.remainder(plot_it, 3) == 0:
+                axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
+            if plot_it > 8:
+                axs.flatten()[plot_it].set_xlabel("Time (yr)")
+            plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
+            
+            
+        '''
         if L_diff>2 and M_diff>5 and median_cor_L>29 and np.min(np.log10(useable_L)) not in np.log10(useable_L)[-10:]:
             #import pdb
             #pdb.set_trace()
@@ -160,6 +178,7 @@ for time_it in range(len(age)):
             plt.title('Max cor ='+ str(np.nanmax(cor_L)))
             plt.show()
             plt.savefig("Scaled_T_"+str(age[time_it])+".png")
+        '''
         '''
         if median_cor_L>30 and median_cor_M>30 and L_diff > 5: #and mass[time_it] > 0.1
             plt.clf()
