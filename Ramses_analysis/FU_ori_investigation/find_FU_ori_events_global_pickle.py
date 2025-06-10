@@ -153,7 +153,7 @@ for time_it in range(len(age)):
             #left_ax.plot(scaled_T, scaled_M, c='b', ls="--")
             #left_ax.plot(np.linspace(0, scaled_T[-1], len(FU_temp)), FU_temp, c='orange')
             left_ax.set_ylim([0,1.05])
-            right_ax.plot(np.linspace(0, scaled_T[-1], len(cor_L)), cor_L, c='g')
+            right_ax.plot(np.linspace(useable_times[0], useable_times[-1], len(cor_L)), cor_L, c='g')
             #right_ax.plot(np.linspace(0, scaled_T[-1], len(cor_M)), cor_M, c='g', ls="--")
             right_ax.set_ylim(bottom=0)
             right_ax.set_ylabel("Correlation")
