@@ -96,7 +96,8 @@ for pick_file in pickle_files:
         else:
             axs.flatten()[0].plot(particle_data['time'][t_start:t_end], np.array(particle_data['mass'][t_start:t_end]).T[part], color=proj_colours[cit], ls="-")
     axs.flatten()[0].set_ylabel('Mass (M$_\odot$)', size=font_size)
-    axs.flatten()[0].legend(loc=(0.5, 0.13), fontsize=font_size)
+    #axs.flatten()[0].legend(loc=(0.5, 0.13), fontsize=font_size)
+    axs.flatten()[0].legend(loc='center right', fontsize=font_size)
     axs.flatten()[0].set_ylim(bottom=0.03)
     axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
     
