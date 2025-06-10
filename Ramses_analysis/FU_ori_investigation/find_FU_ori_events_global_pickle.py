@@ -185,6 +185,8 @@ for time_it in range(len(age)):
             right_ax.tick_params(axis='both', direction='in')
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
             print("updated multiplot with time", age[time_it])
+            if age[time_it] == plot_times[-1]:
+                break
             
             
         '''
