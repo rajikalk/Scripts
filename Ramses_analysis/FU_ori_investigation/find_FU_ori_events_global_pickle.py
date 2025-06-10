@@ -129,6 +129,7 @@ L_diff_arr = []
 M_diff_arr = []
 time_arr = []
 cor_arr = []
+L_lims = [0, 0]
 for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
@@ -159,6 +160,11 @@ for time_it in range(len(age)):
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (yr)")
+            if np.min(np.log10(useable_L)) < L_lims[0]:
+                L_lims[0] = np.min(np.log10(useable_L))
+            if np.max(np.log10(useable_L)) > L_lims[1]:
+                L_lims[1] = np.max(np.log10(useable_L))
+            axs.flatten()[plot_it].set_ylim(L_lims)
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
             print("updated multiplot with time", age[time_it])
             
