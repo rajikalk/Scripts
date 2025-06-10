@@ -117,11 +117,12 @@ plt.xlabel('Time (yr)')
 plt.ylabel('Ltot')
 plt.savefig('Ltot_evol_zoom.png')
 
-plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.016646496952, 13379.528082296252, 13908.540377408266, 14625.588010121137, 15691.680855810642, 15893.586252618581, 17353.72329491377, 26899.01125465706, 29443.443914979696]
+plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.016646496952, 13379.528082296252, 13908.540377408266, 14625.588010121137, 15691.680855810642, 15891.27923379, 17353.72329491377, 26899.01125465706, 29443.443914979696] #14154.07486982271
 
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(two_col_width, 1.5*two_col_width), sharey=True)
 plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(wspace=0.2)
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -155,11 +156,13 @@ for time_it in range(len(age)):
         cor_arr.append([median_cor_L, median_cor_M])
         if age[time_it] in plot_times:
             plot_it = plot_times.index(age[time_it])
-            axs.flatten()[plot_it].plot(useable_times, np.log10(useable_L))
+            axs.flatten()[plot_it].plot(useable_times, np.log10(useable_L), label="Total Luminosity")
             axs.flatten()[plot_it].set_xlim([useable_times[0], useable_times[-1]])
             right_ax = axs.flatten()[plot_it].twinx()
             right_ax.invert_yaxis()
-            right_ax.plot(useable_times, useable_M, c='orange', ls='--')
+            right_ax.plot(useable_times, useable_M, c='orange', ls='--', label="Magnitude")
+            if plot_it == 0:
+                axs.flatten()[plot_it].legend(loc='lower right')
             if np.remainder(plot_it, 3) == 0:
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
             if np.remainder(plot_it, 3) == 2:
