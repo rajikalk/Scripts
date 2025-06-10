@@ -129,8 +129,8 @@ L_diff_arr = []
 M_diff_arr = []
 time_arr = []
 cor_arr = []
-L_lims = [-1.7, 0.8]
-M_lims = [9,3]
+L_lims = [-1.8, 0.8]
+M_lims = [9.1,2.7]
 for time_it in range(len(age)):
     end_time = age[time_it] + time_window
     end_it = np.argmin(abs(age - end_time))
