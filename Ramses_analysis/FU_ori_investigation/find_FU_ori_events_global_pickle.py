@@ -140,7 +140,7 @@ for time_it in range(len(age)):
         median_cor_L = np.median(cor_L[np.where(cor_L>0)[0]])
         median_cor_M = np.median(cor_M[np.where(cor_M>0)[0]])
         cor_arr.append([median_cor_L, median_cor_M])
-        if L_diff>2 and M_diff>5 and median_cor_L>30 and np.min(np.log10(useable_L)) not in np.log10(useable_L)[-10:]:
+        if L_diff>2 and M_diff>5 and median_cor_L>29 and np.min(np.log10(useable_L)) not in np.log10(useable_L)[-10:]:
             #import pdb
             #pdb.set_trace()
             plt.clf()
