@@ -156,8 +156,13 @@ for time_it in range(len(age)):
             plot_it = plot_times.index(age[time_it])
             axs.flatten()[plot_it].plot(useable_times, np.log10(useable_L))
             axs.flatten()[plot_it].set_xlim([useable_times[0], useable_times[-1]])
+            right_ax = axs.flatten()[plot_it].twinx()
+            right_ax.invert_yaxis()
+            axs.flatten()[plot_it].plot(useable_times, useable_M, c='orange', ls='--')
             if np.remainder(plot_it, 3) == 0:
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
+            if np.remainder(plot_it, 3) == 2:
+                axs.flatten()[plot_it].set_ylabel("Magnitude")
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (yr)")
             if np.min(np.log10(useable_L)) < L_lims[0]:
@@ -165,6 +170,7 @@ for time_it in range(len(age)):
             if np.max(np.log10(useable_L)) > L_lims[1]:
                 L_lims[1] = np.max(np.log10(useable_L))
             axs.flatten()[plot_it].set_ylim(L_lims)
+            axs.flatten()[plot_it].tick_params(axis='both', direction='in', top=True, right=True)
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
             print("updated multiplot with time", age[time_it])
             
