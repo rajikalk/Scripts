@@ -170,7 +170,7 @@ for time_it in range(len(age)):
             if np.max(np.log10(useable_L)) > L_lims[1]:
                 L_lims[1] = np.max(np.log10(useable_L))
             axs.flatten()[plot_it].set_ylim(L_lims)
-            axs.flatten()[plot_it].tick_params(axis='both', direction='in', top=True, right=True)
+            axs.flatten()[plot_it].tick_params(axis='both', direction='in', top=True)
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
             print("updated multiplot with time", age[time_it])
             
