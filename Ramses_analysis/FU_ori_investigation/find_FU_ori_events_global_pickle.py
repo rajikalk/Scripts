@@ -155,6 +155,7 @@ for time_it in range(len(age)):
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (yr)")
             plt.savefig('multiplot_burst_events.pdf', bbox_inches='tight', pad_inches=0.02)
+            print("updated multiplot with time", age[time_it])
             
             
         '''
