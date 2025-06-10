@@ -6,6 +6,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import scipy.interpolate as interp
 import pickle
 import yt
+from matplotlib.ticker import FormatStrFormatter
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -122,7 +123,7 @@ plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.
 plt.clf()
 fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(two_col_width, 1.5*two_col_width), sharey=True)
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.0)
+plt.subplots_adjust(hspace=0.1)
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -174,6 +175,7 @@ for time_it in range(len(age)):
                 plt.setp(yticklabels, visible=False)
             if plot_it > 8:
                 axs.flatten()[plot_it].set_xlabel("Time (kyr)")
+            axs.flatten()[plot_it].xaxis.set_major_formatter(FormatStrFormatter('%.2f'))
             '''
             if np.min(np.log10(useable_L)) < L_lims[0]:
                 L_lims[0] = np.min(np.log10(useable_L))
