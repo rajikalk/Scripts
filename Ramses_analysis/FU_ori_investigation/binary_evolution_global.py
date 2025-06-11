@@ -32,7 +32,7 @@ mass_ratio = yt.YTArray(particle_data['mass']).T[1]/yt.YTArray(particle_data['ma
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(two_col_width, two_col_width), sharex=True)
 plt.subplots_adjust(wspace=0.0)
-plt.subplots_adjust(hspace=0.1)
+plt.subplots_adjust(hspace=0.0)
 
 axs.flatten()[0].plot(age, yt.YTArray(particle_data['mass']).T[0], label='Primary')
 axs.flatten()[0].plot(age, yt.YTArray(particle_data['mass']).T[1], label='Secondary')
@@ -43,7 +43,7 @@ axs.flatten()[0].set_ylabel('Mass (M$_\odot$)')
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 
 axs.flatten()[1].plot(age, mass_ratio)
-axs.flatten()[1].set_ylim([0, np.max(mass_ratio)])
+axs.flatten()[1].set_ylim([0, 1])
 axs.flatten()[1].set_ylabel('Mass ratio ($q$)')
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 
@@ -53,7 +53,7 @@ axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
 axs.flatten()[3].plot(age, particle_data['eccentricity'])
-axs.flatten()[3].set_ylim([np.min(particle_data['eccentricity']), np.max(particle_data['eccentricity'])])
+axs.flatten()[3].set_ylim([0, np.max(particle_data['eccentricity'])])
 axs.flatten()[3].set_ylabel('Eccentricity')
 axs.flatten()[3].set_xlabel('Time (kyr)')
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True, right=True)
