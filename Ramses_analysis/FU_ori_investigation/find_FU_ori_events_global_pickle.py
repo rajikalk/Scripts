@@ -169,7 +169,7 @@ for time_it in range(len(age)):
             if np.remainder(plot_it, 3) == 0:
                 axs.flatten()[plot_it].set_ylabel("Log L (L$_\odot$)")
             if np.remainder(plot_it, 3) == 2:
-                right_ax.set_ylabel("Magnitude")
+                right_ax.set_ylabel("Absolute Magnitude")
             else:
                 yticklabels = right_ax.get_yticklabels()
                 plt.setp(yticklabels, visible=False)
