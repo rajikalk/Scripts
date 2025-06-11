@@ -126,8 +126,8 @@ if args.update_pickle == 'True':
                     particle_data['time'].append(time_val)
                     particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                    position = yt.YTArray(np.array([sink_data['x'][sink_ind-1::sink_ind+1], sink_data['y'][sink_ind-1::sink_ind+1], sink_data['z'][sink_ind-1::sink_ind+1]])*units['length_unit'].in_units('au'), 'au')
-                    velocity = yt.YTArray(np.array([sink_data['ux'][sink_ind-1::sink_ind+1], sink_data['uy'][sink_ind-1::sink_ind+1], sink_data['uz'][sink_ind-1::sink_ind+1]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                    position = yt.YTArray(np.array([sink_data['x'][sink_ind-1:sink_ind+1], sink_data['y'][sink_ind-1:sink_ind+1], sink_data['z'][sink_ind-1:sink_ind+1]])*units['length_unit'].in_units('au'), 'au')
+                    velocity = yt.YTArray(np.array([sink_data['ux'][sink_ind-1:sink_ind+1], sink_data['uy'][sink_ind-1:sink_ind+1], sink_data['uz'][sink_ind-1:sink_ind+1]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                     
                     CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
                     CoM_vel = np.sum((velocity*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
