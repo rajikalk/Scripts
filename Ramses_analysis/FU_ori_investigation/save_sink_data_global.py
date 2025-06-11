@@ -147,10 +147,8 @@ if args.update_pickle == 'True':
                     L = particle_data['mass'][-1].in_units('g').T*r_x_v
                     L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
                     h_val = L_tot/reduced_mass.in_units('g')
-                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
                     particle_data['eccentricity'].append(e)
-                    import pdb
-                    pdb.set_trace()
                     
                     d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
                     d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
