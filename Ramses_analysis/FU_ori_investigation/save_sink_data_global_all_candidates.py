@@ -28,7 +28,7 @@ def parse_inputs():
     
 #================================================================================
 args = parse_inputs()
-sink_ids = np.array([17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292])
+sink_ids = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 
 path = sys.argv[1]
 save_dir = sys.argv[2]
@@ -84,19 +84,10 @@ if args.update_pickle == 'True':
                 print('pickle data is not up to date! Updating...')
     else:
         updating = True
-        if args.sink_number == None:
-            last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
-            stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
-            while os.path.exists(stars_output_file) == False:
-                last_n = last_n - 1
-                stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
-            loaded_sink_data_last = rsink(last_n, datadir=path)
-            sink_ind = np.argmin(loaded_sink_data_last['u'])
-        else:
-            sink_ind = args.sink_number
             
         particle_data = {}
         particle_data.update({'tag':sink_ids})
+        particle_data.update({'form_time':[]})
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
@@ -117,20 +108,25 @@ if args.update_pickle == 'True':
                 file.close()
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
-            import pdb
-            pdb.set_trace()
-            if len(sink_data['u']) > sink_ind:
-                if sink_form_time == 0:
+            for sink_id in sink_ids:
+                try:
+                    sink_form_time = particle_data['form_time'][sink_ids.index(sink_id)]
+                except:
+                    print("Saving data of sink", sink_id)
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
+                    particle_data['form_time'].append(sink_form_time)
+                    particle_data['time'].append([])
+                    particle_data['mass'].append([])
+                    particle_data['mdot'].append([])
+                    
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                particle_data['time'].append(time_val)
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
-                d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
+                particle_data['time'][sink_ids.index(sink_id)].append(time_val)
+                particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_ind]*units['mass_unit'].in_units('msun'), 'msun'))
+                d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
-        print("Finished saving Sink 45 data")
+                particle_data['mdot'][sink_ids.index(sink_id)].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
