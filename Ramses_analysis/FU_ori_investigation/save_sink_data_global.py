@@ -100,6 +100,7 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
+        particle_data.update({'eccentricity':[]})
         counter = 0
         sink_form_time = 0
         
@@ -122,13 +123,34 @@ if args.update_pickle == 'True':
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 if time_val < yt.YTQuantity(75000, 'yr'):
-                    pos_prim = yt.YTArray(np.array([sink_data['x'][sink_ind-1], sink_data['y'][sink_ind-1], sink_data['z'][sink_ind-1]])*units['length_unit'].in_units('au'), 'au')
-                    pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
-                    separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-                    particle_data['separation'].append(separation)
-                    
                     particle_data['time'].append(time_val)
                     particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun'), 'msun'))
+                
+                    position = yt.YTArray(np.array([sink_data['x'][sink_ind-1:], sink_data['y'][sink_ind-1:], sink_data['z'][sink_ind-1:]])*units['length_unit'].in_units('au'), 'au')
+                    velocity = yt.YTArray(np.array([sink_data['ux'][sink_ind-1:], sink_data['uy'][sink_ind-1:], sink_data['uz'][sink_ind-1:]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                    
+                    CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
+                    CoM_vel = np.sum((velocity*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
+                    
+                    vel_rel_to_com = (velocity.T - CoM_vel).T
+                    pos_rel_to_com = (position.T - CoM_pos).T
+                    distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
+                    relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
+                    separation = np.sum(distance_from_com)
+                    particle_data['separation'].append(separation)
+                    
+                    reduced_mass = np.product(particle_data['mass'][-1].in_units('g'))/np.sum(particle_data['mass'][-1].in_units('g'))
+                    E_pot = (-1*(yt.units.gravitational_constant_cgs*np.product(particle_data['mass'][-1].in_units('g')))/separation.in_units('cm')).in_units('erg')
+                    E_kin = np.sum((0.5*particle_data['mass'][-1].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+                    epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+                    r_x_v = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
+                    L = particle_data['mass'][-1].in_units('g').T*r_x_v
+                    L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
+                    h_val = L_tot/reduced_mass.in_units('g')
+                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.G*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                    particle_data['eccentricity'].append(e)
+                    import pdb
+                    pdb.set_trace()
                     
                     d_mass = sink_data['dm'][sink_ind-1:sink_ind+1]*units['mass_unit'].in_units('msun')
                     d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
