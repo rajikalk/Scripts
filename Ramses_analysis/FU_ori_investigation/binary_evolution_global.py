@@ -1,12 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import os
-import glob
-from mpi4py.MPI import COMM_WORLD as CW
-import scipy.interpolate as interp
 import pickle
 import yt
-from matplotlib.ticker import FormatStrFormatter
+import matplotlib
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
