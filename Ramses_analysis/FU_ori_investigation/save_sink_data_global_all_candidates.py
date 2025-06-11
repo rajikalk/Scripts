@@ -113,7 +113,7 @@ if args.update_pickle == 'True':
                     sink_form_time = particle_data['form_time'][sink_ids.index(sink_id)]
                 except:
                     print("Saving data of sink", sink_id)
-                    sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
+                    sink_form_time = sink_data['tcreate'][sink_id]*units['time_unit'].in_units('yr')
                     particle_data['form_time'].append(sink_form_time)
                     particle_data['time'].append([])
                     particle_data['mass'].append([])
@@ -121,15 +121,15 @@ if args.update_pickle == 'True':
                     
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 particle_data['time'][sink_ids.index(sink_id)].append(time_val)
-                particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_ind]*units['mass_unit'].in_units('msun'), 'msun'))
-                d_mass = sink_data['dm'][sink_ind]*units['mass_unit'].in_units('msun')
+                particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
+                d_mass = sink_data['dm'][sink_id]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'][sink_ids.index(sink_id)].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
-        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+        pickle.dump((particle_data, counter, sink_form_time), file)
         file.close()
         os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
