@@ -30,7 +30,7 @@ age = yt.YTArray(particle_data['time']).in_units('kyr')
 mass_ratio = yt.YTArray(particle_data['mass']).T[1]/yt.YTArray(particle_data['mass']).T[0]
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(two_col_width, 0.7*two_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=4, figsize=(two_col_width, 0.8*two_col_width), sharex=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 
@@ -43,7 +43,7 @@ axs.flatten()[0].set_ylabel('Mass (M$_\odot$)')
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 
 axs.flatten()[1].plot(age, mass_ratio)
-axs.flatten()[1].set_ylim([0, 1])
+axs.flatten()[1].set_ylim([0, 0.99])
 axs.flatten()[1].set_ylabel('Mass ratio ($q$)')
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 
