@@ -126,7 +126,7 @@ if args.update_pickle == 'True':
                     d_mass = sink_data['dm'][sink_id]*units['mass_unit'].in_units('msun')
                     d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                     acc_val = d_mass/d_time
-                    acc_val[np.where(acc_val == 0)[0]]=1.e-12
+                    #acc_val[np.where(acc_val == 0)[0]]=1.e-12
                     particle_data['mdot'][sink_ids.index(sink_id)].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
