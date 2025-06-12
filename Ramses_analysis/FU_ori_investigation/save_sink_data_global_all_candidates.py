@@ -104,7 +104,7 @@ if args.update_pickle == 'True':
                 except:
                     print("pickle files doesn't exist yet")
                 file = open(save_dir+'particle_data.pkl', 'wb')
-                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+                pickle.dump((particle_data, counter, sink_form_time), file)
                 file.close()
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
