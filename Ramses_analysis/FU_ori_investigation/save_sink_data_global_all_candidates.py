@@ -108,7 +108,7 @@ if args.update_pickle == 'True':
                 file.close()
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
-            if len(sink_data['tcreate']) > sink_ids[0]-1:
+            if len(sink_data['tcreate']) > sink_ids[0]:
                 for sink_id in sink_ids:
                     try:
                         sink_form_time = particle_data['form_time'][sink_ids.index(sink_id)]
