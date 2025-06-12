@@ -29,6 +29,7 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 sink_ids = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
+companion_ids = []
 
 path = sys.argv[1]
 save_dir = sys.argv[2]
@@ -91,6 +92,7 @@ if args.update_pickle == 'True':
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
+        particle_data.update({'separation':[]})
         counter = 0
         sink_form_time = 0
         
@@ -120,7 +122,10 @@ if args.update_pickle == 'True':
                         particle_data['time'].append([])
                         particle_data['mass'].append([])
                         particle_data['mdot'].append([])
+                        particle_data['separation'].append([])
                         
+                    import pdb
+                    pdb.set_trace()
                     time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                     particle_data['time'][sink_ids.index(sink_id)].append(time_val)
                     particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
