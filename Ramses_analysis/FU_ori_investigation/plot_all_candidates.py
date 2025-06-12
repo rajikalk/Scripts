@@ -39,8 +39,8 @@ for tag in particle_data['tag']:
 
     #Derive a stellar luminosity
     facc = 0.5
-    lstar_baraffe = []
-    rstar_barrafe = []
+    lstar_baraffe_prim = []
+    rstar_barrafe_prim = []
     Mass_prim = particle_data['mass'][tag_it]
     Mdot_prim = particle_data['mdot'][tag_it]
     for mass_val in Mass_prim:
