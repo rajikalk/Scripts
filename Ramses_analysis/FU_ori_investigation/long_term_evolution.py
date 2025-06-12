@@ -30,9 +30,12 @@ Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399,
 Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
 
 #Derive a stellar luminosity
+facc = 0.5
 lstar_baraffe_prim = []
 rstar_barrafe_prim = []
-for mass_val in particle_data['mass'].T[0]:
+Mass_prim = yt.YTArray(particle_data['mass']).T[0]
+Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
+for mass_val in Mass_prim:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_prim.append(10**Baraffe_logL[0])
         rstar_barrafe_prim.append(Baraffe_radius[0])
@@ -48,13 +51,14 @@ for mass_val in particle_data['mass'].T[0]:
         radius = gradient*mass_val + y_intercept
         rstar_barrafe_prim.append(radius)
 
-lstar_baraffe_prim = yt.YTArray(lstar_baraffe_prim, 'Lsun')
-lacc_prim = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
-ltot_prim = lacc_prim.in_units('lsun') + lstar_baraffe_prim
+lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
+ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
 
 lstar_baraffe_sec = []
 rstar_barrafe_sec = []
-for mass_val in particle_data['mass'].T[1]:
+Mass_sec = yt.YTArray(particle_data['mass']).T[1]
+Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
+for mass_val in Mass_sec:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_sec.append(10**Baraffe_logL[0])
         rstar_barrafe_sec.append(Baraffe_radius[0])
@@ -70,13 +74,12 @@ for mass_val in particle_data['mass'].T[1]:
         radius = gradient*mass_val + y_intercept
         rstar_barrafe_sec.append(radius)
 
-lstar_baraffe_sec = yt.YTArray(lstar_baraffe_sec, 'Lsun')
-lacc_sec = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe_sec).in_units('cm')
-ltot_sec = lacc_sec.in_units('lsun') + lstar_baraffe_sec
+lacc_sec = facc * (yt.units.gravitational_constant_cgs * Mass_sec.in_units('g') * Mdot_sec.in_units('g/s'))/yt.YTArray(rstar_barrafe_sec).in_units('cm')
+ltot_sec = lacc_sec.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_sec), 'lsun')
 
 particle_data.update({'ltot':[ltot_prim, ltot_sec]})
 
-file = open(save_dir+'particle_data.pkl', 'wb')
+file = open(save_dir+'particle_data_global.pkl', 'wb')
 pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
 file.close()
 
@@ -90,9 +93,9 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
-axs.flatten()[0].semilogy(particle_data['time'], particle_data['ltot'])
+axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
 axs.flatten()[0].set_xlim([0, 10000])
-axs.flatten()[0].set_ylabel("L$_{tot}$ (M$_\odot$/yr)")
+axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
 ax0 = axs.flatten()[0].twinx()
 ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
@@ -100,9 +103,9 @@ ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[1].semilogy(particle_data['time'], particle_data['ltot'])
+axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
 axs.flatten()[1].set_xlim([10000, 20000])
-axs.flatten()[1].set_ylabel("L$_{tot}$ (M$_\odot$/yr)")
+axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
 ax1 = axs.flatten()[1].twinx()
 ax1.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
@@ -110,9 +113,9 @@ ax1.set_ylabel('Separation (AU)')
 ax1.set_ylim([5,1000])
 ax1.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[2].semilogy(particle_data['time'], particle_data['ltot'])
+axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
 axs.flatten()[2].set_xlim([20000, 30000])
-axs.flatten()[2].set_ylabel("L$_{tot}$ (M$_\odot$/yr)")
+axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
 ax2 = axs.flatten()[2].twinx()
 ax2.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
@@ -120,9 +123,9 @@ ax2.set_ylabel('Separation (AU)')
 ax2.set_ylim([5,1000])
 ax2.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[3].semilogy(particle_data['time'], particle_data['ltot'])
+axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
 axs.flatten()[3].set_xlim([30000, 40000])
-axs.flatten()[3].set_ylabel("L$_{tot}$ (M$_\odot$/yr)")
+axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
 ax3 = axs.flatten()[3].twinx()
 ax3.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
@@ -130,9 +133,9 @@ ax3.set_ylabel('Separation (AU)')
 ax3.set_ylim([5,1000])
 ax3.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[4].semilogy(particle_data['time'], particle_data['ltot'])
+axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
 axs.flatten()[4].set_xlim([40000, 50000])
-axs.flatten()[4].set_ylabel("L$_{tot}$ (M$_\odot$/yr)")
+axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
 ax4 = axs.flatten()[4].twinx()
 ax4.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
@@ -140,7 +143,7 @@ ax4.set_ylabel('Separation (AU)')
 ax4.set_ylim([5,1000])
 ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time (yr)")
-#axs.flatten()[4].set_ylim([1.e-1, 2.e1])
+axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 
-plt.savefig('long_term_evolution.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot.pdf', bbox_inches='tight', pad_inches=0.02)
 
