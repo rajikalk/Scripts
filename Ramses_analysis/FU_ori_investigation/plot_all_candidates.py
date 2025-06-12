@@ -41,4 +41,5 @@ for tag in particle_data['tag']:
     axs.set_ylabel('Accretion rate (M$_\odot$/yr)')
 
     plt.savefig('Sink_'+str(tag)+'_accretion_evol.pdf', bbox_inches='tight', pad_inches=0.02)
+    print('plotted accretion evolution for sink', tag)
 
