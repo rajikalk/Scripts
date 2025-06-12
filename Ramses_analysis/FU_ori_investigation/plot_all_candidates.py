@@ -34,11 +34,17 @@ for tag in particle_data['tag']:
     tag_it = particle_data['tag'].index(tag)
     plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=1, figsize=(two_col_width, single_col_width))
+    right_ax = axs.twinx()
+    
     axs.semilogy(particle_data['time'][tag_it], particle_data['mdot'][tag_it])
+    right_ax.semilogy(particle_data['time'][tag_it], particle_data['separation'][tag_it])
+    
     axs.set_xlim([np.min(particle_data['time'][tag_it]), np.max(particle_data['time'][tag_it])])
     axs.set_ylim([np.min(particle_data['mdot'][tag_it]), np.max(particle_data['mdot'][tag_it])])
     axs.set_xlabel('Age (yr)')
     axs.set_ylabel('Accretion rate (M$_\odot$/yr)')
+    
+    right_ax.set_ylabel()
 
     plt.savefig('Sink_'+str(tag)+'_accretion_evol.pdf', bbox_inches='tight', pad_inches=0.02)
     print('plotted accretion evolution for sink', tag)

@@ -124,9 +124,9 @@ if args.update_pickle == 'True':
                         particle_data['mdot'].append([])
                         particle_data['separation'].append([])
                         
-                    dx = ink_data['x'] - sink_data['x'][sink_id]
-                    dy = ink_data['y'] - sink_data['y'][sink_id]
-                    dz = ink_data['z'] - sink_data['z'][sink_id]
+                    dx = sink_data['x'] - sink_data['x'][sink_id]
+                    dy = sink_data['y'] - sink_data['y'][sink_id]
+                    dz = sink_data['z'] - sink_data['z'][sink_id]
                     separation = np.sqrt(dx**2 + dy**2 + dz**2)
                     closest_sep = separation[np.argsort(separation)[1]]
                     particle_data['separation'][sink_ids.index(sink_id)].append(closest_sep)
