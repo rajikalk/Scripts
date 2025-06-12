@@ -76,7 +76,7 @@ if args.update_pickle == 'True':
         except:
             os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
             file_open = open(save_dir+'particle_data.pkl', 'rb')
-            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+            particle_data, counter, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
             if counter < len(loaded_sink_data):
