@@ -124,8 +124,13 @@ if args.update_pickle == 'True':
                         particle_data['mdot'].append([])
                         particle_data['separation'].append([])
                         
-                    import pdb
-                    pdb.set_trace()
+                    dx = ink_data['x'] - sink_data['x'][sink_id]
+                    dy = ink_data['y'] - sink_data['y'][sink_id]
+                    dz = ink_data['z'] - sink_data['z'][sink_id]
+                    separation = np.sqrt(dx**2 + dy**2 + dz**2)
+                    closest_sep = separation[np.argsort(separation)[1]]
+                    particle_data['separation'][sink_ids.index(sink_id)].append(closest_sep)
+                    
                     time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                     particle_data['time'][sink_ids.index(sink_id)].append(time_val)
                     particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
