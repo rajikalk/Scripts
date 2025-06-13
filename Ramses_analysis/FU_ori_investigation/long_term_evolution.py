@@ -105,9 +105,14 @@ ltot_sec = lacc_sec.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_sec), '
 
 particle_data.update({'ltot':[ltot_prim, ltot_sec]})
 
-file = open(save_dir+'particle_data_global.pkl', 'wb')
-pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
-file.close()
+if args.sink_id == None:
+    file = open(save_dir+'particle_data_global.pkl', 'wb')
+    pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+    file.close()
+else:
+    file = open(save_dir+'particle_data_global.pkl', 'wb')
+    pickle.dump((particle_data, counter, sink_form_time), file)
+    file.close()
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
