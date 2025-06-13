@@ -73,7 +73,7 @@ lstar_baraffe_sec = []
 rstar_barrafe_sec = []
 Mass_sec = yt.YTArray(particle_data['mass']).T[1]
 Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
-if np.min(particle_data['closest_mdot']) != np.max(particle_data['closest_mdot']):
+if np.min(particle_data['closest_sink']) != np.max(particle_data['closest_sink']):
     import pdb
     pdb.set_trace()
 for mass_val in Mass_sec:
