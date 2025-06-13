@@ -51,8 +51,12 @@ Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.
 facc = 0.5
 lstar_baraffe_prim = []
 rstar_barrafe_prim = []
-Mass_prim = yt.YTArray(particle_data['mass']).T[0]
-Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
+if args.sink_id == None:
+    Mass_prim = yt.YTArray(particle_data['mass']).T[0]
+    Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
+else:
+    Mass_prim = yt.YTArray(particle_data['mass'])
+    Mdot_prim = yt.YTArray(particle_data['mdot'])
 for mass_val in Mass_prim:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_prim.append(10**Baraffe_logL[0])
@@ -74,8 +78,12 @@ ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim)
 
 lstar_baraffe_sec = []
 rstar_barrafe_sec = []
-Mass_sec = yt.YTArray(particle_data['mass']).T[1]
-Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
+if args.sink_id == None:
+    Mass_sec = yt.YTArray(particle_data['mass']).T[1]
+    Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
+else:
+    Mass_sec = yt.YTArray(particle_data['mass'])
+    Mdot_sec = yt.YTArray(particle_data['mdot'])
 for mass_val in Mass_sec:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_sec.append(10**Baraffe_logL[0])
