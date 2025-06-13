@@ -34,11 +34,14 @@ args = parse_inputs()
 save_dir = sys.argv[1]
 if args.sink_id == None:
     global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+    file_open = open(global_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
 else:
     global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
-file_open = open(global_pickle, 'rb')
-particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-file_open.close()
+    file_open = open(global_pickle, 'rb')
+    particle_data, counter, sink_form_time = pickle.load(file_open)
+    file_open.close()
 
 Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
 Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
