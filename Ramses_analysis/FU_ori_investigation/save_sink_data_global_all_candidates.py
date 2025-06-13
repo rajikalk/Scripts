@@ -115,15 +115,15 @@ if args.update_pickle == 'True':
                     closest_sep = separation[closest_sink]
                     particle_data['separation'].append(closest_sep)
                     particle_data['time'].append(time_val)
-                    particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array(sink_ind,closest_sink)]*units['mass_unit'].in_units('msun'), 'msun'))
-                    d_mass = sink_data['dm'][np.array(sink_ind,closest_sink)]*units['mass_unit'].in_units('msun')
+                    particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
+                    d_mass = sink_data['dm'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun')
                     d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                     acc_val = d_mass/d_time
                     #acc_val[np.where(acc_val == 0)[0]]=1.e-12
                     particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
                     
-                    position = yt.YTArray(np.array([sink_data['x'][np.array(sink_ind,closest_sink)], sink_data['y'][np.array(sink_ind,closest_sink)], sink_data['z'][np.array(sink_ind,closest_sink)]])*units['length_unit'].in_units('au'), 'au')
-                    velocity = yt.YTArray(np.array([sink_data['ux'][np.array(sink_ind,closest_sink)], sink_data['uy'][np.array(sink_ind,closest_sink)], sink_data['uz'][np.array(sink_ind,closest_sink)]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                    position = yt.YTArray(np.array([sink_data['x'][np.array([sink_ind,closest_sink])], sink_data['y'][np.array([sink_ind,closest_sink])], sink_data['z'][np.array([sink_ind,closest_sink])]])*units['length_unit'].in_units('au'), 'au')
+                    velocity = yt.YTArray(np.array([sink_data['ux'][np.array([sink_ind,closest_sink])], sink_data['uy'][np.array([sink_ind,closest_sink])], sink_data['uz'][np.array([sink_ind,closest_sink])]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                     
                     CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
                     CoM_vel = np.sum((velocity*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
