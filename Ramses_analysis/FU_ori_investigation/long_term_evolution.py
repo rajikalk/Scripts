@@ -157,5 +157,5 @@ ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time (yr)")
 axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 
-plt.savefig('long_term_evolution_ltot_'++'.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 
