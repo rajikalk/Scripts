@@ -34,14 +34,11 @@ args = parse_inputs()
 save_dir = sys.argv[1]
 if args.sink_id == None:
     global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
-    file_open = open(global_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
 else:
     global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
-    file_open = open(global_pickle, 'rb')
-    particle_data, counter, sink_form_time = pickle.load(file_open)
-    file_open.close()
+file_open = open(global_pickle, 'rb')
+particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+file_open.close()
 
 Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
 Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
@@ -51,12 +48,8 @@ Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.
 facc = 0.5
 lstar_baraffe_prim = []
 rstar_barrafe_prim = []
-if args.sink_id == None:
-    Mass_prim = yt.YTArray(particle_data['mass']).T[0]
-    Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
-else:
-    Mass_prim = yt.YTArray(particle_data['mass'])
-    Mdot_prim = yt.YTArray(particle_data['mdot'])
+Mass_prim = yt.YTArray(particle_data['mass']).T[0]
+Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
 for mass_val in Mass_prim:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_prim.append(10**Baraffe_logL[0])
@@ -78,15 +71,11 @@ ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim)
 
 lstar_baraffe_sec = []
 rstar_barrafe_sec = []
-if args.sink_id == None:
-    Mass_sec = yt.YTArray(particle_data['mass']).T[1]
-    Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
-else:
-    if np.min(particle_data['closest_mdot']) != np.max(particle_data['closest_mdot']):
-        import pdb
-        pdb.set_trace()
-    Mass_sec = yt.YTArray(particle_data['closest_mass'])
-    Mdot_sec = yt.YTArray(particle_data['closest_mdot'])
+Mass_sec = yt.YTArray(particle_data['mass']).T[1]
+Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
+if np.min(particle_data['closest_mdot']) != np.max(particle_data['closest_mdot']):
+    import pdb
+    pdb.set_trace()
 for mass_val in Mass_sec:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_sec.append(10**Baraffe_logL[0])
@@ -108,14 +97,9 @@ ltot_sec = lacc_sec.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_sec), '
 
 particle_data.update({'ltot':[ltot_prim, ltot_sec]})
 
-if args.sink_id == None:
-    file = open(save_dir+'particle_data_global.pkl', 'wb')
-    pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
-    file.close()
-else:
-    file = open(save_dir+'particle_data_global.pkl', 'wb')
-    pickle.dump((particle_data, counter, sink_form_time), file)
-    file.close()
+file = open(save_dir+'particle_data_global.pkl', 'wb')
+pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+file.close()
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
