@@ -88,7 +88,6 @@ if args.update_pickle == 'True':
         updating = True
             
         particle_data = {}
-        particle_data.update({'form_time':})
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
