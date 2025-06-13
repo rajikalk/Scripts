@@ -84,6 +84,7 @@ if args.update_pickle == 'True':
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
         particle_data.update({'eccentricity':[]})
+        particle_data.update({'closest_sink':[]})
         counter = 0
         sink_form_time = 0
         
@@ -112,6 +113,7 @@ if args.update_pickle == 'True':
                     dz = sink_data['z'] - sink_data['z'][sink_ind]
                     separation = np.sqrt(dx**2 + dy**2 + dz**2)*units['length_unit'].in_units('au')
                     closest_sink = np.argsort(separation)[1]
+                    particle_data['closest_sink'].append(closest_sink)
                     closest_sep = separation[closest_sink]
                     particle_data['separation'].append(closest_sep)
                     particle_data['time'].append(time_val)
