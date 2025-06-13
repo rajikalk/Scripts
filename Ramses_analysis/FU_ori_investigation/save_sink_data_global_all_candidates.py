@@ -94,6 +94,7 @@ if args.update_pickle == 'True':
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
         particle_data.update({'closest_sink':[]})
+        particle_data.update({'closest_mass':[]})
         particle_data.update({'closest_mdot':[]})
         counter = 0
         sink_form_time = 0
@@ -126,6 +127,7 @@ if args.update_pickle == 'True':
                         particle_data['mdot'].append([])
                         particle_data['separation'].append([])
                         particle_data['closest_sink'].append([])
+                        particle_data['closest_mass'].append([])
                         particle_data['closest_mdot'].append([])
                     
                     time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
@@ -148,6 +150,7 @@ if args.update_pickle == 'True':
                         
                         d_mass = sink_data['dm'][closest_sink]*units['mass_unit'].in_units('msun')
                         acc_val = d_mass/d_time
+                        particle_data['closest_mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][closest_sink]*units['mass_unit'].in_units('msun'), 'msun'))
                         particle_data['closest_mdot'][sink_ids.index(sink_id)].append(acc_val)
                         
         #write lastest pickle

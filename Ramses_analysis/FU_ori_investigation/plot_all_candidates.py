@@ -20,22 +20,30 @@ matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
-global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global_all_candidates.pkl"
-file_open = open(global_pickle, 'rb')
-particle_data, counter, sink_form_time = pickle.load(file_open)
-file_open.close()
+try:
+    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global_all_candidates.pkl"
+    file_open = open(global_pickle, 'rb')
+    print("reading pickle")
+    particle_data, counter, sink_form_time = pickle.load(file_open)
+    file_open.close()
+except:
+    global_pickle = "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Pickles/particle_data_global_all_candidates.pkl"
+    file_open = open(global_pickle, 'rb')
+    print("reading pickle")
+    particle_data, counter, sink_form_time = pickle.load(file_open)
+    file_open.close()
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 10
 
+Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
+Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
+Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
+
 for tag in particle_data['tag']:
     tag_it = particle_data['tag'].index(tag)
-    
-    Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
-    Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
-    Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
 
     #Derive a stellar luminosity
     facc = 0.5
@@ -60,13 +68,38 @@ for tag in particle_data['tag']:
             rstar_barrafe_prim.append(radius)
 
     lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
-    ltot = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
+    ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
     
+    '''
+    lstar_baraffe_sec = []
+    rstar_barrafe_sec = []
+    Mass_sec = particle_data['mass'][tag_it]
+    Mdot_sec = particle_data['mdot'][tag_it]
+    for mass_val in Mass_sec:
+        if mass_val < Baraffe_mass[0]:
+            lstar_baraffe_sec.append(10**Baraffe_logL[0])
+            rstar_barrafe_sec.append(Baraffe_radius[0])
+        else:
+            closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
+            gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+            y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+            logL = gradient*mass_val + y_intercept
+            lstar_baraffe_sec.append(10**logL)
+            
+            gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+            y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+            radius = gradient*mass_val + y_intercept
+            rstar_barrafe_sec.append(radius)
+
+    lacc_sec = facc * (yt.units.gravitational_constant_cgs * Mass_sec.in_units('g') * Mdot_sec.in_units('g/s'))/yt.YTArray(rstar_barrafe_sec).in_units('cm')
+    ltot_sec = lacc_sec.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_sec), 'lsun')
+    '''
     plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)
     right_ax = axs.twinx()
     
-    axs.flatten()[0].semilogy(particle_data['time'][tag_it], ltot)
+    axs.flatten()[0].semilogy(particle_data['time'][tag_it], ltot_prim)
+    axs.flatten()[0].semilogy(particle_data['time'][tag_it], ltot_sec)
     axs.flatten()[0].set_xlim([0, 10000])
     axs.flatten()[0].set_ylabel("L$_{acc}$ (L$_\odot$/)")
     axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
@@ -76,7 +109,8 @@ for tag in particle_data['tag']:
     #ax0.set_ylim([5,1000])
     ax0.tick_params(axis='both', direction='in', top=True)
 
-    axs.flatten()[1].semilogy(particle_data['time'][tag_it], ltot)
+    axs.flatten()[1].semilogy(particle_data['time'][tag_it], ltot_prim)
+    axs.flatten()[1].semilogy(particle_data['time'][tag_it], ltot_sec)
     axs.flatten()[1].set_xlim([10000, 20000])
     axs.flatten()[1].set_ylabel("L$_{acc}$ (L$_\odot$/)")
     axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
@@ -86,7 +120,8 @@ for tag in particle_data['tag']:
     #ax1.set_ylim([5,1000])
     ax1.tick_params(axis='both', direction='in', top=True)
 
-    axs.flatten()[2].semilogy(particle_data['time'][tag_it], ltot)
+    axs.flatten()[2].semilogy(particle_data['time'][tag_it], ltot_prim)
+    axs.flatten()[2].semilogy(particle_data['time'][tag_it], ltot_sec)
     axs.flatten()[2].set_xlim([20000, 30000])
     axs.flatten()[2].set_ylabel("L$_{acc}$ (L$_\odot$/)")
     axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
@@ -96,7 +131,8 @@ for tag in particle_data['tag']:
     #ax2.set_ylim([5,1000])
     ax2.tick_params(axis='both', direction='in', top=True)
 
-    axs.flatten()[3].semilogy(particle_data['time'][tag_it], ltot)
+    axs.flatten()[3].semilogy(particle_data['time'][tag_it], ltot_prim)
+    axs.flatten()[3].semilogy(particle_data['time'][tag_it], ltot_sec)
     axs.flatten()[3].set_xlim([30000, 40000])
     axs.flatten()[3].set_ylabel("L$_{acc}$ (L$_\odot$/)")
     axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
@@ -106,7 +142,8 @@ for tag in particle_data['tag']:
     #ax3.set_ylim([5,1000])
     ax3.tick_params(axis='both', direction='in', top=True)
 
-    axs.flatten()[4].semilogy(particle_data['time'][tag_it], ltot)
+    axs.flatten()[4].semilogy(particle_data['time'][tag_it], ltot_prim)
+    axs.flatten()[4].semilogy(particle_data['time'][tag_it], ltot_sec)
     axs.flatten()[4].set_xlim([40000, 50000])
     axs.flatten()[4].set_ylabel("L$_{acc}$ (L$_\odot$/)")
     axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
