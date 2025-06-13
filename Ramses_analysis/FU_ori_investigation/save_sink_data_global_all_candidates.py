@@ -93,6 +93,8 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
+        particle_data.update({'closest_sink':[]})
+        particle_data.update({'closest_mdot':[]})
         counter = 0
         sink_form_time = 0
         
@@ -123,6 +125,8 @@ if args.update_pickle == 'True':
                         particle_data['mass'].append([])
                         particle_data['mdot'].append([])
                         particle_data['separation'].append([])
+                        particle_data['closest_sink'].append([])
+                        particle_data['closest_mdot'].append([])
                     
                     time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                     if time_val < yt.YTQuantity(75000, 'yr'):
@@ -130,7 +134,9 @@ if args.update_pickle == 'True':
                         dy = sink_data['y'] - sink_data['y'][sink_id]
                         dz = sink_data['z'] - sink_data['z'][sink_id]
                         separation = np.sqrt(dx**2 + dy**2 + dz**2)
-                        closest_sep = separation[np.argsort(separation)[1]]
+                        closest_sink = np.argsort(separation)[1]
+                        particle_data['closest_sink'][sink_ids.index(sink_id)].append(closest_sink)
+                        closest_sep = separation[closest_sink]
                         particle_data['separation'][sink_ids.index(sink_id)].append(closest_sep)
                         particle_data['time'][sink_ids.index(sink_id)].append(time_val)
                         particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
@@ -139,6 +145,11 @@ if args.update_pickle == 'True':
                         acc_val = d_mass/d_time
                         #acc_val[np.where(acc_val == 0)[0]]=1.e-12
                         particle_data['mdot'][sink_ids.index(sink_id)].append(yt.YTArray(acc_val, 'msun/yr'))
+                        
+                        d_mass = sink_data['dm'][closest_sink]*units['mass_unit'].in_units('msun')
+                        acc_val = d_mass/d_time
+                        particle_data['closest_mdot'][sink_ids.index(sink_id)].append()
+                        
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_form_time), file)
