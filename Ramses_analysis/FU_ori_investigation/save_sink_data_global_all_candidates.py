@@ -29,7 +29,7 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 sink_ids = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
-sink_id = sink_ids[8]
+sink_id = sink_ids[9]
 companion_ids = []
 
 path = sys.argv[1]

@@ -82,8 +82,8 @@ if args.sink_id == None:
     Mass_sec = yt.YTArray(particle_data['mass']).T[1]
     Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
 else:
-    Mass_sec = yt.YTArray(particle_data['mass'])
-    Mdot_sec = yt.YTArray(particle_data['mdot'])
+    Mass_sec = yt.YTArray(particle_data['closest_mass'])
+    Mdot_sec = yt.YTArray(particle_data['closest_mdot'])
 for mass_val in Mass_sec:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_sec.append(10**Baraffe_logL[0])
