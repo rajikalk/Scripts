@@ -111,7 +111,10 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
-axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
+axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink']):
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[1][curr_inds], ls='.')
 axs.flatten()[0].set_xlim([0, 10000])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
@@ -121,7 +124,10 @@ ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
+axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink']):
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[1][curr_inds], ls='.')
 axs.flatten()[1].set_xlim([10000, 20000])
 axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
@@ -131,7 +137,10 @@ ax1.set_ylabel('Separation (AU)')
 ax1.set_ylim([5,1000])
 ax1.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
+axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink']):
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[1][curr_inds], ls='.')
 axs.flatten()[2].set_xlim([20000, 30000])
 axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
@@ -141,7 +150,10 @@ ax2.set_ylabel('Separation (AU)')
 ax2.set_ylim([5,1000])
 ax2.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
+axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink']):
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[1][curr_inds], ls='.')
 axs.flatten()[3].set_xlim([30000, 40000])
 axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
@@ -151,7 +163,10 @@ ax3.set_ylabel('Separation (AU)')
 ax3.set_ylim([5,1000])
 ax3.tick_params(axis='both', direction='in', top=True)
 
-axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T)
+axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink']):
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    axs.flatten()[].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[1][curr_inds], ls='.')
 axs.flatten()[4].set_xlim([40000, 50000])
 axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
