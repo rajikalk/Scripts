@@ -82,6 +82,9 @@ if args.sink_id == None:
     Mass_sec = yt.YTArray(particle_data['mass']).T[1]
     Mdot_sec = yt.YTArray(particle_data['mdot']).T[1]
 else:
+    if np.min(particle_data['closest_mdot']) != np.max(particle_data['closest_mdot']):
+        import pdb
+        pdb.set_trace()
     Mass_sec = yt.YTArray(particle_data['closest_mass'])
     Mdot_sec = yt.YTArray(particle_data['closest_mdot'])
 for mass_val in Mass_sec:
