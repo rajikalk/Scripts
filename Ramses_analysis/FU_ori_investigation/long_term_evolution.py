@@ -8,6 +8,14 @@ import scipy.interpolate as interp
 import pickle
 import yt
 
+def parse_inputs():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-sink", "--sink_id", help="which sink?", type=int, default=None)
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -20,7 +28,11 @@ matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
-global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+args = parse_inputs()
+if args.sink_id == None:
+    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+else:
+    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
@@ -145,5 +157,5 @@ ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time (yr)")
 axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 
-plt.savefig('long_term_evolution_ltot.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot_'++'.pdf', bbox_inches='tight', pad_inches=0.02)
 
