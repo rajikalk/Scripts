@@ -148,7 +148,7 @@ if args.update_pickle == 'True':
                         
                         d_mass = sink_data['dm'][closest_sink]*units['mass_unit'].in_units('msun')
                         acc_val = d_mass/d_time
-                        particle_data['closest_mdot'][sink_ids.index(sink_id)].append()
+                        particle_data['closest_mdot'][sink_ids.index(sink_id)].append(acc_val)
                         
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
