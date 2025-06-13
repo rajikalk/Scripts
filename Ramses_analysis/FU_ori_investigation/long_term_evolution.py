@@ -30,6 +30,7 @@ matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
 args = parse_inputs()
+save_dir = sys.argv[1]
 if args.sink_id == None:
     global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 else:
