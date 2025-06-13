@@ -29,6 +29,7 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 sink_ids = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
+sink_id = sink_ids[0]
 companion_ids = []
 
 path = sys.argv[1]
@@ -65,9 +66,9 @@ if args.update_pickle == 'True':
     loaded_sink_data = rsink(datadir=path, all=True)
     updating = False
     
-    if os.path.isfile('particle_data.pkl'):
+    if os.path.isfile('particle_data_'+str(sink_id)+'.pkl'):
         try:
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            file_open = open(save_dir+'particle_data_'+str(sink_id)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -75,8 +76,8 @@ if args.update_pickle == 'True':
                 updating = True
                 print('pickle data is not up to date! Updating...')
         except:
-            os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            os.system('cp '+save_dir+'particle_data_'+str(sink_id)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_id)+'.pkl')
+            file_open = open(save_dir+'particle_data_'+str(sink_id)+'.pkl', 'rb')
             particle_data, counter, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -87,8 +88,7 @@ if args.update_pickle == 'True':
         updating = True
             
         particle_data = {}
-        particle_data.update({'tag':sink_ids})
-        particle_data.update({'form_time':[]})
+        particle_data.update({'form_time':})
         particle_data.update({'time':[]})
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
@@ -105,57 +105,46 @@ if args.update_pickle == 'True':
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
                 try:
-                    os.remove(save_dir+'particle_data.pkl')
+                    os.remove(save_dir+'particle_data_'+str(sink_id)+'.pkl')
                 except:
                     print("pickle files doesn't exist yet")
-                file = open(save_dir+'particle_data.pkl', 'wb')
+                file = open(save_dir+'particle_data_'+str(sink_id)+'.pkl', 'wb')
                 pickle.dump((particle_data, counter, sink_form_time), file)
                 file.close()
-                os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+                os.system('cp '+save_dir+'particle_data_'+str(sink_id)+'.pkl '+save_dir+'particle_data_'+str(sink_id)+'_tmp.pkl')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
-            
-            for sink_id in sink_ids:
-                if len(sink_data['tcreate']) > sink_id:
-                    try:
-                        sink_form_time = particle_data['form_time'][sink_ids.index(sink_id)]
-                    except:
-                        print("Saving data of sink", sink_id)
-                        sink_form_time = sink_data['tcreate'][sink_id]*units['time_unit'].in_units('yr')
-                        particle_data['form_time'].append(sink_form_time)
-                        particle_data['time'].append([])
-                        particle_data['mass'].append([])
-                        particle_data['mdot'].append([])
-                        particle_data['separation'].append([])
-                        particle_data['closest_sink'].append([])
-                        particle_data['closest_mass'].append([])
-                        particle_data['closest_mdot'].append([])
+            if len(sink_data['tcreate']) > sink_id:
+                if sink_form_time == 0:
+                    sink_form_time = sink_data['tcreate'][sink_id]*units['time_unit'].in_units('yr')
+                
+                time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
+                if time_val < yt.YTQuantity(75000, 'yr'):
+                    dx = sink_data['x'] - sink_data['x'][sink_id]
+                    dy = sink_data['y'] - sink_data['y'][sink_id]
+                    dz = sink_data['z'] - sink_data['z'][sink_id]
+                    separation = np.sqrt(dx**2 + dy**2 + dz**2)
+                    closest_sink = np.argsort(separation)[1]
+                    particle_data['closest_sink'].append(closest_sink)
+                    closest_sep = separation[closest_sink]
+                    particle_data['separation'].append(closest_sep)
+                    particle_data['time'].append(time_val)
+                    particle_data['mass'].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
+                    d_mass = sink_data['dm'][sink_id]*units['mass_unit'].in_units('msun')
+                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                    acc_val = d_mass/d_time
+                    #acc_val[np.where(acc_val == 0)[0]]=1.e-12
+                    particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
                     
-                    time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                    if time_val < yt.YTQuantity(75000, 'yr'):
-                        dx = sink_data['x'] - sink_data['x'][sink_id]
-                        dy = sink_data['y'] - sink_data['y'][sink_id]
-                        dz = sink_data['z'] - sink_data['z'][sink_id]
-                        separation = np.sqrt(dx**2 + dy**2 + dz**2)
-                        closest_sink = np.argsort(separation)[1]
-                        particle_data['closest_sink'][sink_ids.index(sink_id)].append(closest_sink)
-                        closest_sep = separation[closest_sink]
-                        particle_data['separation'][sink_ids.index(sink_id)].append(closest_sep)
-                        particle_data['time'][sink_ids.index(sink_id)].append(time_val)
-                        particle_data['mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][sink_id]*units['mass_unit'].in_units('msun'), 'msun'))
-                        d_mass = sink_data['dm'][sink_id]*units['mass_unit'].in_units('msun')
-                        d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-                        acc_val = d_mass/d_time
-                        #acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                        particle_data['mdot'][sink_ids.index(sink_id)].append(yt.YTArray(acc_val, 'msun/yr'))
-                        
-                        d_mass = sink_data['dm'][closest_sink]*units['mass_unit'].in_units('msun')
-                        acc_val = d_mass/d_time
-                        particle_data['closest_mass'][sink_ids.index(sink_id)].append(yt.YTArray(sink_data['m'][closest_sink]*units['mass_unit'].in_units('msun'), 'msun'))
-                        particle_data['closest_mdot'][sink_ids.index(sink_id)].append(acc_val)
+                    d_mass = sink_data['dm'][closest_sink]*units['mass_unit'].in_units('msun')
+                    acc_val = d_mass/d_time
+                    particle_data['closest_mass'].append(yt.YTArray(sink_data['m'][closest_sink]*units['mass_unit'].in_units('msun'), 'msun'))
+                    particle_data['closest_mdot'].append(acc_val)
+                else:
+                    break
                         
         #write lastest pickle
-        file = open(save_dir+'particle_data.pkl', 'wb')
+        file = open(save_dir+'particle_data_'+str(sink_id)+'.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_form_time), file)
         file.close()
-        os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+        os.system('cp '+save_dir+'particle_data_'+str(sink_id)+'.pkl '+save_dir+'particle_data_'+str(sink_id)+'_tmp.pkl')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')

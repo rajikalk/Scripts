@@ -70,11 +70,11 @@ for tag in particle_data['tag']:
     lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
     ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
     
-    '''
+    
     lstar_baraffe_sec = []
     rstar_barrafe_sec = []
-    Mass_sec = particle_data['mass'][tag_it]
-    Mdot_sec = particle_data['mdot'][tag_it]
+    Mass_sec = particle_data['closest_mass'][tag_it]
+    Mdot_sec = particle_data['closest_mdot'][tag_it]
     for mass_val in Mass_sec:
         if mass_val < Baraffe_mass[0]:
             lstar_baraffe_sec.append(10**Baraffe_logL[0])
@@ -93,7 +93,7 @@ for tag in particle_data['tag']:
 
     lacc_sec = facc * (yt.units.gravitational_constant_cgs * Mass_sec.in_units('g') * Mdot_sec.in_units('g/s'))/yt.YTArray(rstar_barrafe_sec).in_units('cm')
     ltot_sec = lacc_sec.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_sec), 'lsun')
-    '''
+    
     plt.clf()
     fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)
     right_ax = axs.twinx()
