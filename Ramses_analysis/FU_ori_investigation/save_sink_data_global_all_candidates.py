@@ -29,7 +29,7 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 sink_ids = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
-sink_id = sink_ids[0]
+sink_id = sink_ids[1]
 companion_ids = []
 
 path = sys.argv[1]
@@ -121,7 +121,7 @@ if args.update_pickle == 'True':
                     dx = sink_data['x'] - sink_data['x'][sink_id]
                     dy = sink_data['y'] - sink_data['y'][sink_id]
                     dz = sink_data['z'] - sink_data['z'][sink_id]
-                    separation = np.sqrt(dx**2 + dy**2 + dz**2)
+                    separation = np.sqrt(dx**2 + dy**2 + dz**2)*units['length_unit'].in_units('au')
                     closest_sink = np.argsort(separation)[1]
                     particle_data['closest_sink'].append(closest_sink)
                     closest_sep = separation[closest_sink]
