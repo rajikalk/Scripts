@@ -118,7 +118,7 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(hspace=0.0)
 
 axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
-for closest_id in np.unique(particle_data['closest_sink']):
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
@@ -135,7 +135,7 @@ ax0.tick_params(axis='both', direction='in', top=True)
 print('plotted time [0, 10000]')
 
 axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
-for closest_id in np.unique(particle_data['closest_sink']):
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
@@ -152,7 +152,7 @@ ax1.tick_params(axis='both', direction='in', top=True)
 print('plotted time [10000, 20000]')
 
 axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
-for closest_id in np.unique(particle_data['closest_sink']):
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
@@ -169,7 +169,7 @@ ax2.tick_params(axis='both', direction='in', top=True)
 print('plotted time [20000, 30000]')
 
 axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
-for closest_id in np.unique(particle_data['closest_sink']):
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
@@ -186,7 +186,7 @@ ax3.tick_params(axis='both', direction='in', top=True)
 print('plotted time [30000, 40000]')
 
 axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
-for closest_id in np.unique(particle_data['closest_sink']):
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
