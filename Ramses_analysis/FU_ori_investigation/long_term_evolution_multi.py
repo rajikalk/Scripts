@@ -24,7 +24,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, single_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, 1.5*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 
 for sink_ind in sink_inds:
@@ -41,7 +41,9 @@ for sink_ind in sink_inds:
 
     axs.flatten()[0].set_xlim(left=0)
     axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
+    axs.flatten()[0].set_ylim([0, 1.5])
     axs.flatten()[1].set_ylabel('Eccentricity')
+    axs.flatten()[1].set_ylim([0, 1.1])
     axs.flatten()[1].set_xlabel('Time (yr)')
     plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
     print('updated figure')
