@@ -39,9 +39,10 @@ for sink_ind in sink_inds:
         axs.flatten()[0].plot(particle_data['time'], mass_ratio)
         axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'])
 
-axs.flatten()[0].set_xlim(left=0)
-axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
-axs.flatten()[1].set_ylabel('Eccentricity')
-axs.flatten()[1].set_xlabel('Time (yr)')
-plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
+    axs.flatten()[0].set_xlim(left=0)
+    axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
+    axs.flatten()[1].set_ylabel('Eccentricity')
+    axs.flatten()[1].set_xlabel('Time (yr)')
+    plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
+    print('updated figure')
     
