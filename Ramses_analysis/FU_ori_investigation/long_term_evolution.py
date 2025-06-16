@@ -73,6 +73,7 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
 
     lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
     ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
+    del lstar_baraffe_prim, rstar_barrafe_prim, Mass_prim, Mdot_prim, lacc_prim
     print('Candidate luminosity finished')
     
     print('Calculating luminosity for companion')
@@ -98,6 +99,7 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
 
     lacc_comp = facc * (yt.units.gravitational_constant_cgs * Mass_comp.in_units('g') * Mdot_comp.in_units('g/s'))/yt.YTArray(rstar_barrafe_comp).in_units('cm')
     ltot_comp = lacc_comp.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_comp), 'lsun')
+    del lstar_baraffe_comp, rstar_barrafe_comp, Mass_comp, Mdot_comp, lacc_comp
     print('Companion luminosity finished')
 
     particle_data.update({'ltot':yt.YTArray([ltot_prim, ltot_comp]).T})
