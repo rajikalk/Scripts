@@ -102,9 +102,11 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
 
     particle_data.update({'ltot':yt.YTArray([ltot_prim, ltot_comp]).T})
 
+    print('updating pickle')
     file = open(global_pickle, 'wb')
     pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
     file.close()
+    print('Finished updating pickle', global_pickle)
 print('Got total luminosity')
 
 two_col_width = 7.20472 #inches
