@@ -36,8 +36,8 @@ for sink_ind in sink_inds:
         file_open.close()
         
         mass_ratio = yt.YTArray(particle_data['mass']).T[0]/yt.YTArray(particle_data['mass']).T[1]
-        axs.flatten()[0].plot(particle_data['time'], mass_ratio)
-        axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'])
+        axs.flatten()[0].plot(particle_data['time'], mass_ratio, alpha=0.25)
+        axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'], alpha=0.25)
 
     axs.flatten()[0].set_xlim([0, 75000])
     axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
