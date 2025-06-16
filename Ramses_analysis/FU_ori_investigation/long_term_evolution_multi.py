@@ -42,9 +42,11 @@ for sink_ind in sink_inds:
     axs.flatten()[0].set_xlim([0, 75000])
     axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
     axs.flatten()[0].set_ylim([0, 1.5])
+    axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[1].set_ylabel('Eccentricity')
     axs.flatten()[1].set_ylim([0, 1.1])
     axs.flatten()[1].set_xlabel('Time (yr)')
+    axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
     plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
     print('updated figure')
     
