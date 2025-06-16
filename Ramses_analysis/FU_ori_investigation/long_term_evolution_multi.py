@@ -2,21 +2,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import glob
-from mpi4py.MPI import COMM_WORLD as CW
-import scipy.interpolate as interp
 import pickle
 import yt
-import sys
-
-
-def parse_inputs():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-sink", "--sink_id", help="which sink?", type=int, default=None)
-    parser.add_argument("files", nargs='*')
-    args = parser.parse_args()
-    return args
 
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
