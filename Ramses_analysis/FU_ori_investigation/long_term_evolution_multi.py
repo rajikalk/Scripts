@@ -41,7 +41,7 @@ fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, single_col_wid
 plt.subplots_adjust(hspace=0.0)
 
 for sink_ind in sink_inds:
-    pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'.pkl'
+    pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'_tmp.pkl'
     if os.path.isfile(pickle_file):
         file_open = open(pickle_file, 'rb')
         particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
@@ -52,7 +52,7 @@ for sink_ind in sink_inds:
     axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'])
 
 axs.flatten()[0].set_xlim(left=0)
-axs.flatten()[0].set_ylabel('Mass ratio')
+axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
 axs.flatten()[1].set_ylabel('Eccentricity')
 axs.flatten()[1].set_xlabel('Time (yr)')
 plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
