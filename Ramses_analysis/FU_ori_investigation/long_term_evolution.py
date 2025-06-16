@@ -40,7 +40,7 @@ file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 
-if 'ltot' not in particle_data.keys():
+if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[0] == 2:
     Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
     Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
     Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
@@ -93,11 +93,12 @@ if 'ltot' not in particle_data.keys():
     lacc_comp = facc * (yt.units.gravitational_constant_cgs * Mass_comp.in_units('g') * Mdot_comp.in_units('g/s'))/yt.YTArray(rstar_barrafe_comp).in_units('cm')
     ltot_comp = lacc_comp.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_comp), 'lsun')
 
-    particle_data.update({'ltot':[ltot_prim, ltot_comp]})
+    particle_data.update({'ltot':yt.YTArray([ltot_prim, ltot_comp]).T})
 
     file = open(save_dir+'particle_data_global.pkl', 'wb')
     pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
     file.close()
+print('Got total luminosity')
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -121,6 +122,7 @@ ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
+print('plotted time [0, 10000]')
 
 axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink']):
@@ -134,6 +136,7 @@ ax1.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax1.set_ylabel('Separation (AU)')
 ax1.set_ylim([5,1000])
 ax1.tick_params(axis='both', direction='in', top=True)
+print('plotted time [10000, 20000]')
 
 axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink']):
@@ -147,6 +150,7 @@ ax2.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax2.set_ylabel('Separation (AU)')
 ax2.set_ylim([5,1000])
 ax2.tick_params(axis='both', direction='in', top=True)
+print('plotted time [20000, 30000]')
 
 axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink']):
@@ -160,6 +164,7 @@ ax3.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax3.set_ylabel('Separation (AU)')
 ax3.set_ylim([5,1000])
 ax3.tick_params(axis='both', direction='in', top=True)
+print('plotted time [30000, 40000]')
 
 axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink']):
@@ -175,6 +180,7 @@ ax4.set_ylim([5,1000])
 ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
+print('plotted time [40000, 50000]')
 
 plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 
