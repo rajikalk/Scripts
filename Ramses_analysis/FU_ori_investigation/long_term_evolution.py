@@ -121,7 +121,7 @@ axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot'
 for closest_id in np.unique(particle_data['closest_sink']):
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-    ltot_curr = yt.YTArray(particle_data['ltot']).T[1]
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[0].set_xlim([0, 10000])
@@ -138,7 +138,7 @@ axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot'
 for closest_id in np.unique(particle_data['closest_sink']):
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-    ltot_curr = yt.YTArray(particle_data['ltot']).T[1]
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[1].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[1].set_xlim([10000, 20000])
@@ -155,7 +155,7 @@ axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot'
 for closest_id in np.unique(particle_data['closest_sink']):
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-    ltot_curr = yt.YTArray(particle_data['ltot']).T[1]
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[2].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[2].set_xlim([20000, 30000])
@@ -172,7 +172,7 @@ axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot'
 for closest_id in np.unique(particle_data['closest_sink']):
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-    ltot_curr = yt.YTArray(particle_data['ltot']).T[1]
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[3].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[3].set_xlim([30000, 40000])
@@ -189,7 +189,7 @@ axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot'
 for closest_id in np.unique(particle_data['closest_sink']):
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-    ltot_curr = yt.YTArray(particle_data['ltot']).T[1]
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[4].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[4].set_xlim([40000, 50000])
