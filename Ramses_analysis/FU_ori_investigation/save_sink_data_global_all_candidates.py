@@ -115,7 +115,6 @@ if args.update_pickle == 'True':
                     closest_sink = np.argsort(separation)[1]
                     particle_data['closest_sink'].append(closest_sink)
                     closest_sep = separation[closest_sink]
-                    particle_data['separation'].append(closest_sep)
                     particle_data['time'].append(time_val)
                     particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
                     d_mass = sink_data['dm'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun')

@@ -49,6 +49,7 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[0] == 2
     Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
 
     #Derive a stellar luminosity
+    print('Calculating luminosity for candidate')
     facc = 0.5
     lstar_baraffe_prim = []
     rstar_barrafe_prim = []
@@ -72,7 +73,9 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[0] == 2
 
     lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
     ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
-
+    print('Candidate luminosity finished')
+    
+    print('Calculating luminosity for candidate')
     lstar_baraffe_comp = []
     rstar_barrafe_comp = []
     Mass_comp = yt.YTArray(particle_data['mass']).T[1]
