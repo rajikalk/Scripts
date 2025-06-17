@@ -45,12 +45,12 @@ for sink_ind in sink_inds:
             start_time = particle_data['time'][it] - smoothing_window/2
             if start_time < 0:
                 start_time = 0
-            start_it = np.argmin(abs(particle_data['time'] - start_time))
+            start_it = np.argmin(abs(yt.YTArray(particle_data['time']) - start_time))
             
             end_time = particle_data['time'][it] + smoothing_window/2
             if end_time > particle_data['time'][-1]:
                 end_time = particle_data['time'][-1]
-            end_it = np.argmin(abs(particle_data['time'] - end_time))
+            end_it = np.argmin(abs(yt.YTArray(particle_data['time']) - end_time))
             
             mean_t = np.mean(particle_data['time'][start_it:end_it])
             mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
