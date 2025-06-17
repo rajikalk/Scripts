@@ -40,6 +40,8 @@ for sink_ind in sink_inds:
         axs.flatten()[0].plot(particle_data['time'], mass_ratio, alpha=0.25)
         import pdb
         pdb.set_trace()
+        #for it in range(len(particle_data['time'])):
+        
         axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'], alpha=0.25)
 
     axs.flatten()[0].set_xlim([0, 75000])
