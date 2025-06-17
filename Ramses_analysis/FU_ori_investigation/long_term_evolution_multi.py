@@ -26,7 +26,7 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=2, figsize=(two_col_width, 1.5*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
-smoothing_window = yt
+smoothing_window = yt.YTArray(100, 'yr')
 
 for sink_ind in sink_inds:
     pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'_tmp.pkl'
@@ -38,11 +38,26 @@ for sink_ind in sink_inds:
         
         mass_ratio = yt.YTArray(particle_data['mass']).T[0]/yt.YTArray(particle_data['mass']).T[1]
         axs.flatten()[0].plot(particle_data['time'], mass_ratio, alpha=0.25)
-        import pdb
-        pdb.set_trace()
-        #for it in range(len(particle_data['time'])):
+        smooth_t = []
+        smooth_e = []
+        for it in range(len(particle_data['time'])):
+            curr_time = particle_data['time'][it]
+            start_time = particle_data['time'][it] - smoothing_window/2
+            if start_time < 0:
+                start_time = 0
+            start_it = np.argmin(abs(particle_data['time'] - start_time))
+            
+            end_time = particle_data['time'][it] + smoothing_window/2
+            if end_time > particle_data['time'][-1]:
+                end_time = particle_data['time'][-1]
+            end_it = np.argmin(abs(particle_data['time'] - end_time))
+            
+            mean_t = np.mean(particle_data['time'][start_it:end_it])
+            mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
+            smooth_t.append(mean_t)
+            smooth_e.append(mean_e)
         
-        axs.flatten()[1].plot(particle_data['time'], particle_data['eccentricity'], alpha=0.25)
+        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
 
     axs.flatten()[0].set_xlim([0, 75000])
     axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
