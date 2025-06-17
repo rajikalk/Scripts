@@ -35,10 +35,11 @@ for sink_ind in sink_inds:
         file_open = open(pickle_file, 'rb')
         particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
         file_open.close()
+        print('Finished reading pickle, calculating smoothed quantities')
         
         mass_ratio = yt.YTArray(particle_data['mass']).T[0]/yt.YTArray(particle_data['mass']).T[1]
-        axs.flatten()[0].plot(particle_data['time'], mass_ratio, alpha=0.25)
         smooth_t = []
+        smooth_q = []
         smooth_e = []
         for it in range(len(particle_data['time'])):
             curr_time = particle_data['time'][it]
@@ -53,10 +54,13 @@ for sink_ind in sink_inds:
             end_it = np.argmin(abs(yt.YTArray(particle_data['time']) - end_time))
             
             mean_t = np.mean(particle_data['time'][start_it:end_it])
+            mean_q = np.mean(mass_ratio[start_it:end_it])
             mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
             smooth_t.append(mean_t)
+            smooth_q.append(mean_q)
             smooth_e.append(mean_e)
         
+        axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25)
         axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
 
     axs.flatten()[0].set_xlim([0, 75000])
