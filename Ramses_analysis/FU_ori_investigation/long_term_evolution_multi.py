@@ -29,7 +29,7 @@ plt.subplots_adjust(hspace=0.0)
 smoothing_window = yt.YTArray(100, 'yr')
 
 for sink_ind in sink_inds:
-    pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'_tmp.pkl'
+    pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
         print('reading ', pickle_file)
         file_open = open(pickle_file, 'rb')
