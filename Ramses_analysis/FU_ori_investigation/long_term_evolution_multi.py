@@ -67,7 +67,7 @@ for sink_ind in sink_inds:
         file = open('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
         pickle.dump((smooth_t, smooth_q, smooth_e), file)
         file.close()
-        print('Finished updating pickle', global_pickle)
+        print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
 
     axs.flatten()[0].set_xlim([0, 75000])
     axs.flatten()[0].set_ylabel('$q$ w.r.t closest sink')
