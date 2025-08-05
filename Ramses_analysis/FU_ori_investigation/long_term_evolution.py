@@ -121,21 +121,30 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
-axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+lns1 = axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0], label='Candidate luminosity')
+first_comp = True
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
-    axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+    if first_comp == True:
+        lns2 = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+    else:
+        axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[0].set_xlim([0, 10000])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
 ax0 = axs.flatten()[0].twinx()
-ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
+lns3 = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25, label="Separation")
+lns = lns1+lns2+lns3
+labs = [l.get_label() for l in lns]
+axs.flatten()[0].legend(lns, labs, loc=0)
+
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
+axs.legend()
 print('plotted time [0, 10000]')
 
 axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
