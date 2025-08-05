@@ -140,11 +140,9 @@ lns3 = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k
 lns = lns1+lns2+lns3
 labs = [l.get_label() for l in lns]
 axs.flatten()[0].legend(lns, labs, loc='lower right')
-
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
-axs.legend()
 print('plotted time [0, 10000]')
 
 axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
