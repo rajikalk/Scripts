@@ -130,6 +130,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
     ltot_curr[diff_inds] = np.nan
     if first_comp == True:
         lns2 = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        first_comp = False
     else:
         axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[0].set_xlim([0, 10000])
@@ -139,7 +140,7 @@ ax0 = axs.flatten()[0].twinx()
 lns3 = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25, label="Separation")
 lns = lns1+lns2+lns3
 labs = [l.get_label() for l in lns]
-axs.flatten()[0].legend(lns, labs, loc='lower right')
+axs.flatten()[0].legend(lns, labs, loc='lower left')
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
