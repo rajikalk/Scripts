@@ -60,7 +60,7 @@ for sink_ind in sink_inds:
             smooth_q.append(mean_q)
             smooth_e.append(mean_e)
         
-        axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25)
+        axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=str(sink_ind))
         axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
 
     axs.flatten()[0].set_xlim([0, 75000])
@@ -71,6 +71,8 @@ for sink_ind in sink_inds:
     axs.flatten()[1].set_ylim([0, 1.1])
     axs.flatten()[1].set_xlabel('Time (yr)')
     axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
+    axs.flatten()[0].ax.legend(loc='center right', bbox_to_anchor=(1.2, 1.0),
+          ncol=2)
     plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
     print('updated figure')
     
