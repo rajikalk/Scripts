@@ -18,7 +18,8 @@ try:
         reader = csv.reader(f)
         for row in reader:
             files_done.append(row[0])
-    file_no = int(files_done.split("_")[-1])
+    file_no = int(files_done[-1].split("_")[-1])
+    file_no = file_no + 10
 except:
     files_done = []
     file_no = 160
