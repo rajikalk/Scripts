@@ -32,7 +32,7 @@ for sink_ind in sink_inds:
     pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
         if os.path.isfile('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
-            file_open = open(pickle_file, 'rb')
+            file_open = open('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
             smooth_t, smooth_q, smooth_e = pickle.load(file_open)
             file_open.close()
             
