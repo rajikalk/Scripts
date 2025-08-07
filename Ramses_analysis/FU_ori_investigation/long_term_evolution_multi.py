@@ -91,8 +91,8 @@ for sink_ind in sink_inds:
     axs.flatten()[2].set_ylabel('Separation (AU)')
     axs.flatten()[2].set_xlabel('Time (yr)')
     axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-    axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.2, 1.0),
-          ncol=2)
+    axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5),
+          ncol=1)
     plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
     print('updated figure')
     
