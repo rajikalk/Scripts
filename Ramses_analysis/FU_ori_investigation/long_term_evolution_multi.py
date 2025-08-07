@@ -31,6 +31,17 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_w
 plt.subplots_adjust(hspace=0.0)
 smoothing_window = yt.YTArray(100, 'yr')
 
+axs.flatten()[0].set_xlim([0, 75000])
+axs.flatten()[0].set_ylabel('$M_{cand}/M_{clos}$')
+axs.flatten()[0].set_ylim([0, 1.5])
+axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[1].set_ylabel('Eccentricity')
+axs.flatten()[1].set_ylim([0, 1.1])
+axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
+axs.flatten()[2].set_ylabel('Separation (AU)')
+axs.flatten()[2].set_xlabel('Time (yr)')
+axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
+
 for sink_ind in sink_inds:
     pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
@@ -95,18 +106,21 @@ for sink_ind in sink_inds:
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
             print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
+            axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
+            plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
+'''
     axs.flatten()[0].set_xlim([0, 75000])
     axs.flatten()[0].set_ylabel('$M_{cand}/M_{clos}$')
     axs.flatten()[0].set_ylim([0, 1.5])
     axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[1].set_ylabel('Eccentricity')
     axs.flatten()[1].set_ylim([0, 1.1])
+    axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[2].set_ylabel('Separation (AU)')
     axs.flatten()[2].set_xlabel('Time (yr)')
-    axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-    axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5),
-          ncol=1)
+    axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
+    axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
     plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
     print('updated figure')
-    
+'''
