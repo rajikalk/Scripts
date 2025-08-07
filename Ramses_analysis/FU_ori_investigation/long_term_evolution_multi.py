@@ -62,7 +62,7 @@ for sink_ind in sink_inds:
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25)
                     plot_colour = p[-1].get_color()
                 else:
-                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
+                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, color=plot_colour)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, color=plot_colour)
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
             axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.2, 0.5), ncol=1)
