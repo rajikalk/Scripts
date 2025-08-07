@@ -40,6 +40,7 @@ axs.flatten()[1].set_ylim([0, 1.1])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time (yr)')
+axs.flatten()[1].set_ylim([1.e1, 1e3])
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
 for sink_ind in sink_inds:
@@ -58,12 +59,12 @@ for sink_ind in sink_inds:
                 if plot_colour == None:
                     p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, label=str(sink_ind))
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25)
-                    axs.flatten()[2].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25)
+                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25)
                     plot_colour = p[-1].get_color()
                 else:
                     axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, color=plot_colour)
-                    axs.flatten()[2].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
+                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
             axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
             plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
         else:
