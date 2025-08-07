@@ -40,7 +40,7 @@ axs.flatten()[1].set_ylim([0, 1.1])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time (yr)')
-axs.flatten()[1].set_ylim([1.e1, 1e3])
+axs.flatten()[2].set_ylim([1.e1, 1e3])
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
 for sink_ind in sink_inds:
