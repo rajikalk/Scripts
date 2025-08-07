@@ -71,6 +71,7 @@ while file_no < 1560:
         rm_files = list(set(local_files).symmetric_difference(set(transfer_files)))
         
         #Remove files that are already synced
+        
         for rm_file in rm_files:
             os.remove(rm_file)
             
@@ -80,14 +81,16 @@ while file_no < 1560:
         if return_code != 0:
             print("Error on ryncing to gadi!")
             break
-        else:
-            files_done.append('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file)
-            with open('Copied_dirs_'+args.location+'.txt', 'a') as f:
-                f.write(files_done[-1]+'\n')
-            f.close()
-            os.chdir('../')
-            os.rmdir('output_'+curr_file)
-            file_no = file_no + 10
+        files_done.append('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file)
+        with open('Copied_dirs_'+args.location+'.txt', 'a') as f:
+            f.write(files_done[-1]+'\n')
+        f.close()
+        os.chdir('../')
+        shellcmd = 'rm -rf output_'+curr_file+'/'
+        return_code = subprocess.call(shellcmd, shell=True)
+        if return_code == 0:
+            print('removed previous file and moving onto the next!')
+        file_no = file_no + 10
 
     elif args.location == 'setonix':
         shellcmd = 'scp -r astro03-travel:/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file+' setonix:/home/rkuruwita1/rlk/RAMSES/Zoom-ins/Sink_45/data/.'
