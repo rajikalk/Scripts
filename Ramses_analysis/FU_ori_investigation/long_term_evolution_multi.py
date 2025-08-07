@@ -45,14 +45,14 @@ for sink_ind in sink_inds:
                 end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
                 
                 if plot_colour == None:
-                    p = axs.flatten()[0].plot(smooth_t[start_ind, end_ind], smooth_q[start_ind, end_ind], alpha=0.25, label=str(sink_ind))
-                    axs.flatten()[1].plot(smooth_t[start_ind, end_ind], smooth_e[start_ind, end_ind], alpha=0.25)
-                    axs.flatten()[2].plot(smooth_t[start_ind, end_ind], smooth_sep[start_ind, end_ind], alpha=0.25)
+                    p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_q)[start_ind, end_ind], alpha=0.25, label=str(sink_ind))
+                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_e)[start_ind, end_ind], alpha=0.25)
+                    axs.flatten()[2].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_sep)[start_ind, end_ind], alpha=0.25)
                     plot_colour = p[-1].get_color()
                 else:
-                    axs.flatten()[0].plot(smooth_t[start_ind, end_ind], smooth_q[start_ind, end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
-                    axs.flatten()[1].plot(smooth_t[start_ind, end_ind], smooth_e[start_ind, end_ind], alpha=0.25, color=plot_colour)
-                    axs.flatten()[2].plot(smooth_t[start_ind, end_ind], smooth_sep[start_ind, end_ind], alpha=0.25, color=plot_colour)
+                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_q)[start_ind, end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
+                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_e)[start_ind, end_ind], alpha=0.25, color=plot_colour)
+                    axs.flatten()[2].plot(np.array(smooth_t)[start_ind, end_ind], np.array(smooth_sep)[start_ind, end_ind], alpha=0.25, color=plot_colour)
         else:
             print('reading ', pickle_file)
             file_open = open(pickle_file, 'rb')
