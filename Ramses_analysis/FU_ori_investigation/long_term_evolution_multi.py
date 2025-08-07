@@ -41,8 +41,8 @@ for sink_ind in sink_inds:
             
             plot_colour = None
             for time_window in plot_window[str(sink_ind)]:
-                start_ind = np.argmin(abs(smooth_t-time_window[0]))
-                end_ind = np.argmin(abs(smooth_t-time_window[1]))
+                start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
+                end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
                 
                 if plot_colour == None:
                     p = axs.flatten()[0].plot(smooth_t[start_ind, end_ind], smooth_q[start_ind, end_ind], alpha=0.25, label=str(sink_ind))
