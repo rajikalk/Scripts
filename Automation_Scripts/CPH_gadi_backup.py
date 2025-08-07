@@ -23,10 +23,20 @@ try:
     file_no = file_no + 10
 except:
     files_done = []
-    file_no = 160
+    file_no = 150
 
 while file_no < 1560:
     curr_file = ("%05d" % file_no)
+    
+    #
+    shellcmd = "rsync -n -i -a astro03-travel:/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_"+curr_file+" output_"+curr_file+"/"
+    proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
+    output_Cph_local = proc.stdout.read()
+    
+    shellcmd = "rsync -n -i -a gadi:/g/data/ek9/rlk100/RAMSES/Sink_45/data/output_"+curr_file+" output_"+curr_file+"/"
+    proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
+    output_gadi_local = proc.stdout.read()
+    #
     if args.location == 'gadi':
         #make empty file and copy to gadi
         if os.path.exists('output_'+curr_file) == False:
@@ -81,16 +91,17 @@ while file_no < 1560:
         if return_code != 0:
             print("Error on ryncing to gadi!")
             break
-        files_done.append('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file)
-        with open('Copied_dirs_'+args.location+'.txt', 'a') as f:
-            f.write(files_done[-1]+'\n')
-        f.close()
-        os.chdir('../')
-        shellcmd = 'rm -rf output_'+curr_file+'/'
-        return_code = subprocess.call(shellcmd, shell=True)
-        if return_code == 0:
-            print('removed previous file and moving onto the next!')
-        file_no = file_no + 10
+        else:
+            files_done.append('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file)
+            with open('Copied_dirs_'+args.location+'.txt', 'a') as f:
+                f.write(files_done[-1]+'\n')
+            f.close()
+            os.chdir('../')
+            shellcmd = 'rm -rf output_'+curr_file+'/'
+            return_code = subprocess.call(shellcmd, shell=True)
+            if return_code == 0:
+                print('removed previous file and moving onto the next!')
+            file_no = file_no + 10
 
     elif args.location == 'setonix':
         shellcmd = 'scp -r astro03-travel:/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file+' setonix:/home/rkuruwita1/rlk/RAMSES/Zoom-ins/Sink_45/data/.'

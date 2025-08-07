@@ -18,6 +18,9 @@ matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
 sink_inds = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
+
+#
+plot_window = {'17' : [[19000, 75000]], '45' : [[8500, 75000]], '51' : [[16000, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100] , [16000, 17000], [19000, 25000], [27000, 750000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[5900, 75000]]}
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -36,9 +39,20 @@ for sink_ind in sink_inds:
             smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
             file_open.close()
             
-            axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=str(sink_ind))
-            axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
-            axs.flatten()[2].plot(smooth_t, smooth_sep, alpha=0.25)
+            plot_colour = None
+            for time_window in plot_window[str(sink_ind)]:
+                start_ind = np.argmin(abs(smooth_t-time_window[0]))
+                end_ind = np.argmin(abs(smooth_t-time_window[1]))
+                
+                if plot_colour == None:
+                    p = axs.flatten()[0].plot(smooth_t[start_ind, end_ind], smooth_q[start_ind, end_ind], alpha=0.25, label=str(sink_ind))
+                    axs.flatten()[1].plot(smooth_t[start_ind, end_ind], smooth_e[start_ind, end_ind], alpha=0.25)
+                    axs.flatten()[2].plot(smooth_t[start_ind, end_ind], smooth_sep[start_ind, end_ind], alpha=0.25)
+                    plot_colour = p[-1].get_color()
+                else:
+                    axs.flatten()[0].plot(smooth_t[start_ind, end_ind], smooth_q[start_ind, end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
+                    axs.flatten()[1].plot(smooth_t[start_ind, end_ind], smooth_e[start_ind, end_ind], alpha=0.25, color=plot_colour)
+                    axs.flatten()[2].plot(smooth_t[start_ind, end_ind], smooth_sep[start_ind, end_ind], alpha=0.25, color=plot_colour)
         else:
             print('reading ', pickle_file)
             file_open = open(pickle_file, 'rb')
