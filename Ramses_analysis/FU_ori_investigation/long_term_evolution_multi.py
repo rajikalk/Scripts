@@ -65,7 +65,7 @@ for sink_ind in sink_inds:
                     axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, label=str(sink_ind), color=plot_colour)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, color=plot_colour)
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
-            axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
+            axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.2, 0.5), ncol=1)
             plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
         else:
             print('reading ', pickle_file)
