@@ -65,8 +65,6 @@ for sink_ind in sink_inds:
                     axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, color=plot_colour)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, color=plot_colour)
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
-            axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.1, 0.5), ncol=1)
-            plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
         else:
             print('reading ', pickle_file)
             file_open = open(pickle_file, 'rb')
@@ -109,8 +107,8 @@ for sink_ind in sink_inds:
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
             print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
-            axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
-            plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
+        axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.2, 0.5), ncol=1)
+        plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
     axs.flatten()[0].set_xlim([0, 75000])
