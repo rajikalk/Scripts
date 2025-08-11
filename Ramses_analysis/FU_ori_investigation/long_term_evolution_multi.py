@@ -20,7 +20,7 @@ matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{d
 sink_inds = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 
 #
-plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27400], [30100, 75000]], '51' : [[16000, 30800], [31100, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100] , [16000, 17000], [19000, 25000], [27000, 750000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[5900, 75000]]}
+plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30200, 75000]], '51' : [[16000, 30500], [30800, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100] , [16000, 17000], [19500, 24500], [27000, 750000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[5900, 75000]]}
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -108,7 +108,7 @@ for sink_ind in sink_inds:
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
             print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
-        axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.2, 0.5), ncol=1)
+        axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(1.15, 0.5), ncol=1)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
