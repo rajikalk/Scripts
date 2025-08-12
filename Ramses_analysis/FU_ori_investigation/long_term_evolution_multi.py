@@ -17,7 +17,7 @@ matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
-sink_inds = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
+sink_inds = [45, 17, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 
 #
 plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30600, 75000]], '51' : [[16000, 30500], [30900, 75000]], '71' : [[7500, 38000]], '75' : [[16000, 17000], [19500, 21500], [22500, 24000], [27000, 750000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[5900, 75000]]}
@@ -27,7 +27,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.5*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 smoothing_window = yt.YTArray(100, 'yr')
 
@@ -36,11 +36,11 @@ axs.flatten()[0].set_ylabel('$M_{cand}/M_{clos}$')
 axs.flatten()[0].set_ylim([0, 1.5])
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[1].set_ylabel('Eccentricity')
-axs.flatten()[1].set_ylim([0, 1.1])
+axs.flatten()[1].set_ylim([0.1, 1.1])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time (yr)')
-axs.flatten()[2].set_ylim([5.e0, 1e3])
+axs.flatten()[2].set_ylim([5.e0, 5e2])
 axs.flatten()[2].axhline(y=200, color='k', ls='--')
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
@@ -57,15 +57,21 @@ for sink_ind in sink_inds:
                 start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
                 end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
                 
+                if sink_ind == 45:
+                    alpha_val = 1.0
+                else:
+                    alpha_val = 0.25
+                
                 if plot_colour == None:
-                    p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25)
-                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, label=str(sink_ind))
-                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25)
+                    label = "Candidate " + str(sink_inds.index(sink_ind))
+                    p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val)
+                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, label=label)
+                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val)
                     plot_colour = p[-1].get_color()
                 else:
-                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=0.25, color=plot_colour)
-                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=0.25, color=plot_colour)
-                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=0.25, color=plot_colour)
+                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, color=plot_colour)
+                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour)
+                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour)
         else:
             print('reading ', pickle_file)
             file_open = open(pickle_file, 'rb')
