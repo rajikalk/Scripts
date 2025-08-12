@@ -114,7 +114,7 @@ for sink_ind in sink_inds:
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
             print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
-        axs.flatten()[1].legend(loc='center right', bbox_to_anchor=(0.5, 1.2), ncol=4)
+        axs.flatten()[0].legend(loc='center right', bbox_to_anchor=(37500.0, 1.2), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
