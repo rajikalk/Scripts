@@ -212,7 +212,7 @@ ax4.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax4.set_ylabel('Separation (AU)')
 ax4.set_ylim([5,1000])
 ax4.tick_params(axis='both', direction='in', top=True)
-axs.flatten()[4].set_xlabel("Time (yr)")
+axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 print('plotted time [40000, 50000]')
 
