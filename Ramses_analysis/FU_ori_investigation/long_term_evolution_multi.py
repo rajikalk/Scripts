@@ -27,7 +27,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.2*single_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.1*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 smoothing_window = yt.YTArray(100, 'yr')
 
@@ -114,7 +114,7 @@ for sink_ind in sink_inds:
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
             print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
-        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.5), ncol=5)
+        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.7), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
