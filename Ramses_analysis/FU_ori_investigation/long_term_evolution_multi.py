@@ -63,7 +63,7 @@ for sink_ind in sink_inds:
                     alpha_val = 0.25
                 
                 if sink_inds.index(sink_ind) > 9:
-                    line_style = '--'
+                    line_style = ':'
                 else:
                     line_style = '-'
                 
