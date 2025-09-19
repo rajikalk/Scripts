@@ -21,13 +21,13 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = [
-       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
-       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
-       r'\usepackage{helvet}',    # set the normal font here
-       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
-       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
-]
+#matplotlib.rcParams['text.latex.preamble'] = [
+#       r'\usepackage{siunitx}',   # i need upright \micro symbols, but you need...
+#       r'\sisetup{detect-all}',   # ...this to force siunitx to actually use your fonts
+#       r'\usepackage{helvet}',    # set the normal font here
+#       r'\usepackage{sansmath}',  # load up the sansmath so that math -> helvet
+#       r'\sansmath'               # <- tricky! -- gotta actually tell tex to use!
+#]
 
 subplot_titles = ["1500M$_\odot$", "3000M$_\odot$", "3750M$_\odot$", "4500M$_\odot$", "6000M$_\odot$", "12000M$_\odot$"]
 
