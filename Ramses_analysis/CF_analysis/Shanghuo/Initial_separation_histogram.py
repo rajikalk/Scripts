@@ -194,7 +194,8 @@ def Skewed_Gaussian(x, scale, mean, sigma, skew):
 def Skewed_Gaussian_cdf(x, scale, mean, sigma, skew):
     return scale*stats.skewnorm.cdf(x, skew, loc=mean, scale=sigma)
 
-S_bins = np.logspace(1,4,13)
+#S_bins = np.logspace(1,4,13)
+S_bins = np.logspace(1,4,27)
 bin_centers = (np.log10(S_bins[:-1])+np.log10(S_bins[1:]))/2
 #step_centers = np.append(bin_centers, bin_centers[-1]+0.25)
 step_centers = np.concatenate(([bin_centers[0]-0.25], bin_centers, [bin_centers[-1]+0.25]))
