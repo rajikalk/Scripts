@@ -10,11 +10,11 @@ if len(s) == 0 :
     restore, fname 
  
 # Sink to zoom in on 
-is=17 
+i_sink=17
  
 # Extract first sink record where sink exists 
-ii , = np.where(s[is,:].m > 0) & ss=reform(s[is,ii[0]]) 
-print( 'Coordinate at time of formation: ', (ss.t - ss.time)*[ss.ux,ss.uy,ss.uz]+[ss.x,ss.y,ss.z] 
+ii , = np.where(s[i_sink,:].m > 0) & ss=reform(s[i_sink,ii[0]]) 
+print( 'Coordinate at time of formation: ', (ss.t - ss.time)*[ss.ux,ss.uy,ss.uz]+[ss.x,ss.y,ss.z]
 print( 'Time difference between first snapshot and time of formation: ', (ss.t - ss.time) 
  
 # Time of snapshot just before formation -- put by hand 
