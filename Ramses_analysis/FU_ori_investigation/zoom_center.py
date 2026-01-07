@@ -3,17 +3,20 @@
 import os
 import time
 import numpy as np
+import pickle
 
-fname = '/lustre/astro/troels/IMF_512/stars_red_512.sav' 
-fname = '/lustre/astro/troels/IMF_512_cores/stars_red_512.sav' 
-if len(s) == 0 : 
-    restore, fname 
+fname = '/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl'
+glob_data = open(fname, 'rb')
+sink_data = pickle.load(glob_data)
+glob_data.close()
  
 # Sink to zoom in on 
 i_sink=17
  
 # Extract first sink record where sink exists 
-ii , = np.where(s[i_sink,:].m > 0) & ss=reform(s[i_sink,ii[0]]) 
+form_it = np.where(sink_data['m'].T[i_sink]>0)[0][0]
+tflush = sink_data['tflush'].T[i_sink][form_it]
+tform = sink_data['time'].T[i_sink][form_it]
 print( 'Coordinate at time of formation: ', (ss.t - ss.time)*[ss.ux,ss.uy,ss.uz]+[ss.x,ss.y,ss.z]
 print( 'Time difference between first snapshot and time of formation: ', (ss.t - ss.time) 
  
