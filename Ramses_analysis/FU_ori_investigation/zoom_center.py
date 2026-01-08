@@ -15,18 +15,21 @@ i_sink=17
  
 # Extract first sink record where sink exists 
 form_it = np.where(sink_data['m'].T[i_sink]>0)[0][0]
-tflush = sink_data['tflush'].T[i_sink][form_it]
-tform = sink_data['time'].T[i_sink][form_it]
-print( 'Coordinate at time of formation: ', (ss.t - ss.time)*[ss.ux,ss.uy,ss.uz]+[ss.x,ss.y,ss.z]
-print( 'Time difference between first snapshot and time of formation: ', (ss.t - ss.time) 
+tform = sink_data['tflush'].T[i_sink][form_it]
+tfile = sink_data['time'].T[i_sink][form_it]
+vel = np.array([sink_data['ux'].T[i_sink][form_it], sink_data['uy'].T[i_sink][form_it], sink_data['uz'].T[i_sink][form_it]])
+pos = np.array([sink_data['x'].T[i_sink][form_it], sink_data['y'].T[i_sink][form_it], sink_data['z'].T[i_sink][form_it]])
+form_pos = (tfile-tform)*vel + pos
+print( 'Coordinate at time of formation: ', form_pos)
+print( 'Time difference between first snapshot and time of formation: ', (tfile-tform))
  
 # Time of snapshot just before formation -- put by hand 
 # Found by looking at data/output_XXXXX/info_XXXXX.txt 
 tsnap=0.104721058347503E+01 
  
-tmid = 0.5*(tsnap + ss.t) 
-dt = tmid - ss.time 
-print( "Zoom center :", dt*[ss.ux,ss.uy,ss.uz]+[ss.x,ss.y,ss.z] 
-print( tsnap, tmid, ss.t, ss.time, dt, ss.t - ss.time 
+tmid = 0.5*(tsnap + tfile)
+dt = tmid - tform
+print( "Zoom center :", dt*vel+pos)
+print( tsnap, tmid, tfile, tform, dt, tfile - tform)
  
  
