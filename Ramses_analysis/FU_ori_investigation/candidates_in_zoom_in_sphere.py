@@ -71,5 +71,9 @@ if args.make_pickle_files == "True":
     if rank == 0:
         print("Doing initial ds.all_data() load")
     dd = ds.all_data()
+    if args.sink_number == None:
+        sink_id = np.argmin(dd['sink_particle_speed'])
+    else:
+        sink_id = args.sink_number
     import pdb
     pdb.set_trace()
