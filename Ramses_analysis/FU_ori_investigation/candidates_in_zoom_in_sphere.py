@@ -55,13 +55,12 @@ if args.make_pickle_files == "True":
     #Define units to override:
     units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
     units_override.update({"mass_unit":(2998,"Msun")})
-    units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    mym.set_units(units_override)
         
     scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
     scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
     scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-    scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
-    mym.set_units(units_override)
+    scale_d = yt.YTQuantity(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3").in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
     if rank == 0:
         print("set units")
 
@@ -75,5 +74,24 @@ if args.make_pickle_files == "True":
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
         sink_id = args.sink_number
-    import pdb
-    pdb.set_trace()
+        
+    #Start iterating through files
+    time_arr = []
+    nearest_sinks = []
+    for fn in yt.parallel_objects(usable_files):
+        ds = yt.load(fn, units_override=units_override)
+        dd = ds.all_data()
+        file_time = ds.current_time.in_units('yr')
+        time_arr.append(file_time)
+        
+        #calculate separation to every other sink
+        center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+        dx = dd['sink_particle_posx'] - center_pos[0]
+        dy = dd['sink_particle_posy'] - center_pos[1]
+        dz = dd['sink_particle_posz'] - center_pos[2]
+        separations = np.sqrt(dx**2 + dy**2 + dz**2)
+        close_sinks = np.where(separations.in_units('au')<10000)[0]
+        if len(np.where(separations.in_units('au')<10000)[0]) > 1:
+            
+        import pdb
+        pdb.set_trace()
