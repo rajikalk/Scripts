@@ -65,7 +65,7 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    del units_override['density_unit']
+    #del units_override['density_unit']
     ds = yt.load(usable_files[-1], units_override=units_override)
     if rank == 0:
         print("Doing initial ds.all_data() load")
