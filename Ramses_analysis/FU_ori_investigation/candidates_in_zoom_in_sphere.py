@@ -91,7 +91,6 @@ if args.make_pickle_files == "True":
         dz = dd['sink_particle_posz'] - center_pos[2]
         separations = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(separations.in_units('au')<10000)[0]
-        if len(np.where(separations.in_units('au')<10000)[0]) > 1:
-            
-        import pdb
-        pdb.set_trace()
+        if len(close_sinks) > 1:
+            import pdb
+            pdb.set_trace()
