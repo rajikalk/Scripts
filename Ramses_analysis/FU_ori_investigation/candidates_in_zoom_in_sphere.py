@@ -91,6 +91,13 @@ if args.make_pickle_files == "True":
         dz = dd['sink_particle_posz'] - center_pos[2]
         separations = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(separations.in_units('au')<10000)[0]
+        nearest_sinks.append(close_sinks)
+
+        file = open('Candidates_in_zoom_sphere_' + str(rank) + '.pkl', 'wb')
+        pickle.dump((time_arr, nearest_sinks), file)
+        file.close()
         if len(close_sinks) > 1:
-            import pdb
-            pdb.set_trace()
+            print('Found ' + str(close_sinks) + ' within 10000au of ' + str(sink_id) + ' for ' + fn)
+        else:
+            print('No sinks found within 10000au of ' + str(sink_id) + ' for ' + fn)
+        
