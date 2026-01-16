@@ -121,6 +121,8 @@ def _sink_particle_posx(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        import pdb
+        pdb.set_trace()
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posx = loaded_sink_data['x']*data.ds.length_unit.in_units("pc").value
         '''
