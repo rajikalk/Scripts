@@ -88,6 +88,8 @@ def _sink_particle_tag(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_tag = np.arange(float(len(loaded_sink_data['x'])))
         '''
@@ -121,8 +123,8 @@ def _sink_particle_posx(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
-        import pdb
-        pdb.set_trace()
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posx = loaded_sink_data['x']*data.ds.length_unit.in_units("pc").value
         '''
@@ -156,6 +158,8 @@ def _sink_particle_posy(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posy = loaded_sink_data['y']*data.ds.length_unit.in_units("pc").value
         '''
@@ -189,6 +193,8 @@ def _sink_particle_posz(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_posz = loaded_sink_data['z']*data.ds.length_unit.in_units("pc").value
         '''
@@ -222,6 +228,8 @@ def _sink_particle_velx(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_velx = loaded_sink_data['ux']*data.ds.velocity_unit.in_units("km/s").value
         '''
@@ -255,6 +263,8 @@ def _sink_particle_vely(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_vely = loaded_sink_data['uy']*data.ds.velocity_unit.in_units("km/s").value
         '''
@@ -288,6 +298,8 @@ def _sink_particle_velz(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_velz = loaded_sink_data['uz']*data.ds.velocity_unit.in_units("km/s").value
         '''
@@ -321,6 +333,8 @@ def _sink_particle_speed(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_speed = loaded_sink_data['u']*data.ds.velocity_unit.in_units("km/s").value
         '''
@@ -354,6 +368,8 @@ def _sink_particle_mass(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_mass = loaded_sink_data['m']*data.ds.mass_unit.in_units("Msun").value
         '''
@@ -387,6 +403,8 @@ def _sink_particle_accretion_rate(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         numerator = loaded_sink_data['dm']*data.ds.mass_unit.in_units("Msun").value
         denominator = (loaded_sink_data['snapshot_time'] - loaded_sink_data['tflush'])*data.ds.time_unit.in_units("yr").value
@@ -422,6 +440,8 @@ def _sink_particle_form_time(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_form_time = loaded_sink_data['tcreate']*data.ds.time_unit.in_units("yr").value
         '''
@@ -455,6 +475,8 @@ def _sink_particle_age(field, data):
     else:
         file_no = int(data.ds.directory.split('output_')[-1])
         datadir = data.ds.directory.split('output_')[0]
+        if '/g/data/' in datadir:
+            datadir = datadir.split('/g/data/')[0] + '/gdata/' + datadir.split('/g/data/')[1]
         loaded_sink_data = rsink(file_no, datadir=datadir)
         particle_age = (loaded_sink_data['snapshot_time']-loaded_sink_data['tcreate'])*data.ds.time_unit.in_units("yr").value
         '''
