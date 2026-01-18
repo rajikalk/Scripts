@@ -79,23 +79,24 @@ nearest_sinks = []
 for fn in yt.parallel_objects(usable_files):
     ds = yt.load(fn, units_override=units_override)
     dd = ds.all_data()
-    file_time = ds.current_time.in_units('yr')
-    time_arr.append(file_time)
     
     #calculate separation to every other sink
-    center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
-    dx = dd['sink_particle_posx'] - center_pos[0]
-    dy = dd['sink_particle_posy'] - center_pos[1]
-    dz = dd['sink_particle_posz'] - center_pos[2]
-    separations = np.sqrt(dx**2 + dy**2 + dz**2)
-    close_sinks = np.where(separations.in_units('au')<10000)[0]
-    nearest_sinks.append(close_sinks)
+    if len(dd['sink_particle_posx'])>sink_id:
+        file_time = ds.current_time.in_units('yr')
+        time_arr.append(file_time)
+        center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]])
+        dx = dd['sink_particle_posx'] - center_pos[0]
+        dy = dd['sink_particle_posy'] - center_pos[1]
+        dz = dd['sink_particle_posz'] - center_pos[2]
+        separations = np.sqrt(dx**2 + dy**2 + dz**2)
+        close_sinks = np.where(separations.in_units('au')<10000)[0]
+        nearest_sinks.append(close_sinks)
 
-    file = open('Candidates_in_zoom_sphere_' + str(rank) + '.pkl', 'wb')
-    pickle.dump((time_arr, nearest_sinks), file)
-    file.close()
-    if len(close_sinks) > 1:
-        print('Found ' + str(close_sinks) + ' within 10000au of ' + str(sink_id) + ' for ' + fn)
-    else:
-        print('No sinks found within 10000au of ' + str(sink_id) + ' for ' + fn)
+        file = open('Candidates_in_zoom_sphere_' + str(rank) + '.pkl', 'wb')
+        pickle.dump((time_arr, nearest_sinks), file)
+        file.close()
+        if len(close_sinks) > 1:
+            print('Found ' + str(close_sinks) + ' within 10000au of ' + str(sink_id) + ' for ' + fn)
+        else:
+            print('No sinks found within 10000au of ' + str(sink_id) + ' for ' + fn)
         
