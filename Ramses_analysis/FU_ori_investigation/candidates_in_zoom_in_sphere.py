@@ -12,8 +12,6 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import matplotlib.pyplot as plt
 #plt.rcParams['figure.dpi'] = 300
-from matplotlib.colors import LogNorm
-cm = plt.cm.get_cmap('seismic')
 
 def parse_inputs():
     import argparse
@@ -76,6 +74,7 @@ else:
 #Start iterating through files
 time_arr = []
 nearest_sinks = []
+max_inds = 0
 for fn in yt.parallel_objects(usable_files):
     ds = yt.load(fn, units_override=units_override)
     dd = ds.all_data()
@@ -91,12 +90,44 @@ for fn in yt.parallel_objects(usable_files):
         separations = np.sqrt(dx**2 + dy**2 + dz**2)
         close_sinks = np.where(separations.in_units('au')<10000)[0]
         nearest_sinks.append(close_sinks)
+        if len(nearest_sinks) > max_inds:
+            max_inds = len(nearest_sinks)
 
         file = open('Candidates_in_zoom_sphere_' + str(rank) + '.pkl', 'wb')
-        pickle.dump((time_arr, nearest_sinks), file)
+        pickle.dump((time_arr, nearest_sinks, max_inds), file)
         file.close()
         if len(close_sinks) > 1:
             print('Found ' + str(close_sinks) + ' within 10000au of ' + str(sink_id) + ' for ' + fn)
         else:
             print('No sinks found within 10000au of ' + str(sink_id) + ' for ' + fn)
         
+#Compile pickles
+Candidate_pickles = glob.glob('*_sphere_*.pkl')
+time_arr = []
+nearest_sinks = []
+max_inds = 0
+for pick_file in Candidate_pickles:
+    file = open(pick_file, 'rb')
+    nearest_data = pickle.load(file)
+    file.close()
+    
+    time_arr = time_arr + nearest_data[0]
+    nearest_sinks = nearest_sinks + nearest_data[1]
+    #if nearest_data[2] > max_inds:
+    #    max_inds = nearest_data[2]
+ 
+#Square off the nearest sinks
+for nearest_ind in range(len(nearest_sinks)):
+    if len(nearest_sinks[nearest_ind]) < max_inds:
+        add_length = max_inds - len(nearest_sinks[nearest_ind])
+        nearest_sinks[nearest_ind] = np.append(nearest_sinks[nearest_ind], np.zeros(add_length)*np.nan)
+    if len(nearest_sinks[nearest_ind]) == max_inds:
+        print('All nearby sinks are', nearest_sinks[nearest_ind])
+
+sorted_inds = np.argsort(time_arr)
+time_arr = np.array(time_arr)[sorted_inds]
+nearest_sinks = np.array(nearest_sinks)[sorted_inds]
+
+file = open('Candidates_in_zoom_sphere.pkl', 'wb')
+pickle.dump((time_arr, nearest_sinks, max_inds), file)
+file.close()
