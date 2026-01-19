@@ -17,8 +17,8 @@ time_window = 80
 rank = CW.Get_rank()
 size = CW.Get_size()
 
-#sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
-sink_files = sorted(glob.glob('/lustre/astro/troels/IMF_512/mesa/success/sink_*/LOGS'))
+sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
+#sink_files = sorted(glob.glob('/lustre/astro/troels/IMF_512/mesa/success/sink_*/LOGS'))
 #if rank == 0:
 #    print('sink_files:', sink_files)
 max_age=150000
