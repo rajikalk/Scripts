@@ -7,6 +7,7 @@ import os
 import glob
 from mpi4py.MPI import COMM_WORLD as CW
 import scipy.interpolate as interp
+import pickle
 
 m=mesaPlot.MESA()
 p=mesaPlot.plot()
