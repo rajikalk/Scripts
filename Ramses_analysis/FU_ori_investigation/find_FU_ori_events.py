@@ -48,6 +48,13 @@ for sink_file in sink_files:
                 time_arr = []
                 L_diff_arr = []
                 
+                #save Mesa sink data to pickle
+                pickle_data = {"age":age, "mass":mass, "stellar_luminosity":lum, "accretion_luminosity":lacc, "total_luminosity":ltot}
+                pickle_open = open("Mesa_pickle_"+sink_file.split('sink_')[-1].split('/')[0]+".pkl", "wb")
+                pickle.dump((pickle_data), pickle_open)
+                pickle_open.close()
+                print("saved pickle data for sink", sink_file.split('sink_')[-1].split('/')[0])
+                
                 #have moving window:
                 for time_it in range(len(age)):
                     end_time = age[time_it] + time_window
