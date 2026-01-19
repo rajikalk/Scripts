@@ -20,7 +20,8 @@ FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
 
 time_window = yt.YTQuantity(100, 'yr')
 
-global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+global_pickle = "/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl"
+#global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
