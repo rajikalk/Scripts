@@ -66,7 +66,7 @@ if args.update_pickle == 'True':
     
     if os.path.isfile('particle_data.pkl'):
         try:
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -74,8 +74,8 @@ if args.update_pickle == 'True':
                 updating = True
                 print('pickle data is not up to date! Updating...')
         except:
-            os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
+            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -113,13 +113,13 @@ if args.update_pickle == 'True':
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
                 try:
-                    os.remove(save_dir+'particle_data.pkl')
+                    os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl')
                 except:
                     print("pickle files doesn't exist yet")
-                file = open(save_dir+'particle_data.pkl', 'wb')
+                file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
                 pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
                 file.close()
-                os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+                os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
             if len(sink_data['u']) > sink_ind:
                 tags = [sink_ind]
