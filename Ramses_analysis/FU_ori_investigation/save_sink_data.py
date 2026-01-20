@@ -93,6 +93,7 @@ if args.update_pickle == 'True':
                 updating = True
                 print('pickle data is not up to date! Updating...')
     else:
+        updating = True
         particle_data = {}
         particle_data.update({'particle_tag':[]})
         particle_data.update({'time':[]})
