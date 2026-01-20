@@ -147,9 +147,9 @@ if args.update_pickle == 'True':
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 particle_data['time'].append(time_val)
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([nearest_sink, sink_ind])]*units['mass_unit'].in_units('msun'), 'msun'))
+                particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                d_mass = sink_data['dm'][np.array([nearest_sink, sink_ind])]*units['mass_unit'].in_units('msun')
+                d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
