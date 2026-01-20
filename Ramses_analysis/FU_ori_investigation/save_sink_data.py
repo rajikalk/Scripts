@@ -149,10 +149,10 @@ if args.update_pickle == 'True':
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
-        file = open(save_dir+'particle_data.pkl', 'wb')
+        file = open(save_dir+'particle_data'+str(sink_ind)+'.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
         file.close()
-        os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+        os.system('cp '+save_dir+'particle_data'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
                 
 
