@@ -184,7 +184,7 @@ plt.xlim()
 plt.ylabel('Magnitude (M$_{bol}$)')
 plt.legend()
 plt.title('Sink no ' + str(sink_ind))
-plt.savefig('magnitude_vs_time_sink_'+str(sink_ind)+'.png')
+plt.savefig(str(sink_ind)+'_magnitude_vs_time_sink.png')
 
 plt.clf()
 for part_it in range(2):
@@ -197,7 +197,7 @@ plt.xlim()
 plt.legend()
 plt.ylabel('Luminosity (Lsun)')
 plt.title('Sink no ' + str(sink_ind))
-plt.savefig('luminosity_vs_time_sink_'+str(sink_ind)+'.png')
+plt.savefig(str(sink_ind)+'_luminosity_vs_time_sink.png')
 
 
 plt.clf()
@@ -211,7 +211,7 @@ plt.xlim()
 plt.legend()
 plt.ylabel('Accretion rate (Msun/yr)')
 plt.title('Sink no ' + str(sink_ind))
-plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'.png')
+plt.savefig(str(sink_ind)+'_accretion_vs_time_sink.png')
 
 plt.clf()
 for part_it in range(2):
@@ -224,7 +224,7 @@ plt.xlim()
 plt.legend()
 plt.ylabel('Mass (Msun)')
 plt.title('Sink no ' + str(sink_ind))
-plt.savefig('mass_vs_time_sink_'+str(sink_ind)+'.png')
+plt.savefig(str(sink_ind)+'_mass_vs_time_sink.png')
 
 L = yt.YTQuantity(4, 'pc')
 curr_dir = os.getcwd()
@@ -242,7 +242,7 @@ plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Separation (AU)')
 plt.title('Sink no ' + str(sink_ind))
-plt.savefig('separation_vs_time_sink_'+str(sink_ind)+'.png')
+plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
 
 if sink_ind == 45:
     start_time = 3500
@@ -258,4 +258,4 @@ if sink_ind == 45:
     plt.title('Sink no ' + str(sink_ind))
     plt.tick_params(axis='both', which='major', right=True, direction='in')
     plt.tick_params(axis='both', which='minor', right=True, direction='in')
-    plt.savefig('accretion_vs_time_sink_'+str(sink_ind)+'_trunc_3500.png')
+    plt.savefig(str(sink_ind)+'_accretion_vs_time_sink_trunc_3500.png')
