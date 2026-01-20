@@ -64,7 +64,7 @@ if args.update_pickle == 'True':
     loaded_sink_data = rsink(datadir=path, all=True)
     updating = False
     
-    if os.path.isfile('particle_data.pkl'):
+    if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
         try:
             file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
