@@ -8,9 +8,6 @@ import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
 
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
-
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -162,6 +159,9 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 f_acc = 0.5
 radius = yt.YTQuantity(2.0, 'rsun')
