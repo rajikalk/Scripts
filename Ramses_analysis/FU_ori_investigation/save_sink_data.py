@@ -1,11 +1,6 @@
 import numpy as np
 import pickle
 import glob
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.colors as mcolors
-import matplotlib.cm as cm
 from pyramses import rsink
 import sys
 import os
@@ -49,11 +44,6 @@ else:
     units_override.update({"mass_unit":(2998,"Msun")})
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
-    
-scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
-scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
-scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
-scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 
 units={}
 for key in units_override.keys():
@@ -71,6 +61,7 @@ if args.update_pickle == 'True':
         sink_ind = np.argmin(loaded_sink_data_last['u'])
     else:
         sink_ind = args.sink_number
+    print("Sink_ind =", sink_ind)
     
     if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
         try:
@@ -165,7 +156,12 @@ if args.update_pickle == 'True':
         file.close()
         os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
-                
+             
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
 
 f_acc = 0.5
 radius = yt.YTQuantity(2.0, 'rsun')
