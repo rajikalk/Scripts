@@ -41,9 +41,9 @@ CW.Barrier()
 
 #File files
 usable_files = sorted(glob.glob(input_dir+"*/info*.txt"))
-if size == 1:
-    import pdb
-    pdb.set_trace()
+#if size == 1:
+#    import pdb
+#    pdb.set_trace()
 
 sys.stdout.flush()
 CW.Barrier()
