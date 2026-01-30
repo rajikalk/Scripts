@@ -166,6 +166,17 @@ matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
 if 'particle_data' not in locals():
+    if args.sink_number == None:
+        last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
+        stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
+        while os.path.exists(stars_output_file) == False:
+            last_n = last_n - 1
+            stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
+        loaded_sink_data_last = rsink(last_n, datadir=path)
+        sink_ind = np.argmin(loaded_sink_data_last['u'])
+    else:
+        sink_ind = args.sink_number
+    print("Sink_ind =", sink_ind)
     file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
