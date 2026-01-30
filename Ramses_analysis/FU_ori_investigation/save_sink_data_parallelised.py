@@ -57,59 +57,74 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+    
+sys.stdout.flush()
+CW.Barrier()
 
 if args.update_pickle == 'True':
-    if rank == 1:
-    print("Reading particle data")
-    loaded_sink_data = rsink(datadir=path, all=True)
-    updating = False
-    if args.sink_number == None:
-        last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
-        stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
-        while os.path.exists(stars_output_file) == False:
-            last_n = last_n - 1
+    if rank == 0:
+        updating = False
+        if args.sink_number == None:
+            last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
             stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
-        loaded_sink_data_last = rsink(last_n, datadir=path)
-        sink_ind = np.argmin(loaded_sink_data_last['u'])
-    else:
-        sink_ind = args.sink_number
+            while os.path.exists(stars_output_file) == False:
+                last_n = last_n - 1
+                stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
+            loaded_sink_data_last = rsink(last_n, datadir=path)
+            sink_ind = np.argmin(loaded_sink_data_last['u'])
+        else:
+            sink_ind = args.sink_number
     
-    if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
-        try:
-            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
-            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-            file_open.close()
-            counter = int(counter)
-            if counter < len(loaded_sink_data):
-                updating = True
-                print('pickle data is not up to date! Updating...')
-        except:
-            os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
-            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
-            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-            file_open.close()
-            counter = int(counter)
-            if counter < len(loaded_sink_data):
-                updating = True
-                print('pickle data is not up to date! Updating...')
-    else:
-        updating = True
-        particle_data = {}
-        particle_data.update({'particle_tag':[]})
-        particle_data.update({'time':[]})
-        particle_data.update({'mass':[]})
-        particle_data.update({'mdot':[]})
-        particle_data.update({'separation':[]})
-        particle_data.update({'secondary_position':[]})
-        particle_data.update({'secondary_velocity':[]})
+        sink_ind = CW.bcast(sink_ind, root=0)
         
-        counter = 0
-        sink_form_time = 0
+        if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
+            try:
+                file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
+                particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+                file_open.close()
+                counter = int(counter)
+                print("Reading particle data")
+                loaded_sink_data = rsink(datadir=path, all=True)
+                print("done reading sink particle data")
+                if counter < len(loaded_sink_data):
+                    updating = True
+                    print('pickle data is not up to date! Updating...')
+                del loaded_sink_data
+            except:
+                os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
+                file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
+                particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+                file_open.close()
+                counter = int(counter)
+                if counter < len(loaded_sink_data):
+                    updating = True
+                    print('pickle data is not up to date! Updating...')
+        else:
+            updating = True
+            particle_data = {}
+            particle_data.update({'particle_tag':[]})
+            particle_data.update({'time':[]})
+            particle_data.update({'mass':[]})
+            particle_data.update({'mdot':[]})
+            particle_data.update({'separation':[]})
+            particle_data.update({'secondary_position':[]})
+            particle_data.update({'secondary_velocity':[]})
+            
+            counter = 0
+            sink_form_time = 0
+    
+        counter = CW.bcast(counter, root=0)
+        sink_form_time = CW.bcast(sink_form_time, root=0)
+        del loaded_sink_data, particle_data
+            
+    sys.stdout.flush()
+    CW.Barrier()
         
     if updating == True:
         loaded_sink_data = loaded_sink_data[counter:]
         for sink_data in loaded_sink_data:
             counter = counter + 1
+            if rank == rit
             if np.remainder(counter, 1000) == 0:
                 try:
                     os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl')

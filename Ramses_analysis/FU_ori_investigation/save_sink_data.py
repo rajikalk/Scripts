@@ -60,8 +60,6 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 if args.update_pickle == 'True':
-    print("Reading particle data")
-    loaded_sink_data = rsink(datadir=path, all=True)
     updating = False
     if args.sink_number == None:
         last_n = int(sorted(glob.glob(path+"output*"))[-1].split("_")[-1])
@@ -80,18 +78,24 @@ if args.update_pickle == 'True':
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
+            print("Reading particle data")
+            loaded_sink_data = rsink(datadir=path, all=True)
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating...')
+            del loaded_sink_data
         except:
             os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
             file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
+            print("Reading particle data")
+            loaded_sink_data = rsink(datadir=path, all=True)
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating...')
+            del loaded_sink_data
     else:
         updating = True
         particle_data = {}
@@ -107,6 +111,8 @@ if args.update_pickle == 'True':
         sink_form_time = 0
         
     if updating == True:
+        print("Reading particle data")
+        loaded_sink_data = rsink(datadir=path, all=True)
         loaded_sink_data = loaded_sink_data[counter:]
         for sink_data in loaded_sink_data:
             counter = counter + 1
