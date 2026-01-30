@@ -165,6 +165,11 @@ import matplotlib.cm as cm
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
+if 'particle_data' not in locals():
+    file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
+
 f_acc = 0.5
 radius = yt.YTQuantity(2.0, 'rsun')
 #M_dot = accretion(sink_inds, global_ind)
