@@ -148,8 +148,6 @@ if args.update_pickle == 'True':
                 del time_val
                 particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
                 
-                
-                
                 d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
