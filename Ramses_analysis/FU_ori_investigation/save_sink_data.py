@@ -45,6 +45,7 @@ units_override.update({"density_unit":(units_override['mass_unit'][0]/units_over
 units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
+del units_override
 
 if args.update_pickle == 'True':
     updating = False
@@ -55,7 +56,9 @@ if args.update_pickle == 'True':
             last_n = last_n - 1
             stars_output_file = path + 'output_'+("%05d" % last_n)+'/stars_output.dat'
         loaded_sink_data_last = rsink(last_n, datadir=path)
+        del last_n
         sink_ind = np.argmin(loaded_sink_data_last['u'])
+        del loaded_sink_data_last
     else:
         sink_ind = args.sink_number
     print("Sink_ind =", sink_ind)
