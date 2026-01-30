@@ -62,6 +62,7 @@ if args.update_pickle == 'True':
     
     if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
         try:
+            print("reading", 'particle_data_'+str(sink_ind)+'.pkl')
             file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
@@ -74,6 +75,7 @@ if args.update_pickle == 'True':
             del loaded_sink_data
         except:
             os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
+            print("reading", 'particle_data_'+str(sink_ind)+'.pkl')
             file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
