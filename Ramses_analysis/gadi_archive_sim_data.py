@@ -1,6 +1,5 @@
 import subprocess
 import glob
-import sys
 from mpi4py.MPI import COMM_WORLD as CW
 
 rank = CW.Get_rank()
