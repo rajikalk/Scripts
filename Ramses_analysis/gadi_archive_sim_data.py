@@ -7,12 +7,13 @@ size = CW.Get_size()
 
 data_dirs = sorted(glob.glob('data/output*/'))
 rit = -1
-for data_dir in data_dir:
+for data_dir in data_dirs:
     rit = rit + 1
     if rit == size:
         rit = 0
     if rank == rit:
         dir_it = int(data_dir.split('output_')[-1][:-1])
+        print('Compressing output', dir_it, 'on rank', rit)
         subprocess.run('tar -cvfr output_'+("%05d" % dir_it)+'.tar.gz output_'+("%05d" % dir_it)+'/', shell=True)
         subprocess.run('mdss put output_'+("%05d" % dir_it)+'.tar.gz rlk100/2023_paper/Simulation_data/', shell=True)
         subprocess.run('rm output_'+("%05d" % dir_it)+'.tar.gz', shell=True)
