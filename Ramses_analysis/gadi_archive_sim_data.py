@@ -21,5 +21,5 @@ for data_dir in data_dirs:
         output = result.stdout.strip()
         output = output.split('\n')
         if 'output_'+("%05d" % dir_it)+'.tar.gz' in output:
-            subprocess.run('rm -rf data/output_'+("%05d" % dir_it)+'/', shell=True)
+            subprocess.run('rm -rf data/output_'+("%05d" % dir_it)+'/*.out0*', shell=True)
     
