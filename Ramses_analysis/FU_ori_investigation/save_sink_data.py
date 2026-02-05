@@ -107,6 +107,8 @@ if args.update_pickle == 'True':
         print("Reading particle data")
         loaded_sink_data = rsink(datadir=path, all=True)
         loaded_sink_data = loaded_sink_data[counter:]
+        import pdb
+        pdb.set_trace()
         for sink_data in loaded_sink_data:
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
