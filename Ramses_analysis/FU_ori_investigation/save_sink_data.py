@@ -7,6 +7,7 @@ import os
 import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
+import gc
 
 def parse_inputs():
     import argparse
@@ -46,6 +47,7 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 del units_override
+gc.collect()
 
 if args.update_pickle == 'True':
     updating = False
@@ -62,6 +64,8 @@ if args.update_pickle == 'True':
     else:
         sink_ind = args.sink_number
     print("Sink_ind =", sink_ind)
+    
+    gc.collect()
     
     if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
         try:
@@ -102,6 +106,8 @@ if args.update_pickle == 'True':
         
         counter = 0
         sink_form_time = 0
+        
+    gc.collect()
         
     if updating == True:
         print("Reading particle data")
