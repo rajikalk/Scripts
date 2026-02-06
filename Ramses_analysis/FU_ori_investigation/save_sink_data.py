@@ -169,7 +169,7 @@ if args.update_pickle == 'True':
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
                 del d_mass, d_time
-                gc.collect()
+                    gc.collect()
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
         #write lastest pickle
