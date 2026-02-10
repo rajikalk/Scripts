@@ -6,8 +6,8 @@ import numpy as np
 import sys
 import os
 import my_ramses_module as mym
-import my_ramses_fields_short as myf
-#import my_ramses_fields as myf
+#import my_ramses_fields_short as myf
+import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import gc
