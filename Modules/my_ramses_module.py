@@ -442,7 +442,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             if width_val > width_ceil:
                 width_val = width_ceil
             try:
-                if Z_val == None and color == None:
+                if Z_val is None and color is None:
                         color = 'w'
                     #color = 'k'
             except:
@@ -496,7 +496,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     p_t = ""
     rainbow_text_colors = []
     string_pos = []
-    if particle_tags == None:
+    if particle_tags is None:
         particle_tags = np.arange(len(particle_position))
     for pos_it in np.argsort(particle_tags):
         axis.scatter(particle_position[0][pos_it], particle_position[1][pos_it], c=part_color[pos_it], s=1, zorder=zorder)
