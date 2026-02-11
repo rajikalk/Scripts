@@ -6,8 +6,6 @@ import numpy as np
 import sys
 import os
 import my_ramses_module as mym
-#import my_ramses_fields_short as myf
-import my_ramses_fields as myf
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import gc
@@ -57,9 +55,17 @@ def parse_inputs():
     parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
+    parser.add_argument("-use_myf_short", "--use_my_ramses_field_short", help="is RAM is low, used the short version of the RAMSES yt fields", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
+
+args = parse_inputs()
+if args.use_my_ramses_field_short == "True":
+    import my_ramses_fields_short as myf
+else:
+    import my_ramses_fields as myf
+    
 
 def sim_info(ds,args):
     """
@@ -155,7 +161,6 @@ if rank == 0:
     print("size =", size)
 
 #Get input and output directories
-args = parse_inputs()
 
 #Define relevant directories
 input_dir = sys.argv[1]
