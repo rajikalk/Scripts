@@ -535,6 +535,10 @@ if args.make_frames_only == 'False':
                 #del com_vel
             else:
                 center_vel = region['Center_Velocity'].in_units('cm/s').value
+                if np.mean(center_vel) == np.mean(center_vel) == 0.0:
+                    print("Center Vel == Okm/s even thought projection is centered on a sink. Getting the sink velocity")
+                    center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('km/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
+                    
             #myf.set_center_pos_ind(args.image_center)
             #print("center_vel =", center_vel, "on rank", rank, "for", ds)
             
