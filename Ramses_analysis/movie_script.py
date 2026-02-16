@@ -596,9 +596,6 @@ if args.make_frames_only == 'False':
                     weight_proj = proj.frb.data[field].in_cgs()
                     '''
                     
-                import pdb
-                pdb.set_trace()
-                    
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
