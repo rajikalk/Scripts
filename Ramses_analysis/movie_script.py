@@ -221,7 +221,6 @@ mym.set_units(units_override)
 del units_override['density_unit']
 gc.collect()
 ds = yt.load(files[-1], units_override=units_override)
-#try:
 dd = ds.all_data()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
@@ -374,11 +373,7 @@ if args.make_frames_only == 'False':
         elif len(args.movie_times) > 0:
             pickle_file = save_dir + "time_" + str(float(m_times[file_int])) +".pkl"
         else:
-            try:
-                pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
-            except:
-                file_int = file_int - 1
-                pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         elif os.path.isfile(pickle_file) == True:
