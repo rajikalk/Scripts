@@ -394,6 +394,8 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
     vely = np.array(vely)
     velz = np.array(velz)
     try:
+        import pdb
+        pdb.set_trace()
         velx = velx - center_vel_plane[0]
         vely = vely - center_vel_plane[1]
         velz = velz - center_vel_perp
