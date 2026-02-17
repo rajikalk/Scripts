@@ -250,22 +250,6 @@ else:
     no_frames = len(files)
 
 if args.make_frames_only == 'False':
-    """
-    except:
-        files = files[:-1]
-        ds = yt.load(files[-1], units_override=units_override)
-        dd = ds.all_data()
-        if args.sink_number == None:
-            sink_id = np.argmin(dd['sink_particle_speed'])
-        else:
-            sink_id = args.sink_number
-        if rank == 0:
-            print("CENTERED SINK ID:", sink_id)
-        myf.set_centred_sink_id(sink_id)
-        sink_form_time = dd['sink_particle_form_time'][sink_id]
-        del dd
-    """
-        
     sys.stdout.flush()
     CW.Barrier()
 
@@ -286,19 +270,7 @@ if args.make_frames_only == 'False':
         y_ind.append(int(val))
         counter = counter + 1
     X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
-    '''
-    if args.projection_orientation != None:
-        y_val = 1./np.tan(np.deg2rad(args.projection_orientation))
-        L = [1.0, y_val, 0.0]
-    else:
-        if args.axis == 'xy':
-            L = [0.0, 0.0, 1.0]
-        elif args.axis == 'xz':
-            L = [0.0, 1.0, 0.0]
-        elif args.axis == 'yz':
-            L = [1.0, 0.0, 0.0]
-    myf.set_normal(L)
-    '''
+
     xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
     if args.ax_lim != None:
         xlim = [-1*args.ax_lim, args.ax_lim]
@@ -396,6 +368,10 @@ if args.make_frames_only == 'False':
                 center_pos = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('au').value, dd['sink_particle_posy'][sink_id].in_units('au').value, dd['sink_particle_posz'][sink_id].in_units('au').value], 'au')
             else:
                 center_pos = dd['Center_Position'].in_units('au')
+                
+            if args.image_center == 1:
+                center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('km/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
+            
             if args.axis == 'xy':
                 axis_ind = 2
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
@@ -460,6 +436,9 @@ if args.make_frames_only == 'False':
                     L = np.array([L_x, L_y, L_z])/np.sum(dd['Orbital_Angular_Momentum'].value)
                     myf.set_normal(L)
                     print("L =", L)
+                    
+            del dd
+            gc.collect()
             
             #mass_array = dd['sink_particle_mass']
 
@@ -528,11 +507,6 @@ if args.make_frames_only == 'False':
                 del z_top
                 gc.collect()
                 #del com_vel
-            else:
-                center_vel = region['Center_Velocity'].in_units('cm/s').value
-                if np.mean(center_vel) == np.mean(center_vel) == 0.0:
-                    print("Center Vel == Okm/s even thought projection is centered on a sink. Getting the sink velocity")
-                    center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('km/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
                     
             #myf.set_center_pos_ind(args.image_center)
             #print("center_vel =", center_vel, "on rank", rank, "for", ds)
@@ -561,32 +535,6 @@ if args.make_frames_only == 'False':
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                 #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
-                '''
-                #Defined weighted fields?
-                if args.weight_field != None:
-                    weight_field_list = []
-                    for field_name in proj_field_list:
-                        weight_name = field_name[1] + '_' + weight_field[1]
-                        unit_string = str((region[field_name]*region[weight_field]).in_cgs().units)
-                        function_name = '_' + weight_name
-                        
-                        def function_name(field,data):
-                            """
-                            Calculated the centred z-component of the megnatic field
-                            """
-                            weight_field = data[field_name]*data[weight_field]
-                            return weight_field
-                        
-                        ds.add_field(weight_name, function=function_name, units=unit_string, sampling_type="local")
-                        
-                        weight_field_list.append(('gas', weight_name))
-                    
-                    proj_field_list = weight_field_list
-                    
-                    proj = yt.ProjectionPlot(ds, axis_ind, weight_field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
-                    proj.set_buff_size([args.resolution, args.resolution])
-                    weight_proj = proj.frb.data[field].in_cgs()
-                    '''
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
@@ -637,23 +585,7 @@ if args.make_frames_only == 'False':
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                     sto.result_id = field[1]
                     sto.result = proj_array
-                    '''
-                    if rank == proj_root_rank:
-                        proj_dict[field[1]] = proj_array
-                    else:
-                        file = open(pickle_file.split('.pkl')[0] + '_proj_data_' + str(proj_root_rank)+ str(proj_dict_keys.index(field[1])) + '.pkl', 'wb')
-                        pickle.dump((field[1], proj_array), file)
-                        file.close()
-                    '''
-                '''
-                if rank == proj_root_rank and size > 1:
-                    for kit in range(1,len(proj_dict_keys)):
-                        file = open(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl', 'rb')
-                        key, proj_array = pickle.load(file)
-                        file.close()
-                        proj_dict[key] = proj_array
-                        os.remove(pickle_file.split('.pkl')[0] + '_proj_data_' +str(proj_root_rank) +str(kit)+'.pkl')
-                '''
+
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
                     velx_full = proj_dict[proj_dict_keys[1]]
