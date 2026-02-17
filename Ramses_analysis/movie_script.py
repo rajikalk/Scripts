@@ -626,6 +626,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
+                        import pdb
+                        pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
@@ -751,6 +753,7 @@ if args.make_frames_only == 'False':
                     part_info['particle_position'] = positions
             
             if rank == proj_root_rank:
+                pdb.set_trace()
                 velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
                 del velx_full
                 del vely_full
