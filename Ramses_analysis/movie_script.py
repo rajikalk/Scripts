@@ -233,8 +233,8 @@ try:
 except:
     pass
 sink_form_time = dd['sink_particle_form_time'][sink_id]
-#del dd
-#gc.collect()
+del dd
+gc.collect()
 if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
@@ -317,6 +317,7 @@ if args.make_frames_only == 'False':
         else:
             usable_files = files
         del files
+        gc.collect()
         
     sys.stdout.flush()
     CW.Barrier()
@@ -325,12 +326,12 @@ if args.make_frames_only == 'False':
     frames = list(range(args.start_frame, no_frames))
     print("derived image position arrays")
     
+gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
 if args.make_frames_only == 'False':
-    if rank == 0:
-        print("starting to make projections")
+    print("starting to make projections")
     #Trying yt parallelism
     file_int = -1
     for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
@@ -356,7 +357,6 @@ if args.make_frames_only == 'False':
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
         if make_pickle == True:
-            
             ds = yt.load(fn, units_override=units_override)
             dd = ds.all_data()
             try:
