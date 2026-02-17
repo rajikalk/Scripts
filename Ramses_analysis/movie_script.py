@@ -323,6 +323,7 @@ if args.make_frames_only == 'False':
 
     no_frames = len(usable_files)
     frames = list(range(args.start_frame, no_frames))
+    print("derived image position arrays")
     
 sys.stdout.flush()
 CW.Barrier()
