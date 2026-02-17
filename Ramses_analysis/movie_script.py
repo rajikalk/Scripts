@@ -581,9 +581,6 @@ if args.make_frames_only == 'False':
                         
                         weight_field_list.append(('gas', weight_name))
                     
-                    import pdb
-                    pdb.set_trace()
-                    
                     proj_field_list = weight_field_list
                     
                     proj = yt.ProjectionPlot(ds, axis_ind, weight_field, width=(x_width,'au'), data_source=region, method='integrate', center=(center_pos, 'AU'))
@@ -626,8 +623,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
-                        import pdb
-                        pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
@@ -681,15 +676,11 @@ if args.make_frames_only == 'False':
                         if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_units('cm*gauss')/thickness.in_units('cm'))
                         else:
-                            import pdb
-                            pdb.set_trace()
                             proj_array = np.array(proj.frb.data[field].in_units('gauss'))
                     else:
                        if weight_field == None:
                             proj_array = np.array(proj.frb.data[field].in_cgs()/thickness.in_units('cm'))
                        else:
-                            import pdb
-                            pdb.set_trace()
                             proj_array = np.array(proj.frb.data[field].in_cgs())
                     if rank == proj_root_rank:
                         proj_dict[field[1]] = proj_array
@@ -885,8 +876,6 @@ for pickle_file in pickle_files:
             
         if make_plot == True:
             print(file_name + ".jpg" + " doesn't exist, so plotting image")
-            #import pdb
-            #pdb.set_trace()
             xlim = args_dict['xlim']
             ylim = args_dict['ylim']
             if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
