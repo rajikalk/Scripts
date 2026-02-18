@@ -78,13 +78,13 @@ def sim_info(ds,args):
     if args.ax_lim == None:
         xmin = -1000
         xmax = 1000
-        ymin = -1000
-        ymax = 1000
+        #ymin = -1000
+        #ymax = 1000
     else:
         xmin = -1*args.ax_lim
         xmax = args.ax_lim
-        ymin = -1*args.ax_lim
-        ymax = args.ax_lim
+        #ymin = -1*args.ax_lim
+        #ymax = args.ax_lim
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
@@ -100,8 +100,8 @@ def sim_info(ds,args):
                 'dimension': dim,
                 'xmin': xmin,
                 'xmax': xmax,
-                'ymin': ymin,
-                'ymax': ymax,
+                #'ymin': ymin,
+                #'ymax': ymax,
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
                 'smoothing': smoothing,
@@ -112,8 +112,8 @@ def sim_info(ds,args):
     del dim
     del xmin
     del xmax
-    del ymin
-    del ymax
+    #del ymin
+    #del ymax
     del cl
     del annotate_freq
     del smoothing
@@ -136,8 +136,8 @@ def image_properties(X, Y, args, sim_info):
         xlabel = 'Distance from center (AU)'
         ylabel = 'Distance from center (AU)'
     xlim = [np.min(X), np.max(X)]
-    ylim = [np.min(Y), np.max(Y)]
-    return xlabel, ylabel, xlim, ylim
+    #ylim = [np.min(Y), np.max(Y)]
+    return xlabel, ylabel, xlim, xlim
 
 def has_sinks(ds):
     '''
@@ -254,25 +254,24 @@ if args.make_frames_only == 'False':
         print("loading fields")
     simfo = sim_info(ds, args)
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
-    y = np.linspace(simfo['ymin'], simfo['ymax'], simfo['dimension'])
-    X, Y = np.meshgrid(x, y)
+    X, X = np.meshgrid(x, x)
     annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
     x_ind = []
-    y_ind = []
+    #y_ind = []
     counter = 0
     while counter < args.velocity_annotation_frequency:
         val = annotate_space*counter + annotate_space/2. + simfo['xmin']
         x_ind.append(int(val))
-        y_ind.append(int(val))
+        #y_ind.append(int(val))
         counter = counter + 1
-    X_vel, Y_vel = np.meshgrid(x_ind, y_ind)
+    X_vel, X_vel = np.meshgrid(x_ind, x_ind)
 
-    xabel, yabel, xlim, ylim = image_properties(X, Y, args, simfo)
+    xabel, yabel, xlim, ylim = image_properties(X, X, args, simfo)
     if args.ax_lim != None:
         xlim = [-1*args.ax_lim, args.ax_lim]
-        ylim = [-1*args.ax_lim, args.ax_lim]
+        #ylim = [-1*args.ax_lim, args.ax_lim]
     x_width = (xlim[1] -xlim[0])
-    y_width = (ylim[1] -ylim[0])
+    y_width = (xlim[1] -xlim[0])
     thickness = yt.YTQuantity(args.slice_thickness, 'AU')
     #Sets center for calculating center position and velocity
     try:
@@ -469,6 +468,9 @@ if args.make_frames_only == 'False':
                 Y_image = Y
                 X_image_vel = X_vel
                 Y_image_vel = Y_vel
+            
+            del X, Y, X_vel, Y_vel
+            gc.collect()
             
             if args.update_ax_lim == 'False':
                 if args.axis == 'xy':
