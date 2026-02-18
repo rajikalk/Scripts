@@ -368,7 +368,7 @@ if args.make_frames_only == 'False':
                 center_pos = dd['Center_Position'].in_units('au')
                 
             if args.image_center == 1:
-                center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('km/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
+                center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('cm/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
             del dd
             gc.collect()
             
