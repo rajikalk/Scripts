@@ -447,26 +447,26 @@ if args.make_frames_only == 'False':
             if args.update_ax_lim == 'True':
                 if args.axis == 'xy':
                     X_image = X + center_pos[0].value
-                    Y_image = Y + center_pos[1].value
+                    Y_image = X + center_pos[1].value
                     X_image_vel = X_vel + center_pos[0].value
-                    Y_image_vel = Y_vel + center_pos[1].value
+                    Y_image_vel = X_vel + center_pos[1].value
                 elif args.axis == 'xz':
                     X_image = X + center_pos[0].value
-                    Y_image = Y + center_pos[2].value
+                    Y_image = X + center_pos[2].value
                     X_image_vel = X_vel + center_pos[0].value
-                    Y_image_vel = Y_vel + center_pos[2].value
+                    Y_image_vel = X_vel + center_pos[2].value
                 elif args.axis == 'yz':
                     X_image = X + center_pos[1].value
-                    Y_image = Y + center_pos[2].value
+                    Y_image = X + center_pos[2].value
                     X_image_vel = X_vel + center_pos[1].value
-                    Y_image_vel = Y_vel + center_pos[2].value
+                    Y_image_vel = X_vel + center_pos[2].value
             else:
                 X_image = X
-                Y_image = Y
+                Y_image = X
                 X_image_vel = X_vel
-                Y_image_vel = Y_vel
+                Y_image_vel = X_vel
             
-            del X, Y, X_vel, Y_vel
+            del X, X_vel
             gc.collect()
             
             if args.update_ax_lim == 'False':
