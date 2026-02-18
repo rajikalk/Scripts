@@ -573,9 +573,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
@@ -587,12 +584,19 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
+                        if size == 1:
+                            import pdb
+                            pdb.set_trace()
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
+                        
                     sto.result_id = field[1]
                     sto.result = proj_array
 
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
+                    if size == 1:
+                        import pdb
+                        pdb.set_trace()
                     velx_full = proj_dict[proj_dict_keys[1]]
                     vely_full = proj_dict[proj_dict_keys[2]]
                     velz_full = proj_dict[proj_dict_keys[3]]
