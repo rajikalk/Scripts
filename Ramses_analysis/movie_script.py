@@ -327,8 +327,6 @@ CW.Barrier()
 
 if args.make_frames_only == 'False':
     print("starting to make projections")
-    import pdb
-    pdb.set_trace()
     gc.collect()
     #Trying yt parallelism
     file_int = -1
