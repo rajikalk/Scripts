@@ -466,8 +466,8 @@ if args.make_frames_only == 'False':
                 X_image_vel = X_vel
                 Y_image_vel = X_vel
             
-            del X, X_vel
-            gc.collect()
+            #del X, X_vel
+            #gc.collect()
             
             if args.update_ax_lim == 'False':
                 if args.axis == 'xy':
