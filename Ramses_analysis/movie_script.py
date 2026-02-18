@@ -330,6 +330,7 @@ if args.make_frames_only == 'False':
     print("starting to make projections")
     import pdb
     pdb.set_trace()
+    gc.collect()
     #Trying yt parallelism
     file_int = -1
     for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
@@ -356,6 +357,7 @@ if args.make_frames_only == 'False':
             print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
+            gc.collect()
             dd = ds.all_data()
             try:
                 has_particles = has_sinks(ds)
@@ -370,6 +372,8 @@ if args.make_frames_only == 'False':
                 
             if args.image_center == 1:
                 center_vel = yt.YTArray([dd['sink_particle_velx'][sink_id].in_units('km/s').value, dd['sink_particle_vely'][sink_id].in_units('cm/s').value, dd['sink_particle_velz'][sink_id].in_units('cm/s').value], 'cm/s')
+            del dd
+            gc.collect()
             
             if args.axis == 'xy':
                 axis_ind = 2
