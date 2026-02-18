@@ -437,7 +437,6 @@ if args.make_frames_only == 'False':
                     myf.set_normal(L)
                     print("L =", L)
                     
-            del dd
             gc.collect()
             
             #mass_array = dd['sink_particle_mass']
@@ -777,6 +776,7 @@ else:
 
 sys.stdout.flush()
 CW.Barrier()
+gc.collect()
 
 rit = args.working_rank - 1
 for pickle_file in pickle_files:
@@ -839,6 +839,7 @@ for pickle_file in pickle_files:
             else:
                 cmap=plt.cm.gist_heat
                 plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, zorder=1)
+            del image
             plt.gca().set_aspect('equal')
             if args.debug_plotting != 'False':
                 plt.savefig("Test_784.jpg", format='jpg', bbox_inches='tight')
