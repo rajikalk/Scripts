@@ -33,13 +33,14 @@ input_file = input_dir + 'input.nml'
 with open(input_file, 'r') as f:
     reader = csv.reader(f, delimiter=" ")
     for row in reader:
-        if row[0] == 'x_center':
-            import pdb
-            pdb.set_trace()
-        if row[0] == 'y_center':
-            import pdb
-            pdb.set_trace()
-        if row[0] == 'z_center':
-            import pdb
-            pdb.set_trace()
+        if len(row)>0:
+            if row[0] == 'x_center':
+                import pdb
+                pdb.set_trace()
+            if row[0] == 'y_center':
+                import pdb
+                pdb.set_trace()
+            if row[0] == 'z_center':
+                import pdb
+                pdb.set_trace()
 
