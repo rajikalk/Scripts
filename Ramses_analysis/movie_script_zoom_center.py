@@ -31,7 +31,7 @@ gc.collect()
 #Get zoom_center from input
 input_file = input_dir + 'input.nml'
 with open(input_file, 'r') as f:
-    reader = csv.reader(f, delimiter="")
+    reader = csv.reader(f, delimiter=" ")
     for row in reader:
         if row[0] == 'x_center':
             import pdb
