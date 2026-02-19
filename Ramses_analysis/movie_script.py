@@ -587,7 +587,7 @@ if args.make_frames_only == 'False':
                         if size == 1:
                             import pdb
                             pdb.set_trace()
-                        proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
+                        proj_array = proj_array + center_vel[-1].in_units(args.field_unit).value
                         
                     sto.result_id = field[1]
                     sto.result = proj_array
