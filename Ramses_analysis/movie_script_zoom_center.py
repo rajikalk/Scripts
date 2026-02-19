@@ -25,11 +25,21 @@ save_dir = sys.argv[2]
 if os.path.exists(save_dir) == False:
     os.makedirs(save_dir)
     
-files = sorted(glob.glob(input_dir+"*/info*.txt"))
-del input_dir
+files = sorted(glob.glob(input_dir+"data/*/info*.txt"))
 gc.collect()
 
 #Get zoom_center from input
-import pdb
-pdb.set_trace()
+input_file = input_dir + 'input.nml'
+with open(input_file, 'r') as f:
+    reader = csv.reader(f, delimiter="")
+    for row in reader:
+        if row[0] == 'x_center':
+            import pdb
+            pdb.set_trace()
+        if row[0] == 'y_center':
+            import pdb
+            pdb.set_trace()
+        if row[0] == 'z_center':
+            import pdb
+            pdb.set_trace()
 
