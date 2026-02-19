@@ -23,6 +23,7 @@ def parse_inputs():
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 25)
     parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
     parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
+    parser.add_argument("-pv", "--plot_velocity", help="would you like to annotate the velocity legend?", type=str, default="True")
     parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
     parser.add_argument("-pzl", "--plot_z_velocities", help="do you want to plot the z velocity?", type=str, default='False')
     parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
@@ -524,18 +525,23 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
-                vel1_field = args.axis[0] + '-velocity'
-                vel2_field = args.axis[1] + '-velocity'
-                vel3_field = perp_vel + '-velocity'
-                #vel1_field = 'Corrected_vel' + args.axis[0]
-                #vel2_field = 'Corrected_vel' + args.axis[1]
-                #vel3_field = 'Corrected_vel' + perp_vel
-                mag1_field = 'mag' + args.axis[0]
-                mag2_field = 'mag' + args.axis[1]
-                proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
-                
-                proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                if args.plot_velocity == "True"
+                    vel1_field = args.axis[0] + '-velocity'
+                    vel2_field = args.axis[1] + '-velocity'
+                    vel3_field = perp_vel + '-velocity'
+                    mag1_field = 'mag' + args.axis[0]
+                    mag2_field = 'mag' + args.axis[1]
+                    proj_dict = {simfo['field'][1]:[], vel1_field:[], vel2_field:[], vel3_field:[], mag1_field:[], mag2_field:[]}
+                    
+                    proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                    proj_field_list =[simfo['field'], ('ramses', vel1_field), ('ramses', vel2_field), ('ramses', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
+                else:
+                    mag1_field = 'mag' + args.axis[0]
+                    mag2_field = 'mag' + args.axis[1]
+                    proj_dict = {simfo['field'][1]:[], mag1_field:[], mag2_field:[]}
+                    
+                    proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                    proj_field_list =[simfo['field'], ('gas', mag1_field), ('gas', mag2_field)]
                 #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
@@ -584,24 +590,22 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
-                        if size == 1:
-                            import pdb
-                            pdb.set_trace()
-                        proj_array = proj_array + center_vel[-1].in_units(args.field_unit).value
+                        proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                         
                     sto.result_id = field[1]
                     sto.result = proj_array
 
                 if rank == proj_root_rank:
                     image = proj_dict[proj_dict_keys[0]]
-                    if size == 1:
-                        import pdb
-                        pdb.set_trace()
-                    velx_full = proj_dict[proj_dict_keys[1]]
-                    vely_full = proj_dict[proj_dict_keys[2]]
-                    velz_full = proj_dict[proj_dict_keys[3]]
-                    magx = proj_dict[proj_dict_keys[4]]
-                    magy = proj_dict[proj_dict_keys[5]]
+                    if args.plot_velocity == "True":
+                        velx_full = proj_dict[proj_dict_keys[1]]
+                        vely_full = proj_dict[proj_dict_keys[2]]
+                        velz_full = proj_dict[proj_dict_keys[3]]
+                        magx = proj_dict[proj_dict_keys[4]]
+                        magy = proj_dict[proj_dict_keys[5]]
+                    else:
+                        magx = proj_dict[proj_dict_keys[1]]
+                        magy = proj_dict[proj_dict_keys[2]]
                         
             elif args.use_angular_momentum != 'False':
                 proj_root_rank = int(rank/7)*7
@@ -685,13 +689,15 @@ if args.make_frames_only == 'False':
                     part_info['particle_position'] = positions
             
             if rank == proj_root_rank:
-                if size == 1:
-                    import pdb
-                    pdb.set_trace()
-                velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
-                del velx_full
-                del vely_full
-                del velz_full
+                if args.plot_velocity == "True":
+                    velx, vely, velz = mym.get_quiver_arrays(0.0, 0.0, X_image, velx_full, vely_full, center_vel=center_vel, velz_full=velz_full, axis=args.axis)
+                    del velx_full
+                    del vely_full
+                    del velz_full
+                else:
+                    velx = None
+                    vely = None
+                    velz = None
                 gc.collect()
 
                 args_dict = {}
@@ -866,13 +872,15 @@ for pickle_file in pickle_files:
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            try:
-                if args.plot_z_velocities == 'False':
-                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
-                else:
-                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
-            except:
-                pass
+            if args.plot_velocity == True:
+                try:
+                    if args.plot_z_velocities == 'False':
+                        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+                    else:
+                        mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+                except:
+                    pass
+            
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')
                 
