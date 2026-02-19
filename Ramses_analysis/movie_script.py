@@ -525,7 +525,7 @@ if args.make_frames_only == 'False':
                 perp_vel = 'x'
             
             if args.use_angular_momentum == 'False':
-                if args.plot_velocity == "True"
+                if args.plot_velocity == "True":
                     vel1_field = args.axis[0] + '-velocity'
                     vel2_field = args.axis[1] + '-velocity'
                     vel3_field = perp_vel + '-velocity'
