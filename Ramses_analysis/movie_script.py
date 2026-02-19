@@ -607,6 +607,7 @@ if args.make_frames_only == 'False':
                         magx = proj_dict[proj_dict_keys[1]]
                         magy = proj_dict[proj_dict_keys[2]]
                 del region
+                gc.collect()
                         
             elif args.use_angular_momentum != 'False':
                 proj_root_rank = int(rank/7)*7
@@ -695,6 +696,7 @@ if args.make_frames_only == 'False':
                     del velx_full
                     del vely_full
                     del velz_full
+                    gc.collect()
                 else:
                     velx = None
                     vely = None
