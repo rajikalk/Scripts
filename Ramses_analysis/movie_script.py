@@ -255,7 +255,7 @@ if args.make_frames_only == 'False':
         print("loading fields")
     simfo = sim_info(ds, args)
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
-    X, X = np.meshgrid(x, x)
+    X, Y = np.meshgrid(x, x)
     annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
     x_ind = []
     #y_ind = []
@@ -265,7 +265,7 @@ if args.make_frames_only == 'False':
         x_ind.append(int(val))
         #y_ind.append(int(val))
         counter = counter + 1
-    X_vel, X_vel = np.meshgrid(x_ind, x_ind)
+    X_vel, Y_vel = np.meshgrid(x_ind, x_ind)
 
     xabel, yabel, xlim, ylim = image_properties(X, X, args, simfo)
     if args.ax_lim != None:
