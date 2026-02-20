@@ -40,8 +40,9 @@ with open(input_file, 'r') as f:
 center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
 x_width = yt.YTQuantity(20000, 'au')
 resolution = 4096
-x = np.linspace(-1*x_width/2, x_width/2, resolution)
-X, Y = np.meshgrid(x, x)
+x = np.linspace(center_pos[0]-1*x_width/2, center_pos[0]+x_width/2, resolution)
+y = np.linspace(center_pos[1]-1*x_width/2, center_pos[1]+x_width/2, resolution)
+X, Y = np.meshgrid(x, y)
 left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
 particle_search_bounds_left= []
 for left_ind in left_corner:
