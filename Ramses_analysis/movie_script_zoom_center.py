@@ -46,8 +46,8 @@ center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
 x_width = yt.YTQuantity(10000, 'au')
 x = np.linspace(-5000, 5000, 800)
 X, Y = np.meshgrid(x, x)
-left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width), center_pos[1].value-(0.5*x_width), center_pos[2].value-(0.5*x_width)], 'AU')
-right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width), center_pos[1].value+(0.5*x_width), center_pos[2].value+(0.5*x_width)], 'AU')
+left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
+right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width.value), center_pos[1].value+(0.5*x_width.value), center_pos[2].value+(0.5*x_width.value)], 'AU')
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
