@@ -11,6 +11,7 @@ import pickle
 import gc
 import my_ramses_fields_short as myf
 import csv
+import matplotlib.pyplot as plt
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -42,17 +43,45 @@ with open(input_file, 'r') as f:
             if row[0] == 'z_center':
                 center_pos[2] = float(row[-1])
 center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
-x_width = 5000
-left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*x_width)], 'AU')
-right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*x_width)], 'AU')
+x_width = yt.YTQuantity(10000, 'au')
+x = np.linspace(-5000, 5000, 800)
+X, Y = np.meshgrid(x, x)
+left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width), center_pos[1].value-(0.5*x_width), center_pos[2].value-(0.5*x_width)], 'AU')
+right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width), center_pos[1].value+(0.5*x_width), center_pos[2].value+(0.5*x_width)], 'AU')
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
     
 #make projections
 for fn in yt.parallel_objects(files):
+    fit = files.index(fn)
     ds = yt.load(fn, units_override=units_override)
     region = ds.box(left_corner, right_corner)
     
-    import pdb
-    pdb.set_trace()
+    time_val = ds.current_time.in_units('yr')
+    
+    sink_particle_tag = region['sink_particle_tag']
+    sink_particle_posx = region['sink_particle_posx'].in_units('au') - center_pos[0]
+    sink_particle_posy = region['sink_particle_posy'].in_units('au') - center_pos[1]
+    most_recent_sink_pos = np.argmax(sink_particle_tag)
+    
+    proj = yt.ProjectionPlot(ds, 2, ('gas', 'Density'), data_source=region, method='integrate')
+    proj.set_buff_size([800, 800])
+    proj_array = np.array((proj.frb.data[('gas', 'Density')]/x_width.in_units('cm')).in_units('g/cm**3'))
+    
+    plt.clf()
+    fig, ax = plt.subplots()
+    ax.set_xlabel(x, labelpad=-1, fontsize=12)
+    ax.set_ylabel(y, fontsize=a12) #, labelpad=-20
+    ax.set_xlim([-5000, 5000])
+    ax.set_ylim([-5000, 5000])
+    
+    cmap=plt.cm.gist_heat
+    plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+    plt.gca().set_aspect('equal')
+    cbar = plt.colorbar(plot, pad=0.0)
+    ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
+    ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
+    save_name = save_dir + "file_frame_" + ("%06d" % fit)
+    plt.savefig(save_name + ".jpg", format='jpg', bbox_inches='tight')
+    print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
