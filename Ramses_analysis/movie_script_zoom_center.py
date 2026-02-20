@@ -38,8 +38,8 @@ with open(input_file, 'r') as f:
             if row[0] == 'z_center':
                 center_pos[2] = float(row[-1])
 center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
-x_width = yt.YTQuantity(10000, 'au')
-x = np.linspace(-5000, 5000, 800)
+x_width = yt.YTQuantity(20000, 'au')
+x = np.linspace(-1*x_width/2, x_width/2, 800)
 X, Y = np.meshgrid(x, x)
 left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
 particle_search_bounds_left= []
@@ -82,8 +82,8 @@ for fn in yt.parallel_objects(files):
     fig, ax = plt.subplots()
     ax.set_xlabel("x (AU)", labelpad=-1, fontsize=12)
     ax.set_ylabel("y (AU)", fontsize=12) #, labelpad=-20
-    ax.set_xlim([-5000, 5000])
-    ax.set_ylim([-5000, 5000])
+    ax.set_xlim([-1*x_width/2, x_width/2])
+    ax.set_ylim([-1*x_width/2, x_width/2])
     
     cmap=plt.cm.gist_heat
     plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
