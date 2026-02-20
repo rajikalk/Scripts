@@ -12,6 +12,7 @@ import gc
 import my_ramses_fields_short as myf
 import csv
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -47,7 +48,21 @@ x_width = yt.YTQuantity(10000, 'au')
 x = np.linspace(-5000, 5000, 800)
 X, Y = np.meshgrid(x, x)
 left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
+particle_search_bounds_left= []
+for left_ind in left_corner:
+    if left_ind > 0:
+        particle_search_bounds_left.append(left_ind)
+    else:
+        append_val = yt.YTQuantity(4, 'pc').in_units('au')+left_ind
+        particle_search_bounds_left.append(append_val)
 right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width.value), center_pos[1].value+(0.5*x_width.value), center_pos[2].value+(0.5*x_width.value)], 'AU')
+particle_search_bounds_right= []
+for right_ind in right_corner:
+    if right_ind > 0:
+        particle_search_bounds_right.append(right_ind)
+    else:
+        append_val = yt.YTQuantity(4, 'pc').in_units('au')+right_ind
+        particle_search_bounds_right.append(append_val)
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
@@ -60,10 +75,10 @@ for fn in yt.parallel_objects(files):
     
     time_val = ds.current_time.in_units('yr')
     
-    sink_particle_tag = region['sink_particle_tag']
-    sink_particle_posx = region['sink_particle_posx'].in_units('au') - center_pos[0]
-    sink_particle_posy = region['sink_particle_posy'].in_units('au') - center_pos[1]
-    most_recent_sink_pos = np.argmax(sink_particle_tag)
+    Part_in_region = np.where((region['sink_particle_posx'].in_units('au')>particle_search_bounds_left[0])&(region['sink_particle_posx'].in_units('au')<particle_search_bounds_right[0])&(region['sink_particle_posy'].in_units('au')>particle_search_bounds_left[1])&(region['sink_particle_posy'].in_units('au')<particle_search_bounds_right[1])&(region['sink_particle_posz'].in_units('au')>particle_search_bounds_left[2])&(region['sink_particle_posz'].in_units('au')<particle_search_bounds_right[2]))
+    if len(Part_in_region)>0:
+        import pdb
+        pdb.set_trace()
     
     proj = yt.ProjectionPlot(ds, 2, ('gas', 'Density'), data_source=region, method='integrate')
     proj.set_buff_size([800, 800])
@@ -71,17 +86,18 @@ for fn in yt.parallel_objects(files):
     
     plt.clf()
     fig, ax = plt.subplots()
-    ax.set_xlabel(x, labelpad=-1, fontsize=12)
-    ax.set_ylabel(y, fontsize=a12) #, labelpad=-20
+    ax.set_xlabel("x (AU)", labelpad=-1, fontsize=12)
+    ax.set_ylabel("y (AU)", fontsize=12) #, labelpad=-20
     ax.set_xlim([-5000, 5000])
     ax.set_ylim([-5000, 5000])
     
     cmap=plt.cm.gist_heat
-    plot = ax.pcolormesh(X, Y, image, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+    plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
     plt.gca().set_aspect('equal')
     cbar = plt.colorbar(plot, pad=0.0)
-    ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
-    ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
+    if len(Part_in_region)>0
+        ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
+        ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
     save_name = save_dir + "file_frame_" + ("%06d" % fit)
     plt.savefig(save_name + ".jpg", format='jpg', bbox_inches='tight')
     print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
