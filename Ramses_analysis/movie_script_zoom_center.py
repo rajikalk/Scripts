@@ -71,6 +71,7 @@ for fn in yt.parallel_objects(files):
     
     Part_in_region = np.where((region['sink_particle_posx'].in_units('au')>particle_search_bounds_left[0])&(region['sink_particle_posx'].in_units('au')<particle_search_bounds_right[0])&(region['sink_particle_posy'].in_units('au')>particle_search_bounds_left[1])&(region['sink_particle_posy'].in_units('au')<particle_search_bounds_right[1])&(region['sink_particle_posz'].in_units('au')>particle_search_bounds_left[2])&(region['sink_particle_posz'].in_units('au')<particle_search_bounds_right[2]))[0]
     if len(Part_in_region)>0:
+        print("DEBUG FROM FILE", fn)
         import pdb
         pdb.set_trace()
     
