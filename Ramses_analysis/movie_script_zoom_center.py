@@ -47,15 +47,7 @@ left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].valu
 right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*x_width)], 'AU')
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
-
-if args.simulation_density_id == 'G50':
-    units_override.update({"mass_unit":(1500,"Msun")})
-elif args.simulation_density_id == 'G200':
-    units_override.update({"mass_unit":(6000,"Msun")})
-elif args.simulation_density_id == 'G400':
-    units_override.update({"mass_unit":(12000,"Msun")})
-else:
-    units_override.update({"mass_unit":(2998,"Msun")})
+units_override.update({"mass_unit":(2998,"Msun")})
     
 #make projections
 for fn in yt.parallel_objects(files):
