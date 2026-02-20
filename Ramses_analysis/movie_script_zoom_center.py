@@ -39,7 +39,8 @@ with open(input_file, 'r') as f:
                 center_pos[2] = float(row[-1])
 center_pos = yt.YTArray(center_pos, 'pc').in_units('au')
 x_width = yt.YTQuantity(20000, 'au')
-x = np.linspace(-1*x_width/2, x_width/2, 800)
+resolution = 4096
+x = np.linspace(-1*x_width/2, x_width/2, resolution)
 X, Y = np.meshgrid(x, x)
 left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
 particle_search_bounds_left= []
@@ -76,7 +77,7 @@ for fn in yt.parallel_objects(files):
         pdb.set_trace()
     
     proj = yt.ProjectionPlot(ds, 2, ('gas', 'Density'), data_source=region, method='integrate')
-    proj.set_buff_size([800, 800])
+    proj.set_buff_size([resolution, resolution])
     proj_array = np.array((proj.frb.data[('gas', 'Density')]/x_width.in_units('cm')).in_units('g/cm**3'))
     
     plt.clf()
