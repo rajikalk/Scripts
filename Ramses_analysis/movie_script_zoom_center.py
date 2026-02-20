@@ -4,11 +4,8 @@ yt.enable_parallelism()
 import glob
 import numpy as np
 import sys
-import os
 import my_ramses_module as mym
 from mpi4py.MPI import COMM_WORLD as CW
-import pickle
-import gc
 import my_ramses_fields_short as myf
 import csv
 import matplotlib.pyplot as plt
@@ -24,11 +21,8 @@ if rank == 0:
 #Define relevant directories
 input_dir = sys.argv[1]
 save_dir = sys.argv[2]
-if os.path.exists(save_dir) == False:
-    os.makedirs(save_dir)
     
 files = sorted(glob.glob(input_dir+"data/*/info*.txt"))
-gc.collect()
 
 #Get zoom_center from input
 center_pos = [np.nan, np.nan, np.nan]
