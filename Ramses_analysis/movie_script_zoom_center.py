@@ -85,8 +85,8 @@ for fn in yt.parallel_objects(files):
     fig, ax = plt.subplots()
     ax.set_xlabel("x (AU)", labelpad=-1, fontsize=12)
     ax.set_ylabel("y (AU)", fontsize=12) #, labelpad=-20
-    ax.set_xlim([-1*x_width/2, x_width/2])
-    ax.set_ylim([-1*x_width/2, x_width/2])
+    ax.set_xlim([np.min(X), np.max(X)])
+    ax.set_ylim([np.min(Y), np.max(Y)])
     
     cmap=plt.cm.gist_heat
     plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
