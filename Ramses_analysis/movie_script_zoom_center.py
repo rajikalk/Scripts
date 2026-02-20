@@ -95,7 +95,7 @@ for fn in yt.parallel_objects(files):
     plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
     plt.gca().set_aspect('equal')
     cbar = plt.colorbar(plot, pad=0.0)
-    if len(Part_in_region)>0
+    if len(Part_in_region)>0:
         ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
         ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
     save_name = save_dir + "file_frame_" + ("%06d" % fit)
