@@ -66,35 +66,39 @@ units_override.update({"mass_unit":(2998,"Msun")})
 #make projections
 for fn in yt.parallel_objects(files):
     fit = files.index(fn)
-    ds = yt.load(fn, units_override=units_override)
-    region = ds.box(left_corner, right_corner)
-    
-    time_val = ds.current_time.in_units('yr')
-    
-    Part_in_region = np.where((region['sink_particle_posx'].in_units('au')>particle_search_bounds_left[0])&(region['sink_particle_posx'].in_units('au')<particle_search_bounds_right[0])&(region['sink_particle_posy'].in_units('au')>particle_search_bounds_left[1])&(region['sink_particle_posy'].in_units('au')<particle_search_bounds_right[1])&(region['sink_particle_posz'].in_units('au')>particle_search_bounds_left[2])&(region['sink_particle_posz'].in_units('au')<particle_search_bounds_right[2]))[0]
-    if len(Part_in_region)>0:
-        print("DEBUG FROM FILE", fn)
-        import pdb
-        pdb.set_trace()
-    
-    proj = yt.ProjectionPlot(ds, 2, ('gas', 'Density'), data_source=region, method='integrate')
-    proj.set_buff_size([resolution, resolution])
-    proj_array = np.array((proj.frb.data[('gas', 'Density')]/x_width.in_units('cm')).in_units('g/cm**3'))
-    
-    plt.clf()
-    fig, ax = plt.subplots()
-    ax.set_xlabel("x (AU)", labelpad=-1, fontsize=12)
-    ax.set_ylabel("y (AU)", fontsize=12) #, labelpad=-20
-    ax.set_xlim([np.min(X), np.max(X)])
-    ax.set_ylim([np.min(Y), np.max(Y)])
-    
-    cmap=plt.cm.gist_heat
-    plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
-    plt.gca().set_aspect('equal')
-    cbar = plt.colorbar(plot, pad=0.0)
-    if len(Part_in_region)>0:
-        ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
-        ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
-    save_name = save_dir + "file_frame_" + ("%06d" % fit)
-    plt.savefig(save_name + ".jpg", format='jpg', bbox_inches='tight')
-    print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
+    save_name = save_dir + "file_frame_" + ("%06d" % fit)+".jpg"
+    if os.path.isfile(save_name) == False:
+        ds = yt.load(fn, units_override=units_override)
+        region = ds.box(left_corner, right_corner)
+        
+        time_val = ds.current_time.in_units('yr')
+        
+        Part_in_region = np.where((region['sink_particle_posx'].in_units('au')>particle_search_bounds_left[0])&(region['sink_particle_posx'].in_units('au')<particle_search_bounds_right[0])&(region['sink_particle_posy'].in_units('au')>particle_search_bounds_left[1])&(region['sink_particle_posy'].in_units('au')<particle_search_bounds_right[1])&(region['sink_particle_posz'].in_units('au')>particle_search_bounds_left[2])&(region['sink_particle_posz'].in_units('au')<particle_search_bounds_right[2]))[0]
+        if len(Part_in_region)>0:
+            print("DEBUG FROM FILE", fn)
+            import pdb
+            pdb.set_trace()
+        
+        proj = yt.ProjectionPlot(ds, 2, ('gas', 'Density'), data_source=region, method='integrate')
+        proj.set_buff_size([resolution, resolution])
+        proj_array = np.array((proj.frb.data[('gas', 'Density')]/x_width.in_units('cm')).in_units('g/cm**3'))
+        
+        plt.clf()
+        fig, ax = plt.subplots()
+        ax.set_xlabel("x (AU)", labelpad=-1, fontsize=12)
+        ax.set_ylabel("y (AU)", fontsize=12) #, labelpad=-20
+        ax.set_xlim([np.min(X), np.max(X)])
+        ax.set_ylim([np.min(Y), np.max(Y)])
+        
+        cmap=plt.cm.gist_heat
+        plot = ax.pcolormesh(X, Y, proj_array, cmap=cmap, norm=LogNorm(), rasterized=True, zorder=1)
+        plt.gca().set_aspect('equal')
+        cbar = plt.colorbar(plot, pad=0.0)
+        if len(Part_in_region)>0:
+            ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
+            ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
+        save_name = save_dir + "file_frame_" + ("%06d" % fit)
+        plt.savefig(save_name, format='jpg', bbox_inches='tight')
+        print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
+    else:
+        print(save_name, "already exists")
