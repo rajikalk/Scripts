@@ -10,6 +10,7 @@ import my_ramses_fields_short as myf
 import csv
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+import os
 
 rank = CW.Get_rank()
 size = CW.Get_size()
