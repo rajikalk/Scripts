@@ -98,7 +98,7 @@ for fn in yt.parallel_objects(files):
         if len(Part_in_region)>0:
             ax.scatter(sink_particle_posx, sink_particle_posy, color='c', s=0.5)
             ax.scatter(sink_particle_posx[most_recent_sink_pos], sink_particle_posy[most_recent_sink_pos], color='g', s=1)
-        save_name = save_dir + "file_frame_" + ("%06d" % fit)
+        save_name = save_dir + "file_frame_" + ("%06d" % fit)+".jpg"
         plt.savefig(save_name, format='jpg', bbox_inches='tight')
         print('Created frame on rank', rank, 'at time of', str(time_val), 'to save_dir:', save_name + '.jpg')
     else:
