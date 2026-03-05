@@ -246,9 +246,9 @@ plt.savefig(str(sink_ind)+'_luminosity_vs_time_sink.png')
 plt.clf()
 for part_it in range(2):
     if part_it == 0:
-        plt.plot(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+        plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
     else:
-        plt.plot(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
+        plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.legend()
