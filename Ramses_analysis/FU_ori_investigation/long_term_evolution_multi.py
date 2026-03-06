@@ -20,7 +20,7 @@ matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{d
 sink_inds = [45, 17, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 
 #
-plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30600, 75000]], '51' : [[16000, 30500], [30900, 75000]], '71' : [[7500, 38000]], '75' : [[16000, 17000], [19500, 21500], [22500, 24000], [27000, 750000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[5900, 75000]]}
+plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30600, 75000]], '51' : [[16000, 30500], [30900, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100], [14000, 17000], [18250, 18500], [19000, 24500], [27000, 75000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[1000, 2000], [21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[3000, 4000], [5900, 75000]]}
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -46,10 +46,10 @@ axs.flatten()[2].axhline(y=200, color='k', ls='--')
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
 for sink_ind in sink_inds:
-    pickle_file = '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_'+str(sink_ind)+'.pkl'
+    pickle_file = '/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
-        if os.path.isfile('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
-            file_open = open('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
+        if os.path.isfile('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
+            file_open = open('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
             smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
             file_open.close()
             
@@ -116,10 +116,10 @@ for sink_ind in sink_inds:
             axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
             
             print('updating pickle')
-            file = open('/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
+            file = open('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
-            print('Finished updating pickle', '/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
+            print('Finished updating pickle', '/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.8), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
