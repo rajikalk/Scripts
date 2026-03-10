@@ -117,6 +117,7 @@ if args.update_pickle == 'True':
             loaded_sink_data = rsink(datadir=path, all=True)
             loaded_sink_data = loaded_sink_data[counter:]
         gc.collect()
+        print("starting to update pickles")
         while len(loaded_sink_data)>0:
             sink_data = loaded_sink_data[0]
             loaded_sink_data = loaded_sink_data[1:]
