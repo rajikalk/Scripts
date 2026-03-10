@@ -123,7 +123,7 @@ if args.update_pickle == 'True':
             loaded_sink_data = loaded_sink_data[1:]
             gc.collect()
             counter = counter + 1
-            if np.remainder(counter, 1000) == 0:
+            if np.remainder(counter, 100) == 0:
                 try:
                     os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl')
                 except:
@@ -140,11 +140,11 @@ if args.update_pickle == 'True':
                 dy = sink_data['y']*units['length_unit'].in_units('au') - pos_second[1]
                 dz = sink_data['z']*units['length_unit'].in_units('au') - pos_second[2]
                 sep = np.sqrt(dx**2 + dy**2 + dz**2)
-                del dx, dy, dz
-                gc.collect()
+                #del dx, dy, dz
+                #gc.collect()
                 nearest_sink = np.argsort(sep)[1]
-                del sep
-                gc.collect()
+                #del sep
+                #gc.collect()
                 tags.append(nearest_sink)
                 
                 for tag in tags:
@@ -155,26 +155,26 @@ if args.update_pickle == 'True':
                 vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                 particle_data['secondary_position'].append(pos_second)
                 particle_data['secondary_velocity'].append(vel_second)
-                del vel_second
-                gc.collect()
+                #del vel_second
+                #gc.collect()
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
                 particle_data['separation'].append(separation)
-                del separation
-                gc.collect()
+                #del separation
+                #gc.collect()
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 particle_data['time'].append(time_val)
-                del time_val
-                gc.collect()
+                #del time_val
+                #gc.collect()
                 particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
                 
                 d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
-                del d_mass, d_time
-                gc.collect()
+                #del d_mass, d_time
+                #gc.collect()
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
                 print('read', counter)
