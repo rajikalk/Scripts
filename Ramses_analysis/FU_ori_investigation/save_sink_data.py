@@ -79,7 +79,7 @@ if args.update_pickle == 'True':
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating...')
-            del loaded_sink_data
+            #del loaded_sink_data
         except:
             os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl ')
             print("reading", 'particle_data_'+str(sink_ind)+'.pkl')
@@ -92,7 +92,7 @@ if args.update_pickle == 'True':
             if counter < len(loaded_sink_data):
                 updating = True
                 print('pickle data is not up to date! Updating...')
-            del loaded_sink_data
+            #del loaded_sink_data
     else:
         updating = True
         particle_data = {}
@@ -111,10 +111,15 @@ if args.update_pickle == 'True':
         
     if updating == True:
         print("Reading particle data")
-        loaded_sink_data = rsink(datadir=path, all=True)
-        loaded_sink_data = loaded_sink_data[counter:]
+        try:
+            loaded_sink_data = loaded_sink_data[counter:]
+            counter_limit = len(loaded_sink_data)
+        except:
+            loaded_sink_data = rsink(datadir=path, all=True)
+            loaded_sink_data = loaded_sink_data[counter:]
+            counter_limit = len(loaded_sink_data)
         gc.collect()
-        while counter < len(loaded_sink_data):
+        while counter < counter_limit:
             sink_data = loaded_sink_data[counter]
             loaded_sink_data = loaded_sink_data[1:]
             counter = counter + 1
