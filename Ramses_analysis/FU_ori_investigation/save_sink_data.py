@@ -121,7 +121,6 @@ if args.update_pickle == 'True':
         while len(loaded_sink_data)>0:
             sink_data = loaded_sink_data[0]
             loaded_sink_data = loaded_sink_data[1:]
-            gc.collect()
             counter = counter + 1
             if np.remainder(counter, 100) == 0:
                 try:
@@ -177,7 +176,7 @@ if args.update_pickle == 'True':
                 #gc.collect()
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
-                print('read', counter)
+                #print('read', counter)
         #write lastest pickle
         file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
