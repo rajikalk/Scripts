@@ -112,16 +112,13 @@ if args.update_pickle == 'True':
     if updating == True:
         try:
             loaded_sink_data = loaded_sink_data[counter:]
-            counter_limit = len(loaded_sink_data)
         except:
             print("Reading particle data")
             loaded_sink_data = rsink(datadir=path, all=True)
             loaded_sink_data = loaded_sink_data[counter:]
-            counter_limit = len(loaded_sink_data)
         gc.collect()
-        while counter < counter_limit:
-            sink_data = loaded_sink_data[counter]
-            loaded_sink_data = loaded_sink_data[1:]
+        while len(loaded_sink_data)>0:
+            sink_data = loaded_sink_data[::-1].pop()
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
                 try:
