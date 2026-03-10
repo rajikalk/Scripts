@@ -121,7 +121,9 @@ if args.update_pickle == 'True':
             loaded_sink_data = loaded_sink_data[counter:]
         gc.collect()
         while len(loaded_sink_data)>0:
-            sink_data = loaded_sink_data[::-1].pop()
+            sink_data = loaded_sink_data[0]
+            loaded_sink_data = loaded_sink_data[1:]
+            gc.collect()
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
                 try:
