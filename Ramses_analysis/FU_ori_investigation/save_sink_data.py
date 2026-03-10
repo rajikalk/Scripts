@@ -108,9 +108,6 @@ if args.update_pickle == 'True':
         sink_form_time = 0
         
     gc.collect()
-    
-    import pdb
-    pdb.set_trace()
         
     if updating == True:
         try:
