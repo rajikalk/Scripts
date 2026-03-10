@@ -110,11 +110,11 @@ if args.update_pickle == 'True':
     gc.collect()
         
     if updating == True:
-        print("Reading particle data")
         try:
             loaded_sink_data = loaded_sink_data[counter:]
             counter_limit = len(loaded_sink_data)
         except:
+            print("Reading particle data")
             loaded_sink_data = rsink(datadir=path, all=True)
             loaded_sink_data = loaded_sink_data[counter:]
             counter_limit = len(loaded_sink_data)
