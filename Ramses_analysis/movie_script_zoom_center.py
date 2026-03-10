@@ -45,21 +45,21 @@ x = np.linspace(center_pos[0]-1*x_width/2, center_pos[0]+x_width/2, resolution)
 y = np.linspace(center_pos[1]-1*x_width/2, center_pos[1]+x_width/2, resolution)
 X, Y = np.meshgrid(x, y)
 left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width.value), center_pos[1].value-(0.5*x_width.value), center_pos[2].value-(0.5*x_width.value)], 'AU')
-particle_search_bounds_left= []
-for left_ind in left_corner:
-    if left_ind > 0:
-        particle_search_bounds_left.append(left_ind)
-    else:
-        append_val = yt.YTQuantity(4, 'pc').in_units('au')+left_ind
-        particle_search_bounds_left.append(append_val)
+particle_search_bounds_left= left_corner #[]
+#for left_ind in left_corner:
+#    if left_ind > 0:
+#        particle_search_bounds_left.append(left_ind)
+#    else:
+#        append_val = yt.YTQuantity(4, 'pc').in_units('au')+left_ind
+#        particle_search_bounds_left.append(append_val)
 right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width.value), center_pos[1].value+(0.5*x_width.value), center_pos[2].value+(0.5*x_width.value)], 'AU')
-particle_search_bounds_right= []
-for right_ind in right_corner:
-    if right_ind > 0:
-        particle_search_bounds_right.append(right_ind)
-    else:
-        append_val = yt.YTQuantity(4, 'pc').in_units('au')+right_ind
-        particle_search_bounds_right.append(append_val)
+particle_search_bounds_right= right_corner #[]
+#for right_ind in right_corner:
+#    if right_ind > 0:
+#        particle_search_bounds_right.append(right_ind)
+#    else:
+#        append_val = yt.YTQuantity(4, 'pc').in_units('au')+right_ind
+#        particle_search_bounds_right.append(append_val)
 
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
 units_override.update({"mass_unit":(2998,"Msun")})
