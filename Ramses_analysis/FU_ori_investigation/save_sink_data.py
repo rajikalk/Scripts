@@ -122,7 +122,7 @@ if args.update_pickle == 'True':
                 except:
                     print("pickle files doesn't exist yet")
                 file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
-                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
                 file.close()
                 os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
@@ -173,7 +173,7 @@ if args.update_pickle == 'True':
                 #print('read', counter)
         #write lastest pickle
         file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
-        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
         file.close()
         os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
