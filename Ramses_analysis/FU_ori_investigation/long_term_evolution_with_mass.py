@@ -227,7 +227,7 @@ axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 print('plotted time [40000, 50000]')
 
-plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_mass_1.pdf', bbox_inches='tight', pad_inches=0.02)
 
 
 plt.clf()
@@ -335,7 +335,7 @@ axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 print('plotted time [90000, 100000]')
 
-plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_2.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_mass_2.pdf', bbox_inches='tight', pad_inches=0.02)
 
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
@@ -442,4 +442,4 @@ axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
 print('plotted time [130000, 140000]')
 
-plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_3.pdf', bbox_inches='tight', pad_inches=0.02)
+plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_mass_3.pdf', bbox_inches='tight', pad_inches=0.02)

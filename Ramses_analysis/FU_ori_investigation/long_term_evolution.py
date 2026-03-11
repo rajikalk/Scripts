@@ -218,3 +218,105 @@ print('plotted time [40000, 50000]')
 
 plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 
+
+plt.clf()
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
+#plt.subplots_adjust(wspace=0.0)
+#plt.subplots_adjust(hspace=0.0)
+
+lns1 = axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0], label='Candidate luminosity')
+first_comp = True
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
+    ltot_curr[diff_inds] = np.nan
+    if first_comp == True:
+        lns2 = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        first_comp = False
+    else:
+        axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+axs.flatten()[0].set_xlim([50000, 60000])
+axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
+axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
+ax0 = axs.flatten()[0].twinx()
+lns3 = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25, label="Separation")
+lns = lns1+lns2+lns3
+labs = [l.get_label() for l in lns]
+axs.flatten()[0].legend(lns, labs, loc='lower left')
+ax0.set_ylabel('Separation (AU)')
+ax0.set_ylim([5,1000])
+ax0.tick_params(axis='both', direction='in', top=True)
+print('plotted time [50000, 60000]')
+
+axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
+    ltot_curr[diff_inds] = np.nan
+    axs.flatten()[1].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+axs.flatten()[1].set_xlim([60000, 70000])
+axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
+axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
+ax1 = axs.flatten()[1].twinx()
+ax1.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
+ax1.set_ylabel('Separation (AU)')
+ax1.set_ylim([5,1000])
+ax1.tick_params(axis='both', direction='in', top=True)
+print('plotted time [60000, 70000]')
+
+axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
+    ltot_curr[diff_inds] = np.nan
+    axs.flatten()[2].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+axs.flatten()[2].set_xlim([70000, 80000])
+axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
+axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
+ax2 = axs.flatten()[2].twinx()
+ax2.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
+ax2.set_ylabel('Separation (AU)')
+ax2.set_ylim([5,1000])
+ax2.tick_params(axis='both', direction='in', top=True)
+print('plotted time [70000, 80000]')
+
+axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
+    ltot_curr[diff_inds] = np.nan
+    axs.flatten()[3].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+axs.flatten()[3].set_xlim([80000, 90000])
+axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
+axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
+ax3 = axs.flatten()[3].twinx()
+ax3.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
+ax3.set_ylabel('Separation (AU)')
+ax3.set_ylim([5,1000])
+ax3.tick_params(axis='both', direction='in', top=True)
+print('plotted time [80000, 90000]')
+
+axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
+for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+    ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
+    ltot_curr[diff_inds] = np.nan
+    axs.flatten()[4].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
+axs.flatten()[4].set_xlim([90000, 100000])
+axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
+axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
+ax4 = axs.flatten()[4].twinx()
+ax4.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25)
+ax4.set_ylabel('Separation (AU)')
+ax4.set_ylim([5,1000])
+ax4.tick_params(axis='both', direction='in', top=True)
+axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
+#axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
+print('plotted time [90000, 100000]')
+
+plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_2.pdf', bbox_inches='tight', pad_inches=0.02)
