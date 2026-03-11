@@ -157,7 +157,7 @@ if args.update_pickle == 'True':
                     particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
                 else:
                     break
-        print("Finished saving Sink 45 data")
+        print("Finished saving Sink data")
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
