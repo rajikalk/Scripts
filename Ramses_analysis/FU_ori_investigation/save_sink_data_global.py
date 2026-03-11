@@ -114,7 +114,7 @@ if args.update_pickle == 'True':
                 except:
                     print("pickle files doesn't exist yet")
                 file = open(save_dir+'particle_data.pkl', 'wb')
-                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
                 file.close()
                 os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
@@ -160,7 +160,7 @@ if args.update_pickle == 'True':
         print("Finished saving Sink 45 data")
         #write lastest pickle
         file = open(save_dir+'particle_data.pkl', 'wb')
-        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
         file.close()
         os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
@@ -218,5 +218,5 @@ ltot_sec = lacc_sec.in_units('lsun') + lstar_baraffe_sec
 particle_data.update({'ltot':[ltot_prim, ltot_sec]})
 
 file = open(save_dir+'particle_data.pkl', 'wb')
-pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
 file.close()
