@@ -347,7 +347,7 @@ if args.make_frames_only == 'False':
             try:
                 pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
             except:
-                print("F")
+                print("Failed on fn", fn, "and file_int", file_int)
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         elif os.path.isfile(pickle_file) == True:
