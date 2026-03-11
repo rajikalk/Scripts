@@ -38,9 +38,9 @@ save_dir = sys.argv[1]
 #    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
 
 if args.sink_id == None:
-    global_pickle = "/g/data/ek9/rlk100/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_global.pkl"
+    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_global.pkl"
 else:
-    global_pickle = "/g/data/ek9/rlk100/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_"+str(args.sink_id)+".pkl"
+    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_"+str(args.sink_id)+".pkl"
     
 print('global pickle:', global_pickle)
 file_open = open(global_pickle, 'rb')
