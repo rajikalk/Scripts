@@ -782,6 +782,7 @@ import matplotlib.pyplot as plt
 #plt.rcParams['figure.dpi'] = 300
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
+plt.rcParams['text.usetex'] = False
 
 sys.stdout.flush()
 CW.Barrier()
