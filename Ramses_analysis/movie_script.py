@@ -344,7 +344,10 @@ if args.make_frames_only == 'False':
         elif len(args.movie_times) > 0:
             pickle_file = save_dir + "time_" + str(float(m_times[file_int])) +".pkl"
         else:
-            pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+            try:
+                pickle_file = save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl"
+            except:
+                print("F")
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         elif os.path.isfile(pickle_file) == True:
@@ -724,7 +727,7 @@ if args.make_frames_only == 'False':
                 file = open(pickle_file, 'wb')
                 pickle.dump((X_image, Y_image, image, magx, magy, X_image_vel, Y_image_vel, velx, vely, velz, part_info, args_dict, simfo), file)
                 file.close()
-                print("Created Pickle:", pickle_file, "for  file:", str(ds), "on rank", rank)
+                print("Created Pickle:", pickle_file, "of", no_frames, "frames for  file:", str(ds), "on rank", rank)
                 del image
                 del magx
                 del magy
@@ -759,7 +762,7 @@ if args.make_frames_only == 'False':
         print('Finished copying pickles that use the same file for the same frame')
     
     del usable_files
-    del frames
+    #del frames
 sys.stdout.flush()
 CW.Barrier()
 
