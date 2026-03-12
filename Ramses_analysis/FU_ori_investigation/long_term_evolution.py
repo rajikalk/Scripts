@@ -32,10 +32,15 @@ matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{d
 
 args = parse_inputs()
 save_dir = sys.argv[1]
+#if args.sink_id == None:
+#    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+#else:
+#    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
+
 if args.sink_id == None:
-    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_global.pkl"
 else:
-    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
+    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_"+str(args.sink_id)+".pkl"
 print('global pickle:', global_pickle)
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
