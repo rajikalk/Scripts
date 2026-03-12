@@ -66,7 +66,7 @@ if args.update_pickle == 'True':
     
     if os.path.isfile('particle_data.pkl'):
         try:
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -74,8 +74,8 @@ if args.update_pickle == 'True':
                 updating = True
                 print('pickle data is not up to date! Updating...')
         except:
-            os.system('cp '+save_dir+'particle_data_tmp.pkl '+save_dir+'particle_data.pkl ')
-            file_open = open(save_dir+'particle_data.pkl', 'rb')
+            os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl_tmp.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl.pkl ')
+            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl.pkl', 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
             counter = int(counter)
@@ -110,7 +110,7 @@ if args.update_pickle == 'True':
             counter = counter + 1
             if np.remainder(counter, 1000) == 0:
                 try:
-                    os.remove(save_dir+'particle_data.pkl')
+                    os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl.pkl')
                 except:
                     print("pickle files doesn't exist yet")
                 file = open(save_dir+'particle_data.pkl', 'wb')
@@ -159,10 +159,10 @@ if args.update_pickle == 'True':
                 #    break
         print("Finished saving Sink data")
         #write lastest pickle
-        file = open(save_dir+'particle_data.pkl', 'wb')
+        file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
         file.close()
-        os.system('cp '+save_dir+'particle_data.pkl '+save_dir+'particle_data_tmp.pkl ')
+        os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'.pkl_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
                 
 
@@ -173,7 +173,7 @@ Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.
 #Derive a stellar luminosity
 lstar_baraffe_prim = []
 rstar_barrafe_prim = []
-for mass_val in particle_data['mass'].T[0]:
+for mass_val in np.array(particle_data['mass']).T[0]:
     if mass_val < Baraffe_mass[0]:
         lstar_baraffe_prim.append(10**Baraffe_logL[0])
         rstar_barrafe_prim.append(Baraffe_radius[0])
@@ -217,6 +217,6 @@ ltot_sec = lacc_sec.in_units('lsun') + lstar_baraffe_sec
 
 particle_data.update({'ltot':[ltot_prim, ltot_sec]})
 
-file = open(save_dir+'particle_data.pkl', 'wb')
+file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
 pickle.dump((particle_data, counter, sink_ind, sink_form_time), file, protocol=pickle.HIGHEST_PROTOCOL)
 file.close()
