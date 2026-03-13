@@ -94,6 +94,9 @@ for tag in target_times.keys():
                         #if current time lower than target, then get mid index between the current and highest ind
                         low_ind = mid_ind
                         mid_ind = int(np.mean([mid_ind, high_ind]))
+                    else:
+                        import pdb
+                        pdb.set_trace()
                     
                     if low_ind == mid_ind:
                         if curr_time > prev_flush_time:
