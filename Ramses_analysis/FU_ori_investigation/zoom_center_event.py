@@ -6,7 +6,7 @@ import csv
 
 sink_id = sys.argv[1]
 
-fname = '/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl'
+fname = '/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/stars_red_512.pkl'
 glob_data = open(fname, 'rb')
 sink_data = pickle.load(glob_data)
 glob_data.close()
