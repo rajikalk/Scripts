@@ -22,6 +22,6 @@ with open(file, "r") as f:
             break
 
 curr_it = np.argmin(abs(sink_data['time'].T[0] - curr_time))
-import pdb
-pdb.set_trace()
+position = [sink_data['x'].T[sink_id][curr_it], sink_data['y'].T[sink_id][curr_it], sink_data['z'].T[sink_id][curr_it]]
+print("zoom center = ", position)
  
