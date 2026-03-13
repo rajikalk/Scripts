@@ -3,6 +3,9 @@
 import glob
 import yt
 import my_ramses_fields_short as myf
+import sys
+
+sink_id = sys.argv[1]
 
 file = sorted(glob.glob('data/*/info*txt'))[0]
 
@@ -10,4 +13,7 @@ units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "tim
 
 ds = yt.load(file, units_override=units_override)
 dd = ds.all_data()
+
+import pdb
+pdb.set_trace()
  
