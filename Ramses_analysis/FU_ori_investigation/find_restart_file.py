@@ -56,15 +56,19 @@ for key in units_override.keys():
     
 loaded_sink_data = rsink(datadir=path, all=True)
 for tag in target_times.keys():
+    print('Searching for restart for sink', tag)
     sink_ind = int(tag)
     sink_form_time = 0
+    counter = -1
     for sink_data in loaded_sink_data:
+        counter = counter + 1
         if len(sink_data['tcreate']) > sink_ind:
             if sink_form_time == 0:
                 sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                     
             time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
             if time_val >= yt.YTQuantity(target_times[tag], 'yr'):
+                trunc_ind = counter
                 prev_flush_time = sink_data['tflush']
                 
                 #binary search for file
@@ -94,6 +98,7 @@ for tag in target_times.keys():
                     if low_ind == mid_ind:
                         if curr_time > prev_flush_time:
                             restart_file = info_files[mid_ind]
+                            loaded_sink_data = loaded_sink_data[counter:]
                             found = True
                     elif high_ind == mid_ind:
                         import pdb
