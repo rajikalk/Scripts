@@ -104,6 +104,11 @@ for tag in target_times.keys():
                             restart_file = info_files[mid_ind]
                             loaded_sink_data = loaded_sink_data[counter:]
                             found = True
+                        else:
+                            mid_ind = mid_ind - 1
+                            restart_file = info_files[mid_ind]
+                            loaded_sink_data = loaded_sink_data[counter:]
+                            found = True
                     elif high_ind == mid_ind:
                         import pdb
                         pdb.set_trace()
