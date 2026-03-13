@@ -4,8 +4,9 @@ import glob
 import sys
 import csv
 import pickle
+import numpy as np
 
-sink_id = sys.argv[1]
+sink_id = int(sys.argv[1])
 
 fname = '/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/stars_red_512.pkl'
 glob_data = open(fname, 'rb')
@@ -20,6 +21,7 @@ with open(file, "r") as f:
             curr_time = eval(row[-1])
             break
 
+curr_it = np.argmin(abs(sink_data['time'].T[0] - curr_time))
 import pdb
 pdb.set_trace()
  
