@@ -55,6 +55,7 @@ for key in units_override.keys():
     
 loaded_sink_data = rsink(datadir=path, all=True)
 for tag in target_times.keys():
+    sink_form_time = 0
     if len(sink_data['tcreate']) > ind(tag):
         if sink_form_time == 0:
             sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
