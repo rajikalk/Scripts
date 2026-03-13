@@ -109,7 +109,7 @@ if args.update_pickle == 'True':
                     if args.end_time_val is None:
                         end_time_val = loaded_sink_data[-1]['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                     else:
-                        end_time_val = yt.YTQuantity(arg.end_time_val, 'yr')
+                        end_time_val = yt.YTQuantity(args.end_time_val, 'yr')
                 
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 if time_val < end_time_val:
