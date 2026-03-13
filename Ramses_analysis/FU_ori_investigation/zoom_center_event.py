@@ -3,6 +3,7 @@
 import glob
 import sys
 import csv
+import pickle
 
 sink_id = sys.argv[1]
 
