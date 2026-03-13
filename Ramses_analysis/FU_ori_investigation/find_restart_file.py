@@ -7,6 +7,7 @@ import os
 import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
+import csv
 
 def parse_inputs():
     import argparse
