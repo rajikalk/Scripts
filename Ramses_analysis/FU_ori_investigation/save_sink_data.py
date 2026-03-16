@@ -7,6 +7,14 @@ import os
 import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 def parse_inputs():
     import argparse
@@ -126,6 +134,106 @@ if args.update_pickle == 'True':
                 file.close()
                 os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
+                
+                #make progress plots
+                f_acc = 0.5
+                radius = yt.YTQuantity(2.0, 'rsun')
+                #M_dot = accretion(sink_inds, global_ind)
+                #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
+                m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
+                mass = yt.YTArray(particle_data['mass']).in_units('g')
+                L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
+                L_tot = L_acc.in_units('Lsun')
+
+                Mag = -2.5*np.log10(L_tot)
+
+                plt.clf()
+                for part_it in range(2):
+                    if part_it == 0:
+                        plt.plot(particle_data['time'], Mag.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                    else:
+                        plt.plot(particle_data['time'], Mag.T[part_it], label="Nearest_sink")
+                plt.gca().invert_yaxis()
+                plt.xlabel('Time (yr)')
+                plt.xlim()
+                plt.ylabel('Magnitude (M$_{bol}$)')
+                plt.legend()
+                plt.title('Sink no ' + str(sink_ind))
+                plt.savefig(str(sink_ind)+'_magnitude_vs_time_sink.png')
+
+                plt.clf()
+                for part_it in range(2):
+                    if part_it == 0:
+                        plt.plot(particle_data['time'], L_tot.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                    else:
+                        plt.plot(particle_data['time'], L_tot.T[part_it], label="Nearest_sink")
+                plt.xlabel('Time (yr)')
+                plt.xlim()
+                plt.legend()
+                plt.ylabel('Luminosity (Lsun)')
+                plt.title('Sink no ' + str(sink_ind))
+                plt.savefig(str(sink_ind)+'_luminosity_vs_time_sink.png')
+
+
+                plt.clf()
+                for part_it in range(2):
+                    if part_it == 0:
+                        plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                    else:
+                        plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
+                plt.xlabel('Time (yr)')
+                plt.xlim()
+                plt.legend()
+                plt.ylabel('Accretion rate (Msun/yr)')
+                plt.title('Sink no ' + str(sink_ind))
+                plt.savefig(str(sink_ind)+'_accretion_vs_time_sink.png')
+
+                plt.clf()
+                for part_it in range(2):
+                    if part_it == 0:
+                        plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                    else:
+                        plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Nearest_sink")
+                plt.xlabel('Time (yr)')
+                plt.xlim()
+                plt.legend()
+                plt.ylabel('Mass (Msun)')
+                plt.title('Sink no ' + str(sink_ind))
+                plt.savefig(str(sink_ind)+'_mass_vs_time_sink.png')
+
+                L = yt.YTQuantity(4, 'pc')
+                curr_dir = os.getcwd()
+                if 'Level' not in curr_dir:
+                    refinement = 18
+                else:
+                    refinement = int(curr_dir.split('Level_')[-1][:2])
+                d_min = L.in_units('au')/(2**refinement)
+                plt.clf()
+                plt.semilogy(particle_data['time'], particle_data['separation'])
+                plt.axhline(y=8*d_min, color='r', linestyle=':')
+                plt.axhline(y=4*d_min, color='r', linestyle='--')
+                plt.axhline(y=d_min, color='r')
+                plt.xlabel('Time (yr)')
+                plt.xlim()
+                plt.ylabel('Separation (AU)')
+                plt.title('Sink no ' + str(sink_ind))
+                plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
+
+                if sink_ind == 45:
+                    start_time = 3500
+                    start_ind = np.argmin(abs(np.array(particle_data['time']) - start_time))
+                    end_time = 8500
+                    end_ind = np.argmin(abs(np.array(particle_data['time']) - end_time))
+                    plt.clf()
+                    plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
+                    plt.xlabel('Time (yr)')
+                    plt.xlim()
+                    plt.ylim(bottom=1.e-7)
+                    plt.ylabel('Accretion rate (Msun/yr)')
+                    plt.title('Sink no ' + str(sink_ind))
+                    plt.tick_params(axis='both', which='major', right=True, direction='in')
+                    plt.tick_params(axis='both', which='minor', right=True, direction='in')
+                    plt.savefig(str(sink_ind)+'_accretion_vs_time_sink_trunc_3500.png')
             if len(sink_data['u']) > sink_ind:
                 tags = [sink_ind]
                 pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
@@ -174,15 +282,6 @@ if args.update_pickle == 'True':
         file.close()
         os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl ')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
-             
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.colors as mcolors
-import matplotlib.cm as cm
-
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
 
 if 'particle_data' not in locals():
     if args.sink_number == None:
