@@ -380,7 +380,7 @@ plt.axhline(y=d_min, color='r')
 plt.xlabel('Time (yr)')
 plt.xlim()
 plt.ylabel('Separation (AU)')
-plt.title('Sink no ' + str(sink_ind))
+plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
 plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
 
 if sink_ind == 45:
