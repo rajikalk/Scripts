@@ -5,6 +5,7 @@ yt.enable_parallelism()
 from pyramses import rsink
 import numpy as np
 from mpi4py.MPI import COMM_WORLD as CW
+import matplotlib.pyplot as plt
 
 rank = CW.Get_rank()
 size = CW.Get_size()
