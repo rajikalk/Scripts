@@ -105,8 +105,8 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
-        particle_data.update({'secondary_position':[]})
-        particle_data.update({'secondary_velocity':[]})
+        #particle_data.update({'secondary_position':[]})
+        #particle_data.update({'secondary_velocity':[]})
         
         counter = 0
         sink_form_time = 0
@@ -237,9 +237,9 @@ if args.update_pickle == 'True':
                         particle_data['particle_tag'].append(tag)
                 
                 pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
-                vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                particle_data['secondary_position'].append(pos_second)
-                particle_data['secondary_velocity'].append(vel_second)
+                #vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                #particle_data['secondary_position'].append(pos_second)
+                #particle_data['secondary_velocity'].append(vel_second)
                 #del vel_second
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
