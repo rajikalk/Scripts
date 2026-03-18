@@ -84,10 +84,14 @@ for path in Cleaned_dirs:
                 file_open.close()
                 counter = int(counter)
                 print("Reading particle data")
-                loaded_sink_data = rsink(datadir=path, all=True)
-                if counter < len(loaded_sink_data):
-                    updating = True
-                    print('pickle data is not up to date! Updating...')
+                try:
+                    loaded_sink_data = rsink(datadir=path, all=True)
+                    if counter < len(loaded_sink_data):
+                        updating = True
+                        print('pickle data is not up to date! Updating...')
+                except:
+                    print("NO SINK DATA FOR", path, "ON RANK", rank)
+                    updating = False
                 #del loaded_sink_data
         else:
             updating = True
