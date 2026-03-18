@@ -252,86 +252,87 @@ for path in Cleaned_dirs:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
 
-        f_acc = 0.5
-        radius = yt.YTQuantity(2.0, 'rsun')
-        #M_dot = accretion(sink_inds, global_ind)
-        #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-        m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
-        mass = yt.YTArray(particle_data['mass']).in_units('g')
-        L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
-        L_tot = L_acc.in_units('Lsun')
+        if len(particle_data['mass'])>0:
+            f_acc = 0.5
+            radius = yt.YTQuantity(2.0, 'rsun')
+            #M_dot = accretion(sink_inds, global_ind)
+            #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
+            m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
+            mass = yt.YTArray(particle_data['mass']).in_units('g')
+            L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
+            L_tot = L_acc.in_units('Lsun')
 
-        Mag = -2.5*np.log10(L_tot)
+            Mag = -2.5*np.log10(L_tot)
 
-        plt.clf()
-        for part_it in range(2):
-            if part_it == 0:
-                plt.plot(particle_data['time'], Mag.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+            plt.clf()
+            for part_it in range(2):
+                if part_it == 0:
+                    plt.plot(particle_data['time'], Mag.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                else:
+                    plt.plot(particle_data['time'], Mag.T[part_it], label="Nearest_sink")
+            plt.gca().invert_yaxis()
+            plt.xlabel('Time (yr)')
+            plt.xlim()
+            plt.ylabel('Magnitude (M$_{bol}$)')
+            plt.legend()
+            plt.title('Sink no ' + str(sink_ind))
+            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
+
+            plt.clf()
+            for part_it in range(2):
+                if part_it == 0:
+                    plt.plot(particle_data['time'], L_tot.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                else:
+                    plt.plot(particle_data['time'], L_tot.T[part_it], label="Nearest_sink")
+            plt.xlabel('Time (yr)')
+            plt.xlim()
+            plt.legend()
+            plt.ylabel('Luminosity (Lsun)')
+            plt.title('Sink no ' + str(sink_ind))
+            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
+
+
+            plt.clf()
+            for part_it in range(2):
+                if part_it == 0:
+                    plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                else:
+                    plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
+            plt.xlabel('Time (yr)')
+            plt.xlim()
+            plt.legend()
+            plt.ylabel('Accretion rate (Msun/yr)')
+            plt.title('Sink no ' + str(sink_ind))
+            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
+
+            plt.clf()
+            for part_it in range(2):
+                if part_it == 0:
+                    plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
+                else:
+                    plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Nearest_sink")
+            plt.xlabel('Time (yr)')
+            plt.xlim()
+            plt.legend()
+            plt.ylabel('Mass (Msun)')
+            plt.title('Sink no ' + str(sink_ind))
+            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
+
+            L = yt.YTQuantity(4, 'pc')
+            curr_dir = os.getcwd()
+            if 'Level' not in curr_dir:
+                refinement = 18
             else:
-                plt.plot(particle_data['time'], Mag.T[part_it], label="Nearest_sink")
-        plt.gca().invert_yaxis()
-        plt.xlabel('Time (yr)')
-        plt.xlim()
-        plt.ylabel('Magnitude (M$_{bol}$)')
-        plt.legend()
-        plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
-
-        plt.clf()
-        for part_it in range(2):
-            if part_it == 0:
-                plt.plot(particle_data['time'], L_tot.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-            else:
-                plt.plot(particle_data['time'], L_tot.T[part_it], label="Nearest_sink")
-        plt.xlabel('Time (yr)')
-        plt.xlim()
-        plt.legend()
-        plt.ylabel('Luminosity (Lsun)')
-        plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
-
-
-        plt.clf()
-        for part_it in range(2):
-            if part_it == 0:
-                plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-            else:
-                plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
-        plt.xlabel('Time (yr)')
-        plt.xlim()
-        plt.legend()
-        plt.ylabel('Accretion rate (Msun/yr)')
-        plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
-
-        plt.clf()
-        for part_it in range(2):
-            if part_it == 0:
-                plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-            else:
-                plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Nearest_sink")
-        plt.xlabel('Time (yr)')
-        plt.xlim()
-        plt.legend()
-        plt.ylabel('Mass (Msun)')
-        plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
-
-        L = yt.YTQuantity(4, 'pc')
-        curr_dir = os.getcwd()
-        if 'Level' not in curr_dir:
-            refinement = 18
-        else:
-            refinement = int(curr_dir.split('Level_')[-1][:2])
-        d_min = L.in_units('au')/(2**refinement)
-        plt.clf()
-        plt.semilogy(particle_data['time'], particle_data['separation'])
-        plt.axhline(y=8*d_min, color='r', linestyle=':')
-        plt.axhline(y=4*d_min, color='r', linestyle='--')
-        plt.axhline(y=d_min, color='r')
-        plt.xlabel('Time (yr)')
-        plt.xlim()
-        plt.ylabel('Separation (AU)')
-        plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
-        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
+                refinement = int(curr_dir.split('Level_')[-1][:2])
+            d_min = L.in_units('au')/(2**refinement)
+            plt.clf()
+            plt.semilogy(particle_data['time'], particle_data['separation'])
+            plt.axhline(y=8*d_min, color='r', linestyle=':')
+            plt.axhline(y=4*d_min, color='r', linestyle='--')
+            plt.axhline(y=d_min, color='r')
+            plt.xlabel('Time (yr)')
+            plt.xlim()
+            plt.ylabel('Separation (AU)')
+            plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
+            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
 
