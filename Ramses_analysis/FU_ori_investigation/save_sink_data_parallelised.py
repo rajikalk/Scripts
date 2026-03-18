@@ -83,6 +83,7 @@ for path in Cleaned_dirs:
             particle_data.update({'mass':[]})
             particle_data.update({'mdot':[]})
             particle_data.update({'separation':[]})
+            loaded_sink_data = rsink(datadir=path, all=True)
             #particle_data.update({'secondary_position':[]})
             #particle_data.update({'secondary_velocity':[]})
             
@@ -90,12 +91,7 @@ for path in Cleaned_dirs:
             sink_form_time = 0
             
         if updating == True:
-            try:
-                loaded_sink_data = loaded_sink_data[counter:]
-            except:
-                print("Reading particle data")
-                loaded_sink_data = rsink(datadir=path, all=True)
-                loaded_sink_data = loaded_sink_data[counter:]
+            loaded_sink_data = loaded_sink_data[counter:]
 
             print("starting to update pickles, current counter=", counter)
             while len(loaded_sink_data)>0:
