@@ -1,6 +1,7 @@
 import os
 import pickle
 from mpi4py.MPI import COMM_WORLD as CW
+import yt
 
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -135,7 +136,7 @@ for path in Cleaned_dirs:
                             plt.ylabel('Magnitude (M$_{bol}$)')
                             plt.legend()
                             plt.title('Sink no ' + str(sink_ind))
-                            plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
+                            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
 
                             plt.clf()
                             for part_it in range(2):
@@ -148,7 +149,7 @@ for path in Cleaned_dirs:
                             plt.legend()
                             plt.ylabel('Luminosity (Lsun)')
                             plt.title('Sink no ' + str(sink_ind))
-                            plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
+                            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
 
 
                             plt.clf()
@@ -162,7 +163,7 @@ for path in Cleaned_dirs:
                             plt.legend()
                             plt.ylabel('Accretion rate (Msun/yr)')
                             plt.title('Sink no ' + str(sink_ind))
-                            plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
+                            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
 
                             plt.clf()
                             for part_it in range(2):
@@ -175,7 +176,7 @@ for path in Cleaned_dirs:
                             plt.legend()
                             plt.ylabel('Mass (Msun)')
                             plt.title('Sink no ' + str(sink_ind))
-                            plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
+                            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
 
                             L = yt.YTQuantity(4, 'pc')
                             curr_dir = os.getcwd()
@@ -193,7 +194,7 @@ for path in Cleaned_dirs:
                             plt.xlim()
                             plt.ylabel('Separation (AU)')
                             plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
-                            plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
+                            plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
 
                     if len(sink_data['u']) > sink_ind:
                         tags = [sink_ind]
@@ -283,7 +284,7 @@ for path in Cleaned_dirs:
         plt.ylabel('Magnitude (M$_{bol}$)')
         plt.legend()
         plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
+        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
 
         plt.clf()
         for part_it in range(2):
@@ -296,7 +297,7 @@ for path in Cleaned_dirs:
         plt.legend()
         plt.ylabel('Luminosity (Lsun)')
         plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
+        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_luminosity_vs_time_sink.png')
 
 
         plt.clf()
@@ -310,7 +311,7 @@ for path in Cleaned_dirs:
         plt.legend()
         plt.ylabel('Accretion rate (Msun/yr)')
         plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
+        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
 
         plt.clf()
         for part_it in range(2):
@@ -323,7 +324,7 @@ for path in Cleaned_dirs:
         plt.legend()
         plt.ylabel('Mass (Msun)')
         plt.title('Sink no ' + str(sink_ind))
-        plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
+        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_mass_vs_time_sink.png')
 
         L = yt.YTQuantity(4, 'pc')
         curr_dir = os.getcwd()
@@ -341,5 +342,5 @@ for path in Cleaned_dirs:
         plt.xlim()
         plt.ylabel('Separation (AU)')
         plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
-        plt.savefig(pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
+        plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
 
