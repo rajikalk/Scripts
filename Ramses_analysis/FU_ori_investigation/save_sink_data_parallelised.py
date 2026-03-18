@@ -2,6 +2,7 @@ import os
 import pickle
 from mpi4py.MPI import COMM_WORLD as CW
 import yt
+from pyramses import rsink
 
 rank = CW.Get_rank()
 size = CW.Get_size()
