@@ -1,5 +1,5 @@
 import yt
-yt.enable_parallelism()
+#yt.enable_parallelism()
 import glob
 import numpy as np
 import sys
