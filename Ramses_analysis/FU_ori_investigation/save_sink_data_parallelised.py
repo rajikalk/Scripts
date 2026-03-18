@@ -28,6 +28,9 @@ zoom_directory = "/home/100/rlk100/rlk/RAMSES/Zoom-in/"
 Sim_dirs = [x[0] for x in os.walk(zoom_directory)]
 Cleaned_dirs = []
 for sim_dir in Sim_dirs:
+    if 'Restart' in sim_dir:
+        import pdb
+        pdb.set_trace()
     if sim_dir[-4:] == 'data':
         Cleaned_dirs.append(sim_dir)
 del Sim_dirs
