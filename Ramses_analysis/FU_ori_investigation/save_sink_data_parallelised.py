@@ -1,11 +1,20 @@
-import os
+import numpy as np
 import pickle
+from pyramses import rsink
+import os
 import yt
 yt.enable_parallelism()
-from pyramses import rsink
-import numpy as np
-from mpi4py.MPI import COMM_WORLD as CW
+import yt.units
+from yt.units import g, s, cm, Lsun
+import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import matplotlib.colors as mcolors
+import matplotlib.cm as cm
+from mpi4py.MPI import COMM_WORLD as CW
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 rank = CW.Get_rank()
 size = CW.Get_size()
