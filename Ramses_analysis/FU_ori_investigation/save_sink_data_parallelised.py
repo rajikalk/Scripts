@@ -1,9 +1,13 @@
-import numpy as np
-import pickle
-from pyramses import rsink
-import os
 import yt
 yt.enable_parallelism()
+import glob
+import numpy as np
+import sys
+import os
+import my_ramses_module as mym
+from mpi4py.MPI import COMM_WORLD as CW
+import pickle
+from pyramses import rsink
 import yt.units
 from yt.units import g, s, cm, Lsun
 import matplotlib
@@ -11,7 +15,6 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.colors as mcolors
 import matplotlib.cm as cm
-from mpi4py.MPI import COMM_WORLD as CW
 
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
