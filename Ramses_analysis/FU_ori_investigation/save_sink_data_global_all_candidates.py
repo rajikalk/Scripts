@@ -106,10 +106,10 @@ if args.update_pickle == 'True':
             if len(sink_data['tcreate']) > sink_ind:
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
-                    if args.end_time_val is None:
-                        end_time_val = loaded_sink_data[-1]['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                    else:
-                        end_time_val = yt.YTQuantity(args.end_time_val, 'yr')
+                if args.end_time_val is None:
+                    end_time_val = loaded_sink_data[-1]['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
+                else:
+                    end_time_val = yt.YTQuantity(args.end_time_val, 'yr')
                 
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
                 if time_val < end_time_val:
