@@ -14,7 +14,6 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-sink", "--sink_id", help="which sink?", type=int, default=None)
-    parser.add_argument("-pickle", "--sink_pickle", type)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
