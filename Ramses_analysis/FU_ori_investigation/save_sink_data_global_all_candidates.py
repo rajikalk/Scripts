@@ -22,7 +22,7 @@ def parse_inputs():
     parser.add_argument("-update", "--update_pickle", help="Do you want to update the pickle?", type=str, default='True')
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-sink", "--sink_id", type=int, default=None)
-    parser.add_argument("-end_time", "--end_time_val", default=75000, type=float)
+    parser.add_argument("-end_time", "--end_time_val", default=150000, type=float)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
