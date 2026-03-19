@@ -105,8 +105,8 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
-        particle_data.update({'secondary_position':[]})
-        particle_data.update({'secondary_velocity':[]})
+        #particle_data.update({'secondary_position':[]})
+        #particle_data.update({'secondary_velocity':[]})
         
         counter = 0
         sink_form_time = 0
@@ -220,21 +220,6 @@ if args.update_pickle == 'True':
                     plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
                     plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
 
-                    if sink_ind == 45:
-                        start_time = 3500
-                        start_ind = np.argmin(abs(np.array(particle_data['time']) - start_time))
-                        end_time = 8500
-                        end_ind = np.argmin(abs(np.array(particle_data['time']) - end_time))
-                        plt.clf()
-                        plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
-                        plt.xlabel('Time (yr)')
-                        plt.xlim()
-                        plt.ylim(bottom=1.e-7)
-                        plt.ylabel('Accretion rate (Msun/yr)')
-                        plt.title('Sink no ' + str(sink_ind))
-                        plt.tick_params(axis='both', which='major', right=True, direction='in')
-                        plt.tick_params(axis='both', which='minor', right=True, direction='in')
-                        plt.savefig(str(sink_ind)+'_accretion_vs_time_sink_trunc_3500.png')
             if len(sink_data['u']) > sink_ind:
                 tags = [sink_ind]
                 pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
@@ -252,9 +237,9 @@ if args.update_pickle == 'True':
                         particle_data['particle_tag'].append(tag)
                 
                 pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
-                vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                particle_data['secondary_position'].append(pos_second)
-                particle_data['secondary_velocity'].append(vel_second)
+                #vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                #particle_data['secondary_position'].append(pos_second)
+                #particle_data['secondary_velocity'].append(vel_second)
                 #del vel_second
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
@@ -382,19 +367,3 @@ plt.xlim()
 plt.ylabel('Separation (AU)')
 plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
 plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
-
-if sink_ind == 45:
-    start_time = 3500
-    start_ind = np.argmin(abs(np.array(particle_data['time']) - start_time))
-    end_time = 8500
-    end_ind = np.argmin(abs(np.array(particle_data['time']) - end_time))
-    plt.clf()
-    plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
-    plt.xlabel('Time (yr)')
-    plt.xlim()
-    plt.ylim(bottom=1.e-7)
-    plt.ylabel('Accretion rate (Msun/yr)')
-    plt.title('Sink no ' + str(sink_ind))
-    plt.tick_params(axis='both', which='major', right=True, direction='in')
-    plt.tick_params(axis='both', which='minor', right=True, direction='in')
-    plt.savefig(str(sink_ind)+'_accretion_vs_time_sink_trunc_3500.png')
