@@ -14,6 +14,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-sink", "--sink_id", help="which sink?", type=int, default=None)
+    parser.add_argument("-pickle", "--sink_pickle", type)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -31,16 +32,17 @@ matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
 args = parse_inputs()
-save_dir = sys.argv[1]
+global_pickle = sys.argv[1]
+save_dir = sys.argv[2]
 #if args.sink_id == None:
 #    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 #else:
 #    global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_"+str(args.sink_id)+".pkl"
 
-if args.sink_id == None:
-    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_global.pkl"
-else:
-    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_"+str(args.sink_id)+".pkl"
+#if args.sink_id == None:
+#    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_global.pkl"
+#else:
+#    global_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_"+str(args.sink_id)+".pkl"
     
 print('global pickle:', global_pickle)
 file_open = open(global_pickle, 'rb')
