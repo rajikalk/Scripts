@@ -52,6 +52,8 @@ for zoom_dir in Cleaned_dirs:
     
     if 'Level' not in zoom_dir:
         movie_dir = movie_dir +'/Level_18'
+        if os.path.exists(movie_dir) == False:
+            os.makedirs(movie_dir)
     else:
         import pdb
         pdb.set_trace()
