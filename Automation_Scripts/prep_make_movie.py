@@ -9,28 +9,35 @@ parser.add_argument("-a", "--additions", help="additional inputs", default='', t
 parser.add_argument("files", nargs='*')
 args = parser.parse_args()
 
-cur_dir = subprocess.getoutput('pwd')+'/'
-split_cur = cur_dir.split('/O')
-save_dir = split_cur[0] + '/YT_O' + split_cur[1] + 'Movie/'
+Sim_dirs = [x[0] for x in os.walk(zoom_directory)]
+Cleaned_dirs = []
+for sim_dir in Sim_dirs:
+    if sim_dir[-4:] == 'data':
+        Cleaned_dirs.append(sim_dir)
+del Sim_dirs
+save_dir = '/home/100/rlk100/rlk/RAMSES/Movie_frames'
 
-if not os.path.exists(save_dir):
-    os.makedirs(save_dir)
-
-dirs = ['xz', 'xy', 'xz_zoom', 'xy_zoom']
+dirs = ['XY', 'XZ', 'YZ']
 
 script_lines = ['#!/bin/bash',
                 '#PBS -P ek9',
                 '#PBS -q express',
                 '#PBS -l walltime=24:00:00',
-                '#PBS -l ncpus=16',
-                '#PBS -l mem=32GB',
+                '#PBS -l ncpus=1',
+                '#PBS -l mem=9GB',
                 '#PBS -l wd',
                 '#PBS -N ',
                 '#PBS -j oe',
                 '#PBS -m bea',
                 '#PBS -M rajika.kuruwita@anu.edu.au',
                 '',
-                'mpirun -np $PBS_NCPUS python ~/Scripts/movie_script_mod.py ']
+                'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py /home/100/rlk100/rlk/RAMSES/Zoom-in/Sink_17/data/ ./ -sink ',
+                ' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax ',
+                ' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>',
+                '.out01 2>&1']
+                
+import pdb
+pdb.set_trace()
 
 f = open('job.sh', 'r')
 reader = f.readlines()
