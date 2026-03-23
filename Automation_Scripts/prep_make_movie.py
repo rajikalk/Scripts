@@ -15,7 +15,7 @@ for sim_dir in Sim_dirs:
     if sim_dir[-4:] == 'data':
         Cleaned_dirs.append(sim_dir)
 del Sim_dirs
-save_dir = '/home/100/rlk100/rlk/RAMSES/Movie_frames'
+save_dir = '/home/100/rlk100/rlk/RAMSES/Movie_frames/'
 
 dirs = ['XY', 'XZ', 'YZ']
 
@@ -31,13 +31,39 @@ script_lines = ['#!/bin/bash',
                 '#PBS -m bea',
                 '#PBS -M rajika.kuruwita@anu.edu.au',
                 '',
-                'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py /home/100/rlk100/rlk/RAMSES/Zoom-in/Sink_17/data/ ./ -sink ',
+                'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ',
+                ' ./ -sink ',
                 ' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax ',
                 ' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>',
                 '.out01 2>&1']
-                
-import pdb
-pdb.set_trace()
+
+for zoom_dir in Cleaned_dirs:
+    Sink_id = int(zoom_dir.split('/Sink_')[-1].split('/')[0])
+    movie_dir = save_dir + 'Sink_' + str(Sink_id)
+    if os.path.exists(movie_dir) == False:
+        os.makedirs(movie_dir)
+    os.chdir(movie_dir)
+    
+    if 'Event_restart' in zoom_dir:
+        movie_dir = movie_dir + '/Event_Restart'
+        if os.path.exists(movie_dir) == False:
+            os.makedirs(movie_dir)
+        os.chdir(movie_dir)
+    
+    if 'Level' not in zoom_dir:
+        movie_dir = movie_dir +'/Level_18'
+    else:
+        import pdb
+        pdb.set_trace()
+    
+    os.chdir(movie_dir)
+    
+    for dir in dirs:
+        import pdb
+        pdb.set_trace()
+        
+    
+    
 
 f = open('job.sh', 'r')
 reader = f.readlines()
