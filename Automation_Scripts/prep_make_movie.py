@@ -9,7 +9,7 @@ parser.add_argument("-a", "--additions", help="additional inputs", default='', t
 parser.add_argument("files", nargs='*')
 args = parser.parse_args()
 
-Sim_dirs = [x[0] for x in os.walk(zoom_directory)]
+Sim_dirs = [x[0] for x in os.walk('/home/100/rlk100/rlk/RAMSES/Zoom-in/')]
 Cleaned_dirs = []
 for sim_dir in Sim_dirs:
     if sim_dir[-4:] == 'data':
