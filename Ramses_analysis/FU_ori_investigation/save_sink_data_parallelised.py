@@ -101,7 +101,11 @@ for path in Cleaned_dirs:
             particle_data.update({'mass':[]})
             particle_data.update({'mdot':[]})
             particle_data.update({'separation':[]})
-            loaded_sink_data = rsink(datadir=path, all=True)
+            try:
+                loaded_sink_data = rsink(datadir=path, all=True)
+            except:
+                print("NO SINK DATA FOR", path, "ON RANK", rank)
+                updating = False
             #particle_data.update({'secondary_position':[]})
             #particle_data.update({'secondary_velocity':[]})
             
