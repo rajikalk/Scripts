@@ -59,8 +59,11 @@ for zoom_dir in Cleaned_dirs:
         if os.path.exists(movie_dir) == False:
             os.makedirs(movie_dir)
     else:
-        import pdb
-        pdb.set_trace()
+        zoom_level = zoom_dir.split('/Level_')[-1].split('/')[0]
+        movie_dir = movie_dir +'/Level_' + zoom_level
+        job_name = job_name + 'L'+zoom_level
+        if os.path.exists(movie_dir) == False:
+            os.makedirs(movie_dir)
     
     os.chdir(movie_dir)
     
