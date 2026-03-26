@@ -88,7 +88,7 @@ for zoom_dir in Cleaned_dirs:
         f.close()
         
         #Check if job is already submitted/running
-        qstat = subprocess.run(["qs"], capture_output=True, text=True, check=True)
+        qstat = subprocess.run(["qstat"], capture_output=True, text=True, check=True)
         if job_name_dir not in qstat.stdout:
             shellcmd = 'qsub job.sh'
             print('submitted jobs for', sub_movie_dir)
