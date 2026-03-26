@@ -72,17 +72,18 @@ for zoom_dir in Cleaned_dirs:
         #Check that job script exists
         if os.path.isfile('job.sh') == False:
             f = open('job.sh', 'a')
-            f.close()
-            f = open('job.sh', 'w')
-            for line in script_lines:
-                if line == '#PBS -N ':
-                    write_line = line + job_name
-                elif line == 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ':
-                    write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+' ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax '+dir.lower()+' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
-                else:
-                    write_line = line
-                write_line = write_line + '\n'
-                f.write(write_line)
+        f.close()
+        f = open('job.sh', 'w')
+        for line in script_lines:
+            if line == '#PBS -N ':
+                write_line = line + job_name
+            elif line == 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ':
+                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+' ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax '+dir.lower()+' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
+            else:
+                write_line = line
+            write_line = write_line + '\n'
+            f.write(write_line)
+        f.close()
             
         import pdb
         pdb.set_trace()
