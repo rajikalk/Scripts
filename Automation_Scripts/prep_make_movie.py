@@ -73,7 +73,7 @@ for zoom_dir in Cleaned_dirs:
         #Check that job script exists
         if os.path.isfile('job.sh') == False:
             f = open('job.sh', 'a')
-        f.close()
+            f.close()
         f = open('job.sh', 'w')
         for line in script_lines:
             if line == '#PBS -N ':
