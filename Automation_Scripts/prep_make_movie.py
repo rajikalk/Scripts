@@ -72,7 +72,7 @@ for zoom_dir in Cleaned_dirs:
         if os.path.exists(sub_movie_dir) == False:
             os.makedirs(sub_movie_dir)
         os.chdir(sub_movie_dir)
-        job_name_dir = job_name + dir
+        job_name_dir = dir+ job_name
         
         #Check that job script exists
         if os.path.isfile('job.sh') == False:
@@ -94,5 +94,6 @@ for zoom_dir in Cleaned_dirs:
         qstat = subprocess.run(["qstat"], capture_output=True, text=True, check=True)
         if job_name_dir not in qstat.stdout:
             shellcmd = 'qsub job.sh'
+            subprocess.call(shellcmd, shell=True)
             print('submitted jobs for', sub_movie_dir)
         os.chdir(movie_dir)
