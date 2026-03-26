@@ -229,7 +229,7 @@ try:
     myf.set_centred_sink_id(sink_id)
 except:
     pass
-try:
+if len(dd['sink_particle_form_time']) > sink_id:
     sink_form_time = dd['sink_particle_form_time'][sink_id]
 except:
     print("TARGET SINK NOT FORMED YET")

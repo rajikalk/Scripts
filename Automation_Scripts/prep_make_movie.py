@@ -29,7 +29,7 @@ script_lines = ['#!/bin/bash',
                 '#PBS -l wd',
                 '#PBS -N ',
                 '#PBS -j oe',
-                '#PBS -m bea',
+                '#PBS -m a',
                 '#PBS -M rajika.kuruwita@anu.edu.au',
                 '',
                 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ',]
