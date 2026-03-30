@@ -231,7 +231,7 @@ except:
     pass
 if len(dd['sink_particle_form_time']) > sink_id:
     sink_form_time = dd['sink_particle_form_time'][sink_id]
-except:
+else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 del dd
