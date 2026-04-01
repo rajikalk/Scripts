@@ -849,6 +849,8 @@ for pickle_file in pickle_files:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                velx = velx - part_info['particle_velocity'][0]
+                vely = vely - part_info['particle_velocity'][1]
                   
             has_particles = args_dict['has_particles']
             xabel = args_dict['xabel']

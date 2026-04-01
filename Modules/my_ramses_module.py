@@ -262,14 +262,22 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     if axis == 'xy':
         part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posy'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('au').value
+        part_vel_y = dd['sink_particle_vely'][usable_sinks].in_units('au').value
     elif axis == 'xz':
         part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('au').value
+        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('au').value
     elif axis == 'yz':
         part_pos_x = dd['sink_particle_posy'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_vely'][usable_sinks].in_units('au').value
+        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('au').value
     positions = np.array([part_pos_x,part_pos_y])
+    velocites = np.array([part_vel_x,part_vel_y])
     part_info = {'particle_mass':part_mass,
+                 'particle_velocity':velocites,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
                  'particle_tag':part_tags,
