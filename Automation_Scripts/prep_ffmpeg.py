@@ -77,7 +77,7 @@ for zoom_dir in Cleaned_dirs:
         
         #Check that job script exists
         if len(glob.glob(sub_movie_dir+'/*.jpg'))>0:
-            shellcmd = 'python ~/Scripts/Automation_Scripts/make_movie.py -o '+job_name+'.mp4 movie_frame_000*.jpg'
+            shellcmd = 'python ~/Scripts/Automation_Scripts/make_movie.py -o '+job_name+dir+'.mp4 movie_frame_000*.jpg'
             subprocess.call(shellcmd, shell=True)
             print('created movie '+job_name+dir+'.mp4')
         else:
