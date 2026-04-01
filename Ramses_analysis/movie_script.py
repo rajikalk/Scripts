@@ -598,6 +598,9 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
+                        if size == 1:
+                            import pdb
+                            pdb.set_trace()
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                         
                     sto.result_id = field[1]
