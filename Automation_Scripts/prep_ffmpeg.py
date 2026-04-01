@@ -3,6 +3,7 @@
 import os
 import subprocess
 import argparse
+import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--additions", help="additional inputs", default='', type=str)
@@ -75,7 +76,10 @@ for zoom_dir in Cleaned_dirs:
         job_name_dir = dir+ job_name
         
         #Check that job script exists
-        shellcmd = 'python ~/Scripts/Automation_Scripts/make_movie.py -o '+job_name+'.mp4 movie_frame_000*.jpg'
-        subprocess.call(shellcmd, shell=True)
-        print('created movie '+job_name+'.mp4')
+        if len(glob.glob(sub_movie_dir+'/*.jpg'))>0"
+            shellcmd = 'python ~/Scripts/Automation_Scripts/make_movie.py -o '+job_name+'.mp4 movie_frame_000*.jpg'
+            subprocess.call(shellcmd, shell=True)
+            print('created movie '+job_name+'.mp4')
+        else:
+            print("FRAMES DON'T EXIST FOR", job_name)
         os.chdir(movie_dir)
