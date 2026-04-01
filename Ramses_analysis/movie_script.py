@@ -885,6 +885,8 @@ for pickle_file in pickle_files:
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
             if args.plot_velocity == 'True':
+                import pdb
+                pdb.set_trace()
                 try:
                     if args.plot_z_velocities == 'False':
                         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
