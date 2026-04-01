@@ -528,10 +528,8 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         if len(particle_tags) > 3:
             string_l = p_t.split('M_4')[0][:-3]
             string_2 = "$M_4"+p_t.split('M_4')[1]
-            colors_1 = rainbow_text_colors[:7]
-            colors_2 = rainbow_text_colors[7:]
-            import pdb
-            pdb.set_trace()
+            colors_1 = rainbow_text_colors[:6]
+            colors_2 = rainbow_text_colors[6:]
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
