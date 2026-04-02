@@ -587,6 +587,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     else:
+                        import pdb
+                        pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness.in_units('cm'))
@@ -598,8 +600,6 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
-                        import pdb
-                        pdb.set_trace()
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                         
                     sto.result_id = field[1]
