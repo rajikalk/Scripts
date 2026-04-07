@@ -3,6 +3,7 @@
 import os
 import subprocess
 import argparse
+import glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--additions", help="additional inputs", default='', type=str)
@@ -75,25 +76,10 @@ for zoom_dir in Cleaned_dirs:
         job_name_dir = dir+ job_name
         
         #Check that job script exists
-        if os.path.isfile('job.sh') == False:
-            f = open('job.sh', 'a')
-            f.close()
-        f = open('job.sh', 'w')
-        for line in script_lines:
-            if line == '#PBS -N ':
-                write_line = line + job_name_dir
-            elif line == 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ':
-                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+'/ ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax '+dir.lower()+' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
-            else:
-                write_line = line
-            write_line = write_line + '\n'
-            f.write(write_line)
-        f.close()
-        
-        #Check if job is already submitted/running
-        qstat = subprocess.run(["qstat"], capture_output=True, text=True, check=True)
-        if job_name_dir not in qstat.stdout:
-            shellcmd = 'qsub job.sh'
+        if len(glob.glob(sub_movie_dir+'/*.jpg'))>0:
+            shellcmd = 'python ~/Scripts/Automation_Scripts/make_movie.py -o '+job_name+dir+'.mp4 movie_frame_000*.jpg'
             subprocess.call(shellcmd, shell=True)
-            print('submitted jobs for', sub_movie_dir)
+            print('created movie '+job_name+dir+'.mp4')
+        else:
+            print("FRAMES DON'T EXIST FOR", job_name+dir)
         os.chdir(movie_dir)

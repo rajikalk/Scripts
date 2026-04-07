@@ -849,6 +849,9 @@ for pickle_file in pickle_files:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                part_ind = np.where(part_info['particle_tag']==sink_id)[0][0]
+                velx = velx - part_info['particle_velocity'][0][part_ind]
+                vely = vely - part_info['particle_velocity'][1][part_ind]
                   
             has_particles = args_dict['has_particles']
             xabel = args_dict['xabel']
@@ -884,7 +887,7 @@ for pickle_file in pickle_files:
             cbar = plt.colorbar(plot, pad=0.0)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
-            if args.plot_velocity == True:
+            if args.plot_velocity == 'True':
                 try:
                     if args.plot_z_velocities == 'False':
                         mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)

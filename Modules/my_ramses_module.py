@@ -262,14 +262,22 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     if axis == 'xy':
         part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posy'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('cm/s').value
+        part_vel_y = dd['sink_particle_vely'][usable_sinks].in_units('cm/s').value
     elif axis == 'xz':
         part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('cm/s').value
+        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('cm/s').value
     elif axis == 'yz':
         part_pos_x = dd['sink_particle_posy'][usable_sinks].in_units('au').value
         part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
+        part_vel_x = dd['sink_particle_vely'][usable_sinks].in_units('cm/s').value
+        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('cm/s').value
     positions = np.array([part_pos_x,part_pos_y])
+    velocites = np.array([part_vel_x,part_vel_y])
     part_info = {'particle_mass':part_mass,
+                 'particle_velocity':velocites,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
                  'particle_tag':part_tags,
@@ -526,10 +534,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append('white')
     if annotate_field is not None:
         if len(particle_tags) > 3:
-            string_l = p_t[:68]
-            string_2 = p_t[69:]
-            colors_1 = rainbow_text_colors[:9]
-            colors_2 = rainbow_text_colors[9:]
+            string_l = p_t.split('M_4')[0][:-3]
+            string_2 = "$M_4"+p_t.split('M_4')[1]
+            colors_1 = rainbow_text_colors[:6]
+            colors_2 = rainbow_text_colors[6:]
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, zorder=10, ax=axis)
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, zorder=10, ax=axis)
         else:
