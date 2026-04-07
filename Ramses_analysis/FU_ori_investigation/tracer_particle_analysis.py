@@ -88,6 +88,7 @@ if args.make_pickle_files == "True":
     
     sink_form_time = CW.bcast(sink_form_time, root=0)
     sink_id = CW.bcast(sink_id, root=0)
+    print('Received sink ID and form time on rank', rank)
     
     sys.stdout.flush()
     CW.Barrier()
@@ -182,6 +183,7 @@ if args.make_pickle_files == "True":
 
 sys.stdout.flush()
 CW.Barrier()
+
 '''
 if args.make_plot_figures == "True":
     import matplotlib.pyplot as plt
