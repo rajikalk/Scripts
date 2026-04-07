@@ -217,7 +217,10 @@ mym.set_units(units_override)
 #find sink particle to center on and formation time
 del units_override['density_unit']
 gc.collect()
-ds = yt.load(files[-1], units_override=units_override)
+if len(glob.glob(files.split('info')[0]+'star*')) !=0:
+    ds = yt.load(files[-1], units_override=units_override)
+else:
+    ds = yt.load(files[-2], units_override=units_override)
 dd = ds.all_data()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
