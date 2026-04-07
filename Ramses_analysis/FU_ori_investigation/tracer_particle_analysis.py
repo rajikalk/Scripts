@@ -72,26 +72,16 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    if rank == 0:
-        print("reading pickle", args.input_pickle)
-        sys.stdout.flush()
-        file_open = open(args.input_pickle, 'rb')
-        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-        file_open.close()
-        print("finished reading pickle", args.input_pickle)
-        del particle_data
-    else:
-        sink_form_time = None
-        sink_id = None
+    print("reading pickle", args.input_pickle)
+    sys.stdout.flush()
+    file_open = open(args.input_pickle, 'rb')
+    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+    file_open.close()
+    print("finished reading pickle", args.input_pickle)
+    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     sys.stdout.flush()
     CW.Barrier()
     
-    sink_form_time = CW.bcast(sink_form_time, root=0)
-    sink_id = CW.bcast(sink_id, root=0)
-    print('Received sink ID and form time on rank', rank)
-    
-    sys.stdout.flush()
-    CW.Barrier()
     gc.collect()
     
     #Get accreted tracer particle IDS
@@ -138,9 +128,9 @@ if args.make_pickle_files == "True":
             dd = ds.all_data()
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
-            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]]) #particle_data['secondary_position'][t_ind]
+            particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
-            particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]]) #particle_data['secondary_velocity'][t_ind]
+            particle_velocity = particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
             accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]
@@ -183,7 +173,6 @@ if args.make_pickle_files == "True":
 
 sys.stdout.flush()
 CW.Barrier()
-
 '''
 if args.make_plot_figures == "True":
     import matplotlib.pyplot as plt
