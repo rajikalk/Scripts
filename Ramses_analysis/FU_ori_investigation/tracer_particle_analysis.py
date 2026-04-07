@@ -82,7 +82,7 @@ if args.make_pickle_files == "True":
         del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
         gc.collect()
     else:
-        particle_data = {}
+        particle_data = None
         sink_id = None
         sink_form_time = None
     sys.stdout.flush()
@@ -90,7 +90,7 @@ if args.make_pickle_files == "True":
     
     sink_id = CW.bcast(sink_id, root=0)
     sink_form_time = CW.bcast(sink_form_time, root=0)
-    particle_data = CW.Bcast(particle_data, root=0)
+    particle_data = CW.bcast(particle_data, root=0)
     sys.stdout.flush()
     CW.Barrier()
     gc.collect()
