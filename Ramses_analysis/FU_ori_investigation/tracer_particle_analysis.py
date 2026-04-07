@@ -130,7 +130,7 @@ if args.make_pickle_files == "True":
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
-            particle_velocity = particle_data['secondary_velocity'][t_ind]
+            particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]]) #particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
             accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]

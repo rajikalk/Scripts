@@ -105,8 +105,7 @@ if args.update_pickle == 'True':
         particle_data.update({'mass':[]})
         particle_data.update({'mdot':[]})
         particle_data.update({'separation':[]})
-        #particle_data.update({'secondary_position':[]})
-        #particle_data.update({'secondary_velocity':[]})
+        particle_data.update({'velocity':[]})
         
         counter = 0
         sink_form_time = 0
