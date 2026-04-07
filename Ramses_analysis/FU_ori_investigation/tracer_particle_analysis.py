@@ -146,7 +146,7 @@ if args.make_pickle_files == "True":
 
     file_int = -1
     no_files = len(usable_files)
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/7)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/14)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
