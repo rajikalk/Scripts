@@ -72,16 +72,27 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    print("reading pickle", args.input_pickle)
-    sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading pickle", args.input_pickle)
-    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
+    if rank == 0
+        print("reading pickle", args.input_pickle)
+        sys.stdout.flush()
+        file_open = open(args.input_pickle, 'rb')
+        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+        file_open.close()
+        print("finished reading pickle", args.input_pickle)
+        del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
+        gc.collect()
+    else:
+        particle_data = {}
+        sink_id = None
+        sink_form_time = None
     sys.stdout.flush()
     CW.Barrier()
     
+    particle_data = CW.bcast(particle_data, root=0)
+    sink_id = CW.bcast(sink_id, root=0)
+    sink_form_time = CW.bcast(sink_form_time, root=0)
+    sys.stdout.flush()
+    CW.Barrier()
     gc.collect()
     
     #Get accreted tracer particle IDS
