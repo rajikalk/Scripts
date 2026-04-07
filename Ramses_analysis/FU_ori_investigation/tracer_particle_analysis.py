@@ -72,11 +72,12 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    print("read pickle", args.input_pickle)
+    print("reading pickle", args.input_pickle)
     sys.stdout.flush()
     file_open = open(args.input_pickle, 'rb')
     particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
     file_open.close()
+    print("finished reading pickle", args.input_pickle)
     del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
     gc.collect()
     
