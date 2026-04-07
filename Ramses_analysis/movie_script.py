@@ -339,7 +339,7 @@ if args.make_frames_only == 'False':
     #Trying yt parallelism
     file_int = -1
     #for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/12)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/18)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
