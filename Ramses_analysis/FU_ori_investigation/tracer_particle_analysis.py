@@ -72,7 +72,7 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    if rank == 0
+    if rank == 0:
         print("reading pickle", args.input_pickle)
         sys.stdout.flush()
         file_open = open(args.input_pickle, 'rb')
