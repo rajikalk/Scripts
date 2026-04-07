@@ -72,13 +72,25 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    print("reading pickle", args.input_pickle)
+    if rank == 0:
+        print("reading pickle", args.input_pickle)
+        sys.stdout.flush()
+        file_open = open(args.input_pickle, 'rb')
+        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+        file_open.close()
+        print("finished reading pickle", args.input_pickle)
+        del particle_data
+    else:
+        sink_form_time = None
+        sink_id = None
     sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading pickle", args.input_pickle)
-    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
+    CW.Barrier()
+    
+    sink_form_time = CW.bcast(sink_form_time, root=0)
+    sink_id = CW.bcast(sink_id, root=0)
+    
+    sys.stdout.flush()
+    CW.Barrier()
     gc.collect()
     
     #Get accreted tracer particle IDS
@@ -89,9 +101,6 @@ if args.make_pickle_files == "True":
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
-    if size == 1:
-        import pdb
-        pdb.set_trace()
     del dd
     gc.collect()
     
@@ -128,7 +137,7 @@ if args.make_pickle_files == "True":
             dd = ds.all_data()
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
-            particle_position = particle_data['secondary_position'][t_ind]
+            particle_position = yt.YTArray([dd['sink_particle_posx'][sink_id], dd['sink_particle_posy'][sink_id], dd['sink_particle_posz'][sink_id]]) #particle_data['secondary_position'][t_ind]
             pp_code = particle_position.in_units('pc')/scale_l
             particle_velocity = yt.YTArray([dd['sink_particle_velx'][sink_id], dd['sink_particle_vely'][sink_id], dd['sink_particle_velz'][sink_id]]) #particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
