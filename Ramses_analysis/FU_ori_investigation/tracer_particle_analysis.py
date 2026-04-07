@@ -89,11 +89,11 @@ if args.make_pickle_files == "True":
     
     sink_id = CW.bcast(sink_id, root=0)
     sink_form_time = CW.bcast(sink_form_time, root=0)
-    try:
-        particle_data = {}
-        particle_data = CW.bcast(particle_data, root=0)
-    except:
-        pass
+#    try:
+#        particle_data = {}
+#        particle_data = CW.bcast(particle_data, root=0)
+#    except:
+#        pass
     
     try:
         particle_data = None
