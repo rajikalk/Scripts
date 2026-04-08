@@ -129,7 +129,7 @@ if args.make_pickle_files == "True":
         #Get accreted tracer particle IDS
         print("Getting burst files")
         sys.stdout.flush()
-        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
+        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
         end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         print("starting to load end_burs_file")
         ds = yt.load(end_burst_file)
