@@ -339,8 +339,8 @@ if args.make_frames_only == 'False':
     gc.collect()
     #Trying yt parallelism
     file_int = -1
-    para_div = 12
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/para_div)):
+    para_div = 2
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/(6*para_div))):
         #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
             file_int = usable_files.index(fn)
@@ -630,7 +630,7 @@ if args.make_frames_only == 'False':
                 #proj_field_list =[simfo['field']]
                 proj_field_list =[simfo['field'], ('gas', 'Projected_Velocity_x'), ('gas', 'Projected_Velocity_y'), ('gas', 'Projected_Velocity_z'), ('gas', 'Projected_Magnetic_Field_x'), ('gas', 'Projected_Magnetic_Field_y'), ('gas', 'Projected_Magnetic_Field_z')]
                 
-                for field in yt.parallel_objects(proj_field_list):
+                for field in yt.parallel_objects(proj_field_list, nprocs=len(proj_field_list)*para_div):
                     proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
                     if 'mag' in str(field):
                         if weight_field == None:
