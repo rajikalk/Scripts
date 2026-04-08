@@ -124,16 +124,20 @@ if args.make_pickle_files == "True":
     if rank == 0:
         #Get accreted tracer particle IDS
         print("Getting burst files")
+        sys.stdout.flush()
         end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
         end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         ds = yt.load(end_burst_file)
         print("loaded burst file")
+        sys.stdout.flush()
         dd = ds.all_data()
         print("loaded all data")
+        sys.stdout.flush()
         min_mass = (-1*(sink_id+1))
         accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
         accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
         print("got burst indexes")
+        sys.stdout.flush()
         ds.index.clear_all_data()
         del dd
         gc.collect()
