@@ -237,7 +237,7 @@ if len(dd['sink_particle_form_time']) > sink_id:
 else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
-ds.index.clear_all_data()
+#ds.index.clear_all_data()
 del dd
 gc.collect()
 if args.plot_time != None:
