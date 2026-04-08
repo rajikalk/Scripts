@@ -221,7 +221,7 @@ gc.collect()
 sys.stdout.flush()
 CW.Barrier()
 
-in rank == 0:
+if rank == 0:
     if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
         ds = yt.load(files[-1], units_override=units_override)
     else:
