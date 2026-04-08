@@ -81,7 +81,7 @@ if args.make_pickle_files == "True":
         file_open.close()
         print("finished reading pickle", args.input_pickle)
         del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
-        print('Side of particle data = ', getsizeof(particle_data))
+        print('Size of particle data = ', getsizeof(particle_data))
         gc.collect()
     else:
         sink_id = None
@@ -120,28 +120,36 @@ if args.make_pickle_files == "True":
     gc.collect()
     
     #Get accreted tracer particle IDS
+    print("Getting burst files")
     end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
     end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
     ds = yt.load(end_burst_file)
+    print("loaded burst file")
     dd = ds.all_data()
+    print("loaded all data")
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+    print("got burst indexes")
     del dd
     gc.collect()
     
     #end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
+    print("getting all accreted tracer inds")
     end_sim_file = files[-1]
     usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
+    print("loaded end file")
     dd = ds.all_data()
+    print("loaded all data")
     accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_all = dd['particle_identity'][accreted_inds_all]
+    del dd
+    gc.collect()
+    print("got accreted indexes")
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
     not_accreted_ids = yt.YTArray(list(set(dd['particle_identity'].value) - set(accreted_ids_all.value)), '')
-    del dd
-    gc.collect()
     
     sys.stdout.flush()
     CW.Barrier()
