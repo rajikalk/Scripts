@@ -132,11 +132,12 @@ if args.make_pickle_files == "True":
         accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
         accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
         print("got burst indexes")
+        ds.index.clear_all_data()
         del dd
         gc.collect()
     else:
         accreted_inds_burst = None
-        accreted_ids_burst - None
+        accreted_ids_burst = None
     
     sys.stdout.flush()
     CW.Barrier()
@@ -156,6 +157,7 @@ if args.make_pickle_files == "True":
     print("loaded all data")
     accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
     accreted_ids_all = dd['particle_identity'][accreted_inds_all]
+    ds.index.clear_all_data()
     del dd
     gc.collect()
     print("got accreted indexes")
@@ -215,6 +217,7 @@ if args.make_pickle_files == "True":
             rely = (dd['particle_position_y'][not_accreted_inds].value - pp_code[1].value)*scale_l
             relz = (dd['particle_position_z'][not_accreted_inds].value - pp_code[2].value)*scale_l
             del dd
+            ds.index.clear_all_data()
             gc.collect()
             
             not_accreted_positions = [relx, rely, relz]

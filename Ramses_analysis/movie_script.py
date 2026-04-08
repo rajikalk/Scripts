@@ -745,6 +745,7 @@ if args.make_frames_only == 'False':
                 del velz
                 del args_dict
                 gc.collect()
+            ds.index.clear_all_data()
             del has_particles
             del time_val
             del center_vel
