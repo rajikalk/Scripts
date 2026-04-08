@@ -178,6 +178,9 @@ try:
     cbar_min = float(args.colourbar_min)
 except:
     cbar_min = float(args.colourbar_min[1:])
+
+if arg.debug_plotting == 'True':
+    print('set colorbar limits on rank', rank)
     
 title_parts = args.title.split('_')
 title = ''
@@ -186,7 +189,12 @@ for part in title_parts:
         title = title + part + ' '
     else:
         title = title + part
+        
+if arg.debug_plotting == 'True':
+    print('set plot title on rank', rank)
 mym.set_global_font_size(args.text_font)
+if arg.debug_plotting == 'True':
+    print('set global font size on rank', rank)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -195,6 +203,8 @@ CW.Barrier()
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 del input_dir
 gc.collect()
+if arg.debug_plotting == 'True':
+    print('got all RAMSES files on rank', rank)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -213,6 +223,9 @@ else:
 
 units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
 mym.set_units(units_override)
+if arg.debug_plotting == 'True':
+    print('Updated my modules units with RAMSES code units on rank', rank)
+
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
@@ -222,12 +235,20 @@ sys.stdout.flush()
 CW.Barrier()
 
 if rank == 0:
+    if arg.debug_plotting == 'True':
+        print('About to load end file on rank', rank)
     if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
         ds = yt.load(files[-1], units_override=units_override)
     else:
         ds = yt.load(files[-2], units_override=units_override)
+    if arg.debug_plotting == 'True':
+        print('Getting all_data on rank', rank)
     dd = ds.all_data()
+    if arg.debug_plotting == 'True':
+        print('Successfuly got all_data on rank', rank)
     if args.sink_number == None:
+        if arg.debug_plotting == 'True':
+            print('Getting sink id from sink_particle_speed on rank', rank)
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
         sink_id = args.sink_number
