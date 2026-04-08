@@ -11,6 +11,7 @@ import pickle
 import my_ramses_module as mym
 import gc
 from sys import getsizeof
+import time
 
 def parse_inputs():
     import argparse
@@ -76,10 +77,13 @@ if args.make_pickle_files == "True":
     if rank == 0:
         print("reading pickle", args.input_pickle)
         sys.stdout.flush()
+        pickle_start_time = time.time()
         file_open = open(args.input_pickle, 'rb')
         particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
         file_open.close()
-        print("finished reading pickle", args.input_pickle)
+        pickle_end_time = time.time()
+        read_time = pickle_end_time - pickle_start_time
+        print("It took", read_time, "seconds to read pickle", args.input_pickle)
         del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
         print('Size of particle data = ', getsizeof(particle_data))
         gc.collect()
