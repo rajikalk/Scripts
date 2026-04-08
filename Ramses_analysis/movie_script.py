@@ -217,29 +217,49 @@ mym.set_units(units_override)
 #find sink particle to center on and formation time
 del units_override['density_unit']
 gc.collect()
-if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
-    ds = yt.load(files[-1], units_override=units_override, nprocs=size)
+
+sys.stdout.flush()
+CW.Barrier()
+
+in rank == 0:
+    if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
+        ds = yt.load(files[-1], units_override=units_override)
+    else:
+        ds = yt.load(files[-2], units_override=units_override)
+    dd = ds.all_data()
+    if args.sink_number == None:
+        sink_id = np.argmin(dd['sink_particle_speed'])
+    else:
+        sink_id = args.sink_number
+    if rank == 0:
+        print("CENTERED SINK ID:", sink_id)
+    try:
+        myf.set_centred_sink_id(sink_id)
+    except:
+        pass
+    if len(dd['sink_particle_form_time']) > sink_id:
+        sink_form_time = dd['sink_particle_form_time'][sink_id]
+    else:
+        print("TARGET SINK NOT FORMED YET")
+        sys.exit()
+    #ds.index.clear_all_data()
+    del dd
+    gc.collect()
 else:
-    ds = yt.load(files[-2], units_override=units_override, nprocs=size)
-dd = ds.all_data()
-if args.sink_number == None:
-    sink_id = np.argmin(dd['sink_particle_speed'])
-else:
-    sink_id = args.sink_number
-if rank == 0:
-    print("CENTERED SINK ID:", sink_id)
-try:
-    myf.set_centred_sink_id(sink_id)
-except:
-    pass
-if len(dd['sink_particle_form_time']) > sink_id:
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
-else:
-    print("TARGET SINK NOT FORMED YET")
-    sys.exit()
-#ds.index.clear_all_data()
-del dd
-gc.collect()
+    sink_id = None
+    sink_form_time = None
+
+sys.stdout.flush()
+CW.Barrier()
+
+sink_id = CW.bcast(sink_id, root=0)
+sink_form_time = CW.bcast(sink_form_time, root=0)
+myf.set_centred_sink_id(sink_id)
+print("received particle_data on rank", rank)
+
+sys.stdout.flush()
+CW.Barrier()
+    
 if args.plot_time != None:
     m_times = [args.plot_time]
     no_frames = len(m_times)
