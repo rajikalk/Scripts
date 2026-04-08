@@ -119,21 +119,33 @@ if args.make_pickle_files == "True":
     CW.Barrier()
     gc.collect()
     
-    #Get accreted tracer particle IDS
-    print("Getting burst files")
-    end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
-    end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
-    ds = yt.load(end_burst_file)
-    print("loaded burst file")
-    dd = ds.all_data()
-    print("loaded all data")
-    min_mass = (-1*(sink_id+1))
-    accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
-    accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
-    print("got burst indexes")
-    del dd
-    gc.collect()
+    if rank == 0:
+        #Get accreted tracer particle IDS
+        print("Getting burst files")
+        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
+        end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+        ds = yt.load(end_burst_file)
+        print("loaded burst file")
+        dd = ds.all_data()
+        print("loaded all data")
+        min_mass = (-1*(sink_id+1))
+        accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
+        accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+        print("got burst indexes")
+        del dd
+        gc.collect()
+    else:
+        accreted_inds_burst = None
+        accreted_ids_burst - None
     
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    accreted_inds_burst = CW.bcast(accreted_inds_burst, root=0)
+    accreted_ids_burst = CW.bcast(accreted_ids_burst, root=0)
+    
+    sys.stdout.flush()
+    CW.Barrier()
     #end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
     print("getting all accreted tracer inds")
     end_sim_file = files[-1]
