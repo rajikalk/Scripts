@@ -237,18 +237,22 @@ CW.Barrier()
 if rank == 0:
     if args.debug_plotting == 'True':
         print('About to load end file on rank', rank)
+        sys.stdout.flush()
     if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
         ds = yt.load(files[-1], units_override=units_override)
     else:
         ds = yt.load(files[-2], units_override=units_override)
     if args.debug_plotting == 'True':
         print('Getting all_data on rank', rank)
+        sys.stdout.flush()
     dd = ds.all_data()
     if args.debug_plotting == 'True':
         print('Successfuly got all_data on rank', rank)
+        sys.stdout.flush()
     if args.sink_number == None:
         if args.debug_plotting == 'True':
             print('Getting sink id from sink_particle_speed on rank', rank)
+            sys.stdout.flush()
         sink_id = np.argmin(dd['sink_particle_speed'])
     else:
         sink_id = args.sink_number
