@@ -238,6 +238,7 @@ else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 del dd
+ds.index.clear_all_data()
 gc.collect()
 if args.plot_time != None:
     m_times = [args.plot_time]
