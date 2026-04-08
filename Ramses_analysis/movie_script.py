@@ -218,9 +218,9 @@ mym.set_units(units_override)
 del units_override['density_unit']
 gc.collect()
 if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
-    ds = yt.load(files[-1], units_override=units_override)
+    ds = yt.load(files[-1], units_override=units_override, nprocs=size)
 else:
-    ds = yt.load(files[-2], units_override=units_override)
+    ds = yt.load(files[-2], units_override=units_override, nprocs=size)
 dd = ds.all_data()
 if args.sink_number == None:
     sink_id = np.argmin(dd['sink_particle_speed'])
