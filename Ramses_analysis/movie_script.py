@@ -338,8 +338,9 @@ if args.make_frames_only == 'False':
     gc.collect()
     #Trying yt parallelism
     file_int = -1
-    #for fn in yt.parallel_objects(usable_files, njobs=int(size/6)):
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
+    para_div = 12
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/para_div)):
+        #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -558,7 +559,7 @@ if args.make_frames_only == 'False':
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
-                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict):
+                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, nprocs=(int(size/para_div)/6)):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):

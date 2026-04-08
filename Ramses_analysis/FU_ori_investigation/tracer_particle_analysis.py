@@ -101,17 +101,17 @@ if args.make_pickle_files == "True":
     except:
         pass
     
-    try:
-        particle_data = {}
-        particle_data = CW.Bcast(particle_data, root=0)
-    except:
-        pass
+#    try:
+#        particle_data = {}
+#        particle_data = CW.Bcast(particle_data, root=0)
+#    except:
+#        pass
         
-    try:
-        particle_data = None
-        particle_data = CW.Bcast(particle_data, root=0)
-    except:
-        pass
+#    try:
+#        particle_data = None
+#        particle_data = CW.Bcast(particle_data, root=0)
+#    except:
+#        pass
         
     sys.stdout.flush()
     CW.Barrier()
@@ -146,7 +146,7 @@ if args.make_pickle_files == "True":
 
     file_int = -1
     no_files = len(usable_files)
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/28)):
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/56)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -156,7 +156,7 @@ if args.make_pickle_files == "True":
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         if make_pickle:
-            ds = yt.load(fn)
+            ds = yt.load(fn, nprocs=4)
             time_val = ds.current_time.value*scale_t - sink_form_time
             dd = ds.all_data()
             
