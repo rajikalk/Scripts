@@ -10,6 +10,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
 import gc
+from sys import getsizeof
 
 def parse_inputs():
     import argparse
@@ -79,7 +80,8 @@ if args.make_pickle_files == "True":
         particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
         file_open.close()
         print("finished reading pickle", args.input_pickle)
-        del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation']
+        del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
+        print('Side of particle data = ', getsizeof(particle_data))
         gc.collect()
     else:
         sink_id = None
