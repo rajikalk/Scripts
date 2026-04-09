@@ -119,7 +119,6 @@ def sim_info(ds,args):
     del annotate_freq
     del smoothing
     del unit_string
-    del dd
     gc.collect()
     return sim_info
 
@@ -450,7 +449,6 @@ if args.make_frames_only == 'False':
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"]
                 center_vel = yt.YTArray([sink_particle_velx[sink_id].in_units('cm/s').value, sink_particle_vely[sink_id].in_units('cm/s').value, sink_particle_velz[sink_id].in_units('cm/s').value], 'cm/s')
-            del dd
             gc.collect()
             
             if args.axis == 'xy':
