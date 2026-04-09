@@ -385,10 +385,7 @@ if args.make_frames_only == 'False':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
             
-            has_particles = False
-            if args.debug_plotting == 'True':
-                print('determined if sinks exist on rank', rank)
-                sys.stdout.flush()
+            has_particles = True
             
             #Define box::
             if args.image_center == 1:
