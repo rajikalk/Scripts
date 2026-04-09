@@ -137,8 +137,8 @@ if args.make_pickle_files == "True":
     ds = yt.load(end_burst_file)
     print("loaded burst file")
     sys.stdout.flush()
-    particle_mass = ds.r['gas', 'particle_mass']
-    particle_identity = ds.r['gas', 'particle_identity']
+    particle_mass = ds.r['particle_mass']
+    particle_identity = ds.r['particle_identity']
     print("loaded all data")
     sys.stdout.flush()
     min_mass = (-1*(sink_id+1))
@@ -167,8 +167,8 @@ if args.make_pickle_files == "True":
     usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
     print("loaded end file")
-    particle_mass = ds.r['gas', 'particle_mass']
-    particle_identity = ds.r['gas', 'particle_identity']
+    particle_mass = ds.r['particle_mass']
+    particle_identity = ds.r['particle_identity']
 
     print("loaded all data")
     accreted_inds_all = np.where(particle_mass == min_mass)[0]
