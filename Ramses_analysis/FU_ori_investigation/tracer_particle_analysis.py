@@ -161,6 +161,8 @@ if args.make_pickle_files == "True":
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
     not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
+    print('saved other and not accreted tracer particle indices')
+    sys.stdout.flush()
     del particle_identity
     
     sys.stdout.flush()
@@ -168,7 +170,8 @@ if args.make_pickle_files == "True":
 
     file_int = -1
     no_files = len(usable_files)
-    for fn in yt.parallel_objects(usable_files, njobs=int(size/56)):
+    para_div = 1
+    for fn in yt.parallel_objects(usable_files, njobs=int(size/para_div)):
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -178,7 +181,9 @@ if args.make_pickle_files == "True":
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         if make_pickle:
+            print('loading file', fn, 'on rank', rank)
             ds = yt.load(fn)
+            print('loaded file', fn, 'on rank', rank)
             time_val = ds.current_time.value*scale_t - sink_form_time
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
