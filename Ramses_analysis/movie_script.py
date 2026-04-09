@@ -72,7 +72,6 @@ def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
-    dd = ds.all_data()
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
     field = ds.derived_field_list[field_it]
     dim = args.resolution
@@ -89,10 +88,11 @@ def sim_info(ds,args):
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
+    test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
     try:
-        unit_string = str(dd[field[1]].in_cgs().units)
+        unit_string = str(test_patch[field[1]].in_cgs().units)
     except:
-        unit_string = str(dd[('gas', field[1])].in_cgs().units)
+        unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
@@ -144,13 +144,13 @@ def has_sinks(ds):
     '''
     Checks particle file to see if particles exists, or tries the plot file.
     '''
-    dd = ds.all_data()
-    if len(dd['sink_particle_tag'][myf.get_centred_sink_id():].astype(int)) != 0:
-        del dd
+    sink_particle_tag = ds.r['gas', 'sink_particle_tag']
+    if len(sink_particle_tag[myf.get_centred_sink_id():].astype(int)) != 0:
+        del sink_particle_tag
         gc.collect()
         return True
     else:
-        del dd
+        del sink_particle_tag
         gc.collect()
         return False
 
@@ -440,7 +440,6 @@ if args.make_frames_only == 'False':
                 sink_particle_posy = ds.r["gas", "sink_particle_posy"]
                 sink_particle_posz = ds.r["gas", "sink_particle_posz"]
                 center_pos = yt.YTArray([sink_particle_posx[sink_id].in_units('au').value, sink_particle_posy[sink_id].in_units('au').value, sink_particle_posz[sink_id].in_units('au').value], 'au')
-                del sink_particle_posx, sink_particle_posy, sink_particle_posz
             else:
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
@@ -451,7 +450,6 @@ if args.make_frames_only == 'False':
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"]
                 center_vel = yt.YTArray([sink_particle_velx[sink_id].in_units('cm/s').value, sink_particle_vely[sink_id].in_units('cm/s').value, sink_particle_velz[sink_id].in_units('cm/s').value], 'cm/s')
-                del sink_particle_velx, sink_particle_vely, sink_particle_velz
             del dd
             gc.collect()
             
@@ -496,8 +494,11 @@ if args.make_frames_only == 'False':
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
-                    left_corner_test = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('AU').value - 100, dd['sink_particle_posy'][sink_id].in_units('AU').value - 100, dd['sink_particle_posz'][sink_id].in_units('AU').value - 100], 'AU')
-                    right_corner_test = yt.YTArray([dd['sink_particle_posx'][sink_id].in_units('AU').value + 100, dd['sink_particle_posy'][sink_id].in_units('AU').value + 100, dd['sink_particle_posz'][sink_id].in_units('AU').value + 100], 'AU')
+                    sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+                    sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+                    sink_particle_posz = ds.r['gas', 'sink_particle_posz']
+                    left_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value - 100, sink_particle_posy[sink_id].in_units('AU').value - 100, sink_particle_posz[sink_id].in_units('AU').value - 100], 'AU')
+                    right_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value + 100, sink_particle_posy[sink_id].in_units('AU').value + 100, sink_particle_posz[sink_id].in_units('AU').value + 100], 'AU')
                     region = ds.box(left_corner_test, right_corner_test)
                     L_x = np.sum(region['Angular_Momentum_x'].value)
                     L_y = np.sum(region['Angular_Momentum_y'].value)
@@ -513,10 +514,14 @@ if args.make_frames_only == 'False':
                     del L_z
                     gc.collect()
                 else:
-                    L_x = np.sum(dd['Orbital_Angular_Momentum_x'].value)
-                    L_y = np.sum(dd['Orbital_Angular_Momentum_y'].value)
-                    L_z = np.sum(dd['Orbital_Angular_Momentum_z'].value)
-                    L = np.array([L_x, L_y, L_z])/np.sum(dd['Orbital_Angular_Momentum'].value)
+                    Orbital_Angular_Momentum_x = ds.r['gas', 'Orbital_Angular_Momentum_x']
+                    Orbital_Angular_Momentum_y = ds.r['gas', 'Orbital_Angular_Momentum_y']
+                    Orbital_Angular_Momentum_z = ds.r['gas', 'Orbital_Angular_Momentum_z']
+                    Orbital_Angular_Momentum = ds.r['gas', 'Orbital_Angular_Momentum']
+                    L_x = np.sum(Orbital_Angular_Momentum_x.value)
+                    L_y = np.sum(Orbital_Angular_Momentum_y.value)
+                    L_z = np.sum(Orbital_Angular_Momentum_z.value)
+                    L = np.array([L_x, L_y, L_z])/np.sum(Orbital_Angular_Momentum.value)
                     myf.set_normal(L)
                     print("L =", L)
                     
@@ -752,8 +757,10 @@ if args.make_frames_only == 'False':
 
                 #Update particle data
                 y_axis_vector = proj.data_source.orienter.north_vector
-                dd = ds.all_data()
-                projected_position = yt.YTArray([dd['Projected_Particle_Posx'].in_units('AU').value, dd['Projected_Particle_Posy'].in_units('AU').value, dd['Projected_Particle_Posz'].in_units('AU').value], 'AU')
+                Projected_Particle_Posx = ds.r['gas', 'Projected_Particle_Posx']
+                Projected_Particle_Posy = ds.r['gas', 'Projected_Particle_Posy']
+                Projected_Particle_Posz = ds.r['gas', 'Projected_Particle_Posz']
+                projected_position = yt.YTArray([Projected_Particle_Posx.in_units('AU').value, Projected_Particle_Posy.in_units('AU').value, Projected_Particle_Posz.in_units('AU').value], 'AU')
                 proj_x_pos_1 = (np.dot(projected_position.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[0]
                 proj_x_pos_2 = (np.dot(projected_position.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[1]
                 proj_x_pos_3 = (np.dot(projected_position.T, y_axis_vector)/np.dot(y_axis_vector,y_axis_vector))*y_axis_vector[2]

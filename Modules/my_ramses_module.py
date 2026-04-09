@@ -241,47 +241,62 @@ def get_particle_data(ds, axis='xy', sink_id=None, region=None):
     """
     Retrieve particle data for plotting. NOTE: CANNOT RETURN PARTICLE VELOCITIES AS THESES ARE NOT STORED IN THE MOVIE FILES.
     """
-    dd = ds.all_data()
     if sink_id != None:
         sink_id = sink_id
     else:
-        sink_id = np.argmin(dd['sink_particle_speed'])
+        sink_particle_speed = ds.r['gas', 'sink_particle_speed']
+        sink_id = np.argmin(sink_particle_speed)
     myf.set_centred_sink_id(sink_id)
     
-    #TODO: Possibly update to set the usuable sink particle IDs to custom values (f.x. [80, 90])
+    #TODO: Possibly update to set the usable sink particle IDs to custom values (f.x. [80, 90])
+    sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+    sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+    sink_particle_posz = ds.r['gas', 'sink_particle_posz']
+    sink_particle_tag = ds.r['gas', 'sink_particle_tag']
+    
     if region != None:
-        usable_sinks = np.argwhere((dd['sink_particle_posx'].in_units('au')>region.left_edge[0])&(dd['sink_particle_posx'].in_units('au')<region.right_edge[0])&(dd['sink_particle_posy'].in_units('au')>region.left_edge[1])&(dd['sink_particle_posy'].in_units('au')<region.right_edge[1])&(dd['sink_particle_posz'].in_units('au')>region.left_edge[2])&(dd['sink_particle_posz'].in_units('au')<region.right_edge[2])).T[0]
+        usable_sinks = np.argwhere((sink_particle_posx.in_units('au')>region.left_edge[0])&(sink_particle_posx.in_units('au')<region.right_edge[0])&(sink_particle_posy.in_units('au')>region.left_edge[1])&(sink_particle_posy.in_units('au')<region.right_edge[1])&(sink_particle_posz.in_units('au')>region.left_edge[2])&(sink_particle_posz.in_units('au')<region.right_edge[2])).T[0]
     else:
-        usable_sinks = np.arange(sink_id, len(dd['sink_particle_tag']))
+        usable_sinks = np.arange(sink_id, len(sink_particle_tag))
     
-    part_tags = dd['sink_particle_tag'][usable_sinks]
-    part_mass = dd['sink_particle_mass'][usable_sinks].in_units('msun').value
+    part_tags = sink_particle_tag[usable_sinks]
     
-    accretion_rad = 4.*np.min(dd['dx']).in_units('au').value
+    sink_particle_mass = ds.r['gas', 'sink_particle_mass']
+    part_mass = sink_particle_mass[usable_sinks].in_units('msun').value
+    
+    dx = ds.r['ramses', 'dx']
+    accretion_rad = 4.*np.min(dx).in_units('au').value
     #center_pos = myf.get_center_pos()
+    
+    sink_particle_velx = ds.r['gas', 'sink_particle_velx']
+    sink_particle_vely = ds.r['gas', 'sink_particle_vely']
+    sink_particle_velz = ds.r['gas', 'sink_particle_velz']
+    
     if axis == 'xy':
-        part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
-        part_pos_y = dd['sink_particle_posy'][usable_sinks].in_units('au').value
-        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('cm/s').value
-        part_vel_y = dd['sink_particle_vely'][usable_sinks].in_units('cm/s').value
+        part_pos_x = sink_particle_posx[usable_sinks].in_units('au').value
+        part_pos_y = sink_particle_posy[usable_sinks].in_units('au').value
+        part_vel_x = sink_particle_velx[usable_sinks].in_units('cm/s').value
+        part_vel_y = sink_particle_vely[usable_sinks].in_units('cm/s').value
     elif axis == 'xz':
-        part_pos_x = dd['sink_particle_posx'][usable_sinks].in_units('au').value
-        part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
-        part_vel_x = dd['sink_particle_velx'][usable_sinks].in_units('cm/s').value
-        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('cm/s').value
+        part_pos_x = sink_particle_posx[usable_sinks].in_units('au').value
+        part_pos_y = sink_particle_posz[usable_sinks].in_units('au').value
+        part_vel_x = sink_particle_velx[usable_sinks].in_units('cm/s').value
+        part_vel_y = sink_particle_velz[usable_sinks].in_units('cm/s').value
     elif axis == 'yz':
-        part_pos_x = dd['sink_particle_posy'][usable_sinks].in_units('au').value
-        part_pos_y = dd['sink_particle_posz'][usable_sinks].in_units('au').value
-        part_vel_x = dd['sink_particle_vely'][usable_sinks].in_units('cm/s').value
-        part_vel_y = dd['sink_particle_velz'][usable_sinks].in_units('cm/s').value
+        part_pos_x = sink_particle_posy[usable_sinks].in_units('au').value
+        part_pos_y = sink_particle_posz[usable_sinks].in_units('au').value
+        part_vel_x = sink_particle_vely[usable_sinks].in_units('cm/s').value
+        part_vel_y = sink_particle_velz[usable_sinks].in_units('cm/s').value
     positions = np.array([part_pos_x,part_pos_y])
     velocites = np.array([part_vel_x,part_vel_y])
+    
+    sink_particle_form_time = ds.r['gas', 'sink_particle_form_time']
     part_info = {'particle_mass':part_mass,
                  'particle_velocity':velocites,
                  'particle_position':positions,
                  'accretion_rad':accretion_rad,
                  'particle_tag':part_tags,
-                 'formation_time':dd['sink_particle_form_time'][usable_sinks]}
+                 'formation_time':sink_particle_form_time[usable_sinks]}
     return part_info
 
 def initialise_grid(file, zoom_times=0, num_of_vectors=31.):#, center=0):
@@ -636,95 +651,3 @@ def sample_points(x_field, y_field, z, bin_no=2., no_of_points=2000, weight_arr=
     plot_array = np.array(plot_array)
     plot_array = plot_array.transpose()
     return plot_array
-
-def sliceplot(ds, X, Y, field, cmap=plt.cm.get_cmap('brg'), log=False, resolution=1024, center=0, units=None, cbar_label="Relative Keplerian Velocity ($v_\phi$/$v_\mathrm{kep}$)", weight=None, vmin=None, vmax=None): #cmap=plt.cm.get_cmap('bwr_r')
-    """
-       Creates a slice plot along the xy-plane for a data cube. This is done by interpolating  the simulation output onto a grid.
-    """
-    #print "SLICE PLOT CENTER =", center
-    #print("image resolution =", resolution)
-    x = np.linspace(np.min(X), np.max(X), resolution)
-    y = np.linspace(np.min(Y), np.max(Y), resolution)
-    #print("len(x) =", len(x))
-    X = yt.YTArray(X, 'AU')
-    Y = yt.YTArray(Y, 'AU')
-    xy = np.meshgrid(x,y)
-    dd = ds.all_data()
-    no_of_particles = len(dd['particle_mass'])
-    cell_max = np.max(dd['dz'].in_units('AU'))
-    dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
-    xyz = yt.YTArray([dd['x'].in_units('AU'),dd['y'].in_units('AU'),dd['z'].in_units('AU')]).T
-    print("Computing tree...")
-    tree = spatial.cKDTree(xyz)
-    del xyz
-    print("Done computing tree...")
-    #create grid of the pixel positions and quiver positions
-    xyz_grid = yt.YTArray([xy[0].flatten(), xy[1].flatten(), np.zeros_like(xy[0].flatten())]).T
-
-    #This line also takes a while
-    #print("Finding nearest points...")
-    nearest_points = tree.query(xyz_grid, k=2, distance_upper_bound=cell_max, n_jobs=-1)[1]
-    
-    #print("len(nearest_points) =", len(nearest_points))
-    del xyz_grid
-    #print("Done finding nearest points...")
-
-    if center == 3:
-        field_grid = np.zeros_like(xy[0])
-        for cen in range(len(dd['particle_mass'])+1):
-            myf.set_center(cen)
-            print(("Doing center =", cen))
-            del dd
-            dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
-            field_grid = field_grid + (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
-        field_grid = field_grid/(len(dd['particle_mass'])+1)
-    else:
-        myf.set_center(center)
-        del dd
-        dd = ds.region([0.0,0.0,0.0], [np.min(X), np.min(Y), -cell_max], [np.max(X), np.max(Y), cell_max])
-        field_grid = (dd[field][nearest_points[:,0]].reshape(xy[0].shape) + dd[field][nearest_points[:,1]].reshape(xy[0].shape))/2.
-
-    if weight is not None:
-        weight_field = (dd[weight][nearest_points[:,0]].reshape(xy[0].shape) + dd[weight][nearest_points[:,1]].reshape(xy[0].shape))/2.
-    else:
-        weight_field = np.ones(np.shape(field_grid))
-    weight_field = weight_field/np.max(weight_field)
-
-    if units is not None:
-        field_grid = field_grid.in_units(units)
-    field_grid = field_grid
-
-    if field == 'Relative_Keplerian_Velocity':
-        vmin=0.0
-        vmax=2.0
-    
-    plt.clf()
-    fig, ax = plt.subplots()
-    #print("len(xy[0]) =", len(xy[0]))
-    if log:
-        if vmin is not None:
-            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(vmin=vmin, vmax=vmax), rasterized=True)
-            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-                i[3] = j
-        else:
-            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, norm=LogNorm(), rasterized=True)
-            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-                i[3] = j
-    else:
-        if vmin is not None:
-            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True, vmin=vmin, vmax=vmax)
-            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-                i[3] = j
-        else:
-            plot = ax.pcolormesh(xy[0], xy[1], field_grid.value, cmap=cmap, rasterized=True)
-            for i,j in zip(plot.get_facecolors(),weight_field.flatten()):
-                i[3] = j
-    plt.gca().set_aspect('equal')
-    cbar = plt.colorbar(plot, pad=0.0)
-    cbar.set_label(cbar_label, rotation=270, labelpad=13, size=14)
-
-    ax.set_xlim([np.min(X), np.max(X)])
-    ax.set_ylim([np.min(Y), np.max(Y)])
-    ax.set_xlabel('$x$ (AU)', labelpad=-1)
-    ax.set_ylabel('$y$ (AU)', labelpad=-20)
-    return fig, ax, xy, field_grid, weight_field
