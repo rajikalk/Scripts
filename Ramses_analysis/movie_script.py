@@ -385,22 +385,35 @@ if args.make_frames_only == 'False':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
             
-            try:
-                center_sink_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-                has_particles = True
-            except:
-                has_particles = False
+            has_particles = False
             if args.debug_plotting == 'True':
                 print('determined if sinks exist on rank', rank)
                 sys.stdout.flush()
             
             #Define box::
             if args.image_center == 1:
-                sink_particle_posy = ds.r["gas", "sink_particle_posy"]
-                sink_particle_posz = ds.r["gas", "sink_particle_posz"]
-                center_pos = yt.YTArray([center_sink_posx.in_units('au').value, sink_particle_posy[sink_id].in_units('au').value, sink_particle_posz[sink_id].in_units('au').value], 'au')
-                del sink_particle_posy, sink_particle_posz
+                if args.debug_plotting == 'True':
+                    print('Getting center sink position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink x position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink y position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink z position on rank', rank)
+                    sys.stdout.flush()
+                center_pos = yt.YTArray([sink_particle_posx.in_units('au').value, sink_particle_posy.in_units('au').value, sink_particle_posz.in_units('au').value], 'au')
+                if args.debug_plotting == 'True':
+                    print('set centre posiion on rank', rank)
+                    sys.stdout.flush()
+                del sink_particle_posx, sink_particle_posy, sink_particle_posz
                 gc.collect()
+                
             else:
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
@@ -414,10 +427,10 @@ if args.make_frames_only == 'False':
                 sys.stdout.flush()
                 
             if args.image_center == 1:
-                sink_particle_velx = ds.r["gas", "sink_particle_velx"]
-                sink_particle_vely = ds.r["gas", "sink_particle_vely"]
-                sink_particle_velz = ds.r["gas", "sink_particle_velz"]
-                center_vel = yt.YTArray([sink_particle_velx[sink_id].in_units('cm/s').value, sink_particle_vely[sink_id].in_units('cm/s').value, sink_particle_velz[sink_id].in_units('cm/s').value], 'cm/s')
+                sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+                sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+                sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+                center_vel = yt.YTArray([sink_particle_velx.in_units('cm/s').value, sink_particle_vely.in_units('cm/s').value, sink_particle_velz.in_units('cm/s').value], 'cm/s')
                 del sink_particle_velx, sink_particle_vely, sink_particle_velz
                 gc.collect()
                 if args.debug_plotting == 'True':
