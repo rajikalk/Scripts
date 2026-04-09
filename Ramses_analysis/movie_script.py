@@ -392,17 +392,17 @@ if args.make_frames_only == 'False':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
             
-            try:
-                has_particles = has_sinks(ds)
-            except:
+            sink_particle_posx = ds.r["gas", "sink_particle_posx"]
+            if len(sink_particle_posx)>0:
                 has_particles = True
+            else:
+                has_particles = False
             if args.debug_plotting == 'True':
                 print('determined if sinks exist on rank', rank)
                 sys.stdout.flush()
             
             #Define box::
             if args.image_center == 1:
-                sink_particle_posx = ds.r["gas", "sink_particle_posx"]
                 sink_particle_posy = ds.r["gas", "sink_particle_posy"]
                 sink_particle_posz = ds.r["gas", "sink_particle_posz"]
                 center_pos = yt.YTArray([sink_particle_posx[sink_id].in_units('au').value, sink_particle_posy[sink_id].in_units('au').value, sink_particle_posz[sink_id].in_units('au').value], 'au')
