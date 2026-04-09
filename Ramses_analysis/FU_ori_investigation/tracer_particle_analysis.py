@@ -88,21 +88,22 @@ if args.make_pickle_files == "True":
     sys.stdout.flush()
     CW.Barrier()
     
-    sink_id = CW.bcast(sink_id, root=0)
-    sink_form_time = CW.bcast(sink_form_time, root=0)
-    print("received sink data on rank", rank)
+    if rank != 0:
+        sink_id = CW.bcast(sink_id, root=0)
+        sink_form_time = CW.bcast(sink_form_time, root=0)
+        print("received sink data on rank", rank)
 #    try:
 #        particle_data = {}
 #        particle_data = CW.bcast(particle_data, root=0)
 #    except:
 #        pass
     
-    try:
+
+    if rank != 0:
         particle_data = None
         particle_data = CW.bcast(particle_data, root=0)
         print("received particle_data on rank", rank)
-    except:
-        pass
+
     
 #    try:
 #        particle_data = {}
