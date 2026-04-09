@@ -647,21 +647,25 @@ def _Center_Position_Particle(field, data):
     global centred_sink_id
     global active_radius
     try:
-        dd = data.ds.all_data()
+        sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+        sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+        sink_particle_posz = ds.r['gas', 'sink_particle_posz']
         if np.isnan(active_radius):
-            usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            sink_particle_tag = ds.r['gas', 'sink_particle_tag']
+            usable_tags = sink_particle_tag[centred_sink_id:].astype(int)
             usable_tags = np.array(usable_tags)
         else:
-            centered_sink_pos = yt.YTArray([dd['sink_particle_posx'][sink_ind].in_units('au').value, dd['sink_particle_posy'][sink_ind].in_units('au').value, dd['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-            dx = dd['sink_particle_posx'].in_units('au') - center_pos[0]
-            dy = dd['sink_particle_posy'].in_units('au') - center_pos[1]
-            dz = dd['sink_particle_posz'].in_units('au') - center_pos[2]
+            centered_sink_pos = yt.YTArray([sink_particle_posx[sink_ind].in_units('au').value, sink_particle_posy[sink_ind].in_units('au').value, sink_particle_posz[sink_ind].in_units('au').value], 'au')
+            dx = sink_particle_posx.in_units('au') - center_pos[0]
+            dy = sink_particle_posy.in_units('au') - center_pos[1]
+            dz = sink_particle_posz.in_units('au') - center_pos[2]
             dist = np.sqrt(dx**2+dy**2+dz**2)
             usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-        TM = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
-        x_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posx'][usable_tags].in_units('cm'))
-        y_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posy'][usable_tags].in_units('cm'))
-        z_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posz'][usable_tags].in_units('cm'))
+        sink_particle_mass = ds.r['gas', 'sink_particle_mass']
+        TM = np.sum(sink_particle_mass[np.array(usable_tags)].in_units('g'))
+        x_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posx[usable_tags].in_units('cm'))
+        y_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posy[usable_tags].in_units('cm'))
+        z_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posz[usable_tags].in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm')
@@ -680,46 +684,54 @@ def _Center_Position(field, data):
     global active_radius
     global centred_sink_id
     try:
-        dd = data.ds.all_data()
+        sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+        sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+        sink_particle_posz = ds.r['gas', 'sink_particle_posz']
         if center_pos_ind == 0:
             TM = yt.YTArray(0.0, 'g')
             x_top = yt.YTArray(0.0, 'cm*g')
             y_top = yt.YTArray(0.0, 'cm*g')
             z_top = yt.YTArray(0.0, 'cm*g')
+            sink_particle_tag = ds.r['gas', 'sink_particle_tag']
             if com_pos_use_part == True:
                 try:
                     if np.isnan(active_radius):
-                        usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                        usable_tags = sink_particle_tag[centred_sink_id:].astype(int)
                         usable_tags = np.array(usable_tags)
                     else:
-                        centered_sink_pos = yt.YTArray([dd['sink_particle_posx'][sink_ind].in_units('au').value, dd['sink_particle_posy'][sink_ind].in_units('au').value, dd['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-                        dx = dd['sink_particle_posx'].in_units('au') - center_pos[0]
-                        dy = dd['sink_particle_posy'].in_units('au') - center_pos[1]
-                        dz = dd['sink_particle_posz'].in_units('au') - center_pos[2]
+                        centered_sink_pos = yt.YTArray([sink_particle_posx[sink_ind].in_units('au').value, sink_particle_posy[sink_ind].in_units('au').value, sink_particle_posz[sink_ind].in_units('au').value], 'au')
+                        dx = sink_particle_posx.in_units('au') - center_pos[0]
+                        dy = sink_particle_posy.in_units('au') - center_pos[1]
+                        dz = sink_particle_posz.in_units('au') - center_pos[2]
                         dist = np.sqrt(dx**2+dy**2+dz**2)
                         usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-                    M_part = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    sink_particle_mass = ds.r['gas', 'sink_particle_mass']
+                    M_part = np.sum(sink_particle_mass[np.array(usable_tags)].in_units('g'))
                     TM = TM + M_part
-                    x_top = x_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posx'][usable_tags].in_units('cm'))
-                    y_top = y_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posy'][usable_tags].in_units('cm'))
-                    z_top = z_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_posz'][usable_tags].in_units('cm'))
+                    x_top = x_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posx[usable_tags].in_units('cm'))
+                    y_top = y_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posy[usable_tags].in_units('cm'))
+                    z_top = z_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_posz[usable_tags].in_units('cm'))
                 except:
                     TM = TM
                     x_top = x_top
                     y_top = y_top
                     z_top = z_top
             if com_pos_use_gas == True:
-                M_gas = np.sum(dd['cell_mass'].in_units('g'))
+                cell_mass = ds.r['gas', 'cell_mass']
+                x_index = ds.r['index', 'x']
+                y_index = ds.r['index', 'y']
+                z_index = ds.r['index', 'z']
+                M_gas = np.sum(cell_mass.in_units('g'))
                 TM = TM + M_gas
-                x_top = x_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','x')].in_units('cm'))
-                y_top = y_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','y')].in_units('cm'))
-                z_top = z_top + np.sum(dd['cell_mass'].in_units('g')*dd[('index','z')].in_units('cm'))
+                x_top = x_top + np.sum(cell_mass.in_units('g')*x_index.in_units('cm'))
+                y_top = y_top + np.sum(cell_mass.in_units('g')*y_index.in_units('cm'))
+                z_top = z_top + np.sum(cell_mass.in_units('g')*z_index.in_units('cm'))
             com = [(x_top/TM), (y_top/TM), (z_top/TM)]
             center_pos = yt.YTArray(com, 'cm')
         else:
-            particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            particle_tag = sink_particle_tag[centred_sink_id:].astype(int)
             center_tag = int(particle_tag[center_pos_ind-1])
-            center_pos = yt.YTArray([dd['sink_particle_posx'][center_tag].in_units('cm').value, dd['sink_particle_posy'][center_tag].in_units('cm').value, dd['sink_particle_posz'][center_tag].in_units('cm').value], 'cm')
+            center_pos = yt.YTArray([sink_particle_posx[center_tag].in_units('cm').value, sink_particle_posy[center_tag].in_units('cm').value, sink_particle_posz[center_tag].in_units('cm').value], 'cm')
     except:
         center_pos = data.ds.domain_center
     set_center_pos(center_pos)
