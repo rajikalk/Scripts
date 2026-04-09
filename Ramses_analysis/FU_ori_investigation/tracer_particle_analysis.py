@@ -192,9 +192,9 @@ if args.make_pickle_files == "True":
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
             del particle_identity
             
-            particle_position_x = ds.r['gas', 'particle_position_x']
-            particle_position_y = ds.r['gas', 'particle_position_y']
-            particle_position_z = ds.r['gas', 'particle_position_z']
+            particle_position_x = ds.r['particle_position_x']
+            particle_position_y = ds.r['particle_position_y']
+            particle_position_z = ds.r['particle_position_z']
             
             
             relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
@@ -205,9 +205,9 @@ if args.make_pickle_files == "True":
             
             #Get burst velocity
             
-            particle_velocity_x = ds.r['gas', 'particle_velocity_x']
-            particle_velocity_y = ds.r['gas', 'particle_velocity_y']
-            particle_velocity_z = ds.r['gas', 'particle_velocity_z']
+            particle_velocity_x = ds.r['particle_velocity_x']
+            particle_velocity_y = ds.r['particle_velocity_y']
+            particle_velocity_z = ds.r['particle_velocity_z']
             
             rel_vx = (particle_velocity_x[accreted_inds_burst].value - pv_code[0].value)*scale_v.in_units('km/s')
             rel_vy = (particle_velocity_y[accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
