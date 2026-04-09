@@ -142,18 +142,22 @@ if args.make_pickle_files == "True":
     CW.Barrier()
     #end_sim_file =sorted(glob.glob('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/Level_19/Restart/Level_20_corr_dens_thres/data/output_*/info_*.txt'))[-1]
     print("getting all accreted tracer inds")
+    sys.stdout.flush()
     end_sim_file = files[-1]
     usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
     print("loaded end file")
+    sys.stdout.flush()
     particle_mass = ds.r['particle_mass']
     particle_identity = ds.r['particle_identity']
 
     print("loaded all data")
+    sys.stdout.flush()
     accreted_inds_all = np.where(particle_mass == min_mass)[0]
     accreted_ids_all = particle_identity[accreted_inds_all]
     del particle_mass
     print("got accreted indexes")
+    sys.stdout.flush()
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
     not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
