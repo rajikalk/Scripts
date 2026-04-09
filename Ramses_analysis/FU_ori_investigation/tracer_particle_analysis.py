@@ -9,6 +9,7 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
+import gc
 
 def parse_inputs():
     import argparse
@@ -59,6 +60,8 @@ scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['densi
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
 mym.set_units(units_override)
+del units_override
+gc.collect()
 
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
@@ -78,6 +81,7 @@ if args.make_pickle_files == "True":
         particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
         file_open.close()
         del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
+        gc.collect()
     else:
         sink_id = None
         sink_form_time = None
@@ -137,6 +141,7 @@ if args.make_pickle_files == "True":
     print("got burst indexes")
     sys.stdout.flush()
     del particle_mass, particle_identity
+    gc.collect()
     
     sys.stdout.flush()
     CW.Barrier()
@@ -156,6 +161,7 @@ if args.make_pickle_files == "True":
     accreted_inds_all = np.where(particle_mass == min_mass)[0]
     accreted_ids_all = particle_identity[accreted_inds_all]
     del particle_mass
+    gc.collect()
     print("got accreted indexes")
     sys.stdout.flush()
     
@@ -164,6 +170,7 @@ if args.make_pickle_files == "True":
     print('saved other and not accreted tracer particle indices')
     sys.stdout.flush()
     del particle_identity
+    gc.collect()
     
     sys.stdout.flush()
     CW.Barrier()

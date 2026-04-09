@@ -109,7 +109,7 @@ def sim_info(ds,args):
                 'unit_string': unit_string
                 }
     del field_it, field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
-    gc.collet()
+    gc.collect()
     
     return sim_info
 
@@ -137,11 +137,11 @@ def has_sinks(ds):
     sink_particle_tag = ds.r['gas', 'sink_particle_tag']
     if len(sink_particle_tag[myf.get_centred_sink_id():].astype(int)) != 0:
         del sink_particle_tag
-        gc.collet()
+        gc.collect()
         return True
     else:
         del sink_particle_tag
-        gc.collet()
+        gc.collect()
         return False
 
 #=======MAIN=======
@@ -192,7 +192,7 @@ CW.Barrier()
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 del input_dir
-gc.collet()
+gc.collect()
 if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
 
@@ -219,7 +219,7 @@ if args.debug_plotting == 'True':
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
-gc.collet()
+gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -331,7 +331,7 @@ if args.make_frames_only == 'False':
         else:
             usable_files = files
     del files
-    gc.collet()
+    gc.collect()
         
     sys.stdout.flush()
     CW.Barrier()
@@ -400,14 +400,14 @@ if args.make_frames_only == 'False':
                 sink_particle_posz = ds.r["gas", "sink_particle_posz"]
                 center_pos = yt.YTArray([sink_particle_posx[sink_id].in_units('au').value, sink_particle_posy[sink_id].in_units('au').value, sink_particle_posz[sink_id].in_units('au').value], 'au')
                 del sink_particle_posy, sink_particle_posz
-                gc.collet()
+                gc.collect()
             else:
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
                 del Center_Position
-                gc.collet()
+                gc.collect()
             del sink_particle_posx
-            gc.collet()
+            gc.collect()
             
             if args.debug_plotting == 'True':
                 print('calculated center pos on rank', rank)
