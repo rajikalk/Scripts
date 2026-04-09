@@ -240,10 +240,10 @@ if args.sink_number == None:
     sink_id = np.argmin(sink_particle_speed)
 else:
     sink_id = args.sink_number
-#test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
-#sink_particle_form_time = test_patch["sink_particle_form_time"][sink_id]
 try:
-    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+    test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
+    sink_particle_form_time = test_patch["sink_particle_form_time"][sink_id]
+    #sink_form_time = ds.r["sink_particle_form_time"][sink_id]
 except:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
