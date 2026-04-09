@@ -137,16 +137,17 @@ if args.make_pickle_files == "True":
     ds = yt.load(end_burst_file)
     print("loaded burst file")
     sys.stdout.flush()
-    dd = ds.all_data()
+    particle_mass = ds.r['gas', 'particle_mass']
+    particle_identity = ds.r['gas', 'particle_identity']
     print("loaded all data")
     sys.stdout.flush()
     min_mass = (-1*(sink_id+1))
-    accreted_inds_burst = np.where(dd['particle_mass'] == min_mass)[0]
-    accreted_ids_burst = dd['particle_identity'][accreted_inds_burst]
+    accreted_inds_burst = np.where(particle_mass == min_mass)[0]
+    accreted_ids_burst = particle_identity[accreted_inds_burst]
     print("got burst indexes")
     sys.stdout.flush()
     ds.index.clear_all_data()
-    del dd
+    del particle_mass, particle_identity
     gc.collect()
     #else:
     #    accreted_inds_burst = None
@@ -166,17 +167,20 @@ if args.make_pickle_files == "True":
     usable_files = files[:files.index(end_file)+1]
     ds = yt.load(end_sim_file)
     print("loaded end file")
-    dd = ds.all_data()
+    particle_mass = ds.r['gas', 'particle_mass']
+    particle_identity = ds.r['gas', 'particle_identity']
+
     print("loaded all data")
-    accreted_inds_all = np.where(dd['particle_mass'] == min_mass)[0]
-    accreted_ids_all = dd['particle_identity'][accreted_inds_all]
+    accreted_inds_all = np.where(particle_mass == min_mass)[0]
+    accreted_ids_all = particle_identity[accreted_inds_all]
     ds.index.clear_all_data()
-    del dd
+    del particle_mass
     gc.collect()
     print("got accreted indexes")
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
-    not_accreted_ids = yt.YTArray(list(set(dd['particle_identity'].value) - set(accreted_ids_all.value)), '')
+    not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
+    del particle_identity
     
     sys.stdout.flush()
     CW.Barrier()
@@ -195,7 +199,6 @@ if args.make_pickle_files == "True":
         if make_pickle:
             ds = yt.load(fn, nprocs=4)
             time_val = ds.current_time.value*scale_t - sink_form_time
-            dd = ds.all_data()
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
             particle_position = particle_data['secondary_position'][t_ind]
@@ -203,33 +206,47 @@ if args.make_pickle_files == "True":
             particle_velocity = particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
-            accreted_inds_burst = np.in1d(dd['particle_identity'].value, accreted_ids_burst.value).nonzero()[0]
-            accrete_inds_other = np.in1d(dd['particle_identity'].value, accrete_ids_other.value).nonzero()[0]
-            not_accreted_inds = np.in1d(dd['particle_identity'].value, not_accreted_ids.value).nonzero()[0]
             
-            relx = (dd['particle_position_x'][accreted_inds_burst].value - pp_code[0].value)*scale_l
-            rely = (dd['particle_position_y'][accreted_inds_burst].value - pp_code[1].value)*scale_l
-            relz = (dd['particle_position_z'][accreted_inds_burst].value - pp_code[2].value)*scale_l
+            particle_identity = ds.r['gas', 'particle_identity']
+            accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
+            accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
+            not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
+            del particle_identity
+            
+            particle_position_x = ds.r['gas', 'particle_position_x']
+            particle_position_y = ds.r['gas', 'particle_position_y']
+            particle_position_z = ds.r['gas', 'particle_position_z']
+            
+            
+            relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
+            rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
+            relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
 
             burst_positions = [relx, rely, relz]
             
             #Get burst velocity
-            rel_vx = (dd['particle_velocity_x'][accreted_inds_burst].value - pv_code[0].value)*scale_v.in_units('km/s')
-            rel_vy = (dd['particle_velocity_y'][accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
-            rel_vz = (dd['particle_velocity_z'][accreted_inds_burst].value - pv_code[2].value)*scale_v.in_units('km/s')
+            
+            particle_velocity_x = ds.r['gas', 'particle_velocity_x']
+            particle_velocity_y = ds.r['gas', 'particle_velocity_y']
+            particle_velocity_z = ds.r['gas', 'particle_velocity_z']
+            
+            rel_vx = (particle_velocity_x[accreted_inds_burst].value - pv_code[0].value)*scale_v.in_units('km/s')
+            rel_vy = (particle_velocity_y[accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
+            rel_vz = (particle_velocity_z[accreted_inds_burst].value - pv_code[2].value)*scale_v.in_units('km/s')
+            del particle_velocity_x, particle_velocity_y, particle_velocity_z
             
             burst_velocity = [rel_vx, rel_vy, rel_vz]
             
-            relx = (dd['particle_position_x'][accrete_inds_other].value - pp_code[0].value)*scale_l
-            rely = (dd['particle_position_y'][accrete_inds_other].value - pp_code[1].value)*scale_l
-            relz = (dd['particle_position_z'][accrete_inds_other].value - pp_code[2].value)*scale_l
+            relx = (particle_position_x[accrete_inds_other].value - pp_code[0].value)*scale_l
+            rely = (particle_position_y[accrete_inds_other].value - pp_code[1].value)*scale_l
+            relz = (particle_position_z[accrete_inds_other].value - pp_code[2].value)*scale_l
             
             other_positions = [relx, rely, relz]
             
-            relx = (dd['particle_position_x'][not_accreted_inds].value - pp_code[0].value)*scale_l
-            rely = (dd['particle_position_y'][not_accreted_inds].value - pp_code[1].value)*scale_l
-            relz = (dd['particle_position_z'][not_accreted_inds].value - pp_code[2].value)*scale_l
-            del dd
+            relx = (particle_position_x[not_accreted_inds].value - pp_code[0].value)*scale_l
+            rely = (particle_position_y[not_accreted_inds].value - pp_code[1].value)*scale_l
+            relz = (particle_position_z[not_accreted_inds].value - pp_code[2].value)*scale_l
+            del particle_position_x, particle_position_y, particle_position_z
             ds.index.clear_all_data()
             gc.collect()
             
