@@ -349,7 +349,7 @@ if args.make_frames_only == 'False':
     
     #Trying yt parallelism
     file_int = -1
-    para_div = 1
+    para_div = 2
     for fn in yt.parallel_objects(usable_files, njobs=int(size/(6*para_div))):
         #for fn in yt.parallel_objects(usable_files, njobs=int(size/24)):
         if size > 1:
@@ -386,7 +386,7 @@ if args.make_frames_only == 'False':
                 sys.stdout.flush()
             
             sink_particle_posx = ds.r["gas", "sink_particle_posx"]
-            if len(sink_particle_posx)>0:
+            if len(sink_particle_posx)>sink_id:
                 has_particles = True
             else:
                 has_particles = False
