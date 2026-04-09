@@ -384,14 +384,21 @@ if args.make_frames_only == 'False':
             os.system('cp '+ save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl " + save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl ")
             print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
         if make_pickle == True:
+            if args.debug_plotting == 'True':
+                print('loading file', fn, 'on rank', rank)
+                sys.stdout.flush()
             ds = yt.load(fn, units_override=units_override)
-            
-            #dd = ds.all_data()
+            if args.debug_plotting == 'True':
+                print('loaded file', fn, 'on rank', rank)
+                sys.stdout.flush()
             
             try:
                 has_particles = has_sinks(ds)
             except:
                 has_particles = True
+            if args.debug_plotting == 'True':
+                print('determined if sinks exist on rank', rank)
+                sys.stdout.flush()
             
             #Define box::
             if args.image_center == 1:
@@ -403,12 +410,19 @@ if args.make_frames_only == 'False':
                 Center_Position = ds.r["gas", "Center_Position"]
                 center_pos = Center_Position.in_units('au')
                 del Center_Position
+            
+            if args.debug_plotting == 'True':
+                print('calculated center pos on rank', rank)
+                sys.stdout.flush()
                 
             if args.image_center == 1:
                 sink_particle_velx = ds.r["gas", "sink_particle_velx"]
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"]
                 center_vel = yt.YTArray([sink_particle_velx[sink_id].in_units('cm/s').value, sink_particle_vely[sink_id].in_units('cm/s').value, sink_particle_velz[sink_id].in_units('cm/s').value], 'cm/s')
+                if args.debug_plotting == 'True':
+                    print('calculated center vel on rank', rank)
+                    sys.stdout.flush()
             
             
             if args.axis == 'xy':
