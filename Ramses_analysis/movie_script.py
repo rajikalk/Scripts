@@ -218,9 +218,9 @@ mym.set_units(units_override)
 del units_override['density_unit']
 gc.collect()
 
+print('Getting sink id and formation time')
 sys.stdout.flush()
 CW.Barrier()
-
 if rank == 0:
     if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
         ds = yt.load(files[-1], units_override=units_override)

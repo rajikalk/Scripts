@@ -127,6 +127,7 @@ if args.make_pickle_files == "True":
         end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=False)[0]
         end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         ds = yt.load(end_burst_file)
+        del end_burst_file
         print("loaded burst file")
         dd = ds.all_data()
         print("loaded all data")
