@@ -186,7 +186,7 @@ if args.make_pickle_files == "True":
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
             
-            particle_identity = ds.r['gas', 'particle_identity']
+            particle_identity = ds.r['particle_identity']
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
