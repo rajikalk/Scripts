@@ -78,7 +78,6 @@ if args.make_pickle_files == "True":
         particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
         file_open.close()
         del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
-        print('Size of particle data = ', getsizeof(particle_data))
     else:
         sink_id = None
         sink_form_time = None
