@@ -257,7 +257,18 @@ elif len(args.movie_times) > 0:
     m_times = eval(args.movie_times)
     no_frames = len(m_times)
 elif args.use_all_files == 'False':
-    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=args.start_time)
+    #Get starting file time
+    if args.start_time != 0:
+        start_time = args.start_time
+    else:
+        ds = yt.load(files[0], units_override=units_override)
+        current_time = ds.current_time.in_units('yr')
+        if current_time.in_units('yr') > sink_form_time.in_units('yr'):
+            start_time = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
+        else:
+            start_time = yt.YTQuantity(0, 'yr')
+    
+    m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=start_time)
     
     no_frames = len(m_times)
     m_times = m_times[args.start_frame:]
