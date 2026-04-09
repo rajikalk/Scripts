@@ -748,14 +748,14 @@ def _Center_Velocity_Gas(field, data):
     """
     try:
         cell_mass = data.ds.r['gas', 'cell_mass']
-        x-velocity = data.ds.r['gas', 'x-velocity']
-        y-velocity = data.ds.r['gas', 'y-velocity']
-        z-velocity = data.ds.r['gas', 'z-velocity']
+        x_velocity = data.ds.r['gas', 'x-velocity']
+        y_velocity = data.ds.r['gas', 'y-velocity']
+        z_velocity = data.ds.r['gas', 'z-velocity']
         dd = data.ds.all_data()
         TM = np.sum(cell_mass.in_units('g'))
-        x_top = np.sum(cell_mass.in_units('g')*x-velocity.in_units('cm/s'))
-        y_top = np.sum(cell_mass.in_units('g')*y-velocity.in_units('cm/s'))
-        z_top = np.sum(cell_mass.in_units('g')*z-velocity.in_units('cm/s'))
+        x_top = np.sum(cell_mass.in_units('g')*x_velocity.in_units('cm/s'))
+        y_top = np.sum(cell_mass.in_units('g')*x_velocity.in_units('cm/s'))
+        z_top = np.sum(cell_mass.in_units('g')*x_velocity.in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
