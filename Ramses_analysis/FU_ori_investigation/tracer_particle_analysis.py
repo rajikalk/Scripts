@@ -74,35 +74,32 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    #if rank == 0:
-    print("reading pickle", args.input_pickle)
-    sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading particle data")
-    sys.stdout.flush()
-    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
-    gc.collect()
-    '''
+    if rank == 0:
+        print("reading pickle", args.input_pickle)
+        sys.stdout.flush()
+        file_open = open(args.input_pickle, 'rb')
+        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
+        file_open.close()
+        print("finished reading particle data")
+        sys.stdout.flush()
+        del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
+        gc.collect()
     else:
         sink_id = None
         sink_form_time = None
+        particle_data = None
     sys.stdout.flush()
     CW.Barrier()
     
-    if rank != 0:
-        sink_id = CW.bcast(sink_id, root=0)
-        sink_form_time = CW.bcast(sink_form_time, root=0)
-        print("received sink data on rank", rank)
-        sys.stdout.flush()
+    sink_id = CW.bcast(sink_id, root=0)
+    sink_form_time = CW.bcast(sink_form_time, root=0)
+    print("received sink data on rank", rank)
+    sys.stdout.flush()
+    particle_data = CW.bcast(particle_data, root=0)
+    print("received particle_data on rank", rank)
+    sys.stdout.flush()
 
-    if rank != 0:
-        particle_data = None
-        particle_data = CW.bcast(particle_data, root=0)
-        print("received particle_data on rank", rank)
-        sys.stdout.flush()
-    '''
+
     sys.stdout.flush()
     CW.Barrier()
 
