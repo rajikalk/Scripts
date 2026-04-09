@@ -242,10 +242,9 @@ else:
     sink_id = args.sink_number
 #test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
 #sink_particle_form_time = test_patch["sink_particle_form_time"][sink_id]
-sink_particle_form_time = ds.r["gas", "sink_particle_form_time"][sink_id]
-if len(sink_particle_form_time) > sink_id:
-    sink_form_time = sink_particle_form_time[sink_id]
-else:
+try:
+    sink_form_time = ds.r["gas", "sink_particle_form_time"][sink_id]
+except:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 
