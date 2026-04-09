@@ -8,7 +8,6 @@ import os
 import my_ramses_module as mym
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import gc
 
 def parse_inputs():
     import argparse
@@ -119,7 +118,7 @@ def sim_info(ds,args):
     del annotate_freq
     del smoothing
     del unit_string
-    gc.collect()
+    
     return sim_info
 
 def image_properties(X, Y, args, sim_info):
@@ -146,11 +145,11 @@ def has_sinks(ds):
     sink_particle_tag = ds.r['gas', 'sink_particle_tag']
     if len(sink_particle_tag[myf.get_centred_sink_id():].astype(int)) != 0:
         del sink_particle_tag
-        gc.collect()
+        
         return True
     else:
         del sink_particle_tag
-        gc.collect()
+        
         return False
 
 #=======MAIN=======
@@ -201,7 +200,6 @@ CW.Barrier()
 #File files
 files = sorted(glob.glob(input_dir+"*/info*.txt"))
 del input_dir
-gc.collect()
 if args.debug_plotting == 'True':
     print('got all RAMSES files on rank', rank)
 
@@ -228,7 +226,7 @@ if args.debug_plotting == 'True':
 
 #find sink particle to center on and formation time
 del units_override['density_unit']
-gc.collect()
+
 
 sys.stdout.flush()
 CW.Barrier()
@@ -255,8 +253,6 @@ if len(sink_particle_form_time) > sink_id:
 else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
-
-gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -342,7 +338,7 @@ if args.make_frames_only == 'False':
         else:
             usable_files = files
     del files
-    gc.collect()
+    
         
     sys.stdout.flush()
     CW.Barrier()
@@ -351,13 +347,13 @@ if args.make_frames_only == 'False':
     frames = list(range(args.start_frame, no_frames))
     print("derived image position arrays")
     
-gc.collect()
+
 sys.stdout.flush()
 CW.Barrier()
 
 if args.make_frames_only == 'False':
     print("starting to make projections")
-    gc.collect()
+    
     #Trying yt parallelism
     file_int = -1
     para_div = 1
@@ -389,7 +385,7 @@ if args.make_frames_only == 'False':
             print("copied", save_dir + "movie_frame_" + ("%06d" % frames[file_int-1]) + ".pkl", "to",  save_dir + "movie_frame_" + ("%06d" % frames[file_int]) + ".pkl")
         if make_pickle == True:
             ds = yt.load(fn, units_override=units_override)
-            gc.collect()
+            
             #dd = ds.all_data()
             
             try:
@@ -413,7 +409,7 @@ if args.make_frames_only == 'False':
                 sink_particle_vely = ds.r["gas", "sink_particle_vely"]
                 sink_particle_velz = ds.r["gas", "sink_particle_velz"]
                 center_vel = yt.YTArray([sink_particle_velx[sink_id].in_units('cm/s').value, sink_particle_vely[sink_id].in_units('cm/s').value, sink_particle_velz[sink_id].in_units('cm/s').value], 'cm/s')
-            gc.collect()
+            
             
             if args.axis == 'xy':
                 axis_ind = 2
@@ -422,7 +418,7 @@ if args.make_frames_only == 'False':
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
-                gc.collect()
+                
             elif args.axis == 'xz':
                 axis_ind = 1
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
@@ -431,7 +427,7 @@ if args.make_frames_only == 'False':
 
                 del left_corner
                 del right_corner
-                gc.collect()
+                
             elif args.axis == 'yz':
                 axis_ind = 0
                 left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
@@ -439,7 +435,7 @@ if args.make_frames_only == 'False':
                 region = ds.box(left_corner, right_corner)
                 del left_corner
                 del right_corner
-                gc.collect()
+                
             
             if has_particles:
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
@@ -452,7 +448,7 @@ if args.make_frames_only == 'False':
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
                 del time_real
-                gc.collect()
+                
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
@@ -474,7 +470,7 @@ if args.make_frames_only == 'False':
                     del L_x
                     del L_y
                     del L_z
-                    gc.collect()
+                    
                 else:
                     Orbital_Angular_Momentum_x = ds.r['gas', 'Orbital_Angular_Momentum_x']
                     Orbital_Angular_Momentum_y = ds.r['gas', 'Orbital_Angular_Momentum_y']
@@ -487,7 +483,7 @@ if args.make_frames_only == 'False':
                     myf.set_normal(L)
                     print("L =", L)
                     
-            gc.collect()
+            
             
             #mass_array = dd['sink_particle_mass']
 
@@ -517,7 +513,7 @@ if args.make_frames_only == 'False':
                 Y_image_vel = Y_vel
             
             #del X, X_vel
-            #gc.collect()
+            #
             
             if args.update_ax_lim == 'False':
                 if args.axis == 'xy':
@@ -557,7 +553,7 @@ if args.make_frames_only == 'False':
                 del x_top
                 del y_top
                 del z_top
-                gc.collect()
+                
                 #del com_vel
                     
             #myf.set_center_pos_ind(args.image_center)
@@ -656,7 +652,7 @@ if args.make_frames_only == 'False':
                         magx = proj_dict[proj_dict_keys[1]]
                         magy = proj_dict[proj_dict_keys[2]]
                 del region
-                gc.collect()
+                
                         
             elif args.use_angular_momentum != 'False':
                 proj_root_rank = int(rank/7)*7
@@ -747,12 +743,12 @@ if args.make_frames_only == 'False':
                     del velx_full
                     del vely_full
                     del velz_full
-                    gc.collect()
+                    
                 else:
                     velx = None
                     vely = None
                     velz = None
-                gc.collect()
+                
 
                 args_dict = {}
                 if args.annotate_time == "True":
@@ -783,7 +779,7 @@ if args.make_frames_only == 'False':
                 del vely
                 del velz
                 del args_dict
-                gc.collect()
+                
             ds.index.clear_all_data()
             del has_particles
             del time_val
@@ -793,7 +789,7 @@ if args.make_frames_only == 'False':
             del Y_image
             del X_image_vel
             del Y_image_vel
-            gc.collect()
+            
         
     print('FINISHED MAKING YT PROJECTIONS ON RANK', rank)
 
@@ -848,7 +844,7 @@ else:
 
 sys.stdout.flush()
 CW.Barrier()
-gc.collect()
+
 
 rit = args.working_rank - 1
 for pickle_file in pickle_files:
