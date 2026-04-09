@@ -627,11 +627,14 @@ def _Center_Position_Gas(field, data):
     Calculates the CoM of gas
     """
     try:
-        dd = data.ds.all_data()
-        TM = np.sum(dd['cell_mass'].in_units('g'))
-        x_top = np.sum(dd['cell_mass'].in_units('g')*dd[('index','x')].in_units('cm'))
-        y_top = np.sum(dd['cell_mass'].in_units('g')*dd[('index','y')].in_units('cm'))
-        z_top = np.sum(dd['cell_mass'].in_units('g')*dd[('index','z')].in_units('cm'))
+        cell_mass = ds.r['gas', 'cell_mass']
+        x_index = ds.r['index', 'x']
+        y_index = ds.r['index', 'y']
+        z_index = ds.r['index', 'z']
+        TM = np.sum(cell_mass.in_units('g'))
+        x_top = np.sum(cell_mass.in_units('g')*x_index.in_units('cm'))
+        y_top = np.sum(cell_mass.in_units('g')*y_index.in_units('cm'))
+        z_top = np.sum(cell_mass.in_units('g')*z_index.in_units('cm'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm')
@@ -744,11 +747,15 @@ def _Center_Velocity_Gas(field, data):
     Calculates the mass weighted bulk velocity of the gas
     """
     try:
+        cell_mass = ds.r['gas', 'cell_mass']
+        x-velocity = ds.r['gas', 'x-velocity']
+        y-velocity = ds.r['gas', 'y-velocity']
+        z-velocity = ds.r['gas', 'z-velocity']
         dd = data.ds.all_data()
-        TM = np.sum(dd['cell_mass'].in_units('g'))
-        x_top = np.sum(dd['cell_mass'].in_units('g')*dd['x-velocity'].in_units('cm/s'))
-        y_top = np.sum(dd['cell_mass'].in_units('g')*dd['y-velocity'].in_units('cm/s'))
-        z_top = np.sum(dd['cell_mass'].in_units('g')*dd['z-velocity'].in_units('cm/s'))
+        TM = np.sum(cell_mass.in_units('g'))
+        x_top = np.sum(cell_mass.in_units('g')*x-velocity.in_units('cm/s'))
+        y_top = np.sum(cell_mass.in_units('g')*y-velocity.in_units('cm/s'))
+        z_top = np.sum(cell_mass.in_units('g')*z-velocity.in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
@@ -764,21 +771,28 @@ def _Center_Velocity_Particle(field, data):
     global centred_sink_id
     global active_radius
     try:
-        dd = data.ds.all_data()
+        sink_particle_tag = ds.r['gas', 'sink_particle_tag']
         if np.isnan(active_radius):
-            usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            usable_tags = sink_particle_tag[centred_sink_id:].astype(int)
             usable_tags = np.array(usable_tags)
         else:
-            centered_sink_pos = yt.YTArray([dd['sink_particle_posx'][sink_ind].in_units('au').value, dd['sink_particle_posy'][sink_ind].in_units('au').value, dd['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-            dx = dd['sink_particle_posx'].in_units('au') - center_pos[0]
-            dy = dd['sink_particle_posy'].in_units('au') - center_pos[1]
-            dz = dd['sink_particle_posz'].in_units('au') - center_pos[2]
+            sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+            sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+            sink_particle_posz = ds.r['gas', 'sink_particle_posz']
+            centered_sink_pos = yt.YTArray([sink_particle_posx[sink_ind].in_units('au').value, sink_particle_posy[sink_ind].in_units('au').value, sink_particle_posz[sink_ind].in_units('au').value], 'au')
+            dx = sink_particle_posx.in_units('au') - center_pos[0]
+            dy = sink_particle_posy.in_units('au') - center_pos[1]
+            dz = sink_particle_posz.in_units('au') - center_pos[2]
             dist = np.sqrt(dx**2+dy**2+dz**2)
             usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-        TM = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
-        x_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_velx'][usable_tags].in_units('cm/s'))
-        y_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_vely'][usable_tags].in_units('cm/s'))
-        z_top = np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_velz'][usable_tags].in_units('cm/s'))
+        sink_particle_mass = ds.r['gas', 'sink_particle_mass']
+        sink_particle_velx = ds.r['gas', 'sink_particle_velx']
+        sink_particle_vely = ds.r['gas', 'sink_particle_vely']
+        sink_particle_velz = ds.r['gas', 'sink_particle_velz']
+        TM = np.sum(sink_particle_mass[np.array(usable_tags)].in_units('g'))
+        x_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_velx[usable_tags].in_units('cm/s'))
+        y_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_vely[usable_tags].in_units('cm/s'))
+        z_top = np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_velz[usable_tags].in_units('cm/s'))
         com = [(x_top/TM), (y_top/TM), (z_top/TM)]
     except:
         com = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
@@ -797,29 +811,37 @@ def _Center_Velocity(field, data):
     global center_vel_ind
     global active_radius
     try:
-        dd = data.ds.all_data()
         if center_vel_ind == 0:
             TM = yt.YTArray(0.0, 'g')
             x_top = yt.YTArray(0.0, 'cm*g/s')
             y_top = yt.YTArray(0.0, 'cm*g/s')
             z_top = yt.YTArray(0.0, 'cm*g/s')
+            sink_particle_tag = ds.r['gas', 'sink_particle_tag']
+            sink_particle_velx = ds.r['gas', 'sink_particle_velx']
+            sink_particle_vely = ds.r['gas', 'sink_particle_vely']
+            sink_particle_velz = ds.r['gas', 'sink_particle_velz']
+            
             if com_vel_use_part == True:
                 try:
                     if np.isnan(active_radius):
-                        usable_tags = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+                        usable_tags = sink_particle_tag[centred_sink_id:].astype(int)
                         usable_tags = np.array(usable_tags)
                     else:
-                        centered_sink_pos = yt.YTArray([dd['sink_particle_posx'][sink_ind].in_units('au').value, dd['sink_particle_posy'][sink_ind].in_units('au').value, dd['sink_particle_posz'][sink_ind].in_units('au').value], 'au')
-                        dx = dd['sink_particle_posx'].in_units('au') - center_pos[0]
-                        dy = dd['sink_particle_posy'].in_units('au') - center_pos[1]
-                        dz = dd['sink_particle_posz'].in_units('au') - center_pos[2]
+                        sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+                        sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+                        sink_particle_posz = ds.r['gas', 'sink_particle_posz']
+                        centered_sink_pos = yt.YTArray([sink_particle_posx[sink_ind].in_units('au').value, sink_particle_posy[sink_ind].in_units('au').value, sink_particle_posz[sink_ind].in_units('au').value], 'au')
+                        dx = sink_particle_posx.in_units('au') - center_pos[0]
+                        dy = sink_particle_posy.in_units('au') - center_pos[1]
+                        dz = sink_particle_posz.in_units('au') - center_pos[2]
                         dist = np.sqrt(dx**2+dy**2+dz**2)
                         usable_tags = np.argwhere(dist.value < active_radius.value).T[0]
-                    M_part = np.sum(dd['sink_particle_mass'][np.array(usable_tags)].in_units('g'))
+                    sink_particle_mass = ds.r['gas', 'sink_particle_mass']
+                    M_part = np.sum(sink_particle_mass[np.array(usable_tags)].in_units('g'))
                     TM = TM + M_part
-                    x_top = x_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_velx'][usable_tags].in_units('cm/s'))
-                    y_top = y_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_vely'][usable_tags].in_units('cm/s'))
-                    z_top = z_top + np.sum(dd['sink_particle_mass'][usable_tags].in_units('g')*dd['sink_particle_velz'][usable_tags].in_units('cm/s'))
+                    x_top = x_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_velx[usable_tags].in_units('cm/s'))
+                    y_top = y_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_vely[usable_tags].in_units('cm/s'))
+                    z_top = z_top + np.sum(sink_particle_mass[usable_tags].in_units('g')*sink_particle_velz[usable_tags].in_units('cm/s'))
                 except:
                     TM = TM
                     x_top = x_top
@@ -835,9 +857,9 @@ def _Center_Velocity(field, data):
             center_vel = yt.YTArray(com_vel, 'cm')
         else:
             dd = data.ds.all_data()
-            particle_tag = dd['sink_particle_tag'][centred_sink_id:].astype(int)
+            particle_tag = sink_particle_tag[centred_sink_id:].astype(int)
             center_tag = int(particle_tag[center_vel_ind-1])
-            center_vel = yt.YTArray([dd['sink_particle_velx'][center_tag].in_units('cm/s').value, dd['sink_particle_vely'][center_tag].in_units('cm/s').value, dd['sink_particle_velz'][center_tag].in_units('cm/s').value], 'cm/s')
+            center_vel = yt.YTArray([sink_particle_velx[center_tag].in_units('cm/s').value, sink_particle_vely[center_tag].in_units('cm/s').value, sink_particle_velz[center_tag].in_units('cm/s').value], 'cm/s')
     except:
         center_vel = yt.YTArray([0.0, 0.0, 0.0], 'cm/s')
     set_center_vel(center_vel)
@@ -850,12 +872,14 @@ def _All_Particle_Positions(field, data):
     Saves all the particle positions
     """
     if ('all', 'sink_particle_posx') in data.ds.field_list:
-        dd = data.ds.all_data()
-        if len(dd['sink_particle_posx'].in_units('cm').value) > 1:
-            pos = np.array([dd['sink_particle_posx'].in_units('cm').value, dd['sink_particle_posy'].in_units('cm').value, dd['sink_particle_posz'].in_units('cm').value])
+        sink_particle_posx = ds.r['gas', 'sink_particle_posx']
+        sink_particle_posy = ds.r['gas', 'sink_particle_posy']
+        sink_particle_posz = ds.r['gas', 'sink_particle_posz']
+        if len(sink_particle_posx.in_units('cm').value) > 1:
+            pos = np.array([sink_particle_posx.in_units('cm').value, sink_particle_posy.in_units('cm').value, sink_particle_posz.in_units('cm').value])
             pos = yt.YTArray(pos.T, 'cm')
         else:
-            pos = yt.YTArray([[dd['sink_particle_posx'][0].in_units('cm').value, dd['sink_particle_posy'][0].in_units('cm').value, dd['sink_particle_posz'][0].in_units('cm').value]], 'cm')
+            pos = yt.YTArray([[sink_particle_posx[0].in_units('cm').value, sink_particle_posy[0].in_units('cm').value, sink_particle_posz[0].in_units('cm').value]], 'cm')
     else:
         pos = yt.YTArray([], 'cm')
     set_part_pos(pos)
@@ -868,12 +892,14 @@ def _All_Particle_Velocities(field, data):
     Saves all the particle velocities
     """
     if ('all', 'sink_particle_velx') in data.ds.field_list:
-        dd = data.ds.all_data()
-        if len(dd['sink_particle_velx'].in_units('cm/s').value) > 1:
-            vel = np.array([dd['sink_particle_velx'].in_units('cm/s').value, dd['sink_particle_vely'].in_units('cm/s').value, dd['sink_particle_velz'].in_units('cm/s').value])
+        sink_particle_velx = ds.r['gas', 'sink_particle_velx']
+        sink_particle_vely = ds.r['gas', 'sink_particle_vely']
+        sink_particle_velz = ds.r['gas', 'sink_particle_velz']
+        if len(sink_particle_velx.in_units('cm/s').value) > 1:
+            vel = np.array([sink_particle_velx.in_units('cm/s').value, sink_particle_vely.in_units('cm/s').value, sink_particle_velz.in_units('cm/s').value])
             vel = yt.YTArray(vel.T, 'cm/s')
         else:
-            vel = yt.YTArray([[dd['sink_particle_velx'][0].in_units('cm/s').value, dd['sink_particle_vely'][0].in_units('cm/s').value, dd['sink_particle_velz'][0].in_units('cm/s').value]], 'cm/s')
+            vel = yt.YTArray([[sink_particle_velx[0].in_units('cm/s').value, sink_particle_vely[0].in_units('cm/s').value, sink_particle_velz[0].in_units('cm/s').value]], 'cm/s')
     else:
         vel = yt.YTArray([], 'cm/s')
     set_part_vel(vel)
@@ -889,8 +915,7 @@ def _All_Particle_Masses(field, data):
         if np.shape(data['x']) == (16, 16, 16):
             mass = data['sink_particle_mass']
         else:
-            dd = data.ds.all_data()
-            mass = dd['sink_particle_mass']
+            mass = ds.r['gas', 'sink_particle_mass']
     else:
         mass = yt.YTArray([], 'g')
     set_part_mass(mass)

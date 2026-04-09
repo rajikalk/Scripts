@@ -195,7 +195,7 @@ if args.make_pickle_files == "True":
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
         if make_pickle:
-            ds = yt.load(fn, nprocs=4)
+            ds = yt.load(fn)
             time_val = ds.current_time.value*scale_t - sink_form_time
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
