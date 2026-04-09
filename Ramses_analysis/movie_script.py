@@ -255,44 +255,8 @@ if len(sink_particle_form_time) > sink_id:
 else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
-#dd = ds.all_data()
-'''
-if args.debug_plotting == 'True':
-    print('Successfuly got all_data on rank', rank)
-    sys.stdout.flush()
-if args.sink_number == None:
-    if args.debug_plotting == 'True':
-        print('Getting sink id from sink_particle_speed on rank', rank)
-        sys.stdout.flush()
-    sink_id = np.argmin(dd['sink_particle_speed'])
-else:
-    sink_id = args.sink_number
-if rank == 0:
-    print("CENTERED SINK ID:", sink_id)
-try:
-    myf.set_centred_sink_id(sink_id)
-except:
-    pass
-if len(dd['sink_particle_form_time']) > sink_id:
-    sink_form_time = dd['sink_particle_form_time'][sink_id]
-else:
-    print("TARGET SINK NOT FORMED YET")
-    sys.exit()
-#ds.index.clear_all_data()
-del dd
-'''
+
 gc.collect()
-#else:
-#    sink_id = None
-#    sink_form_time = None
-
-#sys.stdout.flush()
-#CW.Barrier()
-
-#sink_id = CW.bcast(sink_id, root=0)
-#sink_form_time = CW.bcast(sink_form_time, root=0)
-#myf.set_centred_sink_id(sink_id)
-#print("received particle_data on rank", rank)
 
 sys.stdout.flush()
 CW.Barrier()
@@ -632,7 +596,7 @@ if args.make_frames_only == 'False':
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
-                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, nprocs=(int(size/para_div)/6)):
+                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=(int(size/para_div)/6)):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
@@ -702,7 +666,7 @@ if args.make_frames_only == 'False':
                 #proj_field_list =[simfo['field']]
                 proj_field_list =[simfo['field'], ('gas', 'Projected_Velocity_x'), ('gas', 'Projected_Velocity_y'), ('gas', 'Projected_Velocity_z'), ('gas', 'Projected_Magnetic_Field_x'), ('gas', 'Projected_Magnetic_Field_y'), ('gas', 'Projected_Magnetic_Field_z')]
                 
-                for field in yt.parallel_objects(proj_field_list, nprocs=len(proj_field_list)*para_div):
+                for field in yt.parallel_objects(proj_field_list, ncpus=len(proj_field_list)*para_div):
                     proj = yt.OffAxisProjectionPlot(ds, L, field, width=(x_width/2, 'AU'), weight_field=weight_field, method='integrate', center=(center_pos, 'AU'), depth=(args.slice_thickness, 'AU'))
                     if 'mag' in str(field):
                         if weight_field == None:
