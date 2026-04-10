@@ -239,6 +239,8 @@ if args.make_pickle_files == "True":
             pickle.dump((write_dict), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+            
+print("finished saving tracer particle data!")
 
 sys.stdout.flush()
 CW.Barrier()
