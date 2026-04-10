@@ -185,8 +185,12 @@ if args.make_pickle_files == "True":
             particle_velocity = particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
-            print("loading tracer particle indices on rank", rank)
-            particle_identity = ds.r['particle_identity']
+            try:
+                print("loading tracer particle indices on rank", rank)
+                particle_identity = ds.r['particle_identity']
+            except:
+                print('particle data corrupt for', fn)
+                continue
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
