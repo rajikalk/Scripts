@@ -215,16 +215,22 @@ if args.make_pickle_files == "True":
             particle_velocity = particle_data['secondary_velocity'][t_ind]
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
-            
-            particle_identity = ds.r['gas', 'particle_identity']
+            try:
+                print("loading tracer particle indices on rank", rank)
+                particle_identity = ds.r['particle_identity']
+            except:
+                print('particle data corrupt for', fn)
+                continue
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
             del particle_identity
+            gc.collect()
             
-            particle_position_x = ds.r['gas', 'particle_position_x']
-            particle_position_y = ds.r['gas', 'particle_position_y']
-            particle_position_z = ds.r['gas', 'particle_position_z']
+            print("loading tracer particle positions on rank", rank)
+            particle_position_x = ds.r['particle_position_x']
+            particle_position_y = ds.r['particle_position_y']
+            particle_position_z = ds.r['particle_position_z']
             
             
             relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
@@ -234,15 +240,16 @@ if args.make_pickle_files == "True":
             burst_positions = [relx, rely, relz]
             
             #Get burst velocity
+            print("loading tracer particle velocities on rank", rank)
+            particle_velocity_x = ds.r['particle_velocity_x'][accreted_inds_burst]
+            particle_velocity_y = ds.r['particle_velocity_y'][accreted_inds_burst]
+            particle_velocity_z = ds.r['particle_velocity_z'][accreted_inds_burst]
             
-            particle_velocity_x = ds.r['gas', 'particle_velocity_x']
-            particle_velocity_y = ds.r['gas', 'particle_velocity_y']
-            particle_velocity_z = ds.r['gas', 'particle_velocity_z']
-            
-            rel_vx = (particle_velocity_x[accreted_inds_burst].value - pv_code[0].value)*scale_v.in_units('km/s')
-            rel_vy = (particle_velocity_y[accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
-            rel_vz = (particle_velocity_z[accreted_inds_burst].value - pv_code[2].value)*scale_v.in_units('km/s')
+            rel_vx = (particle_velocity_x.value - pv_code[0].value)*scale_v.in_units('km/s')
+            rel_vy = (particle_velocity_y.value - pv_code[1].value)*scale_v.in_units('km/s')
+            rel_vz = (particle_velocity_z.value - pv_code[2].value)*scale_v.in_units('km/s')
             del particle_velocity_x, particle_velocity_y, particle_velocity_z
+            gc.collect()
             
             burst_velocity = [rel_vx, rel_vy, rel_vz]
             
@@ -256,6 +263,7 @@ if args.make_pickle_files == "True":
             rely = (particle_position_y[not_accreted_inds].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[not_accreted_inds].value - pp_code[2].value)*scale_l
             del particle_position_x, particle_position_y, particle_position_z
+            gc.collect()
             
             not_accreted_positions = [relx, rely, relz]
             
@@ -265,6 +273,8 @@ if args.make_pickle_files == "True":
             pickle.dump((write_dict), file)
             file.close()
             print("wrote file", pickle_file, "for file_int", file_int, "of", no_files)
+            
+print("finished saving tracer particle data!")
 
 sys.stdout.flush()
 CW.Barrier()

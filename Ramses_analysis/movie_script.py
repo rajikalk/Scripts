@@ -17,7 +17,7 @@ def parse_inputs():
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
-    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
+    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", type=str, default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 50., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
@@ -72,8 +72,12 @@ def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
+    print("Reading derived fields list")
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
+    print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
+    del field_it
+    gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
@@ -93,6 +97,8 @@ def sim_info(ds,args):
         unit_string = str(test_patch[field[1]].in_cgs().units)
     except:
         unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
+    del test_patch
+    gc.collect()
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
@@ -108,7 +114,7 @@ def sim_info(ds,args):
                 'smoothing': smoothing,
                 'unit_string': unit_string
                 }
-    del field_it, field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
+    del field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
     gc.collect()
     
     return sim_info
@@ -264,14 +270,19 @@ if args.debug_plotting == 'True':
     print('Getting all_data on rank', rank)
     sys.stdout.flush()
 if args.sink_number == None:
-    sink_particle_speed = ds.r["gas", "sink_particle_speed"]
+    sink_particle_speed = ds.r["sink_particle_speed"]
     sink_id = np.argmin(sink_particle_speed)
 else:
     sink_id = args.sink_number
-sink_particle_form_time = ds.r["gas", "sink_particle_form_time"]
-if len(sink_particle_form_time) > sink_id:
-    sink_form_time = sink_particle_form_time[sink_id]
-else:
+print("Center sink =", sink_id)
+try:
+    test_patch = ds.box(ds.domain_center-0.05*ds.domain_width, ds.domain_center+0.05*ds.domain_width)
+    sink_form_time = test_patch["sink_particle_form_time"][sink_id]
+    del test_patch
+    gc.collect()
+    print("Sink form time", sink_form_time)
+    #sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+except:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 
@@ -295,6 +306,8 @@ elif args.use_all_files == 'False':
             start_time = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
         else:
             start_time = yt.YTQuantity(0, 'yr')
+        gc.collect()
+    print("start time", start_time)
     
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=start_time)
     
@@ -303,14 +316,24 @@ elif args.use_all_files == 'False':
 else:
     no_frames = len(files)
 
+print('m_times =', m_times)
+print('no_frames =', no_frames)
+gc.collect()
+
 if args.make_frames_only == 'False':
     sys.stdout.flush()
     CW.Barrier()
 
     #Get simulation information
-    if rank == 0:
-        print("loading fields")
+    print("Getting Simfo")
+    sys.stdout.flush()
     simfo = sim_info(ds, args)
+    print("Got Simfo")
+    sys.stdout.flush()
+    
+    gc.collect()
+    CW.Barrier()
+        
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
     X, Y = np.meshgrid(x, x)
     annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
@@ -455,7 +478,6 @@ if args.make_frames_only == 'False':
                 center_pos = Center_Position.in_units('au')
                 del Center_Position
                 gc.collect()
-            del sink_particle_posx
             gc.collect()
             
             if args.debug_plotting == 'True':
@@ -516,11 +538,11 @@ if args.make_frames_only == 'False':
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
-                    sink_particle_posx = ds.r['gas', 'sink_particle_posx']
-                    sink_particle_posy = ds.r['gas', 'sink_particle_posy']
-                    sink_particle_posz = ds.r['gas', 'sink_particle_posz']
-                    left_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value - 100, sink_particle_posy[sink_id].in_units('AU').value - 100, sink_particle_posz[sink_id].in_units('AU').value - 100], 'AU')
-                    right_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value + 100, sink_particle_posy[sink_id].in_units('AU').value + 100, sink_particle_posz[sink_id].in_units('AU').value + 100], 'AU')
+                    sink_particle_posx = ds.r['gas', 'sink_particle_posx'][sink_id]
+                    sink_particle_posy = ds.r['gas', 'sink_particle_posy'][sink_id]
+                    sink_particle_posz = ds.r['gas', 'sink_particle_posz'][sink_id]
+                    left_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value - 100, sink_particle_posy.in_units('AU').value - 100, sink_particle_posz.in_units('AU').value - 100], 'AU')
+                    right_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value + 100, sink_particle_posy.in_units('AU').value + 100, sink_particle_posz.in_units('AU').value + 100], 'AU')
                     del sink_particle_posx, sink_particle_posy, sink_particle_posz
                     gc.collect()
                     region = ds.box(left_corner_test, right_corner_test)
@@ -643,7 +665,7 @@ if args.make_frames_only == 'False':
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
-                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=(int(size/para_div)/6)):
+                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
@@ -825,7 +847,6 @@ if args.make_frames_only == 'False':
                 del image, magx, magy, velx, vely, velz, args_dict
                 gc.collect()
                 
-            ds.index.clear_all_data()
             del has_particles, time_val, center_vel, part_info, X_image, Y_image, X_image_vel, Y_image_vel
             gc.collect()
             
