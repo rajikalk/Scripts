@@ -191,6 +191,7 @@ if args.make_pickle_files == "True":
             accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
             del particle_identity
+            gc.collect()
             
             particle_position_x = ds.r['particle_position_x']
             particle_position_y = ds.r['particle_position_y']
@@ -213,6 +214,7 @@ if args.make_pickle_files == "True":
             rel_vy = (particle_velocity_y[accreted_inds_burst].value - pv_code[1].value)*scale_v.in_units('km/s')
             rel_vz = (particle_velocity_z[accreted_inds_burst].value - pv_code[2].value)*scale_v.in_units('km/s')
             del particle_velocity_x, particle_velocity_y, particle_velocity_z
+            gc.collect()
             
             burst_velocity = [rel_vx, rel_vy, rel_vz]
             
@@ -226,6 +228,7 @@ if args.make_pickle_files == "True":
             rely = (particle_position_y[not_accreted_inds].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[not_accreted_inds].value - pp_code[2].value)*scale_l
             del particle_position_x, particle_position_y, particle_position_z
+            gc.collect()
             
             not_accreted_positions = [relx, rely, relz]
             
