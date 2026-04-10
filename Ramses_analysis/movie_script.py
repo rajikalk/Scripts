@@ -31,8 +31,8 @@ def parse_inputs():
     parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
     parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
     parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=str, default="")
-    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float, default=1.e-16)
-    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float, default=1.e-14)
+    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float)
+    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float)
     parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
     parser.add_argument("-cc", "--calculation_center", help="where would you like to calculate center positionn and velocity?", type=int, default=0)
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
@@ -169,11 +169,18 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Set some plot variables independant on data files
-cbar_max = args.colourbar_max
-try:
-    cbar_min = float(args.colourbar_min)
-except:
-    cbar_min = float(args.colourbar_min[1:])
+if args.colourbar_min not None:
+    try:
+        cbar_min = float(args.colourbar_min)
+    except:
+        cbar_min = float(args.colourbar_min[1:])
+else:
+    cbar_min = None
+
+if args.colourbar_max not None:
+    cbar_max = args.colourbar_max
+else:
+    cbar_max = None
 
 if args.debug_plotting == 'True':
     print('set colorbar limits on rank', rank)
@@ -937,6 +944,12 @@ for pickle_file in pickle_files:
             ax.set_ylim(ylim)
             if args.debug_plotting != 'False':
                 plt.savefig("Test_776.jpg", format='jpg', bbox_inches='tight')
+                
+            if cbar_min is None:
+                cbar_min = np.min(image)
+            
+            if cbar_max is None:
+                cbar_max = np.max(image)
             
             if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0:
                 plot = ax.pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max, zorder=1)
