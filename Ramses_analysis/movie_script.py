@@ -17,7 +17,7 @@ def parse_inputs():
     parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
     parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
     parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
-    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", default="xz")
+    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", type=str, default="xz")
     parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 50., type=float)
     parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
     parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
