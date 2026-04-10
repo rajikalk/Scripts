@@ -230,32 +230,6 @@ gc.collect()
 print('Getting sink id and formation time')
 sys.stdout.flush()
 CW.Barrier()
-<<<<<<< HEAD
-if rank == 0:
-    if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
-        ds = yt.load(files[-1], units_override=units_override)
-    else:
-        ds = yt.load(files[-2], units_override=units_override)
-    dd = ds.all_data()
-    if args.sink_number == None:
-        sink_id = np.argmin(dd['sink_particle_speed'])
-    else:
-        sink_id = args.sink_number
-    if rank == 0:
-        print("CENTERED SINK ID:", sink_id)
-    try:
-        myf.set_centred_sink_id(sink_id)
-    except:
-        pass
-    if len(dd['sink_particle_form_time']) > sink_id:
-        sink_form_time = dd['sink_particle_form_time'][sink_id]
-    else:
-        print("TARGET SINK NOT FORMED YET")
-        sys.exit()
-    #ds.index.clear_all_data()
-    del dd
-    gc.collect()
-=======
 
 #if rank == 0:
 if args.debug_plotting == 'True':
@@ -263,7 +237,6 @@ if args.debug_plotting == 'True':
     sys.stdout.flush()
 if len(glob.glob(files[-1].split('info')[0]+'star*')) !=0:
     ds = yt.load(files[-1], units_override=units_override)
->>>>>>> bd780ed47cd71e88bd69fa857ccf4754351be7ac
 else:
     ds = yt.load(files[-2], units_override=units_override)
 if args.debug_plotting == 'True':
