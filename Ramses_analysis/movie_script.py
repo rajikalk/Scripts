@@ -496,11 +496,11 @@ if args.make_frames_only == 'False':
                 
             if args.use_angular_momentum != 'False':
                 if len(part_info['particle_mass']) == 1:
-                    sink_particle_posx = ds.r['gas', 'sink_particle_posx']
-                    sink_particle_posy = ds.r['gas', 'sink_particle_posy']
-                    sink_particle_posz = ds.r['gas', 'sink_particle_posz']
-                    left_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value - 100, sink_particle_posy[sink_id].in_units('AU').value - 100, sink_particle_posz[sink_id].in_units('AU').value - 100], 'AU')
-                    right_corner_test = yt.YTArray([sink_particle_posx[sink_id].in_units('AU').value + 100, sink_particle_posy[sink_id].in_units('AU').value + 100, sink_particle_posz[sink_id].in_units('AU').value + 100], 'AU')
+                    sink_particle_posx = ds.r['gas', 'sink_particle_posx'][sink_id]
+                    sink_particle_posy = ds.r['gas', 'sink_particle_posy'][sink_id]
+                    sink_particle_posz = ds.r['gas', 'sink_particle_posz'][sink_id]
+                    left_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value - 100, sink_particle_posy.in_units('AU').value - 100, sink_particle_posz.in_units('AU').value - 100], 'AU')
+                    right_corner_test = yt.YTArray([sink_particle_posx.in_units('AU').value + 100, sink_particle_posy.in_units('AU').value + 100, sink_particle_posz.in_units('AU').value + 100], 'AU')
                     del sink_particle_posx, sink_particle_posy, sink_particle_posz
                     gc.collect()
                     region = ds.box(left_corner_test, right_corner_test)
