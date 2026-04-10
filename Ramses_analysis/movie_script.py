@@ -297,26 +297,13 @@ if args.make_frames_only == 'False':
     CW.Barrier()
 
     #Get simulation information
-    if rank == 0:
-        print("Getting Simfo")
-        sys.stdout.flush()
-        simfo = sim_info(ds, args)
-        print("Got Simfo")
-        sys.stdout.flush()
-    else:
-        simfo = None
+    print("Getting Simfo")
+    sys.stdout.flush()
+    simfo = sim_info(ds, args)
+    print("Got Simfo")
+    sys.stdout.flush()
     
     gc.collect()
-    sys.stdout.flush()
-    CW.Barrier()
-    
-    if rank != 0:
-        simfo = CW.bcast(simfo, root=0)
-        print("Received Simfo on rank", rank)
-        sys.stdout.flush()
-    
-    gc.collect()
-    sys.stdout.flush()
     CW.Barrier()
         
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
