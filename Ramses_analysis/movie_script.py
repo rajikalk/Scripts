@@ -436,7 +436,6 @@ if args.make_frames_only == 'False':
                 center_pos = Center_Position.in_units('au')
                 del Center_Position
                 gc.collect()
-            del sink_particle_posx
             gc.collect()
             
             if args.debug_plotting == 'True':
