@@ -74,6 +74,8 @@ def sim_info(ds,args):
     """
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
     field = ds.derived_field_list[field_it]
+    del field_it
+    gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
@@ -93,6 +95,8 @@ def sim_info(ds,args):
         unit_string = str(test_patch[field[1]].in_cgs().units)
     except:
         unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
+    del test_patch
+    gc.collect()
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
@@ -108,7 +112,7 @@ def sim_info(ds,args):
                 'smoothing': smoothing,
                 'unit_string': unit_string
                 }
-    del field_it, field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
+    del field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
     gc.collect()
     
     return sim_info
@@ -293,7 +297,10 @@ if args.make_frames_only == 'False':
     #Get simulation information
     if rank == 0:
         print("Getting Simfo")
+        sys.stdout.flush()
         simfo = sim_info(ds, args)
+        print("Got Simfo")
+        sys.stdout.flush()
     else:
         simfo = None
     
@@ -304,6 +311,7 @@ if args.make_frames_only == 'False':
     if rank != 0:
         simfo = CW.bcast(simfo, root=0)
         print("Received Simfo on rank", rank)
+        sys.stdout.flush()
     
     gc.collect()
     sys.stdout.flush()
