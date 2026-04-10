@@ -284,14 +284,31 @@ else:
 
 print('m_times =', m_times)
 print('no_frames =', no_frames)
+gc.collect()
 
 if args.make_frames_only == 'False':
     sys.stdout.flush()
     CW.Barrier()
 
     #Get simulation information
-    print("loading fields")
-    simfo = sim_info(ds, args)
+    if rank == 0:
+        print("Getting Simfo")
+        simfo = sim_info(ds, args)
+    else:
+        simfo = None
+    
+    gc.collect()
+    sys.stdout.flush()
+    CW.Barrier()
+    
+    if rank != 0:
+        simfo = CW.bcast(simfo, root=0)
+        print("Received Simfo on rank", rank)
+    
+    gc.collect()
+    sys.stdout.flush()
+    CW.Barrier()
+        
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
     X, Y = np.meshgrid(x, x)
     annotate_space = (simfo['xmax'] - simfo['xmin'])/args.velocity_annotation_frequency
