@@ -90,7 +90,7 @@ for zoom_dir in Cleaned_dirs:
             if line == '#PBS -N ':
                 write_line = line + job_name_dir
             elif line == 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ':
-                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+'/ ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -cmin None -cmax None -wf cell_volume -at True -pvl True -ax '+dir.lower()+' -al '+str(ax_lim)+' -tf 12 -stdv '+str(stdv_val)+' -thickness '+str(2*ax_lim)+' -use_gas False -ic '+str(image_center)+' -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
+                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+'/ ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -wf cell_volume -at True -pvl True -ax '+dir.lower()+' -al '+str(ax_lim)+' -tf 12 -stdv '+str(stdv_val)+' -thickness '+str(2*ax_lim)+' -use_gas False -ic '+str(image_center)+' -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
             else:
                 write_line = line
             write_line = write_line + '\n'
