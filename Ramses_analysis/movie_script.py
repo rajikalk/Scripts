@@ -272,6 +272,9 @@ elif args.use_all_files == 'False':
             start_time = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
         else:
             start_time = yt.YTQuantity(0, 'yr')
+        del ds
+        gc.collect()
+    print("start time", start_time)
     
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=start_time)
     
@@ -280,13 +283,15 @@ elif args.use_all_files == 'False':
 else:
     no_frames = len(files)
 
+print('m_times =', m_times)
+print('no_frames =', no_frames)
+
 if args.make_frames_only == 'False':
     sys.stdout.flush()
     CW.Barrier()
 
     #Get simulation information
-    if rank == 0:
-        print("loading fields")
+    print("loading fields")
     simfo = sim_info(ds, args)
     x = np.linspace(simfo['xmin'], simfo['xmax'], simfo['dimension'])
     X, Y = np.meshgrid(x, x)
