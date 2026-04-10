@@ -272,7 +272,6 @@ elif args.use_all_files == 'False':
             start_time = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
         else:
             start_time = yt.YTQuantity(0, 'yr')
-        del ds
         gc.collect()
     print("start time", start_time)
     
