@@ -72,7 +72,9 @@ def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
+    print("Reading derived fields list")
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
+    print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
     del field_it
     gc.collect()
