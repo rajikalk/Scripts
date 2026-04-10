@@ -169,7 +169,7 @@ sys.stdout.flush()
 CW.Barrier()
 
 #Set some plot variables independant on data files
-if args.colourbar_min not None:
+if args.colourbar_min is not None:
     try:
         cbar_min = float(args.colourbar_min)
     except:
@@ -177,7 +177,7 @@ if args.colourbar_min not None:
 else:
     cbar_min = None
 
-if args.colourbar_max not None:
+if args.colourbar_max is not None:
     cbar_max = args.colourbar_max
 else:
     cbar_max = None
