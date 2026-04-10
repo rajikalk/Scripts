@@ -637,7 +637,7 @@ if args.make_frames_only == 'False':
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
                 proj_dict = {}
-                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=(int(size/para_div)/6)):
+                for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
