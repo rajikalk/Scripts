@@ -67,14 +67,12 @@ for zoom_dir in Cleaned_dirs:
     os.chdir(movie_dir)
     ax_lim = 500
     stdv_val = 5
-    image_center = 1
     
     if 'Event_restart' in zoom_dir:
         movie_dir = movie_dir + '/Event_Restart'
         job_name = job_name + 'E'
         ax_lim = 100
         stdv_val = 10
-        image_center = 0
         if os.path.exists(movie_dir) == False:
             os.makedirs(movie_dir)
         os.chdir(movie_dir)
@@ -109,7 +107,7 @@ for zoom_dir in Cleaned_dirs:
             if line == '#PBS -N ':
                 write_line = line + job_name_dir
             elif line == 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ':
-                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+'/ ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -at True -pvl True -ax '+dir.lower()+' -al '+str(ax_lim)+' -tf 12 -stdv '+str(stdv_val)+' -thickness '+str(2*ax_lim)+' -use_gas False -ic '+str(image_center)+' -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
+                write_line = 'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py '+zoom_dir+'/ ./ -sink '+str(Sink_id)+' -sf 0 -dt 50 -at True -pvl True -ax '+dir.lower()+' -al '+str(ax_lim)+' -tf 12 -stdv '+str(stdv_val)+' -thickness '+str(2*ax_lim)+' -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>'+job_name+'.out01 2>&1'
             else:
                 write_line = line
             write_line = write_line + '\n'
