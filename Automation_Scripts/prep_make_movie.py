@@ -21,10 +21,10 @@ dirs = ['XY', 'XZ', 'YZ']
 
 script_lines = ['#!/bin/bash',
                 '#PBS -P ek9',
-                '#PBS -q expressbw',
+                '#PBS -q hugemembw',
                 '#PBS -l walltime=24:00:00',
-                '#PBS -l ncpus=56',
-                '#PBS -l mem=504GB',
+                '#PBS -l ncpus=28',
+                '#PBS -l mem=1040GB',
                 '#PBS -l storage=scratch/ek9+gdata/ek9',
                 '#PBS -l wd',
                 '#PBS -N ',
