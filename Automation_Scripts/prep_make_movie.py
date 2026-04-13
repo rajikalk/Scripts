@@ -6,6 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--additions", help="additional inputs", default='', type=str)
+parser.add_argument("-use_hugemem", "--use_hugemem_queue", type=str, default='False')
 parser.add_argument("files", nargs='*')
 args = parser.parse_args()
 
@@ -19,21 +20,39 @@ save_dir = '/home/100/rlk100/rlk/RAMSES/Movie_frames/'
 
 dirs = ['XY', 'XZ', 'YZ']
 
-script_lines = ['#!/bin/bash',
-                '#PBS -P ek9',
-                '#PBS -q hugemembw',
-                '#PBS -l walltime=24:00:00',
-                '#PBS -l ncpus=28',
-                '#PBS -l mem=1020GB',
-                '#PBS -l storage=scratch/ek9+gdata/ek9',
-                '#PBS -l wd',
-                '#PBS -N ',
-                '#PBS -j oe',
-                '#PBS -m ae',
-                '#PBS -l place=excl',
-                '#PBS -M rajika.kuruwita@anu.edu.au',
-                '',
-                'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ',]
+if args.use_hugemem_queue == 'True':
+    script_lines = ['#!/bin/bash',
+                    '#PBS -P ek9',
+                    '#PBS -q hugemembw',
+                    '#PBS -l walltime=24:00:00',
+                    '#PBS -l ncpus=28',
+                    '#PBS -l mem=1020GB',
+                    '#PBS -l storage=scratch/ek9+gdata/ek9',
+                    '#PBS -l wd',
+                    '#PBS -N ',
+                    '#PBS -j oe',
+                    '#PBS -m ae',
+                    '#PBS -l place=excl',
+                    '#PBS -M rajika.kuruwita@anu.edu.au',
+                    '',
+                    'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ',]
+else:
+    script_lines = ['#!/bin/bash',
+                    '#PBS -P ek9',
+                    '#PBS -q expressbw',
+                    '#PBS -l walltime=24:00:00',
+                    '#PBS -l ncpus=28',
+                    '#PBS -l mem=256GB',
+                    '#PBS -l storage=scratch/ek9+gdata/ek9',
+                    '#PBS -l wd',
+                    '#PBS -N ',
+                    '#PBS -j oe',
+                    '#PBS -m ae',
+                    '#PBS -l place=excl',
+                    '#PBS -M rajika.kuruwita@anu.edu.au',
+                    '',
+                    'mpirun -np $PBS_NCPUS ~/Scripts/Ramses_analysis/movie_script.py ',]
+
 #                ' ./ -sink ',
 #                ' -sf 0 -dt 50 -cmin 1.e-18 -cmax 1.e-15 -at True -pvl True -ax ',
 #                ' -al 1000 -tf 12 -stdv 5 -thickness 2000 -use_gas False -ic 1 -update_alim True -frames_only False -apm True 1>',
