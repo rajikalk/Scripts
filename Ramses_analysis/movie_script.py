@@ -283,6 +283,8 @@ elif args.use_all_files == 'False':
     if args.start_time != 0:
         start_time = args.start_time
     else:
+        if len(glob.glob(files[0].split('info_')[0]+"*")) < 10:
+            files = files[1:]
         ds = yt.load(files[0], units_override=units_override)
         current_time = ds.current_time.in_units('yr')
         if current_time.in_units('yr') > sink_form_time.in_units('yr'):
