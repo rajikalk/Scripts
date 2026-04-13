@@ -294,6 +294,8 @@ elif args.use_all_files == 'False':
         gc.collect()
     print("start time", start_time)
     
+    if os.path.isfile(files[-1].split('info_')[0]+'/stars_output.snktxt') == False
+        files = files[:-1]
     m_times = mym.generate_frame_times(files, args.time_step, presink_frames=args.presink_frames, end_time=args.end_time, form_time=sink_form_time, start_time=start_time)
     
     no_frames = len(m_times)
