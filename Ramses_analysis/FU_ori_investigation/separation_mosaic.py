@@ -92,7 +92,7 @@ else:
     time_end = args.end_burst_time
     
 if os.path.isfile(event_pickle) == False:
-    end_ind = np.argmin(abs(particle_data['time']-end_ind))
+    end_ind = np.argmin(abs(particle_data['time']-time_end))
     particle_data['time'] = particle_data['time'][:end_ind+1]
     gc.collect()
     particle_data['mdot'] = particle_data['mdot'][:end_ind+1]
