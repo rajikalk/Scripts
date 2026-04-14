@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-in_tracer", "--in_tracer_data", help="where tracer particle data is saved")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=20)
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5)
     parser.add_argument("-cmin", "--cbar_min", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
     parser.add_argument("-cmax", "--cbar_max", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
     parser.add_argument("-end_time", "--end_burst_time", type=float)
@@ -194,7 +194,7 @@ while fit < no_frames:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
+            #mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
             #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
@@ -258,7 +258,7 @@ while fit < no_frames:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
+            #mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             mym.my_own_quiver_function(ax1, part_info['particle_position'][0], part_info['particle_position'][1], part_info['particle_velocity'][0], part_info['particle_velocity'][1], standard_vel=args.standard_vel)
 
@@ -310,14 +310,14 @@ while fit < no_frames:
                 
                 ax4.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
                 
-                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=args.standard_vel)
+                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=args.standard_vel, plot_velocity_legend=True)
             ax4.set_aspect('equal')
             
             if fit > 0 or time_val > -1.0:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
+            #mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
 
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             mym.my_own_quiver_function(ax1, part_info['particle_position'][0], part_info['particle_position'][1], part_info['particle_velocity'][0], part_info['particle_velocity'][1], standard_vel=args.standard_vel)
