@@ -30,7 +30,6 @@ def parse_inputs():
 #=======MAIN=======
 #def main():
 args = parse_inputs()
-mym.set_global_font_size(args.text_font)
 
 event_pickle = args.save_directory + 'event.pkl'
 if os.path.isfile(event_pickle):
@@ -107,6 +106,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import my_ramses_module as mym
+mym.set_global_font_size(args.text_font)
 
 fit = -1
 rit = -1
