@@ -94,6 +94,7 @@ if os.path.isfile(event_pickle) == False:
     file_open = open(event_pickle, 'rb')
     pickle.dump((particle_data), file_open)
     file_open.close()
+    print('wrote event particle data pickle')
 
 
 fit = -1
