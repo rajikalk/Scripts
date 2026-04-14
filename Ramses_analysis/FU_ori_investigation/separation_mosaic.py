@@ -37,20 +37,28 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
-print("read pickle", args.input_pickle)
-sys.stdout.flush()
-file_open = open(args.input_pickle, 'rb')
-particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-file_open.close()
-del counter, sink_ind, sink_form_time, particle_data['mass']
-gc.collect()
-del particle_data['separation']
-gc.collect()
-del particle_data['particle_tag'], args.input_pickle
-gc.collect()
-particle_data['time'] = np.array(particle_data['time'][::5])
-particle_data['mdot'] = np.array(particle_data['mdot'][::5])
-print("finished reading in pickle")
+event_pickle = args.save_directory + 'event.pkl'
+if os.path.isfile(event_pickle):
+    print("read pickle", args.input_pickle)
+    sys.stdout.flush()
+    file_open = open(event_pickle, 'rb')
+    particle_data = pickle.load(file_open)
+    file_open.close()
+else:
+    print("read pickle", args.input_pickle)
+    sys.stdout.flush()
+    file_open = open(args.input_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
+    del counter, sink_ind, sink_form_time, particle_data['mass']
+    gc.collect()
+    del particle_data['separation']
+    gc.collect()
+    del particle_data['particle_tag'], args.input_pickle
+    gc.collect()
+    particle_data['time'] = np.array(particle_data['time'][::5])
+    particle_data['mdot'] = np.array(particle_data['mdot'][::5])
+    print("finished reading in pickle")
 sys.stdout.flush()
 CW.Barrier()
 
@@ -81,6 +89,11 @@ if args.end_burst_time == None:
     time_end = args_dict['time_val']
 else:
     time_end = args.end_burst_time
+    
+if os.path.isfile(event_pickle) == False:
+    file_open = open(event_pickle, 'rb')
+    pickle.dump((particle_data), file_open)
+    file_open.close()
 
 
 fit = -1
