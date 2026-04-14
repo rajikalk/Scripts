@@ -158,8 +158,8 @@ while fit < no_frames:
                 ax1.scatter(tracer_data['other_positions'][1][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax1.scatter(tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
-                import pdb
-                pdb.set_trace()
+                
+                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s'), tracer_data['burst_velocity'][2][plot_inds_burst].in_units('cm/s'), color='magenta')
             
             #del image
             gc.collect()

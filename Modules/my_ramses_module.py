@@ -454,14 +454,35 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     len_scale = (0.07*(xmax - xmin))
     #len_scale = length_scale*standard_vel/(0.07*(xmax - xmin))
     #vels = np.hypot(X_val, Y_val)
-    for xp in range(len(X_pos[0])):
-        for yp in range(len(Y_pos[0])):
-            xvel = len_scale*(X_val[xp][yp]/standard_vel)
-            yvel = len_scale*(Y_val[xp][yp]/standard_vel)
+    try:
+        for xp in range(len(X_pos[0])):
+            for yp in range(len(Y_pos[0])):
+                xvel = len_scale*(X_val[xp][yp]/standard_vel)
+                yvel = len_scale*(Y_val[xp][yp]/standard_vel)
+                #xvel = length_scale*X_val[xp][yp]/len_scale
+                #yvel = length_scale*Y_val[xp][yp]/len_scale
+                #width_val = (np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel)**2.
+                width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
+                if width_val > width_ceil:
+                    width_val = width_ceil
+                try:
+                    if Z_val is None and color is None:
+                            color = 'w'
+                        #color = 'k'
+                except:
+                    #cmap = 'idl06_r'
+                    zvel = Z_val[xp][yp]/len_scale
+                    cit = np.argmin(abs(rv_colors - zvel))
+                    color = rv_cmap(cit)
+                axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+    except:
+        for lin_it in range(len(X_pos)):
+            xvel = len_scale*(X_val[lin_it]/standard_vel)
+            yvel = len_scale*(Y_val[lin_it]/standard_vel)
             #xvel = length_scale*X_val[xp][yp]/len_scale
             #yvel = length_scale*Y_val[xp][yp]/len_scale
             #width_val = (np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel)**2.
-            width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
+            width_val = np.sqrt(X_val[lin_it]**2. + Y_val[lin_it]**2.)/standard_vel
             if width_val > width_ceil:
                 width_val = width_ceil
             try:
@@ -470,10 +491,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
                     #color = 'k'
             except:
                 #cmap = 'idl06_r'
-                zvel = Z_val[xp][yp]/len_scale
+                zvel = Z_val[lin_it]/len_scale
                 cit = np.argmin(abs(rv_colors - zvel))
                 color = rv_cmap(cit)
-            axis.add_patch(mpatches.FancyArrowPatch((X_pos[xp][yp], Y_pos[xp][yp]), (X_pos[xp][yp]+xvel, Y_pos[xp][yp]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+            axis.add_patch(mpatches.FancyArrowPatch((X_pos[lin_it], Y_pos[lin_it]), (X_pos[lin_it]+xvel, Y_pos[lin_it]+yvel), color=color, linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+                
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
