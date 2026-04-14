@@ -190,7 +190,7 @@ while fit < no_frames:
             #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
-            mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
+            mym.my_own_quiver_function(ax1, part_info['particle_position'][0], part_info['particle_position'][1], part_info['particle_velocity'][0], part_info['particle_velocity'][1], standard_vel=args.standard_vel)
 
         
             time_string = "$t$="+str(int(time_val))+"yr"
@@ -252,7 +252,7 @@ while fit < no_frames:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
+            mym.my_own_quiver_function(ax1, part_info['particle_position'][0], part_info['particle_position'][1], part_info['particle_velocity'][0], part_info['particle_velocity'][1], standard_vel=args.standard_vel)
 
             xticklabels = ax2.get_xticklabels()
             plt.setp(xticklabels, visible=False)
@@ -312,7 +312,7 @@ while fit < no_frames:
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
 
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
-            mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
+            mym.my_own_quiver_function(ax1, part_info['particle_position'][0], part_info['particle_position'][1], part_info['particle_velocity'][0], part_info['particle_velocity'][1], standard_vel=args.standard_vel)
             
             yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
