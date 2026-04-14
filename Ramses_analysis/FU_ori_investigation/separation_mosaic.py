@@ -37,28 +37,17 @@ def parse_inputs():
 args = parse_inputs()
 mym.set_global_font_size(args.text_font)
 
-if rank == 0:
-    print("read pickle", args.input_pickle)
-    sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    del counter, sink_ind, sink_form_time, particle_data['mass'], particle_data['separation'], particle_data['particle_tag'], args.input_pickle
-    gc.collect()
-    particle_data['time'] = np.array(particle_data['time'][::5])
-    particle_data['mdot'] = np.array(particle_data['mdot'][::5])
-    print("finished reading in pickle")
-    sys.stdout.flush()
-else:
-    particle_data = {}
-
-CW.Barrier()
-if size > 1:
-    print("going to start sending data to other ranks (on rank)", rank)
-    sys.stdout.flush()
-    particle_data = CW.bcast(particle_data, root=0)
-    print("broadcasted particle data on rank", rank)
-    sys.stdout.flush()
+print("read pickle", args.input_pickle)
+sys.stdout.flush()
+file_open = open(args.input_pickle, 'rb')
+particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+file_open.close()
+del counter, sink_ind, sink_form_time, particle_data['mass'], particle_data['separation'], particle_data['particle_tag'], args.input_pickle
+gc.collect()
+particle_data['time'] = np.array(particle_data['time'][::5])
+particle_data['mdot'] = np.array(particle_data['mdot'][::5])
+print("finished reading in pickle")
+sys.stdout.flush()
 CW.Barrier()
 '''
     print("going to start sending data to other ranks")
