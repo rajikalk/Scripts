@@ -159,7 +159,7 @@ while fit < no_frames:
                 
                 ax1.scatter(tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
                 
-                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s'), tracer_data['burst_velocity'][2][plot_inds_burst].in_units('cm/s'), color='magenta')
+                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_positions'][2][plot_inds_burst].value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][2][plot_inds_burst].in_units('cm/s').value, color='magenta')
             
             #del image
             gc.collect()
@@ -232,8 +232,7 @@ while fit < no_frames:
                 ax2.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax2.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
-                import pdb
-                pdb.set_trace()
+                mym.my_own_quiver_function(ax2, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][2][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][2][plot_inds_burst].in_units('cm/s').value, color='magenta')
             #del image
             gc.collect()
             ax2.set_aspect('equal')
@@ -307,8 +306,8 @@ while fit < no_frames:
                 ax4.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][1][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax4.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
-                import pdb
-                pdb.set_trace()
+                
+                mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta')
             #del image
             gc.collect()
             ax4.set_aspect('equal')
