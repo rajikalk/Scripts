@@ -25,7 +25,7 @@ def parse_inputs():
     parser.add_argument("-in_tracer", "--in_tracer_data", help="where tracer particle data is saved")
     parser.add_argument("-save_dir", "--save_directory", help="do you want define a save directory", type=str, default='./')
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=2.0)
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=20)
     parser.add_argument("-cmin", "--cbar_min", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
     parser.add_argument("-cmax", "--cbar_max", help="if you don't want to use the limits from the pickles, you can redefine them", type=float, default=None)
     parser.add_argument("-end_time", "--end_burst_time", type=float)
@@ -49,33 +49,9 @@ particle_data['mdot'] = np.array(particle_data['mdot'][::5])
 print("finished reading in pickle")
 sys.stdout.flush()
 CW.Barrier()
-'''
-    print("going to start sending data to other ranks")
-    sys.stdout.flush()
-    rit = 0
-    print("rit =", rit)
-    sys.stdout.flush()
-    while rit < size:
-        rit = rit + 1
-        print("rit =", rit)
-        sys.stdout.flush()
-        CW.send(particle_data, dest=rit, tag=rit)
-        print("send particle data to rank", rit)
-        sys.stdout.flush()
-CW.Barrier()
-
-if size > 1:
-    rit = 0
-    while rit < size:
-        rit = rit + 1
-        if rank == rit:
-            particle_data = CW.recv(source=0, tag=rit)
-            print("particle data received on rank", rank)
-            sys.stdout.flush()
-'''
-
 
 no_frames = np.min([len(glob.glob(args.input_dir + '/XY/movie_frame*pkl')), len(glob.glob(args.input_dir + '/XZ/movie_frame*pkl')), len(glob.glob(args.input_dir + '/YZ/movie_frame*pkl'))])
+gc.collect()
 
 cmap=plt.cm.gist_heat
 prev_primary_mass = np.nan
@@ -182,6 +158,8 @@ while fit < no_frames:
                 ax1.scatter(tracer_data['other_positions'][1][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax1.scatter(tracer_data['burst_positions'][1][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
+                import pdb
+                pdb.set_trace()
             
             #del image
             gc.collect()
