@@ -232,6 +232,8 @@ while fit < no_frames:
                 ax2.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][2][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax2.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][2][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
+                import pdb
+                pdb.set_trace()
             #del image
             gc.collect()
             ax2.set_aspect('equal')
@@ -305,6 +307,8 @@ while fit < no_frames:
                 ax4.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][1][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
                 
                 ax4.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
+                import pdb
+                pdb.set_trace()
             #del image
             gc.collect()
             ax4.set_aspect('equal')
