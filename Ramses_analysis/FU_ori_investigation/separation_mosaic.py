@@ -39,7 +39,7 @@ mym.set_global_font_size(args.text_font)
 
 event_pickle = args.save_directory + 'event.pkl'
 if os.path.isfile(event_pickle):
-    print("read pickle", args.input_pickle)
+    print("read pickle", event_pickle)
     sys.stdout.flush()
     file_open = open(event_pickle, 'rb')
     particle_data = pickle.load(file_open)
