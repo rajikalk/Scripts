@@ -7,15 +7,10 @@ size = CW.Get_size()
 print("size =", size)
 sys.stdout.flush()
 import numpy as np
-#from pylab import *
-import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
 import glob
 import pickle
 import argparse
 import os
-import my_ramses_module as mym
-import matplotlib.patheffects as path_effects
 import gc
 
 def parse_inputs():
@@ -73,6 +68,8 @@ pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % 0) +'.pkl'
 file = open(pickle_file, 'rb')
 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
 file.close()
+del X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, simfo
+gc.collect()
 time_start = args_dict['time_val']
 #truncation particle data
 if os.path.isfile(event_pickle) == False:
@@ -87,6 +84,8 @@ if args.end_burst_time == None:
     file = open(pickle_file, 'rb')
     X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
+    del X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, simfo
+    gc.collect()
     time_end = args_dict['time_val']
 else:
     time_end = args.end_burst_time
@@ -103,6 +102,11 @@ if os.path.isfile(event_pickle) == False:
     file_open.close()
     print('wrote event particle data pickle')
 
+
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+import matplotlib.patheffects as path_effects
+import my_ramses_module as mym
 
 fit = -1
 rit = -1
