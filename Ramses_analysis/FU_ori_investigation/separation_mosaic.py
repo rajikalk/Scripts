@@ -42,7 +42,11 @@ sys.stdout.flush()
 file_open = open(args.input_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
-del counter, sink_ind, sink_form_time, particle_data['mass'], particle_data['separation'], particle_data['particle_tag'], args.input_pickle
+del counter, sink_ind, sink_form_time, particle_data['mass']
+gc.collect()
+del particle_data['separation']
+gc.collect()
+del particle_data['particle_tag'], args.input_pickle
 gc.collect()
 particle_data['time'] = np.array(particle_data['time'][::5])
 particle_data['mdot'] = np.array(particle_data['mdot'][::5])
@@ -62,6 +66,12 @@ file = open(pickle_file, 'rb')
 X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
 file.close()
 time_start = args_dict['time_val']
+#truncation particle data
+start_ind = np.argmin(abs(particle_data['time']-time_start))
+particle_data['time'] = particle_data['time'][start_ind-1:]
+gc.collect()
+particle_data['mdot'] = particle_data['mdot'][start_ind-1:]
+gc.collect()
 
 if args.end_burst_time == None:
     pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
@@ -99,8 +109,7 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            #del pickle_file, simfo, velz, file
-            gc.collect()
+            
             
             if os.path.isfile(tracer_file):
                 depth_lim = args_dict['xlim']
@@ -131,8 +140,6 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
-                #del shift_x, shift_y
-                gc.collect()
             
             yabel = args_dict['yabel']
             if args.cbar_min == None:
@@ -144,8 +151,6 @@ while fit < no_frames:
                 cbar_max = args_dict['cbar_max']
             else:
                 cbar_max = args.cbar_max
-            #del args_dict
-            gc.collect()
             
             ax1.set_ylabel(yabel, fontsize=args.text_font, labelpad=-5)#, labelpad=-20)
             ax1.set_xlim(xlim)
@@ -168,26 +173,20 @@ while fit < no_frames:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax1.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            #del X, Y, magx, magy
-            gc.collect()
             mym.my_own_quiver_function(ax1, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
             #del X_vel, Y_vel, velx, vely
             gc.collect()
             mym.annotate_particles(ax1, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'])
             mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
-            #del part_info
-            gc.collect()
+
         
             time_string = "$t$="+str(int(time_val))+"yr"
             time_string_raw = r"{}".format(time_string)
             time_text = ax1.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
-            #del xlim, ylim
             time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
             
             xticklabels = ax1.get_xticklabels()
             plt.setp(xticklabels, visible=False)
-            #del xticklabels
-            gc.collect()
             
             ax1.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
@@ -197,8 +196,7 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            #del pickle_file, simfo, velz, file
-            gc.collect()
+
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
@@ -220,8 +218,6 @@ while fit < no_frames:
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
                 del shift_x, shift_y
                 gc.collect()
-            #del args_dict
-            gc.collect()
             
             ax2.set_xlim(xlim)
             ax2.set_ylim(ylim)
@@ -241,25 +237,15 @@ while fit < no_frames:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax2.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            #del X, Y, magx, magy
-            gc.collect()
             mym.my_own_quiver_function(ax2, X_vel, Y_vel, velx, vely, plot_velocity_legend=False, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
-            #del X_vel, Y_vel, velx, vely
-            gc.collect()
             mym.annotate_particles(ax2, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
-            #del part_info, xlim, ylim
-            gc.collect()
-            
+
             xticklabels = ax2.get_xticklabels()
             plt.setp(xticklabels, visible=False)
-            #del xticklabels
-            gc.collect()
             
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-            #del yticklabels
-            gc.collect()
             
             ax2.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
@@ -269,8 +255,6 @@ while fit < no_frames:
             file = open(pickle_file, 'rb')
             X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
             file.close()
-            #del pickle_file, simfo, velz, file
-            gc.collect()
             
             if len(part_info['particle_tag']) == 2:
                 prev_primary_mass = np.max(part_info['particle_mass'])
@@ -290,12 +274,8 @@ while fit < no_frames:
                 Y_vel = Y_vel - shift_y
                 part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
                 part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
-                #del shift_x, shift_y
-                gc.collect()
             
             xabel = args_dict['xabel']
-            #del args_dict
-            gc.collect()
             
             ax4.set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
             ax4.set_xlim(xlim)
@@ -310,28 +290,19 @@ while fit < no_frames:
                 ax4.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
                 
                 mym.my_own_quiver_function(ax1, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=args.standard_vel)
-            #del image
-            gc.collect()
             ax4.set_aspect('equal')
             
             if fit > 0 or time_val > -1.0:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
             else:
                 ax4.streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5, zorder=2)
-            #del X, Y, magx, magy
-            gc.collect()
             mym.my_own_quiver_function(ax4, X_vel, Y_vel, velx, vely, plot_velocity_legend=True, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None, color='0.5')
-            #del X_vel, Y_vel, velx, vely
-            gc.collect()
+
             mym.annotate_particles(ax4, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], particle_tags=part_info['particle_tag'])
             mym.my_own_quiver_function(ax1, part_info['particle_position'][0].value, part_info['particle_position'][1].value, part_info['particle_velocity'][0].value, part_info['particle_velocity'][1].value, standard_vel=args.standard_vel)
-            #del part_info, xlim, ylim
-            gc.collect()
             
             yticklabels = ax4.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-            #del yticklabels
-            gc.collect()
             
             ax4.tick_params(axis='both', direction='in', color='white', top=True, right=True)
             
@@ -349,8 +320,6 @@ while fit < no_frames:
             ax3.semilogy(particle_data['time'][:plot_ind], particle_data['mdot'].T[1][:plot_ind], color='magenta', linewidth=0.5)
             ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[0][plot_ind], marker='o', color='cyan', s=3)
             ax3.scatter(particle_data['time'][plot_ind], particle_data['mdot'].T[1][plot_ind], marker='o', color='magenta', s=3)
-            #del time_val, plot_ind
-            gc.collect()
             
             fig.subplots_adjust(right=0.95)
             cbar_ax = fig.add_axes([0.825, 0.11, 0.02, 0.77])
