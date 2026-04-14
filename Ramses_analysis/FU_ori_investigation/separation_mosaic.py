@@ -75,11 +75,12 @@ X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, s
 file.close()
 time_start = args_dict['time_val']
 #truncation particle data
-start_ind = np.argmin(abs(particle_data['time']-time_start))
-particle_data['time'] = particle_data['time'][start_ind-1:]
-gc.collect()
-particle_data['mdot'] = particle_data['mdot'][start_ind-1:]
-gc.collect()
+if os.path.isfile(event_pickle) == False:
+    start_ind = np.argmin(abs(particle_data['time']-time_start))
+    particle_data['time'] = particle_data['time'][start_ind-1:]
+    gc.collect()
+    particle_data['mdot'] = particle_data['mdot'][start_ind-1:]
+    gc.collect()
 
 if args.end_burst_time == None:
     pickle_file = args.input_dir+'/YZ/movie_frame_' + ("%06d" % (no_frames-1)) +'.pkl'
@@ -90,7 +91,13 @@ if args.end_burst_time == None:
 else:
     time_end = args.end_burst_time
     
-if os.path.isfile(event_pickle) == False:
+if os.path.isfile(event_pickle) == False
+    end_ind = np.argmin(abs(particle_data['time']-end_ind))
+    particle_data['time'] = particle_data['time'][:end_ind+1]
+    gc.collect()
+    particle_data['mdot'] = particle_data['mdot'][:end_ind+1]
+    gc.collect()
+    
     file_open = open(event_pickle, 'wb')
     pickle.dump((particle_data), file_open)
     file_open.close()
