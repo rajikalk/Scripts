@@ -171,9 +171,17 @@ for fit in range(frame_no):
                 Time_array, Y_array = pickle.load(file_open)
                 file_open.close()
                 
-                #if np.shape(Y_array)
+                part_color = ['cyan','magenta','r','b','y','w','k']
                 
-                axes_dict[ax_label].semilogy(Time_array, Y_array)
+                if np.min(np.shape(Y_array)) > 1:
+                    for line_it in range(min(np.shape(Y_array))):
+                        if np.shape(Y_array)[0] == min(np.shape(Y_array)):
+                            import pdb
+                            pdb.set_trace()
+                        else:
+                            axes_dict[ax_label].semilogy(Time_array, Y_array.T[line_it], color=part_color[line_it])
+                
+                
                 import pdb
                 pdb.set_trace()
                 
@@ -181,4 +189,5 @@ for fit in range(frame_no):
                 import pdb
                 pdb.set_trace()
                 
+            #Check for axis labels and assign them
             counter = counter + 1
