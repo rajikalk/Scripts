@@ -193,7 +193,7 @@ for fit in range(frame_no):
                         else:
                             axes_dict[ax_label].semilogy(Time_array, np.array(Y_array).T[line_it], color=part_color[line_it], label=label)
                             if 'highlight_time' in curr_args.keys():
-                                axes_dict[ax_label].scatter(Time_array[time_ind], np.array(Y_array).T[time_ind], marker='o', color=part_color[line_it], s=3)
+                                axes_dict[ax_label].scatter(Time_array[time_ind], np.array(Y_array).T[line_it][time_ind], marker='o', color=part_color[line_it], s=3)
                                 
                 
                 if 'legend_labels' in curr_args.keys():
