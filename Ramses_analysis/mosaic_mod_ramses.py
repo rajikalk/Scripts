@@ -164,6 +164,7 @@ for fit in range(frame_no):
                     #print "ADDED SUBPLOT:", counter, "on rank", rank
         
             #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
+            curr_args = args_dict_all[counter - 1]
     
             if plot_type[counter - 1] == 'time_series':
             
@@ -174,21 +175,45 @@ for fit in range(frame_no):
                 
                 part_color = ['cyan','magenta','r','b','y','w','k']
                 
+                if 'highlight_time' in curr_args.keys():
+                    time_ind = np.argmin(abs(np.array(Time_array) - curr_args['highlight_time']))
+                
                 if np.min(np.shape(Y_array)) > 1:
                     for line_it in range(min(np.shape(Y_array))):
+                        if 'legend_labels' in curr_args.keys():
+                            label = curr_args['legend_labels'][line_it]
+                        else:
+                            label = None
                         if np.shape(Y_array)[0] == min(np.shape(Y_array)):
                             import pdb
                             pdb.set_trace()
+                            if 'highlight_time' in curr_args.keys():
+                                import pdb
+                                pdb.set_trace()
                         else:
-                            axes_dict[ax_label].semilogy(Time_array, np.array(Y_array).T[line_it], color=part_color[line_it])
+                            axes_dict[ax_label].semilogy(Time_array, np.array(Y_array).T[line_it], color=part_color[line_it], label=label)
+                            if 'highlight_time' in curr_args.keys():
+                                axes_dict[ax_label].scatter(Time_array[time_ind], np.array(Y_array).T[time_ind] marker='o', color=part_color[line_it], s=3)
+                                
                 
-                
-                import pdb
-                pdb.set_trace()
+                if 'legend_labels' in curr_args.keys():
+                    axes_dict[ax_label].legend(loc='best')
+                    
                 
             if plot_type[counter - 1] == 'movie_frame':
                 import pdb
                 pdb.set_trace()
                 
             #Check for axis labels and assign them
+            if 'xlabel' in curr_args.keys():
+                axes_dict[ax_label].set_xlabel(curr_args['xlabel'])
+            if 'ylabel' in curr_args.keys():
+                axes_dict[ax_label].set_ylabel(curr_args['ylabel'])
+            if 'xlim' in curr_args.keys():
+                axes_dict[ax_label].set_xlim(curr_args['xlim'])
+            if 'ylim' in curr_args.keys():
+                axes_dict[ax_label].set_ylim(curr_args['ylim'])
+                
+            plt.savefig(file_name+'.jpg', bbox_inches='tight', dpi=300)
+            print('saved after plotting', ax_label)
             counter = counter + 1
