@@ -52,14 +52,15 @@ with open(input_file, 'r') as mosaic_file:
             plot_type.append(row[2])
             paths.append(row[3])
             if len(row) > 4:
-                dict = "{"
-                for col in row[4].split(' -'):
-                    key_string = col.split(' ')[0][1:]
-                    value_string = col.split(' ')[1]
-                    dict = dict + "'"+key_string+"':"+value_string+","
-                dict = dict[:-1]+"}"
-                dict = eval(dict)
-                args_dict_all.append(dict)
+                if len(row[4])>0:
+                    dict = "{"
+                    for col in row[4].split(' -'):
+                        key_string = col.split(' ')[0][1:]
+                        value_string = col.split(' ')[1]
+                        dict = dict + "'"+key_string+"':"+value_string+","
+                    dict = dict[:-1]+"}"
+                    dict = eval(dict)
+                    args_dict_all.append(dict)
 
 positions = np.array(positions)
 #import pdb
