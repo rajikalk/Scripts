@@ -52,7 +52,7 @@ with open(input_file, 'r') as mosaic_file:
             plot_type.append(row[2])
             paths.append(row[3])
             if len(row[4]) > 0:
-            dict = "{"
+                dict = "{"
                 for col in row[4:][0].split(' -')[1:]:
                     key_string = col.split(' ')[0]
                     value_string = col.split(' ')[1]
