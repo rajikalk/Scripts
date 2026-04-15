@@ -54,8 +54,8 @@ with open(input_file, 'r') as mosaic_file:
             if len(row) > 4:
                 if len(row[4])>0:
                     dict = "{"
-                    for col in row[4].split(' -'):
-                        key_string = col.split(' ')[0][1:]
+                    for col in row[4][1:].split(' -'):
+                        key_string = col.split(' ')[0]
                         value_string = col.split(' ')[1]
                         dict = dict + "'"+key_string+"':"+value_string+","
                     dict = dict[:-1]+"}"
