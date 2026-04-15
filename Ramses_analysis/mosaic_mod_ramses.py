@@ -171,7 +171,7 @@ for fit in range(frame_no):
                 Time_array, Y_array = pickle.load(file_open)
                 file_open.close()
                 
-                if no.shape(Y_array)
+                #if np.shape(Y_array)
                 
                 axes_dict[ax_label].semilogy(Time_array, Y_array)
                 import pdb
