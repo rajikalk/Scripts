@@ -48,6 +48,10 @@ else:
     gc.collect()
     del particle_data['separation']
     gc.collect()
+    del particle_data['secondary_position']
+    gc.collect()
+    del particle_data['secondary_velocity']
+    gc.collect()
     del particle_data['particle_tag'], args.input_pickle
     gc.collect()
     particle_data['time'] = np.array(particle_data['time'][::5])

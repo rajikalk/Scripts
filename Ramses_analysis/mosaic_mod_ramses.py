@@ -162,13 +162,21 @@ for fit in range(frame_no):
                         axes_dict.update({ax_label:fig.add_subplot(gs_left[positions[pit][1]-1,positions[pit][0]-1])})
                     #print "ADDED SUBPLOT:", counter, "on rank", rank
         
-            counter = counter + 1
             #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
     
-            if plot_type[counter - 2] == 'time_series':
+            if plot_type[counter - 1] == 'time_series':
+            
+                pickle_file = paths[counter - 1]
+                file_open = file.open(pickle_file, 'rb')
+                Time_array, Y_array = pickle.load(file_open)
+                file_open.close()
+                
+                axes_dict[ax_label].semilogy(Time_array, Y_array)
                 import pdb
                 pdb.set_trace()
                 
-            if plot_type[counter - 2] == 'movie_frame':
+            if plot_type[counter - 1] == 'movie_frame':
                 import pdb
                 pdb.set_trace()
+                
+            counter = counter + 1
