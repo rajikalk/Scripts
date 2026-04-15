@@ -53,8 +53,9 @@ with open(input_file, 'r') as mosaic_file:
             paths.append(row[3])
             if len(row) > 4:
                 if len(row[4])>0:
+                    input_string = ",".join(row[4:])
                     dict = "{"
-                    for col in row[4][1:].split(' -'):
+                    for col in input_string[1:].split(' -'):
                         key_string = col.split(' ')[0]
                         value_string = col.split(' ')[1]
                         dict = dict + "'"+key_string+"':"+value_string+","
