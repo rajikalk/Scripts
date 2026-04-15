@@ -11,6 +11,7 @@ import matplotlib.patheffects as path_effects
 import matplotlib.gridspec as gridspec
 import argparse
 import my_ramses_module as mym
+import ast
 
 def parse_inputs():
     parser = argparse.ArgumentParser()
