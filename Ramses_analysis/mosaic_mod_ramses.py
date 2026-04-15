@@ -57,7 +57,7 @@ with open(input_file, 'r') as mosaic_file:
                     dict = "{"
                     for col in input_string[1:].split(', -'):
                         key_string = col.split(' ')[0]
-                        value_string = col.split(' ')[1]
+                        value_string = ' '.join(col.split(' ')[1:])
                         dict = dict + "'"+key_string+"':"+value_string+","
                     dict = dict[:-1]+"}"
                     dict = eval(dict)
