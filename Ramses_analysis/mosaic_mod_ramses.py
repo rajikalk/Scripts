@@ -180,7 +180,7 @@ for fit in range(frame_no):
                             import pdb
                             pdb.set_trace()
                         else:
-                            axes_dict[ax_label].semilogy(Time_array, Y_array.T[line_it], color=part_color[line_it])
+                            axes_dict[ax_label].semilogy(Time_array, np.array(Y_array).T[line_it], color=part_color[line_it])
                 
                 
                 import pdb
