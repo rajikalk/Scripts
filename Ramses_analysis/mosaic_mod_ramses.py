@@ -34,7 +34,6 @@ prev_args = args
 input_file = args.input_file
 
 # Read in input file
-print("Reading in input mosaic file on rank", rank)
 positions = []
 plot_type = []
 paths = []
