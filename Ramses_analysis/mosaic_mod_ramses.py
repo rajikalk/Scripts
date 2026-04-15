@@ -56,6 +56,7 @@ print("Reading in input mosaic file on rank", rank)
 positions = []
 paths = []
 args_dict_all = []
+plot_type = []
 with open(input_file, 'r') as mosaic_file:
     reader = csv.reader(mosaic_file)
     for row in reader:
@@ -66,11 +67,12 @@ with open(input_file, 'r') as mosaic_file:
             ghspace = float(row[4])
         elif row[0][0] != '#':
             positions.append((int(row[0]), int(row[1])))
-            paths.append(row[2])
-            if row[3:][0][0] != ' ':
-                row[3:][0] = ' '+row[3:][0]
+            plot_type.append(row[2])
+            paths.append(row[3])
+            if row[4:][0][0] != ' ':
+                row[4:][0] = ' '+row[4:][0]
             dict = "{"
-            for col in row[3:][0].split(' -')[1:]:
+            for col in row[4:][0].split(' -')[1:]:
                 key_string = col.split(' ')[0]
                 value_string = col.split(' ')[1]
                 dict = dict + "'"+key_string+"':"+value_string+","
@@ -186,205 +188,213 @@ for fit in range(frame_no):
             
                 counter = counter + 1
                 #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
-        
-                fs = sorted(glob.glob(paths[pit]))[fit]
-                try:
-                    file = open(fs, 'rb')
-                    X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
-                    file.close()
-                    del simfo
-                except:
-                    print("problem with pickle", fs)
-                
-                
-                """
-                if np.round(np.mean(args_dict_pit['xlim'])) == np.round(np.mean(X)):
-                    xlim = args_dict_pit['xlim']
-                    ylim = args_dict_pit['ylim']
-                else:
-                    xlim = args_dict_pit['xlim'] + np.mean(X)
-                    ylim = args_dict_pit['ylim'] + np.mean(Y)
-                    
-                has_particles = args_dict_pit['has_particles']
-                time_val = args_dict_pit['time_val']
-                axes_dict[ax_label].set_xlim(xlim)
-                axes_dict[ax_label].set_ylim(ylim)
-                rv_channel = [fs.split('_')[-2], fs.split('_')[-1].split('.')[0]]
-                
-                try:
-                    image_file = os.getcwd().split('Channel_maps')[0] + 'Time_Series' + os.getcwd().split('Channel_maps')[1] + '/' + fs.split('/')[-3] + '/' + fs.split('/')[-2] + '.pkl'
-                    file = open(image_file, 'rb')
-                    stuff = pickle.load(file)
-                    file.close()
-                    background = stuff[2]
-                    cbar_min = args_dict_pit['cbar_min']
-                    cbar_max = args_dict_pit['cbar_max']
-                    if None in (cbar_min, cbar_max):
-                        plot = axes_dict[ax_label].pcolormesh(X, Y, background, cmap=plt.cm.Greys, rasterized=True, alpha=0.5)
-                    else:
-                        plot = axes_dict[ax_label].pcolormesh(X, Y, background, cmap=plt.cm.Greys, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, alpha=0.1)
-                    #print("plotted image")
-                except:
-                    print("Couldn't get image data")
-                    
-                non_nan_inds = np.where(np.isnan(image) == False)
-                if len(non_nan_inds[0]) > 0:
-                    std = np.std(image[non_nan_inds])
-                    max = np.max(image[non_nan_inds])
-                    mean = np.mean(image[non_nan_inds])
-                    #mean = np.mean(image[non_nan_inds])
+                if plot_type[counter-2] == 'global_frame:'
+                    fs = sorted(glob.glob(paths[pit]))[fit]
                     try:
-                        level_b = np.arange(1, max.value, std.value*3)
-                        level_r = -1*np.arange(1, max.value, std.value*3)[::-1]
-                        CS_b = axes_dict[ax_label].contour(X,Y,np.nan_to_num(image*np.sign(sign_array)), levels=level_b, linewidths=0.5, colors='b', alpha=1.0)
-                        #CS_b = ax.contour(X,Y,np.nan_to_num(image), levels=level_b, linewidths=0.5, colors='b', alpha=1.0)
-                        CS_r = axes_dict[ax_label].contour(X,Y,np.nan_to_num(image*np.sign(sign_array)), levels=level_r, linewidths=0.5, colors='r', alpha=1.0)
-                        #ax.clabel(CS,inline=1)
-                        #print("Contours plotted")
+                        file = open(fs, 'rb')
+                        X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+                        file.close()
+                        del simfo
                     except:
-                        print("Couldn't plot contours")
-                plt.gca().set_aspect('equal')
-                
-                mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
-                
-                axes_dict[ax_label].set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
-                if positions[pit][0] == 1:
-                    axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
-                
-                if positions[pit][0] != 1:
-                    yticklabels = axes_dict[ax_label].get_yticklabels()
-                    plt.setp(yticklabels, visible=False)
-                
-                if positions[pit][1] == rows:
-                    axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
+                        print("problem with pickle", fs)
+                    
+                    
+                    """
+                    if np.round(np.mean(args_dict_pit['xlim'])) == np.round(np.mean(X)):
+                        xlim = args_dict_pit['xlim']
+                        ylim = args_dict_pit['ylim']
+                    else:
+                        xlim = args_dict_pit['xlim'] + np.mean(X)
+                        ylim = args_dict_pit['ylim'] + np.mean(Y)
+                        
+                    has_particles = args_dict_pit['has_particles']
+                    time_val = args_dict_pit['time_val']
+                    axes_dict[ax_label].set_xlim(xlim)
+                    axes_dict[ax_label].set_ylim(ylim)
+                    rv_channel = [fs.split('_')[-2], fs.split('_')[-1].split('.')[0]]
+                    
+                    try:
+                        image_file = os.getcwd().split('Channel_maps')[0] + 'Time_Series' + os.getcwd().split('Channel_maps')[1] + '/' + fs.split('/')[-3] + '/' + fs.split('/')[-2] + '.pkl'
+                        file = open(image_file, 'rb')
+                        stuff = pickle.load(file)
+                        file.close()
+                        background = stuff[2]
+                        cbar_min = args_dict_pit['cbar_min']
+                        cbar_max = args_dict_pit['cbar_max']
+                        if None in (cbar_min, cbar_max):
+                            plot = axes_dict[ax_label].pcolormesh(X, Y, background, cmap=plt.cm.Greys, rasterized=True, alpha=0.5)
+                        else:
+                            plot = axes_dict[ax_label].pcolormesh(X, Y, background, cmap=plt.cm.Greys, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True, alpha=0.1)
+                        #print("plotted image")
+                    except:
+                        print("Couldn't get image data")
+                        
+                    non_nan_inds = np.where(np.isnan(image) == False)
+                    if len(non_nan_inds[0]) > 0:
+                        std = np.std(image[non_nan_inds])
+                        max = np.max(image[non_nan_inds])
+                        mean = np.mean(image[non_nan_inds])
+                        #mean = np.mean(image[non_nan_inds])
+                        try:
+                            level_b = np.arange(1, max.value, std.value*3)
+                            level_r = -1*np.arange(1, max.value, std.value*3)[::-1]
+                            CS_b = axes_dict[ax_label].contour(X,Y,np.nan_to_num(image*np.sign(sign_array)), levels=level_b, linewidths=0.5, colors='b', alpha=1.0)
+                            #CS_b = ax.contour(X,Y,np.nan_to_num(image), levels=level_b, linewidths=0.5, colors='b', alpha=1.0)
+                            CS_r = axes_dict[ax_label].contour(X,Y,np.nan_to_num(image*np.sign(sign_array)), levels=level_r, linewidths=0.5, colors='r', alpha=1.0)
+                            #ax.clabel(CS,inline=1)
+                            #print("Contours plotted")
+                        except:
+                            print("Couldn't plot contours")
+                    plt.gca().set_aspect('equal')
+                    
+                    mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=None)
+                    
+                    axes_dict[ax_label].set_xlabel('$x$ (AU)', labelpad=-1, fontsize=args.text_font)
+                    if positions[pit][0] == 1:
+                        axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
+                    
                     if positions[pit][0] != 1:
-                        xticklabels = axes_dict[ax_label].get_xticklabels()
-                        plt.setp(xticklabels[0], visible=False)
-                else:
-                    xticklabels = axes_dict[ax_label].get_xticklabels()
-                    plt.setp(xticklabels, visible=False)
-                
-                chanel_str = '[' + str(rv_channel[0]) + ',' + str(rv_channel[1]) + ']'
-                axes_dict[ax_label].text(0.70*xlim[1], 0.85*ylim[1], chanel_str)
-                
-                axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font, direction='in')
-                axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font, direction='in')
-                axes_dict[ax_label].xaxis.set_ticks_position('both')
-                axes_dict[ax_label].yaxis.set_ticks_position('both')
-                """
-                
-                xlim = args_dict['xlim']
-                ylim = args_dict['ylim']
-                if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
-                    shift_x = np.mean(X)
-                    shift_y = np.mean(Y)
-                    X = X - shift_x
-                    Y = Y - shift_y
-                    X_vel = X_vel - shift_x
-                    Y_vel = Y_vel - shift_y
-                    part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
-                    part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
-                      
-                has_particles = args_dict['has_particles']
-                xabel = args_dict['xabel']
-                yabel = args_dict['yabel']
-
-                axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
-                #axes_dict[ax_label].set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
-                axes_dict[ax_label].set_xlim(xlim)
-                axes_dict[ax_label].set_ylim(ylim)
-                
-                if 'cmin' in args_dict_all[pit].keys():
-                    cbar_min = args_dict_all[pit]['cmin']
-                else:
-                    cbar_min = args_dict['cbar_min']
-                if 'cmax' in args_dict_all[pit].keys():
-                    cbar_max = args_dict_all[pit]['cmax']
-                else:
-                    cbar_max = args_dict['cbar_max']
-                
-                if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
-                    plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
-                else:
-                    plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
-                plt.gca().set_aspect('equal')
-                
-                del image
-                
-                '''
-                if frame_no > 0 or time_val > -1.0:
-                    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
-                else:
-                    axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
-                '''
-                del X
-                del Y
-                del magx
-                del magy
-                
-                if positions[pit][0] == columns:
-                    cbar = plt.colorbar(plot, pad=0.0)
-                    cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
-                
-                if 'pvl' in args_dict_all[pit].keys():
-                    plot_vel_legend = args_dict_all[pit]['pvl']
-                    if 'stdv' in args_dict_all[pit].keys():
-                        standard_vel = args_dict_all[pit]['stdv']
+                        yticklabels = axes_dict[ax_label].get_yticklabels()
+                        plt.setp(yticklabels, visible=False)
+                    
+                    if positions[pit][1] == rows:
+                        axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font)
+                        if positions[pit][0] != 1:
+                            xticklabels = axes_dict[ax_label].get_xticklabels()
+                            plt.setp(xticklabels[0], visible=False)
                     else:
+                        xticklabels = axes_dict[ax_label].get_xticklabels()
+                        plt.setp(xticklabels, visible=False)
+                    
+                    chanel_str = '[' + str(rv_channel[0]) + ',' + str(rv_channel[1]) + ']'
+                    axes_dict[ax_label].text(0.70*xlim[1], 0.85*ylim[1], chanel_str)
+                    
+                    axes_dict[ax_label].tick_params(axis='x', which='major', labelsize=args.text_font, direction='in')
+                    axes_dict[ax_label].tick_params(axis='y', which='major', labelsize=args.text_font, direction='in')
+                    axes_dict[ax_label].xaxis.set_ticks_position('both')
+                    axes_dict[ax_label].yaxis.set_ticks_position('both')
+                    """
+                    
+                    xlim = args_dict['xlim']
+                    ylim = args_dict['ylim']
+                    if np.round(np.mean(args_dict['xlim'])) != np.round(np.mean(X)):
+                        shift_x = np.mean(X)
+                        shift_y = np.mean(Y)
+                        X = X - shift_x
+                        Y = Y - shift_y
+                        X_vel = X_vel - shift_x
+                        Y_vel = Y_vel - shift_y
+                        part_info['particle_position'][0] = part_info['particle_position'][0] - shift_x
+                        part_info['particle_position'][1] = part_info['particle_position'][1] - shift_y
+                          
+                    has_particles = args_dict['has_particles']
+                    xabel = args_dict['xabel']
+                    yabel = args_dict['yabel']
+
+                    axes_dict[ax_label].set_xlabel(xabel, labelpad=-1, fontsize=args.text_font)
+                    #axes_dict[ax_label].set_ylabel(yabel, fontsize=args.text_font) #, labelpad=-20
+                    axes_dict[ax_label].set_xlim(xlim)
+                    axes_dict[ax_label].set_ylim(ylim)
+                    
+                    if 'cmin' in args_dict_all[pit].keys():
+                        cbar_min = args_dict_all[pit]['cmin']
+                    else:
+                        cbar_min = args_dict['cbar_min']
+                    if 'cmax' in args_dict_all[pit].keys():
+                        cbar_max = args_dict_all[pit]['cmax']
+                    else:
+                        cbar_max = args_dict['cbar_max']
+                    
+                    if 0.0 in (cbar_min, cbar_max) or len(np.where(np.array([cbar_min, cbar_max]) < 0)[0]) > 0 :
+                        plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.bwr, rasterized=True, vmin=cbar_min, vmax=cbar_max)
+                    else:
+                        plot = axes_dict[ax_label].pcolormesh(X, Y, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_min, vmax=cbar_max), rasterized=True)
+                    plt.gca().set_aspect('equal')
+                    
+                    del image
+                    
+                    '''
+                    if frame_no > 0 or time_val > -1.0:
+                        axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, arrowstyle='-', minlength=0.5)
+                    else:
+                        axes_dict[ax_label].streamplot(X, Y, magx, magy, density=4, linewidth=0.25, minlength=0.5)
+                    '''
+                    del X
+                    del Y
+                    del magx
+                    del magy
+                    
+                    if positions[pit][0] == columns:
+                        cbar = plt.colorbar(plot, pad=0.0)
+                        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", rotation=270, labelpad=14, size=args.text_font)
+                    
+                    if 'pvl' in args_dict_all[pit].keys():
+                        plot_vel_legend = args_dict_all[pit]['pvl']
+                        if 'stdv' in args_dict_all[pit].keys():
+                            standard_vel = args_dict_all[pit]['stdv']
+                        else:
+                            standard_vel = 2
+                    else:
+                        plot_vel_legend = False
                         standard_vel = 2
-                else:
-                    plot_vel_legend = False
-                    standard_vel = 2
-                
-                mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_vel_legend, standard_vel=standard_vel, limits=[xlim, ylim])
-                
-                del X_vel
-                del Y_vel
-                del velx
-                del vely
-                
-                if 'title' in args_dict_all[pit].keys():
-                    title = args_dict_all[pit]['title']
-                else:
-                    title = args_dict['title']
-                
-                title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+2))
-                title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
-                
-                if 'at' in args_dict_all[pit].keys():
-                    annotate_time = args_dict_all[pit]['at']
-                else:
-                    annotate_time = False
                     
-                if annotate_time:
-                    time_string = "$t$="+str(int(args_dict['time_val']))+"yr"
-                    time_string_raw = r"{}".format(time_string)
-                    time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
-                    time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                    mym.my_own_quiver_function(axes_dict[ax_label], X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_vel_legend, standard_vel=standard_vel, limits=[xlim, ylim])
+                    
+                    del X_vel
+                    del Y_vel
+                    del velx
+                    del vely
+                    
+                    if 'title' in args_dict_all[pit].keys():
+                        title = args_dict_all[pit]['title']
+                    else:
+                        title = args_dict['title']
+                    
+                    title_text = axes_dict[ax_label].text((np.mean(xlim)), (ylim[1]-0.03*(ylim[1]-ylim[0])), title, va="center", ha="center", color='w', fontsize=(args.text_font+2))
+                    title_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+                    
+                    if 'at' in args_dict_all[pit].keys():
+                        annotate_time = args_dict_all[pit]['at']
+                    else:
+                        annotate_time = False
+                        
+                    if annotate_time:
+                        time_string = "$t$="+str(int(args_dict['time_val']))+"yr"
+                        time_string_raw = r"{}".format(time_string)
+                        time_text = axes_dict[ax_label].text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.03*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=args.text_font)
+                        time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
-                if 'apm' in args_dict_all[pit].keys():
-                    plot_particle_mass = args_dict_all[pit]['apm']
-                else:
-                    plot_particle_mass = False
-                
-                if plot_particle_mass:
-                    annotate_field = part_info['particle_mass']
-                else:
-                    annotate_field = None
+                    if 'apm' in args_dict_all[pit].keys():
+                        plot_particle_mass = args_dict_all[pit]['apm']
+                    else:
+                        plot_particle_mass = False
+                    
+                    if plot_particle_mass:
+                        annotate_field = part_info['particle_mass']
+                    else:
+                        annotate_field = None
 
-                if size > 1:
-                    try:
+                    if size > 1:
+                        try:
+                            mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=annotate_field, particle_tags=part_info['particle_tag'])
+                        except:
+                            save_bool[fit] = 0
+                    else:
                         mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=annotate_field, particle_tags=part_info['particle_tag'])
-                    except:
-                        save_bool[fit] = 0
-                else:
-                    mym.annotate_particles(axes_dict[ax_label], part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=annotate_field, particle_tags=part_info['particle_tag'])
+                        
+                    del part_info
                     
-                del part_info
+                    
+                    if positions[pit][0] == 1:
+                        axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
                 
-                
-                if positions[pit][0] == 1:
-                    axes_dict[ax_label].set_ylabel('$y$ (AU)', labelpad=-20, fontsize=args.text_font)
+                if plot_type[counter-2] == 'time_series':
+                    import pdb
+                    pdb.set_trace()
+                    
+                if plot_type[counter-2] == 'movie_frame':
+                    import pdb
+                    pdb.set_trace()
                 
                 if positions[pit][0] != 1:
                     yticklabels = axes_dict[ax_label].get_yticklabels()
