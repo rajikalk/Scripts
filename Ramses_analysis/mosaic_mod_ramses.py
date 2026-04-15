@@ -51,7 +51,7 @@ with open(input_file, 'r') as mosaic_file:
             positions.append((int(row[0]), int(row[1])))
             plot_type.append(row[2])
             paths.append(row[3])
-            if len(row[4]) > 0:
+            if len(row) > 4:
                 dict = "{"
                 for col in row[4].split(' -'):
                     key_string = col.split(' ')[0][1:]
