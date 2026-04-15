@@ -188,7 +188,7 @@ for fit in range(frame_no):
             
                 counter = counter + 1
                 #axes_dict[ax_label].set(adjustable='box-forced', aspect='equal')
-                if plot_type[counter-2] == 'global_frame:'
+                if plot_type[counter-2] == 'global_frame':
                     fs = sorted(glob.glob(paths[pit]))[fit]
                     try:
                         file = open(fs, 'rb')
