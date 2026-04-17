@@ -187,6 +187,9 @@ if args.make_pickle_files == "True":
         pickle_file = save_dir + "movie_frame_" + ("%06d" % file_int + ".pkl")
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
+            print("making", pickle_file, "on rank", rank)
+        else:
+            print(pickle_file, "already exists on rank", rank)
         if make_pickle:
             print('loading file', fn, 'on rank', rank)
             ds = yt.load(fn)
