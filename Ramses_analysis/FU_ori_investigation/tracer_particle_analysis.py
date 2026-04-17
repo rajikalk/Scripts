@@ -175,12 +175,8 @@ if args.make_pickle_files == "True":
             print('loaded file', fn, 'on rank', rank)
             time_val = ds.current_time.value*scale_t - sink_form_time
             
-            particle_position = yt.YTArray([ds.r['sink_particle_posx'].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
-            import pdb
-            pdb.set_trace()
-            pp_code = particle_position
-            particle_velocity = yt.YTArray([ds.r['sink_particle_velx'][sink_id], ds.r['sink_particle_vely'][sink_id], ds.r['sink_particle_velz'][sink_id]]).in_units('km/s')
-            pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
+            pp_code = yt.YTArray([ds.r['sink_particle_posx'][sink_id].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
+            pv_code = yt.YTArray([ds.r['sink_particle_velx'][sink_id].in_units('code_velocity'), ds.r['sink_particle_vely'][sink_id].in_units('code_velocity'), ds.r['sink_particle_velz'][sink_id].in_units('code_velocity')])
             
             try:
                 print("loading tracer particle indices on rank", rank)
