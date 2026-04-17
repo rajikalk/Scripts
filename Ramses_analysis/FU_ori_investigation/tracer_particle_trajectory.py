@@ -14,7 +14,7 @@ X_pos = []
 Y_pos = []
 Z_pos = []
 
-for tracer_file in tracer_pickle_files
+for tracer_file in tracer_pickle_files:
     file = open(tracer_file, 'rb')
     tracer_dict = pickle.load(file)
     file.close()
