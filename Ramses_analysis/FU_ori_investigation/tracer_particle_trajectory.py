@@ -17,6 +17,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
     Z_pos = []
 
     for tracer_file in tracer_pickle_files:
+        print("reading", tracer_file)
         file = open(tracer_file, 'rb')
         tracer_dict = pickle.load(file)
         file.close()
@@ -33,11 +34,13 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         Z_pos.append(tracer_dict['burst_positions'][2])
 
     #save the data
+    print("saving tracer trajectories")
     file = open('tracer_trajectory.pkl', 'rb')
     pickle.dump((Time_array, X_pos, Y_pos, Z_pos))
     file.close()
 
 else:
+    print("reading tracer trajectories")
     file = open('tracer_trajectory.pkl', 'wb')
     Time_array, X_pos, Y_pos, Z_pos = pickle.load(file)
     file.close()
