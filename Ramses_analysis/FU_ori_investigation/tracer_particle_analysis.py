@@ -191,10 +191,13 @@ if args.make_pickle_files == "True":
             gc.collect()
             
             print("loading tracer particle positions on rank", rank)
+            curr_accreted_inds = np.where(ds.r['particle_mass'] == min_mass)[0]
             particle_position_x = ds.r['particle_position_x']
+            particle_position_x[curr_accreted_inds] = pp_code[0]
             particle_position_y = ds.r['particle_position_y']
+            particle_position_y[curr_accreted_inds] = pp_code[1]
             particle_position_z = ds.r['particle_position_z']
-            
+            particle_position_z[curr_accreted_inds] = pp_code[2]
             
             relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
             rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
@@ -205,8 +208,13 @@ if args.make_pickle_files == "True":
             #Get burst velocity
             print("loading tracer particle velocities on rank", rank)
             particle_velocity_x = ds.r['particle_velocity_x'][accreted_inds_burst]
+            particle_velocity_x[curr_accreted_inds] = pv_code[0]
             particle_velocity_y = ds.r['particle_velocity_y'][accreted_inds_burst]
+            particle_velocity_y[curr_accreted_inds] = pv_code[1]
             particle_velocity_z = ds.r['particle_velocity_z'][accreted_inds_burst]
+            particle_velocity_z[curr_accreted_inds] = pv_code[2]
+            del curr_accreted_inds
+            gc.collect()
             
             rel_vx = (particle_velocity_x.value - pv_code[0].value)*scale_v.in_units('km/s')
             rel_vy = (particle_velocity_y.value - pv_code[1].value)*scale_v.in_units('km/s')
