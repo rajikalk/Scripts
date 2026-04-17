@@ -35,6 +35,7 @@ if rank == 0:
 #Get input and output directories
 args = parse_inputs()
 
+
 time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
 
 #Define relevant directories
@@ -69,7 +70,21 @@ if args.make_pickle_files == "True":
 
     sys.stdout.flush()
     CW.Barrier()
+    
+    if args.sink_number != None:
+        sink_id = args.sink_number
+    else:
+        ds = yt.load(files[-1])
+        sink_id = np.argmin(ds.r['sink_particle_speed'])
+    print("SINK ID =", sink_id)
+    
+    try:
+        sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+    else:
+        ds = yt.load(files[-1])
+        sink_form_time = ds.r['sink_particle_form_time'][sink_id]
 
+    '''
     #find sink particle to center on and formation time
     print("reading pickle", args.input_pickle)
     sys.stdout.flush()
@@ -80,6 +95,7 @@ if args.make_pickle_files == "True":
     sys.stdout.flush()
     del particle_data, counter
     gc.collect()
+    '''
     '''
     else:
         sink_id = None
