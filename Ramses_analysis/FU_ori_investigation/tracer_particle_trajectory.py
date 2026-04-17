@@ -3,26 +3,55 @@
 import glob
 import pickle
 import gc
+import sys
     
 
 #=======MAIN=======
-tracer_pickle_files = sorted(glob.glob('./movie_frame*.pkl'))
 
-Time_array = []
-X_pos = []
-Y_pos = []
-Z_pos = []
+if os.path.isfile('tracer_trajectory.pkl') == False:
+    tracer_pickle_files = sorted(glob.glob('./movie_frame*.pkl'))
 
-for tracer_file in tracer_pickle_files:
-    file = open(tracer_file, 'rb')
-    tracer_dict = pickle.load(file)
+    Time_array = []
+    X_pos = []
+    Y_pos = []
+    Z_pos = []
+
+    for tracer_file in tracer_pickle_files:
+        file = open(tracer_file, 'rb')
+        tracer_dict = pickle.load(file)
+        file.close()
+        del tracer_dict['other_positions']
+        gc.collect()
+        del tracer_dict['burst_velocity']
+        gc.collect()
+        del tracer_dict['not_accreted_positions']
+        gc.collect()
+        
+        Time_array.append(tracer_dict['time'])
+        X_pos.append(tracer_dict['burst_positions'][0])
+        Y_pos.append(tracer_dict['burst_positions'][1])
+        Z_pos.append(tracer_dict['burst_positions'][2])
+
+    #save the data
+    file = open('tracer_trajectory.pkl', 'rb')
+    pickle.dump((Time_array, X_pos, Y_pos, Z_pos))
     file.close()
-    del tracer_dict['other_positions']
-    gc.collect()
-    del tracer_dict['burst_velocity']
-    gc.collect()
-    del tracer_dict['not_accreted_positions']
-    gc.collect()
+
+else:
+    file = open('tracer_trajectory.pkl', 'wb')
+    Time_array, X_pos, Y_pos, Z_pos = pickle.load(file)
+    file.close()
     
-    import pdb
-    pdb.set_trace()
+
+#Make plots!
+import matplotlib as plt
+
+plt.clf()
+#XY plot
+plt.plot(X_pos, Y_pos)
+plt.scatter(0, 0, marker='o', color='magenta', s=3)
+plt.xlim([-50, 50])
+plt.ylim([-50, 50])
+plt.xlabel('X (AU)')
+plt.xlabel('Y (AU)')
+plt.savefig("XY_tracer_traj.png")
