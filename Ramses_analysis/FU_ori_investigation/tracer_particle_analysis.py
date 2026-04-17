@@ -67,7 +67,7 @@ gc.collect()
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
 
-    sys.stdout.flush(files)
+    sys.stdout.flush()
     CW.Barrier()
 
     #find sink particle to center on and formation time
