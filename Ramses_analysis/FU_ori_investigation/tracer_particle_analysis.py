@@ -180,9 +180,12 @@ if args.make_pickle_files == "True":
             time_val = ds.current_time.value*scale_t - sink_form_time
             
             t_ind = np.argmin(abs(particle_data['time'] - time_val))
-            particle_position = particle_data['secondary_position'][t_ind]
-            pp_code = particle_position.in_units('pc')/scale_l
-            particle_velocity = particle_data['secondary_velocity'][t_ind]
+            
+            particle_position = yt.YTArray([ds.r['sink_particle_posx'].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
+            import pdb
+            pdb.set_trace()
+            pp_code = particle_position
+            particle_velocity = yt.YTArray([ds.r['sink_particle_velx'][sink_id], ds.r['sink_particle_vely'][sink_id], ds.r['sink_particle_velz'][sink_id]]).in_units('km/s')
             pv_code = particle_velocity.in_units('km/s')/scale_v.in_units('km/s')
             
             try:

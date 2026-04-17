@@ -35,7 +35,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
 
     #save the data
     print("saving tracer trajectories")
-    file = open('tracer_trajectory.pkl', 'rb')
+    file = open('tracer_trajectory.pkl', 'wb')
     pickle.dump((Time_array, X_pos, Y_pos, Z_pos), file)
     file.close()
 
@@ -47,7 +47,7 @@ else:
     
 
 #Make plots!
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 plt.clf()
 #XY plot
