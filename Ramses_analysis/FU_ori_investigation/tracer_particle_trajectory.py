@@ -36,7 +36,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
     #save the data
     print("saving tracer trajectories")
     file = open('tracer_trajectory.pkl', 'rb')
-    pickle.dump((Time_array, X_pos, Y_pos, Z_pos))
+    pickle.dump((Time_array, X_pos, Y_pos, Z_pos), file)
     file.close()
 
 else:
@@ -53,8 +53,8 @@ plt.clf()
 #XY plot
 plt.plot(X_pos, Y_pos)
 plt.scatter(0, 0, marker='o', color='magenta', s=3)
-plt.xlim([-50, 50])
-plt.ylim([-50, 50])
+plt.xlim([-15, 15])
+plt.ylim([-15, 15])
 plt.xlabel('X (AU)')
 plt.xlabel('Y (AU)')
 plt.savefig("XY_tracer_traj.png")
