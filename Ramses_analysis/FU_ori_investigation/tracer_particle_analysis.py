@@ -9,6 +9,7 @@ import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import my_ramses_module as mym
+import my_ramses_fields_short as myf
 import gc
 
 def parse_inputs():
@@ -66,15 +67,10 @@ gc.collect()
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
 
-    sys.stdout.flush()
+    sys.stdout.flush(files)
     CW.Barrier()
 
-    #Define units to override:
-    if rank == 0:
-        print("set units")
-
     #find sink particle to center on and formation time
-    #if rank == 0:
     print("reading pickle", args.input_pickle)
     sys.stdout.flush()
     file_open = open(args.input_pickle, 'rb')
