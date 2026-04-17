@@ -83,6 +83,8 @@ if args.make_pickle_files == "True":
     except:
         ds = yt.load(files[-1])
         sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+    
+    gc.collect()
 
     '''
     #find sink particle to center on and formation time
@@ -130,15 +132,16 @@ if args.make_pickle_files == "True":
     print("loaded burst file")
     sys.stdout.flush()
     particle_mass = ds.r['particle_mass']
-    particle_identity = ds.r['particle_identity']
-    print("loaded all data")
-    sys.stdout.flush()
     min_mass = (-1*(sink_id+1))
     accreted_inds_burst = np.where(particle_mass == min_mass)[0]
+    del particle_mass
+    print("Got all accreted_inds_burst")
+    sys.stdout.flush()
+    particle_identity = ds.r['particle_identity']
     accreted_ids_burst = particle_identity[accreted_inds_burst]
     print("got burst indexes")
     sys.stdout.flush()
-    del particle_mass, particle_identity
+    del particle_identity
     gc.collect()
     
     sys.stdout.flush()
@@ -152,20 +155,19 @@ if args.make_pickle_files == "True":
     print("loaded end file")
     sys.stdout.flush()
     particle_mass = ds.r['particle_mass']
-    particle_identity = ds.r['particle_identity']
-
-    print("loaded all data")
-    sys.stdout.flush()
     accreted_inds_all = np.where(particle_mass == min_mass)[0]
-    accreted_ids_all = particle_identity[accreted_inds_all]
     del particle_mass
+    print("got accreted_inds_all")
+    sys.stdout.flush()
+    particle_identity = ds.r['particle_identity']
+    accreted_ids_all = particle_identity[accreted_inds_all]
     gc.collect()
     print("got accreted indexes")
     sys.stdout.flush()
     
     accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
     not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
-    print('saved other and not accreted tracer particle indices')
+    print("saved other and not accreted tracer particle indices")
     sys.stdout.flush()
     del particle_identity
     gc.collect()
