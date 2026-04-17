@@ -74,16 +74,6 @@ if args.make_pickle_files == "True":
         print("set units")
 
     #find sink particle to center on and formation time
-    #if rank == 0:
-    print("reading pickle", args.input_pickle)
-    sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading particle data")
-    sys.stdout.flush()
-    del particle_data['particle_tag'], particle_data['mass'], particle_data['mdot'], particle_data['separation'], counter
-    gc.collect()
     '''
     else:
         sink_id = None
@@ -178,8 +168,6 @@ if args.make_pickle_files == "True":
             ds = yt.load(fn)
             print('loaded file', fn, 'on rank', rank)
             time_val = ds.current_time.value*scale_t - sink_form_time
-            
-            t_ind = np.argmin(abs(particle_data['time'] - time_val))
             
             particle_position = yt.YTArray([ds.r['sink_particle_posx'].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
             import pdb
