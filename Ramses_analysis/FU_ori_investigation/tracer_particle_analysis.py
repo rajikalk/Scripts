@@ -17,10 +17,8 @@ def parse_inputs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
-    parser.add_argument("-in_pickle","--input_pickle", default='/lustre/astro/rlk/FU_ori_investigation/Sink_pickles/particle_data_L20.pkl')
     parser.add_argument("-end_time", "--end_burst_time", type=float)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
-    parser.add_argument("-make_plots", "--make_plot_figures", type=str, default="True")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -34,8 +32,6 @@ if rank == 0:
 
 #Get input and output directories
 args = parse_inputs()
-
-
 time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
 
 #Define relevant directories
@@ -85,36 +81,6 @@ if args.make_pickle_files == "True":
         sink_form_time = ds.r['sink_particle_form_time'][sink_id]
     
     gc.collect()
-
-    '''
-    #find sink particle to center on and formation time
-    print("reading pickle", args.input_pickle)
-    sys.stdout.flush()
-    file_open = open(args.input_pickle, 'rb')
-    particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading particle data")
-    sys.stdout.flush()
-    del particle_data, counter
-    gc.collect()
-    '''
-    '''
-    else:
-        sink_id = None
-        sink_form_time = None
-        particle_data = None
-    sys.stdout.flush()
-    CW.Barrier()
-    
-    sink_id = CW.bcast(sink_id, root=0)
-    sink_form_time = CW.bcast(sink_form_time, root=0)
-    print("received sink data on rank", rank)
-    sys.stdout.flush()
-    particle_data = CW.bcast(particle_data, root=0)
-    print("received particle_data on rank", rank)
-    sys.stdout.flush()
-    '''
-
     sys.stdout.flush()
     CW.Barrier()
 
@@ -157,11 +123,11 @@ if args.make_pickle_files == "True":
     particle_mass = ds.r['particle_mass']
     accreted_inds_all = np.where(particle_mass == min_mass)[0]
     del particle_mass
+    gc.collect()
     print("got accreted_inds_all")
     sys.stdout.flush()
     particle_identity = ds.r['particle_identity']
     accreted_ids_all = particle_identity[accreted_inds_all]
-    gc.collect()
     print("got accreted indexes")
     sys.stdout.flush()
     
