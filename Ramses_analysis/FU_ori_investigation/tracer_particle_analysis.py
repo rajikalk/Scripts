@@ -63,80 +63,96 @@ gc.collect()
 
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
+    if os.path.isfile('all_tracer_data.pkl') == False:
 
-    sys.stdout.flush()
-    CW.Barrier()
+        sys.stdout.flush()
+        CW.Barrier()
+        
+        if args.sink_number != None:
+            sink_id = args.sink_number
+        else:
+            ds = yt.load(files[-1], bbox=bbox)
+            sink_id = np.argmin(ds.r['sink_particle_speed'])
+        print("SINK ID =", sink_id)
+        
+        try:
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+        except:
+            bbox= [[0.0, 0.0, 0.0], [0.1, 0.1, 0.1]]
+            ds = yt.load(files[-1], bbox=bbox)
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+        
+        gc.collect()
+        sys.stdout.flush()
+        CW.Barrier()
+
+        
+        #if rank == 0:
+        #Get accreted tracer particle IDS
+        print("Getting burst files")
+        sys.stdout.flush()
+        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
+        end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+        #end_burst_file = files[-1] #WARNING THIS SHOULD USE THE MYM.FIND FILES LINE
+        #end_file = end_burst_file
+        print("starting to load end_burst_file")
+        ds = yt.load(end_burst_file)
+        print("loaded burst file")
+        sys.stdout.flush()
+        particle_mass = ds.r['particle_mass']
+        min_mass = (-1*(sink_id+1))
+        accreted_inds_burst = np.where(particle_mass == min_mass)[0]
+        del particle_mass
+        print("Got all accreted_inds_burst")
+        sys.stdout.flush()
+        particle_identity = ds.r['particle_identity']
+        accreted_ids_burst = particle_identity[accreted_inds_burst]
+        print("got burst indexes")
+        sys.stdout.flush()
+        del particle_identity
+        gc.collect()
+        
+        sys.stdout.flush()
+        CW.Barrier()
+
+        print("getting all accreted tracer inds")
+        sys.stdout.flush()
+        end_sim_file = files[-1]
+        usable_files = files[:files.index(end_file)+1]
+        ds = yt.load(end_sim_file)
+        print("loaded end file")
+        sys.stdout.flush()
+        particle_mass = ds.r['particle_mass']
+        accreted_inds_all = np.where(particle_mass == min_mass)[0]
+        del particle_mass
+        gc.collect()
+        print("got accreted_inds_all")
+        sys.stdout.flush()
+        particle_identity = ds.r['particle_identity']
+        accreted_ids_all = particle_identity[accreted_inds_all]
+        print("got accreted indexes")
+        sys.stdout.flush()
+        
+        accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
+        not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
+        print("saved other and not accreted tracer particle indices")
+        sys.stdout.flush()
+        del particle_identity
+        gc.collect()
     
-    if args.sink_number != None:
-        sink_id = args.sink_number
+        if rank == 0:
+            #Save overall tracer particle data:
+            file = open('all_tracer_data.pkl', 'wb')
+            pickle.dump((sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accrete_ids_other, not_accreted_ids, end_file), file)
+            file.close()
+        sys.stdout.flush()
+        CW.Barrier()
     else:
-        ds = yt.load(files[-1])
-        sink_id = np.argmin(ds.r['sink_particle_speed'])
-    print("SINK ID =", sink_id)
-    
-    try:
-        sink_form_time = ds.r['sink_particle_form_time'][sink_id]
-    except:
-        ds = yt.load(files[-1])
-        sink_form_time = ds.r['sink_particle_form_time'][sink_id]
-    
-    gc.collect()
-    sys.stdout.flush()
-    CW.Barrier()
-
-    
-    #if rank == 0:
-    #Get accreted tracer particle IDS
-    print("Getting burst files")
-    sys.stdout.flush()
-    end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
-    end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
-    #end_burst_file = files[-1] #WARNING THIS SHOULD USE THE MYM.FIND FILES LINE
-    #end_file = end_burst_file
-    print("starting to load end_burst_file")
-    ds = yt.load(end_burst_file)
-    print("loaded burst file")
-    sys.stdout.flush()
-    particle_mass = ds.r['particle_mass']
-    min_mass = (-1*(sink_id+1))
-    accreted_inds_burst = np.where(particle_mass == min_mass)[0]
-    del particle_mass
-    print("Got all accreted_inds_burst")
-    sys.stdout.flush()
-    particle_identity = ds.r['particle_identity']
-    accreted_ids_burst = particle_identity[accreted_inds_burst]
-    print("got burst indexes")
-    sys.stdout.flush()
-    del particle_identity
-    gc.collect()
-    
-    sys.stdout.flush()
-    CW.Barrier()
-
-    print("getting all accreted tracer inds")
-    sys.stdout.flush()
-    end_sim_file = files[-1]
-    usable_files = files[:files.index(end_file)+1]
-    ds = yt.load(end_sim_file)
-    print("loaded end file")
-    sys.stdout.flush()
-    particle_mass = ds.r['particle_mass']
-    accreted_inds_all = np.where(particle_mass == min_mass)[0]
-    del particle_mass
-    gc.collect()
-    print("got accreted_inds_all")
-    sys.stdout.flush()
-    particle_identity = ds.r['particle_identity']
-    accreted_ids_all = particle_identity[accreted_inds_all]
-    print("got accreted indexes")
-    sys.stdout.flush()
-    
-    accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
-    not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
-    print("saved other and not accreted tracer particle indices")
-    sys.stdout.flush()
-    del particle_identity
-    gc.collect()
+        file = open('all_tracer_data.pkl', 'rb')
+        sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accrete_ids_other, not_accreted_ids, end_file = pickle.load(file)
+        file.close()
+        
+        usable_files = files[:files.index(end_file)+1]
     
     sys.stdout.flush()
     CW.Barrier()
@@ -144,7 +160,8 @@ if args.make_pickle_files == "True":
     file_int = -1
     no_files = len(usable_files)
     para_div = 1
-    for fn in yt.parallel_objects(usable_files):
+    for fn in yt.parallel_objects(usable_files, njobs=size):
+        print('entering form loop on rank', rank)
         if size > 1:
             file_int = usable_files.index(fn)
         else:
