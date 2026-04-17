@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #In this script we are trying to learn how mass is primarily being accreted
 import glob
-import numpy as np
 import pickle
 import gc
     
