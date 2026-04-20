@@ -201,8 +201,10 @@ for fit in range(frame_no):
                     
                 
             if plot_type[counter - 1] == 'movie_frame':
-                import pdb
-                pdb.set_trace()
+                pickle_file = paths[counter - 1]
+                file_open = open(pickle_file, 'rb')
+                Time_array, Y_array = pickle.load(file_open)
+                file_open.close()
                 
             #Check for axis labels and assign them
             if 'xlabel' in curr_args.keys():

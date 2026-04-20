@@ -8,7 +8,7 @@ import sys
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import my_ramses_module as mym
+from my_ramses_module import set_units, find_files
 import my_ramses_fields_short as myf
 import gc
 
@@ -45,6 +45,8 @@ if args.end_burst_time != None:
 else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
     end_time = time_bounds[event_id][-1]
+    del time_bounds
+    gc.collect()
 
 sys.stdout.flush()
 CW.Barrier()
@@ -57,12 +59,13 @@ scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velo
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
-mym.set_units(units_override)
+set_units(units_override)
 del units_override
 gc.collect()
 
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
+    del input_dir
     if os.path.isfile('all_tracer_data.pkl') == False:
 
         sys.stdout.flush()
@@ -91,8 +94,8 @@ if args.make_pickle_files == "True":
         #Get accreted tracer particle IDS
         print("Getting burst files")
         sys.stdout.flush()
-        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
-        end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+        end_burst_file = find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
+        end_file = find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         #end_burst_file = files[-1] #WARNING THIS SHOULD USE THE MYM.FIND FILES LINE
         #end_file = end_burst_file
         print("starting to load end_burst_file")
