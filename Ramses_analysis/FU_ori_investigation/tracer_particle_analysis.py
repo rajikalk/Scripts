@@ -8,7 +8,6 @@ import sys
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-from my_ramses_module import set_units, find_files
 import my_ramses_fields_short as myf
 import gc
 
@@ -59,14 +58,14 @@ scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velo
 scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value  # 2998 Msun / (4 pc)^3
 scale_l = yt.YTQuantity(4, 'pc').in_units('au')
 scale_t = yt.YTQuantity(685706129102738.9, "s").in_units('yr') # 4 pc / 0.18 km/s
-set_units(units_override)
-del units_override
-gc.collect()
 
 if args.make_pickle_files == "True":
     files = sorted(glob.glob(input_dir+"*/info*.txt"))
     del input_dir
     if os.path.isfile('all_tracer_data.pkl') == False:
+        import my_ramses_module as mym
+        
+        mym.set_units(units_override)
 
         sys.stdout.flush()
         CW.Barrier()
@@ -94,8 +93,8 @@ if args.make_pickle_files == "True":
         #Get accreted tracer particle IDS
         print("Getting burst files")
         sys.stdout.flush()
-        end_burst_file = find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
-        end_file = find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
+        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
+        end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         #end_burst_file = files[-1] #WARNING THIS SHOULD USE THE MYM.FIND FILES LINE
         #end_file = end_burst_file
         print("starting to load end_burst_file")
@@ -157,6 +156,9 @@ if args.make_pickle_files == "True":
         
         usable_files = files[:files.index(end_file)+1]
     
+    
+    del units_override
+    gc.collect()
     sys.stdout.flush()
     CW.Barrier()
 
@@ -165,6 +167,7 @@ if args.make_pickle_files == "True":
     para_div = 1
     for fn in yt.parallel_objects(usable_files, njobs=size):
         print('entering form loop on rank', rank)
+        sys.stdout.flush()
         if size > 1:
             file_int = usable_files.index(fn)
         else:
@@ -178,40 +181,29 @@ if args.make_pickle_files == "True":
             print(pickle_file, "already exists on rank", rank)
         if make_pickle:
             print('loading file', fn, 'on rank', rank)
+            sys.stdout.flush()
             ds = yt.load(fn)
             print('loaded file', fn, 'on rank', rank)
+            sys.stdout.flush()
             try:
                 print("loading tracer particle indices on rank", rank)
+                sys.stdout.flush()
                 particle_identity = ds.r['particle_identity']
-                
-                time_val = ds.current_time.value*scale_t - sink_form_time
-            
-                pp_code = yt.YTArray([ds.r['sink_particle_posx'][sink_id].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
-                pv_code = yt.YTArray([ds.r['sink_particle_velx'][sink_id].in_units('code_velocity'), ds.r['sink_particle_vely'][sink_id].in_units('code_velocity'), ds.r['sink_particle_velz'][sink_id].in_units('code_velocity')])
                 
                 accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
                 accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
                 not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
                 del particle_identity
                 gc.collect()
+            
+                print("Getting candidate particle position", rank)
+                sys.stdout.flush()
+                pp_code = yt.YTArray([ds.r['sink_particle_posx'][sink_id].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
+                pv_code = yt.YTArray([ds.r['sink_particle_velx'][sink_id].in_units('code_velocity'), ds.r['sink_particle_vely'][sink_id].in_units('code_velocity'), ds.r['sink_particle_velz'][sink_id].in_units('code_velocity')])
                 
-                print("loading tracer particle positions on rank", rank)
-                curr_accreted_inds = np.where(ds.r['particle_mass'] == min_mass)[0]
-                particle_position_x = ds.r['particle_position_x']
-                particle_position_x[curr_accreted_inds] = pp_code[0]
-                particle_position_y = ds.r['particle_position_y']
-                particle_position_y[curr_accreted_inds] = pp_code[1]
-                particle_position_z = ds.r['particle_position_z']
-                particle_position_z[curr_accreted_inds] = pp_code[2]
-                
-                relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
-                rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
-                relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
-
-                burst_positions = [relx, rely, relz]
-                
-                #Get burst velocity
+                                #Get burst velocity
                 print("loading tracer particle velocities on rank", rank)
+                sys.stdout.flush()
                 curr_accreted_inds = np.where(ds.r['particle_mass'][accreted_inds_burst] == min_mass)[0]
                 particle_velocity_x = ds.r['particle_velocity_x'][accreted_inds_burst]
                 particle_velocity_x[curr_accreted_inds] = pv_code[0]
@@ -230,6 +222,22 @@ if args.make_pickle_files == "True":
                 
                 burst_velocity = [rel_vx, rel_vy, rel_vz]
                 
+                print("loading tracer particle positions on rank", rank)
+                sys.stdout.flush()
+                curr_accreted_inds = np.where(ds.r['particle_mass'] == min_mass)[0]
+                particle_position_x = ds.r['particle_position_x']
+                particle_position_x[curr_accreted_inds] = pp_code[0]
+                particle_position_y = ds.r['particle_position_y']
+                particle_position_y[curr_accreted_inds] = pp_code[1]
+                particle_position_z = ds.r['particle_position_z']
+                particle_position_z[curr_accreted_inds] = pp_code[2]
+                
+                relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
+                rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
+                relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
+
+                burst_positions = [relx, rely, relz]
+                
                 relx = (particle_position_x[accrete_inds_other].value - pp_code[0].value)*scale_l
                 rely = (particle_position_y[accrete_inds_other].value - pp_code[1].value)*scale_l
                 relz = (particle_position_z[accrete_inds_other].value - pp_code[2].value)*scale_l
@@ -243,6 +251,8 @@ if args.make_pickle_files == "True":
                 gc.collect()
                 
                 not_accreted_positions = [relx, rely, relz]
+                
+                time_val = ds.current_time.value*scale_t - sink_form_time
                 
                 write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions, 'burst_velocity':burst_velocity}
                 
