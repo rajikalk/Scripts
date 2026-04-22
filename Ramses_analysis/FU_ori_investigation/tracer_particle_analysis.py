@@ -73,7 +73,7 @@ if args.make_pickle_files == "True":
         if args.sink_number != None:
             sink_id = args.sink_number
         else:
-            ds = yt.load(files[-1], bbox=bbox)
+            ds = yt.load(files[-1])
             sink_id = np.argmin(ds.r['sink_particle_speed'])
         print("SINK ID =", sink_id)
         
@@ -166,8 +166,6 @@ if args.make_pickle_files == "True":
     no_files = len(usable_files)
     para_div = 1
     for fn in yt.parallel_objects(usable_files, njobs=size):
-        print('entering form loop on rank', rank)
-        sys.stdout.flush()
         if size > 1:
             file_int = usable_files.index(fn)
         else:
