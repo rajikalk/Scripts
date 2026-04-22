@@ -203,6 +203,7 @@ if args.make_pickle_files == "True":
                             #Get burst velocity
             print("loading tracer particle velocities on rank", rank)
             sys.stdout.flush()
+            min_mass = (-1*(sink_id+1))
             curr_accreted_inds = np.where(ds.r['particle_mass'][accreted_inds_burst] == min_mass)[0]
             particle_velocity_x = ds.r['particle_velocity_x'][accreted_inds_burst]
             particle_velocity_x[curr_accreted_inds] = pv_code[0]
