@@ -79,11 +79,11 @@ if args.make_pickle_files == "True":
         print("SINK ID =", sink_id)
         
         try:
-            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time')*scale_t
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time').value*scale_t
         except:
             bbox= [[0.0, 0.0, 0.0], [0.1, 0.1, 0.1]]
             ds = yt.load(files[-1], bbox=bbox)
-            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time')*scale_t
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time').value*scale_t
         
         gc.collect()
         sys.stdout.flush()
