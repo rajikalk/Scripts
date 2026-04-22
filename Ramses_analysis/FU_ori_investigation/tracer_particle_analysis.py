@@ -43,6 +43,7 @@ if args.end_burst_time != None:
     end_time = args.end_burst_time
 else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
+    print("Getting tracer particles for Event", event_id)
     end_time = time_bounds[event_id][-1]
     del time_bounds
     gc.collect()
