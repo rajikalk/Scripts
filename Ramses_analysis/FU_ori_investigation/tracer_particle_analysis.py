@@ -43,7 +43,7 @@ if args.end_burst_time != None:
     end_time = args.end_burst_time
 else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
-    print("Getting tracer particles for Event", event_id)
+    print("Getting tracer particles for Event", event_id+19i    ```q1`)
     end_time = time_bounds[event_id][-1]
     del time_bounds
     gc.collect()
@@ -79,11 +79,11 @@ if args.make_pickle_files == "True":
         print("SINK ID =", sink_id)
         
         try:
-            sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time')*scale_t
         except:
             bbox= [[0.0, 0.0, 0.0], [0.1, 0.1, 0.1]]
             ds = yt.load(files[-1], bbox=bbox)
-            sink_form_time = ds.r['sink_particle_form_time'][sink_id]
+            sink_form_time = ds.r['sink_particle_form_time'][sink_id].in_units('code_time')*scale_t
         
         gc.collect()
         sys.stdout.flush()
