@@ -184,6 +184,7 @@ if args.make_pickle_files == "True":
             print("making", pickle_file, "on rank", rank)
         else:
             print(pickle_file, "already exists on rank", rank)
+            make_pickle = False
         if make_pickle:
             print('loading file', fn, 'on rank', rank)
             sys.stdout.flush()
