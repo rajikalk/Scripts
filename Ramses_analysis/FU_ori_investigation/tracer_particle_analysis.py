@@ -212,13 +212,13 @@ if args.make_pickle_files == "True":
             print("loading tracer particle velocities on rank", rank)
             sys.stdout.flush()
             min_mass = (-1*(sink_id+1))
-            curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst] == min_mass)[0]
+            #curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst] == min_mass)[0]
             particle_velocity_x = ds.r['particle_velocity_x'][sorted_inds][accreted_inds_burst]
-            particle_velocity_x[curr_accreted_inds] = pv_code[0]
+            #particle_velocity_x[curr_accreted_inds] = pv_code[0]
             particle_velocity_y = ds.r['particle_velocity_y'][sorted_inds][accreted_inds_burst]
-            particle_velocity_y[curr_accreted_inds] = pv_code[1]
+            #particle_velocity_y[curr_accreted_inds] = pv_code[1]
             particle_velocity_z = ds.r['particle_velocity_z'][sorted_inds][accreted_inds_burst]
-            particle_velocity_z[curr_accreted_inds] = pv_code[2]
+            #particle_velocity_z[curr_accreted_inds] = pv_code[2]
             del curr_accreted_inds
             gc.collect()
             
@@ -232,13 +232,13 @@ if args.make_pickle_files == "True":
             
             print("loading tracer particle positions on rank", rank)
             sys.stdout.flush()
-            curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds] == min_mass)[0]
+            #curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds] == min_mass)[0]
             particle_position_x = ds.r['particle_position_x'][sorted_inds]
-            particle_position_x[curr_accreted_inds] = pp_code[0]
+            #particle_position_x[curr_accreted_inds] = pp_code[0]
             particle_position_y = ds.r['particle_position_y'][sorted_inds]
-            particle_position_y[curr_accreted_inds] = pp_code[1]
+            #particle_position_y[curr_accreted_inds] = pp_code[1]
             particle_position_z = ds.r['particle_position_z'][sorted_inds]
-            particle_position_z[curr_accreted_inds] = pp_code[2]
+            #particle_position_z[curr_accreted_inds] = pp_code[2]
             
             relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
             rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
