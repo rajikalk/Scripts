@@ -55,7 +55,7 @@ X_pos = np.array(X_pos)
 Y_pos = np.array(Y_pos)
 alpha_val = np.linspace(0, 1, len(Time_array))
 
-for time_it in range(len(Time_array)):
+#for time_it in range(len(Time_array)):
     #PLot sink vector
 
 plt.clf()
