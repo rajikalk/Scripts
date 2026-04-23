@@ -48,10 +48,12 @@ else:
 
 #Make plots!
 import matplotlib.pyplot as plt
+X_pos = np.array(X_pos)
+Y_pos = np.array(Y_pos)
 
 plt.clf()
-#XY plot
-plt.plot(X_pos, Y_pos)
+for part_it in range(np.shape(X_pos)[1]):
+    plt.plot(X_pos.T[part_it], Y_pos.T[part_it], alpha=0.5)
 plt.scatter(0, 0, marker='o', color='magenta', s=3)
 plt.xlim([-15, 15])
 plt.ylim([-15, 15])
