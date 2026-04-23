@@ -141,8 +141,6 @@ if args.make_pickle_files == "True":
         print("got accreted indexes")
         sys.stdout.flush()
         
-        import pdb
-        pdb.set_trace()
         #Check carefulling abotu saving tracer partice IDS and there indexes.
         accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
         not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
