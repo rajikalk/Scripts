@@ -207,6 +207,7 @@ if args.make_pickle_files == "True":
             sys.stdout.flush()
             pp_code = yt.YTArray([ds.r['sink_particle_posx'][sink_id].in_units('code_length'), ds.r['sink_particle_posy'][sink_id].in_units('code_length'), ds.r['sink_particle_posz'][sink_id].in_units('code_length')])
             pv_code = yt.YTArray([ds.r['sink_particle_velx'][sink_id].in_units('code_velocity'), ds.r['sink_particle_vely'][sink_id].in_units('code_velocity'), ds.r['sink_particle_velz'][sink_id].in_units('code_velocity')])
+            pv_code_unit = pv_code/(np.sqrt(np.sum(pv_code**2)))
             
                             #Get burst velocity
             print("loading tracer particle velocities on rank", rank)
@@ -262,7 +263,7 @@ if args.make_pickle_files == "True":
             
             time_val = ds.current_time.value*scale_t - sink_form_time
             
-            write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions, 'burst_velocity':burst_velocity}
+            write_dict = {'time':time_val, 'burst_positions':burst_positions, 'other_positions':other_positions, 'not_accreted_positions':not_accreted_positions, 'burst_velocity':burst_velocity, 'sink_velocity_vector':pv_code_unit}
             
             file = open(pickle_file, 'wb')
             pickle.dump((write_dict), file)
