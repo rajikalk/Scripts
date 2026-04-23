@@ -16,6 +16,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
     X_pos = []
     Y_pos = []
     Z_pos = []
+    Sink_vec = []
 
     for tracer_file in tracer_pickle_files:
         print("reading", tracer_file)
@@ -33,6 +34,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         X_pos.append(tracer_dict['burst_positions'][0])
         Y_pos.append(tracer_dict['burst_positions'][1])
         Z_pos.append(tracer_dict['burst_positions'][2])
+        Sink_vec.append(tracer_dict['sink_velocity_vector'])
 
     #save the data
     print("saving tracer trajectories")
@@ -51,10 +53,14 @@ else:
 import matplotlib.pyplot as plt
 X_pos = np.array(X_pos)
 Y_pos = np.array(Y_pos)
+alpha_val = np.linspace(0, 1, len(Time_array))
+
+for time_it in range(len(Time_array)):
+    #PLot sink vector
 
 plt.clf()
 for part_it in range(np.shape(X_pos)[1]):
-    plt.plot(X_pos.T[part_it], Y_pos.T[part_it], alpha=0.5)
+    plt.plot(X_pos.T[part_it], Y_pos.T[part_it], alpha=alpha_val)
 plt.scatter(0, 0, marker='o', color='magenta', s=3)
 plt.xlim([-15, 15])
 plt.ylim([-15, 15])
