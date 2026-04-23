@@ -219,7 +219,7 @@ if args.make_pickle_files == "True":
             #particle_velocity_y[curr_accreted_inds] = pv_code[1]
             particle_velocity_z = ds.r['particle_velocity_z'][sorted_inds][accreted_inds_burst]
             #particle_velocity_z[curr_accreted_inds] = pv_code[2]
-            del curr_accreted_inds
+            #del curr_accreted_inds
             gc.collect()
             
             rel_vx = (particle_velocity_x.value - pv_code[0].value)*scale_v.in_units('km/s')
