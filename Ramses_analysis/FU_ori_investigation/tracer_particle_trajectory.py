@@ -33,6 +33,9 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         
         Tracer_distance = np.sqrt(np.sum(np.square(tracer_dict['burst_positions']), axis=0))
         Tracer_proj_parallel =np.sqrt(np.sum((projected_vector(yt.YTArray(np.array(tracer_dict['burst_positions']).T, 'au'), tracer_dict['sink_velocity_vector']))**2, axis=1))
+        import pdb
+        pdb.set_trace()
+        sign = np.dot(Tracer_proj_parallel, tracer_dict['sink_velocity_vector'].T)
         Tracer_proj_perp = np.sqrt(Tracer_distance**2 - Tracer_proj_parallel.value**2)
         
         Time_array.append(tracer_dict['time'])
@@ -56,10 +59,10 @@ else:
 import matplotlib.pyplot as plt
 
 plt.clf()
-plt.plot(Tracer_parallel, Tracer_perpendicular)
+plt.plot(Tracer_parallel, Tracer_perpendicular, alpha=0.25)
 plt.scatter(0, 0, marker='o', color='magenta', s=3)
-plt.xlim([-15, 15])
-plt.ylim([-15, 15])
+plt.xlim([-1, 15])
+plt.ylim([0, 15])
 plt.xlabel('X (AU)')
 plt.xlabel('Y (AU)')
 plt.savefig("XY_tracer_traj.png")
