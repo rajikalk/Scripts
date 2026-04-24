@@ -142,7 +142,7 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         
         #Check carefulling abotu saving tracer partice IDS and there indexes.
-        accrete_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
+        accreted_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
         not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
         print("saved other and not accreted tracer particle indices")
         sys.stdout.flush()
@@ -152,13 +152,13 @@ if args.make_pickle_files == "True":
         if rank == 0:
             #Save overall tracer particle data:
             file = open('all_tracer_data.pkl', 'wb')
-            pickle.dump((sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accrete_ids_other, not_accreted_ids, end_file), file)
+            pickle.dump((sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file), file)
             file.close()
         sys.stdout.flush()
         CW.Barrier()
     else:
         file = open('all_tracer_data.pkl', 'rb')
-        sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accrete_ids_other, not_accreted_ids, end_file = pickle.load(file)
+        sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file = pickle.load(file)
         file.close()
         
         usable_files = files[:files.index(end_file)+1]
@@ -198,7 +198,7 @@ if args.make_pickle_files == "True":
             particle_identity = particle_identity[sorted_inds]
             
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
-            accrete_inds_other = np.in1d(particle_identity.value, accrete_ids_other.value).nonzero()[0]
+            accrete_inds_other = np.in1d(particle_identity.value, accreted_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
             del particle_identity
             gc.collect()
