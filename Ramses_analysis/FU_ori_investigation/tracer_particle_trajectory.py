@@ -39,13 +39,13 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
     #save the data
     print("saving tracer trajectories")
     file = open('tracer_trajectory.pkl', 'wb')
-    pickle.dump((Time_array, X_pos, Y_pos, Z_pos), file)
+    pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
     file.close()
 
 else:
     print("reading tracer trajectories")
     file = open('tracer_trajectory.pkl', 'rb')
-    Time_array, X_pos, Y_pos, Z_pos = pickle.load(file)
+    Time_array, X_pos, Y_pos, Z_pos, Sink_vec = pickle.load(file)
     file.close()
     
 
@@ -55,7 +55,7 @@ X_pos = np.array(X_pos)
 Y_pos = np.array(Y_pos)
 alpha_val = np.linspace(0, 1, len(Time_array))
 
-#for time_it in range(len(Time_array)):
+for time_it in range(len(Time_array)):
     #PLot sink vector
 
 plt.clf()
