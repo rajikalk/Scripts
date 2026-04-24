@@ -89,6 +89,20 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         CW.Barrier()
 
+
+        #Remove tracers already accreted
+        print("Removie tracers already accreted")
+        ds = yt.load(files[0])
+        print("loaded first file")
+        sys.stdout.flush()
+        particle_identity = ds.r['particle_identity']
+        sorted_inds = np.argsort(particle_identity)
+        particle_mass = ds.r['particle_mass'][sorted_inds]
+        min_mass = (-1*(sink_id+1))
+        already_accreted_inds = np.where(particle_mass == min_mass)[0]
+        del particle_mass
+        print("Got already accreted inds")
+        sys.stdout.flush()
         
         #if rank == 0:
         #Get accreted tracer particle IDS
@@ -105,8 +119,9 @@ if args.make_pickle_files == "True":
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
         particle_mass = ds.r['particle_mass'][sorted_inds]
-        min_mass = (-1*(sink_id+1))
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
+        import pdb
+        pdb.set_trace()
         del particle_mass
         print("Got all accreted_inds_burst")
         sys.stdout.flush()
