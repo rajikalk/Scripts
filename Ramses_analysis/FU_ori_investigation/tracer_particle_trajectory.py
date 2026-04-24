@@ -59,9 +59,10 @@ import matplotlib.pyplot as plt
 
 plt.clf()
 plt.plot(Tracer_parallel, Tracer_perpendicular, alpha=0.25)
-plt.scatter(0, 0, marker='o', color='magenta', s=3)
+plt.scatter(0, 0, marker='*', color='magenta', s=3)
 plt.xlim([np.min(Tracer_parallel), 15])
 plt.ylim([0, 15])
 plt.xlabel('X (AU)')
 plt.xlabel('Y (AU)')
+plt.gca().set_aspect('equal')
 plt.savefig("XY_tracer_traj.png")
