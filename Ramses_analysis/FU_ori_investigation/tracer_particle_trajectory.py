@@ -7,7 +7,6 @@ import os
 import numpy as np
 from my_ramses_fields import projected_vector
 import yt
-    
 
 #=======MAIN=======
 
@@ -56,13 +55,54 @@ else:
 
 #Make plots!
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib as mpl
+
+
+Tracer_parallel = -1*np.array(Tracer_parallel).T
+Tracer_perpendicular = np.array(Tracer_perpendicular).T
+
+cmap = mpl.colormaps['plasma']
+colors = cmap(np.linspace(0, 1, len(Tracer_parallel[0])-1))
+plt.clf()
+fig1, ax1 = plt.subplots()
+for tracer_it in range(len(Tracer_parallel)):
+    start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
+    end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
+    if end_sep < start_sep:
+    for pit in range(1,len(Tracer_parallel[tracer_it])):
+        ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
+ax1.scatter(0, 0, marker='*', color='magenta', s=500)
+circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
+plt.gca().add_patch(circle)
+plt.xlim([-15, 15])
+plt.ylim([0, 30])
+plt.xlabel('X (AU)')
+plt.ylabel('Y (AU)')
+plt.gca().set_aspect('equal')
+plt.savefig("XY_tracer_traj.jpg", bbox_inches='tight', dpi=300)
 
 plt.clf()
 plt.plot(Tracer_parallel, Tracer_perpendicular, alpha=0.25)
-plt.scatter(0, 0, marker='*', color='magenta', s=3)
-plt.xlim([np.min(Tracer_parallel), 15])
+plt.scatter(0, 0, marker='*', color='magenta', s=500)
+circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
+plt.gca().add_patch(circle)
+plt.xlim([-15, 15])
 plt.ylim([0, 15])
 plt.xlabel('X (AU)')
-plt.xlabel('Y (AU)')
+plt.ylabel('Y (AU)')
 plt.gca().set_aspect('equal')
-plt.savefig("XY_tracer_traj.png")
+plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight')
+
+
+plt.clf()
+plt.plot(Tracer_parallel, Tracer_perpendicular, alpha=0.25)
+plt.scatter(0, 0, marker='*', color='magenta', s=500)
+circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
+plt.gca().add_patch(circle)
+plt.xlim([-2, 2])
+plt.ylim([0, 4])
+plt.xlabel('X (AU)')
+plt.ylabel('Y (AU)')
+plt.gca().set_aspect('equal')
+plt.savefig("XY_tracer_traj_zoom.pdf", bbox_inches='tight')
