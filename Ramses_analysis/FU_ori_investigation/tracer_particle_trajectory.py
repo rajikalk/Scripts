@@ -5,6 +5,7 @@ import pickle
 import gc
 import os
 import numpy as np
+from my_ramses_fields import projected_vector
     
 
 #=======MAIN=======
@@ -12,41 +13,26 @@ import numpy as np
 if os.path.isfile('tracer_trajectory.pkl') == False:
     tracer_pickle_files = sorted(glob.glob('./movie_frame*.pkl'))
 
-    Time_array = []
-    X_pos = []
-    Y_pos = []
-    Z_pos = []
-    Sink_vec = []
-
     for tracer_file in tracer_pickle_files:
         print("reading", tracer_file)
         file = open(tracer_file, 'rb')
         tracer_dict = pickle.load(file)
         file.close()
-        del tracer_dict['other_positions']
-        gc.collect()
-        del tracer_dict['burst_velocity']
-        gc.collect()
-        del tracer_dict['not_accreted_positions']
-        gc.collect()
         
-        Time_array.append(tracer_dict['time'])
-        X_pos.append(tracer_dict['burst_positions'][0])
-        Y_pos.append(tracer_dict['burst_positions'][1])
-        Z_pos.append(tracer_dict['burst_positions'][2])
-        Sink_vec.append(tracer_dict['sink_velocity_vector'])
+        import pdb
+        pdb.set_trace()
 
-        #save the data
-        print("saving tracer trajectories")
-        file = open('tracer_trajectory.pkl', 'wb')
-        pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
-        file.close()
+    #save the data
+    #print("saving tracer trajectories")
+    #file = open('tracer_trajectory.pkl', 'wb')
+    #pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
+    #file.close()
 
-else:
-    print("reading tracer trajectories")
-    file = open('tracer_trajectory.pkl', 'rb')
-    Time_array, X_pos, Y_pos, Z_pos, Sink_vec = pickle.load(file)
-    file.close()
+#else:
+#    print("reading tracer trajectories")
+#    file = open('tracer_trajectory.pkl', 'rb')
+#    Time_array, X_pos, Y_pos, Z_pos, Sink_vec = pickle.load(file)
+#    file.close()
     
 
 #Make plots!
