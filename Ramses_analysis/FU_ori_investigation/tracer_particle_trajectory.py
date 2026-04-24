@@ -44,7 +44,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
 
 else:
     print("reading tracer trajectories")
-    file = open('tracer_trajectory.pkl', 'wb')
+    file = open('tracer_trajectory.pkl', 'rb')
     Time_array, X_pos, Y_pos, Z_pos = pickle.load(file)
     file.close()
     
