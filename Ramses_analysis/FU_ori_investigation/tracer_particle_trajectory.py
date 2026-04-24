@@ -36,11 +36,11 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         Z_pos.append(tracer_dict['burst_positions'][2])
         Sink_vec.append(tracer_dict['sink_velocity_vector'])
 
-    #save the data
-    print("saving tracer trajectories")
-    file = open('tracer_trajectory.pkl', 'wb')
-    pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
-    file.close()
+        #save the data
+        print("saving tracer trajectories")
+        file = open('tracer_trajectory.pkl', 'wb')
+        pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
+        file.close()
 
 else:
     print("reading tracer trajectories")
