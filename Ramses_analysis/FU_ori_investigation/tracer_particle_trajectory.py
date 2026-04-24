@@ -6,6 +6,7 @@ import gc
 import os
 import numpy as np
 from my_ramses_fields import projected_vector
+import yt
     
 
 #=======MAIN=======
@@ -13,40 +14,49 @@ from my_ramses_fields import projected_vector
 if os.path.isfile('tracer_trajectory.pkl') == False:
     tracer_pickle_files = sorted(glob.glob('./movie_frame*.pkl'))
 
+    Time_array = []
+    Tracer_parallel = []
+    Tracer_perpendicular = []
+    Sink_vec = []
+
     for tracer_file in tracer_pickle_files:
         print("reading", tracer_file)
         file = open(tracer_file, 'rb')
         tracer_dict = pickle.load(file)
         file.close()
+        del tracer_dict['other_positions']
+        gc.collect()
+        del tracer_dict['not_accreted_positions']
+        gc.collect()
+        del tracer_dict['burst_velocity']
+        gc.collect()
         
-        import pdb
-        pdb.set_trace()
+        Tracer_distance = np.sqrt(np.sum(np.square(tracer_dict['burst_positions']), axis=0))
+        Tracer_proj_parallel =np.sqrt(np.sum((projected_vector(yt.YTArray(np.array(tracer_dict['burst_positions']).T, 'au'), tracer_dict['sink_velocity_vector']))**2, axis=1))
+        Tracer_proj_perp = np.sqrt(Tracer_distance**2 - Tracer_proj_parallel.value**2)
+        
+        Time_array.append(tracer_dict['time'])
+        Tracer_parallel.append(Tracer_proj_parallel)
+        Tracer_perpendicular.append(Tracer_proj_perp)
 
     #save the data
-    #print("saving tracer trajectories")
-    #file = open('tracer_trajectory.pkl', 'wb')
-    #pickle.dump((Time_array, X_pos, Y_pos, Z_pos, Sink_vec), file)
-    #file.close()
+    print("saving tracer trajectories")
+    file = open('tracer_trajectory.pkl', 'wb')
+    pickle.dump((Time_array, Tracer_parallel, Tracer_perpendicular), file)
+    file.close()
 
-#else:
-#    print("reading tracer trajectories")
-#    file = open('tracer_trajectory.pkl', 'rb')
-#    Time_array, X_pos, Y_pos, Z_pos, Sink_vec = pickle.load(file)
-#    file.close()
+else:
+    print("reading tracer trajectories")
+    file = open('tracer_trajectory.pkl', 'rb')
+    Time_array, Tracer_parallel, Tracer_perpendicular = pickle.load(file)
+    file.close()
     
 
 #Make plots!
 import matplotlib.pyplot as plt
-X_pos = np.array(X_pos)
-Y_pos = np.array(Y_pos)
-alpha_val = np.linspace(0, 1, len(Time_array))
-
-#for time_it in range(len(Time_array)):
-    #PLot sink vector
 
 plt.clf()
-for part_it in range(np.shape(X_pos)[1]):
-    plt.plot(X_pos.T[part_it], Y_pos.T[part_it], alpha=alpha_val)
+plt.plot(Tracer_parallel, Tracer_perpendicular)
 plt.scatter(0, 0, marker='o', color='magenta', s=3)
 plt.xlim([-15, 15])
 plt.ylim([-15, 15])
