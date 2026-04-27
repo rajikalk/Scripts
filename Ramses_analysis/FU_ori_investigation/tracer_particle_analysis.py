@@ -97,10 +97,13 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
+        del particle_identity
+        gc.collect()
         particle_mass = ds.r['particle_mass'][sorted_inds]
         min_mass = (-1*(sink_id+1))
         already_accreted_inds = np.where(particle_mass == min_mass)[0]
         del particle_mass
+        gc.collect()
         print("Got already accreted inds")
         sys.stdout.flush()
         
@@ -146,8 +149,7 @@ if args.make_pickle_files == "True":
         sorted_inds = np.argsort(particle_identity)
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_all = np.where(particle_mass == min_mass)[0]
-        import pdb
-        pdb.set_trace()
+        accreted_inds_all = np.sort(list(set(accreted_inds_all).symmetric_difference(already_accreted_inds)))
         del particle_mass
         gc.collect()
         print("got accreted_inds_all")
@@ -159,11 +161,16 @@ if args.make_pickle_files == "True":
         
         #Check carefulling abotu saving tracer partice IDS and there indexes.
         accreted_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
-        not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value)), '')
+        particle_identity = particle_identity[sorted_inds]
+        already_accreted_ids = particle_identity[already_accreted_inds]
+        del already_accreted_inds
+        gc.collect()
+        not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value) - set(already_accreted_ids.value)), '')
         print("saved other and not accreted tracer particle indices")
         sys.stdout.flush()
         del particle_identity
         gc.collect()
+        del
     
         if rank == 0:
             #Save overall tracer particle data:
