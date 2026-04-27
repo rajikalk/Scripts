@@ -170,7 +170,6 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         del particle_identity
         gc.collect()
-        del
     
         if rank == 0:
             #Save overall tracer particle data:
