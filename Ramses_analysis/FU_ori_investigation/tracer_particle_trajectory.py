@@ -51,7 +51,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         Tracer_proj_parallel = projected_vector(np.array(tracer_dict['burst_positions']).T, tracer_dict['sink_velocity_vector'])
         sign = np.sign(np.dot(Tracer_proj_parallel, tracer_dict['sink_velocity_vector']))
         Tracer_proj_parallel_mag = sign*np.sqrt(np.sum(Tracer_proj_parallel**2, axis=1))
-        Tracer_proj_perp = np.sqrt(Tracer_distance**2 - Tracer_proj_parallel_mag.value**2)
+        Tracer_proj_perp = np.sqrt(Tracer_distance**2 - Tracer_proj_parallel_mag**2)
         
         Time_array.append(tracer_dict['time'])
         Tracer_parallel.append(Tracer_proj_parallel_mag)
