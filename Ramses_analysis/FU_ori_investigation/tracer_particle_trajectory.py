@@ -5,8 +5,25 @@ import pickle
 import gc
 import os
 import numpy as np
-from my_ramses_fields import projected_vector
-import yt
+
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the projection of vecter projected onto vector
+    """
+    if len(proj_vector)>3:
+        #Calc vector.proj
+        v_dot_pv = vector.T[0]*proj_vector.T[0] + vector.T[1]*proj_vector.T[1] + vector.T[2]*proj_vector.T[2]
+        pv_dot_pv = proj_vector.T[0]**2 + proj_vector.T[1]**2 + proj_vector.T[2]**2
+        proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
+        proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
+        proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
+        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+    else:
+        proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+        proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+        proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+        proj_v = np.array([proj_v_x,proj_v_y,proj_v_z]).T
+    return proj_v
 
 #=======MAIN=======
 
