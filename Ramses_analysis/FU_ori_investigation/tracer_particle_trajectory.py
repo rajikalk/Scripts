@@ -17,7 +17,7 @@ def projected_vector(vector, proj_vector):
         proj_v_x = (v_dot_pv/pv_dot_pv)*proj_vector.T[0]
         proj_v_y = (v_dot_pv/pv_dot_pv)*proj_vector.T[1]
         proj_v_z = (v_dot_pv/pv_dot_pv)*proj_vector.T[2]
-        proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T)
+        proj_v = np.array([proj_v_x,proj_v_y,proj_v_z]).T
     else:
         proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
         proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
@@ -48,7 +48,7 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         gc.collect()
         
         Tracer_distance = np.sqrt(np.sum(np.square(tracer_dict['burst_positions']), axis=0))
-        Tracer_proj_parallel = projected_vector(yt.YTArray(np.array(tracer_dict['burst_positions']).T, 'au'), tracer_dict['sink_velocity_vector'])
+        Tracer_proj_parallel = projected_vector(np.array(tracer_dict['burst_positions']).T, tracer_dict['sink_velocity_vector'])
         sign = np.sign(np.dot(Tracer_proj_parallel, tracer_dict['sink_velocity_vector']))
         Tracer_proj_parallel_mag = sign*np.sqrt(np.sum(Tracer_proj_parallel**2, axis=1))
         Tracer_proj_perp = np.sqrt(Tracer_distance**2 - Tracer_proj_parallel_mag.value**2)
