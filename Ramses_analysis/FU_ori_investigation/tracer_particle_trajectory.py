@@ -75,7 +75,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
-
+mutation_scale = 15
 Tracer_parallel = -1 * np.array(Tracer_parallel).T
 Tracer_perpendicular = np.array(Tracer_perpendicular).T
 
@@ -91,7 +91,7 @@ for tracer_it in range(len(Tracer_parallel)):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
 ax1.scatter(0, 0, marker='*', color='magenta', s=500)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
-arrow = mpatches.FancyArrowPatch((0, 0), (25, 0), mutation_scale=10, color='magenta')
+arrow = mpatches.FancyArrowPatch((0, 0), (25, 0), mutation_scale=mutation_scale, color='magenta')
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([np.min(Tracer_parallel), np.max(Tracer_parallel)])
@@ -111,7 +111,7 @@ for tracer_it in range(len(Tracer_parallel)):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
 ax1.scatter(0, 0, marker='*', color='magenta', s=500)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
-arrow = mpatches.FancyArrowPatch((0, 0), (5, 0), mutation_scale=10, color='magenta')
+arrow = mpatches.FancyArrowPatch((0, 0), (5, 0), mutation_scale=mutation_scale, color='magenta')
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([-15, 15])
@@ -132,7 +132,7 @@ for tracer_it in range(len(Tracer_parallel)):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
     ax1.scatter(0, 0, marker='*', color='magenta', s=500)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
-arrow = mpatches.FancyArrowPatch((0, 0), (1, 0), mutation_scale=10, color='magenta')
+arrow = mpatches.FancyArrowPatch((0, 0), (1, 0), mutation_scale=mutation_scale, color='magenta')
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([-5, 5])
