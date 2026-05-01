@@ -219,8 +219,9 @@ if args.make_pickle_files == "True":
             sorted_inds = np.argsort(particle_identity)
             particle_identity = particle_identity[sorted_inds]
             
-            import pdb
-            pdb.set_trace()
+            if fn == end_burst_file:
+                import pdb
+                pdb.set_trace()
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accreted_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
