@@ -76,7 +76,7 @@ import matplotlib.patches as mpatches
 import matplotlib as mpl
 
 mutation_scale = 15
-linewidth = 5
+linewidth = 2
 Tracer_parallel = -1 * np.array(Tracer_parallel).T
 Tracer_perpendicular = np.array(Tracer_perpendicular).T
 
@@ -90,13 +90,13 @@ for tracer_it in range(len(Tracer_parallel)):
     if Tracer_perpendicular[tracer_it][-1] < 40:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-ax1.scatter(0, 0, marker='*', color='magenta', s=500)
+ax1.scatter(0, 0, marker='*', color='magenta', s=600)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
 arrow = mpatches.FancyArrowPatch((0, 0), (10, 0), mutation_scale=mutation_scale, color='magenta', linewidth=linewidth)
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([np.min(Tracer_parallel), np.max(Tracer_parallel)])
-plt.ylim([np.min(Tracer_perpendicular), np.max(Tracer_perpendicular)])
+plt.ylim([np.min(-1, np.max(Tracer_perpendicular)])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
@@ -110,13 +110,13 @@ for tracer_it in range(len(Tracer_parallel)):
     if Tracer_perpendicular[tracer_it][-1] < 40:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-ax1.scatter(0, 0, marker='*', color='magenta', s=500)
+ax1.scatter(0, 0, marker='*', color='magenta', s=600)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
 arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='magenta', linewidth=linewidth)
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([-15, 15])
-plt.ylim([0, 15])
+plt.ylim([-1, 15])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
@@ -131,13 +131,13 @@ for tracer_it in range(len(Tracer_parallel)):
     if Tracer_perpendicular[tracer_it][-1] < 40:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-    ax1.scatter(0, 0, marker='*', color='magenta', s=500)
+    ax1.scatter(0, 0, marker='*', color='magenta', s=600)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
 arrow = mpatches.FancyArrowPatch((0, 0), (1.5, 0), mutation_scale=mutation_scale, color='magenta', linewidth=linewidth)
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([-5, 5])
-plt.ylim([0, 5])
+plt.ylim([-1, 5])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
