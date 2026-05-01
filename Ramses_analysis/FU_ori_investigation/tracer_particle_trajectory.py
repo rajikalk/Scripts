@@ -76,12 +76,13 @@ import matplotlib.patches as mpatches
 import matplotlib as mpl
 
 mutation_scale = 15
-linewidth = 2
+linewidth = 1
 Tracer_parallel = -1 * np.array(Tracer_parallel).T
 Tracer_perpendicular = np.array(Tracer_perpendicular).T
 
 cmap = mpl.colormaps['plasma']
-colors = cmap(np.linspace(0, 1, len(Tracer_parallel[0])-1))
+N = len(Tracer_parallel[0])-1
+colors = cmap(np.linspace(0, 1, N)
 plt.clf()
 fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
@@ -100,6 +101,12 @@ plt.ylim([-1, np.max(Tracer_perpendicular)])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
+import pdb
+pdb.set_trace()
+norm = mpl.colors.Normalize(vmin=Time_array[0].value,vmax=Time_array[-1].value)
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])
+fig1.colorbar(sm, ticks=np.linspace(0,2,N))#,boundaries=np.arange(-0.05,2.1,.1))
 plt.savefig("XY_tracer_traj_full.jpg", bbox_inches='tight', dpi=300)
 
 plt.clf()
