@@ -82,7 +82,7 @@ Tracer_perpendicular = np.array(Tracer_perpendicular).T
 
 cmap = mpl.colormaps['plasma']
 N = len(Tracer_parallel[0])-1
-colors = cmap(np.linspace(0, 1, N)
+colors = cmap(np.linspace(0, 1, N))
 plt.clf()
 fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
