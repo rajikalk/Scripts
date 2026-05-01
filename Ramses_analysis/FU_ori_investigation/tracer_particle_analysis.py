@@ -91,7 +91,7 @@ if args.make_pickle_files == "True":
 
 
         #Remove tracers already accreted
-        print("Removie tracers already accreted")
+        print("Remove tracers already accreted")
         ds = yt.load(files[0])
         print("loaded first file")
         sys.stdout.flush()
@@ -123,8 +123,6 @@ if args.make_pickle_files == "True":
         sorted_inds = np.argsort(particle_identity)
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
-        import pdb
-        pdb.set_trace()
         accreted_inds_burst = np.sort(list(set(accreted_inds_burst).symmetric_difference(already_accreted_inds)))
         del particle_mass
         print("Got all accreted_inds_burst")
@@ -221,6 +219,8 @@ if args.make_pickle_files == "True":
             sorted_inds = np.argsort(particle_identity)
             particle_identity = particle_identity[sorted_inds]
             
+            import pdb
+            pdb.set_trace()
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accreted_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
