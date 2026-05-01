@@ -88,7 +88,7 @@ fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
     start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
     end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
-    if Tracer_perpendicular[tracer_it][-1] < 40:
+    if end_sep > start_sep:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
 ax1.scatter(0, 0, marker='*', color='magenta', s=600)
@@ -101,12 +101,12 @@ plt.ylim([-1, np.max(Tracer_perpendicular)])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
-import pdb
-pdb.set_trace()
 norm = mpl.colors.Normalize(vmin=Time_array[0].value,vmax=Time_array[-1].value)
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 sm.set_array([])
-fig1.colorbar(sm, ticks=np.linspace(0,2,N))#,boundaries=np.arange(-0.05,2.1,.1))
+cax = fig1.add_axes([0.905, 0.13, 0.03, 0.72])
+cbar = plt.colorbar(sm, cax=cax, ticks=np.linspace(int(Time_array[0].value),int(Time_array[-1].value),int(N/4)).astype(int), boundaries=np.arange(Time_array[0].value,Time_array[-1].value,1))
+cbar.set_label(r"Time (yr)", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj_full.jpg", bbox_inches='tight', dpi=300)
 
 plt.clf()
@@ -114,7 +114,7 @@ fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
     start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
     end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
-    if Tracer_perpendicular[tracer_it][-1] < 40:
+    if end_sep > start_sep:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
 ax1.scatter(0, 0, marker='*', color='magenta', s=600)
@@ -127,6 +127,12 @@ plt.ylim([-1, 15])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
+norm = mpl.colors.Normalize(vmin=Time_array[0].value,vmax=Time_array[-1].value)
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])
+cax = fig1.add_axes([0.905, 0.13, 0.03, 0.72])
+cbar = plt.colorbar(sm, cax=cax, ticks=np.linspace(int(Time_array[0].value),int(Time_array[-1].value),int(N/4)).astype(int), boundaries=np.arange(Time_array[0].value,Time_array[-1].value,1))
+cbar.set_label(r"Time (yr)", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj.jpg", bbox_inches='tight', dpi=300)
 
 
@@ -135,7 +141,7 @@ fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
     start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
     end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
-    if Tracer_perpendicular[tracer_it][-1] < 40:
+    if end_sep > start_sep:
         for pit in range(1,len(Tracer_parallel[tracer_it])):
             ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
     ax1.scatter(0, 0, marker='*', color='magenta', s=600)
@@ -148,4 +154,10 @@ plt.ylim([-1, 5])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
+norm = mpl.colors.Normalize(vmin=Time_array[0].value,vmax=Time_array[-1].value)
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])
+cax = fig1.add_axes([0.905, 0.13, 0.03, 0.72])
+cbar = plt.colorbar(sm, cax=cax, ticks=np.linspace(int(Time_array[0].value),int(Time_array[-1].value),int(N/4)).astype(int), boundaries=np.arange(Time_array[0].value,Time_array[-1].value,1))
+cbar.set_label(r"Time (yr)", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj_zoom.jpg", bbox_inches='tight', dpi=300)
