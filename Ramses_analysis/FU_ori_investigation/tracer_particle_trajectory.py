@@ -96,7 +96,7 @@ arrow = mpatches.FancyArrowPatch((0, 0), (10, 0), mutation_scale=mutation_scale,
 plt.gca().add_patch(circle)
 plt.gca().add_patch(arrow)
 plt.xlim([np.min(Tracer_parallel), np.max(Tracer_parallel)])
-plt.ylim([np.min(-1, np.max(Tracer_perpendicular)])
+plt.ylim([-1, np.max(Tracer_perpendicular)])
 plt.xlabel('Distance$_\parallel$ (AU)')
 plt.ylabel('Distance$_\perp$ (AU)')
 plt.gca().set_aspect('equal')
