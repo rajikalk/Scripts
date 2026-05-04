@@ -102,6 +102,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         min_mass = (-1*(sink_id+1))
         already_accreted_inds = np.where(particle_mass == min_mass)[0]
+        import pdb
+        pdb.set_trace()
         del particle_mass
         gc.collect()
         print("Got already accreted inds")
@@ -124,6 +126,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
         accreted_inds_burst = np.sort(list(set(accreted_inds_burst).symmetric_difference(already_accreted_inds)))
+        import pdb
+        pdb.set_trace()
         del particle_mass
         print("Got all accreted_inds_burst")
         sys.stdout.flush()
@@ -150,6 +154,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_all = np.where(particle_mass == min_mass)[0]
         accreted_inds_all = np.sort(list(set(accreted_inds_all).symmetric_difference(already_accreted_inds)))
+        import pdb
+        pdb.set_trace()
         del particle_mass
         gc.collect()
         print("got accreted_inds_all")
