@@ -31,7 +31,7 @@ if rank == 0:
 
 #Get input and output directories
 args = parse_inputs()
-time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
+time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7365], [7850, 7900]]
 
 #Define relevant directories
 input_dir = sys.argv[1]
@@ -102,8 +102,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         min_mass = (-1*(sink_id+1))
         already_accreted_inds = np.where(particle_mass == min_mass)[0]
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         del particle_mass
         gc.collect()
         print("Got already accreted inds")
@@ -126,8 +126,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
         accreted_inds_burst = np.sort(list(set(accreted_inds_burst).symmetric_difference(already_accreted_inds)))
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         del particle_mass
         print("Got all accreted_inds_burst")
         sys.stdout.flush()
@@ -154,8 +154,8 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_all = np.where(particle_mass == min_mass)[0]
         accreted_inds_all = np.sort(list(set(accreted_inds_all).symmetric_difference(already_accreted_inds)))
-        import pdb
-        pdb.set_trace()
+        #import pdb
+        #pdb.set_trace()
         del particle_mass
         gc.collect()
         print("got accreted_inds_all")
@@ -225,9 +225,9 @@ if args.make_pickle_files == "True":
             sorted_inds = np.argsort(particle_identity)
             particle_identity = particle_identity[sorted_inds]
             
-            if fn == end_file:
-                import pdb
-                pdb.set_trace()
+            #if fn == end_file:
+            #    import pdb
+            #    pdb.set_trace()
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accreted_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
