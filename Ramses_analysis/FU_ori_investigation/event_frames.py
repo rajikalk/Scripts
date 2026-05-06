@@ -36,6 +36,12 @@ try:
     print("finished reading in pickle")
 except:
     print("ADD PICKLE DIRECTORY FOR GADI")
+    sink_pickle = "../particle_data_L20.pkl"
+    print("read pickle", sink_pickle)
+    file_open = open(sink_pickle, 'rb')
+    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+    file_open.close()
+    print("finished reading in pickle")
     
 
 
