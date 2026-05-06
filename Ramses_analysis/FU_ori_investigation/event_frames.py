@@ -136,7 +136,7 @@ for plot_time in plot_times:
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
 
-    if np.min(part_info['formation_time'][1:] - part_info['formation_time'][:-1]) < 0:
+    if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['particle_form_time'])
         part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
