@@ -100,12 +100,12 @@ if args.update_pickle == 'True':
     else:
         updating = True
         particle_data = {}
-        particle_data.update({'particle_tag':[]})
-        particle_data.update({'time':[]})
-        particle_data.update({'mass':[]})
-        particle_data.update({'mdot':[]})
-        particle_data.update({'separation':[]})
-        particle_data.update({'velocity':[]})
+        particle_data.update({'particle_tag':np.array([])})
+        particle_data.update({'time':np.array([])})
+        particle_data.update({'mass':np.array([])})
+        particle_data.update({'mdot':np.array([])})
+        particle_data.update({'separation':np.array([])})
+        particle_data.update({'velocity':np.array([])})
         
         counter = 0
         sink_form_time = 0
@@ -233,25 +233,23 @@ if args.update_pickle == 'True':
                 
                 for tag in tags:
                     if tag not in particle_data['particle_tag']:
-                        particle_data['particle_tag'].append(tag)
+                        particle_data['particle_tag'] = np.append(particle_data['particle_tag'], np.array(tags), axis=0)
                 
                 pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
-                #vel_second = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                #particle_data['secondary_position'].append(pos_second)
-                #particle_data['secondary_velocity'].append(vel_second)
-                #del vel_second
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-                particle_data['separation'].append(separation)
+                particle_data['separation'] = np.append(particle_data['separation'], separation)
                 #del separation
 
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                particle_data['time'].append(time_val)
+                particle_data['time'] = np.append(particle_data['time'], time_val)
                 #del time_val
 
-                particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
+                append_mass = yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun')
+                particle_data['mass'] = np.append(particle_data['mass'], append_mass, axis[0])
+                
                 
                 d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
@@ -259,7 +257,8 @@ if args.update_pickle == 'True':
                 #del d_mass, d_time
                 
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
+                append_acc = yt.YTArray(acc_val, 'msun/yr')
+                particle_data['mdot'] = np.append(particle_data['mdot'], append_acc, axis[0])
                 #print('read', counter)
         #write lastest pickle
         file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
