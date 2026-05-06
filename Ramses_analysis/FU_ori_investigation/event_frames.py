@@ -137,7 +137,7 @@ for plot_time in plot_times:
                 
 
     if len(part_info['particle_tag']) > 1:
-        sort_inds = np.argsort(part_info['particle_form_time'])
+        sort_inds = np.argsort(part_info['formation_time'])
         part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
