@@ -510,7 +510,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         axis.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, alpha=width_val/width_ceil))
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0):
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
@@ -553,6 +553,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         axis.plot((particle_position[0][pos_it], particle_position[0][pos_it]), (particle_position[1][pos_it]-(line_rad), particle_position[1][pos_it]+(line_rad)), lw=lw/2, c=part_color[pos_it])
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
+        
+        if annotate_velocity:
+            len_scale = (0.07*(xmax - xmin))
+            xvel = len_scale*(X_val[xp][yp]/standard_vel)
+            yvel = len_scale*(Y_val[xp][yp]/standard_vel)
+            width_val = np.sqrt(X_val[xp][yp]**2. + Y_val[xp][yp]**2.)/standard_vel
+            if width_val > width_ceil:
+                width_val = width_ceil
+            axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
