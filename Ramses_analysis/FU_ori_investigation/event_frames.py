@@ -135,15 +135,15 @@ for plot_time in plot_times:
         plot_velocity_legend = False
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
-    if len(part_info['particle_tag']) > 1:
-        if np.min(part_info['formation_time'][1:] - part_info['formation_time'][:-1]) < 0:
-            sort_inds = np.argsort(part_info['particle_form_time'])
-            part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
-            part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
-            part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-            part_info['formation_time'] = part_info['formation_time'][sort_inds]
-        if plot_it >= n_frames:
-            mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=3, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0)
+
+    if np.min(part_info['formation_time'][1:] - part_info['formation_time'][:-1]) < 0:
+        sort_inds = np.argsort(part_info['particle_form_time'])
+        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+        part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
+        part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
+        part_info['formation_time'] = part_info['formation_time'][sort_inds]
+    if plot_it >= n_frames:
+        mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=3, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0)
                 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
