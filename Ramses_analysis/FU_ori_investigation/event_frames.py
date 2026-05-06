@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import matplotlib.patheffects as path_effects
 import matplotlib.gridspec as gridspec
+import os
+import subprocess
 
 #------------------------------------------------------
 
@@ -48,6 +50,7 @@ stdvel = 10
 n_frames = 5
 make_frame = True
 event_it = 2
+cbar_lims = [5.e-16, 5.e-13]
 plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/4
 plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
 
@@ -61,21 +64,23 @@ plt.subplots_adjust(hspace=-0.00)
             
 axes_1.set_title("Suppression event "+str(event_it), y=0.94)
 start_ind = np.argmin(abs(particle_data['time']-plot_times[0]))
-end_ind = np.argmin(abs(particle_data['time']-plot_times[1]))
-axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'][start_ind:end_ind])
-axes_1_twin = axes_1.twinx(particle_data['time'][start_ind:end_ind], )
-axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind])
+end_ind = np.argmin(abs(particle_data['time']-plot_times[-1]))
+#axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
+axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-')
+axes_1_twin = axes_1.twinx()
+axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
-axes_1.set_ylabel('Accretione rate (M$_\odot/yr$)', labelpad=-0.2, fontsize=font_size)
+axes_1.set_ylabel('Accretion rate (M$_\odot/yr$)', labelpad=-0.2, fontsize=font_size)
 axes_1_twin.set_ylabel('Separation (au)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 axes_1.xaxis.label.set_color('black')
 axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
+axes_1.set_xlim([plot_times[0], plot_times[-1]])
 
 plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
@@ -90,12 +95,21 @@ for plot_time in plot_times:
         subprocess.Popen(cmd).wait()
     
     #load pickle
-    file = open(pickle_file, 'rb')
-    X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+    file = open(movie_plot_pickle, 'rb')
+    X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
+    
+    
+    centre_ind = np.where(part_info['particle_tag']==45)[0]
+    X_image = X_image - part_info['particle_position'][0][centre_ind]
+    Y_image = Y_image - part_info['particle_position'][1][centre_ind]
+    X_vel = X_vel - part_info['particle_position'][0][centre_ind]
+    Y_vel = Y_vel - part_info['particle_position'][1][centre_ind]
+    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][centre_ind]
+    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][centre_ind]
 
     xlim = [-1*width/2, width/2]
     ylim = [-1*width/2, width/2]
@@ -114,7 +128,7 @@ for plot_time in plot_times:
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
-    ax.streamplot(X_image.value, Y_image.value, magx.value, magy.value, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     if plot_it == 0:
         plot_velocity_legend = True
     else:
@@ -122,12 +136,12 @@ for plot_time in plot_times:
     #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
     if len(part_info['particle_tag']) > 1:
-        if np.min(part_info['particle_form_time'][1:] - part_info['particle_form_time'][:-1]) < 0:
+        if np.min(part_info['formation_time'][1:] - part_info['formation_time'][:-1]) < 0:
             sort_inds = np.argsort(part_info['particle_form_time'])
             part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
             part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
             part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-            part_info['particle_form_time'] = part_info['particle_form_time'][sort_inds]
+            part_info['formation_time'] = part_info['formation_time'][sort_inds]
         if plot_it >= n_frames:
             mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, split_threshold=3, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0)
                 
@@ -137,7 +151,7 @@ for plot_time in plot_times:
     for line in ax.yaxis.get_ticklines():
         line.set_color('white')
                     
-    time_string = "$t$="+str(int(time_val))+"yr"
+    time_string = "$t$="+str(int(plot_time))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
