@@ -142,7 +142,8 @@ for plot_time in plot_times:
         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0)
+        part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
                 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
