@@ -26,7 +26,7 @@ matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
-
+matplotlib.rcParams['text.usetex'] = True
 
 #Ploting parameters
 two_col_width = 7.20472 #inches
@@ -85,8 +85,8 @@ axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separa
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
-axes_1.set_ylabel('Accretion rate (M$_\odot/yr$)', labelpad=-0.2, fontsize=font_size)
+axes_1.set_xlabel('Time', labelpad=-0.2) #($yr$)
+axes_1.set_ylabel('Accretion rate', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
