@@ -102,13 +102,17 @@ for plot_time in plot_times:
         subprocess.Popen(cmd).wait()
     tracer_pickle = "tracer_time_" + str(plot_time) + ".pkl"
     if os.path.isfile(tracer_pickle) == False:
-        cmd = ['python', 'FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
         
         subprocess.Popen(cmd).wait()
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
+    file.close()
+    
+    file = open(tracer_pickle, 'wb')
+    tracer_dict = pickle.load(file)
     file.close()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
