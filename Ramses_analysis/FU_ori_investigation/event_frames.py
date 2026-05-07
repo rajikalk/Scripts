@@ -57,7 +57,7 @@ plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames)
+G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.00)
@@ -161,7 +161,7 @@ for plot_time in plot_times:
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size)
-    ax.set_xlabel('AU', fontsize=font_size, labelpad=-5)
+    ax.set_xlabel('AU', fontsize=font_size)
                     
     if np.remainder(plot_it, n_frames)==0:
         ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
