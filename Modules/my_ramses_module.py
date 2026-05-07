@@ -556,9 +556,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         
         if annotate_velocity:
             len_scale = (0.07*(xmax - xmin))
-            xvel = len_scale*(part_info['particle_velocity'][0][pos_it]/standard_vel)
-            yvel = len_scale*(part_info['particle_velocity'][1][pos_it]/standard_vel)
-            width_val = np.sqrt(part_info['particle_velocity'][0][pos_it]**2. + part_info['particle_velocity'][1][pos_it]**2.)/standard_vel
+            xvel = len_scale*(particle_velocity[0][pos_it]/standard_vel)
+            yvel = len_scale*(particle_velocity[1][pos_it]/standard_vel)
+            width_val = np.sqrt(particle_velocity[0][pos_it]**2. + particle_velocity[1][pos_it]**2.)/standard_vel
             if width_val > width_ceil:
                 width_val = width_ceil
             axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
