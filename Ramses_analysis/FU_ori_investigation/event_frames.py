@@ -46,7 +46,7 @@ except:
 
 
 width = 30
-stdvel = 100
+stdvel = 150
 n_frames = 5
 make_frame = True
 event_it = 2
@@ -60,9 +60,9 @@ fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
-plt.subplots_adjust(hspace=-0.00)
+plt.subplots_adjust(hspace=-0.1)
             
-axes_1.set_title("Suppression event "+str(event_it), y=0.9)
+axes_1.set_title("Suppression event "+str(event_it), y=0.8)
 start_ind = np.argmin(abs(particle_data['time']-plot_times[0]))
 end_ind = np.argmin(abs(particle_data['time']-plot_times[-1]))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
@@ -87,6 +87,7 @@ plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tig
 plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
+    axes_1.axvline(x=plot_time, color='k', alpha=0.5)
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
@@ -161,7 +162,7 @@ for plot_time in plot_times:
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size)
-    ax.set_xlabel('AU', fontsize=font_size)
+    ax.set_xlabel('AU', fontsize=font_size, labelpad=-2)
                     
     if np.remainder(plot_it, n_frames)==0:
         ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
