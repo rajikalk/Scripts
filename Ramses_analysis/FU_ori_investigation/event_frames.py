@@ -123,7 +123,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.1, 0.015, 0.257])
+        cbar_ax = fig.add_axes([0.90, 0.2, 0.015, 0.257])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -163,9 +163,6 @@ for plot_time in plot_times:
     ax.tick_params(axis='both', labelsize=font_size)
     ax.set_xlabel('AU', fontsize=font_size, labelpad=-5)
                     
-    if plot_it < n_frames:
-        xticklabels = ax.get_xticklabels()
-        plt.setp(xticklabels, visible=False)
     if np.remainder(plot_it, n_frames)==0:
         ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
         if plot_it == n_frames:
