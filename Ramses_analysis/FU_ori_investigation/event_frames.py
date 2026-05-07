@@ -46,7 +46,7 @@ except:
 
 
 width = 30
-stdvel = 10
+stdvel = 50
 n_frames = 5
 make_frame = True
 event_it = 2
