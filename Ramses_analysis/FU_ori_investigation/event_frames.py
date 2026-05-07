@@ -46,7 +46,7 @@ except:
 
 
 width = 30
-stdvel = 50
+stdvel = 100
 n_frames = 5
 make_frame = True
 event_it = 2
@@ -171,11 +171,6 @@ for plot_time in plot_times:
         if plot_it == n_frames:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
-    if plot_it >= n_frames:
-        ax.set_xlabel('AU', fontsize=font_size, labelpad=0)
-        if plot_it > n_frames:
-            xticklabels = ax.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
