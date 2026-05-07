@@ -110,6 +110,11 @@ for plot_time in plot_times:
         cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
         
         subprocess.Popen(cmd).wait()
+    tracer_pickle = "tracer_time_" + str(args.plot_time) + ".pkl"
+    if os.path.isfile(tracer_pickle) == False:
+        cmd = ['python', 'FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
+        
+        subprocess.Popen(cmd).wait()
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
@@ -140,7 +145,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.3, 0.015, 0.257])
+        cbar_ax = fig.add_axes([0.90, 0.257, 0.015, 0.257])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
