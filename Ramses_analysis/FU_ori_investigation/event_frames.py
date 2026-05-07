@@ -45,12 +45,12 @@ except:
     
 
 
-width = 15
+width = 30
 stdvel = 10
 n_frames = 5
 make_frame = True
 event_it = 2
-cbar_lims = [5.e-16, 5.e-13]
+cbar_lims = [1.e-16, 1.e-13]
 plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/4
 plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
 
@@ -62,7 +62,7 @@ axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.00)
             
-axes_1.set_title("Suppression event "+str(event_it), y=0.94)
+axes_1.set_title("Suppression event "+str(event_it), y=0.9)
 start_ind = np.argmin(abs(particle_data['time']-plot_times[0]))
 end_ind = np.argmin(abs(particle_data['time']-plot_times[-1]))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
@@ -123,7 +123,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.367, 0.015, 0.257])
+        cbar_ax = fig.add_axes([0.90, 0.1, 0.015, 0.257])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -161,12 +161,13 @@ for plot_time in plot_times:
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size)
+    ax.set_xlabel('AU', fontsize=font_size, labelpad=-5)
                     
     if plot_it < n_frames:
         xticklabels = ax.get_xticklabels()
         plt.setp(xticklabels, visible=False)
     if np.remainder(plot_it, n_frames)==0:
-        ax.set_ylabel('AU', fontsize=font_size, labelpad=-10)
+        ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
         if plot_it == n_frames:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
