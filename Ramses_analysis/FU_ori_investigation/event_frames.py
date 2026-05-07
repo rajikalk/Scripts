@@ -88,8 +88,8 @@ plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', size=10)
-    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'].T[1][plot_time_ind], marker='o', size=10, color='k', alpha=0.5)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=10)
+    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=10, color='k', alpha=0.5)
     
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
