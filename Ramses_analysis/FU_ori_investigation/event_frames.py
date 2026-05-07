@@ -26,7 +26,7 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
+matplotlib.rcParams['text.latex.preamble'] = "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
 #Ploting parameters
 two_col_width = 7.20472 #inches
