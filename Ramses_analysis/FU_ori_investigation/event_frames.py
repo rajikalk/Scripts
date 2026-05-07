@@ -72,7 +72,7 @@ axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separa
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-#axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
+axes_1.set_xlabel('Time ($yr$)', labelpad=-0.2)
 axes_1.set_ylabel('Accretion rate (M$_\odot/yr$)', labelpad=-0.2, fontsize=font_size)
 axes_1_twin.set_ylabel('Separation (au)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
@@ -88,8 +88,8 @@ plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=10)
-    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=10, color='k', alpha=0.5)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
+    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
     
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
@@ -127,7 +127,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.2, 0.015, 0.257])
+        cbar_ax = fig.add_axes([0.90, 0.3, 0.015, 0.257])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
