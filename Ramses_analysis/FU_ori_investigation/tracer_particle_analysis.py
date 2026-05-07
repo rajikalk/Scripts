@@ -18,6 +18,7 @@ def parse_inputs():
     parser.add_argument("-sink_id", "--sink_number", help="Which sink do you want to measure around? default is the sink with lowest velocity", type=int, default=None)
     parser.add_argument("-end_time", "--end_burst_time", type=float)
     parser.add_argument("-make_pickles", "--make_pickle_files", type=str, default="True")
+    parser.add_argument("-pt", "--plot_time", help="Get tracer data for a particular time", type=float, default=None)
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -191,6 +192,9 @@ if args.make_pickle_files == "True":
         
         usable_files = files[:files.index(end_file)+1]
     
+    if args.plot_time != None:
+        import my_ramses_module as mym
+        usable_files = mym.find_files([args.plot_time], files, sink_form_time, sink_id, verbatim=False)
     
     del units_override
     gc.collect()
@@ -206,7 +210,10 @@ if args.make_pickle_files == "True":
         else:
             file_int = file_int + 1
         make_pickle = False
-        pickle_file = save_dir + "movie_frame_" + ("%06d" % file_int + ".pkl")
+        if args.plot_time != None:
+            pickle_file = save_dir + "tracer_time_" + str(args.plot_time) + ".pkl"
+        else:
+            pickle_file = save_dir + "movie_frame_" + ("%06d" % file_int) + ".pkl"
         if os.path.isfile(pickle_file) == False:
             make_pickle = True
             print("making", pickle_file, "on rank", rank)
