@@ -176,7 +176,7 @@ for plot_time in plot_times:
     
     ax.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
     
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=args.standard_vel)
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=stdvel)
                 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
