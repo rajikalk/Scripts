@@ -122,9 +122,6 @@ for plot_time in plot_times:
     
     plot_inds_not_accreted = np.where((tracer_data['not_accreted_positions'][0].value>depth_lim[0])&(tracer_data['not_accreted_positions'][0].value<depth_lim[1])&(tracer_data['not_accreted_positions'][1].value>depth_lim[0])&(tracer_data['not_accreted_positions'][1].value<depth_lim[1])&(tracer_data['not_accreted_positions'][2].value>depth_lim[0])&(tracer_data['not_accreted_positions'][2].value<depth_lim[1]))[0]
     file.close()
-    
-    import pdb
-    pdb.set_trace()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
