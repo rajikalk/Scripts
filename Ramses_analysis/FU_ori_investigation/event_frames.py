@@ -111,7 +111,7 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    file = open(tracer_pickle, 'wb')
+    file = open(tracer_pickle, 'rb')
     tracer_data = pickle.load(file)
     file.close()
     
