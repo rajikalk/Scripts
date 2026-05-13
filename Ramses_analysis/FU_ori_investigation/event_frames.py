@@ -15,6 +15,12 @@ import subprocess
 
 #-----------------------------------------------------
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
+parser.add_argument('files', nargs='*')
+args = parser.parse_args()
+
+
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = 'Arial'
 
@@ -52,7 +58,7 @@ width = 30
 stdvel = 150
 n_frames = 5
 make_frame = True
-event_it = 2
+event_it = args.event_identifier
 cbar_lims = [5.e-17, 5.e-14]
 plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/4
 plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
