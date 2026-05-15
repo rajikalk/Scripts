@@ -94,7 +94,7 @@ if args.make_pickle_files == "True":
         #Remove tracers already accreted
         print("Remove tracers already accreted")
         ds = yt.load(files[0])
-        print("loaded first file")
+        print("loaded first file": files[0])
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
@@ -120,7 +120,7 @@ if args.make_pickle_files == "True":
         #end_file = end_burst_file
         print("starting to load end_burst_file")
         ds = yt.load(end_burst_file)
-        print("loaded burst file")
+        print("loaded burst file", end_burst_file)
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
@@ -148,7 +148,7 @@ if args.make_pickle_files == "True":
         end_sim_file = files[-1]
         usable_files = files[:files.index(end_file)+1]
         ds = yt.load(end_sim_file)
-        print("loaded end file")
+        print("loaded end file", end_sim_file)
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
