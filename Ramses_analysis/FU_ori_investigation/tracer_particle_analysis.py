@@ -194,7 +194,7 @@ if args.make_pickle_files == "True":
     
     if args.plot_time != None:
         import my_ramses_module as mym
-        usable_files = mym.find_files([args.plot_time], files, sink_form_time, sink_id, verbatim=False)
+        usable_files = mym.find_files([args.plot_time], files, sink_form_time, sink_id, verbatim=True)
     
     del units_override
     gc.collect()
