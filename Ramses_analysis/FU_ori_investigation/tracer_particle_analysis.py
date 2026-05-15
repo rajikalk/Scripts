@@ -94,7 +94,7 @@ if args.make_pickle_files == "True":
         #Remove tracers already accreted
         print("Remove tracers already accreted")
         ds = yt.load(files[0])
-        print("loaded first file": files[0])
+        print("loaded first file", files[0])
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
