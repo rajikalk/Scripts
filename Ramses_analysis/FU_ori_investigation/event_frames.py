@@ -59,7 +59,7 @@ stdvel = 150
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
-cbar_lims = [5.e-17, 5.e-14]
+cbar_lims = [1.e-16, 1.e-13]
 plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/9
 plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
 
