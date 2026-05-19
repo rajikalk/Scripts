@@ -34,7 +34,7 @@ mym.set_global_font_size(font_size)
 
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6730], [7295, 7340], [7850, 7900]]
-burst_bounds = [[], [[5679, 5689]], [[6625, 6635]], [[7309, 7319], [7327, 7337]], [[7858, 7868]]]
+burst_bounds = [[], [[5675, 5700]], [[6625, 6635]], [[7309, 7319], [7327, 7337]], [[7858, 7868]]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -60,20 +60,22 @@ n_frames = 5
 make_frame = True
 event_it = args.event_identifier
 cbar_lims = [1.e-16, 1.e-13]
-plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/9
-plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
+plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
+plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
+start_time = time_bounds[event_it -1][0]
+end_time = time_bounds[event_it -1][1]
 
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(3, n_frames)#, height_ratios=[1, 2])
+G = gridspec.GridSpec(2, n_frames)#, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
             
 axes_1.set_title("Suppression event "+str(event_it), y=0.8)
-start_ind = np.argmin(abs(particle_data['time']-plot_times[0]))
-end_ind = np.argmin(abs(particle_data['time']-plot_times[-1]))
+start_ind = np.argmin(abs(particle_data['time']-start_time))
+end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
 axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-')
 axes_1_twin = axes_1.twinx()
@@ -152,7 +154,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.257, 0.015, 0.4])
+        cbar_ax = fig.add_axes([0.90, 0.27, 0.015, 0.247])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -182,7 +184,7 @@ for plot_time in plot_times:
     
     ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
     
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel)
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=2)
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
