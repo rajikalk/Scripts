@@ -376,7 +376,11 @@ if args.make_frames_only == 'False':
         if rank == 0:
             verbatim = True
         if args.use_all_files == 'False':
-            usable_files = mym.find_files(m_times, files, sink_form_time, sink_id, verbatim=False)
+            if arg.plot_time != None:
+                verbatim = True
+            else:
+                verbatim = False
+            usable_files = mym.find_files(m_times, files, sink_form_time, sink_id, verbatim=verbatim)
         else:
             usable_files = files
     del files
