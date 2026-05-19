@@ -68,7 +68,7 @@ end_time = time_bounds[event_it -1][1]
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames)#, height_ratios=[1, 2])
+G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
