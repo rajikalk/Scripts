@@ -376,7 +376,7 @@ if args.make_frames_only == 'False':
         if rank == 0:
             verbatim = True
         if args.use_all_files == 'False':
-            if arg.plot_time != None:
+            if args.plot_time != None:
                 verbatim = True
             else:
                 verbatim = False
