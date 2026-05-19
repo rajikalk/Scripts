@@ -157,7 +157,7 @@ for plot_time in plot_times:
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
-    ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    #ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     if plot_it == 0:
         plot_velocity_legend = True
     else:
