@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 
 plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.sans-serif'] = 'Arial'
+plt.rcParams['font.sans-serif'] = ['Arial']
 
 #Ploting parameters
 two_col_width = 7.20472 #inches
@@ -207,7 +207,7 @@ for plot_time in plot_times:
     ax.tick_params(axis='y', which='major', direction='in', color='w', right=True)
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
-    ax.tick_params(axis='both', labelsize=font_size)
+    ax.tick_params(axis='both', labelsize=font_size, labelfontfamilystr='sans-serif')
     ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
                     
     if np.remainder(plot_it, n_frames)==0:
