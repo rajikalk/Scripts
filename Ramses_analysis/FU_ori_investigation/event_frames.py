@@ -60,13 +60,13 @@ n_frames = 5
 make_frame = True
 event_it = args.event_identifier
 cbar_lims = [5.e-17, 5.e-14]
-plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/4
+plot_dt = (time_bounds[event_it -1][1]-time_bounds[event_it -1][0])/9
 plot_times = np.arange(time_bounds[event_it -1][0], time_bounds[event_it -1][1]+plot_dt, plot_dt)
 
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+G = gridspec.GridSpec(3, n_frames)#, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
@@ -152,7 +152,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.257, 0.015, 0.257])
+        cbar_ax = fig.add_axes([0.90, 0.257, 0.015, 0.4])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -208,7 +208,6 @@ for plot_time in plot_times:
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-    ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
                     
     if np.remainder(plot_it, n_frames)==0:
         ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
@@ -218,6 +217,11 @@ for plot_time in plot_times:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
-                
+    if plot_it < n_frames:
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+    else:
+        ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
+        
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
