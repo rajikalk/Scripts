@@ -220,3 +220,4 @@ for plot_time in plot_times:
         plt.setp(yticklabels, visible=False)
                 
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    print('saving figure after plotting time', plot_time)
