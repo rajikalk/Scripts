@@ -91,7 +91,7 @@ axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=Tru
 axes_1.xaxis.label.set_color('black')
 axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
-axes_1.set_xlim([plot_times[0], plot_times[-1]])
+axes_1.set_xlim([start_time, end_time])
 
 plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
