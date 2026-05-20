@@ -16,7 +16,6 @@ import subprocess
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -33,8 +32,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6730], [7295, 7365], [7850, 7900]]
-burst_bounds = [[], [5675, 5700], [6655, 6730], [7325, 7365], [7860, 7900]]
+time_bounds = [
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -59,7 +57,7 @@ stdvel = 150
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
-cbar_lims = [1.e-15, 1.e-13]
+cbar_lims = [1.e-16, 1.e-13]
 plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
 plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
 start_time = time_bounds[event_it -1][0]
@@ -154,7 +152,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.26, 0.015, 0.25])
+        cbar_ax = fig.add_axes([0.90, 0.27, 0.015, 0.247])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -178,15 +176,13 @@ for plot_time in plot_times:
     
     
     #PLOT TRACERS
-    #ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
+    ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
     ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
     
     ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
     
-    import pdb
-    pdb.set_trace()
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=1)
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=2)
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
@@ -221,11 +217,11 @@ for plot_time in plot_times:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
-    #if plot_it < n_frames:
-    #    xticklabels = ax.get_xticklabels()
-    #    plt.setp(xticklabels, visible=False)
-    #else:
-    ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
+    if plot_it < n_frames:
+        xticklabels = ax.get_xticklabels()
+        plt.setp(xticklabels, visible=False)
+    else:
+        ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
