@@ -56,7 +56,7 @@ except:
 
 
 width = 30
-stdvel = 150
+stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
@@ -198,7 +198,7 @@ for plot_time in plot_times:
     
     ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
     
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=1)
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel)
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
