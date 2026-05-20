@@ -183,7 +183,7 @@ for plot_time in plot_times:
     sink_id = int(part_info['particle_tag'][-1].value)
     ds = yt.load(files[-1], units_override=units_override)
     sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-    usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=verbatim)
+    usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
     ds = yt.load(usable_files[0], units_override=units_override)
     part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
     part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
