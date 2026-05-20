@@ -180,7 +180,7 @@ for plot_time in plot_times:
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
     
     #get relative velocity
-    sink_id = part_info['particle_tag'][1]
+    sink_id = part_info['particle_tag'][-1]
     ds = yt.load(files[-1], units_override=units_override)
     sink_form_time = ds.r["sink_particle_form_time"][sink_id]
     usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=verbatim)
