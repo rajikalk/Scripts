@@ -12,7 +12,8 @@ import matplotlib.patheffects as path_effects
 import matplotlib.gridspec as gridspec
 import os
 import subprocess
-
+import yt
+import my_ramses_fields_short as myf
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
@@ -64,6 +65,7 @@ plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
 plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 
 
 plt.clf()
@@ -113,6 +115,8 @@ for plot_time in plot_times:
         cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
         
         subprocess.Popen(cmd).wait()
+        
+    files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/*/info*'))
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
@@ -174,6 +178,16 @@ for plot_time in plot_times:
         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
+    
+    #get relative velocity
+    sink_id = part_info['particle_tag'][1]
+    ds = yt.load(files[-1], units_override=units_override)
+    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+    usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=verbatim)
+    ds = yt.load(usable_files[0], units_override=units_override)
+    part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
+    part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+        
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
     
     
@@ -184,8 +198,6 @@ for plot_time in plot_times:
     
     ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
     
-    import pdb
-    pdb.set_trace()
     mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=1)
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
