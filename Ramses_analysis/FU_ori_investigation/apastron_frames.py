@@ -93,7 +93,7 @@ for plot_time in plot_times:
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
     
-    movie_plot_pickle = "time_" + str(plot_time) +".pkl"
+    movie_plot_pickle = "time_" + str(float(plot_time)) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
         cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
