@@ -501,12 +501,14 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        if pvl_pos == None:
-            pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.5*(fontsize_global/100)*(ymax-ymin)]
-            text_y_pos = (ymin + 0.03*(ymax-ymin))
-        else:
-            pos_start = pvl_pos
-            text_y_pos = pos_start[1] + fontsize_global
+        if pvl_pos != None:
+            xmin = axis.get_xlim()[0]
+            xmax = axis.get_xlim()[1]
+            ymin = axis.get_ylim()[0]
+            ymax = axis.get_ylim()[1]
+        
+        pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.5*(fontsize_global/100)*(ymax-ymin)]
+        text_y_pos = (ymin + 0.03*(ymax-ymin))
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
@@ -597,7 +599,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         width_val = np.sqrt(particle_velocity[0][pos_it]**2. + particle_velocity[1][pos_it]**2.)/standard_vel
         if width_val > width_ceil:
             width_val = width_ceil
-        axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+        axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil), zorder=9)
 
     return axis
 

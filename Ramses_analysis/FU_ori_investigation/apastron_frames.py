@@ -36,19 +36,12 @@ plot_times = [3000, 4800, 6100, 7000, 7500, 8000, 8400, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
-try:
-    sink_pickle = "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl"
-    file_open = open(sink_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading in pickle")
-except:
-    sink_pickle = "../particle_data_L20.pkl"
-    print("read pickle", sink_pickle)
-    file_open = open(sink_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print("finished reading in pickle")
+sink_pickle = "../particle_data_L20_with_vel.pkl.pkl"
+print("read pickle", sink_pickle)
+file_open = open(sink_pickle, 'rb')
+particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+file_open.close()
+print("finished reading in pickle")
     
 
 
@@ -71,7 +64,9 @@ start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
 axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='g', ls='-')
-#axes_1_twin = axes_1.twinx()
+axes_1_twin = axes_1.twinx()
+import pdb
+pdb.set_trace()
 #axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5)
             
 #Plot accretion and separation. This should be loaded from a pickle
@@ -96,7 +91,7 @@ for plot_time in plot_times:
     movie_plot_pickle = "time_" + str(float(plot_time)) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '25', '-wf', 'density']
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '23', '-wf', 'density']
         
         subprocess.Popen(cmd).wait()
     
