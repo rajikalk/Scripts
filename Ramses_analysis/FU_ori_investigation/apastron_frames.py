@@ -53,16 +53,16 @@ except:
 
 
 width = 30
-stdvel = 1
+stdvel = 2
 n_frames = len(plot_times)
 cbar_lims = [1.e-16, 1.e-13]
 start_time = plot_times[0]
-end_time = plot_times[1]
+end_time = plot_times[-1]
 
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(3,4)#, height_ratios=[1, 2])
+G = gridspec.GridSpec(3,4, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
