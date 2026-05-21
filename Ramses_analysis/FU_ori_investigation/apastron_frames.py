@@ -62,7 +62,7 @@ end_time = plot_times[-1]
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(3,4), height_ratios=[1, 3])
+G = gridspec.GridSpec(3,4, height_ratios=[1, 3])
 axes_1 = plt.subplot(G[0, :])
 #plt.subplots_adjust(wspace=0.01)
 #plt.subplots_adjust(hspace=-0.2)
