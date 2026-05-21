@@ -180,7 +180,7 @@ for plot_time in plot_times:
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
     
     #get relative velocity
-    part_info_pickle = 'part_info_'+str(plot_time)'+.pkl'
+    part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
         ds = yt.load(files[-1], units_override=units_override)
