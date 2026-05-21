@@ -85,7 +85,7 @@ axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
 
-plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+plt.savefig("Apastron_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
 plot_it = -1
 for plot_time in plot_times:
@@ -175,5 +175,5 @@ for plot_time in plot_times:
     else:
         ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
         
-    plt.savefig("Apastron_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("Apastron_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
