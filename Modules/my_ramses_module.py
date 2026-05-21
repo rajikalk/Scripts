@@ -506,6 +506,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             xmax = axis.get_xlim()[1]
             ymin = axis.get_ylim()[0]
             ymax = axis.get_ylim()[1]
+            import pdb
+            pdb.set_trace()
         
         pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.5*(fontsize_global/100)*(ymax-ymin)]
         text_y_pos = (ymin + 0.03*(ymax-ymin))
