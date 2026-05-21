@@ -85,8 +85,8 @@ axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separa
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-axes_1.set_xlabel('Time', labelpad=-0.2) #($yr$)
-axes_1.set_ylabel('Accretion rate', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+axes_1.set_xlabel('Time (yr)', labelpad=-0.2) #($yr$)
+axes_1.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
@@ -159,7 +159,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.26, 0.015, 0.25])
+        cbar_ax = fig.add_axes([0.90, 0.27, 0.015, 0.27])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -239,7 +239,7 @@ for plot_time in plot_times:
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
                     
     if np.remainder(plot_it, n_frames)==0:
-        ax.set_ylabel('AU', fontsize=font_size, labelpad=-5)
+        ax.set_ylabel('$y$ (AU)', fontsize=font_size, labelpad=-5)
         if plot_it == n_frames:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
@@ -250,7 +250,7 @@ for plot_time in plot_times:
     #    xticklabels = ax.get_xticklabels()
     #    plt.setp(xticklabels, visible=False)
     #else:
-    ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
+    ax.set_xlabel('$x$ (AU)', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
