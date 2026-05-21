@@ -238,13 +238,13 @@ if args.update_pickle == 'True':
                 pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-                particle_data['separation'] = np.append(particle_data['separation'], np.array(separation))
+                particle_data['separation'] = np.append(particle_data['separation'], separation.value)
                 #del separation
 
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                particle_data['time'] = np.append(particle_data['time'], time_val)
+                particle_data['time'] = np.append(particle_data['time'], time_val.value)
                 #del time_val
 
                 append_mass = yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun')
