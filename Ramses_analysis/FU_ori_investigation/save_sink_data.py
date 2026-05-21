@@ -140,8 +140,8 @@ if args.update_pickle == 'True':
                     radius = yt.YTQuantity(2.0, 'rsun')
                     #M_dot = accretion(sink_inds, global_ind)
                     #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-                    m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
-                    mass = yt.YTArray(particle_data['mass']).in_units('g')
+                    m_dot = yt.YTArray(particle_data['mdot'], 'msun/yr').in_units('g/s')
+                    mass = yt.YTArray(particle_data['mass'], 'msun').in_units('g')
                     L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
                     L_tot = L_acc.in_units('Lsun')
 
@@ -301,8 +301,8 @@ f_acc = 0.5
 radius = yt.YTQuantity(2.0, 'rsun')
 #M_dot = accretion(sink_inds, global_ind)
 #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
-mass = yt.YTArray(particle_data['mass']).in_units('g')
+m_dot = yt.YTArray(particle_data['mdot'], 'msun/yr').in_units('g/s')
+mass = yt.YTArray(particle_data['mass'], 'msun').in_units('g')
 L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
 L_tot = L_acc.in_units('Lsun')
 
