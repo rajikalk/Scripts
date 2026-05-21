@@ -70,7 +70,7 @@ units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "tim
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
