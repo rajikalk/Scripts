@@ -238,7 +238,7 @@ if args.update_pickle == 'True':
                 pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
                 
                 separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-                particle_data['separation'] = np.append(particle_data['separation'], separation)
+                particle_data['separation'] = np.append(particle_data['separation'], np.array(separation))
                 #del separation
 
                 if sink_form_time == 0:
@@ -248,7 +248,7 @@ if args.update_pickle == 'True':
                 #del time_val
 
                 append_mass = yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun')
-                particle_data['mass'] = np.append(particle_data['mass'], append_mass, axis[0])
+                particle_data['mass'] = np.append(particle_data['mass'], np.array(append_mass), axis[0])
                 
                 
                 d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
@@ -258,12 +258,12 @@ if args.update_pickle == 'True':
                 
                 acc_val[np.where(acc_val == 0)[0]]=1.e-12
                 append_acc = yt.YTArray(acc_val, 'msun/yr')
-                particle_data['mdot'] = np.append(particle_data['mdot'], append_acc, axis[0])
+                particle_data['mdot'] = np.append(particle_data['mdot'], np.array(append_acc), axis[0])
                 
                 vel_prim = yt.YTArray(np.array([sink_data['ux'][nearest_sink], sink_data['uy'][nearest_sink], sink_data['uz'][nearest_sink]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                 vel_sec = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
                 rel_vel = np.array([vel_sec[0]-vel_prim[0], vel_sec[1]-vel_prim[1], vel_sec[2]-vel_prim[2]])
-                particle_data['relative_velocity'] = np.append(particle_data['relative_velocity'], rel_vel, axis[0])
+                particle_data['relative_velocity'] = np.append(particle_data['relative_velocity'], np.array(rel_vel), axis[0])
                 #print('read', counter)
         #write lastest pickle
         file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
