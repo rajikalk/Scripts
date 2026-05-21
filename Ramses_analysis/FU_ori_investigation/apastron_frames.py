@@ -65,14 +65,14 @@ end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
 axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='g', ls='-')
 axes_1_twin = axes_1.twinx()
-import pdb
-pdb.set_trace()
-#axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5)
+rel_speed = np.sqrt(np.sum(particle_data['relative_velocity']**2, axis=1))
+axes_1_twin.plot(particle_data['time'][start_ind:end_ind], rel_speed, ls='--', color='k', alpha=0.5)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time', labelpad=-0.2) #($yr$)
 axes_1.set_ylabel('Separation (au)')
+axes_1_twin.set_ylabel('Relative Speed (km/s)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 axes_1.xaxis.label.set_color('black')
