@@ -32,7 +32,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [
+plot_times = [3000, 4800, 6100, 7000, 7500, 8000, 8400, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -53,37 +53,31 @@ except:
 
 
 width = 30
-stdvel = 150
-n_frames = 5
-make_frame = True
-event_it = args.event_identifier
+stdvel = 1
+n_frames = len(plot_times)
 cbar_lims = [1.e-16, 1.e-13]
-plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
-plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
-start_time = time_bounds[event_it -1][0]
-end_time = time_bounds[event_it -1][1]
+start_time = plot_times[0]
+end_time = plot_times[1]
 
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(2, n_frames, height_ratios=[1, 2])
+G = gridspec.GridSpec(3,4)#, height_ratios=[1, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
             
-axes_1.set_title("Suppression event "+str(event_it), y=0.8)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-')
-axes_1_twin = axes_1.twinx()
-axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5)
+axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], color='g', ls='-')
+#axes_1_twin = axes_1.twinx()
+#axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5)
             
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time', labelpad=-0.2) #($yr$)
-axes_1.set_ylabel('Accretion rate', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-axes_1_twin.set_ylabel('Separation (au)')
+axes_1.set_ylabel('Separation (au)')
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 axes_1.xaxis.label.set_color('black')
@@ -97,8 +91,7 @@ plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
     plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['mdot'].T[1][plot_time_ind], color='b', marker='o', s=20)
-    axes_1_twin.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='k', alpha=0.5)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
     
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
@@ -106,27 +99,10 @@ for plot_time in plot_times:
         cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
         
         subprocess.Popen(cmd).wait()
-    tracer_pickle = "tracer_time_" + str(plot_time) + ".pkl"
-    if os.path.isfile(tracer_pickle) == False:
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
-        
-        subprocess.Popen(cmd).wait()
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
-    file.close()
-    
-    file = open(tracer_pickle, 'rb')
-    tracer_data = pickle.load(file)
-    file.close()
-    
-    depth_lim = args_dict['xlim']
-    #plot_inds_burst = np.where((tracer_data['burst_positions'][0].value>depth_lim[0])&(tracer_data['burst_positions'][0].value<depth_lim[1])&(tracer_data['burst_positions'][1].value>depth_lim[0])&(tracer_data['burst_positions'][1].value<depth_lim[1])&(tracer_data['burst_positions'][2].value>depth_lim[0])&(tracer_data['burst_positions'][2].value<depth_lim[1]))[0]
-    
-    #plot_inds_other = np.where((tracer_data['other_positions'][0].value>depth_lim[0])&(tracer_data['other_positions'][0].value<depth_lim[1])&(tracer_data['other_positions'][1].value>depth_lim[0])&(tracer_data['other_positions'][1].value<depth_lim[1])&(tracer_data['other_positions'][2].value>depth_lim[0])&(tracer_data['other_positions'][2].value<depth_lim[1]))[0]
-    
-    #plot_inds_not_accreted = np.where((tracer_data['not_accreted_positions'][0].value>depth_lim[0])&(tracer_data['not_accreted_positions'][0].value<depth_lim[1])&(tracer_data['not_accreted_positions'][1].value>depth_lim[0])&(tracer_data['not_accreted_positions'][1].value<depth_lim[1])&(tracer_data['not_accreted_positions'][2].value>depth_lim[0])&(tracer_data['not_accreted_positions'][2].value<depth_lim[1]))[0]
     file.close()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
@@ -158,40 +134,16 @@ for plot_time in plot_times:
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     #ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
-    if plot_it == 0:
-        plot_velocity_legend = True
-    else:
-        plot_velocity_legend = False
-    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
+    pvl = False
+    if plot_time == plot_times[-1]:
+        pvl = True    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
-
-    if len(part_info['particle_tag']) > 1:
-        sort_inds = np.argsort(part_info['formation_time'])
-        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
-        part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
-        part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
-        part_info['formation_time'] = part_info['formation_time'][sort_inds]
-        part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, standard_vel=stdvel,  plot_velocity_legend=pvl)
     
     
     #PLOT TRACERS
-    ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
-    
-    ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
-    
-    ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
-    
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=2)
-    '''
-    ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
-    
-    ax.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][1][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
-    
-    ax.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
-    
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=stdvel)
-    '''
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel)
+
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
         line.set_color('white')
@@ -217,11 +169,11 @@ for plot_time in plot_times:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
-    if plot_it < n_frames:
+    if plot_it < 4:
         xticklabels = ax.get_xticklabels()
         plt.setp(xticklabels, visible=False)
     else:
         ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
         
-    plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("Apastron_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
