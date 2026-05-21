@@ -159,7 +159,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.90, 0.27, 0.015, 0.27])
+        cbar_ax = fig.add_axes([0.90, 0.265, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
@@ -182,7 +182,7 @@ for plot_time in plot_times:
     if plot_time == plot_times[-1]:
         pvl = True
     
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=pvl)
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=pvl, pvl_pos=[10, -10])
 
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])

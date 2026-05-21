@@ -559,14 +559,6 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         circle = mpatches.Circle([particle_position[0][pos_it], particle_position[1][pos_it]], accretion_rad, fill=False, lw=lw/2, edgecolor='k')
         axis.add_patch(circle)
         
-        if annotate_velocity:
-            len_scale = (0.07*(xmax - xmin))
-            xvel = len_scale*(particle_velocity[0][pos_it]/standard_vel)
-            yvel = len_scale*(particle_velocity[1][pos_it]/standard_vel)
-            width_val = np.sqrt(particle_velocity[0][pos_it]**2. + particle_velocity[1][pos_it]**2.)/standard_vel
-            if width_val > width_ceil:
-                width_val = width_ceil
-            axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
         if annotate_field is not None:
             if units is not None:
                 annotate_field = annotate_field.in_units(units)
@@ -598,6 +590,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
+    if annotate_velocity:
+        len_scale = (0.07*(xmax - xmin))
+        xvel = len_scale*(particle_velocity[0][pos_it]/standard_vel)
+        yvel = len_scale*(particle_velocity[1][pos_it]/standard_vel)
+        width_val = np.sqrt(particle_velocity[0][pos_it]**2. + particle_velocity[1][pos_it]**2.)/standard_vel
+        if width_val > width_ceil:
+            width_val = width_ceil
+        axis.add_patch(mpatches.FancyArrowPatch((particle_position[0][pos_it], particle_position[1][pos_it]), (particle_position[0][pos_it]+xvel, particle_position[1][pos_it]+yvel), color=part_color[pos_it], linewidth=width_val, arrowstyle='->', mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+
     return axis
 
 def profile_plot(x, y, weight=None, n_bins=None, log=False, bin_data=None, bin_min=None, bin_max=None, calc_vel_dispersion=False, cumulative=False):
