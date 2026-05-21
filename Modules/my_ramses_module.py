@@ -506,7 +506,7 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             text_y_pos = (ymin + 0.03*(ymax-ymin))
         else:
             pos_start = pvl_pos
-            text_y_pos = pos_start[2] + fontsize_global
+            text_y_pos = pos_start[1] + fontsize_global
         xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
