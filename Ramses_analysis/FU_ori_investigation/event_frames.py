@@ -180,13 +180,22 @@ for plot_time in plot_times:
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
     
     #get relative velocity
-    sink_id = int(part_info['particle_tag'][-1].value)
-    ds = yt.load(files[-1], units_override=units_override)
-    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-    usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
-    ds = yt.load(usable_files[0], units_override=units_override)
-    part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
-    part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+    part_info_pickle = 'part_info_+'str(plot_time)'+.pkl'
+    if os.path.isfile(part_info_pickle) == False:
+        sink_id = int(part_info['particle_tag'][-1].value)
+        ds = yt.load(files[-1], units_override=units_override)
+        sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+        usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
+        ds = yt.load(usable_files[0], units_override=units_override)
+        part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
+        part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+        file = open(part_info_pickle, 'wb')
+        pickle.dump((part_info), file)
+        file.close()
+    else:
+        file = open(part_info_pickle, 'rb')
+        part_info = pickle.load(file)
+        file.close()
         
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
     
