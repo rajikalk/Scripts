@@ -182,14 +182,14 @@ for plot_time in plot_times:
     mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
-        legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
+        legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
         xvel = (0.07*(xlim[1] - xlim[0]))
         yvel = 0
-        pos_start = [10.0, -13.53]
+        pos_start = [9.5, -13]
         width_val = 0.8
         width_ceil = 0.8
         ax.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
-        annotate_text = axis.text(pos_start[0], -10, legend_text, va="bottom", ha="center", color='w', fontsize=font_size)
+        annotate_text = ax.text(pos_start[0], -10, legend_text, va="center", ha="center", color='w', fontsize=font_size)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
 
