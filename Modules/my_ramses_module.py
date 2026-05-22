@@ -496,12 +496,12 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
         
-        pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.6*(fontsize_global/100)*(ymax-ymin)]
-        text_y_pos = ymin + 0.06*(ymax-ymin)
+        pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.7*(fontsize_global/100)*(ymax-ymin)]
+        text_y_pos = ymin + 0.07*(ymax-ymin)
         print("FIGURE OUT WHY LEGEND ARROW HAS NO LENGTH")
+        xvel = len_scale*(standard_vel/standard_vel)
         import pdb
         pdb.set_trace()
-        xvel = len_scale*(standard_vel/standard_vel)
         yvel = 0.0
         width_val = width_ceil
         annotate_text = axis.text(pos_start[0], text_y_pos, legend_text, va="bottom", ha="center", color='w', fontsize=fontsize_global)
