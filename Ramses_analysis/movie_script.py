@@ -705,8 +705,7 @@ if args.make_frames_only == 'False':
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
                         
                     if 'velocity' in field[1] and args.rm_bulk_velocity == "True":
-                        import pdb
-                        pdb.set_trace()
+                        proj_array = proj_array - np.mean(proj_array)
                         
                     sto.result_id = field[1]
                     sto.result = proj_array
