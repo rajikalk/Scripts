@@ -56,7 +56,7 @@ except:
 
 
 width = 30
-stdvel = 2
+stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
