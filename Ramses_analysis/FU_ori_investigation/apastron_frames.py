@@ -46,7 +46,7 @@ print("finished reading in pickle")
 
 
 width = 30
-stdvel = 2
+stdvel = 3
 n_frames = 4
 cbar_lims = [1.e-16, 1.e-13]
 start_time = plot_times[0]
@@ -57,6 +57,7 @@ plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 G = gridspec.GridSpec(3,4)#, height_ratios=[1, 2, 2])
 axes_1 = plt.subplot(G[0, :])
+plt.tight_layout()
 #plt.subplots_adjust(wspace=0.01)
 #plt.subplots_adjust(hspace=-0.2)
             
@@ -91,7 +92,7 @@ for plot_time in plot_times:
     movie_plot_pickle = "time_" + str(float(plot_time)) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '19', '-wf', 'density']
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '17', '-wf', 'density']
         
         subprocess.Popen(cmd).wait()
     
