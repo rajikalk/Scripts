@@ -23,10 +23,14 @@ parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
 
+plt.rcParams.update({
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Arial"],
+    "mathtext.fontset": "stixsans"  # Force math to use a sans-serif look
+})
+
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = 'Arial'
-plt.rcParams['mathtext.fontset'] = 'custom'
-plt.rcParams['mathtext.sans'] = 'Arial'
 
 #Ploting parameters
 two_col_width = 7.20472 #inches
