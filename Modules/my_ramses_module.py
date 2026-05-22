@@ -437,6 +437,8 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
         else:
             legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
+    import pdb
+    pdb.set_trace()
     standard_vel = (yt.units.km * standard_vel).in_units('cm').value
     if limits is None:
         xmin = np.min(X_pos)
