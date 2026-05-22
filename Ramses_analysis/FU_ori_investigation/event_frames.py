@@ -56,7 +56,7 @@ except:
 
 
 width = 30
-stdvel = 2
+stdvel = 3
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
@@ -210,7 +210,7 @@ for plot_time in plot_times:
         part_info = pickle.load(file)
         file.close()
         
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel*2, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
 
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
