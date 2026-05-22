@@ -14,6 +14,7 @@ import os
 import subprocess
 import yt
 import my_ramses_fields_short as myf
+import matplotlib.patches as mpatches
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
