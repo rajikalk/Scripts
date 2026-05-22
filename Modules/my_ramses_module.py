@@ -426,7 +426,7 @@ def get_quiver_arrays(x_pos_min, y_pos_min, image_array, velx_full, vely_full, n
         velz = velz
     return velx, vely, velz
 
-def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, limits=None, Z_val=None, width_ceil = 0.8, zorder=3, color=None, pvl_pos=None):
+def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legend='False', standard_vel=5, Z_val=None, width_ceil = 0.8, zorder=3, color=None, pvl_pos=None):
     global fontsize_global
     
     if plot_velocity_legend == 'False' or plot_velocity_legend == False:
@@ -437,19 +437,11 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
             legend_text=str(int(standard_vel)) + "km$\,$s$^{-1}$"
         else:
             legend_text=str(int(standard_vel*10.)/10.) + "km$\,$s$^{-1}$"
-    import pdb
-    pdb.set_trace()
     standard_vel = (yt.units.km * standard_vel).in_units('cm').value
-    if limits is None:
-        xmin = np.min(X_pos)
-        xmax = np.max(X_pos)
-        ymin = np.min(Y_pos)
-        ymax = np.max(Y_pos)
-    else:
-        xmin = limits[0][0]
-        xmax = limits[0][1]
-        ymin = limits[1][0]
-        ymax = limits[1][1]
+    xmin = axis.get_xlim()[0]
+    xmax = axis.get_xlim()[1]
+    ymin = axis.get_ylim()[0]
+    ymax = axis.get_ylim()[1]
     #rv_colors = np.linspace(-1, 1, 256)
     rv_colors = np.linspace(0, 1, 256)
     rv_cmap = plt.cm.get_cmap('RdGy_r')#plt.cm.get_cmap('bwr')
@@ -503,11 +495,6 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
     if plot_velocity_legend:
         #print("plotting quiver legend")
         #pos_start = [xmax - 0.15*(xmax-xmin), ymin + (fontsize_global/100)*(ymax-ymin)]
-        if pvl_pos != None:
-            xmin = axis.get_xlim()[0]
-            xmax = axis.get_xlim()[1]
-            ymin = axis.get_ylim()[0]
-            ymax = axis.get_ylim()[1]
         
         pos_start = [xmax - 0.1*(xmax-xmin), ymin + 0.5*(fontsize_global/100)*(ymax-ymin)]
         text_y_pos = pos_start[1] + 0.03*(ymax-ymin)
