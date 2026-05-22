@@ -46,7 +46,7 @@ print("finished reading in pickle")
 
 
 width = 30
-stdvel = 3
+stdvel = 2
 n_frames = 4
 cbar_lims = [1.e-16, 1.e-13]
 start_time = plot_times[0]

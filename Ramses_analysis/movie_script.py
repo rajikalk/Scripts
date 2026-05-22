@@ -659,8 +659,6 @@ if args.make_frames_only == 'False':
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     if 'velocity' in field[1]:
                         weight_field = 'density'
-                        import pdb
-                        pdb.set_trace()
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
