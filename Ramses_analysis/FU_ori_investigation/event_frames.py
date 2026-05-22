@@ -186,7 +186,7 @@ for plot_time in plot_times:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
         xvel = (0.07*(xlim[1] - xlim[0]))
         yvel = 0
-        pos_start = [9.5, -13]
+        pos_start = [8, -13]
         width_val = 0.8
         width_ceil = 0.8
         ax.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='w', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
