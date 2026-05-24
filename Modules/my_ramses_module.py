@@ -587,6 +587,9 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
+            print("GET TICK LENGTH AND MAKE SURE THE MASS ANNOTATION DOESN'T OVERLAP")
+            import pdb
+            pdb.set_trace()
             rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
