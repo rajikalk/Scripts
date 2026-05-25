@@ -135,7 +135,32 @@ for plot_time in plot_times:
     file = open(tracer_pickle, 'rb')
     tracer_data = pickle.load(file)
     file.close()
-
+    
+    part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
+    if os.path.isfile(part_info_pickle):
+        file = open(part_info_pickle, 'rb')
+        part_info = pickle.load(file)
+        file.close()
+    if len(part_info['particle_velocity']) != len(part_info['particle_tag']):
+        os.remove(part_info_pickle)
+        
+    #get relative velocity
+    if os.path.isfile(part_info_pickle) == False:
+        sink_id = int(part_info['particle_tag'][-1].value)
+        ds = yt.load(files[-1], units_override=units_override)
+        sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+        usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
+        ds = yt.load(usable_files[0], units_override=units_override)
+        if len(part_info['particle_tag']) == 1:
+            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
+            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+        else:
+            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][44] - ds.r['gas', 'sink_particle_velx'][45], ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
+            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][44] - ds.r['gas', 'sink_particle_vely'][45], ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+        file = open(part_info_pickle, 'wb')
+        pickle.dump((part_info), file)
+        file.close()
+    
     if event_it == 2:
         usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
     else:
@@ -160,30 +185,21 @@ for plot_time in plot_times:
     if plot_it < n_frames:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
 
-                
     if plot_it == n_frames-1:
-        #Figure out colorbar
-        #fig.subplots_adjust(bottom=0.0)
         cbar_ax = fig.add_axes([0.90, 0.267, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
-    #ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     if plot_it == 0:
         plot_velocity_legend = True
     else:
         plot_velocity_legend = False
-    #mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
-    
-    #PLOT TRACERS
-    #ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
     ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
     
     ax.scatter(tracer_data['burst_positions'][0][usable_inds], tracer_data['burst_positions'][1][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
 
-    
     mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][usable_inds].value, tracer_data['burst_positions'][1][usable_inds].value, tracer_data['burst_velocity'][0][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][1][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
@@ -197,7 +213,6 @@ for plot_time in plot_times:
         annotate_text = ax.text(10, -10, legend_text, va="center", ha="center", color='w', fontsize=font_size)
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
-
     part_color = None
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])
@@ -207,38 +222,9 @@ for plot_time in plot_times:
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
         part_color = ['b', 'cyan']
-    
-    #get relative velocity
-    part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
-    if os.path.isfile(part_info_pickle) == False:
-        sink_id = int(part_info['particle_tag'][-1].value)
-        ds = yt.load(files[-1], units_override=units_override)
-        sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-        usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
-        ds = yt.load(usable_files[0], units_override=units_override)
-        import pdb
-        pdb.set_trace()
-        part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
-        part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
-        file = open(part_info_pickle, 'wb')
-        pickle.dump((part_info), file)
-        file.close()
-    else:
-        file = open(part_info_pickle, 'rb')
-        part_info = pickle.load(file)
-        file.close()
         
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel/2, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
 
-    '''
-    ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
-    
-    ax.scatter(tracer_data['other_positions'][0][plot_inds_other], tracer_data['other_positions'][1][plot_inds_other], marker='.', s=1, c='orange', edgecolors=None)
-    
-    ax.scatter(tracer_data['burst_positions'][0][plot_inds_burst], tracer_data['burst_positions'][1][plot_inds_burst], marker='.', s=1, c='magenta', edgecolors=None)
-    
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][plot_inds_burst].value, tracer_data['burst_positions'][1][plot_inds_burst].value, tracer_data['burst_velocity'][0][plot_inds_burst].in_units('cm/s').value, tracer_data['burst_velocity'][1][plot_inds_burst].in_units('cm/s').value, color='magenta', standard_vel=stdvel)
-    '''
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
         line.set_color('white')
@@ -264,10 +250,7 @@ for plot_time in plot_times:
     if np.remainder(plot_it, n_frames)!=0:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
-    #if plot_it < n_frames:
-    #    xticklabels = ax.get_xticklabels()
-    #    plt.setp(xticklabels, visible=False)
-    #else:
+
     ax.set_xlabel('$x$ (AU)', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
