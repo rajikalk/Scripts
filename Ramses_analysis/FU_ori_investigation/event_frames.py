@@ -215,22 +215,30 @@ for plot_time in plot_times:
     part_color = None
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])
-        part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
+        part_info['particle_position'][0] = part_info['particle_position'][0][sort_inds]
+        part_info['particle_position'][1] = part_info['particle_position'][1][sort_inds]
         part_info['particle_mass'] = part_info['particle_mass'][sort_inds]
         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
-        part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
+        part_info['particle_velocity'][0] = part_info['particle_velocity'][0][sort_inds]
+        part_info['particle_velocity'][1] = part_info['particle_velocity'][1][sort_inds]
         part_color = ['b', 'cyan']
+        if np.max(abs(part_info['particle_position'])) > np.max(xlim):
+            part_info['particle_position'][0] = part_info['particle_position'][0][-1]
+            part_info['particle_position'][1] = part_info['particle_position'][1][-1]
+            part_info['particle_mass'] = part_info['particle_mass'][-1]
+            part_info['particle_tag'] = part_info['particle_tag'][-1]
+            part_info['formation_time'] = part_info['formation_time'][-1]
+            part_info['particle_velocity'][0] = part_info['particle_velocity'][0][-1]
+            part_info['particle_velocity'][1] = part_info['particle_velocity'][1][-1]
+            part_color = [part_color[-1]]
         
     #Get unit velocity:
     if event_it == 5:
         import pdb
         pdb.set_trace()
     part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
-    
-    if event_it == 4:
-        import pdb
-        pdb.set_trace()
+        
     
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=0.5, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
 
