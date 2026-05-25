@@ -596,11 +596,11 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             string_2 = "$M_4"+p_t.split('M_4')[1]
             colors_1 = rainbow_text_colors[:6]
             colors_2 = rainbow_text_colors[6:]
-            rainbow_text((xpos), (ymin + ypos*3), string_l.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
-            rainbow_text((xpos), (ymin + ypos), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ypos+3*ylabel_scale*(ymax-ymin)), string_l.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ypos), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
-            rainbow_text((xpos), (ypos)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
+            rainbow_text((xpos), (ypos), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
     '''
