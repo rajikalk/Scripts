@@ -207,8 +207,6 @@ for plot_time in plot_times:
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
         part_color = ['b', 'cyan']
-        import pdb
-        pdb.set_trace()
     
     #get relative velocity
     part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
@@ -218,6 +216,8 @@ for plot_time in plot_times:
         sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
         ds = yt.load(usable_files[0], units_override=units_override)
+        import pdb
+        pdb.set_trace()
         part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
         part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
         file = open(part_info_pickle, 'wb')
