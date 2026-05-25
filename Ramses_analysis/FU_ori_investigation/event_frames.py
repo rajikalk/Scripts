@@ -164,6 +164,18 @@ for plot_time in plot_times:
     if len(part_info['particle_velocity']) != len(part_info['particle_tag']) and os.path.isfile(part_info_pickle):
         os.remove(part_info_pickle)
         print("REMOVING PART INFO FILE", part_info_pickle)
+    
+    #define axis inds
+    if args.axis == 'xy':
+        ax_x_ind = 0
+        ax_y_ind = 1
+    elif args.axis == 'xz':
+        ax_x_ind = 0
+        ax_y_ind = 2
+    else:
+        ax_x_ind = 1
+        ax_y_ind = 2
+    
     #get relative velocity
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
@@ -172,11 +184,11 @@ for plot_time in plot_times:
         usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
         ds = yt.load(usable_files[0], units_override=units_override)
         if len(part_info['particle_tag']) == 1:
-            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
-            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+            part_info['particle_velocity'][ax_x_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
+            part_info['particle_velocity'][ax_y_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
         else:
-            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_velx'][44] - ds.r['gas', 'sink_particle_velx'][45], ds.r['gas', 'sink_particle_velx'][45] - ds.r['gas', 'sink_particle_velx'][44]]
-            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vely'][44] - ds.r['gas', 'sink_particle_vely'][45], ds.r['gas', 'sink_particle_vely'][45] - ds.r['gas', 'sink_particle_vely'][44]]
+            part_info['particle_velocity'][ax_x_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][45], ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
+            part_info['particle_velocity'][ax_y_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][45], ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
         file = open(part_info_pickle, 'wb')
         pickle.dump((part_info), file)
         file.close()
@@ -200,11 +212,11 @@ for plot_time in plot_times:
     else:
         plot_velocity_legend = False
     
-    ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
+    ax.scatter(tracer_data['other_positions'][ax_x_ind], tracer_data['other_positions'][ax_y_ind], marker='.', s=1, c='orange', edgecolors=None)
     
-    ax.scatter(tracer_data['burst_positions'][0][usable_inds], tracer_data['burst_positions'][1][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
+    ax.scatter(tracer_data['burst_positions'][ax_x_ind][usable_inds], tracer_data['burst_positions'][ax_y_ind][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
 
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][usable_inds].value, tracer_data['burst_positions'][1][usable_inds].value, tracer_data['burst_velocity'][0][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][1][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][ax_x_ind][usable_inds].value, tracer_data['burst_positions'][ax_y_ind][usable_inds].value, tracer_data['burst_velocity'][ax_x_ind][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][ax_y_ind][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
