@@ -234,9 +234,6 @@ for plot_time in plot_times:
             part_color = [part_color[-1]]
         
     #Get unit velocity:
-    if event_it == 5:
-        import pdb
-        pdb.set_trace()
     part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
         
     
