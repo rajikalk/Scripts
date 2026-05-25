@@ -132,14 +132,14 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    file = open(tracer_pickle, 'rb')
-    tracer_data = pickle.load(file)
-    file.close()
-    
     if event_it == 2:
         print("Remove dodgy tracers")
         import pdb
         pdb.set_trace()
+    
+    file = open(tracer_pickle, 'rb')
+    tracer_data = pickle.load(file)
+    file.close()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
