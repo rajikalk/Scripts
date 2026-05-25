@@ -132,14 +132,14 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    if event_it == 2:
-        print("Remove dodgy tracers")
-        import pdb
-        pdb.set_trace()
-    
     file = open(tracer_pickle, 'rb')
     tracer_data = pickle.load(file)
     file.close()
+
+    if event_it == 2:
+        usable_inds = np.where(tracer_data['burst_positions'][1]>-7)[0]
+    else:
+        usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
@@ -179,12 +179,12 @@ for plot_time in plot_times:
     #PLOT TRACERS
     #ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
-    ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
+    ax.scatter(tracer_data['other_positions'][0][us], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
     
-    ax.scatter(tracer_data['burst_positions'][0], tracer_data['burst_positions'][1], marker='.', s=1, c='magenta', edgecolors=None)
+    ax.scatter(tracer_data['burst_positions'][0][usable_inds], tracer_data['burst_positions'][1][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
 
     
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0].value, tracer_data['burst_positions'][1].value, tracer_data['burst_velocity'][0].in_units('cm/s').value, tracer_data['burst_velocity'][1].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][0][usable_inds].value, tracer_data['burst_positions'][1][usable_inds].value, tracer_data['burst_velocity'][0][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][1][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
