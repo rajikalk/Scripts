@@ -228,7 +228,7 @@ for plot_time in plot_times:
         pdb.set_trace()
     part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
     
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=0.5, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
