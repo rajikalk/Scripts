@@ -41,8 +41,8 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6730], [7295, 7365], [7850, 7900]]
-burst_bounds = [[], [5675, 5700], [6655, 6730], [7325, 7365], [7860, 7900]]
+time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7340], [7850, 7900]]
+burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7340], [7860, 7900]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
