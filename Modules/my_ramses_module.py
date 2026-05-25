@@ -601,7 +601,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             p0 = axis.transData.inverted().transform((0, 0))
             p1 = axis.transData.inverted().transform((0, height_px))
             height_in_data_units = p1[1] - p0[1]
-            rainbow_text((xpos), (ymin+ypos_delta+1.2*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ymin+ypos_delta+2*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
             rainbow_text((xpos), (ymin+ypos_delta), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
