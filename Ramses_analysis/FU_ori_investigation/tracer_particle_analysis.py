@@ -32,7 +32,7 @@ if rank == 0:
 
 #Get input and output directories
 args = parse_inputs()
-time_bounds = [[3810, 4950], [5575, 5700], [6580, 6730], [7295, 7365], [7850, 7900]]
+time_bounds = [[3810, 4950], [5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 
 #Define relevant directories
 input_dir = sys.argv[1]

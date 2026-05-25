@@ -43,7 +43,7 @@ mym.set_global_font_size(font_size)
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7340], [7850, 7900]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7340], [7860, 7900]]
-cbar_lims_all = [[], [5.e-15, 1.e-13], [5.e-15, 1.e-13], [1.e-15, 5.e-13], [1.e-15, 5.e-13]]
+cbar_lims_all = [[], [5.e-15, 1.e-13], [7.5.e-15, 3.e-13], [1.e-15, 5.e-13], [1.e-15, 5.e-13]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -136,6 +136,22 @@ for plot_time in plot_times:
     tracer_data = pickle.load(file)
     file.close()
     
+    if event_it == 2:
+        usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
+    else:
+        usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
+
+    ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
+    ax.set_aspect('equal')
+    
+    centre_ind = np.where(part_info['particle_tag']==45)[0]
+    X_image = X_image - part_info['particle_position'][0][centre_ind]
+    Y_image = Y_image - part_info['particle_position'][1][centre_ind]
+    X_vel = X_vel - part_info['particle_position'][0][centre_ind]
+    Y_vel = Y_vel - part_info['particle_position'][1][centre_ind]
+    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][centre_ind]
+    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][centre_ind]
+    
     part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
     if os.path.isfile(part_info_pickle):
         file = open(part_info_pickle, 'rb')
@@ -143,7 +159,6 @@ for plot_time in plot_times:
         file.close()
     if len(part_info['particle_velocity']) != len(part_info['particle_tag']):
         os.remove(part_info_pickle)
-        
     #get relative velocity
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
@@ -160,22 +175,6 @@ for plot_time in plot_times:
         file = open(part_info_pickle, 'wb')
         pickle.dump((part_info), file)
         file.close()
-    
-    if event_it == 2:
-        usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
-    else:
-        usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
-
-    ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
-    ax.set_aspect('equal')
-    
-    centre_ind = np.where(part_info['particle_tag']==45)[0]
-    X_image = X_image - part_info['particle_position'][0][centre_ind]
-    Y_image = Y_image - part_info['particle_position'][1][centre_ind]
-    X_vel = X_vel - part_info['particle_position'][0][centre_ind]
-    Y_vel = Y_vel - part_info['particle_position'][1][centre_ind]
-    part_info['particle_position'][0] = part_info['particle_position'][0] - part_info['particle_position'][0][centre_ind]
-    part_info['particle_position'][1] = part_info['particle_position'][1] - part_info['particle_position'][1][centre_ind]
 
     xlim = [-1*width/2, width/2]
     ylim = [-1*width/2, width/2]
