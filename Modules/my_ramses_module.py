@@ -510,7 +510,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    if part_color = None:
+    if part_color == None:
         part_color = ['cyan','magenta','r','b','y','w','k']
     #part_color = ['r','r','r','b','y','w','k']
     xmin = limits[0][0]
