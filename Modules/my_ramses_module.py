@@ -586,10 +586,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         tick_len_data = tick_len_pts * (dpi / 72) * pixel_in_data
         xpos = (xmin + 0.01*(box_size))
         if xpos < xmin + tick_len_data:
-            xpos = xmin + tick_len_data
+            xpos = (xmin + tick_len_data)
         ypos = ymin + ylabel_scale*(ymax-ymin)
         if ypos < ymin + tick_len_data:
-            ypos = ymin + tick_len_data
+            ypos = 1.1*(ymin + tick_len_data)
         
         if len(particle_tags) > 3:
             string_l = p_t.split('M_4')[0][:-3]
