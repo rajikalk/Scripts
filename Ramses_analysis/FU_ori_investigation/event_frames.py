@@ -179,7 +179,7 @@ for plot_time in plot_times:
     #PLOT TRACERS
     #ax.scatter(tracer_data['not_accreted_positions'][0], tracer_data['not_accreted_positions'][1], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)
     
-    ax.scatter(tracer_data['other_positions'][0][us], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
+    ax.scatter(tracer_data['other_positions'][0], tracer_data['other_positions'][1], marker='.', s=1, c='orange', edgecolors=None)
     
     ax.scatter(tracer_data['burst_positions'][0][usable_inds], tracer_data['burst_positions'][1][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
 
