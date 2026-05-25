@@ -55,7 +55,7 @@ try:
     file_open.close()
     print("finished reading in pickle")
 except:
-    sink_pickle = "../particle_data_L20.pkl"
+    sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
     print("read pickle", sink_pickle)
     file_open = open(sink_pickle, 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
