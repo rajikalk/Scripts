@@ -590,7 +590,7 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             xpos = (xmin + tick_len_data)
         ypos_delta = ylabel_scale*(ymax-ymin)
         if ymin + ypos_delta < ymin + tick_len_data:
-            ypos_delta = 1.1*(tick_len_data)
+            ypos_delta = 1.2*(tick_len_data)
         
         if len(particle_tags) > part_tag_split_length:
             string_1 = p_t.split('M_'+str(part_tag_split_length+1))[0][:-3]
