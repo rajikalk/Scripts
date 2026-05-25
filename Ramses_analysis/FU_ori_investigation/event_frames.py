@@ -222,6 +222,10 @@ for plot_time in plot_times:
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
         part_color = ['b', 'cyan']
         
+    #Get unit velocity:
+    import pdb
+    pdb.set_trace()
+        
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel/2, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
