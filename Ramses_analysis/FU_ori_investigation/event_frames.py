@@ -43,6 +43,7 @@ mym.set_global_font_size(font_size)
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7340], [7850, 7900]]
 burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7340], [7860, 7900]]
+cbar_lims_all = [[5.e-15, 1.e-13], [5.e-15, 1.e-13], [1.e-15, 5.e-13], [1.e-15, 5.e-13]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -67,7 +68,7 @@ stdvel = 3
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
-cbar_lims = [5.e-15, 1.e-13]
+cbar_lims = cbar_lims_all[event_it]
 plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
 plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
 start_time = time_bounds[event_it -1][0]
@@ -135,13 +136,10 @@ for plot_time in plot_times:
     tracer_data = pickle.load(file)
     file.close()
     
-    depth_lim = args_dict['xlim']
-    #plot_inds_burst = np.where((tracer_data['burst_positions'][0].value>depth_lim[0])&(tracer_data['burst_positions'][0].value<depth_lim[1])&(tracer_data['burst_positions'][1].value>depth_lim[0])&(tracer_data['burst_positions'][1].value<depth_lim[1])&(tracer_data['burst_positions'][2].value>depth_lim[0])&(tracer_data['burst_positions'][2].value<depth_lim[1]))[0]
-    
-    #plot_inds_other = np.where((tracer_data['other_positions'][0].value>depth_lim[0])&(tracer_data['other_positions'][0].value<depth_lim[1])&(tracer_data['other_positions'][1].value>depth_lim[0])&(tracer_data['other_positions'][1].value<depth_lim[1])&(tracer_data['other_positions'][2].value>depth_lim[0])&(tracer_data['other_positions'][2].value<depth_lim[1]))[0]
-    
-    #plot_inds_not_accreted = np.where((tracer_data['not_accreted_positions'][0].value>depth_lim[0])&(tracer_data['not_accreted_positions'][0].value<depth_lim[1])&(tracer_data['not_accreted_positions'][1].value>depth_lim[0])&(tracer_data['not_accreted_positions'][1].value<depth_lim[1])&(tracer_data['not_accreted_positions'][2].value>depth_lim[0])&(tracer_data['not_accreted_positions'][2].value<depth_lim[1]))[0]
-    file.close()
+    if event_it == 2:
+        print("Remove dodgy tracers")
+        import pdb
+        pdb.set_trace()
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
@@ -200,6 +198,7 @@ for plot_time in plot_times:
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
         
 
+    part_color = None
     if len(part_info['particle_tag']) > 1:
         sort_inds = np.argsort(part_info['formation_time'])
         part_info['particle_position'] = part_info['particle_position'].T[sort_inds].T
@@ -207,6 +206,7 @@ for plot_time in plot_times:
         part_info['particle_tag'] = part_info['particle_tag'][sort_inds]
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
+        part_color = ['b', 'cyan']
     
     #get relative velocity
     part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
@@ -226,7 +226,7 @@ for plot_time in plot_times:
         part_info = pickle.load(file)
         file.close()
         
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel/2, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'])
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel/2, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color)
 
     '''
     ax.scatter(tracer_data['not_accreted_positions'][0][plot_inds_not_accreted], tracer_data['not_accreted_positions'][1][plot_inds_not_accreted], marker='.', s=1, c='blue', edgecolors=None, alpha=0.25)

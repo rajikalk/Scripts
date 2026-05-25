@@ -506,11 +506,12 @@ def my_own_quiver_function(axis, X_pos, Y_pos, X_val, Y_val, plot_velocity_legen
         annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     return axis
 
-def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None):
+def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_field=None, field_symbol="M", units=None, particle_tags=None, lw=1.5, zorder=4, ylabel_scale=0.025, annotate_velocity=False, standard_vel=5, width_ceil = 1.0, particle_velocity=None, part_color=None, part_tag_split_length=2):
     global fontsize_global
     if annotate_field is not None and units is not None:
         annotate_field = annotate_field.in_units(units)
-    part_color = ['cyan','magenta','r','b','y','w','k']
+    if part_color = None:
+        part_color = ['cyan','magenta','r','b','y','w','k']
     #part_color = ['r','r','r','b','y','w','k']
     xmin = limits[0][0]
     xmax = limits[0][1]
@@ -591,7 +592,10 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
         if ymin + ypos_delta < ymin + tick_len_data:
             ypos_delta = 1.1*(tick_len_data)
         
-        if len(particle_tags) > 3:
+        if len(particle_tags) > part_tag_split_length:
+            print("FIGURE OUT SPLIT PARTICLE ANNOTATION")
+            import pdb
+            pdb.set_trace()
             string_l = p_t.split('M_4')[0][:-3]
             string_2 = "$M_4"+p_t.split('M_4')[1]
             colors_1 = rainbow_text_colors[:6]
