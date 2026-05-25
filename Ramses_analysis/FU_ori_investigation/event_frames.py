@@ -162,6 +162,7 @@ for plot_time in plot_times:
         file.close()
     if len(part_info['particle_velocity']) != len(part_info['particle_tag']) and os.path.isfile(part_info_pickle):
         os.remove(part_info_pickle)
+        print("REMOVING PART INFO FILE", part_info_pickle)
     #get relative velocity
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
