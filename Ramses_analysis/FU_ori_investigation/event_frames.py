@@ -224,13 +224,12 @@ for plot_time in plot_times:
         part_info['particle_velocity'][1] = part_info['particle_velocity'][1][sort_inds]
         part_color = ['b', 'cyan']
         if np.max(abs(part_info['particle_position'])) > np.max(xlim):
-            part_info['particle_position'][0] = part_info['particle_position'][0][-1]
+            part_info['particle_position'] = [[part_info['particle_position'][0][-1]], [part_info['particle_position'][1][-1]]]
             part_info['particle_position'][1] = part_info['particle_position'][1][-1]
-            part_info['particle_mass'] = part_info['particle_mass'][-1]
-            part_info['particle_tag'] = part_info['particle_tag'][-1]
-            part_info['formation_time'] = part_info['formation_time'][-1]
-            part_info['particle_velocity'][0] = part_info['particle_velocity'][0][-1]
-            part_info['particle_velocity'][1] = part_info['particle_velocity'][1][-1]
+            part_info['particle_mass'] = [part_info['particle_mass'][-1]]
+            part_info['particle_tag'] = [part_info['particle_tag'][-1]]
+            part_info['formation_time'] = [part_info['formation_time'][-1]]
+            part_info['particle_velocity'] = [[part_info['particle_velocity'][0][-1]], [part_info['particle_velocity'][1][-1]]]
             part_color = [part_color[-1]]
         
     #Get unit velocity:
