@@ -578,19 +578,29 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             rainbow_text_colors.append(part_color[pos_it])
             rainbow_text_colors.append('white')
     if annotate_field is not None:
+        tick_len_pts = axis.xaxis.majorTicks[0].tick1line.get_markersize()
+        p0 = axis.transData.inverted().transform((0, 0))
+        p1 = axis.transData.inverted().transform((1, 0))
+        pixel_in_data = abs(p1[0] - p0[0])
+        dpi = axis.figure.dpi
+        tick_len_data = tick_len_pts * (dpi / 72) * pixel_in_data
+        xpos = (xmin + 0.01*(box_size))
+        if xpos < xmin + tick_len_data:
+            xpos = xmin + tick_len_data
+        ypos = ymin + ylabel_scale*(ymax-ymin)
+        if ypos < ymin + tick_len_data:
+            ypos = ymin + tick_len_data
+        
         if len(particle_tags) > 3:
             string_l = p_t.split('M_4')[0][:-3]
             string_2 = "$M_4"+p_t.split('M_4')[1]
             colors_1 = rainbow_text_colors[:6]
             colors_2 = rainbow_text_colors[6:]
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)*3), string_l.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ymin + ypos*3), string_l.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            rainbow_text((xpos), (ymin + ypos), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
-            print("GET TICK LENGTH AND MAKE SURE THE MASS ANNOTATION DOESN'T OVERLAP")
-            import pdb
-            pdb.set_trace()
-            rainbow_text((xmin + 0.01*(box_size)), (ymin + ylabel_scale*(ymax-ymin)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
+            rainbow_text((xpos), (ypos)), p_t.split(' '), rainbow_text_colors, size=fontsize_global, ax=axis)#, zorder=10)
             #except:
             #    print("couldn't annotate particle masses")
     '''
