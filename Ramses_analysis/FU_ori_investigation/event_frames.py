@@ -207,6 +207,8 @@ for plot_time in plot_times:
         part_info['formation_time'] = part_info['formation_time'][sort_inds]
         part_info['particle_velocity'] =  part_info['particle_velocity'][sort_inds]
         part_color = ['b', 'cyan']
+        import pdb
+        pdb.set_trace()
     
     #get relative velocity
     part_info_pickle = 'part_info_'+str(plot_time)+'.pkl'
