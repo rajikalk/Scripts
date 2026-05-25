@@ -137,7 +137,7 @@ for plot_time in plot_times:
     file.close()
 
     if event_it == 2:
-        usable_inds = np.where(tracer_data['burst_positions'][1]>-7)[0]
+        usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
     else:
         usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
 
