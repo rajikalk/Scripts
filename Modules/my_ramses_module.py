@@ -593,14 +593,15 @@ def annotate_particles(axis, particle_position, accretion_rad, limits, annotate_
             ypos_delta = 1.1*(tick_len_data)
         
         if len(particle_tags) > part_tag_split_length:
-            print("FIGURE OUT SPLIT PARTICLE ANNOTATION")
-            import pdb
-            pdb.set_trace()
-            string_l = p_t.split('M_4')[0][:-3]
-            string_2 = "$M_4"+p_t.split('M_4')[1]
-            colors_1 = rainbow_text_colors[:6]
-            colors_2 = rainbow_text_colors[6:]
-            rainbow_text((xpos), (ymin+3*ypos_delta), string_l.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
+            string_1 = p_t.split('M_'+str(part_tag_split_length+1))[0][:-3]
+            string_2 = "$M_"+str(part_tag_split_length+1)+p_t.split('M_'+str(part_tag_split_length+1))[1]
+            colors_1 = rainbow_text_colors[:part_tag_split_length*2]
+            colors_2 = rainbow_text_colors[part_tag_split_length*2:]
+            height_px = fontsize_global * (dpi / 72.0)
+            p0 = axis.transData.inverted().transform((0, 0))
+            p1 = axis.transData.inverted().transform((0, height_px))
+            height_in_data_units = p1[1] - p0[1]
+            rainbow_text((xpos), (ymin+ypos_delta+1.2*height_in_data_units), string_1.split(' '), colors_1, size=fontsize_global, ax=axis)#zorder=10
             rainbow_text((xpos), (ymin+ypos_delta), string_2.split(' '), colors_2, size=fontsize_global, ax=axis)#zorder=10
         else:
             #try:
