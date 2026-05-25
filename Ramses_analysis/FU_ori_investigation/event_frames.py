@@ -19,6 +19,7 @@ import matplotlib.patches as mpatches
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
+parser.add_argument("-ax", "--axis", default='xy', type=str)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -119,7 +120,7 @@ for plot_time in plot_times:
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xy', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', args.axis, '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
         
         subprocess.Popen(cmd).wait()
     tracer_pickle = "tracer_time_" + str(plot_time) + ".pkl"
@@ -260,7 +261,7 @@ for plot_time in plot_times:
     ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
                     
     if np.remainder(plot_it, n_frames)==0:
-        ax.set_ylabel('$y$ (AU)', fontsize=font_size, labelpad=-5)
+        ax.set_ylabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-5)
         if plot_it == n_frames:
             yticklabels = ax.get_yticklabels()
             plt.setp(yticklabels[-1], visible=False)
@@ -268,7 +269,7 @@ for plot_time in plot_times:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
 
-    ax.set_xlabel('$x$ (AU)', fontsize=font_size, labelpad=-1)
+    ax.set_xlabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
