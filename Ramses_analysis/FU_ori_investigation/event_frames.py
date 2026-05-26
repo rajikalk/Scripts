@@ -42,8 +42,8 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7340], [7850, 7900]]
-burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7340], [7860, 7900]]
+time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
+burst_bounds = [[], [5675, 5700], [6655, 6720], [7325, 7365], [7860, 7900]]
 cbar_lims_all = [[], [5.e-15, 1.e-13], [5.e-15, 1.e-13], [5.e-15, 1.e-13], [6.e-15, 2.e-13]]
 cmap=plt.cm.gist_heat
 
@@ -70,10 +70,16 @@ n_frames = 5
 make_frame = True
 event_it = args.event_identifier
 cbar_lims = cbar_lims_all[event_it-1]
-plot_dt = (burst_bounds[event_it -1][1]-burst_bounds[event_it -1][0])/4
-plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1]+plot_dt, plot_dt)
+start_burst = burst_bounds[event_it -1][0]
+end_burst = burst_bounds[event_it -1][1]
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
+if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
+    end_burst = 7340
+    end_time = 7340
+    
+plot_dt = (end_burst-start_burst)/4
+plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
