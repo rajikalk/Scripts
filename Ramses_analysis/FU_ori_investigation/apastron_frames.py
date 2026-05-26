@@ -85,8 +85,6 @@ plt.savefig("Apastron_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches
 plot_it = -1
 for plot_time in plot_times:
     plot_it = plot_it + 1
-    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
     
     movie_plot_pickle = "time_" + str(float(plot_time)) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
@@ -99,6 +97,12 @@ for plot_time in plot_times:
     file = open(movie_plot_pickle, 'rb')
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
+    
+    print("GET ACTUAL FRAME TIME")
+    import pdb
+    pdb.set_trace()
+    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
