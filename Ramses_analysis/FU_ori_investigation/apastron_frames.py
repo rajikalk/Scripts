@@ -98,10 +98,7 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    print("GET ACTUAL FRAME TIME")
-    import pdb
-    pdb.set_trace()
-    plot_time_ind = np.argmin(abs(particle_data['time'] - plot_time))
+    plot_time_ind = np.argmin(abs(particle_data['time'] - args_dict['time_real']))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
@@ -149,7 +146,7 @@ for plot_time in plot_times:
     for line in ax.yaxis.get_ticklines():
         line.set_color('white')
                     
-    time_string = "$t$="+str(int(plot_time))+"yr"
+    time_string = "$t$="+str(int(args_dict['time_real']))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="center", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
