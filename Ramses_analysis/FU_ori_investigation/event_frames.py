@@ -185,11 +185,11 @@ for plot_time in plot_times:
         usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
         ds = yt.load(usable_files[0], units_override=units_override)
         if len(part_info['particle_tag']) == 1:
-            part_info['particle_velocity'][ax_x_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
-            part_info['particle_velocity'][ax_y_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
+            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
+            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
         else:
-            part_info['particle_velocity'][ax_x_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][45], ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
-            part_info['particle_velocity'][ax_y_ind] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][45], ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
+            part_info['particle_velocity'][0] = [ds.r['gas', 'sink_particle_vel'+args.axis[0]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][45], ds.r['gas', 'sink_particle_vel'+args.axis[0]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[0]][44]]
+            part_info['particle_velocity'][1] = [ds.r['gas', 'sink_particle_vel'+args.axis[1]][44] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][45], ds.r['gas', 'sink_particle_vel'+args.axis[1]][45] - ds.r['gas', 'sink_particle_vel'+args.axis[1]][44]]
         file = open(part_info_pickle, 'wb')
         pickle.dump((part_info), file)
         file.close()
