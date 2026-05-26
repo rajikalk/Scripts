@@ -146,7 +146,7 @@ for plot_time in plot_times:
     for line in ax.yaxis.get_ticklines():
         line.set_color('white')
                     
-    time_string = "$t$="+str(int(args_dict['time_real']))+"yr"
+    time_string = "$t$="+str(int(args_dict['time_real'].value))+"yr"
     time_string_raw = r"{}".format(time_string)
     time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="center", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
