@@ -435,6 +435,7 @@ if args.make_frames_only == 'False':
                 print('loading file', fn, 'on rank', rank)
                 sys.stdout.flush()
             ds = yt.load(fn, units_override=units_override)
+            time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
             if args.debug_plotting == 'True':
                 print('loaded file', fn, 'on rank', rank)
                 sys.stdout.flush()
