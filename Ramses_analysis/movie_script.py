@@ -524,7 +524,6 @@ if args.make_frames_only == 'False':
             except:
                 time_real = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
                 time_val = np.round(time_real.in_units('yr'))
-                del time_real
                 gc.collect()
                 
                 
@@ -825,6 +824,7 @@ if args.make_frames_only == 'False':
                 args_dict.update({'field':simfo['field']})
                 args_dict.update({'annotate_velocity': args.plot_velocity_legend})
                 args_dict.update({'time_val': time_val})
+                args_dict.update({'time_real': time_real})
                 args_dict.update({'cbar_min': cbar_min})
                 args_dict.update({'cbar_max': cbar_max})
                 args_dict.update({'title': title})
