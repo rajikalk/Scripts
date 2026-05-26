@@ -55,11 +55,10 @@ end_time = plot_times[-1]
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-G = gridspec.GridSpec(3,4, height_ratios=[1.5, 2, 2])
+G = gridspec.GridSpec(3,n_frames)
 axes_1 = plt.subplot(G[0, :])
-plt.tight_layout()
 plt.subplots_adjust(wspace=0.01)
-#plt.subplots_adjust(hspace=-0.2)
+plt.subplots_adjust(hspace=-0.00)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))

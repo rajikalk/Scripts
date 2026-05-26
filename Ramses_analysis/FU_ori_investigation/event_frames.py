@@ -75,6 +75,7 @@ plot_times = np.arange(burst_bounds[event_it -1][0], burst_bounds[event_it -1][1
 start_time = time_bounds[event_it -1][0]
 end_time = time_bounds[event_it -1][1]
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
+mym.set_units(units_override)
 
 
 plt.clf()
