@@ -417,15 +417,15 @@ if args.make_frames_only == 'False':
             usuable_inds = np.where(dist.in_units('au') < args.active_radius)[0]
             cell_mass = dd['mass'][usuable_inds]
             
-            sph_dx = dd['x'].in_units('cm') - center_pos[0].in_units('cm')
-            sph_dy = dd['y'].in_units('cm') - center_pos[1].in_units('cm')
-            sph_dz = dd['z'].in_units('cm') - center_pos[2].in_units('cm')
+            sph_dx = dd['x'][usuable_inds].in_units('cm') - center_pos[0].in_units('cm')
+            sph_dy = dd['y'][usuable_inds].in_units('cm') - center_pos[1].in_units('cm')
+            sph_dz = dd['z'][usuable_inds].in_units('cm') - center_pos[2].in_units('cm')
             
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             
-            sph_dvx = dd['velocity_x'].in_units('cm/s') - center_vel[0].in_units('cm/s')
-            sph_dvy = dd['velocity_y'].in_units('cm/s') - center_vel[1].in_units('cm/s')
-            sph_dvz = dd['velocity_z'].in_units('cm/s') - center_vel[2].in_units('cm/s')
+            sph_dvx = dd['velocity_x'][usuable_inds].in_units('cm/s') - center_vel[0].in_units('cm/s')
+            sph_dvy = dd['velocity_y'][usuable_inds].in_units('cm/s') - center_vel[1].in_units('cm/s')
+            sph_dvz = dd['velocity_z'][usuable_inds].in_units('cm/s') - center_vel[2].in_units('cm/s')
             
             sph_radial_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
             
