@@ -297,7 +297,6 @@ if args.plot_time != None:
 sys.stdout.flush()
 CW.Barrier()
 
-dd = ds.all_data()
 if args.sink_number == None:
     sink_particle_speed = ds.r["sink_particle_speed"]
     sink_id = np.argmin(sink_particle_speed)
@@ -373,15 +372,43 @@ if args.make_frames_only == 'False':
             pickle_file = save_dir + "time_" + (str(int(args.plot_time)))
         if os.path.isfile(pickle_file) == False:
             ds = yt.load(fn, units_override=units_override)
-            dd = ds.all_data()
             
             has_particles = has_sinks(ds)
             part_info = mym.get_particle_data(ds, sink_id=sink_id)
             
             time_val = m_times[file_int]
             
-            center_pos = ds.r['Center_Position'].in_units('AU')
-            center_vel = ds.r['Center_Velocity'].in_units('cm/s')
+            if args.image_center == 0:
+                center_pos = ds.r['Center_Position'].in_units('AU')
+                center_vel = ds.r['Center_Velocity'].in_units('cm/s')
+            elif args.image_center == 1:
+                if args.debug_plotting == 'True':
+                    print('Getting center sink position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink x position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink y position on rank', rank)
+                    sys.stdout.flush()
+                sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+                if args.debug_plotting == 'True':
+                    print('Got center sink z position on rank', rank)
+                    sys.stdout.flush()
+                center_pos = yt.YTArray([sink_particle_posx.in_units('au').value, sink_particle_posy.in_units('au').value, sink_particle_posz.in_units('au').value], 'au'):
+                del sink_particle_posx, sink_particle_posy, sink_particle_posz
+                gc.collect()
+                
+            if args.image_center == 1:
+                sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+                sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+                sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+                center_vel = yt.YTArray([sink_particle_velx.in_units('cm/s').value, sink_particle_vely.in_units('cm/s').value, sink_particle_velz.in_units('cm/s').value], 'cm/s')
+                del sink_particle_velx, sink_particle_vely, sink_particle_velz
+                gc.collect()
+                
             myf.set_center_vel(center_vel)
             myf.set_center_pos(center_pos)
             
