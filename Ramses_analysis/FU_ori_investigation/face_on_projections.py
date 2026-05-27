@@ -411,15 +411,14 @@ if args.make_frames_only == 'False':
             myf.set_center_vel(center_vel)
             myf.set_center_pos(center_pos)
             
-            dd = ds.all_data()
-            sep_array = (yt.YTArray([dd['x'], dd['y'], dd['z']]).T - center_pos.in_units('cm'))
+            sep_array = (yt.YTArray([ds.r['x'], ds.r['y'], ds.r['z']]).T - center_pos.in_units('cm'))
             dist = np.sqrt(np.sum(sep_array**2, axis=1))
             usuable_inds = np.where(dist.in_units('au') < args.active_radius)[0]
-            cell_mass = dd['mass'][usuable_inds]
+            cell_mass = ds.r['mass'][usuable_inds]
             
-            sph_dx = dd['x'][usuable_inds].in_units('cm') - center_pos[0].in_units('cm')
-            sph_dy = dd['y'][usuable_inds].in_units('cm') - center_pos[1].in_units('cm')
-            sph_dz = dd['z'][usuable_inds].in_units('cm') - center_pos[2].in_units('cm')
+            sph_dx = ds.r['x'][usuable_inds].in_units('cm') - center_pos[0].in_units('cm')
+            sph_dy = ds.r['y'][usuable_inds].in_units('cm') - center_pos[1].in_units('cm')
+            sph_dz = ds.r['z'][usuable_inds].in_units('cm') - center_pos[2].in_units('cm')
             
             sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
             
