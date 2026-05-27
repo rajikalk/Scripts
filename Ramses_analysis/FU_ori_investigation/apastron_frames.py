@@ -137,7 +137,7 @@ for plot_time in plot_times:
     if plot_time == plot_times[-1]:
         pvl = True
         
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=plot_velocity_legend,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=pvl,limits=[xlim, ylim], Z_val=None, standard_vel=stdvel, width_ceil = 0.4)
                 
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, standard_vel=stdvel)
 
