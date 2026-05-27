@@ -283,7 +283,7 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
-if args.weight_field == 'None':
+if args.weight_field == None:
     weight_field = None
 else:
     weight_field = ('gas', args.weight_field)
