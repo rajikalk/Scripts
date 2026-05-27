@@ -80,13 +80,13 @@ def sim_info(ds,args):
     if args.ax_lim == None:
         xmin = -1000
         xmax = 1000
-        #ymin = -1000
-        #ymax = 1000
+        ymin = -1000
+        ymax = 1000
     else:
         xmin = -1*args.ax_lim
         xmax = args.ax_lim
-        #ymin = -1*args.ax_lim
-        #ymax = args.ax_lim
+        ymin = -1*args.ax_lim
+        ymax = args.ax_lim
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
@@ -105,8 +105,8 @@ def sim_info(ds,args):
                 'dimension': dim,
                 'xmin': xmin,
                 'xmax': xmax,
-                #'ymin': ymin,
-                #'ymax': ymax,
+                'ymin': ymin,
+                'ymax': ymax,
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
                 'smoothing': smoothing,
