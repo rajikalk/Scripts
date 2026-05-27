@@ -283,7 +283,10 @@ else:
 sys.stdout.flush()
 CW.Barrier()
 
-weight_field = simfo['weight_field']
+if args.weight_field == 'None':
+    weight_field = None
+else:
+    weight_field = ('gas', args.weight_field)
 
 if args.plot_time != None:
     if args.weight_field == 'None':
