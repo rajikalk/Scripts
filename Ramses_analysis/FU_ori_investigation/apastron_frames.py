@@ -98,8 +98,6 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    velx = yt.YTArray(velx, 'cm/s')
-    vely = yt.YTArray(vely, 'cm/s')
     velx = velx - np.mean(velx)
     vely = vely - np.mean(vely)
     
