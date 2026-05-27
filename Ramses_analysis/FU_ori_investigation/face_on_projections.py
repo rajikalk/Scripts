@@ -312,7 +312,6 @@ if args.image_center == 2:
     start_time = secondary_form_time - sink_form_time
 else:
     start_time = 0
-del dd
 
 if rank == 0:
     print("Finding times")
