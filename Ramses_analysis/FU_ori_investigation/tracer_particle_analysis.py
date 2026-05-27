@@ -46,7 +46,7 @@ else:
     event_id = int(input_dir.split('Event_')[-1][0]) - 1
     print("Getting tracer particles for Event", event_id+1)
     end_time = time_bounds[event_id][-1]
-    elif os.getcwd().split('/')[-1] == 'End_7340':
+    if os.getcwd().split('/')[-1] == 'End_7340':
         end_time = 7340
     del time_bounds
     gc.collect()
