@@ -16,6 +16,7 @@ from matplotlib import transforms
 import matplotlib.patheffects as path_effects
 from matplotlib import ticker
 plt.rcParams["text.usetex"] = False
+import gc
 
 def parse_inputs():
     import argparse
