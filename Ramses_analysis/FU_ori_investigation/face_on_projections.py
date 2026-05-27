@@ -69,29 +69,33 @@ def sim_info(ds,args):
     """
     Finds particle info, relevant to frame size and such. NOTE ACCRETION RADIUS IS GIVEN FROM PARTICLE INFO FUNCTION
     """
-    dd = ds.all_data()
+    print("Reading derived fields list")
     field_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.field][0]
+    print("Succesfully read in derived fields list")
     field = ds.derived_field_list[field_it]
-    if args.weight_field != None:
-        wf_it = [i for i, v in enumerate(ds.derived_field_list) if v[1] == args.weight_field][0]
-        weight_field = ds.derived_field_list[wf_it]
-    else:
-        weight_field = None
+    del field_it
+    gc.collect()
     dim = args.resolution
     if args.ax_lim == None:
         xmin = -1000
         xmax = 1000
-        ymin = -1000
-        ymax = 1000
+        #ymin = -1000
+        #ymax = 1000
     else:
         xmin = -1*args.ax_lim
         xmax = args.ax_lim
-        ymin = -1*args.ax_lim
-        ymax = args.ax_lim
+        #ymin = -1*args.ax_lim
+        #ymax = args.ax_lim
     cl = (xmax-xmin)/dim
     annotate_freq = dim/args.velocity_annotation_frequency
     smoothing = annotate_freq/2
-    unit_string = str(dd[field].in_cgs().units)
+    test_patch = ds.box(ds.domain_center-0.1*ds.domain_width, ds.domain_center+0.1*ds.domain_width)
+    try:
+        unit_string = str(test_patch[field[1]].in_cgs().units)
+    except:
+        unit_string = str(test_patch[('gas', field[1])].in_cgs().units)
+    del test_patch
+    gc.collect()
     split_string = unit_string.split('**')
     unit_string = "^".join(split_string)
     split_string = unit_string.split('*')
@@ -100,26 +104,16 @@ def sim_info(ds,args):
                 'dimension': dim,
                 'xmin': xmin,
                 'xmax': xmax,
-                'ymin': ymin,
-                'ymax': ymax,
+                #'ymin': ymin,
+                #'ymax': ymax,
                 'cell_length': cl,
                 'annotate_freq': annotate_freq,
                 'smoothing': smoothing,
-                'unit_string': unit_string,
-                'weight_field': weight_field
+                'unit_string': unit_string
                 }
-    del field_it
-    del field
-    del dim
-    del xmin
-    del xmax
-    del ymin
-    del ymax
-    del cl
-    del annotate_freq
-    del smoothing
-    del unit_string
-    del dd
+    del field, dim, xmin, xmax, cl, annotate_freq, smoothing, unit_string
+    gc.collect()
+    
     return sim_info
 
 def image_properties(X, Y, args, sim_info):
@@ -133,12 +127,14 @@ def has_sinks(ds):
     '''
     Checks particle file to see if particles exists, or tries the plot file.
     '''
-    dd = ds.all_data()
-    if len(dd['sink_particle_tag'][myf.get_centred_sink_id():].astype(int)) != 0:
-        del dd
+    sink_particle_tag = ds.r['gas', 'sink_particle_tag']
+    if len(sink_particle_tag[myf.get_centred_sink_id():].astype(int)) != 0:
+        del sink_particle_tag
+        gc.collect()
         return True
     else:
-        del dd
+        del sink_particle_tag
+        gc.collect()
         return False
         
 def xy_rotation_matrix(theta):
@@ -299,15 +295,17 @@ CW.Barrier()
 
 dd = ds.all_data()
 if args.sink_number == None:
-    sink_id = np.argmin(dd['sink_particle_speed'])
+    sink_particle_speed = ds.r["sink_particle_speed"]
+    sink_id = np.argmin(sink_particle_speed)
 else:
     sink_id = args.sink_number
 if rank == 0:
     print("CENTERED SINK ID:", sink_id)
 myf.set_centred_sink_id(sink_id)
-sink_form_time = dd['sink_particle_form_time'][sink_id]
+test_patch = ds.box(ds.domain_center-0.05*ds.domain_width, ds.domain_center+0.05*ds.domain_width)
+sink_form_time = test_patch["sink_particle_form_time"][sink_id]
 if args.image_center == 2:
-    secondary_form_time = dd['sink_particle_form_time'][sink_id+1]
+    secondary_form_time = test_patch["sink_particle_form_time"][sink_id+1]
     start_time = secondary_form_time - sink_form_time
 else:
     start_time = 0
@@ -378,8 +376,8 @@ if args.make_frames_only == 'False':
             
             time_val = m_times[file_int]
             
-            center_pos = dd['Center_Position'].in_units('AU')
-            center_vel = dd['Center_Velocity'].in_units('cm/s')
+            center_pos = ds.r['Center_Position'].in_units('AU')
+            center_vel = ds.r['Center_Velocity'].in_units('cm/s')
             myf.set_center_vel(center_vel)
             myf.set_center_pos(center_pos)
             
@@ -407,8 +405,8 @@ if args.make_frames_only == 'False':
             L_unit = L_tot/L_mag
             
             ##CALCULCATE NORTH VECTOR!!
-            Primary_pos = yt.YTArray([dd['sink_particle_posx'][44], dd['sink_particle_posy'][44], dd['sink_particle_posz'][44]])
-            Secondary_pos = yt.YTArray([dd['sink_particle_posx'][45], dd['sink_particle_posy'][45], dd['sink_particle_posz'][45]])
+            Primary_pos = yt.YTArray([ds.r['sink_particle_posx'][44], ds.r['sink_particle_posy'][44], ds.r['sink_particle_posz'][44]])
+            Secondary_pos = yt.YTArray([ds.r['sink_particle_posx'][45], ds.r['sink_particle_posy'][45], ds.r['sink_particle_posz'][45]])
             if sink_id == 45:
                 sep_vec = Primary_pos - Secondary_pos
             elif sink_id == 44:
@@ -439,9 +437,9 @@ if args.make_frames_only == 'False':
             
             #Calculate particle positions
             
-            part_posx = dd['sink_particle_posx'][-2:].in_units('AU') - center_pos[0]
-            part_posy = dd['sink_particle_posy'][-2:].in_units('AU') - center_pos[1]
-            part_posz = dd['sink_particle_posz'][-2:].in_units('AU') - center_pos[2]
+            part_posx = ds.r['sink_particle_posx'][-2:].in_units('AU') - center_pos[0]
+            part_posy = ds.r['sink_particle_posy'][-2:].in_units('AU') - center_pos[1]
+            part_posz = ds.r['sink_particle_posz'][-2:].in_units('AU') - center_pos[2]
             pos_array = yt.YTArray([part_posx, part_posy, part_posz]).T
             
             projected_particle_posy = projected_vector(pos_array, north_unit)
