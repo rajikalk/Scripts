@@ -397,7 +397,7 @@ if args.make_frames_only == 'False':
                 if args.debug_plotting == 'True':
                     print('Got center sink z position on rank', rank)
                     sys.stdout.flush()
-                center_pos = yt.YTArray([sink_particle_posx.in_units('au').value, sink_particle_posy.in_units('au').value, sink_particle_posz.in_units('au').value], 'au'):
+                center_pos = yt.YTArray([sink_particle_posx.in_units('au').value, sink_particle_posy.in_units('au').value, sink_particle_posz.in_units('au').value], 'au')
                 del sink_particle_posx, sink_particle_posy, sink_particle_posz
                 gc.collect()
                 
