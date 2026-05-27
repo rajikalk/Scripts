@@ -36,7 +36,7 @@ plot_times = [3000, 4800, 6100, 7000, 7500, 8000, 8400, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
-sink_pickle = "../particle_data_L20_with_relvel.pkl"
+sink_pickle = "/home/100/rlk100/rlk/RAMSES/Analysis/Event_plots/particle_data_L20_with_relvel.pkl"
 print("read pickle", sink_pickle)
 file_open = open(sink_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
