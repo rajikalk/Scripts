@@ -411,7 +411,28 @@ if args.make_frames_only == 'False':
             myf.set_center_vel(center_vel)
             myf.set_center_pos(center_pos)
             
-            measuring_sphere_primary = ds.sphere(center_pos, yt.YTQuantity(args.active_radius, 'au'))
+            dd = ds.all_data()
+            sep_array = (yt.YTArray([dd['x'], dd['y'], dd['z']]).T - center_pos.in_units('cm'))
+            dist = np.sqrt(np.sum(sep_array**2, axis=1))
+            usuable_inds = np.where(dist.in_units('au') < args.active_radius)[0]
+            cell_mass = dd['mass'][usuable_inds]
+            
+            sph_dx = dd['x'].in_units('cm') - center_pos[0].in_units('cm')
+            sph_dy = dd['y'].in_units('cm') - center_pos[1].in_units('cm')
+            sph_dz = dd['z'].in_units('cm') - center_pos[2].in_units('cm')
+            
+            sph_radial_vector = yt.YTArray([sph_dx, sph_dy, sph_dz]).T
+            
+            sph_dvx = dd['velocity_x'].in_units('cm/s') - center_vel[0].in_units('cm/s')
+            sph_dvy = dd['velocity_y'].in_units('cm/s') - center_vel[1].in_units('cm/s')
+            sph_dvz = dd['velocity_z'].in_units('cm/s') - center_vel[2].in_units('cm/s')
+            
+            sph_radial_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+            
+            del dd
+            
+            '''
+            measuring_sphere_primary = ds.sphere(center_pos.in_units('au'), yt.YTQuantity(args.active_radius, 'au'))
             cell_mass = measuring_sphere_primary['mass'].in_units('g')
             
             sph_dx = measuring_sphere_primary['x'].in_units('cm') - center_pos[0].in_units('cm')
@@ -425,6 +446,7 @@ if args.make_frames_only == 'False':
             sph_dvz = measuring_sphere_primary['velocity_z'].in_units('cm/s') - center_vel[2].in_units('cm/s')
             
             sph_radial_vector = yt.YTArray([sph_dvx, sph_dvy, sph_dvz]).T
+            '''
             
             L_x = cell_mass*(sph_dy*sph_dvz - sph_dz*sph_dvy)
             L_y = cell_mass*(sph_dx*sph_dvz - sph_dz*sph_dvx)
