@@ -32,7 +32,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-plot_times = [3000, 4800, 6100, 7000, 7500, 8000, 8400, 8700]
+plot_times = [3000, 4800, 6100, 6900, 7500, 8000, 8400, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
