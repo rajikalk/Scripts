@@ -663,6 +663,7 @@ if args.make_frames_only == 'False':
                     int_field = ('gas', 'dx')
                 
                 proj_thickness = yt.ProjectionPlot(ds, axis_ind, int_field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='sum', center=center_pos)
+                proj_thickness.set_buff_size([args.resolution, args.resolution])
                 thickness = proj_thickness.frb.data[int_field]
                 
                 proj_dict = {}
