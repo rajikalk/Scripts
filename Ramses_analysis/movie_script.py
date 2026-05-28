@@ -12,17 +12,6 @@ import gc
 
 #===========================================================
 
-def _Velx_times_cell_length(field,data):
-    """
-    Field for velocity integration
-    """
-    import pdb
-    pdb.set_trace()
-    velx_times_cell_length = data['velocity_x'].in_units('cm/s')*data['dx'].in_units('cm')
-    return velx_times_cell_length
-
-yt.add_field("Velx_times_cell_length", function=_Velx_times_cell_length, units=r"cm**2/s", sampling_type="local", force_override=True)
-
 #===========================================================
 
 def parse_inputs():
@@ -676,7 +665,7 @@ if args.make_frames_only == 'False':
                     #    weight_field = 'density'
                     import pdb
                     pdb.set_trace()
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method='integrate', center=center_pos)
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
