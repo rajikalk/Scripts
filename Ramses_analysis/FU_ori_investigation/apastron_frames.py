@@ -44,7 +44,7 @@ file_open.close()
 print("finished reading in pickle")
 
 width = 30
-stdvel = 10
+stdvel = 12
 n_frames = 4
 cbar_lims = [1.e-16, 5.e-14]
 start_time = plot_times[0]
@@ -146,7 +146,7 @@ for plot_time in plot_times:
                     
     time_string = "$t$="+str(int(args_dict['time_real'].value))+"yr"
     time_string_raw = r"{}".format(time_string)
-    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="center", color='w', fontsize=font_size)
+    time_text = ax.text((xlim[0]+0.01*(xlim[1]-xlim[0])), (ylim[1]-0.06*(ylim[1]-ylim[0])), time_string_raw, va="center", ha="left", color='w', fontsize=font_size)
     time_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
                 
     ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
