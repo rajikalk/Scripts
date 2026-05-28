@@ -492,26 +492,20 @@ if args.make_frames_only == 'False':
                 axis_ind = 2
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.75*args.slice_thickness)], 'AU')
-                region = ds.box(left_corner, right_corner)
-                del left_corner, right_corner
-                gc.collect()
                 
             elif args.axis == 'xz':
                 axis_ind = 1
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
-                region = ds.box(left_corner, right_corner)
-
-                del left_corner, right_corner
-                gc.collect()
                 
             elif args.axis == 'yz':
                 axis_ind = 0
                 left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
-                region = ds.box(left_corner, right_corner)
-                del left_corner, right_corner
-                gc.collect()
+                
+            region = ds.region(center_pos, left_corner, right_corner)
+            del left_corner, right_corner
+            gc.collect()
                 
             
             if has_particles:
