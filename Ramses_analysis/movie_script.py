@@ -648,23 +648,17 @@ if args.make_frames_only == 'False':
                 #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
+                proj_fn = region.save_as_dataset(fields=proj_field_list)
                 
-                if args.axis == 'xy':
-                    int_field = ('gas', 'dz')
-                elif args.axis == 'xz':
-                    int_field = ('gas', 'dy')
-                else:
-                    int_field = ('gas', 'dx')
+                proj_ds = yt.load(proj_fn)
+                #proj = yt.ProjectionPlot(proj_ds, axis_ind, ('ramses', 'x-velocity'), method='integrate')
                 
-                proj_thickness = yt.ProjectionPlot(ds, axis_ind, int_field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='sum', center=center_pos)
-                proj_thickness.set_buff_size([args.resolution, args.resolution])
-                thickness = proj_thickness.frb.data[int_field]
-                import pdb
-                pdb.set_trace()
+                #import pdb
+                #pdb.set_trace()
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
+                    proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
