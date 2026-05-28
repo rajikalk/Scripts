@@ -658,7 +658,7 @@ if args.make_frames_only == 'False':
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
-                    proj_fn = region.save_as_dataset(fields=[field])
+                    proj_fn = region.save_as_dataset(filename=field[1]+'.h5' fields=[field])
                     proj_ds = yt.load(proj_fn)
                     
                     proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), method='integrate')
