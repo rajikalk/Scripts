@@ -42,8 +42,6 @@ file_open = open(sink_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print("finished reading in pickle")
-    
-
 
 width = 30
 stdvel = 10
@@ -57,7 +55,7 @@ plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 G = gridspec.GridSpec(3,n_frames)
 axes_1 = plt.subplot(G[0, :])
-plt.subplots_adjust(wspace=0.01)
+plt.subplots_adjust(wspace=0)
 #plt.subplots_adjust(hspace=-0.00)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
@@ -105,7 +103,6 @@ for plot_time in plot_times:
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
-    ax.set_aspect('equal')
     
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
@@ -122,7 +119,7 @@ for plot_time in plot_times:
                 
     if plot_it < n_frames:
         plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
-
+    plt.gca().set_aspect('equal')
                 
     if plot_it == n_frames-1:
         #Figure out colorbar
