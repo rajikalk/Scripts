@@ -10,10 +10,6 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import gc
 
-#===========================================================
-
-#===========================================================
-
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -659,12 +655,18 @@ if args.make_frames_only == 'False':
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
                 
+                if args.axis == 'xy':
+                    int_field = ('gas', 'dz')
+                elif args.axis == 'xz':
+                    int_field = ('gas', 'dy')
+                else:
+                    int_field = ('gas', 'dx')
+                
+                proj_thickness = yt.ProjectionPlot(ds, axis_ind, int_field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='sum', center=center_pos)
+                thickness = proj_thickness.frb.data[int_field]
+                
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
-                    #if 'velocity' in field[1] and args.rm_bulk_velocity == "False":
-                    #    weight_field = 'density'
-                    import pdb
-                    pdb.set_trace()
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
