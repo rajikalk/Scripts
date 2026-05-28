@@ -16,6 +16,8 @@ def _Velx_times_cell_length(field,data):
     """
     Field for velocity integration
     """
+    import pdb
+    pdb.set_trace()
     velx_times_cell_length = data['velocity_x'].in_units('cm/s')*data['dx'].in_units('cm')
     return velx_times_cell_length
 
