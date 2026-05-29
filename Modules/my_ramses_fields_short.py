@@ -498,12 +498,10 @@ def _sink_particle_age(field, data):
 
 yt.add_field("sink_particle_age", function=_sink_particle_age, units=r"yr", sampling_type="local", force_override=True)
 
-
 def _Density_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global axis_ind
     global ax_str
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
@@ -522,13 +520,12 @@ def _x_velocity_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'x-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'x-velocity')]
+    if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'x-velocity')]
     else:
-        Proj_field = data[('gas', 'x-velocity')]
+        Proj_field = data[('ramses', 'x-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
@@ -544,10 +541,10 @@ def _y_velocity_Proj(field,data):
     #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'y-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'y-velocity')]
+    if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'y-velocity')]
     else:
-        Proj_field = data[('gas', 'y-velocity')]
+        Proj_field = data[('ramses', 'y-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
@@ -563,10 +560,10 @@ def _z_velocity_Proj(field,data):
     #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'z-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'z-velocity')]
+    if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'z-velocity')]
     else:
-        Proj_field = data[('gas', 'z-velocity')]
+        Proj_field = data[('ramses', 'z-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
