@@ -1308,7 +1308,7 @@ def _x_velocity_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
-'''
+
 def _y_velocity_Proj(field,data):
     """
     Overwrites density field
@@ -1316,10 +1316,10 @@ def _y_velocity_Proj(field,data):
     #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'y-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'y-velocity')]
+    if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'y-velocity')]
     else:
-        Proj_field = data[('gas', 'y-velocity')]
+        Proj_field = data[('ramses', 'y-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
@@ -1335,10 +1335,10 @@ def _z_velocity_Proj(field,data):
     #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'z-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'z-velocity')]
+    if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'z-velocity')]
     else:
-        Proj_field = data[('gas', 'z-velocity')]
+        Proj_field = data[('ramses', 'z-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
@@ -1403,4 +1403,3 @@ def _magz_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
-'''
