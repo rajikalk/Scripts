@@ -665,7 +665,7 @@ if args.make_frames_only == 'False':
                 proj_field_list_original = proj_field_list
                 proj_field_list = []
                 for field_tuple in proj_field_list_original:
-                    field_tuple = (field_tuple[0], 'Proj_'+field_tuple[1])
+                    field_tuple = (field_tuple[0], field_tuple[1]+'_Proj')
                     proj_field_list.append(field_tuple)
                 
                 proj_dict = {}
