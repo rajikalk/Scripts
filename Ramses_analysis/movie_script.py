@@ -788,9 +788,9 @@ if args.make_frames_only == 'False':
                 #proj_field_list =[simfo['field'], ('gas', vel1_field), ('gas', vel2_field), ('gas', vel3_field), ('gas', mag1_field), ('gas', mag2_field)]
                     
                 proj_root_rank = int(rank/len(proj_field_list))*len(proj_field_list)
-                proj_fn = region.save_as_dataset(fields=proj_field_list)
+                #proj_fn = region.save_as_dataset(fields=proj_field_list)
                 
-                proj_ds = yt.load(proj_fn)
+                #proj_ds = yt.load(proj_fn)
                 #proj = yt.ProjectionPlot(proj_ds, axis_ind, ('ramses', 'x-velocity'), method='integrate')
                 
                 #import pdb
