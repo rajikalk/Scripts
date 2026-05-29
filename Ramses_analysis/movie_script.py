@@ -10,9 +10,67 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import gc
 
+def parse_inputs():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-abs", "--absolute_image", help="do you want to get the absolute value of the image field?", default="False")
+    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
+    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
+    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
+    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", type=str, default="xz")
+    parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 50., type=float)
+    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
+    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
+    parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
+    parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
+    parser.add_argument("-pv", "--plot_velocity", help="would you like to annotate the velocity legend?", type=str, default="True")
+    parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
+    parser.add_argument("-pzl", "--plot_z_velocities", help="do you want to plot the z velocity?", type=str, default='False')
+    parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
+    parser.add_argument("-wr", "--working_rank", default=0, type=int)
+    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
+    parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
+    parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=str, default="")
+    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float)
+    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float)
+    parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
+    parser.add_argument("-cc", "--calculation_center", help="where would you like to calculate center positionn and velocity?", type=int, default=0)
+    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
+    parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
+    parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=250)
+    parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default='True')
+    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
+    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
+    parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
+    parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
+    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
+    parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='None')
+    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn velocity?", type=str, default='True')
+    parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
+    parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
+    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
+    parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
+    parser.add_argument("-use_L", "--use_angular_momentum", help="use disc angular momentum to find normal", default='False', type=str)
+    parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
+    parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
+    parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
+    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
+    parser.add_argument("-use_myf_short", "--use_my_ramses_field_short", help="is RAM is low, used the short version of the RAMSES yt fields", type=str, default="False")
+    parser.add_argument("-rm_bulk_vel", "--rm_bulk_velocity", help="remove bulk velocity from projections", type=str, default="False")
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+
+args = parse_inputs()
+if args.use_my_ramses_field_short == "True":
+    import my_ramses_fields_short as myf
+else:
+    import my_ramses_fields as myf
+    
 ax_str = 'z'
 axis_ind = 2
-'''
+
 def _Density_Proj(field,data):
     """
     Overwrites density field
@@ -145,65 +203,7 @@ def _magz_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
-'''
 
-def parse_inputs():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-abs", "--absolute_image", help="do you want to get the absolute value of the image field?", default="False")
-    parser.add_argument("-f", "--field", help="What field to you wish to plot?", default="Density")
-    parser.add_argument("-f_unit", "--field_unit", help="What units would you like to plot the field?", default="g/cm**3")
-    parser.add_argument("-div_by_thickness", "--divide_by_proj_thickness", help="Woudl you like to divide the field by the thickness of the projection?", default="True", type=str)
-    parser.add_argument("-ax", "--axis", help="Along what axis will the plots be made?", type=str, default="xz")
-    parser.add_argument("-dt", "--time_step", help="time step between movie frames", default = 50., type=float)
-    parser.add_argument("-sf", "--start_frame", help="initial frame to start with", default=0, type=int)
-    parser.add_argument("-pf", "--presink_frames", help="How many frames do you want before the formation of particles?", type=int, default = 0)
-    parser.add_argument("-pt", "--plot_time", help="If you want to plot one specific time, specify time in years", type=float)
-    parser.add_argument("-o", "--output_filename", help="What will you save your output files as?")
-    parser.add_argument("-pv", "--plot_velocity", help="would you like to annotate the velocity legend?", type=str, default="True")
-    parser.add_argument("-pvl", "--plot_velocity_legend", help="would you like to annotate the velocity legend?", type=str, default="False")
-    parser.add_argument("-pzl", "--plot_z_velocities", help="do you want to plot the z velocity?", type=str, default='False')
-    parser.add_argument("-vaf", "--velocity_annotation_frequency", help="how many velocity vectors do you want annotated across one side?", type=float, default=31.)
-    parser.add_argument("-wr", "--working_rank", default=0, type=int)
-    parser.add_argument("-at", "--annotate_time", help="Would you like to annotate the time that is plotted?", type=str, default="False")
-    parser.add_argument("-t", "--title", help="What title would you like the image to have? If left blank it won't show.", default="")
-    parser.add_argument("-mt", "--movie_times", help="What movies times would you like plotted?", type=str, default="")
-    parser.add_argument("-cmin", "--colourbar_min", help="Input a list with the colour bar ranges", type=float)
-    parser.add_argument("-cmax", "--colourbar_max", help="Input a list with the colour bar ranges", type=float)
-    parser.add_argument("-ic", "--image_center", help="where would you like to center the image?", type=int, default=0)
-    parser.add_argument("-cc", "--calculation_center", help="where would you like to calculate center positionn and velocity?", type=int, default=0)
-    parser.add_argument("-tf", "--text_font", help="What font text do you want to use?", type=int, default=10)
-    parser.add_argument("-pd", "--pickle_dump", help="Do you want to dump the plot sata as a pickle? If true, image won't be plotted", default=False)
-    parser.add_argument("-al", "--ax_lim", help="Want to set the limit of the axis to a nice round number?", type=int, default=250)
-    parser.add_argument("-apm", "--annotate_particles_mass", help="Do you want to annotate the particle mass?", default='True')
-    parser.add_argument("-stdv", "--standard_vel", help="what is the standard velocity you want to annotate?", type=float, default=5.0)
-    parser.add_argument("-end", "--end_time", help="What time do you want to the movie to finish at?", default=None, type=int)
-    parser.add_argument("-start", "--start_time", help="What time do you want to the movie to finish at?", default=0, type=int)
-    parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
-    parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
-    parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
-    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='None')
-    parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn velocity?", type=str, default='True')
-    parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
-    parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
-    parser.add_argument("-sink", "--sink_number", help="do you want to specific which sink to center on?", type=int, default=None)
-    parser.add_argument("-frames_only", "--make_frames_only", help="do you only want to make frames?", default='False', type=str)
-    parser.add_argument("-use_L", "--use_angular_momentum", help="use disc angular momentum to find normal", default='False', type=str)
-    parser.add_argument("-debug", "--debug_plotting", help="Do you want to debug why plotting is messing up", default='False', type=str)
-    parser.add_argument("-res", "--resolution", help="define image resolution", default=4096, type=int)
-    parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
-    parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
-    parser.add_argument("-use_myf_short", "--use_my_ramses_field_short", help="is RAM is low, used the short version of the RAMSES yt fields", type=str, default="False")
-    parser.add_argument("-rm_bulk_vel", "--rm_bulk_velocity", help="remove bulk velocity from projections", type=str, default="False")
-    parser.add_argument("files", nargs='*')
-    args = parser.parse_args()
-    return args
-
-args = parse_inputs()
-if args.use_my_ramses_field_short == "True":
-    import my_ramses_fields_short as myf
-else:
-    import my_ramses_fields as myf
 
 def sim_info(ds,args):
     """
