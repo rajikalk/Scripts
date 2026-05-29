@@ -512,7 +512,11 @@ if args.make_frames_only == 'False':
                 right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.5*x_width), center_pos[2].value+(0.5*y_width)], 'AU')
                 
             region = ds.region(center_pos, left_corner, right_corner)
-            del left_corner, right_corner
+            x_pos = ds.r[('gas', 'x')]
+            y_pos = ds.r[('gas', 'y')]
+            z_pos = ds.r[('gas', 'z')]
+            region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
+            del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
                 
             
@@ -1006,9 +1010,9 @@ for pickle_file in pickle_files:
                 plt.savefig("Test_793.jpg", format='jpg', bbox_inches='tight')
             if args.plot_velocity == 'True':
                 if args.plot_z_velocities == 'False':
-                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=None)#velz)
+                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel, Z_val=None)#velz)
                 else:
-                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, limits=[xlim, ylim], standard_vel=args.standard_vel, Z_val=velz)
+                    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=args.plot_velocity_legend, standard_vel=args.standard_vel, Z_val=velz)
             
             if args.debug_plotting != 'False':
                 plt.savefig("Test_796.jpg", format='jpg', bbox_inches='tight')

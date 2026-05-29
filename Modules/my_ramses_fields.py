@@ -29,26 +29,26 @@ com_vel_use_gas = True
 com_vel_use_part = True
 centred_sink_id = 0
 active_radius = yt.YTArray(np.nan, 'au')
-ax_str = 'z'
-axis_ind = 2
+left_corner = []
+right_corner = []
 
-def set_axis_str(x):
-    global ax_str
-    ax_str = x
-    return ax_str
+def set_left_corner(x):
+    global left_corner
+    left_corner = x
+    return left_corner
     
-def set_axis_ind(x):
-    global axis_ind
-    axis_ind = x
-    return axis_ind
+def set_right_corner(x):
+    global right_corner
+    right_corner = x
+    return right_corner
     
-def get_axis_str():
-    global ax_str
-    return ax_str
+def get_left_corner():
+    global left_corner
+    return left_corner
     
-def get_axis_ind():
-    global axis_ind
-    return axis_ind
+def get_right_corner():
+    global right_corner
+    return right_corner
 
 
 def set_centred_sink_id(x):
@@ -1283,8 +1283,10 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
     else:
         Proj_field = data[('gas', 'Density')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1301,8 +1303,10 @@ def _x_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
         Proj_field = data[('ramses', 'x-velocity')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1320,8 +1324,10 @@ def _y_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
         Proj_field = data[('ramses', 'y-velocity')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1339,8 +1345,10 @@ def _z_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
         Proj_field = data[('ramses', 'z-velocity')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1358,8 +1366,10 @@ def _magx_Proj(field,data):
         Proj_field = data[('gas', 'magx')]
     else:
         Proj_field = data[('gas', 'magx')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1377,8 +1387,10 @@ def _magy_Proj(field,data):
         Proj_field = data[('gas', 'magy')]
     else:
         Proj_field = data[('gas', 'magy')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
@@ -1396,8 +1408,10 @@ def _magz_Proj(field,data):
         Proj_field = data[('gas', 'magz')]
     else:
         Proj_field = data[('gas', 'magz')]
-        axis_pos = data[('gas', ax_str)]
-        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
     
     return Proj_field
