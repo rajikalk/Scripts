@@ -1277,7 +1277,6 @@ def _Density_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global axis_ind
     global ax_str
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
@@ -1291,7 +1290,7 @@ def _Density_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
-
+'''
 def _x_velocity_Proj(field,data):
     """
     Overwrites density field
@@ -1405,3 +1404,4 @@ def _magz_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
+'''
