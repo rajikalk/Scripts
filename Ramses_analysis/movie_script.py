@@ -395,14 +395,10 @@ if args.sink_number == None:
 else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
-try:
-    test_patch = ds.box(ds.domain_center-0.05*ds.domain_width, ds.domain_center+0.05*ds.domain_width)
-    sink_form_time = test_patch["sink_particle_form_time"][sink_id]
-    del test_patch
-    gc.collect()
-    print("Sink form time", sink_form_time)
-    #sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-except:
+sink_form_times = ds.r['sink_particle_form_time']
+if len(sink_form_times) > sink_id:
+    sink_form_time = sink_form_times[sink_id]
+else:
     print("TARGET SINK NOT FORMED YET")
     sys.exit()
 
