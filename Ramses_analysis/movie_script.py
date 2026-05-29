@@ -66,7 +66,8 @@ if args.use_my_ramses_field_short == "True":
     import my_ramses_fields_short as myf
 else:
     import my_ramses_fields as myf
-    
+   
+'''
 if args.axis == "xy":
     myf.set_axis_str('z')
     myf.set_axis_ind(2)
@@ -76,6 +77,7 @@ elif args.axis == "xz":
 else:
     myf.set_axis_str('x')
     myf.set_axis_ind(0)
+'''
 
 def sim_info(ds,args):
     """
