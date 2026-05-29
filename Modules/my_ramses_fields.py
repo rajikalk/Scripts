@@ -29,6 +29,27 @@ com_vel_use_gas = True
 com_vel_use_part = True
 centred_sink_id = 0
 active_radius = yt.YTArray(np.nan, 'au')
+ax_str = 'z'
+axis_ind = 2
+
+def set_axis_str(ax_str):
+    global ax_str
+    ax_str = ax_str
+    return ax_str
+    
+def set_axis_ind(axis_ind):
+    global axis_ind
+    axis_ind = axis_ind
+    return axis_ind
+    
+def get_axis_str():
+    global ax_str
+    return ax_str
+    
+def get_axis_ind():
+    global axis_ind
+    return axis_ind
+
 
 def set_centred_sink_id(x):
     """
