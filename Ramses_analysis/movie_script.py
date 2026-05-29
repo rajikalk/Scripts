@@ -395,7 +395,7 @@ if args.sink_number == None:
 else:
     sink_id = args.sink_number
 print("Center sink =", sink_id)
-sink_form_times = ds.r['sink_particle_form_time']
+sink_form_times = ds.r["sink_particle_form_time"]
 if len(sink_form_times) > sink_id:
     sink_form_time = sink_form_times[sink_id]
 else:
