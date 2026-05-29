@@ -71,7 +71,6 @@ else:
 ax_str = 'z'
 axis_ind = 2
 
-'''
 def _Density_Proj(field,data):
     """
     Overwrites density field
@@ -204,7 +203,6 @@ def _magz_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
-'''
 
 def sim_info(ds,args):
     """
