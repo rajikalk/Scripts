@@ -663,9 +663,12 @@ if args.make_frames_only == 'False':
                 
                 proj_field_list_original = proj_field_list
                 proj_field_list = []
+                proj_dict = {}
                 for field_tuple in proj_field_list_original:
                     field_tuple = ('gas', field_tuple[1]+'_Proj')
                     proj_field_list.append(field_tuple)
+                    proj_dict.update({field_tuple[-1]:[]})
+                proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
