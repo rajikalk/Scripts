@@ -1273,42 +1273,135 @@ def _Radial_Momentum_wrt_Center(field, data):
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
 
-def _Proj_x_velocity(field, data):
-    global east_vector
-
-    shape = np.shape(data['x'])
-    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
-    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
-    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
-    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+def _Density_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'Density')]
+    else:
+        Proj_field = data[('gas', 'Density')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
     
-    radial_vel = projected_vector(cell_vel,east_vector)
-    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
-    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
-    sign = np.dot(east_vector, radial_vel_unit.T)
+    return Proj_field
     
-    rv_mag = yt.YTArray(sign*radial_vel_mag, 'cm/s')
-    rv_mag = np.reshape(rv_mag, shape)
-    return rv_mag
+yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
 
-yt.add_field("Proj_x_velocity", function=_Proj_x_velocity, units="cm/s", sampling_type="local")
-
-def _Proj_y_velocity(field, data):
-    global north_vector
-
-    shape = np.shape(data['x'])
-    gas_velx = (data['x-velocity'].in_units('cm/s')-center_vel[0]).flatten()
-    gas_vely = (data['y-velocity'].in_units('cm/s')-center_vel[1]).flatten()
-    gas_velz = (data['z-velocity'].in_units('cm/s')-center_vel[2]).flatten()
-    cell_vel = yt.YTArray(np.array([gas_velx,gas_vely,gas_velz]).T)
+def _x_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'x-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'x-velocity')]
+    else:
+        Proj_field = data[('gas', 'x-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
     
-    radial_vel = projected_vector(cell_vel,north_vector)
-    radial_vel_mag = np.sqrt(np.sum(radial_vel**2, axis=1))
-    radial_vel_unit = (radial_vel.T/radial_vel_mag).T
-    sign = np.dot(north_vector, radial_vel_unit.T)
+    return Proj_field
+    
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
-    rv_mag = yt.YTArray(sign*radial_vel_mag, 'cm/s')
-    rv_mag = np.reshape(rv_mag, shape)
-    return rv_mag
+def _y_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'y-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'y-velocity')]
+    else:
+        Proj_field = data[('gas', 'y-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
-yt.add_field("Proj_y_velocity", function=_Proj_y_velocity, units="cm/s", sampling_type="local")
+def _z_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'z-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'z-velocity')]
+    else:
+        Proj_field = data[('gas', 'z-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+def _magx_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magx')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magx')]
+    else:
+        Proj_field = data[('gas', 'magx')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"gauss", sampling_type="local", force_override=True)
+
+def _magy_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magy')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magy')]
+    else:
+        Proj_field = data[('gas', 'magy')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"gauss", sampling_type="local", force_override=True)
+
+def _magz_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magz')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magz')]
+    else:
+        Proj_field = data[('gas', 'magz')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)

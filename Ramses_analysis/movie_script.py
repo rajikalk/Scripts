@@ -670,7 +670,7 @@ if args.make_frames_only == 'False':
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
-                    proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     import pdb
                     pdb.set_trace()
