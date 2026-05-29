@@ -496,20 +496,20 @@ if args.make_frames_only == 'False':
             if args.axis == 'xy':
                 axis_ind = 2
                 ax_str = 'z'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.75*args.slice_thickness)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width), center_pos[1].value-(0.5*y_width), center_pos[2].value-(0.5*args.slice_thickness)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width), center_pos[1].value+(0.5*y_width), center_pos[2].value+(0.5*args.slice_thickness)], 'AU')
                 
             elif args.axis == 'xz':
                 axis_ind = 1
                 ax_str = 'y'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*x_width), center_pos[1].value-(0.5*args.slice_thickness), center_pos[2].value-(0.5*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*x_width), center_pos[1].value+(0.5*args.slice_thickness), center_pos[2].value+(0.5*y_width)], 'AU')
                 
             elif args.axis == 'yz':
                 axis_ind = 0
                 ax_str = 'x'
-                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.5*x_width), center_pos[2].value-(0.5*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.5*x_width), center_pos[2].value+(0.5*y_width)], 'AU')
                 
             region = ds.region(center_pos, left_corner, right_corner)
             del left_corner, right_corner
@@ -669,6 +669,7 @@ if args.make_frames_only == 'False':
                     proj_field_list.append(field_tuple)
                     proj_dict.update({field_tuple[-1]:[]})
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
