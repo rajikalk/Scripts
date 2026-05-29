@@ -1290,7 +1290,7 @@ def _Density_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
-'''
+
 def _x_velocity_Proj(field,data):
     """
     Overwrites density field
@@ -1309,7 +1309,7 @@ def _x_velocity_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
-
+'''
 def _y_velocity_Proj(field,data):
     """
     Overwrites density field
