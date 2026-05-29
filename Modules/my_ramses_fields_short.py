@@ -10,14 +10,14 @@ from pyramses import rsink
 ax_str = 'z'
 axis_ind = 2
 
-def set_axis_str(ax_str):
+def set_axis_str(x):
     global ax_str
-    ax_str = ax_str
+    ax_str = x
     return ax_str
     
-def set_axis_ind(axis_ind):
+def set_axis_ind(x):
     global axis_ind
-    axis_ind = axis_ind
+    axis_ind = x
     return axis_ind
     
 def get_axis_str():
