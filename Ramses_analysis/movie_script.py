@@ -30,7 +30,7 @@ def _Density_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
 
 def _x_velocity_Proj(field,data):
     """
@@ -49,7 +49,7 @@ def _x_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _y_velocity_Proj(field,data):
     """
@@ -68,7 +68,7 @@ def _y_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _z_velocity_Proj(field,data):
     """
@@ -87,7 +87,7 @@ def _z_velocity_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
 
 def _magx_Proj(field,data):
     """
@@ -106,7 +106,7 @@ def _magx_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"gauss", sampling_type="local", force_override=True)
 
 def _magy_Proj(field,data):
     """
@@ -125,7 +125,7 @@ def _magy_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"gauss", sampling_type="local", force_override=True)
 
 def _magz_Proj(field,data):
     """
@@ -144,7 +144,7 @@ def _magz_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
 
 
 def parse_inputs():
