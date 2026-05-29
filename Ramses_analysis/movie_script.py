@@ -664,8 +664,8 @@ if args.make_frames_only == 'False':
                 #proj_ds = yt.load(proj_fn)
                 #proj = yt.ProjectionPlot(proj_ds, axis_ind, ('ramses', 'x-velocity'), method='integrate')
                 
-                #import pdb
-                #pdb.set_trace()
+                import pdb
+                pdb.set_trace()
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
