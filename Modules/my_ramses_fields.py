@@ -1295,13 +1295,12 @@ def _x_velocity_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global axis_ind
     global ax_str
-    if np.shape(data[('gas', 'x-velocity')]) == (16, 16, 16):
-        Proj_field = data[('gas', 'x-velocity')]
+    if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'x-velocity')]
     else:
-        Proj_field = data[('gas', 'x-velocity')]
+        Proj_field = data[('ramses', 'x-velocity')]
         axis_pos = data[('gas', ax_str)]
         unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
         Proj_field[unusable_dd_inds] = 0
