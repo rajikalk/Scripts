@@ -45,7 +45,7 @@ def parse_inputs():
     parser.add_argument("-proj_or", "--projection_orientation", help="Do you want to set the projection orientation? give as angle (in degrees) from positive y-axis", default=None, type=float)
     parser.add_argument("-thickness", "--slice_thickness", help="How thick would you like your yt_projections to be? default 300AU", type=float, default=500.)
     parser.add_argument("-use_disk", "--use_disk_angular_momentum", help="Do you want to use the disk angular momentum to define the normal vector for a projection?", default="False")
-    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default='None')
+    parser.add_argument("-wf", "--weight_field", help="Do you want to have a weighted projection plot?", type=str, default=None)
     parser.add_argument("-use_gas", "--use_gas_center_calc", help="Do you want to use gas when calculating the center position adn velocity?", type=str, default='True')
     parser.add_argument("-all_files", "--use_all_files", help="Do you want to make frames using all available files instead of at particular time steps?", type=str, default='False')
     parser.add_argument("-update_alim", "--update_ax_lim", help="Do you want to update the axes limits by taking away the center position values or not?", type=str, default='False')
@@ -366,7 +366,7 @@ if args.make_frames_only == 'False':
     CW.Barrier()
 
     if args.plot_time != None:
-        if args.weight_field == 'None':
+        if args.weight_field == None:
             weight_field = None
             pickle_file = save_dir + args.axis + '_' + args.field + '_thickness_' + str(int(args.slice_thickness)) + "_AU_movie_time_" + (str(args.plot_time)) + "_unweighted.pkl"
         else:
@@ -603,7 +603,7 @@ if args.make_frames_only == 'False':
             if args.use_angular_momentum != 'False':
                 region = yt.disk(center_pos, L, (np.sqrt((0.5*x_width)**2 + (0.5*y_width)), 'AU'), (args.slice_thickness/2, 'AU'))
                 
-            if args.weight_field == 'None':
+            if args.weight_field == None:
                 weight_field = None
             else:
                 weight_field = ('gas', args.weight_field)
