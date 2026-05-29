@@ -10,6 +10,143 @@ from mpi4py.MPI import COMM_WORLD as CW
 import pickle
 import gc
 
+ax_str = 'z'
+axis_ind = 2
+
+def _Density_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'Density')]
+    else:
+        Proj_field = data[('gas', 'Density')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _x_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'x-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'x-velocity')]
+    else:
+        Proj_field = data[('gas', 'x-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _y_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'y-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'y-velocity')]
+    else:
+        Proj_field = data[('gas', 'y-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _z_velocity_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'z-velocity')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'z-velocity')]
+    else:
+        Proj_field = data[('gas', 'z-velocity')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _magx_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magx')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magx')]
+    else:
+        Proj_field = data[('gas', 'magx')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _magy_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magy')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magy')]
+    else:
+        Proj_field = data[('gas', 'magy')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _magz_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    #global unusable_dd_inds
+    global axis_ind
+    global ax_str
+    if np.shape(data[('gas', 'magz')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'magz')]
+    else:
+        Proj_field = data[('gas', 'magz')]
+        axis_pos = data[('gas', ax_str)]
+        unusable_dd_inds = np.where((axis_pos<data.left_edge[axis_ind])|(axis_pos>data.right_edge[axis_ind]))[0]
+        Proj_field[unusable_dd_inds] = 0
+    
+    return Proj_field
+    
+yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+
 def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
@@ -490,16 +627,19 @@ if args.make_frames_only == 'False':
             
             if args.axis == 'xy':
                 axis_ind = 2
+                ax_str = 'z'
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*y_width), center_pos[2].value-(0.75*args.slice_thickness)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*y_width), center_pos[2].value+(0.75*args.slice_thickness)], 'AU')
                 
             elif args.axis == 'xz':
                 axis_ind = 1
+                ax_str = 'y'
                 left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
                 
             elif args.axis == 'yz':
                 axis_ind = 0
+                ax_str = 'x'
                 left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
                 
@@ -660,11 +800,10 @@ if args.make_frames_only == 'False':
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     proj_fn = region.save_as_dataset(filename=field[1]+'.h5', fields=[field])
                     proj_ds = yt.load(proj_fn)
-                    
-                    proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), method='integrate')
-                    
-                    #proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
+                    proj = yt.ProjectionPlot(proj_ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
+                    import pdb
+                    pdb.set_trace()
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
