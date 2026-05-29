@@ -677,11 +677,14 @@ if args.make_frames_only == 'False':
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     if args.weight_field == None and 'velocity' in field[1]:
-                        weight_field = ('gas', 'Density')
+                        weight_field = ('gas', 'cell_mass')
                     elif args.weight_field == None and 'velocity' not in field[1]:
                         weight_field = None
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
+                    if 'velocity' in field[1]:
+                        import pdb
+                        pdb.set_trace
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
