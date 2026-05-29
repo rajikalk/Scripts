@@ -734,7 +734,7 @@ if args.make_frames_only == 'False':
                     else:
                         magx = proj_dict[proj_dict_keys[1]]
                         magy = proj_dict[proj_dict_keys[2]]
-                del region
+                #del region
                 
                         
             elif args.use_angular_momentum != 'False':
