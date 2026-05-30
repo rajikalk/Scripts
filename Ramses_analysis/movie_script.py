@@ -547,6 +547,9 @@ if args.make_frames_only == 'False':
                 return Proj_field
     
             ds.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
+            
+            import pdb
+            pdb.set_trace()
 
             def _x_velocity_Proj(field,data):
                 """
