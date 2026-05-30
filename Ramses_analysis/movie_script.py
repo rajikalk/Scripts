@@ -518,6 +518,8 @@ if args.make_frames_only == 'False':
             y_pos = ds.r[('gas', 'y')]
             z_pos = ds.r[('gas', 'z')]
             region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
+            myf.set_left_corner(left_corner)
+            myf.set_right_corner(right_corner)
             del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
                 
@@ -689,9 +691,9 @@ if args.make_frames_only == 'False':
                     if args.weight_field == None and 'velocity' in field[1]:
                         weight_field = ('gas', 'cell_mass')
                     elif args.weight_field == None and 'velocity' not in field[1]:
-                        weight_field = None
                     '''
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='sum', center=center_pos)
+                    weight_field = None
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
                     if 'mag' in str(field):
                         if weight_field == None:
