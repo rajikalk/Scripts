@@ -27,7 +27,8 @@ com_pos_use_gas = True
 com_pos_use_part = True
 com_vel_use_gas = True
 com_vel_use_part = True
-centred_sink_id = 0
+centred_sink_id = 45
+projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
@@ -1272,21 +1273,27 @@ def _Radial_Momentum_wrt_Center(field, data):
     return radial_momentum
 
 yt.add_field("Radial_Momentum_wrt_Center", function=_Radial_Momentum_wrt_Center, units="g*cm/s", sampling_type="local")
-'''
+
 def _Density_Proj(field,data):
     """
     Overwrites density field
     """
+    #global centred_sink_id
+    #global projection_depth
     global left_corner
     global right_corner
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'Density')]
     else:
         Proj_field = data[('gas', 'Density')]
+        #sink_pos = [data[('gas', 'sink_particle_posx')][centred_sink_id].in_units(), data[('gas', 'sink_particle_posy')][centred_sink_id], data[('gas', 'sink_particle_posz')][centred_sink_id]]
+        #dx = data[('gas', 'x')] - sink_pos[0]
+        #dy = data[('gas', 'y')] - sink_pos[1]
+        #dz = data[('gas', 'z')] - sink_pos[2]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g/cm**3')
     
@@ -1307,7 +1314,7 @@ def _x_velocity_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
@@ -1329,7 +1336,7 @@ def _y_velocity_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
@@ -1351,7 +1358,7 @@ def _z_velocity_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
@@ -1373,7 +1380,7 @@ def _magx_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
@@ -1395,7 +1402,7 @@ def _magy_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
 
@@ -1417,11 +1424,10 @@ def _magz_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('gauss')
     
     return Proj_field
     
 yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
-'''

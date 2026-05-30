@@ -522,6 +522,169 @@ if args.make_frames_only == 'False':
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             
+            ################
+            '''
+            def _Density_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global centred_sink_id
+                #global projection_depth
+                global left_corner
+                global right_corner
+                if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
+                    Proj_field = data[('gas', 'Density')]
+                else:
+                    Proj_field = data[('gas', 'Density')]
+                    #sink_pos = [data[('gas', 'sink_particle_posx')][centred_sink_id].in_units(), data[('gas', 'sink_particle_posy')][centred_sink_id], data[('gas', 'sink_particle_posz')][centred_sink_id]]
+                    #dx = data[('gas', 'x')] - sink_pos[0]
+                    #dy = data[('gas', 'y')] - sink_pos[1]
+                    #dz = data[('gas', 'z')] - sink_pos[2]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('g/cm**3')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
+
+            def _x_velocity_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                global left_corner
+                global right_corner
+                if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
+                    Proj_field = data[('ramses', 'x-velocity')]
+                else:
+                    Proj_field = data[('ramses', 'x-velocity')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('cm/s')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+            def _y_velocity_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global unusable_dd_inds
+                global left_corner
+                global right_corner
+                if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
+                    Proj_field = data[('ramses', 'y-velocity')]
+                else:
+                    Proj_field = data[('ramses', 'y-velocity')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('cm/s')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+            def _z_velocity_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global unusable_dd_inds
+                global left_corner
+                global right_corner
+                if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
+                    Proj_field = data[('ramses', 'z-velocity')]
+                else:
+                    Proj_field = data[('ramses', 'z-velocity')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('cm/s')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+            def _magx_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global unusable_dd_inds
+                global left_corner
+                global right_corner
+                if np.shape(data[('gas', 'magx')]) == (16, 16, 16):
+                    Proj_field = data[('gas', 'magx')]
+                else:
+                    Proj_field = data[('gas', 'magx')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('gauss')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"gauss", sampling_type="local", force_override=True)
+
+            def _magy_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global unusable_dd_inds
+                global left_corner
+                global right_corner
+                if np.shape(data[('gas', 'magy')]) == (16, 16, 16):
+                    Proj_field = data[('gas', 'magy')]
+                else:
+                    Proj_field = data[('gas', 'magy')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('gauss')
+
+                return Proj_field
+                
+            yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"gauss", sampling_type="local", force_override=True)
+
+            def _magz_Proj(field,data):
+                """
+                Overwrites density field
+                """
+                #global unusable_dd_inds
+                global left_corner
+                global right_corner
+                if np.shape(data[('gas', 'magz')]) == (16, 16, 16):
+                    Proj_field = data[('gas', 'magz')]
+                else:
+                    Proj_field = data[('gas', 'magz')]
+                    x_pos = data[('gas', 'x')]
+                    y_pos = data[('gas', 'y')]
+                    z_pos = data[('gas', 'z')]
+                    unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+                    Proj_field[unusable_dd_inds] = 0
+                    Proj_field = Proj_field.in_units('gauss')
+                
+                return Proj_field
+                
+            yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
+            '''
+            
+            ################
+            
             
             if has_particles:
                 part_info = mym.get_particle_data(ds, axis=args.axis, sink_id=sink_id, region=region)
