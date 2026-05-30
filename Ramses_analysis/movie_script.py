@@ -676,17 +676,19 @@ if args.make_frames_only == 'False':
                     proj_dict.update({field_tuple[-1]:[]})
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 
+                if np.min(region['dx'][region_inds]) == np.max(region['dx'][region_inds]):
+                    proj_method ='sum'
+                else:
+                    proj_method = 'integrate'
+                
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     if args.weight_field == None and 'velocity' in field[1]:
                         weight_field = ('gas', 'cell_mass')
                     elif args.weight_field == None and 'velocity' not in field[1]:
                         weight_field = None
-                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method='integrate', center=center_pos)
+                    proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, data_source=region, method=proj_method, center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
-                    if 'velocity' in field[1]:
-                        import pdb
-                        pdb.set_trace
                     if 'mag' in str(field):
                         if weight_field == None:
                             if args.axis == 'xz':
@@ -728,6 +730,9 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].in_cgs())
                     if str(args.field) in field and 'velocity' in str(args.field):
                         proj_array = proj_array + com_vel[-1].in_units(args.field_unit).value
+                    if 'velocity' in field[1]:
+                        import pdb
+                        pdb.set_trace()
                         
                     sto.result_id = field[1]
                     sto.result = proj_array
