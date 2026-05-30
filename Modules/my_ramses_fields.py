@@ -1282,6 +1282,8 @@ def _Density_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'Density')]
     else:
+        import pdb
+        pdb.set_trace()
         Proj_field = data[('gas', 'Density')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
