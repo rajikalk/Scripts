@@ -1448,7 +1448,7 @@ def _cell_mass_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        Proj_field = Proj_field.in_units('gauss')
+        Proj_field = Proj_field.in_units('g')
     
     return Proj_field
     
