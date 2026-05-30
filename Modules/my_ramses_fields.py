@@ -1288,10 +1288,11 @@ def _Density_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
+yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**2", sampling_type="local", force_override=True)
 
 def _x_velocity_Proj(field,data):
     """
@@ -1308,10 +1309,11 @@ def _x_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _y_velocity_Proj(field,data):
     """
@@ -1329,10 +1331,11 @@ def _y_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _z_velocity_Proj(field,data):
     """
@@ -1350,10 +1353,11 @@ def _z_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _magx_Proj(field,data):
     """
@@ -1371,10 +1375,11 @@ def _magx_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"gauss", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magx_Proj"), function=_magx_Proj, units=r"gauss*cm", sampling_type="local", force_override=True)
 
 def _magy_Proj(field,data):
     """
@@ -1392,10 +1397,11 @@ def _magy_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-    
+        Proj_field = Proj_field*data['dx'].in_units('cm')
+
     return Proj_field
     
-yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"gauss", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magy_Proj"), function=_magy_Proj, units=r"gauss*cm", sampling_type="local", force_override=True)
 
 def _magz_Proj(field,data):
     """
@@ -1413,7 +1419,8 @@ def _magz_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<data.left_edge[0])&(x_pos>data.right_edge[0])&(y_pos<data.left_edge[1])&(y_pos>data.right_edge[1])&(z_pos<data.left_edge[2])&(z_pos>data.right_edge[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        Proj_field = Proj_field*data['dx'].in_units('cm')
     
     return Proj_field
     
-yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss", sampling_type="local", force_override=True)
+yt.add_field(("gas", "magz_Proj"), function=_magz_Proj, units=r"gauss*cm", sampling_type="local", force_override=True)
