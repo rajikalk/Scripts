@@ -1286,8 +1286,6 @@ def _Density_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        import pdb
-        pdb.set_trace()
         unusable_dd_inds = np.where((x_pos<left_corner[0])&(x_pos>right_corner[0])&(y_pos<left_corner[1])&(y_pos>right_corner[1])&(z_pos<left_corner[2])&(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field = Proj_field.in_units('g/cm**3')
