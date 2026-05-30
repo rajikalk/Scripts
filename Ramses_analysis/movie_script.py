@@ -830,7 +830,7 @@ if args.make_frames_only == 'False':
                 
                 #proj_ds = yt.load(proj_fn)
                 #proj = yt.ProjectionPlot(proj_ds, axis_ind, ('ramses', 'x-velocity'), method='integrate')
-                '''
+                
                 proj_field_list_original = proj_field_list
                 proj_field_list = []
                 proj_dict = {}
@@ -839,13 +839,9 @@ if args.make_frames_only == 'False':
                     proj_field_list.append(field_tuple)
                     proj_dict.update({field_tuple[-1]:[]})
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
-                '''
-        
                 
-                dd = ds.all_data()
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
-                    dd[field][unusable_inds] = 0
                     #weight_field = None
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method='integrate', center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
