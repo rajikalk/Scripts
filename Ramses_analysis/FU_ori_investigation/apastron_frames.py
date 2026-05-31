@@ -27,7 +27,7 @@ plt.rcParams['font.sans-serif'] = ['Arial']
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 7
+font_size = 6
 mym.set_global_font_size(font_size)
 
 
@@ -54,9 +54,9 @@ end_time = plot_times[-1]
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-G = gridspec.GridSpec(3,n_frames)#, height_ratios=[2, 3, 3])
+G = gridspec.GridSpec(3,n_frames, height_ratios=[2, 3, 3])
 axes_1 = plt.subplot(G[0, :])
-plt.subplots_adjust(wspace=-0.1)
+plt.subplots_adjust(wspace=-0.2)
 #plt.subplots_adjust(hspace=-0.00)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
@@ -136,8 +136,10 @@ for plot_time in plot_times:
         pvl = True
         
     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=pvl, Z_val=None, standard_vel=stdvel)
+    
+    part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
                 
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, standard_vel=stdvel)
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, standard_vel=0.5, particle_velocity=part_info['particle_velocity'])
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
