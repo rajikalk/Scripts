@@ -127,7 +127,7 @@ for plot_time in plot_times:
     movie_plot_pickle = "time_" + str(plot_time) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', args.axis, '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True']
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', args.axis, '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-res', '1028']
         
         subprocess.Popen(cmd).wait()
     tracer_pickle = "tracer_time_" + str(plot_time) + ".pkl"
