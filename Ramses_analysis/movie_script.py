@@ -513,8 +513,6 @@ if args.make_frames_only == 'False':
                 left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.5*x_width), center_pos[2].value-(0.5*y_width)], 'AU')
                 right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.5*x_width), center_pos[2].value+(0.5*y_width)], 'AU')
                 
-            import pdb
-            pdb.set_trace()
             region = ds.box(left_corner, right_corner)
             x_pos = ds.r[('gas', 'x')]
             y_pos = ds.r[('gas', 'y')]
