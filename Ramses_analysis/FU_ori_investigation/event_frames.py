@@ -115,7 +115,7 @@ axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
 axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
-plt.savefig("Event_"+str(event_it)+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+plt.savefig("Event_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
 plot_it = -1
 for plot_time in plot_times:
