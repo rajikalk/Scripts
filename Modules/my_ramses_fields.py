@@ -1317,6 +1317,7 @@ def _x_velocity_Proj(field,data):
     """
     global left_corner
     global right_corner
+    global density_threshold
     if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
@@ -1327,8 +1328,8 @@ def _x_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
-            import pdb
-            pdb.set_trace()
+            threshold_inds = np.where(data[('gas', 'Density')].in_units('g/cm**3')<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
+            Proj_field[threshold_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1342,6 +1343,7 @@ def _y_velocity_Proj(field,data):
     #global unusable_dd_inds
     global left_corner
     global right_corner
+    global density_threshold
     if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
@@ -1352,8 +1354,8 @@ def _y_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
-            import pdb
-            pdb.set_trace()
+            threshold_inds = np.where(data[('gas', 'Density')].in_units('g/cm**3')<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
+            Proj_field[threshold_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1367,6 +1369,7 @@ def _z_velocity_Proj(field,data):
     #global unusable_dd_inds
     global left_corner
     global right_corner
+    global density_threshold
     if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
@@ -1377,8 +1380,8 @@ def _z_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
-            import pdb
-            pdb.set_trace()
+            threshold_inds = np.where(data[('gas', 'Density')].in_units('g/cm**3')<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
+            Proj_field[threshold_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
