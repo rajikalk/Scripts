@@ -69,7 +69,7 @@ G = gridspec.GridSpec(3,int(n_frames/2))#,height_ratios=[1.5, 2, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(wspace=-0.4)
-plt.subplots_adjust(hspace=0.1)
+plt.subplots_adjust(hspace=0.09)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
@@ -100,7 +100,7 @@ for plot_time in plot_times:
     movie_plot_pickle = "time_" + str(float(plot_time)) +".pkl"
     if os.path.isfile(movie_plot_pickle) == False:
         #Make movie frame
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xz', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '15', '-res', '1028']
+        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', 'xz', '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-vaf', '15', '-res', '1028', 'wf', 'Density']
         
         subprocess.Popen(cmd).wait()
     
