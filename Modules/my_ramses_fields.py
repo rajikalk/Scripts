@@ -32,7 +32,7 @@ projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
-density_threshold = 1.e-15
+density_threshold = 0
 
 def set_density_threshold(x):
     global density_threshold

@@ -525,6 +525,9 @@ if args.make_frames_only == 'False':
             
             if args.use_density_threshold == "True":
                 myf.set_density_threshold(1.e-15)
+                dummy = region[('gas', 'Density_threshold_mask')]
+                import pdb
+                pdb.set_trace()
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             
