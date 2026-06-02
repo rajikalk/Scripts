@@ -69,7 +69,7 @@ G = gridspec.GridSpec(3,n_frames)#,height_ratios=[1.5, 2, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(wspace=-0.4)
-plt.subplots_adjust(hspace=0.03)
+plt.subplots_adjust(hspace=0.06)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
@@ -82,7 +82,7 @@ axes_1_twin.plot(particle_data['time'][start_ind:end_ind], rel_speed[start_ind:e
 #Plot accretion and separation. This should be loaded from a pickle
 
 axes_1.set_xlabel('Time', labelpad=-0.2, fontsize=font_size) #($yr$)
-axes_1.set_ylabel('Separation (au), fontsize=font_size')
+axes_1.set_ylabel('Separation (au)', fontsize=font_size)
 axes_1_twin.set_ylabel('Relative Speed (km/s)', fontsize=font_size)
 axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
