@@ -37,7 +37,7 @@ plt.rcParams['font.sans-serif'] = 'Arial'
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
-font_size = 10
+font_size = 9
 mym.set_global_font_size(font_size)
 
 
