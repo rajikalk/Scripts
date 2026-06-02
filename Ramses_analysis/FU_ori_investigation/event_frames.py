@@ -288,7 +288,7 @@ for plot_time in plot_times:
         yticklabels = ax.get_yticklabels()
         plt.setp(yticklabels, visible=False)
 
-    ax.set_xlabel('$'+args.axis[1]+'$ (AU)', fontsize=font_size, labelpad=-1)
+    ax.set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
     plt.savefig("Event_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
