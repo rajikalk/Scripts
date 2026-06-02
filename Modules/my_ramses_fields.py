@@ -32,7 +32,7 @@ projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
-density_threshold = 0
+density_threshold = 1.e-15
 
 def set_density_threshold(x):
     global density_threshold
@@ -388,6 +388,21 @@ def _Density(field,data):
     return density_arr
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local")
+
+def _Density_threshold_mask(field,data):
+    """
+    Overwrites density field
+    """
+    global density_threshold
+    dens_arr = data[('gas', 'Density')].in_units('g/cm**3')
+    mask_inds_0 = np.where(dens_arr<density_threshold)[0]
+    mask_inds_1 = np.where(dens_arr>density_threshold)[0]
+    mask_arr = dens_arr
+    mask_arr[mask_inds_0] = 0
+    mask_arr[mask_inds_1] = 1
+    return mask_arr
+
+yt.add_field("Density_threshold_mask", function=_Density_threshold_mask, units=r"", sampling_type="local")
 
 def _cell_mass(field,data):
     """
@@ -1328,8 +1343,7 @@ def _x_velocity_Proj(field,data):
         dens_arr = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
-        Proj_field[threshold_inds] = 0
+        Proj_field = Proj_field*data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1354,8 +1368,7 @@ def _y_velocity_Proj(field,data):
         dens_arr = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
-        Proj_field[threshold_inds] = 0
+        Proj_field = Proj_field*data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1380,8 +1393,7 @@ def _z_velocity_Proj(field,data):
         dens_arr = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
-        Proj_field[threshold_inds] = 0
+        Proj_field = Proj_field*data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
