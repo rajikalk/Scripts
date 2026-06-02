@@ -126,12 +126,12 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.99, 0.05, 0.015, 0.6])
+        cbar_ax = fig.add_axes([0.99, 0.02, 0.015, 0.6])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
-    #ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
+    ax.streamplot(X_image, Y_image, magx, magy, density=2, linewidth=0.25, arrowstyle='-', minlength=0.5, color='grey', zorder=2)
     pvl = False
     if plot_time == plot_times[-1]:
         pvl = True
