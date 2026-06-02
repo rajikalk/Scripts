@@ -115,7 +115,7 @@ for plot_time in plot_times:
     plot_time_ind = np.argmin(abs(particle_data['time'] - args_dict['time_real'].value))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
 
-    ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
+    ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, int(n_frames/2))])
     
     centre_ind = np.where(part_info['particle_tag']==45)[0]
     X_image = X_image - part_info['particle_position'][0][centre_ind]
