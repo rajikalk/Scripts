@@ -1328,6 +1328,8 @@ def _x_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
+            import pdb
+            pdb.set_trace()
             dens_arr = data[('gas', 'Density')].in_units('g/cm**3')
             threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
             Proj_field[threshold_inds] = 0
@@ -1355,6 +1357,8 @@ def _y_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
+            import pdb
+            pdb.set_trace()
             dens_arr = data[('gas', 'Density')].in_units('g/cm**3')
             threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
             Proj_field[threshold_inds] = 0
@@ -1382,6 +1386,8 @@ def _z_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         if density_threshold != None:
+            import pdb
+            pdb.set_trace()
             dens_arr = data[('gas', 'Density')].in_units('g/cm**3')
             threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
             Proj_field[threshold_inds] = 0
