@@ -32,6 +32,16 @@ projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
+density_threshold = None
+
+def set_density_threshold(x):
+    global density_threshold
+    density_threshold = x
+    return density_threshold
+    
+def get_density_threshold(x):
+    global density_threshold
+    return density_threshold
 
 def set_left_corner(x):
     global left_corner
@@ -1316,6 +1326,9 @@ def _x_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        if density_threshold != None:
+            import pdb
+            pdb.set_trace()
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1338,6 +1351,9 @@ def _y_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        if density_threshold != None:
+            import pdb
+            pdb.set_trace()
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1360,6 +1376,9 @@ def _z_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        if density_threshold != None:
+            import pdb
+            pdb.set_trace()
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field

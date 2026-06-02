@@ -57,6 +57,7 @@ def parse_inputs():
     parser.add_argument("-active_rad", "--active_radius", help="within what radius of the centered sink do you want to consider when using sink and gas for calculations", type=float, default=10000.0)
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-use_myf_short", "--use_my_ramses_field_short", help="is RAM is low, used the short version of the RAMSES yt fields", type=str, default="False")
+    parser.add_argument("-use_dens_threshold", "--use_density_threshold", type=str, default="False")
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -521,6 +522,10 @@ if args.make_frames_only == 'False':
             z_pos = ds.r[('gas', 'z')]
             region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
             unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+            
+            if args.use_density_threshold == True:
+                import pdb
+                pdb.set_trace()
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             
