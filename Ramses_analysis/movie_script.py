@@ -504,14 +504,14 @@ if args.make_frames_only == 'False':
             elif args.axis == 'xz':
                 axis_ind = 1
                 ax_str = 'y'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.75*args.slice_thickness), center_pos[2].value-(0.5*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.75*args.slice_thickness), center_pos[2].value+(0.5*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.75*x_width), center_pos[1].value-(0.5*args.slice_thickness), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.75*x_width), center_pos[1].value+(0.5*args.slice_thickness), center_pos[2].value+(0.75*y_width)], 'AU')
                 
             elif args.axis == 'yz':
                 axis_ind = 0
                 ax_str = 'x'
-                left_corner = yt.YTArray([center_pos[0].value-(0.75*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.5*y_width)], 'AU')
-                right_corner = yt.YTArray([center_pos[0].value+(0.75*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.5*y_width)], 'AU')
+                left_corner = yt.YTArray([center_pos[0].value-(0.5*args.slice_thickness), center_pos[1].value-(0.75*x_width), center_pos[2].value-(0.75*y_width)], 'AU')
+                right_corner = yt.YTArray([center_pos[0].value+(0.5*args.slice_thickness), center_pos[1].value+(0.75*x_width), center_pos[2].value+(0.75*y_width)], 'AU')
                 
             myf.set_left_corner(left_corner)
             myf.set_right_corner(right_corner)
