@@ -56,7 +56,7 @@ fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
 fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
 G = gridspec.GridSpec(3,n_frames)
 axes_1 = plt.subplot(G[0, :])
-plt.subplots_adjust(wspace=-0.3)
+plt.subplots_adjust(wspace=-0.4)
 #plt.subplots_adjust(hspace=-0.00)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
