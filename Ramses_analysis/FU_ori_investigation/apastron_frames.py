@@ -119,8 +119,7 @@ for plot_time in plot_times:
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
                 
-    if plot_it < n_frames:
-        plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
+    plot = ax.pcolormesh(X_image, Y_image, image, cmap=plt.cm.gist_heat, norm=LogNorm(vmin=cbar_lims[0], vmax=cbar_lims[1]), rasterized=True, zorder=1)
     plt.gca().set_aspect('equal')
                 
     if plot_it == n_frames-1:
