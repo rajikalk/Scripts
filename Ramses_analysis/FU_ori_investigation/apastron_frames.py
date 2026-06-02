@@ -69,7 +69,7 @@ G = gridspec.GridSpec(3,int(n_frames/2))#,height_ratios=[1.5, 2, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(wspace=-0.4)
-plt.subplots_adjust(hspace=0.15)
+plt.subplots_adjust(hspace=0.1)
             
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
@@ -136,7 +136,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([1, -0.1, 0.01, 0.69])
+        cbar_ax = fig.add_axes([1, 0, 0.15, 0.69])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
