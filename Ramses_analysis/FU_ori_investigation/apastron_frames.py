@@ -43,7 +43,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-plot_times = [3000, 4800, 6100, 7000, 7600, 8100, 8500, 8700]
+plot_times = [3000, 4800, 6100, 7000, 7600, 8100, 8450, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -56,7 +56,7 @@ print("finished reading in pickle")
 
 width = 30
 stdvel = 2
-n_frames = 4
+n_frames = 8
 cbar_lims = [1.e-15, 1.e-13]# [1.e-16, 5.e-14]
 start_time = plot_times[0]
 end_time = plot_times[-1]
@@ -65,7 +65,7 @@ end_time = plot_times[-1]
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.8*two_col_width))
 fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
-G = gridspec.GridSpec(3,n_frames)#,height_ratios=[1.5, 2, 2])
+G = gridspec.GridSpec(3,n_frames/2)#,height_ratios=[1.5, 2, 2])
 axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(wspace=-0.4)
