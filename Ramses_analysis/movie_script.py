@@ -523,7 +523,7 @@ if args.make_frames_only == 'False':
             region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
             unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
             
-            if args.use_density_threshold == True:
+            if args.use_density_threshold == "True":
                 import pdb
                 pdb.set_trace()
             #del left_corner, right_corner, x_pos, y_pos, z_pos
