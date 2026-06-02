@@ -55,7 +55,7 @@ file_open.close()
 print("finished reading in pickle")
 
 width = 30
-stdvel = 2
+stdvel = 3
 n_frames = 8
 cbar_lims = [1.e-15, 1.e-13]# [1.e-16, 5.e-14]
 start_time = plot_times[0]
@@ -109,8 +109,8 @@ for plot_time in plot_times:
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
     file.close()
     
-    velx = velx - np.mean(velx)
-    vely = vely - np.mean(vely)
+    #velx = velx - np.mean(velx)
+    #vely = vely - np.mean(vely)
     
     plot_time_ind = np.argmin(abs(particle_data['time'] - args_dict['time_real'].value))
     axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
