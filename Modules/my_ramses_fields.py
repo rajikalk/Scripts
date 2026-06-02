@@ -400,6 +400,7 @@ def _Density_threshold_mask(field,data):
     mask_arr = dens_arr
     mask_arr[mask_inds_0] = 0
     mask_arr[mask_inds_1] = 1
+    mask_arr = yt.YTArray(mask_arr.value, '')
     return mask_arr
 
 yt.add_field("Density_threshold_mask", function=_Density_threshold_mask, units=r"", sampling_type="local")
