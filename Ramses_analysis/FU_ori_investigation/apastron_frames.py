@@ -32,7 +32,7 @@ mym.set_global_font_size(font_size)
 
 
 #------------------------------------------------------
-plot_times = [3000, 4800, 6100, 7000, 7600, 8100, 8400, 8700]
+plot_times = [3000, 4800, 6100, 7000, 7600, 8100, 8500, 8700]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -52,7 +52,7 @@ end_time = plot_times[-1]
 
 
 plt.clf()
-fig = plt.figure(figsize=(two_col_width, 0.9*two_col_width))
+fig = plt.figure(figsize=(two_col_width, 0.85*two_col_width))
 fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
 G = gridspec.GridSpec(3,n_frames)#,height_ratios=[1.5, 2, 2])
 axes_1 = plt.subplot(G[0, :])
@@ -126,7 +126,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([0.95, 0.05, 0.015, 0.6])
+        cbar_ax = fig.add_axes([0.99, 0.05, 0.015, 0.6])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
