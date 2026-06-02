@@ -1329,7 +1329,7 @@ def _x_velocity_Proj(field,data):
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         threshold_inds = np.where(dens_arr<yt.YTQuantity(density_threshold, 'g/cm**3'))[0]
-            Proj_field[threshold_inds] = 0
+        Proj_field[threshold_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
