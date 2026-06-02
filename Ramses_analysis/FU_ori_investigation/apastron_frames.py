@@ -113,7 +113,7 @@ for plot_time in plot_times:
     #vely = vely - np.mean(vely)
     
     plot_time_ind = np.argmin(abs(particle_data['time'] - args_dict['time_real'].value))
-    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=20, color='g', alpha=0.5)
+    axes_1.scatter(particle_data['time'][plot_time_ind], particle_data['separation'][plot_time_ind], marker='o', s=50, color='g', alpha=0.5)
 
     ax = plt.subplot(G[int(plot_it/(n_frames/2))+1, np.remainder(plot_it, int(n_frames/2))])
     
@@ -136,7 +136,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         #Figure out colorbar
         #fig.subplots_adjust(bottom=0.0)
-        cbar_ax = fig.add_axes([1, 0.02, 0.015, 0.7])
+        cbar_ax = fig.add_axes([1, 0.02, 0.01, 0.69])
         cbar = fig.colorbar(plot, cax=cbar_ax)
         cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
