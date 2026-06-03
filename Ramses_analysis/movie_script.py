@@ -522,23 +522,17 @@ if args.make_frames_only == 'False':
             z_pos = ds.r[('gas', 'z')]
             region_inds = np.where((x_pos>left_corner[0])&(x_pos<right_corner[0])&(y_pos>left_corner[1])&(y_pos<right_corner[1])&(z_pos>left_corner[2])&(z_pos<right_corner[2]))[0]
             unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
-            '''
+            
             if args.use_density_threshold == "True":
-                myf.set_density_threshold(1.e-15)
-                dd = ds.all_data()
-                dummy = dd[('ramses', 'Density')]
-                dummy = dd[('gas', 'Density')]
-                dummy = dd[('gas', 'Density_threshold_mask')]
-                dummy = dd[('gas', 'x-velocity_Proj')]
-                dummy = dd[('gas', 'y-velocity_Proj')]
-                dummy = dd[('gas', 'z-velocity_Proj')]
-                dummy = region[('ramses', 'Density')]
-                dummy = region[('gas', 'Density')]
-                dummy = region[('gas', 'Density_threshold_mask')]
-                dummy = region[('gas', 'x-velocity_Proj')]
-                dummy = region[('gas', 'y-velocity_Proj')]
-                dummy = region[('gas', 'z-velocity_Proj')]
-            '''
+                import pdb
+                pdb.set_trace()
+                mask_array = region[('gas', 'Density')].value
+                zero_inds = np.where(region[('gas', 'Density')]<1.e-15)[0]
+                one_inds = np.where(region[('gas', 'Density')]>1.e-15)[0]
+                mask_array[zero_inds] = 0
+                mask_array[one_inds] = 1
+                myf.set_velocity_mask(mask_array)
+
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             

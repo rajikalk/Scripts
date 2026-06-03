@@ -32,6 +32,16 @@ projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
+velocity_mask = np.array([])
+
+def set_velocity_mask(x)
+    global velocity_mask
+    velocity_mask = x
+    return velocity_mask
+
+def get_velocity_mask(x)
+    global velocity_mask
+    return velocity_mask
 
 def set_left_corner(x):
     global left_corner
@@ -1306,6 +1316,7 @@ def _x_velocity_Proj(field,data):
     """
     global left_corner
     global right_corner
+    global velocity_mask
     if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
@@ -1315,6 +1326,9 @@ def _x_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        
+        if len(velocity_mask) > 0:
+            Proj_field = Proj_field*velocity_mask
         #num_dens = data[('gas', 'number_density')]
         #zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
         #Proj_field[zero_inds] = 0
