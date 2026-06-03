@@ -1353,7 +1353,7 @@ def _x_velocity_Proj_threshold(field,data):
     if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
-        Proj_field = data[('ramses', 'x-velocity_Proj')]
+        Proj_field = data[('gas', 'x-velocity_Proj')]
         dens_mask = data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field*dens_mask
         Proj_field = Proj_field.in_units('cm/s')
@@ -1393,7 +1393,7 @@ def _y_velocity_Proj_threshold(field,data):
     if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
-        Proj_field = data[('ramses', 'y-velocity_Proj')]
+        Proj_field = data[('gas', 'y-velocity_Proj')]
         dens_mask = data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field*dens_mask
         Proj_field = Proj_field.in_units('cm/s')
@@ -1434,7 +1434,7 @@ def _z_velocity_Proj_threshold(field,data):
     if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
-        Proj_field = data[('ramses', 'z-velocity_Proj')]
+        Proj_field = data[('gas', 'z-velocity_Proj')]
         dens_mask = data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field*dens_mask
         Proj_field = Proj_field.in_units('cm/s')
