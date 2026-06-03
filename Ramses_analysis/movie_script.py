@@ -967,8 +967,8 @@ for pickle_file in pickle_files:
             velx = np.nan_to_num(velx)
             vely = np.nan_to_num(vely)
             
-        velx = velx - np.mean(velx)
-        vely = vely - np.mean(vely)
+        #velx = velx - np.mean(velx)
+        #vely = vely - np.mean(vely)
         
         time_val = args_dict['time_val']
         
