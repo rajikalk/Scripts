@@ -1315,9 +1315,9 @@ def _x_velocity_Proj(field,data):
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        num_dens = data[('gas', 'number_density')]
-        zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
-        Proj_field[zero_inds] = 0
+        #num_dens = data[('gas', 'number_density')]
+        #zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
+        #Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
