@@ -1329,7 +1329,7 @@ def _dx_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "_dx_Proj"), function=_dx_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "dx_Proj"), function=_dx_Proj, units=r"cm", sampling_type="local", force_override=True)
 
 def _dy_Proj(field,data):
     """
@@ -1354,7 +1354,7 @@ def _dy_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "_dy_Proj"), function=_dy_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "dy_Proj"), function=_dy_Proj, units=r"cm", sampling_type="local", force_override=True)
 
 def _dz_Proj(field,data):
     """
@@ -1379,7 +1379,7 @@ def _dz_Proj(field,data):
     
     return Proj_field
     
-yt.add_field(("gas", "_dz_Proj"), function=_dz_Proj, units=r"cm", sampling_type="local", force_override=True)
+yt.add_field(("gas", "dz_Proj"), function=_dz_Proj, units=r"cm", sampling_type="local", force_override=True)
 
 def _x_velocity_Proj(field,data):
     """
