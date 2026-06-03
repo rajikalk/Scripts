@@ -1396,15 +1396,16 @@ def _x_velocity_Proj(field,data):
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'x-velocity')]
-        zero_inds = np.where(dens<density_threshold)[0]
+        cell_length = data[('gas', 'dx')].in_units('cm')
+        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
-        Proj_field = Proj_field.in_units('cm/s')
+        Proj_field = cell_length*Proj_field.in_units('cm/s')
     
     return Proj_field
     
-yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _y_velocity_Proj(field,data):
     """
@@ -1421,15 +1422,16 @@ def _y_velocity_Proj(field,data):
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'y-velocity')]
-        zero_inds = np.where(dens<density_threshold)[0]
+        cell_length = data[('gas', 'dy')].in_units('cm')
+        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
-        Proj_field = Proj_field.in_units('cm/s')
+        Proj_field = cell_length*Proj_field.in_units('cm/s')
     
     return Proj_field
     
-yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _z_velocity_Proj(field,data):
     """
@@ -1446,15 +1448,16 @@ def _z_velocity_Proj(field,data):
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         Proj_field = data[('ramses', 'z-velocity')]
-        zero_inds = np.where(dens<density_threshold)[0]
+        cell_length = data[('gas', 'dz')].in_units('cm')
+        zero_inds = np.where(dens.in_units('g/cm**3')<density_threshold)[0]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         Proj_field[zero_inds] = 0
-        Proj_field = Proj_field.in_units('cm/s')
+        Proj_field = cell_length*Proj_field.in_units('cm/s')
     
     return Proj_field
     
-yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm**2/s", sampling_type="local", force_override=True)
 
 def _magx_Proj(field,data):
     """
