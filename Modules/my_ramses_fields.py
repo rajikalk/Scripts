@@ -1295,10 +1295,6 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
     else:
         Proj_field = data[('gas', 'Density')]
-        #sink_pos = [data[('gas', 'sink_particle_posx')][centred_sink_id].in_units(), data[('gas', 'sink_particle_posy')][centred_sink_id], data[('gas', 'sink_particle_posz')][centred_sink_id]]
-        #dx = data[('gas', 'x')] - sink_pos[0]
-        #dy = data[('gas', 'y')] - sink_pos[1]
-        #dz = data[('gas', 'z')] - sink_pos[2]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
@@ -1321,10 +1317,12 @@ def _x_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
         dens = data[('gas', 'Density')]
-        Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
+        Proj_field = data[('ramses', 'x-velocity')]
+        import pdb
+        pdb.set_trace()
         zero_inds = np.where(dens<density_threshold)[0]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
