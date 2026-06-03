@@ -1321,16 +1321,14 @@ def _x_velocity_Proj(field,data):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
         dens = data[('gas', 'Density')]
-        if density_threshold != 0:
-            zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
+        zero_inds = np.where(dens<density_threshold)[0]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        if density_threshold != 0:
-            Proj_field[zero_inds] = 0
+        Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
