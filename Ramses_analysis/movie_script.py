@@ -958,6 +958,10 @@ for pickle_file in pickle_files:
         #X, Y, image, magx, magy, X_vel, Y_vel, velx, vely, xlim, ylim, has_particles, part_info, simfo, time_val, xabel, yabel = pickle.load(file)
         file.close()
         
+        if np.isnan(np.mean(velx)):
+            velx = np.nan_to_num(velx)
+            vely = np.nan_to_num(vely)
+        
         time_val = args_dict['time_val']
         
         if args.plot_time == None:
