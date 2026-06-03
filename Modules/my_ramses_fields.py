@@ -1329,7 +1329,6 @@ def _x_velocity_Proj(field,data):
     """
     global left_corner
     global right_corner
-    global density_threshold
     if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
@@ -1340,12 +1339,29 @@ def _x_velocity_Proj(field,data):
         dens_arr = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        Proj_field = Proj_field*data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
     
 yt.add_field(("gas", "x-velocity_Proj"), function=_x_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+
+def _x_velocity_Proj_threshold(field,data):
+    """
+    Overwrites density field
+    """
+    if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'x-velocity')]
+    else:
+        Proj_field = data[('ramses', 'x-velocity_Proj')]
+        dens_mask = data[('gas', 'Density_threshold_mask')]
+        Proj_field = Proj_field*dens_mask
+        Proj_field = Proj_field.in_units('cm/s')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "x-velocity_Proj_threshold"), function=_x_velocity_Proj_threshold, units=r"cm/s", sampling_type="local", force_override=True)
+
 
 def _y_velocity_Proj(field,data):
     """
@@ -1354,7 +1370,6 @@ def _y_velocity_Proj(field,data):
     #global unusable_dd_inds
     global left_corner
     global right_corner
-    global density_threshold
     if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
@@ -1365,12 +1380,28 @@ def _y_velocity_Proj(field,data):
         dens_arr = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        Proj_field = Proj_field*data[('gas', 'Density_threshold_mask')]
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
     
 yt.add_field(("gas", "y-velocity_Proj"), function=_y_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+def _y_velocity_Proj_threshold(field,data):
+    """
+    Overwrites density field
+    """
+    if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'y-velocity')]
+    else:
+        Proj_field = data[('ramses', 'y-velocity_Proj')]
+        dens_mask = data[('gas', 'Density_threshold_mask')]
+        Proj_field = Proj_field*dens_mask
+        Proj_field = Proj_field.in_units('cm/s')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "y-velocity_Proj_threshold"), function=_y_velocity_Proj_threshold, units=r"cm/s", sampling_type="local", force_override=True)
+
 
 def _z_velocity_Proj(field,data):
     """
@@ -1379,7 +1410,6 @@ def _z_velocity_Proj(field,data):
     #global unusable_dd_inds
     global left_corner
     global right_corner
-    global density_threshold
     if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
@@ -1396,6 +1426,23 @@ def _z_velocity_Proj(field,data):
     return Proj_field
     
 yt.add_field(("gas", "z-velocity_Proj"), function=_z_velocity_Proj, units=r"cm/s", sampling_type="local", force_override=True)
+
+def _z_velocity_Proj_threshold(field,data):
+    """
+    Overwrites density field
+    """
+    if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
+        Proj_field = data[('ramses', 'z-velocity')]
+    else:
+        Proj_field = data[('ramses', 'z-velocity_Proj')]
+        dens_mask = data[('gas', 'Density_threshold_mask')]
+        Proj_field = Proj_field*dens_mask
+        Proj_field = Proj_field.in_units('cm/s')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "z-velocity_Proj_threshold"), function=_z_velocity_Proj_threshold, units=r"cm/s", sampling_type="local", force_override=True)
+
 
 def _magx_Proj(field,data):
     """
