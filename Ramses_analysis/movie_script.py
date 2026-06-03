@@ -686,6 +686,7 @@ if args.make_frames_only == 'False':
                 if args.use_density_threshold != None:
                     proj_axis_field = [('gas', 'd'+perp_vel+'_Proj')]
                     proj = yt.ProjectionPlot(ds, axis_ind, proj_axis_field, width=(x_width,'au'), weight_field=weight_field, method='sum', center=center_pos)
+                    proj.set_buff_size([args.resolution, args.resolution])
                     thickness_arr = proj.frb.data[proj_axis_field[0]]
                 
                 proj_dict = {}
