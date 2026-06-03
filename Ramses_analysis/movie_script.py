@@ -959,6 +959,8 @@ for pickle_file in pickle_files:
         file.close()
         
         if np.isnan(np.mean(velx)):
+            velx[np.isinf(velx)] = np.nan
+            vely[np.isinf(vely)] = np.nan
             velx = np.nan_to_num(velx)
             vely = np.nan_to_num(vely)
         
