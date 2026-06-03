@@ -34,12 +34,12 @@ left_corner = []
 right_corner = []
 velocity_mask = np.array([])
 
-def set_velocity_mask(x)
+def set_velocity_mask(x):
     global velocity_mask
     velocity_mask = x
     return velocity_mask
 
-def get_velocity_mask(x)
+def get_velocity_mask(x):
     global velocity_mask
     return velocity_mask
 
