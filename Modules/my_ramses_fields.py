@@ -39,7 +39,7 @@ def set_velocity_mask(x):
     velocity_mask = x
     return velocity_mask
 
-def get_velocity_mask(x):
+def get_velocity_mask():
     global velocity_mask
     return velocity_mask
 
