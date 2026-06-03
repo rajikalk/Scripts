@@ -1306,6 +1306,81 @@ def _Density_Proj(field,data):
     
 yt.add_field(("gas", "Density_Proj"), function=_Density_Proj, units=r"g/cm**3", sampling_type="local", force_override=True)
 
+def _dx_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    global left_corner
+    global right_corner
+    global density_threshold
+    if np.shape(data[('gas', 'dx')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'dx')]
+    else:
+        dens = data[('gas', 'Density')]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        Proj_field = data[('gas', 'dx')]
+        zero_inds = np.where(dens<density_threshold)[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        Proj_field[unusable_dd_inds] = 0
+        Proj_field[zero_inds] = 0
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "_dx_Proj"), function=_dx_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _dy_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    global left_corner
+    global right_corner
+    global density_threshold
+    if np.shape(data[('gas', 'dy')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'dy')]
+    else:
+        dens = data[('gas', 'Density')]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        Proj_field = data[('gas', 'dy')]
+        zero_inds = np.where(dens<density_threshold)[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        Proj_field[unusable_dd_inds] = 0
+        Proj_field[zero_inds] = 0
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "_dy_Proj"), function=_dy_Proj, units=r"cm", sampling_type="local", force_override=True)
+
+def _dz_Proj(field,data):
+    """
+    Overwrites density field
+    """
+    global left_corner
+    global right_corner
+    global density_threshold
+    if np.shape(data[('gas', 'dz')]) == (16, 16, 16):
+        Proj_field = data[('gas', 'dz')]
+    else:
+        dens = data[('gas', 'Density')]
+        x_pos = data[('gas', 'x')]
+        y_pos = data[('gas', 'y')]
+        z_pos = data[('gas', 'z')]
+        Proj_field = data[('gas', 'dz')]
+        zero_inds = np.where(dens<density_threshold)[0]
+        unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
+        Proj_field[unusable_dd_inds] = 0
+        Proj_field[zero_inds] = 0
+        Proj_field = Proj_field.in_units('cm')
+    
+    return Proj_field
+    
+yt.add_field(("gas", "_dz_Proj"), function=_dz_Proj, units=r"cm", sampling_type="local", force_override=True)
+
 def _x_velocity_Proj(field,data):
     """
     Overwrites density field
