@@ -1322,7 +1322,7 @@ def _x_velocity_Proj(field,data):
     else:
         if density_threshold != 0:
             dens = data[('gas', 'Density')]
-            zero_inds = np.where(dummy<density_threshold)[0]
+            zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
@@ -1349,7 +1349,7 @@ def _y_velocity_Proj(field,data):
     else:
         if density_threshold != 0:
             dens = data[('gas', 'Density')]
-            zero_inds = np.where(dummy<density_threshold)[0]
+            zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'y-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
@@ -1376,7 +1376,7 @@ def _z_velocity_Proj(field,data):
     else:
         if density_threshold != 0:
             dens = data[('gas', 'Density')]
-            zero_inds = np.where(dummy<density_threshold)[0]
+            zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'z-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
