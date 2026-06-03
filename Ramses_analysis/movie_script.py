@@ -976,10 +976,6 @@ for pickle_file in pickle_files:
                 part_ind = np.where(part_info['particle_tag']==sink_id)[0][0]
                 velx = velx - part_info['particle_velocity'][0][part_ind]
                 vely = vely - part_info['particle_velocity'][1][part_ind]
-                
-            if args.image_center == 1:
-                velx = velx - np.mean(velx)
-                vely = vely - np.mean(vely)
                   
             has_particles = args_dict['has_particles']
             xabel = args_dict['xabel']
