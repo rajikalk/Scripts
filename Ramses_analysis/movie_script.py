@@ -697,7 +697,7 @@ if args.make_frames_only == 'False':
                     proj_dict.update({field_tuple[-1]:[]})
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
                 
-                proj_field_list = [('ramses', 'Density')] + [('gas', 'Density')] + [('gas', 'Density_threshold_mask')] + [('gas', 'x-velocity_Proj_threshold')] + [('gas', 'z-velocity_Proj_threshold')] + [('gas', 'magx_Proj')] + [('gas', 'magz_Proj')]
+                proj_field_list = [('ramses', 'Density')] + [('gas', 'Density')] + [('gas', 'Density_threshold_mask')] + [('gas', 'x-velocity_Proj')] + [('gas', 'x-velocity_Proj_threshold')] + [('gas', 'z-velocity_Proj_threshold')] + [('gas', 'magx_Proj')] + [('gas', 'magz_Proj')]
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
