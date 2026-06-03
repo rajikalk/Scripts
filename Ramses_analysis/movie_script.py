@@ -693,7 +693,7 @@ if args.make_frames_only == 'False':
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
                     #weight_field = None
                     method='integrate'
-                    if 'velocity' in field and args.use_density_threshold != None:
+                    if 'velocity' in field[1] and args.use_density_threshold != None:
                         method = 'sum'
                     proj = yt.ProjectionPlot(ds, axis_ind, field, width=(x_width,'au'), weight_field=weight_field, method=method, center=center_pos)
                     proj.set_buff_size([args.resolution, args.resolution])
