@@ -1324,12 +1324,12 @@ def _x_velocity_Proj(field,data):
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
+        dummy = data[('ramses', 'Density')]
+        dummy = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         
         if len(velocity_mask) > 0:
-            dummy = data[('ramses', 'Density')]
-            dummy = data[('gas', 'Density')]
             Proj_field = Proj_field*velocity_mask
         #num_dens = data[('gas', 'number_density')]
         #zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
