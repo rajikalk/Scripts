@@ -32,16 +32,16 @@ projection_depth = yt.YTQuantity(30, 'au')
 active_radius = yt.YTArray(np.nan, 'au')
 left_corner = []
 right_corner = []
-velocity_mask = np.array([])
+density_threshold = 0
 
-def set_velocity_mask(x):
-    global velocity_mask
-    velocity_mask = x
-    return velocity_mask
+def set_density_threshold(x):
+    global density_threshold
+    density_threshold = x
+    return density_threshold
 
-def get_velocity_mask():
-    global velocity_mask
-    return velocity_mask
+def get_density_threshold():
+    global density_threshold
+    return density_threshold
 
 def set_left_corner(x):
     global left_corner
@@ -1316,23 +1316,21 @@ def _x_velocity_Proj(field,data):
     """
     global left_corner
     global right_corner
-    global velocity_mask
+    global density_threshold
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
-        dummy = data[('gas', 'Density')]
+        if density_threshold != 0:
+            dens = data[('gas', 'Density')]
+            zero_inds = np.where(dummy<density_threshold)[0]
         Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
-        
-        if len(velocity_mask) > 0:
-            Proj_field = Proj_field*velocity_mask
-        #num_dens = data[('gas', 'number_density')]
-        #zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
-        #Proj_field[zero_inds] = 0
+        if density_threshold != 0:
+            Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1343,18 +1341,23 @@ def _y_velocity_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global left_corner
     global right_corner
+    global density_threshold
     if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
+        if density_threshold != 0:
+            dens = data[('gas', 'Density')]
+            zero_inds = np.where(dummy<density_threshold)[0]
         Proj_field = data[('ramses', 'y-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        if density_threshold != 0:
+            Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field
@@ -1365,18 +1368,23 @@ def _z_velocity_Proj(field,data):
     """
     Overwrites density field
     """
-    #global unusable_dd_inds
     global left_corner
     global right_corner
+    global density_threshold
     if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
+        if density_threshold != 0:
+            dens = data[('gas', 'Density')]
+            zero_inds = np.where(dummy<density_threshold)[0]
         Proj_field = data[('ramses', 'z-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
+        if density_threshold != 0:
+            Proj_field[zero_inds] = 0
         Proj_field = Proj_field.in_units('cm/s')
     
     return Proj_field

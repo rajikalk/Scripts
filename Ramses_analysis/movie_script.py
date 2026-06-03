@@ -524,12 +524,7 @@ if args.make_frames_only == 'False':
             unusable_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
             
             if args.use_density_threshold == "True":
-                mask_array = region[('gas', 'Density')].value
-                zero_inds = np.where(region[('gas', 'Density')]<1.e-15)[0]
-                one_inds = np.where(region[('gas', 'Density')]>1.e-15)[0]
-                mask_array[zero_inds] = 0
-                mask_array[one_inds] = 1
-                myf.set_velocity_mask(mask_array)
+                myf.set_density_threshold(1.e-15)
 
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
