@@ -525,9 +525,19 @@ if args.make_frames_only == 'False':
             
             if args.use_density_threshold == "True":
                 myf.set_density_threshold(1.e-15)
+                dd = ds.all_data()
+                dummy = dd[('ramses', 'Density')]
+                dummy = dd[('gas', 'Density')]
+                dummy = dd[('gas', 'Density_threshold_mask')]
+                dummy = dd[('gas', 'x-velocity_Proj')]
+                dummy = dd[('gas', 'y-velocity_Proj')]
+                dummy = dd[('gas', 'z-velocity_Proj')]
+                dummy = region[('ramses', 'Density')]
+                dummy = region[('gas', 'Density')]
                 dummy = region[('gas', 'Density_threshold_mask')]
-                import pdb
-                pdb.set_trace()
+                dummy = region[('gas', 'x-velocity_Proj')]
+                dummy = region[('gas', 'y-velocity_Proj')]
+                dummy = region[('gas', 'z-velocity_Proj')]
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             

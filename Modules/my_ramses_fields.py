@@ -1312,10 +1312,6 @@ def _Density_Proj(field,data):
         Proj_field = data[('gas', 'Density')]
     else:
         Proj_field = data[('gas', 'Density')]
-        #sink_pos = [data[('gas', 'sink_particle_posx')][centred_sink_id].in_units(), data[('gas', 'sink_particle_posy')][centred_sink_id], data[('gas', 'sink_particle_posz')][centred_sink_id]]
-        #dx = data[('gas', 'x')] - sink_pos[0]
-        #dy = data[('gas', 'y')] - sink_pos[1]
-        #dz = data[('gas', 'z')] - sink_pos[2]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
