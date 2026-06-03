@@ -525,6 +525,7 @@ if args.make_frames_only == 'False':
             
             if args.use_density_threshold == "True":
                 myf.set_density_threshold(1.e-15)
+                '''
                 dd = ds.all_data()
                 dummy = dd[('ramses', 'Density')]
                 dummy = dd[('gas', 'Density')]
@@ -538,6 +539,7 @@ if args.make_frames_only == 'False':
                 dummy = region[('gas', 'x-velocity_Proj')]
                 dummy = region[('gas', 'y-velocity_Proj')]
                 dummy = region[('gas', 'z-velocity_Proj')]
+                '''
             #del left_corner, right_corner, x_pos, y_pos, z_pos
             gc.collect()
             
@@ -694,6 +696,8 @@ if args.make_frames_only == 'False':
                     proj_field_list.append(field_tuple)
                     proj_dict.update({field_tuple[-1]:[]})
                 proj_dict_keys = str(proj_dict.keys()).split("['")[1].split("']")[0].split("', '")
+                
+                proj_field_list = [proj_field_list[0]] + [('gas', 'Density_threshold_mask')] +proj_field_list[1:]
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
