@@ -686,9 +686,7 @@ if args.make_frames_only == 'False':
                 if args.use_density_threshold != None:
                     proj_axis_field = [('gas', 'd'+perp_vel+'_Proj')]
                     proj = yt.ProjectionPlot(ds, axis_ind, proj_axis_field, width=(x_width,'au'), weight_field=weight_field, method='integrate', center=center_pos)
-                    import pdb
-                    pdb.set_trace()
-                    
+                    thickness_arr = proj.frb.data[proj_axis_field[0]]
                 
                 proj_dict = {}
                 for sto, field in yt.parallel_objects(proj_field_list, storage=proj_dict, njobs=len(proj_field_list)):
@@ -723,6 +721,15 @@ if args.make_frames_only == 'False':
                                 proj_array = np.array(proj.frb.data[field].T.in_units(args.field_unit))
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
+                    elif 'velocity' in field[1] and args.use_density_threshold != None:
+                        if weight_field == None:
+                            if args.axis == 'xz':
+                                proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness_arr.in_units('cm'))
+                            else:
+                                proj_array = np.array(proj.frb.data[field].in_cgs()/thickness_arr.in_units('cm'))
+                        else:
+                            import pdb
+                            pdb.set_trace()
                     else:
                         if weight_field == None:
                             if args.axis == 'xz':
