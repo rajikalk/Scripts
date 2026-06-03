@@ -726,6 +726,8 @@ if args.make_frames_only == 'False':
                             else:
                                 proj_array = np.array(proj.frb.data[field].in_units(args.field_unit))
                     elif 'velocity' in field[1] and args.use_density_threshold != None:
+                        import pdb
+                        pdb.set_trace()
                         if weight_field == None:
                             if args.axis == 'xz':
                                 proj_array = np.array(proj.frb.data[field].T.in_cgs()/thickness_arr.in_units('cm'))
