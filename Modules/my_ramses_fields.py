@@ -1320,8 +1320,8 @@ def _x_velocity_Proj(field,data):
     if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
+        dens = data[('gas', 'Density')]
         if density_threshold != 0:
-            dens = data[('gas', 'Density')]
             zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
@@ -1347,8 +1347,8 @@ def _y_velocity_Proj(field,data):
     if np.shape(data[('ramses', 'y-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'y-velocity')]
     else:
+        dens = data[('gas', 'Density')]
         if density_threshold != 0:
-            dens = data[('gas', 'Density')]
             zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'y-velocity')]
         x_pos = data[('gas', 'x')]
@@ -1374,8 +1374,8 @@ def _z_velocity_Proj(field,data):
     if np.shape(data[('ramses', 'z-velocity')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'z-velocity')]
     else:
+        dens = data[('gas', 'Density')]
         if density_threshold != 0:
-            dens = data[('gas', 'Density')]
             zero_inds = np.where(dens<density_threshold)[0]
         Proj_field = data[('ramses', 'z-velocity')]
         x_pos = data[('gas', 'x')]
