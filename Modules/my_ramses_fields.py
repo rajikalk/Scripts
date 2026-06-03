@@ -1317,15 +1317,14 @@ def _x_velocity_Proj(field,data):
     global left_corner
     global right_corner
     global velocity_mask
-    if np.shape(data[('ramses', 'x-velocity')]) == (16, 16, 16):
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('ramses', 'x-velocity')]
     else:
+        dummy = data[('gas', 'Density')]
         Proj_field = data[('ramses', 'x-velocity')]
         x_pos = data[('gas', 'x')]
         y_pos = data[('gas', 'y')]
         z_pos = data[('gas', 'z')]
-        dummy = data[('ramses', 'Density')]
-        dummy = data[('gas', 'Density')]
         unusable_dd_inds = np.where((x_pos<left_corner[0])|(x_pos>right_corner[0])|(y_pos<left_corner[1])|(y_pos>right_corner[1])|(z_pos<left_corner[2])|(z_pos>right_corner[2]))[0]
         Proj_field[unusable_dd_inds] = 0
         
