@@ -1328,6 +1328,8 @@ def _x_velocity_Proj(field,data):
         Proj_field[unusable_dd_inds] = 0
         
         if len(velocity_mask) > 0:
+            dummy = data[('ramses', 'Density')]
+            dummy = data[('gas', 'Density')]
             Proj_field = Proj_field*velocity_mask
         #num_dens = data[('gas', 'number_density')]
         #zero_inds = np.where(num_dens.in_units('1/cm**3')<1.e30)[0]
