@@ -1313,7 +1313,7 @@ def _dx_Proj(field,data):
     global left_corner
     global right_corner
     global density_threshold
-    if np.shape(data[('gas', 'dx')]) == (16, 16, 16):
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'dx')]
     else:
         dens = data[('gas', 'Density')]
@@ -1338,7 +1338,7 @@ def _dy_Proj(field,data):
     global left_corner
     global right_corner
     global density_threshold
-    if np.shape(data[('gas', 'dy')]) == (16, 16, 16):
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'dy')]
     else:
         dens = data[('gas', 'Density')]
@@ -1363,7 +1363,7 @@ def _dz_Proj(field,data):
     global left_corner
     global right_corner
     global density_threshold
-    if np.shape(data[('gas', 'dz')]) == (16, 16, 16):
+    if np.shape(data[('gas', 'Density')]) == (16, 16, 16):
         Proj_field = data[('gas', 'dz')]
     else:
         dens = data[('gas', 'Density')]
