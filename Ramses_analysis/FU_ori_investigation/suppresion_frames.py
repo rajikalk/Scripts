@@ -247,7 +247,7 @@ for plot_time in plot_times:
             part_color = [part_color[-1]]
         
     #Get unit velocity:
-    part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
+    #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
         
     
     mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=stdvel, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1)
