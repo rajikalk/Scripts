@@ -44,7 +44,7 @@ mym.set_global_font_size(font_size)
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
 burst_bounds = [[], [5575, 5635], [6580, 6625], [7295, 7309], [7850, 7858]]
-cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [2.e-15, 2.e-13]]
+cbar_lims_all = [[], [1.e-15, 1.e-13], [1.e-15, 1.e-13], [2.e-15, 2.e-13], [2.e-15, 2.e-13]]
 cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
@@ -205,7 +205,7 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         cbar_ax = fig.add_axes([0.90, 0.267, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        if event_it == 5:
+        if event_it > 3:
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size, y=0.35)
         else:
             cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
