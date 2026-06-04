@@ -100,7 +100,7 @@ axes_1_twin = axes_1.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
-axes_1.legend(lns, labs, loc='upper left')
+axes_1.legend(lns, labs, loc='lower right')
             
 #Plot accretion and separation. This should be loaded from a pickle
 
