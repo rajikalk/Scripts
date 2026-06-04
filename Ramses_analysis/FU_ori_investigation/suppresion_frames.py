@@ -179,6 +179,7 @@ for plot_time in plot_times:
     #get relative velocity
     if os.path.isfile(part_info_pickle) == False:
         sink_id = int(part_info['particle_tag'][-1].value)
+        files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+event_it+'/data/info*')
         ds = yt.load(files[-1], units_override=units_override)
         sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         usable_files = mym.find_files([plot_time], files, sink_form_time, sink_id, verbatim=True)
