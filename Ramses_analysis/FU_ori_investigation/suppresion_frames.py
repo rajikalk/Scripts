@@ -205,7 +205,10 @@ for plot_time in plot_times:
     if plot_it == n_frames-1:
         cbar_ax = fig.add_axes([0.90, 0.267, 0.015, 0.256])
         cbar = fig.colorbar(plot, cax=cbar_ax)
-        cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
+        if event_it == 5:
+            cbar.set_label(r"    Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
+        else:
+            cbar.set_label(r"Density (g$\,$cm$^{-3}$)", labelpad=-8, rotation=270, size=font_size)
         cbar_ticks = cbar.ax.yaxis.get_ticklabels()[2].set_visible(False)
                 
     if plot_it == n_frames-1:
