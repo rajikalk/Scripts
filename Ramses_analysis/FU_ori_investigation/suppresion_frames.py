@@ -213,6 +213,9 @@ for plot_time in plot_times:
     else:
         plot_velocity_legend = False
 
+    import pdb
+    pdb.set_trace()
+
     mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
