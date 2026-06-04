@@ -140,10 +140,10 @@ for plot_time in plot_times:
     #tracer_data = pickle.load(file)
     #file.close()
     
-    if event_it == 2:
-        usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
-    else:
-        usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
+    #if event_it == 2:
+    #    usable_inds = np.where(tracer_data['burst_positions'][1]>-5)[0]
+    #else:
+    #    usable_inds = np.arange(len(tracer_data['burst_positions'][1]))
 
     ax = plt.subplot(G[int(plot_it/n_frames)+1, np.remainder(plot_it, n_frames)])
     ax.set_aspect('equal')
