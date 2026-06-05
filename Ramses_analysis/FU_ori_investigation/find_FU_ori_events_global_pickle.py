@@ -25,6 +25,7 @@ global_pickle = "/home/100/rlk100/gdata/RAMSES/Low_res_pickles/particle_data_glo
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
+print('loaded particle data')
 
 age = yt.YTArray(particle_data['time'])
 mass = yt.YTArray(particle_data['mass']).T[1]
@@ -85,6 +86,8 @@ for mass_val in mass:
         y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
         radius = gradient*mass_val + y_intercept
         rstar_barrafe.append(radius)
+        
+print('calculated luminosity and radii of protostars')
 
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
 lacc = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe).in_units('cm')
@@ -120,6 +123,8 @@ plt.ylabel('Ltot')
 plt.savefig('Ltot_evol_zoom.png')
 
 plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.016646496952, 13379.528082296252, 13908.540377408266, 14625.588010121137, 15691.680855810642, 15891.27923379466, 17353.72329491377, 26899.01125465706, 29443.443914979696] #14154.07486982271
+
+print('starting to make multiplot of events')
 
 plt.clf()
 fig, axs = plt.subplots(ncols=4, nrows=3, figsize=(two_col_width, 1.0*two_col_width), sharey=True)
