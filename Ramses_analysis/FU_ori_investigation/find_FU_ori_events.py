@@ -122,7 +122,7 @@ for sink_file in sink_files:
                 plt.ylabel('max L diff over 100 yr (log)')
                 plt.savefig('L_diff_Sink_'+str(sink_it)+'.png')
                 print("plotted L diff history for sink", sink_it, "on rank", rank)
-                cors_file = open('best_cors_'_str(rank)'.pkl', 'wb')
+                cors_file = open('best_cors_'+str(rank)+'.pkl', 'wb')
                 pickle.dump((np.array(best_cors)), cors_file)
                 cors_file.close()
                 
