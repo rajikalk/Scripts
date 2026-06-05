@@ -8,8 +8,8 @@ from mpi4py.MPI import COMM_WORLD as CW
 import scipy.interpolate as interp
 import pickle
 
-lsun = 3.828e26*1e7 # solar luminosity in erg
-FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
+lsun = 3.828e26*1.e7 # solar luminosity in erg
+FU_temp = np.concatenate(np.zeros(20), np.ones(80))
 time_window = 80
 
 rank = CW.Get_rank()
