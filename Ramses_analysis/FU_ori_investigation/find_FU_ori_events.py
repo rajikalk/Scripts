@@ -113,7 +113,7 @@ for sink_file in sink_files:
                             ax1.legend()
                             plt.savefig('Sink_' + str(sink_it) + '_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
                             print("Found potential match for sink", sink_it, "at age", age[time_it])
-                            best_cors.append([sink_it, time_it, np.median(cor)])
+                            best_cors.append([sink_it, age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight'), np.median(cor)])
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
