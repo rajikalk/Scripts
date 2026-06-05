@@ -29,12 +29,14 @@ except:
 #    print('sink_files:', sink_files)
 max_age=150000
 rit = -1
+sink_it = -1
 for sink_file in sink_files:
+    sink_it = sink_it + 1
     rit = rit + 1
     if rit == size:
         rit = 0
     if rank == rit:
-        if os.path.isfile('L_diff_Sink_'+sink_file.split('sink_')[-1].split('/')[0]+'.png') == False:
+        if os.path.isfile('L_diff_Sink_'+str(sink_it)+'.png') == False:
             if use_pickles == False:
                 try:
                     m.log_fold=sink_file
