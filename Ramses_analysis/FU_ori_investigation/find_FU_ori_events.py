@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #Plots MESA luminsoties calculated for all sinks int eh G100 512 run
 import matplotlib.pyplot as plt
 import numpy as np
