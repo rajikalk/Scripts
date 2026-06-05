@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
-'''
+
 matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -30,7 +30,7 @@ matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
 matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
-'''
+
 #plt.rcParams['font.family'] = 'sans-serif'
 #plt.rcParams['font.sans-serif'] = ['Arial']
 
@@ -90,6 +90,9 @@ axes_1.xaxis.label.set_color('black')
 axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
+
+for label in axes_1.get_xticklabels() + axes_1.get_yticklabels():
+    label.set_fontname('Arial')
 
 plt.savefig("Apastron_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
@@ -183,6 +186,9 @@ for plot_time in plot_times:
         plt.setp(xticklabels, visible=False)
     else:
         ax.set_xlabel('AU', fontsize=font_size, labelpad=-1)
+    
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontname('Arial')
         
     plt.savefig("Apastron_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
