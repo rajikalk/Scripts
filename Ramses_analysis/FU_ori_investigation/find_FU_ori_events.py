@@ -44,7 +44,7 @@ for sink_file in sink_files:
                     print("Can't read sink_file")
                     could_read_file = False
             else:
-                pickle_open = open("Mesa_pickle_"+sink_file.split('sink_')[-1].split('/')[0]+".pkl", "rb")
+                pickle_open = open(sink_file, "rb")
                 pickle_data = pickle.load(pickle_open)
                 pickle_open.close()
                 could_read_file = True
