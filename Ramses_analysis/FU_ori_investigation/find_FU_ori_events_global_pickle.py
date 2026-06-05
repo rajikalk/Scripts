@@ -22,6 +22,7 @@ time_window = yt.YTQuantity(100, 'yr')
 
 #global_pickle = "/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl"
 global_pickle = "/home/100/rlk100/gdata/RAMSES/Low_res_pickles/particle_data_global.pkl"
+print('starting to read particle data')
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
