@@ -19,7 +19,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
-
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['mathtext.fontset'] = 'custom' #stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
@@ -28,8 +29,6 @@ matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
 matplotlib.rcParams['mathtext.sf'] = 'Arial'
 matplotlib.rcParams['mathtext.default'] = 'regular'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
-matplotlib.rcParams['font.family'] = 'sans-serif'
 
 #plt.rcParams['font.family'] = 'sans-serif'
 #plt.rcParams['font.sans-serif'] = ['Arial']
