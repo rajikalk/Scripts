@@ -30,6 +30,7 @@ except:
 max_age=150000
 rit = -1
 sink_it = -1
+best_cors = []
 for sink_file in sink_files:
     sink_it = sink_it + 1
     rit = rit + 1
@@ -112,12 +113,16 @@ for sink_file in sink_files:
                             ax1.legend()
                             plt.savefig('Sink_' + str(sink_it) + '_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
                             print("Found potential match for sink", sink_it, "at age", age[time_it])
+                            best_cors.append([sink_it, time_it, np.median(cor)])
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
                 plt.ylabel('max L diff over 100 yr (log)')
                 plt.savefig('L_diff_Sink_'+str(sink_it)+'.png')
                 print("plotted L diff history for sink", sink_it, "on rank", rank)
+                cors_file = open('best_cors.pkl', 'wb')
+                pickle.dump((np.array(best_cors)), cors_file)
+                cors_file.close()
                 
 
 ##Data for multiply plot
