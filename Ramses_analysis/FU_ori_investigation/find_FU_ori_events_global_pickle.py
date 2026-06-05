@@ -20,8 +20,8 @@ FU_temp_inv = np.concatenate((np.ones(15), np.zeros(85)))
 
 time_window = yt.YTQuantity(100, 'yr')
 
-global_pickle = "/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl"
-#global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
+#global_pickle = "/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl"
+global_pickle = "/groups/astro/rlk/rlk/FU_ori_investigation/Sink_pickles/particle_data_global.pkl"
 file_open = open(global_pickle, 'rb')
 particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
@@ -122,7 +122,7 @@ plt.savefig('Ltot_evol_zoom.png')
 plot_times = [10317.928611457348, 10861.812506761402, 12135.403063911945, 13096.016646496952, 13379.528082296252, 13908.540377408266, 14625.588010121137, 15691.680855810642, 15891.27923379466, 17353.72329491377, 26899.01125465706, 29443.443914979696] #14154.07486982271
 
 plt.clf()
-fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(two_col_width, 1.4*two_col_width), sharey=True)
+fig, axs = plt.subplots(ncols=4, nrows=3, figsize=(two_col_width, 1.0*two_col_width), sharey=True)
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.1)
 
