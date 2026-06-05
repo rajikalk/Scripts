@@ -31,7 +31,15 @@ except:
 #max_age=150000
 rit = -1
 sink_it = -1
-best_cors = []
+best_corr_pickle = 'best_cors_'+str(rank)+'.pkl'
+if os.path.isfile(best_corr_pickle):
+    cors_file = open('best_cors_'+str(rank)+'.pkl', 'rb')
+    best_sink, best_time, best_corr = pickle.dump((np.array(best_cors)), cors_file)
+    cors_file.close()
+else:
+    best_sink = np.array([])
+    best_time = np.array([])
+    best_corr = np.array([])
 for sink_file in sink_files:
     sink_it = sink_it + 1
     rit = rit + 1
@@ -115,7 +123,9 @@ for sink_file in sink_files:
                             ax1.legend()
                             plt.savefig('Sink_' + str(sink_it) + '_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
                             print("Found potential match for sink", sink_it, "at age", age[time_it])
-                            best_cors.append([sink_it, age[time_it], np.median(cor)])
+                            best_sink = np.append(best_sink, sink_it)
+                            best_time = np.append(best_time, age[time_it])
+                            best_corr = np.append(best_corr, np.median(cor))
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
@@ -123,7 +133,7 @@ for sink_file in sink_files:
                 plt.savefig('L_diff_Sink_'+str(sink_it)+'.png')
                 print("plotted L diff history for sink", sink_it, "on rank", rank)
                 cors_file = open('best_cors_'+str(rank)+'.pkl', 'wb')
-                pickle.dump((np.array(best_cors)), cors_file)
+                pickle.dump((np.array(best_sink, best_time, best_corr)), cors_file)
                 cors_file.close()
                 
 
