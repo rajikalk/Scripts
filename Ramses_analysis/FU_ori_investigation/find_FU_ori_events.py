@@ -16,7 +16,8 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 
 try:
-    sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
+    #sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
+    sink_files = sorted(glob.glob('/home/100/rlk100/rlk/RAMSES/Analysis/MESA_raw/sink_*/LOGS'))
     import mesaPlot
     m=mesaPlot.MESA()
     p=mesaPlot.plot()
@@ -27,7 +28,7 @@ except:
 #sink_files = sorted(glob.glob('/lustre/astro/troels/IMF_512/mesa/success/sink_*/LOGS'))
 #if rank == 0:
 #    print('sink_files:', sink_files)
-max_age=150000
+#max_age=150000
 rit = -1
 sink_it = -1
 best_cors = []
@@ -43,6 +44,7 @@ for sink_file in sink_files:
                     m.log_fold=sink_file
                     m.loadHistory()
                     could_read_file = True
+                    print('Successfully read', sink_file)
                 except:
                     print("Can't read sink_file")
                     could_read_file = False
@@ -56,15 +58,15 @@ for sink_file in sink_files:
                 if use_pickles == False:
                     mass = m.hist.star_mass
                     age = m.hist.star_age
-                    idx = np.where(age <= max_age)
-                    age = age[idx]
+                    #idx = np.where(age <= max_age)
+                    #age = age[idx]
                     lum = 10.**m.hist.log_L
                     lacc = m.hist.extra_lum / lsun
                     ltot = lum + lacc
                     
                     #save Mesa sink data to pickle
                     pickle_data = {"age":age, "mass":mass, "stellar_luminosity":lum, "accretion_luminosity":lacc, "total_luminosity":ltot}
-                    pickle_open = open("Mesa_pickle_"+sink_file.split('sink_')[-1].split('/')[0]+".pkl", "wb")
+                    pickle_open = open("Mesa_pickle_"+sink_file.split('sink_')[-1].split('/')[0]+"_full_age.pkl", "wb")
                     pickle.dump((pickle_data), pickle_open)
                     pickle_open.close()
                     print("saved pickle data for sink", sink_file.split('sink_')[-1].split('/')[0])
@@ -120,14 +122,18 @@ for sink_file in sink_files:
                 plt.ylabel('max L diff over 100 yr (log)')
                 plt.savefig('L_diff_Sink_'+str(sink_it)+'.png')
                 print("plotted L diff history for sink", sink_it, "on rank", rank)
-                cors_file = open('best_cors.pkl', 'wb')
+                cors_file = open('best_cors_'_str(rank)'.pkl', 'wb')
                 pickle.dump((np.array(best_cors)), cors_file)
                 cors_file.close()
                 
 
 ##Data for multiply plot
+plot_sink = [45, 17, 51, 54, 74]
+
 plot_sink = [17, 17, 17, 17, 17, 51, 74, 260, 270, 273, 290, 290, 290, 290, 290, 174, 175, 54, 84, 45]
 plot_time = [69614.81013489112, 77207.60066041496, 77340.74994086033, 83816.50575862321, 88474.8956793223, 34617.36712460182, 30982.481234925883, 36357.680496830486, 45271.959678627885, 23027.750556024763, 20559.836032810344, 26877.25760296158, 26975.78215359961, 37188.631669261405, 50732.408920391805, 73943.3525513, 149484.80417919, 112569.82249152, 47797.44646577, 34786.14689247]
 plot_corr = [73.34874538, 78.29124944, 77.15026779, 77.74458688, 78.0603211, 78.96473908, 78.22833953, 78.59386108, 77.8718668, 77.30801646, 78.3453675, 79.30769461, 78.78456987, 78.13137853, 78.41088411, 78.03140985, 76.67806032, 76.23207367, 76.1266242, 76.07275835]
+
+
 
 
