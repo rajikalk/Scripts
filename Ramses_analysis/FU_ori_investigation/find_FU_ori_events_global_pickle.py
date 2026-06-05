@@ -92,7 +92,7 @@ print('calculated luminosity and radii of protostars')
 
 lstar_baraffe = yt.YTArray(lstar_baraffe, 'Lsun')
 lacc = facc * (yt.units.gravitational_constant_cgs * mass.in_units('g') * mdot.in_units('g/s'))/yt.YTArray(rstar_barrafe).in_units('cm')
-ltot = lacc.in_units('lsun') + lstar_baraffe
+ltot = lacc.in_units('lsun') + lstar_baraffe.in_units('lsun')
 magnitude = -2.5 * np.log10(ltot.in_units('watt')/3.0128e28)
 plt.clf()
 plt.semilogy(age, ltot, label='Total', alpha=0.5)
