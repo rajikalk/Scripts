@@ -110,11 +110,18 @@ for sink_file in sink_files:
                             ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
                         
                             ax1.legend()
-                            plt.savefig('Sink_' + sink_file.split('sink_')[-1].split('/')[0] + '_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
-                            print("Found potential match for sink", sink_file.split('sink_')[-1].split('/')[0], "at age", age[time_it])
+                            plt.savefig('Sink_' + str(sink_it) + '_time_'+str(age[time_it])+'_mass_'+str(np.round(mass[time_it], decimals=2))+'.png',  bbox_inches='tight')
+                            print("Found potential match for sink", sink_it, "at age", age[time_it])
                 plt.clf()
                 plt.plot(time_arr, L_diff_arr)
                 plt.xlabel('age (yr)')
                 plt.ylabel('max L diff over 100 yr (log)')
                 plt.savefig('L_diff_Sink_'+str(sink_it)+'.png')
                 print("plotted L diff history for sink", sink_it, "on rank", rank)
+                
+
+##Data for multiply plot
+plot_sink = []
+plot_time = []
+
+
