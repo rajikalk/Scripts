@@ -20,7 +20,7 @@ parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
 
-matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.fontset'] = 'custom' #stixsans'
 matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
 matplotlib.rcParams['mathtext.rm'] = 'Arial'
 matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
