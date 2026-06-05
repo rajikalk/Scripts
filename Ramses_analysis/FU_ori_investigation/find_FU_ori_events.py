@@ -34,7 +34,7 @@ sink_it = -1
 best_corr_pickle = 'best_cors_'+str(rank)+'.pkl'
 if os.path.isfile(best_corr_pickle):
     cors_file = open('best_cors_'+str(rank)+'.pkl', 'rb')
-    best_sink, best_time, best_corr = pickle.dump((np.array(best_cors)), cors_file)
+    best_sink, best_time, best_corr = pickle.load(cors_file)
     cors_file.close()
 else:
     best_sink = np.array([])
