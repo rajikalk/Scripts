@@ -22,7 +22,7 @@ try:
     p=mesaPlot.plot()
     use_pickles = False
 except:
-    sink_files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/Mesa_pickles/Mesa_pickle_0*.pkl'))
+    sink_files = sorted(glob.glob('/g/data/ek9/rlk100/RAMSES/Global/G100/512_Resolution/Mesa_pickles/Mesa_pickle_0*.pkl'))
     use_pickles = True
 #sink_files = sorted(glob.glob('/lustre/astro/troels/IMF_512/mesa/success/sink_*/LOGS'))
 #if rank == 0:
