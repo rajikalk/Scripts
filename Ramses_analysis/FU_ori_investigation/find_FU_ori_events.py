@@ -68,9 +68,9 @@ for sink_file in sink_files:
                 else:
                     age = pickle_data['age']
                     mass = pickle_data['mass']
-                    lum = pickle_data['lum']
-                    lacc = pickle_data['lacc']
-                    ltot = pickle_data['ltot']
+                    lum = pickle_data['stellar_luminosity']
+                    lacc = pickle_data['accretion_luminosity']
+                    ltot = pickle_data['total_luminosity']
                 time_arr = []
                 L_diff_arr = []
                 
