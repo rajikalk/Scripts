@@ -139,27 +139,34 @@ time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5)
 
 #Calculate Time chunks for each section
 
-lns1 = axs.flatten()[0].semilogy(particle_data['time'], particle_data['ltot'].T[0], label='Candidate accretion_rate')
+lns = []
+ln = axs.flatten()[0].semilogy(particle_data['time'], particle_data['ltot'].T[0], label='Candidate accretion_rate'))
+lns.append(ln)
 first_comp = True
 closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
+ax0 = axs.flatten()[0].twinx()
+ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25, label="Separation")
+lns.append(ln)
 for closest_id in closes_inds:
-    if closest_id in top_clean:
-        import pdb
-        pdb.set_trace()
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     if first_comp == True:
-        lns2 = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        lns.append(ln)
         first_comp = False
+    elif closest_id in top_clean:
+        line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+        ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        lns.append(ln)
     else:
         axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
-ax0 = axs.flatten()[0].twinx()
-lns3 = ax0.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="--", alpha=0.25, label="Separation")
+import pdb
+pdb.set_trace()
 lns = lns1+lns2+lns3
 labs = [l.get_label() for l in lns]
 axs.flatten()[0].legend(lns, labs, loc='lower left')
