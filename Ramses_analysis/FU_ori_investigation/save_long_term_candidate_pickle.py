@@ -100,6 +100,7 @@ if args.update_pickle == 'True':
         particle_data.update({'separation':np.array([])})
         particle_data.update({'eccentricity':np.array([])})
         particle_data.update({'closest_sink':np.array([])})
+        particle_data.update({'closest_mass':np.array([])})
         counter = 0
         sink_form_time = 0
         
@@ -148,11 +149,12 @@ if args.update_pickle == 'True':
                             
                             
                 particle_data['closest_sink'] = np.append(particle_data['closest_sink'], closest_ind)
+                other_mass = sink_data[closest_ind][9]*units['mass_unit'].in_units('msun')
+                particle_data['closest_mass'] = np.append(particle_data['closest_mass'], other_mass)
                 particle_data['separation'] = np.append(particle_data['separation'], separation)
                 if np.isnan(closest_ind) == False:
                     other_pos = np.array([sink_data[closest_ind][0], sink_data[closest_ind][1], sink_data[closest_ind][2]])*units['length_unit'].in_units('au')
                     other_vel = np.array([sink_data[closest_ind][3], sink_data[closest_ind][4], sink_data[closest_ind][5]])*units['velocity_unit'].in_units('km/s')
-                    other_mass = sink_data[closest_ind][9]*units['mass_unit'].in_units('msun')
                     CoM_pos = (position*particle_mass + other_pos*other_mass)/(particle_mass + other_mass)
                     CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
                     
