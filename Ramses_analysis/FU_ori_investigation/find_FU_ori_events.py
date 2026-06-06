@@ -254,7 +254,7 @@ if rank == 0:
         Cand_string_raw = r"{}".format(Cand_string)
         Cand_text = ax1.text(np.min(useable_times)+5, 0.9, Cand_string_raw, va="center", ha="left", color='k', fontsize=font_size)
         
-        Corr_string = "Med. Corr="+str(np.median(cor))
+        Corr_string = "Med. Corr="+str(np.round(np.median(cor), decimals=2))
         Corr_string_raw = r"{}".format(Corr_string)
         Corr_text = ax1.text(np.min(useable_times)+5, 0.8, Corr_string_raw, va="center", ha="left", color='k', fontsize=font_size)
         
