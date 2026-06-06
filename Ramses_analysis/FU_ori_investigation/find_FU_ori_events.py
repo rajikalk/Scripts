@@ -219,8 +219,7 @@ if rank == 0:
         ax1 = axs.flatten()[plot_it]
         #plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
-        import pdb
-        pdb.set_trace()
+        ax1.ticklabel_format(useOffset=False)
         ax1.plot(useable_times/1000, scaled_L, label="Scaled Luminosity", color='b')
         ax1.plot(useable_times/1000, cor[:len(useable_times)]/100., label="Correlation", color='r')
                             
