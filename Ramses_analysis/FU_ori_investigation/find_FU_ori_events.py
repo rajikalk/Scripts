@@ -188,9 +188,9 @@ if rank == 0:
     
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.7*two_col_width), sharey=True)
+    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.5*two_col_width), sharey=True)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.1)
+    plt.subplots_adjust(hspace=0.11)
     
     for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
@@ -231,7 +231,7 @@ if rank == 0:
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-        if np.remainder(plot_it, 4) == 0 and plot_it > 0:
+        if plot_it == 4 or plot_it == 9:
             ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=-1)
         else:
             yticklabels = ax2.get_yticklabels()
@@ -242,8 +242,8 @@ if rank == 0:
         ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
         ax1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
-        ax1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
-        ax2.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+        ax1.tick_params(axis='y', which='major', direction='in', color='k')
+        ax2.tick_params(axis='y', which='major', direction='in', color='k')
         ax1.xaxis.label.set_color('black')
         ax1.yaxis.label.set_color('black')
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
