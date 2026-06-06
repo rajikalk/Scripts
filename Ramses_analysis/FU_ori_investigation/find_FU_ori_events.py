@@ -241,6 +241,8 @@ if rank == 0:
         if plot_it == 5 or plot_it == 8:
             xticklabels = ax1.get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
+            xticklabels = ax2.get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
                             
         #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
