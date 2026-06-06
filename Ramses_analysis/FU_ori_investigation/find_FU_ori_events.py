@@ -238,7 +238,7 @@ if rank == 0:
                             
         ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
-        ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+        #ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
         ax1.tick_params(axis='x', which='major', direction='in', color='w', top=True)
         ax1.tick_params(axis='y', which='major', direction='in', color='w', right=True)
