@@ -144,7 +144,7 @@ if args.update_pickle == 'True':
                         if sink_data[other_sink_ind][9]>0:
                             other_pos = np.array([sink_data[other_sink_ind][0], sink_data[other_sink_ind][1], sink_data[other_sink_ind][2]])*units['length_unit'].in_units('au')
                             sep = np.sqrt(np.sum((position - other_pos)**2))
-                            if sep < np.inf:
+                            if sep < separation:
                                 separation = sep
                                 closest_ind = other_sink_ind
                             
