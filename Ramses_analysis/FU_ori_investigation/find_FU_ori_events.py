@@ -189,7 +189,7 @@ if rank == 0:
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.6*two_col_width), sharey=True)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.0)
+    plt.subplots_adjust(hspace=0.05)
     
     for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
@@ -238,10 +238,11 @@ if rank == 0:
                             
         ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
-        #ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+        ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
-        ax1.tick_params(axis='x', which='major', direction='in', color='w', top=True)
-        ax1.tick_params(axis='y', which='major', direction='in', color='w', right=True)
+        ax1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
+        ax1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+        ax2.tick_params(axis='y', which='major', direction='in', color='k', right=True)
         ax1.xaxis.label.set_color('black')
         ax1.yaxis.label.set_color('black')
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
