@@ -289,8 +289,8 @@ if rank == 0:
         lacc = pickle_data['accretion_luminosity']
         ltot = pickle_data['total_luminosity']
         
-        top_sink_it = np.where(top_sinks==top_clean[plot_it])[0]
-        plot_time = top_times[top_sink_it]
+        top_sink_it = np.where(top_sinks==op_clean[10:][plot_it])[0]
+        plot_time = top_times[10:][top_sink_it]
         time_it = np.argmin(abs(age - plot_time))
         end_time = age[time_it] + time_window
         end_it = np.argmin(abs(age - end_time))
@@ -342,8 +342,8 @@ if rank == 0:
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
-        if plot_it == 0:
-            ax1.legend(loc="center", fontsize=font_size)
+        if plot_it == 25:
+            ax1.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+11)
