@@ -166,8 +166,11 @@ for closest_id in closes_inds:
 axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
-labs = [l[0].get_label() for l in lns]
-axs.flatten()[0].legend(lns, labs, loc='lower left')
+ln_lab = lns[0]
+for ln_it in lns[1:]:
+    ln_lab = ln_lab + ln_it
+labs = [l.get_label() for l in ln_lab]
+axs.flatten()[0].legend(ln_lab, labs, loc='lower left')
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
