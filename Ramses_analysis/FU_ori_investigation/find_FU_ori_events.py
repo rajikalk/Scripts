@@ -190,7 +190,7 @@ if rank == 0:
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.48*two_col_width), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.12)
+    plt.subplots_adjust(hspace=0.13)
     
     for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
@@ -226,7 +226,7 @@ if rank == 0:
         ax2.plot(useable_times/1000, useable_L, color='b')
 
         if plot_it >4:
-            ax1.set_xlabel('Time (kyr)', fontsize=font_size)#, labelpad=-1)
+            ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
