@@ -186,6 +186,7 @@ if rank == 0:
     matplotlib.rcParams['mathtext.sf'] = 'Arial'
     matplotlib.rcParams['mathtext.default'] = 'regular'
     
+    plt.cla()
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.6*two_col_width), sharey=True)
     plt.subplots_adjust(wspace=0.0)
