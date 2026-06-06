@@ -140,7 +140,7 @@ time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5)
 #Calculate Time chunks for each section
 
 lns = []
-ln = axs.flatten()[0].semilogy(particle_data['time'], particle_data['ltot'].T[0], label='Candidate accretion_rate'))
+ln = axs.flatten()[0].semilogy(particle_data['time'], particle_data['ltot'].T[0], label='Candidate accretion_rate')
 lns.append(ln)
 first_comp = True
 closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
