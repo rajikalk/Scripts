@@ -190,7 +190,7 @@ if rank == 0:
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.5*two_col_width), sharey=True)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.11)
+    plt.subplots_adjust(hspace=0.12)
     
     for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
@@ -228,12 +228,12 @@ if rank == 0:
         if plot_it >4:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
-            ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=-1)
+            ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
         if plot_it == 4 or plot_it == 9:
-            ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=-1)
+            ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
@@ -243,24 +243,24 @@ if rank == 0:
         ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
         ax1.tick_params(axis='x', which='major', direction='in', color='k', top=True, length=2)
-        ax1.tick_params(axis='y', which='major', direction='in', color='k', length=2)
-        ax2.tick_params(axis='y', which='major', direction='in', color='k', length=2)
+        ax1.tick_params(axis='y', which='major', direction='in', color='k', length=0)
+        ax2.tick_params(axis='y', which='major', direction='in', color='k', length=3)
         ax1.xaxis.label.set_color('black')
         ax1.yaxis.label.set_color('black')
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
         if plot_it == 0:
-            ax1.legend(fontsize=font_size)
+            ax1.legend(loc="upper left", fontsize=font_size)
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+1)
         Cand_string_raw = r"{}".format(Cand_string)
-        Cand_text = ax1.text(np.min(useable_times), 0.9, Cand_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        Cand_text = ax1.text(np.max(useable_times), 0.2, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
         Corr_string = "Med. Corr="+str(np.round(np.median(cor), decimals=2))
         Corr_string_raw = r"{}".format(Corr_string)
-        Corr_text = ax1.text(np.min(useable_times), 0.8, Corr_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        Corr_text = ax1.text(np.max(useable_times), 0.1, Corr_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
         plt.savefig('Main_body_best_matches.pdf', bbox_inches='tight', pad_inches=0.02)
         print('Updated Main_body_best_matches.pdf with sink', top_clean[plot_it])
