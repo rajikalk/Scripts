@@ -150,23 +150,27 @@ if args.update_pickle == 'True':
                     other_vel = np.array([sink_data[closest_ind][3], sink_data[closest_ind][4], sink_data[closest_ind][5]])*units['velocity_unit'].in_units('km/s')
                     other_mass = sink_data[closest_ind][9]*units['mass_unit'].in_units('msun')
                     CoM_pos = (position*particle_mass + other_pos*other_mass)/(particle_mass + other_mass)
-                    Com_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
+                    CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
                     
-                    vel_rel_to_com = (velocity.T - CoM_vel).T
-                    pos_rel_to_com = (position.T - CoM_pos).T
-                    relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
+                    Cand_vel_rel_to_com = velocity - CoM_vel
+                    Other_vel_rel_to_com = other_vel - CoM_vel
+                    
+                    Cand_pos_rel_to_com = position - CoM_pos
+                    Other_pos_rel_to_com = other_pos - CoM_pos
+                    
+                    Cand_rel_speed_to_com = np.sqrt(np.sum((Cand_vel_rel_to_com)**2))
+                    Other_rel_speed_to_com = np.sqrt(np.sum((Other_vel_rel_to_com)**2))
                 
                     reduced_mass = (particle_mass*other_mass)/(particle_mass+other_mass)
                     E_pot = (-1*(yt.units.gravitational_constant_cgs*particle_mass*other_mass)/separation.in_units('cm')).in_units('erg')
-                    import pdb
-                    pdb.set_trace()
-                    E_kin = np.sum((0.5*particle_data['mass'][-1].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+                    E_kin = (0.5*particle_mass*Cand_rel_speed_to_com**2 + 0.5*other_mass*Other_rel_speed_to_com**2).in_units('erg')
                     epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
-                    r_x_v = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                    L = particle_data['mass'][-1].in_units('g').T*r_x_v
-                    L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
+                    Cand_r_x_v = yt.YTArray(np.cross(Cand_pos_rel_to_com.in_units('cm'), Cand_vel_rel_to_com.in_units('cm/s')), 'cm**2/s')
+                    Other_r_x_v = yt.YTArray(np.cross(Other_pos_rel_to_com.in_units('cm'), Other_vel_rel_to_com.in_units('cm/s')), 'cm**2/s')
+                    L = particle_mass.in_units('g')*Cand_r_x_v + other_mass.in_units('g')*Other_r_x_v
+                    L_tot = np.sqrt(np.sum(L**2))
                     h_val = L_tot/reduced_mass.in_units('g')
-                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g')))**2.))
                 else:
                     e = np.nan
                 particle_data['eccentricity'] = np.append(particle_data['eccentricity'], e)
