@@ -209,13 +209,13 @@ if rank == 0:
         end_time = age[time_it] + time_window
         end_it = np.argmin(abs(age - end_time))
         useable_times = age[time_it:end_it]
-        useable_times = useable_times/1000
         useable_L = ltot[time_it:end_it]
         useable_L = np.log10(useable_L)
         scaled_T = useable_times - useable_times[0]
         scaled_L = useable_L - np.min(useable_L)
         scaled_L = scaled_L/np.max(scaled_L)
         cor = np.correlate(scaled_L,FU_temp,'same')
+        useable_times = useable_times/1000
     
         ax1 = axs.flatten()[plot_it]
         #plt.gca().set_aspect('equal')
