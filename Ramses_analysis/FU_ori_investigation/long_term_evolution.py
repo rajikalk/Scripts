@@ -158,17 +158,14 @@ for closest_id in closes_inds:
         first_comp = False
     elif closest_id in top_clean:
         line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-        ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label='Closest sink luminosity')
+        ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':', label=line_label)
         lns.append(ln)
     else:
         axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
 axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
-import pdb
-pdb.set_trace()
-lns = lns1+lns2+lns3
-labs = [l.get_label() for l in lns]
+labs = [l[0].get_label() for l in lns]
 axs.flatten()[0].legend(lns, labs, loc='lower left')
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
