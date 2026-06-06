@@ -170,7 +170,7 @@ if rank == 0:
     two_col_width = 7.20472 #inches
     single_col_width = 3.50394 #inches
     page_height = 10.62472 #inches
-    font_size = 12
+    font_size = 7
     
     import matplotlib
     import matplotlib.pyplot as plt
