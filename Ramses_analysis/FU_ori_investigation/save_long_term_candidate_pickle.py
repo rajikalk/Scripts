@@ -147,7 +147,7 @@ if args.update_pickle == 'True':
                                 closest_ind = other_sink_ind
                             
                             
-                particle_data['closest_sink'] = np.append(particle_data['closest_sink'], separation)
+                particle_data['closest_sink'] = np.append(particle_data['closest_sink'], closest_ind)
                 particle_data['separation'] = np.append(particle_data['separation'], separation)
                 if np.isnan(closest_ind) == False:
                     other_pos = np.array([sink_data[closest_ind][0], sink_data[closest_ind][1], sink_data[closest_ind][2]])*units['length_unit'].in_units('au')
