@@ -30,8 +30,7 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 
-path = sys.argv[1]
-save_dir = sys.argv[2]
+save_dir = sys.argv[1]
 if save_dir[-1] != '/':
     save_dir = save_dir + '/'
 if os.path.exists(save_dir) == "False":
