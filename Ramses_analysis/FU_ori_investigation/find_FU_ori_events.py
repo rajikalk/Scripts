@@ -224,7 +224,7 @@ if rank == 0:
 
         if plot_it >4:
             ax1.set_xlabel('Time (yr)', fontsize=font_size, labelpad=-1)
-        if np.remainder(plot_it, 5) == 0
+        if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=-1)
         else:
             yticklabels = ax1.get_yticklabels()
