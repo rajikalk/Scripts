@@ -130,7 +130,7 @@ if args.update_pickle == 'True':
                 acc_val = d_mass/d_time
                 if acc_val == 0:
                     acc_val =1.e-12
-                particle_data['mdot'] = np.append(particle_data['mdot'], particle_mass)
+                particle_data['mdot'] = np.append(particle_data['mdot'], acc_val)
                 
             
                 position = np.array([sink_data[sink_ind][0], sink_data[sink_ind][1], sink_data[sink_ind][2]])*units['length_unit'].in_units('au')
