@@ -188,7 +188,7 @@ if rank == 0:
     
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.5*two_col_width), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.48*two_col_width), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.12)
     
@@ -220,13 +220,13 @@ if rank == 0:
         #plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
         ax1.ticklabel_format(useOffset=False)
-        ax1.plot(useable_times/1000, scaled_L, label="Scaled Luminosity", color='b')
+        ax1.plot(useable_times/1000, scaled_L, label="Scaled Lum.", color='b')
         ax1.plot(useable_times/1000, cor[:len(useable_times)]/100., label="Correlation", color='r')
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
 
         if plot_it >4:
-            ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
+            ax1.set_xlabel('Time (kyr)', fontsize=font_size)#, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
@@ -256,11 +256,11 @@ if rank == 0:
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+1)
         Cand_string_raw = r"{}".format(Cand_string)
-        Cand_text = ax1.text(np.max(useable_times), 0.2, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        Cand_text = ax1.text(np.max(useable_times), 0.15, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
         Corr_string = "Med. Corr="+str(np.round(np.median(cor), decimals=2))
         Corr_string_raw = r"{}".format(Corr_string)
-        Corr_text = ax1.text(np.max(useable_times), 0.1, Corr_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        Corr_text = ax1.text(np.max(useable_times), 0.05, Corr_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
         plt.savefig('Main_body_best_matches.pdf', bbox_inches='tight', pad_inches=0.02)
         print('Updated Main_body_best_matches.pdf with sink', top_clean[plot_it])
