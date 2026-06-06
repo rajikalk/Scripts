@@ -133,8 +133,6 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
-import pdb
-pdb.set_trace()
 start_time = particle_data['time'][0]
 end_time = particle_data['time'][-1]
 time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
