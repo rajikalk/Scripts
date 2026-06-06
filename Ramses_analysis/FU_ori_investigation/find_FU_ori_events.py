@@ -276,7 +276,7 @@ if rank == 0:
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=6, figsize=(two_col_width, page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.13)
+    plt.subplots_adjust(hspace=0.14)
     
     axs.flatten()[27].set_axis_off()
     axs.flatten()[28].set_axis_off()
@@ -349,7 +349,7 @@ if rank == 0:
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
         if plot_it == 25:
-            ax1.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+            ax1.legend(bbox_to_anchor=(1.05, 1))
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+11)
