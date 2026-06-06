@@ -238,11 +238,11 @@ if rank == 0:
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
             
-        if plot_it == 5 or plot_it == 8:
+        if plot_it == 6 or plot_it == 9:
             xticklabels = ax1.get_xticklabels()
-            plt.setp(xticklabels[-2], visible=False)
+            plt.setp(xticklabels[0], visible=False)
             xticklabels = ax2.get_xticklabels()
-            plt.setp(xticklabels[-2], visible=False)
+            plt.setp(xticklabels[0], visible=False)
                             
         #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
