@@ -53,7 +53,7 @@ print('successfully read global pickle')
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
-'''
+
 if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
     print('Calculating Total Luminosity')
     Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
@@ -91,8 +91,8 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
     print('Calculating luminosity for companion')
     lstar_baraffe_comp = []
     rstar_barrafe_comp = []
-    Mass_comp = yt.YTArray(particle_data['mass']).T[1]
-    Mdot_comp = yt.YTArray(particle_data['mdot']).T[1]
+    Mass_comp = yt.YTArray(particle_data['closest_mass'], 'msun')
+    Mdot_comp = yt.YTArray(particle_data['closest_mdot'], 'msun/yr')
     for mass_val in Mass_comp:
         if mass_val < Baraffe_mass[0]:
             lstar_baraffe_comp.append(10**Baraffe_logL[0])
@@ -122,7 +122,7 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
     file.close()
     print('Finished updating pickle', global_pickle)
 print('Got total luminosity')
-'''
+
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
