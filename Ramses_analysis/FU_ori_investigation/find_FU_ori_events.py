@@ -191,7 +191,7 @@ if rank == 0:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.0)
     
-    for plot_it in range(len(top_clean[:10]))
+    for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
         pickle_open.close()
