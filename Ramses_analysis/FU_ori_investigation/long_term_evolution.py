@@ -48,6 +48,9 @@ particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
 file_open.close()
 print('successfully read global pickle')
 
+top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
+top_clean = top_clean[np.argsort(top_clean)]
+
 if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
     print('Calculating Total Luminosity')
     Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
@@ -129,11 +132,19 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 
 import pdb
 pdb.set_trace()
+start_time = particle_data['time'][0]
+end_time = particle_data['time'][-1]
+time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
+
 #Calculate Time chunks for each section
 
 lns1 = axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0], label='Candidate luminosity')
 first_comp = True
-for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
+closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
+for closest_id in closes_inds:
+    if closest_id in top_clean:
+        import pdb
+        pdb.set_trace()
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
@@ -143,7 +154,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
         first_comp = False
     else:
         axs.flatten()[0].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
-axs.flatten()[0].set_xlim([0, 10000])
+axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
 axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
 ax0 = axs.flatten()[0].twinx()
@@ -154,7 +165,7 @@ axs.flatten()[0].legend(lns, labs, loc='lower left')
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
-print('plotted time [0, 10000]')
+print('plotted time panel 1')
 
 axs.flatten()[1].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
@@ -163,7 +174,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[1].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
-axs.flatten()[1].set_xlim([10000, 20000])
+axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
 axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
 ax1 = axs.flatten()[1].twinx()
@@ -171,7 +182,7 @@ ax1.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax1.set_ylabel('Separation (AU)')
 ax1.set_ylim([5,1000])
 ax1.tick_params(axis='both', direction='in', top=True)
-print('plotted time [10000, 20000]')
+print('plotted time panel 2')
 
 axs.flatten()[2].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
@@ -180,7 +191,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[2].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
-axs.flatten()[2].set_xlim([20000, 30000])
+axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
 axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
 ax2 = axs.flatten()[2].twinx()
@@ -188,7 +199,7 @@ ax2.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax2.set_ylabel('Separation (AU)')
 ax2.set_ylim([5,1000])
 ax2.tick_params(axis='both', direction='in', top=True)
-print('plotted time [20000, 30000]')
+print('plotted time panel 3')
 
 axs.flatten()[3].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
@@ -197,7 +208,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[3].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
-axs.flatten()[3].set_xlim([30000, 40000])
+axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
 axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
 ax3 = axs.flatten()[3].twinx()
@@ -205,7 +216,7 @@ ax3.semilogy(particle_data['time'], particle_data['separation'], color='k', ls="
 ax3.set_ylabel('Separation (AU)')
 ax3.set_ylim([5,1000])
 ax3.tick_params(axis='both', direction='in', top=True)
-print('plotted time [30000, 40000]')
+print('plotted time panel 4')
 
 axs.flatten()[4].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0])
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
@@ -214,7 +225,7 @@ for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0]
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot']).T[1])
     ltot_curr[diff_inds] = np.nan
     axs.flatten()[4].semilogy(yt.YTArray(particle_data['time']), ltot_curr, ls=':')
-axs.flatten()[4].set_xlim([40000, 50000])
+axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
 axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
 axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
 ax4 = axs.flatten()[4].twinx()
@@ -224,7 +235,7 @@ ax4.set_ylim([5,1000])
 ax4.tick_params(axis='both', direction='in', top=True)
 axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
-print('plotted time [40000, 50000]')
+print('plotted time panel 5')
 
 plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 
