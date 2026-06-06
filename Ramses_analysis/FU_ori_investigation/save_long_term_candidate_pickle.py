@@ -66,6 +66,7 @@ if args.update_pickle == 'True':
     file_open.close()
     updating = False
     
+    sink_ind = args.sink_number
     pickle_name = save_dir+'particle_data_'+str(sink_ind)+'.pkl'
     
     if os.path.isfile(pickle_name):
@@ -88,8 +89,6 @@ if args.update_pickle == 'True':
                 print('pickle data is not up to date! Updating...')
     else:
         updating = True
-        
-        sink_ind = args.sink_number
             
         particle_data = {}
         particle_data.update({'time':np.array([])})
