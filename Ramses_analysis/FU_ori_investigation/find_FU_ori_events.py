@@ -278,8 +278,10 @@ if rank == 0:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.13)
     
-    for plot_it in range(len(top_clean[10:])):
-        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[10:][plot_it])+'_full_age.pkl', "rb")
+    
+    top_clean = top_clean[10:]
+    for plot_it in range(len(top_clean)):
+        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
         pickle_open.close()
         
@@ -289,8 +291,8 @@ if rank == 0:
         lacc = pickle_data['accretion_luminosity']
         ltot = pickle_data['total_luminosity']
         
-        top_sink_it = np.where(top_sinks==top_clean[10:][plot_it])[0]
-        plot_time = top_times[10:][top_sink_it]
+        top_sink_it = np.where(top_sinks==top_clean[plot_it])[0]
+        plot_time = top_times[top_sink_it]
         time_it = np.argmin(abs(age - plot_time))
         end_time = age[time_it] + time_window
         end_it = np.argmin(abs(age - end_time))
