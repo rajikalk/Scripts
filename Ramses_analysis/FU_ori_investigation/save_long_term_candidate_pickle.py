@@ -30,7 +30,8 @@ def parse_inputs():
 #================================================================================
 args = parse_inputs()
 
-Candidates
+top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
+top_clean = top_clean[np.argsort(top_clean)]
 
 save_dir = sys.argv[1]
 if save_dir[-1] != '/':
@@ -62,7 +63,8 @@ for key in units_override.keys():
 
 if args.update_pickle == 'True':
     print("Reading global data")
-    file_open = open('/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl', 'rb')
+    #file_open = open('/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl', 'rb')
+    file_open = open('/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl', 'rb')
     loaded_sink_data = pickle.load(file_open)
     file_open.close()
     updating = False
