@@ -312,7 +312,7 @@ if rank == 0:
         #plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
         ax1.ticklabel_format(useOffset=False)
-        ax1.plot(useable_times/1000, scaled_L, label="Scaled Lum.", color='b')
+        ax1.plot(useable_times/1000, scaled_L, label="Scaled Luminosity", color='b')
         ax1.plot(useable_times/1000, cor[:len(useable_times)]/100., label="Correlation", color='r')
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
@@ -349,7 +349,7 @@ if rank == 0:
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
         if plot_it == 25:
-            ax1.legend(bbox_to_anchor=(1.05, 1))
+            ax1.legend(bbox_to_anchor=(2, 1))
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+11)
