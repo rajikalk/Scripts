@@ -64,8 +64,8 @@ if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2
     facc = 0.5
     lstar_baraffe_prim = []
     rstar_barrafe_prim = []
-    Mass_prim = yt.YTArray(particle_data['mass']).T[0]
-    Mdot_prim = yt.YTArray(particle_data['mdot']).T[0]
+    Mass_prim = yt.YTArray(particle_data['mass'], 'msun')
+    Mdot_prim = yt.YTArray(particle_data['mdot'], 'msun/yr')
     for mass_val in Mass_prim:
         if mass_val < Baraffe_mass[0]:
             lstar_baraffe_prim.append(10**Baraffe_logL[0])
