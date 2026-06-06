@@ -16,15 +16,15 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 
 try:
+    sink_files = sorted(glob.glob('/g/data/ek9/rlk100/RAMSES/Global/G100/512_Resolution/Mesa_pickles/Mesa_pickle_0*.pkl'))
+    use_pickles = True
     #sink_files = sorted(glob.glob('/data/scratch/troels/IMF_512/mesa/sink_*/LOGS'))
+except:
     sink_files = sorted(glob.glob('/home/100/rlk100/rlk/RAMSES/Analysis/MESA_raw/sink_*/LOGS'))
     import mesaPlot
     m=mesaPlot.MESA()
     p=mesaPlot.plot()
     use_pickles = False
-except:
-    sink_files = sorted(glob.glob('/g/data/ek9/rlk100/RAMSES/Global/G100/512_Resolution/Mesa_pickles/Mesa_pickle_0*.pkl'))
-    use_pickles = True
 #sink_files = sorted(glob.glob('/lustre/astro/troels/IMF_512/mesa/success/sink_*/LOGS'))
 #if rank == 0:
 #    print('sink_files:', sink_files)
