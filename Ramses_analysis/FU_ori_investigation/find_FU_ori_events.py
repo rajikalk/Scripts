@@ -289,7 +289,7 @@ if rank == 0:
         lacc = pickle_data['accretion_luminosity']
         ltot = pickle_data['total_luminosity']
         
-        top_sink_it = np.where(top_sinks==op_clean[10:][plot_it])[0]
+        top_sink_it = np.where(top_sinks==top_clean[10:][plot_it])[0]
         plot_time = top_times[10:][top_sink_it]
         time_it = np.argmin(abs(age - plot_time))
         end_time = age[time_it] + time_window
