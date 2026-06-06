@@ -204,7 +204,7 @@ if rank == 0:
         
         top_sink_it = np.where(top_sinks==top_clean[plot_it])[0]
         plot_time = top_times[top_sink_it]
-        time_it = mp.argmin(abs(age - plot_time))
+        time_it = np.argmin(abs(age - plot_time))
         end_time = age[time_it] + time_window
         end_it = np.argmin(abs(age - end_time))
         useable_times = age[time_it:end_it]
