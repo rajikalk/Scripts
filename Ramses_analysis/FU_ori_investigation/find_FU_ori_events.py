@@ -216,7 +216,7 @@ if rank == 0:
         cor = np.correlate(scaled_L,FU_temp,'same')
     
         ax1 = axs.flatten()[plot_it]
-        plt.gca().set_aspect('equal')
+        #plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
         ax1.plot(useable_times, scaled_L, label="Scaled Luminosity", color='b')
         ax1.plot(useable_times, cor[:len(useable_times)]/100., label="Correlation", color='r')
