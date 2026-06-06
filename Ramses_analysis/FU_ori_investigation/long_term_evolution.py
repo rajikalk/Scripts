@@ -152,7 +152,7 @@ lns.append(ln)
 color_it = 0
 for closest_id in closes_inds:
     color_it = color_it + 1
-    if comp_colors == len(comp_colors)
+    if comp_colors == len(comp_colors):
         color_it = 0
     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
