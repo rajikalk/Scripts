@@ -219,11 +219,10 @@ if rank == 0:
         ax1 = axs.flatten()[plot_it]
         #plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
-        #useable_times = useable_times/1000
-        ax1.plot(useable_times, scaled_L, label="Scaled Luminosity", color='b')
-        ax1.plot(useable_times, cor[:len(useable_times)]/100., label="Correlation", color='r')
+        ax1.plot(useable_times/1000, scaled_L, label="Scaled Luminosity", color='b')
+        ax1.plot(useable_times/1000, cor[:len(useable_times)]/100., label="Correlation", color='r')
                             
-        ax2.plot(useable_times, useable_L, color='b')
+        ax2.plot(useable_times/1000, useable_L, color='b')
 
         if plot_it >4:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
@@ -253,6 +252,7 @@ if rank == 0:
         if plot_it == 0:
             ax1.legend(fontsize=font_size)
             
+        useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+1)
         Cand_string_raw = r"{}".format(Cand_string)
         Cand_text = ax1.text(np.min(useable_times)+5, 0.9, Cand_string_raw, va="center", ha="left", color='k', fontsize=font_size)
