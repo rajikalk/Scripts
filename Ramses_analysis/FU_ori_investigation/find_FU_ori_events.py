@@ -216,6 +216,7 @@ if rank == 0:
         cor = np.correlate(scaled_L,FU_temp,'same')
     
         ax1 = axs.flatten()[plot_it]
+        plt.gca().set_aspect('equal')
         ax2 = ax1.twinx()
         ax1.plot(useable_times, scaled_L, label="Scaled Luminosity", color='b')
         ax1.plot(useable_times, cor[:len(useable_times)]/100., label="Correlation", color='r')
@@ -246,7 +247,7 @@ if rank == 0:
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
         if plot_it == 0:
-            ax1.legend()
+            ax1.legend(fontsize=font_size)
             
         Cand_string = "Cand. "+str(plot_it+1)
         Cand_string_raw = r"{}".format(Cand_string)
