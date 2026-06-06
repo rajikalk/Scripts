@@ -279,7 +279,7 @@ if rank == 0:
     plt.subplots_adjust(hspace=0.13)
     
     for plot_it in range(len(top_clean[10:])):
-        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
+        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[10:][plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
         pickle_open.close()
         
@@ -311,24 +311,24 @@ if rank == 0:
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
 
-        if plot_it >4:
+        if plot_it >24:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-        if plot_it == 4 or plot_it == 9:
+        if np.remainder(plot_it+1, 5)==0:
             ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
             
-        if plot_it == 6 or plot_it == 9:
-            xticklabels = ax1.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
-            xticklabels = ax2.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
+        #if plot_it == 6 or plot_it == 9:
+        #    xticklabels = ax1.get_xticklabels()
+        #    plt.setp(xticklabels[0], visible=False)
+        #    xticklabels = ax2.get_xticklabels()
+        #    plt.setp(xticklabels[0], visible=False)
                             
         #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
@@ -346,7 +346,7 @@ if rank == 0:
             ax1.legend(loc="center", fontsize=font_size)
             
         useable_times = useable_times/1000
-        Cand_string = "Cand. "+str(plot_it+1)
+        Cand_string = "Cand. "+str(plot_it+11)
         Cand_string_raw = r"{}".format(Cand_string)
         Cand_text = ax1.text(np.max(useable_times), 0.15, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
