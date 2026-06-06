@@ -188,9 +188,9 @@ if rank == 0:
     
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.6*two_col_width), sharey=True)
+    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.7*two_col_width), sharey=True)
     plt.subplots_adjust(wspace=0.0)
-    plt.subplots_adjust(hspace=0.05)
+    plt.subplots_adjust(hspace=0.1)
     
     for plot_it in range(len(top_clean[:10])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
@@ -237,7 +237,7 @@ if rank == 0:
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
                             
-        ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
+        #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
         ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
         
@@ -247,6 +247,7 @@ if rank == 0:
         ax1.xaxis.label.set_color('black')
         ax1.yaxis.label.set_color('black')
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+        ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
         if plot_it == 0:
             ax1.legend(fontsize=font_size)
