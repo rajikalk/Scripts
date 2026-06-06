@@ -209,6 +209,7 @@ if rank == 0:
         end_time = age[time_it] + time_window
         end_it = np.argmin(abs(age - end_time))
         useable_times = age[time_it:end_it]
+        useable_times = useable_times/1000
         useable_L = ltot[time_it:end_it]
         useable_L = np.log10(useable_L)
         scaled_T = useable_times - useable_times[0]
@@ -225,7 +226,7 @@ if rank == 0:
         ax2.plot(useable_times, useable_L, color='b')
 
         if plot_it >4:
-            ax1.set_xlabel('Time (yr)', fontsize=font_size, labelpad=-1)
+            ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=-1)
         else:
