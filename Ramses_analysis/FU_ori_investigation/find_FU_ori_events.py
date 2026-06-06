@@ -270,6 +270,92 @@ if rank == 0:
         
         plt.savefig('Main_body_best_matches.pdf', bbox_inches='tight', pad_inches=0.02)
         print('Updated Main_body_best_matches.pdf with sink', top_clean[plot_it])
+        
+        
+    plt.cla()
+    plt.clf()
+    fig, axs = plt.subplots(ncols=5, nrows=6, figsize=(two_col_width, page_height), sharey=True, linewidth=1)
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.13)
+    
+    for plot_it in range(len(top_clean[10:])):
+        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
+        pickle_data = pickle.load(pickle_open)
+        pickle_open.close()
+        
+        age = pickle_data['age']
+        mass = pickle_data['mass']
+        lum = pickle_data['stellar_luminosity']
+        lacc = pickle_data['accretion_luminosity']
+        ltot = pickle_data['total_luminosity']
+        
+        top_sink_it = np.where(top_sinks==top_clean[plot_it])[0]
+        plot_time = top_times[top_sink_it]
+        time_it = np.argmin(abs(age - plot_time))
+        end_time = age[time_it] + time_window
+        end_it = np.argmin(abs(age - end_time))
+        useable_times = age[time_it:end_it]
+        useable_L = ltot[time_it:end_it]
+        useable_L = np.log10(useable_L)
+        scaled_T = useable_times - useable_times[0]
+        scaled_L = useable_L - np.min(useable_L)
+        scaled_L = scaled_L/np.max(scaled_L)
+        cor = np.correlate(scaled_L,FU_temp,'same')
+    
+        ax1 = axs.flatten()[plot_it]
+        #plt.gca().set_aspect('equal')
+        ax2 = ax1.twinx()
+        ax1.ticklabel_format(useOffset=False)
+        ax1.plot(useable_times/1000, scaled_L, label="Scaled Lum.", color='b')
+        ax1.plot(useable_times/1000, cor[:len(useable_times)]/100., label="Correlation", color='r')
+                            
+        ax2.plot(useable_times/1000, useable_L, color='b')
+
+        if plot_it >4:
+            ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
+        if np.remainder(plot_it, 5) == 0:
+            ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
+        else:
+            yticklabels = ax1.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if plot_it == 4 or plot_it == 9:
+            ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=0)
+        else:
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+            
+        if plot_it == 6 or plot_it == 9:
+            xticklabels = ax1.get_xticklabels()
+            plt.setp(xticklabels[0], visible=False)
+            xticklabels = ax2.get_xticklabels()
+            plt.setp(xticklabels[0], visible=False)
+                            
+        #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
+        ax1.set_ylim([0, 1])
+        ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+        
+        ax1.tick_params(axis='x', which='major', direction='in', color='k', top=True, length=2)
+        ax1.tick_params(axis='y', which='major', direction='in', color='k', length=0)
+        ax2.tick_params(axis='y', which='major', direction='in', color='k', length=3)
+        ax1.xaxis.label.set_color('black')
+        ax1.yaxis.label.set_color('black')
+        ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+        ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+        
+        if plot_it == 0:
+            ax1.legend(loc="center", fontsize=font_size)
+            
+        useable_times = useable_times/1000
+        Cand_string = "Cand. "+str(plot_it+1)
+        Cand_string_raw = r"{}".format(Cand_string)
+        Cand_text = ax1.text(np.max(useable_times), 0.15, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        
+        Corr_string = "Med. Corr="+str(np.round(np.median(cor), decimals=2))
+        Corr_string_raw = r"{}".format(Corr_string)
+        Corr_text = ax1.text(np.max(useable_times), 0.05, Corr_string_raw, va="center", ha="right", color='k', fontsize=font_size)
+        
+        plt.savefig('A1.pdf', bbox_inches='tight', pad_inches=0.02)
+        print('Updated A1.pdf with sink', top_clean[plot_it])
 
 
 
