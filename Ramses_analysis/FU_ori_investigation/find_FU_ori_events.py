@@ -278,6 +278,10 @@ if rank == 0:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.13)
     
+    axs.flatten()[27].set_axis_off()
+    axs.flatten()[28].set_axis_off()
+    axs.flatten()[29].set_axis_off()
+    
     
     top_clean = top_clean[10:]
     for plot_it in range(len(top_clean)):
