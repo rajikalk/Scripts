@@ -127,6 +127,10 @@ fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_wi
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
 
+import pdb
+pdb.set_trace()
+#Calculate Time chunks for each section
+
 lns1 = axs.flatten()[0].semilogy(particle_data['time'], yt.YTArray(particle_data['ltot']).T[0], label='Candidate luminosity')
 first_comp = True
 for closest_id in np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]:
@@ -224,7 +228,7 @@ print('plotted time [40000, 50000]')
 
 plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
 
-
+'''
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
 #plt.subplots_adjust(wspace=0.0)
@@ -429,3 +433,4 @@ axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
 print('plotted time [140000, 150000]')
 
 plt.savefig('long_term_evolution_ltot_'+str(args.sink_id)+'_3.pdf', bbox_inches='tight', pad_inches=0.02)
+'''
