@@ -180,7 +180,7 @@ if args.update_pickle == 'True':
         file = open(pickle_name, 'wb')
         pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
         file.close()
-os.system('cp '+pickle_name+' '+pickle_name.split('.pkl')[0]+'_tmp.pkl')
+        os.system('cp '+pickle_name+' '+pickle_name.split('.pkl')[0]+'_tmp.pkl')
         print('read', counter, 'snapshots of sink particle data, and saved pickle')
                 
 '''
