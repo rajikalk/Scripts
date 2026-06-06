@@ -136,13 +136,129 @@ for sink_file in sink_files:
                 pickle.dump((best_sink, best_time, best_corr), cors_file)
                 cors_file.close()
                 
+if rank == 0:
+    best_sink_all = np.array([])
+    best_time_all = np.array([])
+    best_corr_all = np.array([])
+    
+    best_corr_pickle = sorted(glob.glob('best_cors_*.pkl'))
+    for best_pick in best_corr_pickle:
+        cors_file = open(best_pick, 'rb')
+        best_sink, best_time, best_corr = pickle.load(cors_file)
+        cors_file.close()
+        best_sink_all = np.append(best_sink_all, best_sink)
+        best_time_all = np.append(best_time_all, best_time)
+        best_corr_all = np.append(best_corr_all, best_corr)
+        
+    
+    top_sinks = []
+    top_times = []
+    top_corrs = []
+    
+    for ind in np.argsort(best_corr_all)[::-1]:
+        if best_sink_all[ind] not in top_sinks:
+            top_sinks.append(best_sink_all[ind])
+            top_times.append(best_time_all[ind])
+            top_corrs.append(best_corr_all[ind])
 
-##Data for multiply plot
-plot_sink = [45, 17, 51, 54, 74]
 
-plot_sink = [17, 17, 17, 17, 17, 51, 74, 260, 270, 273, 290, 290, 290, 290, 290, 174, 175, 54, 84, 45]
-plot_time = [69614.81013489112, 77207.60066041496, 77340.74994086033, 83816.50575862321, 88474.8956793223, 34617.36712460182, 30982.481234925883, 36357.680496830486, 45271.959678627885, 23027.750556024763, 20559.836032810344, 26877.25760296158, 26975.78215359961, 37188.631669261405, 50732.408920391805, 73943.3525513, 149484.80417919, 112569.82249152, 47797.44646577, 34786.14689247]
-plot_corr = [73.34874538, 78.29124944, 77.15026779, 77.74458688, 78.0603211, 78.96473908, 78.22833953, 78.59386108, 77.8718668, 77.30801646, 78.3453675, 79.30769461, 78.78456987, 78.13137853, 78.41088411, 78.03140985, 76.67806032, 76.23207367, 76.1266242, 76.07275835]
+    top_sinks = np.array(top_sinks)[np.argsort(top_sinks)]
+    top_times = np.array(top_times)[np.argsort(top_sinks)]
+    top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
+    top_clean = top_clean(np.argsort(top_clean))
+    
+    two_col_width = 7.20472 #inches
+    single_col_width = 3.50394 #inches
+    page_height = 10.62472 #inches
+    font_size = 12
+    
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    matplotlib.rcParams['font.sans-serif'] = 'Arial'
+    matplotlib.rcParams['font.family'] = 'sans-serif'
+    matplotlib.rcParams['mathtext.fontset'] = 'custom' #stixsans'
+    matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+    matplotlib.rcParams['mathtext.rm'] = 'Arial'
+    matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+    matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+    matplotlib.rcParams['mathtext.rm'] = 'Arial'
+    matplotlib.rcParams['mathtext.sf'] = 'Arial'
+    matplotlib.rcParams['mathtext.default'] = 'regular'
+    
+    plt.clf()
+    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.6*two_col_width), sharey=True)
+    plt.subplots_adjust(wspace=0.0)
+    plt.subplots_adjust(hspace=0.0)
+    
+    for plot_it in range(len(top_clean[:10]))
+        pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
+        pickle_data = pickle.load(pickle_open)
+        pickle_open.close()
+        
+        age = pickle_data['age']
+        mass = pickle_data['mass']
+        lum = pickle_data['stellar_luminosity']
+        lacc = pickle_data['accretion_luminosity']
+        ltot = pickle_data['total_luminosity']
+        
+        top_sink_it = np.where(top_sinks==top_clean[plot_it])[0]
+        plot_time = top_times[top_sink_it]
+        time_it = mp.argmin(abs(age - plot_time))
+        end_time = age[time_it] + time_window
+        end_it = np.argmin(abs(age - end_time))
+        useable_times = age[time_it:end_it]
+        useable_L = ltot[time_it:end_it]
+        useable_L = np.log10(useable_L)
+        scaled_T = useable_times - useable_times[0]
+        scaled_L = useable_L - np.min(useable_L)
+        scaled_L = scaled_L/np.max(scaled_L)
+        cor = np.correlate(scaled_L,FU_temp,'same')
+    
+        ax1 = axs.flatten()[plot_it]
+        ax2 = ax1.twinx()
+        ax1.plot(useable_times, scaled_L, label="Scaled Luminosity", color='b')
+        ax1.plot(useable_times, cor[:len(useable_times)]/100., label="Correlation", color='r')
+                            
+        ax2.plot(useable_times, useable_L, color='b')
+
+        if plot_it >4:
+            ax1.set_xlabel('Time (yr)', fontsize=font_size, labelpad=-1)
+        if np.remainder(plot_it, 5) == 0
+            ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=-1)
+        else:
+            yticklabels = ax1.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        if np.remainder(plot_it, 4) == 0 and plot_it > 0:
+            ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=-1)
+        else:
+            yticklabels = ax2.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+                            
+        ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
+        ax1.set_ylim([0, 1])
+        ax2.set_ylim([np.min(useable_L), np.max(useable_L)])
+        
+        ax1.tick_params(axis='x', which='major', direction='in', color='w', top=True)
+        ax1.tick_params(axis='y', which='major', direction='in', color='w', right=True)
+        ax1.xaxis.label.set_color('black')
+        ax1.yaxis.label.set_color('black')
+        ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+        
+        if plot_it == 0:
+            ax1.legend()
+            
+        Cand_string = "Cand. "+str(plot_it+1)
+        Cand_string_raw = r"{}".format(Cand_string)
+        Cand_text = ax.text(np.min(useable_times)+5, 0.9, Cand_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        
+        Corr_string = "Med. Corr="+str(np.median(cor))
+        Corr_string_raw = r"{}".format(Corr_string)
+        Corr_text = ax.text(np.min(useable_times)+5, 0.8, Corr_string_raw, va="center", ha="left", color='k', fontsize=font_size)
+        
+        plt.savefig('Main_body_best_matches.pdf', bbox_inches='tight', pad_inches=0.02)
+        print('Updated Main_body_best_matches.pdf with sink', top_clean[plot_it])
+
 
 
 
