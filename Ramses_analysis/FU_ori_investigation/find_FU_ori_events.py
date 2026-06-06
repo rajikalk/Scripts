@@ -165,7 +165,7 @@ if rank == 0:
     top_sinks = np.array(top_sinks)[np.argsort(top_sinks)]
     top_times = np.array(top_times)[np.argsort(top_sinks)]
     top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
-    top_clean = top_clean(np.argsort(top_clean))
+    top_clean = top_clean[np.argsort(top_clean)]
     
     two_col_width = 7.20472 #inches
     single_col_width = 3.50394 #inches
