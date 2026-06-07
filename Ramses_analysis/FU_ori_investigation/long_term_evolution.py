@@ -166,8 +166,6 @@ for closest_id in closes_inds:
     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
     ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
     ltot_curr[diff_inds] = np.nan
-    import pdb
-    pdb.set_trace()
     if first_comp == True and closest_id not in top_clean:
         ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
         lns.append(ln)
@@ -190,7 +188,7 @@ ln_lab = lns[0]
 for ln_it in lns[1:]:
     ln_lab = ln_lab + ln_it
 labs = [l.get_label() for l in ln_lab]
-axs.flatten()[0].legend(ln_lab, labs, loc='lower left', ncols=2)
+axs.flatten()[0].legend(ln_lab, labs, loc='upper right', ncols=2)
 ax0.set_ylabel('Separation (AU)')
 ax0.set_ylim([5,1000])
 ax0.tick_params(axis='both', direction='in', top=True)
