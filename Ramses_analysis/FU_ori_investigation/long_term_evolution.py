@@ -141,7 +141,7 @@ for sink_id in top_clean:
     #plt.subplots_adjust(hspace=0.0)
 
     Cand_ind = np.where(top_clean == sink_id)[0] + 1
-    plt.titlle('Candidate 'str(Cand_ind))
+    plt.title('Candidate '+str(Cand_ind))
 
     start_time = particle_data['time'][0]
     if str(sink_id) in end_times.keys():
