@@ -54,7 +54,7 @@ print('successfully read global pickle')
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
-end_times = {'10': 540000, '17': 730000, '45':850000}
+end_times = {'10': 540000, '17': 730000, '45':85000}
 
 
 if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
