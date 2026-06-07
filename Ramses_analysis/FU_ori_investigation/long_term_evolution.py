@@ -177,7 +177,7 @@ for sink_id in top_clean:
             ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
             lns.append(ln)
             first_comp = False
-        elif first_comp == True and closest_id not in top_clean:
+        elif first_comp == True and closest_id in top_clean:
             line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
             ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
             lns.append(ln)
