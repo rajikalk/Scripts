@@ -145,7 +145,9 @@ end_it = np.argmin(abs(particle_data['time'] - end_time))
 time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
 
 #Calculate Time chunks for each section
-comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+prop_cycle = plt.rcParams['axes.prop_cycle']
+comp_colors = prop_cycle.by_key()['color']
+#comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 lns = []
 ln = axs.flatten()[0].semilogy(particle_data['time'][:end_it], particle_data['ltot'].T[0][:end_it], label='Candidate accretion_rate')
