@@ -54,7 +54,7 @@ print('successfully read global pickle')
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
-end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000}
+end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, 54:150000, '56':150000, '71':500000, '72':850000, '73':150000, '75':100000, '83':190000, '85':200000, '93':102000, '101':120000, 102:}
 
 
 if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
@@ -135,6 +135,9 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
 #plt.subplots_adjust(wspace=0.0)
 #plt.subplots_adjust(hspace=0.0)
+
+Cand_ind = np.where(top_clean == args.sink_id)[0] + 1
+plt.titlle('Candidate 'str(Cand_ind))
 
 start_time = particle_data['time'][0]
 if str(args.sink_id) in end_times.keys():
