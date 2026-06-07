@@ -58,7 +58,7 @@ for sink_id in top_clean:
     print('successfully read global pickle')
 
 
-    end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, 54:150000, '56':150000, '71':500000, '72':850000, '73':150000, '75':100000, '83':190000, '85':200000, '93':102000, '101':120000}
+    end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, 54:150000, '71':60000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '101':120000, '102':120000, '103':110000, '109:'1050000, 151:390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
 
 
     if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
@@ -141,7 +141,6 @@ for sink_id in top_clean:
     #plt.subplots_adjust(hspace=0.0)
 
     Cand_ind = np.where(top_clean == sink_id)[0] + 1
-    plt.title('Candidate '+str(Cand_ind))
 
     start_time = particle_data['time'][0]
     if str(sink_id) in end_times.keys():
@@ -156,6 +155,7 @@ for sink_id in top_clean:
     comp_colors = prop_cycle.by_key()['color']
     #comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
+    axs.flatten()[0].set_title('Candidate '+str(Cand_ind))
     lns = []
     ln = axs.flatten()[0].semilogy(particle_data['time'][:end_it], particle_data['ltot'].T[0][:end_it], label='Candidate accretion_rate')
     lns.append(ln)
