@@ -74,7 +74,11 @@ if args.update_pickle == 'True':
     updating = False
     
     sink_ind = args.sink_number
-    pickle_name = save_dir+'particle_data_'+str(sink_ind)+'.pkl'
+    pickle_name = save_dir+'particle_data_'+str(sink_ind)
+    if args.high_resolution == 'True':
+        pickle_name = pickle_name +'_high_res'
+    
+    pickle_name = pickle_name+'.pkl'
     
     if os.path.isfile(pickle_name):
         try:
