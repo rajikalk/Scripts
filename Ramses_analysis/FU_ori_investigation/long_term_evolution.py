@@ -53,7 +53,7 @@ end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, 
 
 for sink_id in top_clean:
     save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
-    if os.path.ifile(save_name) == False:
+    if os.path.isfile(save_name) == False:
         global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
         if os.path.isfile(global_pickle) == False:
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
