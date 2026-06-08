@@ -49,7 +49,7 @@ except:
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
-end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, '71':56000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '93':105000, '101':120000, '102':120000, '103':105000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
+end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, '54':150000, 71':56000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '93':105000, '101':120000, '102':120000, '103':105000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
 
 for sink_id in top_clean:
     save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
@@ -165,7 +165,7 @@ for sink_id in top_clean:
         closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
         ax0 = axs.flatten()[0].twinx()
         ln = ax0.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25, label="Separation")
-        ax0.axhline(y=16.6)
+        ax0.axhline(y=16.6, color='k')
         lns.append(ln)
         color_it = 0
         for closest_id in closes_inds:
@@ -234,7 +234,7 @@ for sink_id in top_clean:
         axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
         ax1 = axs.flatten()[1].twinx()
         ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-        ax1.axhline(y=16.6)
+        ax1.axhline(y=16.6, color='k')
         ax1.set_ylabel('Separation (AU)')
         ax1.set_ylim([5,1000])
         ax1.tick_params(axis='both', direction='in', top=True)
@@ -270,7 +270,7 @@ for sink_id in top_clean:
         axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
         ax2 = axs.flatten()[2].twinx()
         ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-        ax2.axhline(y=16.6)
+        ax2.axhline(y=16.6, color='k')
         ax2.set_ylabel('Separation (AU)')
         ax2.set_ylim([5,1000])
         ax2.tick_params(axis='both', direction='in', top=True)
@@ -306,7 +306,7 @@ for sink_id in top_clean:
         axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
         ax3 = axs.flatten()[3].twinx()
         ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-        ax3.axhline(y=16.6)
+        ax3.axhline(y=16.6, color='k')
         ax3.set_ylabel('Separation (AU)')
         ax3.set_ylim([5,1000])
         ax3.tick_params(axis='both', direction='in', top=True)
@@ -342,7 +342,7 @@ for sink_id in top_clean:
         axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
         ax4 = axs.flatten()[4].twinx()
         ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-        ax4.axhline(y=16.6)
+        ax4.axhline(y=16.6, color='k')
         ax4.set_ylabel('Separation (AU)')
         ax4.set_ylim([5,1000])
         ax4.tick_params(axis='both', direction='in', top=True)
