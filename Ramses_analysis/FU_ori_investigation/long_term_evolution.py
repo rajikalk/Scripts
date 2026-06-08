@@ -52,298 +52,300 @@ top_clean = top_clean[np.argsort(top_clean)]
 end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '51':550000, '71':56000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '93':105000, '101':120000, '102':120000, '103':105000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
 
 for sink_id in top_clean:
-    global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
-    if os.path.isfile(global_pickle) == False:
-        global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
-    print('global pickle:', global_pickle)
-    file_open = open(global_pickle, 'rb')
-    particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-    file_open.close()
-    print('successfully read global pickle')
+    save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
+    if os.path.ifile(save_name) == False:
+        global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
+        if os.path.isfile(global_pickle) == False:
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
+        print('global pickle:', global_pickle)
+        file_open = open(global_pickle, 'rb')
+        particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+        file_open.close()
+        print('successfully read global pickle')
 
-    if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
-        print('Calculating Total Luminosity')
-        Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
-        Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
-        Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
+        if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
+            print('Calculating Total Luminosity')
+            Baraffe_mass = yt.YTArray([0.010, 0.015, 0.020, 0.030, 0.040, 0.050, 0.060, 0.070, 0.072, 0.075, 0.080, 0.090, 0.100, 0.110, 0.130, 0.150, 0.170, 0.200, 0.300, 0.400, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.100, 1.200, 1.300, 1.400], 'msun')
+            Baraffe_logL = np.array([-2.469, -2.208, -2.044, -1.783, -1.655, -1.481, -1.399, -1.324, -1.291, -1.261, -1.197, -1.127, -1.154, -1.075, -0.926, -0.795, -0.669, -0.539, -0.199, -0.040, 0.076, 0.171, 0.268, 0.356, 0.436, 0.508, 0.573, 0.634, 0.688, 0.740])
+            Baraffe_radius = yt.YTArray([0.341, 0.416, 0.472, 0.603, 0.665, 0.796, 0.846, 0.905, 0.942, 0.972, 1.045, 1.113, 1.033, 1.115, 1.270, 1.412, 1.568, 1.731, 2.215, 2.364, 2.458, 2.552, 2.687, 2.821, 2.960, 3.096, 3.227, 3.362, 3.488, 3.621], 'rsun')
 
-        #Derive a stellar luminosity
-        print('Calculating luminosity for candidate')
-        facc = 0.5
-        lstar_baraffe_prim = []
-        rstar_barrafe_prim = []
-        Mass_prim = yt.YTArray(particle_data['mass'], 'msun')
-        Mdot_prim = yt.YTArray(particle_data['mdot'], 'msun/yr')
-        for mass_val in Mass_prim:
-            if mass_val < Baraffe_mass[0]:
-                lstar_baraffe_prim.append(10**Baraffe_logL[0])
-                rstar_barrafe_prim.append(Baraffe_radius[0])
+            #Derive a stellar luminosity
+            print('Calculating luminosity for candidate')
+            facc = 0.5
+            lstar_baraffe_prim = []
+            rstar_barrafe_prim = []
+            Mass_prim = yt.YTArray(particle_data['mass'], 'msun')
+            Mdot_prim = yt.YTArray(particle_data['mdot'], 'msun/yr')
+            for mass_val in Mass_prim:
+                if mass_val < Baraffe_mass[0]:
+                    lstar_baraffe_prim.append(10**Baraffe_logL[0])
+                    rstar_barrafe_prim.append(Baraffe_radius[0])
+                else:
+                    closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
+                    gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+                    y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+                    logL = gradient*mass_val + y_intercept
+                    lstar_baraffe_prim.append(10**logL)
+                    
+                    gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+                    y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+                    radius = gradient*mass_val + y_intercept
+                    rstar_barrafe_prim.append(radius)
+
+            lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
+            ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
+            del lstar_baraffe_prim, rstar_barrafe_prim, Mass_prim, Mdot_prim, lacc_prim
+            print('Candidate luminosity finished')
+            
+            print('Calculating luminosity for companion')
+            lstar_baraffe_comp = []
+            rstar_barrafe_comp = []
+            Mass_comp = yt.YTArray(particle_data['closest_mass'], 'msun')
+            Mdot_comp = yt.YTArray(particle_data['closest_mdot'], 'msun/yr')
+            for mass_val in Mass_comp:
+                if mass_val < Baraffe_mass[0]:
+                    lstar_baraffe_comp.append(10**Baraffe_logL[0])
+                    rstar_barrafe_comp.append(Baraffe_radius[0])
+                else:
+                    closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
+                    gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+                    y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+                    logL = gradient*mass_val + y_intercept
+                    lstar_baraffe_comp.append(10**logL)
+                    
+                    gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
+                    y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
+                    radius = gradient*mass_val + y_intercept
+                    rstar_barrafe_comp.append(radius)
+
+            lacc_comp = facc * (yt.units.gravitational_constant_cgs * Mass_comp.in_units('g') * Mdot_comp.in_units('g/s'))/yt.YTArray(rstar_barrafe_comp).in_units('cm')
+            ltot_comp = lacc_comp.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_comp), 'lsun')
+            del lstar_baraffe_comp, rstar_barrafe_comp, Mass_comp, Mdot_comp, lacc_comp
+            print('Companion luminosity finished')
+
+            particle_data.update({'ltot':yt.YTArray([ltot_prim, ltot_comp]).T})
+
+            print('updating pickle')
+            file = open(global_pickle, 'wb')
+            pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+            file.close()
+            print('Finished updating pickle', global_pickle)
+        print('Got total luminosity')
+
+        two_col_width = 7.20472 #inches
+        single_col_width = 3.50394 #inches
+        page_height = 10.62472 #inches
+        font_size = 10
+
+        plt.clf()
+        fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
+        #plt.subplots_adjust(wspace=0.0)
+        #plt.subplots_adjust(hspace=0.0)
+
+        Cand_ind = np.where(top_clean == sink_id)[0] + 1
+
+        start_time = particle_data['time'][0]
+        if str(sink_id) in end_times.keys():
+            end_time = end_times[str(sink_id)]
+        else:
+            end_time = particle_data['time'][-1]
+        end_it = np.argmin(abs(particle_data['time'] - end_time))
+        time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
+
+        #Calculate Time chunks for each section
+        prop_cycle = plt.rcParams['axes.prop_cycle']
+        comp_colors = prop_cycle.by_key()['color']
+        #comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+        axs.flatten()[0].set_title('Candidate '+str(Cand_ind))
+        lns = []
+        ln = axs.flatten()[0].semilogy(particle_data['time'][:end_it], particle_data['ltot'].T[0][:end_it], label='Candidate accretion_rate')
+        lns.append(ln)
+        first_comp = True
+        closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
+        ax0 = axs.flatten()[0].twinx()
+        ln = ax0.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25, label="Separation")
+        lns.append(ln)
+        color_it = 0
+        for closest_id in closes_inds:
+            color_it = color_it + 1
+            if color_it == len(comp_colors):
+                color_it = 0
+            curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
+            diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
+            ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
+            ltot_curr[diff_inds] = np.nan
+            if first_comp == True and closest_id not in top_clean:
+                ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif first_comp == True and closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
+                lns.append(ln)
             else:
-                closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
-                gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
-                y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-                logL = gradient*mass_val + y_intercept
-                lstar_baraffe_prim.append(10**logL)
-                
-                gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
-                y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-                radius = gradient*mass_val + y_intercept
-                rstar_barrafe_prim.append(radius)
+                axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
+        axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
+        axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
+        ln_lab = lns[0]
+        for ln_it in lns[1:]:
+            ln_lab = ln_lab + ln_it
+        labs = [l.get_label() for l in ln_lab]
+        axs.flatten()[0].legend(ln_lab, labs, loc='upper right', ncols=2)
+        ax0.set_ylabel('Separation (AU)')
+        ax0.set_ylim([5,1000])
+        ax0.tick_params(axis='both', direction='in', top=True)
+        print('plotted time panel 1')
 
-        lacc_prim = facc * (yt.units.gravitational_constant_cgs * Mass_prim.in_units('g') * Mdot_prim.in_units('g/s'))/yt.YTArray(rstar_barrafe_prim).in_units('cm')
-        ltot_prim = lacc_prim.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_prim), 'lsun')
-        del lstar_baraffe_prim, rstar_barrafe_prim, Mass_prim, Mdot_prim, lacc_prim
-        print('Candidate luminosity finished')
-        
-        print('Calculating luminosity for companion')
-        lstar_baraffe_comp = []
-        rstar_barrafe_comp = []
-        Mass_comp = yt.YTArray(particle_data['closest_mass'], 'msun')
-        Mdot_comp = yt.YTArray(particle_data['closest_mdot'], 'msun/yr')
-        for mass_val in Mass_comp:
-            if mass_val < Baraffe_mass[0]:
-                lstar_baraffe_comp.append(10**Baraffe_logL[0])
-                rstar_barrafe_comp.append(Baraffe_radius[0])
+        axs.flatten()[1].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
+        color_it = 0
+        for closest_id in closes_inds:
+            color_it = color_it + 1
+            if color_it == len(comp_colors):
+                color_it = 0
+            curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
+            diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
+            ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
+            ltot_curr[diff_inds] = np.nan
+            if first_comp == True and closest_id not in top_clean:
+                ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif first_comp == True and closest_id not in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
+                lns.append(ln)
             else:
-                closest_inds = sorted(np.argsort(np.abs(Baraffe_mass - mass_val))[:2])
-                gradient = (Baraffe_logL[closest_inds][1] - Baraffe_logL[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
-                y_intercept = Baraffe_logL[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-                logL = gradient*mass_val + y_intercept
-                lstar_baraffe_comp.append(10**logL)
-                
-                gradient = (Baraffe_radius[closest_inds][1] - Baraffe_radius[closest_inds][0])/(Baraffe_mass[closest_inds][1] - Baraffe_mass[closest_inds][0])
-                y_intercept = Baraffe_radius[closest_inds][1] - gradient*Baraffe_mass[closest_inds][1]
-                radius = gradient*mass_val + y_intercept
-                rstar_barrafe_comp.append(radius)
+                axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
+        axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
+        axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
+        ax1 = axs.flatten()[1].twinx()
+        ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax1.set_ylabel('Separation (AU)')
+        ax1.set_ylim([5,1000])
+        ax1.tick_params(axis='both', direction='in', top=True)
+        print('plotted time panel 2')
 
-        lacc_comp = facc * (yt.units.gravitational_constant_cgs * Mass_comp.in_units('g') * Mdot_comp.in_units('g/s'))/yt.YTArray(rstar_barrafe_comp).in_units('cm')
-        ltot_comp = lacc_comp.in_units('lsun') + yt.YTArray(np.array(lstar_baraffe_comp), 'lsun')
-        del lstar_baraffe_comp, rstar_barrafe_comp, Mass_comp, Mdot_comp, lacc_comp
-        print('Companion luminosity finished')
+        axs.flatten()[2].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
+        color_it = 0
+        for closest_id in closes_inds:
+            color_it = color_it + 1
+            if color_it == len(comp_colors):
+                color_it = 0
+            curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
+            diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
+            ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
+            ltot_curr[diff_inds] = np.nan
+            if first_comp == True and closest_id not in top_clean:
+                ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif first_comp == True and closest_id not in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
+                lns.append(ln)
+            else:
+                axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
+        axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
+        axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
+        ax2 = axs.flatten()[2].twinx()
+        ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax2.set_ylabel('Separation (AU)')
+        ax2.set_ylim([5,1000])
+        ax2.tick_params(axis='both', direction='in', top=True)
+        print('plotted time panel 3')
 
-        particle_data.update({'ltot':yt.YTArray([ltot_prim, ltot_comp]).T})
+        axs.flatten()[3].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
+        color_it = 0
+        for closest_id in closes_inds:
+            color_it = color_it + 1
+            if color_it == len(comp_colors):
+                color_it = 0
+            curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
+            diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
+            ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
+            ltot_curr[diff_inds] = np.nan
+            if first_comp == True and closest_id not in top_clean:
+                ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif first_comp == True and closest_id not in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
+                lns.append(ln)
+            else:
+                axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
+        axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
+        axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
+        ax3 = axs.flatten()[3].twinx()
+        ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax3.set_ylabel('Separation (AU)')
+        ax3.set_ylim([5,1000])
+        ax3.tick_params(axis='both', direction='in', top=True)
+        print('plotted time panel 4')
 
-        print('updating pickle')
-        file = open(global_pickle, 'wb')
-        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
-        file.close()
-        print('Finished updating pickle', global_pickle)
-    print('Got total luminosity')
+        axs.flatten()[4].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
+        color_it = 0
+        for closest_id in closes_inds:
+            color_it = color_it + 1
+            if color_it == len(comp_colors):
+                color_it = 0
+            curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
+            diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
+            ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
+            ltot_curr[diff_inds] = np.nan
+            if first_comp == True and closest_id not in top_clean:
+                ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif first_comp == True and closest_id not in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
+                lns.append(ln)
+                first_comp = False
+            elif closest_id in top_clean:
+                line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
+                ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
+                lns.append(ln)
+            else:
+                axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr, ls=':')
+        axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
+        axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
+        ax4 = axs.flatten()[4].twinx()
+        ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax4.set_ylabel('Separation (AU)')
+        ax4.set_ylim([5,1000])
+        ax4.tick_params(axis='both', direction='in', top=True)
+        axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
+        #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
+        print('plotted time panel 5')
 
-    two_col_width = 7.20472 #inches
-    single_col_width = 3.50394 #inches
-    page_height = 10.62472 #inches
-    font_size = 10
-
-    plt.clf()
-    fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
-    #plt.subplots_adjust(wspace=0.0)
-    #plt.subplots_adjust(hspace=0.0)
-
-    Cand_ind = np.where(top_clean == sink_id)[0] + 1
-
-    start_time = particle_data['time'][0]
-    if str(sink_id) in end_times.keys():
-        end_time = end_times[str(sink_id)]
-    else:
-        end_time = particle_data['time'][-1]
-    end_it = np.argmin(abs(particle_data['time'] - end_time))
-    time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
-
-    #Calculate Time chunks for each section
-    prop_cycle = plt.rcParams['axes.prop_cycle']
-    comp_colors = prop_cycle.by_key()['color']
-    #comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
-
-    axs.flatten()[0].set_title('Candidate '+str(Cand_ind))
-    lns = []
-    ln = axs.flatten()[0].semilogy(particle_data['time'][:end_it], particle_data['ltot'].T[0][:end_it], label='Candidate accretion_rate')
-    lns.append(ln)
-    first_comp = True
-    closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
-    ax0 = axs.flatten()[0].twinx()
-    ln = ax0.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25, label="Separation")
-    lns.append(ln)
-    color_it = 0
-    for closest_id in closes_inds:
-        color_it = color_it + 1
-        if color_it == len(comp_colors):
-            color_it = 0
-        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
-        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
-        ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
-        ltot_curr[diff_inds] = np.nan
-        if first_comp == True and closest_id not in top_clean:
-            ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif first_comp == True and closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
-            lns.append(ln)
-        else:
-            axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
-    axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
-    axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
-    axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
-    ln_lab = lns[0]
-    for ln_it in lns[1:]:
-        ln_lab = ln_lab + ln_it
-    labs = [l.get_label() for l in ln_lab]
-    axs.flatten()[0].legend(ln_lab, labs, loc='upper right', ncols=2)
-    ax0.set_ylabel('Separation (AU)')
-    ax0.set_ylim([5,1000])
-    ax0.tick_params(axis='both', direction='in', top=True)
-    print('plotted time panel 1')
-
-    axs.flatten()[1].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
-    color_it = 0
-    for closest_id in closes_inds:
-        color_it = color_it + 1
-        if color_it == len(comp_colors):
-            color_it = 0
-        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
-        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
-        ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
-        ltot_curr[diff_inds] = np.nan
-        if first_comp == True and closest_id not in top_clean:
-            ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif first_comp == True and closest_id not in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
-            lns.append(ln)
-        else:
-            axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
-    axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
-    axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
-    axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
-    ax1 = axs.flatten()[1].twinx()
-    ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-    ax1.set_ylabel('Separation (AU)')
-    ax1.set_ylim([5,1000])
-    ax1.tick_params(axis='both', direction='in', top=True)
-    print('plotted time panel 2')
-
-    axs.flatten()[2].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
-    color_it = 0
-    for closest_id in closes_inds:
-        color_it = color_it + 1
-        if color_it == len(comp_colors):
-            color_it = 0
-        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
-        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
-        ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
-        ltot_curr[diff_inds] = np.nan
-        if first_comp == True and closest_id not in top_clean:
-            ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif first_comp == True and closest_id not in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
-            lns.append(ln)
-        else:
-            axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
-    axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
-    axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
-    axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
-    ax2 = axs.flatten()[2].twinx()
-    ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-    ax2.set_ylabel('Separation (AU)')
-    ax2.set_ylim([5,1000])
-    ax2.tick_params(axis='both', direction='in', top=True)
-    print('plotted time panel 3')
-
-    axs.flatten()[3].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
-    color_it = 0
-    for closest_id in closes_inds:
-        color_it = color_it + 1
-        if color_it == len(comp_colors):
-            color_it = 0
-        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
-        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
-        ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
-        ltot_curr[diff_inds] = np.nan
-        if first_comp == True and closest_id not in top_clean:
-            ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif first_comp == True and closest_id not in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
-            lns.append(ln)
-        else:
-            axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
-    axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
-    axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
-    axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
-    ax3 = axs.flatten()[3].twinx()
-    ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-    ax3.set_ylabel('Separation (AU)')
-    ax3.set_ylim([5,1000])
-    ax3.tick_params(axis='both', direction='in', top=True)
-    print('plotted time panel 4')
-
-    axs.flatten()[4].semilogy(particle_data['time'][:end_it], yt.YTArray(particle_data['ltot'][:end_it]).T[0])
-    color_it = 0
-    for closest_id in closes_inds:
-        color_it = color_it + 1
-        if color_it == len(comp_colors):
-            color_it = 0
-        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][:end_it]) == closest_id).T[0]
-        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][:end_it])), curr_inds)
-        ltot_curr = np.copy(yt.YTArray(particle_data['ltot'][:end_it]).T[1])
-        ltot_curr[diff_inds] = np.nan
-        if first_comp == True and closest_id not in top_clean:
-            ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif first_comp == True and closest_id not in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label='Closest sink luminosity ('+line_label+')', color=comp_colors[color_it])
-            lns.append(ln)
-            first_comp = False
-        elif closest_id in top_clean:
-            line_label = 'Cand. ' + str(int(np.where(top_clean == closest_id)[0]) + 1)
-            ln = axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':', label=line_label, color=comp_colors[color_it])
-            lns.append(ln)
-        else:
-            axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr, ls=':')
-    axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
-    axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
-    axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
-    ax4 = axs.flatten()[4].twinx()
-    ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-    ax4.set_ylabel('Separation (AU)')
-    ax4.set_ylim([5,1000])
-    ax4.tick_params(axis='both', direction='in', top=True)
-    axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
-    #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
-    print('plotted time panel 5')
-
-    plt.savefig('long_term_evolution_ltot_'+str(sink_id)+'.pdf', bbox_inches='tight', pad_inches=0.02)
+        plt.savefig(save_name, bbox_inches='tight', pad_inches=0.02)
 
     '''
     plt.clf()
