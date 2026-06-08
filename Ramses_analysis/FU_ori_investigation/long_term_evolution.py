@@ -165,6 +165,7 @@ for sink_id in top_clean:
         closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
         ax0 = axs.flatten()[0].twinx()
         ln = ax0.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25, label="Separation")
+        ax0.axhline(y=16.6)
         lns.append(ln)
         color_it = 0
         for closest_id in closes_inds:
@@ -233,6 +234,7 @@ for sink_id in top_clean:
         axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
         ax1 = axs.flatten()[1].twinx()
         ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax1.axhline(y=16.6)
         ax1.set_ylabel('Separation (AU)')
         ax1.set_ylim([5,1000])
         ax1.tick_params(axis='both', direction='in', top=True)
@@ -268,6 +270,7 @@ for sink_id in top_clean:
         axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
         ax2 = axs.flatten()[2].twinx()
         ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax2.axhline(y=16.6)
         ax2.set_ylabel('Separation (AU)')
         ax2.set_ylim([5,1000])
         ax2.tick_params(axis='both', direction='in', top=True)
@@ -303,6 +306,7 @@ for sink_id in top_clean:
         axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
         ax3 = axs.flatten()[3].twinx()
         ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax3.axhline(y=16.6)
         ax3.set_ylabel('Separation (AU)')
         ax3.set_ylim([5,1000])
         ax3.tick_params(axis='both', direction='in', top=True)
@@ -338,6 +342,7 @@ for sink_id in top_clean:
         axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
         ax4 = axs.flatten()[4].twinx()
         ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
+        ax4.axhline(y=16.6)
         ax4.set_ylabel('Separation (AU)')
         ax4.set_ylim([5,1000])
         ax4.tick_params(axis='both', direction='in', top=True)
