@@ -234,7 +234,7 @@ for sink_id in top_clean:
         axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
         ax1 = axs.flatten()[1].twinx()
         ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
-        ax1.axhline(y=16.6, color='k', ls='--', ls='--')
+        ax1.axhline(y=16.6, color='k', ls='--')
         ax1.set_ylabel('Separation (AU)')
         ax1.set_ylim([5,1000])
         ax1.tick_params(axis='both', direction='in', top=True)
