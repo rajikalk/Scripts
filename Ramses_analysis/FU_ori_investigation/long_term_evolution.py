@@ -49,6 +49,8 @@ except:
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
+end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '54':150000, '71':60000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '101':120000, '102':120000, '103':110000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
+
 for sink_id in top_clean:
     global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
     print('global pickle:', global_pickle)
@@ -56,10 +58,6 @@ for sink_id in top_clean:
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
     print('successfully read global pickle')
-
-
-    end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '54':150000, '71':60000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '101':120000, '102':120000, '103':110000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
-
 
     if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
         print('Calculating Total Luminosity')

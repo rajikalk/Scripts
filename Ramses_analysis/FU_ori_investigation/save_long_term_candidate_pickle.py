@@ -35,6 +35,8 @@ args = parse_inputs()
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
+end_times = {'10': 540000, '17': 730000, '45':79000, '48':1450000, '54':150000, '71':60000, '72':850000, '73':120000, '75':90000, '83':185000, '85':195000, '101':120000, '102':120000, '103':110000, '109':1050000, '151':390000, '154':630000, '159':610000, '168':420000, '175':265000, '176':265000, '177':400000, '275':51000}
+
 save_dir = sys.argv[1]
 if save_dir[-1] != '/':
     save_dir = save_dir + '/'
@@ -74,6 +76,12 @@ if args.update_pickle == 'True':
     updating = False
     
     sink_ind = args.sink_number
+    if args.end_save_time != None:
+        end_time = args.end_save_time
+    elif str(sink_ind) in end_times.keys():
+        end_time = end_times[str(sink_ind)]
+    else:
+        end_time = None
     pickle_name = save_dir+'particle_data_'+str(sink_ind)
     if args.high_resolution == 'True':
         pickle_name = pickle_name +'_high_res'
@@ -131,7 +139,7 @@ if args.update_pickle == 'True':
                 if sink_form_time == 0:
                     sink_form_time = sink_data[sink_ind][14]*units['time_unit'].in_units('yr')
                 time_val = sink_data[sink_ind][17]*units['time_unit'].in_units('yr') - sink_form_time
-                if args.end_save_time == None or time_val < yt.YTQuantity(args.end_save_time, 'yr'):
+                if end_time == None or time_val < yt.YTQuantity(end_time, 'yr'):
                     particle_data['time'] = np.append(particle_data['time'], time_val)
                     particle_mass = sink_data[sink_ind][9]*units['mass_unit'].in_units('msun')
                     particle_data['mass'] = np.append(particle_data['mass'], particle_mass)
