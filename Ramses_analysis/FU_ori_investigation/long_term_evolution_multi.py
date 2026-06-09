@@ -63,7 +63,7 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.1)
-smoothing_window = 200
+smoothing_window = 500
 do_smoothing = True
 plot_whole_binary = True
 plot_windows = False
@@ -151,8 +151,6 @@ for sink_ind in sink_inds:
                 smooth_q = []
                 smooth_e = []
                 smooth_sep = []
-                import pdb
-                pdb.set_trace()
                 for it in range(len(particle_data['time'])):
                     curr_time = particle_data['time'][it]
                     start_time = particle_data['time'][it] - smoothing_window/2
