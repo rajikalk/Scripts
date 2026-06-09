@@ -64,7 +64,7 @@ plt.subplots_adjust(hspace=0.0)
 smoothing_window = 200
 do_smoothing = False
 
-axs.flatten()[0].set_xlim([left=0])
+axs.flatten()[0].set_xlim(left=0)
 axs.flatten()[0].set_ylabel('$M_{cand.}/M_{clos.}$')
 #axs.flatten()[0].set_ylim([0, 1.5])
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
