@@ -66,15 +66,15 @@ do_smoothing = False
 
 #axs.flatten()[0].set_xlim([0, 75000])
 axs.flatten()[0].set_ylabel('$M_{cand.}/M_{clos.}$')
-axs.flatten()[0].set_ylim([0, 1.5])
+#axs.flatten()[0].set_ylim([0, 1.5])
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[0].axhline(y=1.6, color='k', ls='--', label="2r$_{\mathrm{acc}}$")
 axs.flatten()[1].set_ylabel('Eccentricity')
-axs.flatten()[1].set_ylim([0.1, 1.15])
+#axs.flatten()[1].set_ylim([0.1, 1.15])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
-axs.flatten()[2].set_ylim([5.e0, 3e2])
+#axs.flatten()[2].set_ylim([5.e0, 3e2])
 axs.flatten()[2].axhline(y=200, color='k', ls='--')
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
@@ -177,7 +177,7 @@ for sink_ind in sink_inds:
                 axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
                 axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
                 
-        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2), ncol=5)
+        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.5), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
