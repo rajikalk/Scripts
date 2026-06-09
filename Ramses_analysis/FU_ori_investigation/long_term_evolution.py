@@ -5,6 +5,7 @@ import numpy as np
 import os
 import glob
 from mpi4py.MPI import COMM_WORLD as CW
+import matplotlib.colors as mcolors
 import scipy.interpolate as interp
 import pickle
 import yt
@@ -49,7 +50,7 @@ except:
 top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
 top_clean = top_clean[np.argsort(top_clean)]
 
-end_times = {'10':300000, '17':380000, '45':30000, '48':1450000, '51':280000, '54':150000, '56':10000, '71':22000, '72':90000, '73':70000, '75':36000, '83':55000, '85':60000, '93':105000, '101':10000, '102':10000, '103':50000, '109':1000000, '118':325000, '141':500000, '150':750000, '151':240000, '154':240000, '159':190000, '168':90000, '175':80000, '176':75000, '177':230000, '221':35000, '239':90000, '258':26000, '262':55000, '272':7000, '275':51000, '292':440000, '309':10000}
+end_times = {'10':300000, '17':380000, '45':30000, '48':1450000, '51':280000, '54':150000, '56':10000, '71':22000, '72':90000, '73':70000, '75':36000, '83':55000, '85':60000, '93':105000, '101':10000, '102':10000, '103':50000, '109':1000000, '118':325000, '141':500000, '150':750000, '151':240000, '154':240000, '159':190000, '168':90000, '175':80000, '176':75000, '177':230000, '221':35000, '239':90000, '258':26000, '262':55000, '272':7000, '275':51000, '292':79000, '309':10000}
 
 for sink_id in top_clean:
     save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
@@ -153,8 +154,9 @@ for sink_id in top_clean:
         time_bounds = np.append(np.arange(start_time, end_time, (end_time-start_time)/5), end_time)
 
         #Calculate Time chunks for each section
-        prop_cycle = plt.rcParams['axes.prop_cycle']
-        comp_colors = prop_cycle.by_key()['color']
+        #prop_cycle = plt.rcParams['axes.prop_cycle']
+        #comp_colors = prop_cycle.by_key()['color']
+        comp_colors = mcolors.TABLEUC_COLORS
         #comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
         axs.flatten()[0].set_title('Candidate '+str(Cand_ind))
