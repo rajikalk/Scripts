@@ -63,7 +63,7 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.1)
-smoothing_window = 500
+smoothing_window = 1000
 do_smoothing = True
 plot_whole_binary = True
 plot_windows = False
