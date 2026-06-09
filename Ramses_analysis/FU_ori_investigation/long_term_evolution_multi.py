@@ -61,7 +61,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.1*single_col_width), sharex=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 200
 do_smoothing = False
@@ -76,9 +76,9 @@ axs.flatten()[1].set_ylim([0, 2])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[0].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
-axs.flatten()[0].set_ylim([16.6, 5e3])
-axs.flatten()[0].axhline(y=100, color='k', ls='--', label="r$_{\mathrm{acc}}$")
-axs.flatten()[0].axhline(y=16.6, color='k', ls='--', lw=0.5)
+axs.flatten()[0].set_ylim([5, 5e3])
+axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
+#axs.flatten()[0].axhline(y=16.6, color='k', ls='--', lw=0.5)
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 
 label_it = -1
