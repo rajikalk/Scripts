@@ -164,8 +164,8 @@ for sink_ind in sink_inds:
             for time_window in plot_window[str(sink_ind)]:
                 start_t = time_window[0]
                 end_t = time_window[-1]
-                start_it = np.argmin(abs(particle_data - start_t))
-                end_it = np.argmin(abs(particle_data - end_t))
+                start_it = np.argmin(abs(particle_data['time'] - start_t))
+                end_it = np.argmin(abs(particle_data['time'] - end_t))
                 mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
                 smooth_t = particle_data['time'][start_it:end_it]
                 smooth_q = mass_ratio[start_it:end_it]
