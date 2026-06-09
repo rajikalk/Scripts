@@ -159,7 +159,7 @@ for sink_ind in sink_inds:
             file_open = open(pickle_file, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
-            print('Finished reading pickle)
+            print('Finished reading pickle')
             
             for time_window in plot_window[str(sink_ind)]:
                 start_t = time_window[0]
