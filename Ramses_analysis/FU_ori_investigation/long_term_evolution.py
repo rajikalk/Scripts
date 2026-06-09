@@ -200,7 +200,7 @@ for sink_id in top_clean:
         for ln_it in lns[1:]:
             ln_lab = ln_lab + ln_it
         labs = [l.get_label() for l in ln_lab]
-        axs.flatten()[0].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.75)
+        axs.flatten()[0].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.9)
         ax0.set_ylabel('Separation (AU)')
         ax0.set_ylim([5,1000])
         ax0.tick_params(axis='both', direction='in', top=True)
