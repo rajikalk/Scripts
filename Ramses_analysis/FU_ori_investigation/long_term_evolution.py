@@ -156,7 +156,7 @@ for sink_id in top_clean:
         #Calculate Time chunks for each section
         #prop_cycle = plt.rcParams['axes.prop_cycle']
         #comp_colors = prop_cycle.by_key()['color']
-        comp_colors = mcolors.TABLEAU_COLORS
+        comp_colors = list(mcolors.TABLEAU_COLORS)
         #comp_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
         axs.flatten()[0].set_title('Candidate '+str(Cand_ind))
