@@ -62,6 +62,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.1*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
 smoothing_window = 200
+do_smoothing = False
 
 #axs.flatten()[0].set_xlim([0, 75000])
 axs.flatten()[0].set_ylabel('$M_{cand.}/M_{clos.}$')
@@ -80,79 +81,103 @@ axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 for sink_ind in sink_inds:
     pickle_file = '/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
-        if os.path.isfile('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
-            file_open = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
-            smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
-            file_open.close()
-            
-            plot_colour = None
-            for time_window in plot_window[str(sink_ind)]:
-                start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
-                end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
+        if do_smoothing == True:
+            if os.path.isfile('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
+                file_open = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
+                smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
+                file_open.close()
                 
-                if sink_ind == 45:
-                    alpha_val = 1.0
-                else:
-                    alpha_val = 0.25
+                plot_colour = None
+                for time_window in plot_window[str(sink_ind)]:
+                    start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
+                    end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
+                    
+                    if sink_ind == 45:
+                        alpha_val = 1.0
+                    else:
+                        alpha_val = 0.25
+                    
+                    if sink_inds.index(sink_ind) > 9:
+                        line_style = ':'
+                    else:
+                        line_style = '-'
+                    
+                    if plot_colour == None:
+                        p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
+                        axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
+                        axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
+                        plot_colour = p[-1].get_color()
+                    else:
+                        axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                        axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                        axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+            else:
+                print('reading ', pickle_file)
+                file_open = open(pickle_file, 'rb')
+                particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+                file_open.close()
+                print('Finished reading pickle, calculating smoothed quantities')
                 
-                if sink_inds.index(sink_ind) > 9:
-                    line_style = ':'
-                else:
-                    line_style = '-'
+                mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
+                smooth_t = []
+                smooth_q = []
+                smooth_e = []
+                smooth_sep = []
+                for it in range(len(particle_data['time'])):
+                    curr_time = particle_data['time'][it]
+                    start_time = particle_data['time'][it] - smoothing_window/2
+                    if start_time < 0:
+                        start_time = 0
+                    start_it = np.argmin(abs(yt.YTArray(particle_data['time']) - start_time))
+                    
+                    end_time = particle_data['time'][it] + smoothing_window/2
+                    if end_time > particle_data['time'][-1]:
+                        end_time = particle_data['time'][-1]
+                    end_it = np.argmin(abs(yt.YTArray(particle_data['time']) - end_time))
+                    
+                    mean_t = np.mean(particle_data['time'][start_it:end_it])
+                    mean_q = np.mean(mass_ratio[start_it:end_it])
+                    mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
+                    mean_sep = np.mean(particle_data['separation'][start_it:end_it])
+                    smooth_t.append(mean_t)
+                    smooth_q.append(mean_q)
+                    smooth_e.append(mean_e)
+                    smooth_sep.append(mean_sep)
                 
-                if plot_colour == None:
-                    p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
-                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
-                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
-                    plot_colour = p[-1].get_color()
-                else:
-                    axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
-                    axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
-                    axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                label = "Cand. " + str(sink_inds.index(sink_ind)+1)
+                axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
+                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
+                axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
+                
+                print('updating pickle')
+                file = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
+                pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
+                file.close()
+                print('Finished updating pickle', '/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
         else:
             print('reading ', pickle_file)
             file_open = open(pickle_file, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
             file_open.close()
-            print('Finished reading pickle, calculating smoothed quantities')
+            print('Finished reading pickle)
             
-            mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-            smooth_t = []
-            smooth_q = []
-            smooth_e = []
-            smooth_sep = []
-            for it in range(len(particle_data['time'])):
-                curr_time = particle_data['time'][it]
-                start_time = particle_data['time'][it] - smoothing_window/2
-                if start_time < 0:
-                    start_time = 0
-                start_it = np.argmin(abs(yt.YTArray(particle_data['time']) - start_time))
+            for time_window in plot_window[str(sink_ind)]:
+                start_t = time_window[0]
+                end_t = time_window[-1]
+                start_it = np.argmin(abs(particle_data - start_t))
+                end_it = np.argmin(abs(particle_data - end_t))
+                mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
+                smooth_t = particle_data['time'][start_it:end_it]
+                smooth_q = mass_ratio[start_it:end_it]
+                smooth_e = particle_data['eccentricity'][start_it:end_it]
+                smooth_sep = particle_data['separation'][start_it:end_it]
                 
-                end_time = particle_data['time'][it] + smoothing_window/2
-                if end_time > particle_data['time'][-1]:
-                    end_time = particle_data['time'][-1]
-                end_it = np.argmin(abs(yt.YTArray(particle_data['time']) - end_time))
+                label = "Cand. " + str(sink_inds.index(sink_ind)+1)
+                axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
+                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
+                axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
                 
-                mean_t = np.mean(particle_data['time'][start_it:end_it])
-                mean_q = np.mean(mass_ratio[start_it:end_it])
-                mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
-                mean_sep = np.mean(particle_data['separation'][start_it:end_it])
-                smooth_t.append(mean_t)
-                smooth_q.append(mean_q)
-                smooth_e.append(mean_e)
-                smooth_sep.append(mean_sep)
-            
-            label = "Cand. " + str(sink_inds.index(sink_ind)+1)
-            axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
-            axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
-            axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
-            
-            print('updating pickle')
-            file = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
-            pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
-            file.close()
-            print('Finished updating pickle', '/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
-        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.8), ncol=5)
+        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
