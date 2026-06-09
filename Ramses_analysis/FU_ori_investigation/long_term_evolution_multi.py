@@ -61,7 +61,7 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.1*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
-smoothing_window = 100
+smoothing_window = 200
 
 #axs.flatten()[0].set_xlim([0, 75000])
 axs.flatten()[0].set_ylabel('$M_{cand.}/M_{clos.}$')
@@ -101,9 +101,6 @@ for sink_ind in sink_inds:
                     line_style = '-'
                 
                 if plot_colour == None:
-                    label = "Cand. " + str(sink_inds.index(sink_ind)+1)
-                    import pdb
-                    pdb.set_trace()
                     p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
@@ -145,7 +142,8 @@ for sink_ind in sink_inds:
                 smooth_e.append(mean_e)
                 smooth_sep.append(mean_sep)
             
-            axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=str(sink_ind))
+            label = "Cand. " + str(sink_inds.index(sink_ind)+1)
+            axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
             axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
             axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
             
