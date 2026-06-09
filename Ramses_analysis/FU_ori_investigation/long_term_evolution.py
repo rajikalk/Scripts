@@ -56,7 +56,8 @@ end_times = {'10':300000, '17':380000, '45':30000, '48':1450000, '51':280000, '5
 for sink_id in top_clean:
     if args.low_res_pickle == 'True':
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'_low_res.pdf'
-    save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
+    else:
+        save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
     if os.path.isfile(save_name) == False:
         if args.low_res_pickle == 'True':
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
