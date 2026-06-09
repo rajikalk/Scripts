@@ -102,6 +102,8 @@ for sink_ind in sink_inds:
                 
                 if plot_colour == None:
                     label = "Cand. " + str(sink_inds.index(sink_ind)+1)
+                    import pdb
+                    pdb.set_trace()
                     p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
                     axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
                     axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
