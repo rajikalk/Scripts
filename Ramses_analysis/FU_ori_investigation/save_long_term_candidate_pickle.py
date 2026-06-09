@@ -122,6 +122,7 @@ if args.update_pickle == 'True':
         particle_data.update({'closest_sink':np.array([])})
         particle_data.update({'closest_mass':np.array([])})
         particle_data.update({'closest_mdot':np.array([])})
+        particle_data.update({'semimajor_axis':np.array([])})
         counter = 0
         sink_form_time = 0
         
@@ -204,9 +205,12 @@ if args.update_pickle == 'True':
                         L_tot = np.sqrt(np.sum(L**2))
                         h_val = L_tot/reduced_mass.in_units('g')
                         e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g')))**2.))
+                        semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g'))*(1-e**2))).in_units('AU')
                     else:
                         e = np.nan
+                        semimajor_a = np.nan
                     particle_data['eccentricity'] = np.append(particle_data['eccentricity'], e)
+                    particle_data['semimajor_axis'] = np.append(particle_data['semimajor_axis'], e)
                 
                 else:
                     break
