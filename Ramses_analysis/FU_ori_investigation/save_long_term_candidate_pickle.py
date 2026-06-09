@@ -81,7 +81,7 @@ if args.update_pickle == 'True':
     updating = False
     
     sink_ind = args.sink_number
-    if save_all_sinks == False:
+    if args.save_all_sinks == False:
         save_sinks = [sink_ind]
     else:
         save_sinks = top_clean
