@@ -64,8 +64,9 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 200
-do_smoothing = False
+do_smoothing = True
 plot_whole_binary = True
+plot_windows = False
 
 axs.flatten()[2].set_xlim([0, 1.1e6])
 axs.flatten()[2].set_ylabel('$M_{cand.}/M_{clos.}$')
@@ -93,30 +94,51 @@ for sink_ind in sink_inds:
                 smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
                 file_open.close()
                 
-                plot_colour = None
-                for time_window in plot_window[str(sink_ind)]:
-                    start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
-                    end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
+                if plot_windows == True:
+                    plot_colour = None
+                    for time_window in plot_window[str(sink_ind)]:
+                        start_ind = np.argmin(abs(np.array(smooth_t)-time_window[0]))
+                        end_ind = np.argmin(abs(np.array(smooth_t)-time_window[1]))
                     
+                        if sink_ind == 45:
+                            alpha_val = 1.0
+                        else:
+                            alpha_val = 0.25
+                        
+                        label = "Cand. " + labels[label_it]
+                        if '*' in labels[label_it]:
+                            ls = ':'
+                        elif '^' in labels[label_it]:
+                            ls='--'
+                        else:
+                            ls='-'
+                        
+                        if plot_colour == None:
+                            p = axs.flatten()[2].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
+                            axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
+                            axs.flatten()[0].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
+                            plot_colour = p[-1].get_color()
+                        else:
+                            axs.flatten()[2].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                            axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                            axs.flatten()[0].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                else:
                     if sink_ind == 45:
                         alpha_val = 1.0
                     else:
                         alpha_val = 0.25
                     
-                    if sink_inds.index(sink_ind) > 9:
+                    label = "Cand. " + labels[label_it]
+                    if '*' in labels[label_it]:
                         line_style = ':'
+                    elif '^' in labels[label_it]:
+                        line_style='--'
                     else:
-                        line_style = '-'
+                        line_style='-'
                     
-                    if plot_colour == None:
-                        p = axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
-                        axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
-                        axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
-                        plot_colour = p[-1].get_color()
-                    else:
-                        axs.flatten()[0].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
-                        axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
-                        axs.flatten()[2].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
+                    p = axs.flatten()[2].plot(np.array(smooth_t), np.array(smooth_q), alpha=alpha_val, ls=line_style)
+                    axs.flatten()[1].plot(np.array(smooth_t), np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
+                    axs.flatten()[0].semilogy(np.array(smooth_t), np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style, , label=label)
             else:
                 print('reading ', pickle_file)
                 file_open = open(pickle_file, 'rb')
@@ -150,10 +172,16 @@ for sink_ind in sink_inds:
                     smooth_e.append(mean_e)
                     smooth_sep.append(mean_sep)
                 
-                label = "Cand. " + str(sink_inds.index(sink_ind)+1)
-                axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
-                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
-                axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
+                label = "Cand. " + labels[label_it]
+                if '*' in labels[label_it]:
+                    ls = ':'
+                elif '^' in labels[label_it]:
+                    ls='--'
+                else:
+                    ls='-'
+                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=ls)
+                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=ls)
+                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=ls)
                 
                 print('updating pickle')
                 file = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
