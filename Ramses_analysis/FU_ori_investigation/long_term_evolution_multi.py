@@ -179,9 +179,9 @@ for sink_ind in sink_inds:
                 smooth_sep = particle_data['separation'][start_it:end_it]
                 
                 label = "Cand. " + labels[label_it]
-                axs.flatten()[0].plot(smooth_t, smooth_q, alpha=0.25, label=label)
+                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, label=label)
                 axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25)
-                axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
+                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25)
                 
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.5), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
