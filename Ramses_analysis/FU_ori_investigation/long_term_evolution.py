@@ -16,6 +16,7 @@ def parse_inputs():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("-sink", "--sink_id", help="which sink?", type=int, default=None)
+    parser.add_argument("-low_res", "--low_res_pickle", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
@@ -53,9 +54,14 @@ top_clean = top_clean[np.argsort(top_clean)]
 end_times = {'10':300000, '17':380000, '45':30000, '48':1450000, '51':280000, '54':150000, '56':10000, '71':22000, '72':90000, '73':70000, '75':36000, '83':55000, '85':60000, '93':105000, '101':10000, '102':10000, '103':50000, '109':1000000, '118':325000, '141':500000, '150':750000, '151':240000, '154':240000, '159':190000, '168':90000, '175':80000, '176':75000, '177':230000, '221':35000, '239':90000, '258':26000, '262':55000, '272':7000, '275':51000, '292':79000, '309':10000}
 
 for sink_id in top_clean:
+    if args.low_res_pickle == 'True'
+        save_name = 'long_term_evolution_ltot_'+str(sink_id)+'_low_res.pdf'
     save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
     if os.path.isfile(save_name) == False:
-        global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
+        if args.low_res_pickle == 'True':
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
+        else:
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
         if os.path.isfile(global_pickle) == False:
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
         print('global pickle:', global_pickle)
@@ -146,7 +152,9 @@ for sink_id in top_clean:
         Cand_ind = np.where(top_clean == sink_id)[0] + 1
 
         start_time = particle_data['time'][0]
-        if str(sink_id) in end_times.keys():
+        if args.low_res_pickle == 'True':
+            end_time = particle_data['time'][-1]
+        elif str(sink_id) in end_times.keys():
             end_time = end_times[str(sink_id)]
         else:
             end_time = particle_data['time'][-1]
