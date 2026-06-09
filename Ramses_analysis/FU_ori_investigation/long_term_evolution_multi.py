@@ -21,6 +21,38 @@ sink_inds = [45, 17, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 
 #
 plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30600, 75000]], '51' : [[16000, 30500], [30900, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100], [14000, 17000], [18250, 18500], [19000, 24500], [27000, 75000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[1000, 2000], [21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[3000, 4000], [5900, 75000]]}
+
+plot_window = {'10':[238983, 278330],
+               '17':[31323, 88478],
+               '45':[27994, 76169],
+               '48':[1037941, 1078831],
+               '51':[26015, 81016],
+               '54':[112554, 112569],
+               '56':[28998, 47214],
+               '71':[13236, 13245],
+               '73':[65139, 65471],
+               '75':[30918, 52999],
+               '85':[47797, 98532],
+               '93':[158528, 875146],
+               '103':[76647, 100965],
+               '109':[861997, 1034221],
+               '118':[163707, 186713],
+               '141':[601800, 604687],
+               '150':[679968, 748192],
+               '151':[193236, 246112],
+               '154':[326996, 520258],
+               '159':[157623, 199899],
+               '168':[72453, 88947],
+               '176':[73943, 186419],
+               '177':[149168, 197064],
+               '195':[421958, 557305],
+               '221':[37296, 199944],
+               '239':[100755, 123564],
+               '258':[14885, 114601],
+               '262':[34266, 36958],
+               '275':[23027, 23033],
+               '292':[19204, 95581],
+}
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -46,10 +78,10 @@ axs.flatten()[2].axhline(y=200, color='k', ls='--')
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 
 for sink_ind in sink_inds:
-    pickle_file = '/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/particle_data_'+str(sink_ind)+'.pkl'
+    pickle_file = '/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_'+str(sink_ind)+'.pkl'
     if os.path.isfile(pickle_file):
-        if os.path.isfile('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
-            file_open = open('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
+        if os.path.isfile('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl'):
+            file_open = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'rb')
             smooth_t, smooth_q, smooth_e, smooth_sep = pickle.load(file_open)
             file_open.close()
             
@@ -85,7 +117,7 @@ for sink_ind in sink_inds:
             file_open.close()
             print('Finished reading pickle, calculating smoothed quantities')
             
-            mass_ratio = yt.YTArray(particle_data['mass']).T[0]/yt.YTArray(particle_data['mass']).T[1]
+            mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
             smooth_t = []
             smooth_q = []
             smooth_e = []
@@ -116,10 +148,10 @@ for sink_ind in sink_inds:
             axs.flatten()[2].semilogy(smooth_t, smooth_sep, alpha=0.25)
             
             print('updating pickle')
-            file = open('/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
+            file = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
             pickle.dump((smooth_t, smooth_q, smooth_e, smooth_sep), file)
             file.close()
-            print('Finished updating pickle', '/home/100/rlk100/gdata/RAMSES/Analysis/Sink_pickles/Low_res_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
+            print('Finished updating pickle', '/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl')
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 1.8), ncol=5)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
