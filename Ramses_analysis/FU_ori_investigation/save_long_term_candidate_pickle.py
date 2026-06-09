@@ -24,7 +24,7 @@ def parse_inputs():
     parser.add_argument("-sim_dens_id", "--simulation_density_id", help="G50, G100, G200 or G400?", type=str, default="G100")
     parser.add_argument("-high_res", "--high_resolution", default=False)
     parser.add_argument("-end_time", "--end_save_time", type=float, default=None)
-    parser.add_argument("-all_sinks", "--save_all_sinks", type=float, default='False')
+    parser.add_argument("-all_sinks", "--save_all_sinks", type=str, default='False')
     parser.add_argument("files", nargs='*')
     args = parser.parse_args()
     return args
