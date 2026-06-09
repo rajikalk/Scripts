@@ -61,7 +61,7 @@ font_size = 10
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 1.1*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.0)
-smoothing_window = yt.YTArray(100, 'yr')
+smoothing_window = 100
 
 axs.flatten()[0].set_xlim([0, 75000])
 axs.flatten()[0].set_ylabel('$M_{cand.}/M_{clos.}$')
