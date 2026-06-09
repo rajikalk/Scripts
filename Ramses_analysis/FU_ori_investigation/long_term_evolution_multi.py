@@ -65,6 +65,7 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_w
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 200
 do_smoothing = False
+plot_whole_binary = True
 
 axs.flatten()[2].set_xlim([0, 1.1e6])
 axs.flatten()[2].set_ylabel('$M_{cand.}/M_{clos.}$')
@@ -166,17 +167,23 @@ for sink_ind in sink_inds:
             file_open.close()
             print('Finished reading pickle')
             
-            
-            for time_window in plot_window[str(sink_ind)]:
-                start_t = time_window[0]
-                end_t = time_window[-1]
-                start_it = np.argmin(abs(particle_data['time'] - start_t))
-                end_it = np.argmin(abs(particle_data['time'] - end_t))
+            if plot_whole_binary == False:
+                for time_window in plot_window[str(sink_ind)]:
+                    start_t = time_window[0]
+                    end_t = time_window[-1]
+                    start_it = np.argmin(abs(particle_data['time'] - start_t))
+                    end_it = np.argmin(abs(particle_data['time'] - end_t))
+                    mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
+                    smooth_t = particle_data['time'][start_it:end_it]
+                    smooth_q = mass_ratio[start_it:end_it]
+                    smooth_e = particle_data['eccentricity'][start_it:end_it]
+                    smooth_sep = particle_data['separation'][start_it:end_it]
+            else:
                 mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-                smooth_t = particle_data['time'][start_it:end_it]
-                smooth_q = mass_ratio[start_it:end_it]
-                smooth_e = particle_data['eccentricity'][start_it:end_it]
-                smooth_sep = particle_data['separation'][start_it:end_it]
+                smooth_t = particle_data['time']
+                smooth_q = mass_ratio
+                smooth_e = particle_data['eccentricity']
+                smooth_sep = particle_data['separation']
                 
                 label = "Cand. " + labels[label_it]
                 if '*' in labels[label_it]:
