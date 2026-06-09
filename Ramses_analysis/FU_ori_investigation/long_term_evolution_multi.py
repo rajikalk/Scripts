@@ -151,6 +151,8 @@ for sink_ind in sink_inds:
                 smooth_q = []
                 smooth_e = []
                 smooth_sep = []
+                import pdb
+                pdb.set_trace()
                 for it in range(len(particle_data['time'])):
                     curr_time = particle_data['time'][it]
                     start_time = particle_data['time'][it] - smoothing_window/2
