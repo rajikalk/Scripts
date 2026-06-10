@@ -109,9 +109,9 @@ for sink_ind in sink_inds:
                         if '*' in labels[label_it]:
                             linestyle = ':'
                         elif '^' in labels[label_it]:
-                            ls='--'
+                            linestyle='--'
                         else:
-                            ls='-'
+                            linestyle='-'
                         
                         if plot_colour == None:
                             p = axs.flatten()[2].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_q)[start_ind:end_ind], alpha=alpha_val, label=label, ls=line_style)
@@ -180,12 +180,12 @@ for sink_ind in sink_inds:
                 if '*' in labels[label_it]:
                     linestyle = ':'
                 elif '^' in labels[label_it]:
-                    ls='--'
+                    linestyle='--'
                 else:
-                    ls='-'
-                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=ls)
-                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=ls)
-                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=ls)
+                    linestyle='-'
+                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
+                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
+                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
                 
                 print('updating pickle')
                 file = open('/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/smoothed_particle_data_'+str(sink_ind)+'.pkl', 'wb')
@@ -223,12 +223,12 @@ for sink_ind in sink_inds:
                 if '*' in labels[label_it]:
                     linestyle = ':'
                 elif '^' in labels[label_it]:
-                    ls='--'
+                    linestyle='--'
                 else:
-                    ls='-'
-                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=ls)
-                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=ls)
-                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=ls)
+                    linestyle='-'
+                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
+                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
+                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
                 
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.1), ncol=4)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
