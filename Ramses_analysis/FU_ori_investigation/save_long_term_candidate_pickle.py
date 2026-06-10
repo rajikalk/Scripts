@@ -89,7 +89,7 @@ if args.update_pickle == 'True':
     for sink_ind in save_sinks:
         if args.end_save_time != None:
             end_time = args.end_save_time
-        elif str(sink_ind) in end_times.keys() and args.high_resolution == 'True':
+        elif str(sink_ind) in end_times.keys():# and args.high_resolution == 'True':
             end_time = end_times[str(sink_ind)]
         else:
             end_time = None
