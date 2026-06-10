@@ -69,7 +69,7 @@ plot_whole_binary = True
 plot_windows = False
 
 #axs.flatten()[2].set_xlim([0, 600000])
-axs.flatten()[2].set_xlim(left=0)
+#axs.flatten()[2].set_xlim(left=0)
 axs.flatten()[2].set_ylabel('$M_{cand.}/M_{clos.}$')
 axs.flatten()[2].set_ylim([0, 1.25])
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
