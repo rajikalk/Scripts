@@ -76,7 +76,7 @@ axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[1].set_ylabel('Eccentricity')
 axs.flatten()[1].set_ylim([0, 1.5])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[0].set_ylabel('Separation (AU)')
+axs.flatten()[0].set_ylabel('Semimajor_axis (AU)')
 axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
 axs.flatten()[0].set_ylim([5, 1e3])
 axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
@@ -166,7 +166,7 @@ for sink_ind in sink_inds:
                     mean_t = np.mean(particle_data['time'][start_it:end_it])
                     mean_q = np.mean(mass_ratio[start_it:end_it])
                     mean_e = np.mean(particle_data['eccentricity'][start_it:end_it])
-                    mean_sep = np.mean(particle_data['separation'][start_it:end_it])
+                    mean_sep = np.mean(particle_data['semimajor_axis'][start_it:end_it])
                     smooth_t.append(mean_t)
                     smooth_q.append(mean_q)
                     smooth_e.append(mean_e)
@@ -205,13 +205,13 @@ for sink_ind in sink_inds:
                     smooth_t = particle_data['time'][start_it:end_it]
                     smooth_q = mass_ratio[start_it:end_it]
                     smooth_e = particle_data['eccentricity'][start_it:end_it]
-                    smooth_sep = particle_data['separation'][start_it:end_it]
+                    smooth_sep = particle_data['semimajor_axis'][start_it:end_it]
             else:
                 mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
                 smooth_t = particle_data['time']
                 smooth_q = mass_ratio
                 smooth_e = particle_data['eccentricity']
-                smooth_sep = particle_data['separation']
+                smooth_sep = particle_data['semimajor_axis']
                 
                 label = "Cand. " + labels[label_it]
                 if '*' in labels[label_it]:
