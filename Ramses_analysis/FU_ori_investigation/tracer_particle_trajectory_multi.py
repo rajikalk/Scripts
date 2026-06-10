@@ -46,19 +46,36 @@ for Traj_pickle in Traj_pickles:
             if end_sep < 5:
                 for pit in range(1,len(Tracer_parallel[tracer_it])):
                     ax.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-        ax.scatter(0, 0, marker='*', color='magenta', s=600)
-        circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
-        arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='magenta', linewidth=linewidth)
-        plt.gca().add_patch(circle)
-        plt.gca().add_patch(arrow)
+        ax.scatter(0, 0, marker='*', color='cyan', s=600)
+        circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='k')
+        arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
+        ax.add_patch(circle)
+        ax.add_patch(arrow)
         ax.set_xlim([-15, 15])
         ax.set_ylim([-1, 15])
-        ax.set_xlabel('Distance$_\parallel$ (AU)')
-        ax.set_ylabel('Distance$_\perp$ (AU)')
-        #plt.gca().set_aspect('equal')
+        plt.gca().set_aspect('equal')
         norm = mpl.colors.Normalize(vmin=0,vmax=1)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
+        
+        ax.tick_params(axis='x', which='major', direction='in', color='w', top=True)
+        ax.tick_params(axis='y', which='major', direction='in', color='w', right=True)
+        ax.xaxis.label.set_color('black')
+        ax.yaxis.label.set_color('black')
+        ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+        
+        if Traj_pickles.index(Traj_pickle) == 1 or Traj_pickles.index(Traj_pickle) == 3:
+            yticklabels = ax.get_yticklabels()
+            plt.setp(yticklabels, visible=False)
+        else:
+            ax.set_ylabel('Distance$_\perp$ (AU)')
+            
+        if Traj_pickles.index(Traj_pickle) < 2:
+            xticklabels = ax.get_xticklabels()
+            plt.setp(xticklabels, visible=False)
+        else:
+            ax.set_xlabel('Distance$_\parallel$ (AU)')
+        
         plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
 cax = fig.add_axes([0.905, 0.13, 0.03, 0.72])
 cbar = plt.colorbar(sm, cax=cax)
