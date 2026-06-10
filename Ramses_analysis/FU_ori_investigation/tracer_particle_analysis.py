@@ -179,7 +179,7 @@ if args.make_pickle_files == "True":
         CW.Barrier()
     else:
         file = open('all_tracer_data.pkl', 'rb')
-        sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file = pickle.load(file)
+        sink_id, sink_form_time, accreted_ids_burst, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file = pickle.load(file)
         file.close()
         
         usable_files = files[:files.index(end_file)+1]
@@ -229,6 +229,8 @@ if args.make_pickle_files == "True":
             #if fn == end_file:
             #    import pdb
             #    pdb.set_trace()
+            import pdb
+            pdb.set_trace()
             accreted_inds_burst = np.in1d(particle_identity.value, accreted_ids_burst.value).nonzero()[0]
             accrete_inds_other = np.in1d(particle_identity.value, accreted_ids_other.value).nonzero()[0]
             not_accreted_inds = np.in1d(particle_identity.value, not_accreted_ids.value).nonzero()[0]
