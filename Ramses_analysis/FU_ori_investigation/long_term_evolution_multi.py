@@ -281,6 +281,9 @@ for sink_ind in sink_inds:
                     smooth_sep[diff_inds] = np.nan
                     time_window = plot_window[str(sink_ind)][0]
                     start_t = time_window[0]
+                    if start_t > particle_data['time'][-1]:
+                        import pdb
+                        pdb.set_trace()
                     end_t = time_window[-1]
                     start_it = np.argmin(abs(particle_data['time'] - start_t))
                     end_it = np.argmin(abs(particle_data['time'] - end_t))
