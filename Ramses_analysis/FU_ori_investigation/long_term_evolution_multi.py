@@ -64,7 +64,7 @@ plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_width), sharex=True)
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 1000
-do_smoothing = True
+do_smoothing = False
 plot_whole_binary = True
 plot_windows = False
 
@@ -153,6 +153,7 @@ for sink_ind in sink_inds:
                 smooth_q = []
                 smooth_e = []
                 smooth_sep = []
+                closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
                 import pdb
                 pdb.set_trace()
                 for it in range(len(particle_data['time'])):
@@ -213,22 +214,40 @@ for sink_ind in sink_inds:
             else:
                 import pdb
                 pdb.set_trace()
-                mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-                smooth_t = particle_data['time']
-                smooth_q = mass_ratio
-                smooth_e = particle_data['eccentricity']
-                smooth_sep = particle_data['semimajor_axis']
+                closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
+                diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
                 
-                label = "Cand. " + labels[label_it]
-                if '*' in labels[label_it]:
-                    linestyle = ':'
-                elif '^' in labels[label_it]:
-                    linestyle='--'
-                else:
-                    linestyle='-'
-                axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
-                axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
-                axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
+                smooth_t = particle_data['time']
+                smooth_t[diff_inds] = np.nan
+                mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
+                smooth_q = mass_ratio
+                smooth_q[diff_inds] = np.nan
+                smooth_e = particle_data['eccentricity']
+                smooth_e[diff_inds] = np.nan
+                smooth_sep = particle_data['semimajor_axis']
+                smooth_sep[diff_inds] = np.nan
+                
+                label = None
+                plot_colour = None:
+                for comp_ind in closes_inds:
+                    if label == None:
+                        label = "Cand. " + labels[label_it]
+                    if '*' in labels[label_it]:
+                        linestyle = ':'
+                    elif '^' in labels[label_it]:
+                        linestyle='--'
+                    else:
+                        linestyle='-'
+                    
+                    if plot_colour == None:
+                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
+                        plot_colour = p[-1].get_color()
+                    else:
+                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle, color=plot_colour)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle, color=plot_colour)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle, color=plot_colour)
                 
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.1), ncol=4)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
