@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
-matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
-matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
-matplotlib.rcParams['mathtext.rm'] = 'Arial'
-matplotlib.rcParams['mathtext.sf'] = 'Arial'
-matplotlib.rcParams['mathtext.default'] = 'regular'
-matplotlib.rcParams['font.sans-serif'] = 'Arial'
-matplotlib.rcParams['font.family'] = 'sans-serif'
-matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
+mpl.rcParams['mathtext.fontset'] = 'stixsans'
+mpl.rcParams['mathtext.it'] = 'Arial:italic'
+mpl.rcParams['mathtext.rm'] = 'Arial'
+mpl.rcParams['mathtext.bf'] = 'Arial:bold'
+mpl.rcParams['mathtext.it'] = 'Arial:italic'
+mpl.rcParams['mathtext.rm'] = 'Arial'
+mpl.rcParams['mathtext.sf'] = 'Arial'
+mpl.rcParams['mathtext.default'] = 'regular'
+mpl.rcParams['font.sans-serif'] = 'Arial'
+mpl.rcParams['font.family'] = 'sans-serif'
+mpl.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
