@@ -283,18 +283,18 @@ for sink_ind in sink_inds:
                     end_it = np.argmin(abs(particle_data['time'] - end_t))
                     
                     if plot_colour == None:
-                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
+                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.1, ls=linestyle, lw=0.5)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.1, ls=linestyle, lw=0.5)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.1, label=label, ls=linestyle, lw=0.5)
                         plot_colour = p[-1].get_color()
                         axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         
                     else:
-                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle, color=plot_colour)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle, color=plot_colour)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.1, ls=linestyle, color=plot_colour, lw=0.5)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.1, ls=linestyle, color=plot_colour, lw=0.5)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.1, label=label, ls=linestyle, color=plot_colour, lw=0.5)
                         axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
