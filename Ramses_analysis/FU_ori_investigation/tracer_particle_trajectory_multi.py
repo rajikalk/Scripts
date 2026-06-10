@@ -9,6 +9,18 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
+matplotlib.rcParams['mathtext.fontset'] = 'stixsans'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.bf'] = 'Arial:bold'
+matplotlib.rcParams['mathtext.it'] = 'Arial:italic'
+matplotlib.rcParams['mathtext.rm'] = 'Arial'
+matplotlib.rcParams['mathtext.sf'] = 'Arial'
+matplotlib.rcParams['mathtext.default'] = 'regular'
+matplotlib.rcParams['font.sans-serif'] = 'Arial'
+matplotlib.rcParams['font.family'] = 'sans-serif'
+matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
+
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
@@ -20,7 +32,7 @@ Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/E
 
 fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 2*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
-plt.subplots_adjust(wspace=0.0)
+plt.subplots_adjust(wspace=-0.2)
 
 for Traj_pickle in Traj_pickles:
     if os.path.isfile(Traj_pickle):
@@ -75,9 +87,11 @@ for Traj_pickle in Traj_pickles:
             plt.setp(xticklabels, visible=False)
         else:
             ax.set_xlabel('Distance$_\parallel$ (AU)')
+            xticklabels = ax.get_xticklabels()
+            plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.905, 0.13, 0.03, 0.72])
+cax = fig.add_axes([0.905, 0.13, 0.03, 0.5])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Norm (yr)", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
