@@ -207,6 +207,8 @@ for sink_ind in sink_inds:
                     smooth_e = particle_data['eccentricity'][start_it:end_it]
                     smooth_sep = particle_data['semimajor_axis'][start_it:end_it]
             else:
+                import pdb
+                pdb.set_trace()
                 mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
                 smooth_t = particle_data['time']
                 smooth_q = mass_ratio
