@@ -17,7 +17,7 @@ matplotlib.rcParams['font.sans-serif'] = 'Arial'
 matplotlib.rcParams['font.family'] = 'sans-serif'
 matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{detect-all}" r"\usepackage{helvet}" r"\usepackage{sansmath}" "\sansmath"               # <- tricky! -- gotta actually tell tex to use!
 
-sink_inds = [10, 17, 45, 48, 51, 54, 56, 71, 73, 75, 85, 93, 102, 103, 109, 118, 141, 150, 151, 154, 159, 168, 176, 177, 195, 221, 239, 258, 275, 262, 272, 292, 309]
+sink_inds = [10, 17, 45, 48, 51, 54, 56, 71, 73, 75, 85, 93, 102, 103, 109, 118, 141, 150, 151, 154, 159, 168, 176, 177, 195, 221, 239, 258, 262, 272, 275, 292, 309]
 
 #sink_inds = [10, 17, 45, 51, 56, 71, 73, 75, 85, 93, 103, 109, 118, 141, 150, 151, 154, 159, 168, 176, 177, 221, 239, 258, 262, 292]
 
