@@ -93,9 +93,8 @@ fig1, ax1 = plt.subplots()
 for tracer_it in range(len(Tracer_parallel)):
     start_sep = np.sqrt(Tracer_parallel[tracer_it][0]**2 +Tracer_perpendicular[tracer_it][0]**2)
     end_sep = np.sqrt(Tracer_parallel[tracer_it][-1]**2 +Tracer_perpendicular[tracer_it][-1]**2)
-    if end_sep < 5:
-        for pit in range(1,len(Tracer_parallel[tracer_it])):
-            ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
+    for pit in range(1,len(Tracer_parallel[tracer_it])):
+        ax1.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
 ax1.scatter(0, 0, marker='*', color='magenta', s=600)
 circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='magenta')
 arrow = mpatches.FancyArrowPatch((0, 0), (10, 0), mutation_scale=mutation_scale, color='magenta', linewidth=linewidth)
