@@ -68,7 +68,8 @@ do_smoothing = False
 plot_whole_binary = True
 plot_windows = False
 
-axs.flatten()[2].set_xlim([0, 600000])
+#axs.flatten()[2].set_xlim([0, 600000])
+axs.flatten()[2].set_xlim(left=0)
 axs.flatten()[2].set_ylabel('$M_{cand.}/M_{clos.}$')
 axs.flatten()[2].set_ylim([0, 1.25])
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
@@ -77,7 +78,8 @@ axs.flatten()[1].set_ylabel('Eccentricity')
 axs.flatten()[1].set_ylim([0, 1.5])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[0].set_ylabel('Semimajor Axis (AU)')
-axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
+#axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
+axs.flatten()[2].set_xlabel('Simulation Time (yr)')
 axs.flatten()[0].set_ylim([5, 1e3])
 axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
 #axs.flatten()[0].axhline(y=16.6, color='k', ls='--', lw=0.5)
@@ -229,7 +231,7 @@ for sink_ind in sink_inds:
                         
                     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
                     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-                    smooth_t = np.copy(particle_data['time'])
+                    smooth_t = np.copy(particle_data['time']+sink_form_time)
                     smooth_t[diff_inds] = np.nan
                     mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
                     smooth_q = np.copy(mass_ratio)
