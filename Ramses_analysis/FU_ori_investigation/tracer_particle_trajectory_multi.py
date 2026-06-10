@@ -75,7 +75,7 @@ for Traj_pickle in Traj_pickles:
         ax.xaxis.label.set_color('black')
         ax.yaxis.label.set_color('black')
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.01)
+        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.0)
         
         if Traj_pickles.index(Traj_pickle) == 1 or Traj_pickles.index(Traj_pickle) == 3:
             yticklabels = ax.get_yticklabels()
