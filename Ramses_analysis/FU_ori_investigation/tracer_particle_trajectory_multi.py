@@ -88,7 +88,6 @@ for Traj_pickle in Traj_pickles:
             plt.setp(xticklabels, visible=False)
         else:
             ax.set_xlabel('Distance$_\parallel$ (AU)', labelpad=-1)
-            )
             xticklabels = ax.get_xticklabels()
             plt.setp(xticklabels[-1], visible=False)
         
