@@ -231,7 +231,7 @@ for sink_ind in sink_inds:
                         
                     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
                     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-                    smooth_t = np.copy(particle_data['time']+sink_form_time)
+                    smooth_t = np.copy(particle_data['time']+sink_form_time.value)
                     smooth_t[diff_inds] = np.nan
                     mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
                     smooth_q = np.copy(mass_ratio)
