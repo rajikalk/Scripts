@@ -87,7 +87,7 @@ axs.flatten()[0].set_ylabel('Semimajor Axis (AU)')
 #axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
 axs.flatten()[2].set_xlabel('Simulation Time (yr)')
 axs.flatten()[0].set_ylim([5, 1e3])
-axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
+#axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
 #axs.flatten()[0].axhline(y=16.6, color='k', ls='--', lw=0.5)
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 
@@ -300,7 +300,7 @@ for sink_ind in sink_inds:
                         axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.1, ls=linestyle, color=plot_colour, lw=0.75)
                         axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.1, ls=linestyle, color=plot_colour, lw=0.75)
                         axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.1, label=label, ls=linestyle, color=plot_colour, lw=0.75)
-                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour, lw=2)
                         axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                 
