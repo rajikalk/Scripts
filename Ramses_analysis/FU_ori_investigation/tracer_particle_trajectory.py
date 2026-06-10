@@ -29,7 +29,7 @@ def projected_vector(vector, proj_vector):
 
 if os.path.isfile('tracer_trajectory.pkl') == False:
     tracer_pickle_files = sorted(glob.glob('./movie_frame*.pkl'))
-
+    
     Time_array = []
     Tracer_parallel = []
     Tracer_perpendicular = []
@@ -40,13 +40,18 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         file = open(tracer_file, 'rb')
         tracer_dict = pickle.load(file)
         file.close()
+        
+        import pdb
+        pdb.set_trace()
+        tracer_data['burst_positions']
+        '''
         del tracer_dict['other_positions']
         gc.collect()
         del tracer_dict['not_accreted_positions']
         gc.collect()
         del tracer_dict['burst_velocity']
         gc.collect()
-        
+        '''
         Tracer_distance = np.sqrt(np.sum(np.square(tracer_dict['burst_positions']), axis=0))
         Tracer_proj_parallel = projected_vector(np.array(tracer_dict['burst_positions']).T, tracer_dict['sink_velocity_vector'])
         sign = np.sign(np.dot(Tracer_proj_parallel, tracer_dict['sink_velocity_vector']))
