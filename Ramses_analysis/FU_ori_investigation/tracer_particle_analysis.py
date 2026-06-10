@@ -247,6 +247,11 @@ if args.make_pickle_files == "True":
             sys.stdout.flush()
             min_mass = (-1*(sink_id+1))
             #curr_accreted_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst] == min_mass)[0]
+            neg_inds = np.where(ds.r['particle_mass'][sorted_inds][accreted_inds_burst]<0)[0]
+            if np.min(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != min_mass or np.max(ds.r['particle_mass'][sorted_inds][accreted_inds_burst][neg_inds]) != min_mass:
+                import pdb
+                pdb.set_trace()
+            
             particle_velocity_x = ds.r['particle_velocity_x'][sorted_inds][accreted_inds_burst]
             #particle_velocity_x[curr_accreted_inds] = pv_code[0]
             particle_velocity_y = ds.r['particle_velocity_y'][sorted_inds][accreted_inds_burst]
@@ -261,6 +266,10 @@ if args.make_pickle_files == "True":
             rel_vz = (particle_velocity_z.value - pv_code[2].value)*scale_v.in_units('km/s')
             del particle_velocity_x, particle_velocity_y, particle_velocity_z
             gc.collect()
+            
+            rel_vx[neg_inds] = 0
+            rel_vy[neg_inds] = 0
+            rel_vz[neg_inds] = 0
             
             burst_velocity = [rel_vx, rel_vy, rel_vz]
             
@@ -277,17 +286,20 @@ if args.make_pickle_files == "True":
             relx = (particle_position_x[accreted_inds_burst].value - pp_code[0].value)*scale_l
             rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
-            
-            if np.min(ds.r['particle_mass'][accreted_inds_burst])<0:
-                neg_inds = np.where(ds.r['particle_mass'][accreted_inds_burst]<0)[0]
-                import pdb
-                pdb.set_trace()
+        
+            relx[neg_inds] = 0
+            rely[neg_inds] = 0
+            relz[neg_inds] = 0
 
             burst_positions = [relx, rely, relz]
             
             relx = (particle_position_x[accrete_inds_other].value - pp_code[0].value)*scale_l
             rely = (particle_position_y[accrete_inds_other].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[accrete_inds_other].value - pp_code[2].value)*scale_l
+            
+            relx[neg_inds] = 0
+            rely[neg_inds] = 0
+            relz[neg_inds] = 0
             
             other_positions = [relx, rely, relz]
             
@@ -296,6 +308,10 @@ if args.make_pickle_files == "True":
             relz = (particle_position_z[not_accreted_inds].value - pp_code[2].value)*scale_l
             del particle_position_x, particle_position_y, particle_position_z
             gc.collect()
+            
+            relx[neg_inds] = 0
+            rely[neg_inds] = 0
+            relz[neg_inds] = 0
             
             not_accreted_positions = [relx, rely, relz]
             
