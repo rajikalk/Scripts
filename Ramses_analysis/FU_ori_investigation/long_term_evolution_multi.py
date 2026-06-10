@@ -91,6 +91,8 @@ axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
 #axs.flatten()[0].axhline(y=16.6, color='k', ls='--', lw=0.5)
 axs.flatten()[0].tick_params(axis='both', direction='in', top=True, right=True)
 
+linestyles = ['-', '--', '-.', ':']
+
 label_it = -1
 for sink_ind in sink_inds:
     label_it = label_it+1
@@ -186,12 +188,12 @@ for sink_ind in sink_inds:
                     smooth_sep.append(mean_sep)
                 
                 label = "Cand. " + labels[label_it]
-                if '*' in labels[label_it]:
-                    linestyle = ':'
-                elif '^' in labels[label_it]:
-                    linestyle='--'
-                else:
-                    linestyle='-'
+                #if '*' in labels[label_it]:
+                #    linestyle = ':'
+                #elif '^' in labels[label_it]:
+                #    linestyle='--'
+                #else:
+                #    linestyle='-'
                 axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
                 axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
                 axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
@@ -261,12 +263,13 @@ for sink_ind in sink_inds:
                         label = "Cand. " + labels[label_it]
                     else:
                         label = None
-                    if '*' in labels[label_it]:
-                        linestyle = ':'
-                    elif '^' in labels[label_it]:
-                        linestyle='--'
-                    else:
-                        linestyle='-'
+                    #if '*' in labels[label_it]:
+                    #    linestyle = ':'
+                    #elif '^' in labels[label_it]:
+                    #    linestyle='--'
+                    #else:
+                    #    linestyle='-'
+                    linestyle = linestyles[int(label_it/10)]
                         
                     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
                     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
