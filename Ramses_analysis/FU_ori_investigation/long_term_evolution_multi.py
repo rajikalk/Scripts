@@ -213,17 +213,6 @@ for sink_ind in sink_inds:
                     smooth_sep = particle_data['semimajor_axis'][start_it:end_it]
             else:
                 closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
-                diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-                
-                smooth_t = particle_data['time']
-                smooth_t[diff_inds] = np.nan
-                mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-                smooth_q = mass_ratio
-                smooth_q[diff_inds] = np.nan
-                smooth_e = particle_data['eccentricity']
-                smooth_e[diff_inds] = np.nan
-                smooth_sep = particle_data['semimajor_axis']
-                smooth_sep[diff_inds] = np.nan
                 
                 label = None
                 plot_colour = None
@@ -236,6 +225,18 @@ for sink_ind in sink_inds:
                         linestyle='--'
                     else:
                         linestyle='-'
+                        
+                    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+                    diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+                    smooth_t = particle_data['time']
+                    smooth_t[diff_inds] = np.nan
+                    mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
+                    smooth_q = mass_ratio
+                    smooth_q[diff_inds] = np.nan
+                    smooth_e = particle_data['eccentricity']
+                    smooth_e[diff_inds] = np.nan
+                    smooth_sep = particle_data['semimajor_axis']
+                    smooth_sep[diff_inds] = np.nan
                     
                     if plot_colour == None:
                         p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
