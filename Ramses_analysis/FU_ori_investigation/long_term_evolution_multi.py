@@ -68,8 +68,8 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_w
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 1000
 do_smoothing = False
-plot_whole_binary = True
-plot_windows = False
+plot_whole_binary = False
+plot_windows = True
 
 #axs.flatten()[2].set_xlim([0, 600000])
 #axs.flatten()[2].set_xlim(left=0)
@@ -206,16 +206,49 @@ for sink_ind in sink_inds:
             print('Finished reading pickle')
             
             if plot_whole_binary == False:
+                
+            
                 for time_window in plot_window[str(sink_ind)]:
                     start_t = time_window[0]
                     end_t = time_window[-1]
                     start_it = np.argmin(abs(particle_data['time'] - start_t))
                     end_it = np.argmin(abs(particle_data['time'] - end_t))
-                    mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-                    smooth_t = particle_data['time'][start_it:end_it]
-                    smooth_q = mass_ratio[start_it:end_it]
-                    smooth_e = particle_data['eccentricity'][start_it:end_it]
-                    smooth_sep = particle_data['semimajor_axis'][start_it:end_it]
+                    closes_inds = np.unique(particle_data['closest_sink'][start_it:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][start_it:end_it], return_index=True)[1])]
+                    
+                    plot_colour = None
+                    for comp_ind in closes_inds:
+                        if comp_ind == closes_inds[0]:
+                            label = "Cand. " + labels[label_it]
+                        else:
+                            label = None
+                        if '*' in labels[label_it]:
+                            linestyle = ':'
+                        elif '^' in labels[label_it]:
+                            linestyle='--'
+                        else:
+                            linestyle='-'
+                            
+                        curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
+                        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+                        smooth_t = np.copy(particle_data['time'][start_it:end_it]+sink_form_time.value)
+                        smooth_t[diff_inds] = np.nan
+                        mass_ratio = yt.YTArray(particle_data['mass'][start_it:end_it])/yt.YTArray(particle_data['closest_mass'][start_it:end_it])
+                        smooth_q = np.copy(mass_ratio)
+                        smooth_q[diff_inds] = np.nan
+                        smooth_e = np.copy(particle_data['eccentricity'][start_it:end_it])
+                        smooth_e[diff_inds] = np.nan
+                        smooth_sep = np.copy(particle_data['semimajor_axis'][start_it:end_it])
+                        smooth_sep[diff_inds] = np.nan
+                        
+                        if plot_colour == None:
+                            p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
+                            axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
+                            axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
+                            plot_colour = p[-1].get_color()
+                        else:
+                            axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle, color=plot_colour)
+                            axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle, color=plot_colour)
+                            axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle, color=plot_colour)
             else:
                 closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
                 
