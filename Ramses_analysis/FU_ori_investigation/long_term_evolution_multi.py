@@ -293,7 +293,7 @@ for sink_ind in sink_inds:
                         axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.1, ls=linestyle, lw=0.75)
                         axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.1, ls=linestyle, lw=0.75)
                         plot_colour = p[-1].get_color()
-                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour, lw=2)
                         axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour, label=label)
                     else:
