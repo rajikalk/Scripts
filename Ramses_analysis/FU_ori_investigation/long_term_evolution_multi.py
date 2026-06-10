@@ -226,7 +226,7 @@ for sink_ind in sink_inds:
                 smooth_sep[diff_inds] = np.nan
                 
                 label = None
-                plot_colour = None:
+                plot_colour = None
                 for comp_ind in closes_inds:
                     if label == None:
                         label = "Cand. " + labels[label_it]
