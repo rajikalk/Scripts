@@ -276,23 +276,28 @@ for sink_ind in sink_inds:
                     smooth_e[diff_inds] = np.nan
                     smooth_sep = np.copy(particle_data['semimajor_axis'])
                     smooth_sep[diff_inds] = np.nan
-                    alpha_arr = np.ones(np.shape(smooth_t))*0.25
                     time_window = plot_window[str(sink_ind)][0]
                     start_t = time_window[0]
                     end_t = time_window[-1]
                     start_it = np.argmin(abs(particle_data['time'] - start_t))
                     end_it = np.argmin(abs(particle_data['time'] - end_t))
-                    alpha_arr[start_t:end_t] = 1
                     
                     if plot_colour == None:
-                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=alpha_arr, ls=linestyle)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=alpha_arr, ls=linestyle)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=alpha_arr, label=label, ls=linestyle)
+                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
                         plot_colour = p[-1].get_color()
+                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        
                     else:
-                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=alpha_arr, ls=linestyle, color=plot_colour)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=alpha_arr, ls=linestyle, color=plot_colour)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=alpha_arr, label=label, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle, color=plot_colour)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle, color=plot_colour)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t[start_it:end_it], smooth_q[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
+                        axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                 
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.1), ncol=4)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
