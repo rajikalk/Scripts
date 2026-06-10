@@ -32,7 +32,7 @@ Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/E
 
 fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 2*single_col_width), sharex=True, sharey=True)
 plt.subplots_adjust(hspace=0.0)
-plt.subplots_adjust(wspace=-0.2)
+plt.subplots_adjust(wspace=-0.5)
 
 for Traj_pickle in Traj_pickles:
     if os.path.isfile(Traj_pickle):
