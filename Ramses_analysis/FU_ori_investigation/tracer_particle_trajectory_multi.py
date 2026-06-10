@@ -31,7 +31,7 @@ linewidth = 1
 Traj_pickles = ['/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_2/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_3/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_4/tracer_trajectory.pkl', '/home/100/rlk100/rlk/RAMSES/Analysis/Tracer_particle_analysis/Event_5/tracer_trajectory.pkl']
 
 fig, axs = plt.subplots(ncols=2, nrows=2, figsize=(two_col_width, 2*single_col_width), sharex=True, sharey=True)
-plt.subplots_adjust(hspace=-0.6)
+plt.subplots_adjust(hspace=-0.5)
 plt.subplots_adjust(wspace=0.0)
 
 for Traj_pickle in Traj_pickles:
@@ -75,7 +75,7 @@ for Traj_pickle in Traj_pickles:
         ax.xaxis.label.set_color('black')
         ax.yaxis.label.set_color('black')
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.5, y=0.8)
+        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.1, y=0.1)
         
         if Traj_pickles.index(Traj_pickle) == 1 or Traj_pickles.index(Traj_pickle) == 3:
             yticklabels = ax.get_yticklabels()
@@ -92,7 +92,7 @@ for Traj_pickle in Traj_pickles:
             plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.3, 0.03, 0.45])
+cax = fig.add_axes([0.90, 0.25, 0.03, 0.45])
 cbar = plt.colorbar(sm, cax=cax)
 cbar.set_label(r"Time Norm (yr)", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
