@@ -123,6 +123,8 @@ for sink_ind in sink_inds:
                             axs.flatten()[1].plot(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
                             axs.flatten()[0].semilogy(np.array(smooth_t)[start_ind:end_ind], np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, color=plot_colour, ls=line_style)
                 else:
+                    import pdb
+                    pdb.set_trace()
                     if sink_ind == 45:
                         alpha_val = 1.0
                     else:
@@ -151,6 +153,8 @@ for sink_ind in sink_inds:
                 smooth_q = []
                 smooth_e = []
                 smooth_sep = []
+                import pdb
+                pdb.set_trace()
                 for it in range(len(particle_data['time'])):
                     curr_time = particle_data['time'][it]
                     start_time = particle_data['time'][it] - smoothing_window/2
