@@ -41,9 +41,9 @@ if os.path.isfile('tracer_trajectory.pkl') == False:
         tracer_dict = pickle.load(file)
         file.close()
         
-        import pdb
-        pdb.set_trace()
-        tracer_data['burst_positions']
+        #import pdb
+        #pdb.set_trace()
+        #tracer_dict['burst_positions']
         '''
         del tracer_dict['other_positions']
         gc.collect()
