@@ -212,8 +212,6 @@ for sink_ind in sink_inds:
                     smooth_e = particle_data['eccentricity'][start_it:end_it]
                     smooth_sep = particle_data['semimajor_axis'][start_it:end_it]
             else:
-                import pdb
-                pdb.set_trace()
                 closes_inds = np.unique(particle_data['closest_sink'][:end_it], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'][:end_it], return_index=True)[1])]
                 diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
                 
