@@ -228,8 +228,8 @@ for sink_ind in sink_inds:
                         else:
                             linestyle='-'
                             
-                        curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
-                        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
+                        curr_inds = np.argwhere(np.array(particle_data['closest_sink'][start_it:end_it]) == comp_ind).T[0]
+                        diff_inds = np.setdiff1d(np.arange(len(particle_data['time'][start_it:end_it])), curr_inds)
                         smooth_t = np.copy(particle_data['time'][start_it:end_it]+sink_form_time.value)
                         smooth_t[diff_inds] = np.nan
                         mass_ratio = yt.YTArray(particle_data['mass'][start_it:end_it])/yt.YTArray(particle_data['closest_mass'][start_it:end_it])
