@@ -226,7 +226,7 @@ for sink_ind in sink_inds:
                     else:
                         linestyle='-'
                         
-                    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == closest_id).T[0]
+                    curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
                     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
                     smooth_t = particle_data['time']
                     smooth_t[diff_inds] = np.nan
