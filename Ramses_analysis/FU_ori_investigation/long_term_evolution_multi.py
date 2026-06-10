@@ -137,8 +137,8 @@ for sink_ind in sink_inds:
                         line_style='-'
                     
                     p = axs.flatten()[2].plot(np.array(smooth_t), np.array(smooth_q), alpha=alpha_val, ls=line_style)
-                    axs.flatten()[1].plot(np.array(smooth_t), np.array(smooth_e)[start_ind:end_ind], alpha=alpha_val, ls=line_style)
-                    axs.flatten()[0].semilogy(np.array(smooth_t), np.array(smooth_sep)[start_ind:end_ind], alpha=alpha_val, ls=line_style, label=label)
+                    axs.flatten()[1].plot(np.array(smooth_t), np.array(smooth_e), alpha=alpha_val, ls=line_style)
+                    axs.flatten()[0].semilogy(np.array(smooth_t), np.array(smooth_sep), alpha=alpha_val, ls=line_style, label=label)
             else:
                 print('reading ', pickle_file)
                 file_open = open(pickle_file, 'rb')
