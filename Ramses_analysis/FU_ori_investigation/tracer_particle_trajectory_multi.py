@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib as mpl
 
+two_col_width = 7.20472 #inches
+single_col_width = 3.50394 #inches
+page_height = 10.62472 #inches
+font_size = 10
 mutation_scale = 15
 linewidth = 1
 
