@@ -19,7 +19,7 @@ matplotlib.rcParams['text.latex.preamble'] = r"\usepackage{siunitx}" "\sisetup{d
 
 sink_inds = [10, 17, 45, 48, 51, 54, 56, 71, 73, 75, 85, 93, 103, 109, 118, 141, 150, 151, 154, 159, 168, 176, 177, 195, 221, 239, 258, 275, 292]
 
-labels = ['1', '2', '3', '4*', '5', '6*', '7', '8', '9 + 10', '11^', '12+13', '14', '17', '18', '19', '20^', '21', '22', '23', '24', '25', '26+27', '28', '29*', '30', '31', '32^', '33', '35*', '36']
+labels = ['1', '2', '3', '4*', '5', '6*', '7', '8', '9+10', '11^', '12+13', '14', '17', '18', '19', '20^', '21', '22', '23', '24', '25', '26+27', '28', '29*', '30', '31', '32^', '33', '35*', '36']
 
 #
 #plot_window = {'17' : [[19000, 55000], [56000, 75000]], '45' : [[8500, 27300], [30600, 75000]], '51' : [[16000, 30500], [30900, 75000]], '71' : [[7500, 38000]], '75' : [[5900, 6100], [14000, 17000], [18250, 18500], [19000, 24500], [27000, 75000]], '85' : [[2250, 75000]], '101' : [[3000, 75000]], '103' : [[1000, 2000], [21900, 75000]], '176' : [[36500, 39000], [45000, 46000], [48250, 49000]], '177' : [[32000, 75000]], '258' : [[6500, 12500], [13900, 75000]], '272' : [[10100, 29750], [41000, 75000]], '292' : [[3000, 4000], [5900, 75000]]}
@@ -229,14 +229,14 @@ for sink_ind in sink_inds:
                         
                     curr_inds = np.argwhere(np.array(particle_data['closest_sink']) == comp_ind).T[0]
                     diff_inds = np.setdiff1d(np.arange(len(particle_data['time'])), curr_inds)
-                    smooth_t = particle_data['time']
+                    smooth_t = np.copy(particle_data['time'])
                     smooth_t[diff_inds] = np.nan
                     mass_ratio = yt.YTArray(particle_data['mass'])/yt.YTArray(particle_data['closest_mass'])
-                    smooth_q = mass_ratio
+                    smooth_q = np.copy(mass_ratio)
                     smooth_q[diff_inds] = np.nan
-                    smooth_e = particle_data['eccentricity']
+                    smooth_e = np.copy(particle_data['eccentricity'])
                     smooth_e[diff_inds] = np.nan
-                    smooth_sep = particle_data['semimajor_axis']
+                    smooth_sep = np.copy(particle_data['semimajor_axis'])
                     smooth_sep[diff_inds] = np.nan
                     
                     if plot_colour == None:
