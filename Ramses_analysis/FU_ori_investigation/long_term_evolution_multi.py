@@ -304,7 +304,7 @@ for sink_ind in sink_inds:
                         axs.flatten()[1].plot(smooth_t[start_it:end_it], smooth_e[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                         axs.flatten()[0].plot(smooth_t[start_it:end_it], smooth_sep[start_it:end_it], alpha=1, ls=linestyle, color=plot_colour)
                 
-        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.1), ncol=4)
+        axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.2), ncol=4)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
 
 '''
