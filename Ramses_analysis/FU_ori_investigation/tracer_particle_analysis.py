@@ -103,7 +103,7 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         min_mass = (-1*(sink_id+1))
         already_accreted_inds = np.where(particle_mass == min_mass)[0]
-        already_accreted_tracer_part_ids = particle_identity[already_accreted_inds]
+        already_accreted_ids = particle_identity[already_accreted_inds]
         #import pdb
         #pdb.set_trace()
         del particle_mass
@@ -115,7 +115,7 @@ if args.make_pickle_files == "True":
         #Get accreted tracer particle IDS
         print("Getting burst files")
         sys.stdout.flush()
-        end_burst_file = mym.find_files(ç[end_time], files, sink_form_time, sink_id, verbatim=True)[0]
+        end_burst_file = mym.find_files([end_time], files, sink_form_time, sink_id, verbatim=True)[0]
         end_file = mym.find_files([end_time+100], files, sink_form_time, sink_id, verbatim=False)[0]
         #end_burst_file = files[-1] #WARNING THIS SHOULD USE THE MYM.FIND FILES LINE
         #end_file = end_burst_file
@@ -129,17 +129,10 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
         burst_tracer_part_ids = particle_identity[accreted_inds_burst]
-        accreted_inds_burst = np.sort(list(set(burst_tracer_part_ids).symmetric_difference(already_accreted_tracer_part_ids)))
+        accreted_ids_burst = np.sort(list(set(burst_tracer_part_ids.value).symmetric_difference(already_accreted_ids.value)))
         #import pdb
         #pdb.set_trace()
         del particle_mass
-        print("Got all accreted_inds_burst")
-        sys.stdout.flush()
-        
-        import pdb
-        pdb.set_trace()
-        particle_identity = particle_identity[sorted_inds]
-        accreted_ids_burst = particle_identity[accreted_inds_burst]
         print("got burst indexes")
         sys.stdout.flush()
         del particle_identity
@@ -157,26 +150,22 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
+        particle_identity = particle_identity[sorted_inds]
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_all = np.where(particle_mass == min_mass)[0]
-        accreted_inds_all = np.sort(list(set(accreted_inds_all).symmetric_difference(already_accreted_inds)))
+        accreted_all_part_ids = particle_identity[accreted_inds_all]
+        accreted_ids_all = np.sort(list(set(accreted_all_part_ids.value).symmetric_difference(accreted_ids_burst.value)))
         #import pdb
         #pdb.set_trace()
         del particle_mass
         gc.collect()
-        print("got accreted_inds_all")
-        sys.stdout.flush()
-        particle_identity = particle_identity[sorted_inds]
-        accreted_ids_all = particle_identity[accreted_inds_all]
         print("got accreted indexes")
         sys.stdout.flush()
         
         #Check carefulling abotu saving tracer partice IDS and there indexes.
         accreted_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
-        particle_identity = particle_identity[sorted_inds]
-        already_accreted_ids = particle_identity[already_accreted_inds]
-        del already_accreted_inds
-        gc.collect()
+        import pdb
+        pdb.set_trace()
         not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value) - set(already_accreted_ids.value)), '')
         print("saved other and not accreted tracer particle indices")
         sys.stdout.flush()
@@ -186,7 +175,7 @@ if args.make_pickle_files == "True":
         if rank == 0:
             #Save overall tracer particle data:
             file = open('all_tracer_data.pkl', 'wb')
-            pickle.dump((sink_id, sink_form_time, accreted_inds_burst, accreted_ids_burst, accreted_inds_all, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file), file)
+            pickle.dump((sink_id, sink_form_time, accreted_ids_burst, accreted_ids_all, accreted_ids_other, not_accreted_ids, end_file), file)
             file.close()
         sys.stdout.flush()
         CW.Barrier()
