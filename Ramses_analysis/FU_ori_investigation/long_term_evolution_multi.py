@@ -68,8 +68,8 @@ fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, 2*single_col_w
 plt.subplots_adjust(hspace=0.1)
 smoothing_window = 1000
 do_smoothing = False
-plot_whole_binary = False
-plot_windows = True
+plot_whole_binary = True
+plot_windows = False
 
 #axs.flatten()[2].set_xlim([0, 600000])
 #axs.flatten()[2].set_xlim(left=0)
