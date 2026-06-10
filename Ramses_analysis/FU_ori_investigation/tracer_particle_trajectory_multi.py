@@ -46,14 +46,14 @@ for Traj_pickle in Traj_pickles:
             if end_sep < 5:
                 for pit in range(1,len(Tracer_parallel[tracer_it])):
                     ax.add_patch(mpatches.FancyArrowPatch((Tracer_parallel[tracer_it][pit-1], Tracer_perpendicular[tracer_it][pit-1]), (Tracer_parallel[tracer_it][pit], Tracer_perpendicular[tracer_it][pit]), color=colors[pit-1], linewidth=0.5, arrowstyle='->', shrinkA=0.0, shrinkB=0.0, alpha=0.5, mutation_scale=5))
-        ax.scatter(0, 0, marker='*', color='cyan', s=600)
+        ax.scatter(0, 0, marker='*', color='cyan', s=600, edgecolor='k')
         circle = mpatches.Circle([0, 0], 0.79, fill=False, edgecolor='k')
         arrow = mpatches.FancyArrowPatch((0, 0), (2.5, 0), mutation_scale=mutation_scale, color='k', linewidth=linewidth)
         ax.add_patch(circle)
         ax.add_patch(arrow)
         ax.set_xlim([-15, 15])
         ax.set_ylim([-1, 15])
-        plt.gca().set_aspect('equal')
+        ax.set_aspect('equal')
         norm = mpl.colors.Normalize(vmin=0,vmax=1)
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
         sm.set_array([])
