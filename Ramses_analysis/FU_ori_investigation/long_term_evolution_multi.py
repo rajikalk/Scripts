@@ -214,11 +214,12 @@ for sink_ind in sink_inds:
             else:
                 closes_inds = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
                 
-                label = None
                 plot_colour = None
                 for comp_ind in closes_inds:
-                    if label == None:
+                    if comp_ind == closes_inds[0]:
                         label = "Cand. " + labels[label_it]
+                    else:
+                        label = None
                     if '*' in labels[label_it]:
                         linestyle = ':'
                     elif '^' in labels[label_it]:
