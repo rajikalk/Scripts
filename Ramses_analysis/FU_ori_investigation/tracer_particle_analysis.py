@@ -268,9 +268,10 @@ if args.make_pickle_files == "True":
             del particle_velocity_x, particle_velocity_y, particle_velocity_z
             gc.collect()
             
-            rel_vx[neg_inds] = 0
-            rel_vy[neg_inds] = 0
-            rel_vz[neg_inds] = 0
+            if len(neg_inds) > 0:
+                rel_vx[neg_inds] = 0
+                rel_vy[neg_inds] = 0
+                rel_vz[neg_inds] = 0
             
             burst_velocity = [rel_vx, rel_vy, rel_vz]
             
@@ -288,9 +289,10 @@ if args.make_pickle_files == "True":
             rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
         
-            relx[neg_inds] = 0
-            rely[neg_inds] = 0
-            relz[neg_inds] = 0
+            if len(neg_inds) > 0:
+                relx[neg_inds] = 0
+                rely[neg_inds] = 0
+                relz[neg_inds] = 0
 
             burst_positions = [relx, rely, relz]
             
@@ -298,9 +300,10 @@ if args.make_pickle_files == "True":
             rely = (particle_position_y[accrete_inds_other].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[accrete_inds_other].value - pp_code[2].value)*scale_l
             
-            relx[neg_inds] = 0
-            rely[neg_inds] = 0
-            relz[neg_inds] = 0
+            if len(neg_inds) > 0:
+                relx[neg_inds] = 0
+                rely[neg_inds] = 0
+                relz[neg_inds] = 0
             
             other_positions = [relx, rely, relz]
             
@@ -310,9 +313,10 @@ if args.make_pickle_files == "True":
             del particle_position_x, particle_position_y, particle_position_z
             gc.collect()
             
-            relx[neg_inds] = 0
-            rely[neg_inds] = 0
-            relz[neg_inds] = 0
+            if len(neg_inds) > 0:
+                relx[neg_inds] = 0
+                rely[neg_inds] = 0
+                relz[neg_inds] = 0
             
             not_accreted_positions = [relx, rely, relz]
             
