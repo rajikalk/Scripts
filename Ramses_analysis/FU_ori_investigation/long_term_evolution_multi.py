@@ -68,7 +68,7 @@ do_smoothing = False
 plot_whole_binary = True
 plot_windows = False
 
-axs.flatten()[2].set_xlim([0, 1.1e6])
+axs.flatten()[2].set_xlim([0, 600000])
 axs.flatten()[2].set_ylabel('$M_{cand.}/M_{clos.}$')
 axs.flatten()[2].set_ylim([0, 1.25])
 axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
@@ -76,7 +76,7 @@ axs.flatten()[2].tick_params(axis='both', direction='in', top=True, right=True)
 axs.flatten()[1].set_ylabel('Eccentricity')
 axs.flatten()[1].set_ylim([0, 1.5])
 axs.flatten()[1].tick_params(axis='both', direction='in', top=True, right=True)
-axs.flatten()[0].set_ylabel('Semimajor_axis (AU)')
+axs.flatten()[0].set_ylabel('Semimajor Axis (AU)')
 axs.flatten()[2].set_xlabel('Time since candidate formation (yr)')
 axs.flatten()[0].set_ylim([5, 1e3])
 axs.flatten()[0].axhline(y=16.6, color='k', ls='--', label="r$_{soft}$")
