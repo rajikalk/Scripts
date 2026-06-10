@@ -100,11 +100,11 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
-        del particle_identity
-        gc.collect()
+        particle_identity = particle_identity[sorted_inds]
         particle_mass = ds.r['particle_mass'][sorted_inds]
         min_mass = (-1*(sink_id+1))
         already_accreted_inds = np.where(particle_mass == min_mass)[0]
+        already_accreted_tracer_part_ids = particle_identity[already_accreted_inds]
         #import pdb
         #pdb.set_trace()
         del particle_mass
@@ -126,15 +126,19 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         particle_identity = ds.r['particle_identity']
         sorted_inds = np.argsort(particle_identity)
+        particle_identity = particle_identity[sorted_inds]
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
-        accreted_inds_burst = np.sort(list(set(accreted_inds_burst).symmetric_difference(already_accreted_inds)))
+        burst_tracer_part_ids = particle_identity[accreted_inds_burst]
+        accreted_inds_burst = np.sort(list(set(burst_tracer_part_ids).symmetric_difference(already_accreted_tracer_part_ids)))
         #import pdb
         #pdb.set_trace()
         del particle_mass
         print("Got all accreted_inds_burst")
         sys.stdout.flush()
         
+        import pdb
+        pdb.set_trace()
         particle_identity = particle_identity[sorted_inds]
         accreted_ids_burst = particle_identity[accreted_inds_burst]
         print("got burst indexes")
@@ -288,6 +292,7 @@ if args.make_pickle_files == "True":
             relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
             
             if np.min(ds.r['particle_mass'][accreted_inds_burst])<0:
+                neg_inds = np.where(ds.r['particle_mass'][accreted_inds_burst]<0)[0]
                 import pdb
                 pdb.set_trace()
 
