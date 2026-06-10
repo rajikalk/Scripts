@@ -129,7 +129,7 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_burst = np.where(particle_mass == min_mass)[0]
         burst_tracer_part_ids = particle_identity[accreted_inds_burst]
-        accreted_ids_burst = np.sort(list(set(burst_tracer_part_ids.value).symmetric_difference(already_accreted_ids.value)))
+        accreted_ids_burst = np.sort(list(set(burst_tracer_part_ids.value) - set(already_accreted_ids.value)))
         #import pdb
         #pdb.set_trace()
         del particle_mass
@@ -154,7 +154,7 @@ if args.make_pickle_files == "True":
         particle_mass = ds.r['particle_mass'][sorted_inds]
         accreted_inds_all = np.where(particle_mass == min_mass)[0]
         accreted_all_part_ids = particle_identity[accreted_inds_all]
-        accreted_ids_all = np.sort(list(set(accreted_all_part_ids.value).symmetric_difference(accreted_ids_burst.value)))
+        accreted_ids_all = np.sort(list(set(accreted_all_part_ids.value) -set(accreted_ids_burst)))
         #import pdb
         #pdb.set_trace()
         del particle_mass
@@ -163,10 +163,8 @@ if args.make_pickle_files == "True":
         sys.stdout.flush()
         
         #Check carefulling abotu saving tracer partice IDS and there indexes.
-        accreted_ids_other = yt.YTArray(list(set(accreted_ids_all.value) - set(accreted_ids_burst.value)), '')
-        import pdb
-        pdb.set_trace()
-        not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all.value) - set(already_accreted_ids.value)), '')
+        accreted_ids_other = yt.YTArray(list(set(accreted_ids_all) - set(accreted_ids_burst)), '')
+        not_accreted_ids = yt.YTArray(list(set(particle_identity.value) - set(accreted_ids_all) - set(already_accreted_ids.value)), '')
         print("saved other and not accreted tracer particle indices")
         sys.stdout.flush()
         del particle_identity
