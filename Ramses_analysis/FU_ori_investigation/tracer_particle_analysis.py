@@ -287,8 +287,9 @@ if args.make_pickle_files == "True":
             rely = (particle_position_y[accreted_inds_burst].value - pp_code[1].value)*scale_l
             relz = (particle_position_z[accreted_inds_burst].value - pp_code[2].value)*scale_l
             
-            import pdb
-            pdb.set_trace()
+            if np.min(ds.r['particle_mass'][accreted_inds_burst])<0:
+                import pdb
+                pdb.set_trace()
 
             burst_positions = [relx, rely, relz]
             
