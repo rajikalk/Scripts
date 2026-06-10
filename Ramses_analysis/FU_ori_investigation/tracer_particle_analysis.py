@@ -8,7 +8,6 @@ import sys
 import os
 from mpi4py.MPI import COMM_WORLD as CW
 import pickle
-import my_ramses_fields_short as myf
 import gc
 
 def parse_inputs():
