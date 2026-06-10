@@ -217,7 +217,7 @@ if args.update_pickle == 'True':
                             e = np.nan
                             semimajor_a = np.nan
                         particle_data['eccentricity'] = np.append(particle_data['eccentricity'], e)
-                        particle_data['semimajor_axis'] = np.append(particle_data['semimajor_axis'], e)
+                        particle_data['semimajor_axis'] = np.append(particle_data['semimajor_axis'], semimajor_a)
                     
                     else:
                         break
