@@ -276,6 +276,13 @@ for sink_ind in sink_inds:
                     smooth_e[diff_inds] = np.nan
                     smooth_sep = np.copy(particle_data['semimajor_axis'])
                     smooth_sep[diff_inds] = np.nan
+                    alpha_arr = np.ones(np.shape(smooth_t))*0.25
+                    time_window = plot_window[str(sink_ind)][0]
+                    start_t = time_window[0]
+                    end_t = time_window[-1]
+                    start_it = np.argmin(abs(particle_data['time'] - start_t))
+                    end_it = np.argmin(abs(particle_data['time'] - end_t))
+                    alpha_arr[start_t:end_t] = 1
                     
                     if plot_colour == None:
                         p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
