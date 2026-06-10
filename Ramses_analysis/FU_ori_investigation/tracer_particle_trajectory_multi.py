@@ -75,7 +75,7 @@ for Traj_pickle in Traj_pickles:
         ax.xaxis.label.set_color('black')
         ax.yaxis.label.set_color('black')
         ax.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.02)
+        ax.set_title("Burst event "+str(Traj_pickles.index(Traj_pickle)+2), x=0.21, y=0.01)
         
         if Traj_pickles.index(Traj_pickle) == 1 or Traj_pickles.index(Traj_pickle) == 3:
             yticklabels = ax.get_yticklabels()
@@ -92,7 +92,7 @@ for Traj_pickle in Traj_pickles:
             plt.setp(xticklabels[-1], visible=False)
         
         plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
-cax = fig.add_axes([0.90, 0.28, 0.03, 0.42])
+cax = fig.add_axes([0.90, 0.28, 0.03, 0.43])
 cbar = plt.colorbar(sm, cax=cax)
-cbar.set_label(r"Time Norm (yr)", rotation=270, labelpad=14)
+cbar.set_label(r"Time Normalised", rotation=270, labelpad=14)
 plt.savefig("XY_tracer_traj.pdf", bbox_inches='tight', pad_inches=0.02)
