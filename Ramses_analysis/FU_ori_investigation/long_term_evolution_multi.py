@@ -285,14 +285,14 @@ for sink_ind in sink_inds:
                     alpha_arr[start_t:end_t] = 1
                     
                     if plot_colour == None:
-                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle)
+                        p = axs.flatten()[2].plot(smooth_t, smooth_q, alpha=alpha_arr, ls=linestyle)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=alpha_arr, ls=linestyle)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=alpha_arr, label=label, ls=linestyle)
                         plot_colour = p[-1].get_color()
                     else:
-                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=0.25, ls=linestyle, color=plot_colour)
-                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=0.25, ls=linestyle, color=plot_colour)
-                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=0.25, label=label, ls=linestyle, color=plot_colour)
+                        axs.flatten()[2].plot(smooth_t, smooth_q, alpha=alpha_arr, ls=linestyle, color=plot_colour)
+                        axs.flatten()[1].plot(smooth_t, smooth_e, alpha=alpha_arr, ls=linestyle, color=plot_colour)
+                        axs.flatten()[0].semilogy(smooth_t, smooth_sep, alpha=alpha_arr, label=label, ls=linestyle, color=plot_colour)
                 
         axs.flatten()[0].legend(loc='upper center', bbox_to_anchor=(0.5, 2.1), ncol=4)
         plt.savefig("q_and_e_evol_all_candidates.pdf", bbox_inches='tight', pad_inches=0.02)
