@@ -212,6 +212,8 @@ if args.update_pickle == 'True':
                             L_tot = np.sqrt(np.sum(L**2))
                             h_val = L_tot/reduced_mass.in_units('g')
                             e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g')))**2.))
+                            import pdb
+                            pdb.set_trace()
                             semimajor_a = ((h_val**2)/(yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g'))*(1-e**2))).in_units('AU')
                         else:
                             e = np.nan
