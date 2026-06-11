@@ -148,7 +148,7 @@ for plot_time in plot_times:
     if plot_time == plot_times[-1]:
         pvl = True
         
-    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=pvl, Z_val=None, standard_vel=stdvel, pvl_pos)
+    mym.my_own_quiver_function(ax, X_vel, Y_vel, velx, vely, plot_velocity_legend=pvl, Z_val=None, standard_vel=stdvel)
     
     #CHECK PARTICLE VELOCITY!!
     part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
