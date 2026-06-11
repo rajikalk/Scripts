@@ -356,7 +356,7 @@ if rank == 0:
             ax1.legend(bbox_to_anchor=(1, 1))
             
         useable_times = useable_times/1000
-        Cand_string = "Cand. "+str(plot_it+11)
+        Cand_string = "Cand. "+str(plot_it+16)
         Cand_string_raw = r"{}".format(Cand_string)
         Cand_text = ax1.text(np.max(useable_times), 0.15, Cand_string_raw, va="center", ha="right", color='k', fontsize=font_size)
         
