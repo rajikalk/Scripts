@@ -166,7 +166,7 @@ if rank == 0:
     top_sinks = np.array(top_sinks)[np.argsort(top_sinks)]
     top_corr = [78.26, 78.4, 76.07, 79.07, 78.96, 76.25, 68.11, 74.23, 67.44, 67.76, 78.23, 67.33, 76.13, 72.56, 74.05, 70.49, 74.54, 68.16, 77.04, 67.06, 72.73, 71.15, 71.31, 78.2, 68.85, 69.41, 78.03, 79.74, 78.71, 72.27, 68.37, 73.88, 78.86, 78.11, 78.08, 79.31, 68.04]
     top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
-    #top_clean = top_clean[np.argsort(top_clean)]
+    top_clean = top_clean[np.argsort(top_clean)]
     #cand_label = np.arange(1, 38)
     #top_clean = top_clean[np.argsort(top_corr)[::-1]]
     #cand_label = cand_label[np.argsort(top_corr)[::-1]]
@@ -192,7 +192,7 @@ if rank == 0:
     
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=3, figsize=(two_col_width, 0.5*page_height), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=3, figsize=(two_col_width, 0.6*page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.13)
     
@@ -278,7 +278,7 @@ if rank == 0:
         
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=5, figsize=(two_col_width, page_height), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=5, figsize=(two_col_width, 0.9*page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.14)
     
