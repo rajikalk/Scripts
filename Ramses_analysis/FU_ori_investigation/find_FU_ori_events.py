@@ -164,11 +164,12 @@ if rank == 0:
 
     top_times = np.array(top_times)[np.argsort(top_sinks)]
     top_sinks = np.array(top_sinks)[np.argsort(top_sinks)]
+    top_corr = [78.26, 78.4, 76.07, 79.07, 78.96, 76.25, 68.11, 74.23, 67.44, 67.76, 78.23, 67.33, 76.13, 72.56, 74.05, 70.49, 74.54, 68.16, 77.04, 67.06, 72.73, 71.15, 71.31, 78.2, 68.85, 69.41, 78.03, 79.74, 78.71, 72.27, 68.37, 73.88, 78.86, 78.11, 78.08, 79.31, 68.04]
     top_clean = np.array([177, 292, 48, 51, 262, 195, 17, 10, 75, 159, 272, 275, 176, 118, 54, 45, 85, 103, 71, 101, 258, 150, 93, 221, 151, 154, 102, 168, 175, 56, 309, 239, 109, 73, 72, 83, 141])
-    top_clean = top_clean[np.argsort(top_clean)]
-    
-    import pdb
-    pdb.set_trace()
+    #top_clean = top_clean[np.argsort(top_clean)]
+    #cand_label = np.arange(1, 38)
+    #top_clean = top_clean[np.argsort(top_corr)[::-1]]
+    #cand_label = cand_label[np.argsort(top_corr)[::-1]]
     
     two_col_width = 7.20472 #inches
     single_col_width = 3.50394 #inches
@@ -191,11 +192,11 @@ if rank == 0:
     
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=2, figsize=(two_col_width, 0.48*two_col_width), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=3, figsize=(two_col_width, 0.5*page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.13)
     
-    for plot_it in range(len(top_clean[:10])):
+    for plot_it in range(len(top_clean[:15])):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
         pickle_open.close()
@@ -228,24 +229,24 @@ if rank == 0:
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
 
-        if plot_it >4:
+        if plot_it >9:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
-        if plot_it == 4 or plot_it == 9:
+        if plot_it == 4 or plot_it == 9 or plot_it == 14:
             ax2.set_ylabel('Total log Luminosity', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax2.get_yticklabels()
             plt.setp(yticklabels, visible=False)
             
-        if plot_it == 6 or plot_it == 9:
-            xticklabels = ax1.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
-            xticklabels = ax2.get_xticklabels()
-            plt.setp(xticklabels[0], visible=False)
+        #if plot_it == 6 or plot_it == 9:
+        #    xticklabels = ax1.get_xticklabels()
+        #    plt.setp(xticklabels[0], visible=False)
+        #    xticklabels = ax2.get_xticklabels()
+        #    plt.setp(xticklabels[0], visible=False)
                             
         #ax1.set_xlim([np.min(useable_times), np.max(useable_times)])
         ax1.set_ylim([0, 1])
@@ -277,16 +278,16 @@ if rank == 0:
         
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=6, figsize=(two_col_width, page_height), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=5, figsize=(two_col_width, page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.14)
     
-    axs.flatten()[27].set_axis_off()
-    axs.flatten()[28].set_axis_off()
-    axs.flatten()[29].set_axis_off()
+    axs.flatten()[22].set_axis_off()
+    axs.flatten()[23].set_axis_off()
+    axs.flatten()[24].set_axis_off()
     
     
-    top_clean = top_clean[10:]
+    top_clean = top_clean[15:]
     for plot_it in range(len(top_clean)):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
@@ -320,7 +321,7 @@ if rank == 0:
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
 
-        if plot_it >24:
+        if plot_it >19:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
@@ -351,8 +352,8 @@ if rank == 0:
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
-        if plot_it == 25:
-            ax1.legend(bbox_to_anchor=(2, 1))
+        if plot_it == 21:
+            ax1.legend(bbox_to_anchor=(1, 1))
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+11)
