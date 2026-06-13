@@ -109,6 +109,7 @@ for path in Cleaned_dirs:
             particle_data.update({'semimajor_axis':np.array([])})
             particle_data.update({'relative_velocity':np.array([])})
             try:
+                print("Loading sink particle data")
                 loaded_sink_data = rsink(datadir=path, all=True)
             except:
                 print("NO SINK DATA FOR", path, "ON RANK", rank)
