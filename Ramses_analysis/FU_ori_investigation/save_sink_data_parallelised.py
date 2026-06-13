@@ -139,10 +139,8 @@ for path in Cleaned_dirs:
                     os.system('cp '+save_dir + pickle_name + ' ' + save_dir+pickle_name.split('.pkl')[0]+'_tmp.pkl')
                     print('read', counter, 'snapshots of sink particle data, and saved pickle')
                     
-                    import pdb
-                    pdb.set_trace()
-                    
                     #make progress plots
+                    '''
                     if len(particle_data['mass'])>0:
                         f_acc = 0.5
                         radius = yt.YTQuantity(2.0, 'rsun')
@@ -226,8 +224,11 @@ for path in Cleaned_dirs:
                         plt.ylabel('Separation (AU)')
                         plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
                         plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
-
+                '''
                 if len(sink_data['u']) > sink_ind:
+                    import pdb
+                    pdb.set_trace()
+                
                     tags = [sink_ind]
                     pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
                     dx = sink_data['x']*units['length_unit'].in_units('au') - pos_second[0]
