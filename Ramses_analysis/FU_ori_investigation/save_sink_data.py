@@ -100,11 +100,15 @@ if args.update_pickle == 'True':
     else:
         updating = True
         particle_data = {}
-        particle_data.update({'particle_tag':np.array([])})
         particle_data.update({'time':np.array([])})
         particle_data.update({'mass':np.array([])})
         particle_data.update({'mdot':np.array([])})
         particle_data.update({'separation':np.array([])})
+        particle_data.update({'eccentricity':np.array([])})
+        particle_data.update({'closest_sink':np.array([])})
+        particle_data.update({'closest_mass':np.array([])})
+        particle_data.update({'closest_mdot':np.array([])})
+        particle_data.update({'semimajor_axis':np.array([])})
         particle_data.update({'relative_velocity':np.array([])})
         
         counter = 0

@@ -50,6 +50,8 @@ for path in Cleaned_dirs:
         rit = 0
     if rank == rit:
         sink_ind = int(path.split('Sink_')[-1].split('/')[0])
+        if sink_ind == 101:
+            sink_ind = 102
         pickle_name = 'particle_data_'+str(sink_ind)
         if "Event_restart" in path:
             save_dir = save_dir_top + 'Starting_from_event/'
@@ -96,11 +98,16 @@ for path in Cleaned_dirs:
         else:
             updating = True
             particle_data = {}
-            particle_data.update({'particle_tag':[]})
-            particle_data.update({'time':[]})
-            particle_data.update({'mass':[]})
-            particle_data.update({'mdot':[]})
-            particle_data.update({'separation':[]})
+            particle_data.update({'time':np.array([])})
+            particle_data.update({'mass':np.array([])})
+            particle_data.update({'mdot':np.array([])})
+            particle_data.update({'separation':np.array([])})
+            particle_data.update({'eccentricity':np.array([])})
+            particle_data.update({'closest_sink':np.array([])})
+            particle_data.update({'closest_mass':np.array([])})
+            particle_data.update({'closest_mdot':np.array([])})
+            particle_data.update({'semimajor_axis':np.array([])})
+            particle_data.update({'relative_velocity':np.array([])})
             try:
                 loaded_sink_data = rsink(datadir=path, all=True)
             except:
@@ -130,6 +137,9 @@ for path in Cleaned_dirs:
                     file.close()
                     os.system('cp '+save_dir + pickle_name + ' ' + save_dir+pickle_name.split('.pkl')[0]+'_tmp.pkl')
                     print('read', counter, 'snapshots of sink particle data, and saved pickle')
+                    
+                    import pdb
+                    pdb.set_trace()
                     
                     #make progress plots
                     if len(particle_data['mass'])>0:
