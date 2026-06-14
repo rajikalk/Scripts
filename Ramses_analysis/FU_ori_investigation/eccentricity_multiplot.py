@@ -48,7 +48,7 @@ except:
 
 plot_sinks = [17, 45, 71, 75, 102]
 Cand_labels = ['2', '3', '8', '11', '15+16']
-particle_pickles = [['particle_data_17.pkl', 'particle_data_17_19.pkl'], ['CPH_pickles/particle_data_45_L18.pkl', 'CPH_pickles/particle_data_45_L19.pkl', 'CPH_pickles/particle_data_45_L20.pkl'], ['particle_data_71.pkl', 'particle_data_71_19.pkl', 'particle_data_71_20.pkl'], ['particle_data_75.pkl', 'particle_data_75_19.pkl'], ['particle_data_102.pkl', 'particle_data_102_19.pkl', 'particle_data_102_20.pkl']]
+particle_pickles = [['particle_data_17.pkl', 'particle_data_17_19.pkl'], ['CPH_pickles/particle_data_45_L18.pkl', 'CPH_pickles/particle_data_45_L19.pkl', 'CPH_pickles/particle_data_45_L20.pkl'], ['particle_data_71.pkl', 'particle_data_71_19.pkl', 'particle_data_71_20.pkl'], ['particle_data_75.pkl', 'particle_data_75_19.pkl'], ['particle_data_102.pkl', 'particle_data_102_19.pkl']]
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
 
@@ -80,6 +80,9 @@ for plot_sink in plot_sinks:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
+            import pdb
+            pdb.set_trace()
+            semi_minor = particle_data['semimajor_axis'] * np.sqrt(1-particle_data['eccentricity']**2)
             
             axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
         else:
@@ -87,6 +90,8 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
+            import pdb
+            pdb.set_trace()
             ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns_res.append(ln)
         
