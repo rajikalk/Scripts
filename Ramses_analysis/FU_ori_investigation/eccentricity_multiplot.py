@@ -82,13 +82,13 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[sink_it], color=proj_colours[pickle_it], ls='-')
+            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[sink_it], color=proj_colours[pickle_it], ls='-')
+            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
 
         
     #axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
