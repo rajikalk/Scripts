@@ -54,7 +54,7 @@ r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(le
 
 res_label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\Delta x=0.39$AU"]
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
-x_right_lim = [12000, 9000, 5500, 4000, 1750]
+x_right_lim = [12000, 9000, 10000, 4000, 1750]
 left_lower_lim = [1.e-9, 1.e-12, 1.e-12, 1.e-10, 1.e-7] #[None, 1.e-9, 1.e-9, 1.e-9, None]
 right_upper_lim = [9.e4, 9.e4, 9.e4, 9.e4, 9.e4] #[None, 1.e3, None, None, None]
 

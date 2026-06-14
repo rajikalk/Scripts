@@ -54,7 +54,7 @@ r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(le
 
 res_label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\Delta x=0.39$AU"]
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
-x_right_lim = [12000, 9000, 5500, 4000, 1750]
+x_right_lim = [12000, 9000, 10000, 4000, 1750]
 left_lower_lim = [1.e-9, 1.e-12, 1.e-12, 1.e-10, 1.e-7] #[None, 1.e-9, 1.e-9, 1.e-9, None]
 right_upper_lim = [9.e4, 9.e4, 9.e4, 9.e4, 9.e4] #[None, 1.e3, None, None, None]
 
@@ -64,7 +64,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2.1*single_col_width))#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2.2*single_col_width))#, sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -87,11 +87,12 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            lns_res.append(ln)
         
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
-    axs.flatten()[sink_it].set_ylim([0.5, 1.2])
+    axs.flatten()[sink_it].set_ylim([0.5, 1.1])
     #if left_lower_lim[sink_it]!= None:
     #    axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
     axs.flatten()[sink_it].set_ylabel("Eccentricity")
