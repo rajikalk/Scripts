@@ -64,7 +64,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 0.5single_col_width))#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 0.5*single_col_width))#, sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
