@@ -100,6 +100,7 @@ if args.update_pickle == 'True':
     else:
         updating = True
         particle_data = {}
+        particle_data = {}
         particle_data.update({'time':np.array([])})
         particle_data.update({'mass':np.array([])})
         particle_data.update({'mdot':np.array([])})
@@ -139,6 +140,7 @@ if args.update_pickle == 'True':
                 print('read', counter, 'snapshots of sink particle data, and saved pickle')
                 
                 #make progress plots
+                '''
                 if len(particle_data['mass'])>0:
                     f_acc = 0.5
                     radius = yt.YTQuantity(2.0, 'rsun')
@@ -222,61 +224,80 @@ if args.update_pickle == 'True':
                     plt.ylabel('Separation (AU)')
                     plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
                     plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
-
+                '''
             if len(sink_data['u']) > sink_ind:
-                tags = [sink_ind]
-                pos_second = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
-                dx = sink_data['x']*units['length_unit'].in_units('au') - pos_second[0]
-                dy = sink_data['y']*units['length_unit'].in_units('au') - pos_second[1]
-                dz = sink_data['z']*units['length_unit'].in_units('au') - pos_second[2]
-                sep = np.sqrt(dx**2 + dy**2 + dz**2)
-                #del dx, dy, dz
-                nearest_sink = np.argsort(sep)[1]
-                #del sep
-                tags.append(nearest_sink)
-                
-                for tag in tags:
-                    if tag not in particle_data['particle_tag']:
-                        particle_data['particle_tag'] = np.append(particle_data['particle_tag'], np.array(tags), axis=0)
-                
-                pos_prim = yt.YTArray(np.array([sink_data['x'][nearest_sink], sink_data['y'][nearest_sink], sink_data['z'][nearest_sink]])*units['length_unit'].in_units('au'), 'au')
-                
-                separation = np.sqrt(np.sum((pos_second - pos_prim)**2))
-                particle_data['separation'] = np.append(particle_data['separation'], separation.value)
-                #del separation
-
                 if sink_form_time == 0:
                     sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                 time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                particle_data['time'] = np.append(particle_data['time'], time_val.value)
-                #del time_val
-
-                append_mass = yt.YTArray(sink_data['m'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun'), 'msun')
-                if len(particle_data['mass']) == 0:
-                    particle_data['mass'] = np.array([append_mass])
-                else:
-                    particle_data['mass'] = np.append(particle_data['mass'], np.array([append_mass]), axis=0)
+                particle_data['time'] = np.append(particle_data['time'], time_val)
                 
+                particle_mass = yt.YTArray(sink_data['m'][np.array([sink_ind])]*units['mass_unit'].in_units('msun'), 'msun')
+                particle_data['mass'] = np.append(particle_data['mass'], particle_mass)
                 
-                d_mass = sink_data['dm'][np.array([sink_ind, nearest_sink])]*units['mass_unit'].in_units('msun')
+                d_mass = sink_data['dm'][np.array([sink_ind])]*units['mass_unit'].in_units('msun')
                 d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                 acc_val = d_mass/d_time
-                #del d_mass, d_time
+                if acc_val == 0:
+                    acc_val =1.e-12
+                particle_data['mdot'] = np.append(particle_data['mdot'], acc_val)
                 
-                acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                append_acc = yt.YTArray(acc_val, 'msun/yr')
-                if len(particle_data['mdot']) == 0:
-                    particle_data['mdot'] = np.array([append_acc])
-                else:
-                    particle_data['mdot'] = np.append(particle_data['mdot'], np.array([append_acc]), axis=0)
+
+                position = yt.YTArray(np.array([sink_data['x'][sink_ind], sink_data['y'][sink_ind], sink_data['z'][sink_ind]])*units['length_unit'].in_units('au'), 'au')
+                velocity = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                dx = sink_data['x']*units['length_unit'].in_units('au') - position[0]
+                dy = sink_data['y']*units['length_unit'].in_units('au') - position[1]
+                dz = sink_data['z']*units['length_unit'].in_units('au') - position[2]
+                sep = np.sqrt(dx**2 + dy**2 + dz**2)
+                #del dx, dy, dz
+                closest_ind = np.argsort(sep)[1]
+                particle_data['closest_sink'] = np.append(particle_data['closest_sink'], closest_ind)
+                separation = sep[closest_ind]
+                particle_data['separation'] = np.append(particle_data['separation'], separation)
+                #del sep
                 
-                vel_prim = yt.YTArray(np.array([sink_data['ux'][nearest_sink], sink_data['uy'][nearest_sink], sink_data['uz'][nearest_sink]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                vel_sec = yt.YTArray(np.array([sink_data['ux'][sink_ind], sink_data['uy'][sink_ind], sink_data['uz'][sink_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                rel_vel = np.array([vel_sec[0]-vel_prim[0], vel_sec[1]-vel_prim[1], vel_sec[2]-vel_prim[2]])
-                if len(particle_data['relative_velocity']) == 0:
-                    particle_data['relative_velocity'] = np.array([rel_vel])
+                other_mass = yt.YTArray(sink_data['m'][np.array([closest_ind])]*units['mass_unit'].in_units('msun'), 'msun')
+                d_mass = sink_data['dm'][np.array([closest_ind])]*units['mass_unit'].in_units('msun')
+                d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                acc_val = d_mass/d_time
+                if acc_val == 0:
+                    acc_val =1.e-12
+                particle_data['closest_mass'] = np.append(particle_data['closest_mass'], other_mass)
+                particle_data['closest_mdot'] = np.append(particle_data['closest_mdot'], acc_val)
+                
+                if np.isnan(closest_ind) == False:
+                    other_pos = yt.YTArray(np.array([sink_data['x'][closest_ind], sink_data['y'][closest_ind], sink_data['z'][closest_ind]])*units['length_unit'].in_units('au'), 'au')
+                    other_vel = yt.YTArray(np.array([sink_data['ux'][closest_ind], sink_data['uy'][closest_ind], sink_data['uz'][closest_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                    
+                    CoM_pos = (position*particle_mass + other_pos*other_mass)/(particle_mass + other_mass)
+                    CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
+                
+                    CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
+                    
+                    Cand_vel_rel_to_com = velocity - CoM_vel
+                    Other_vel_rel_to_com = other_vel - CoM_vel
+                    
+                    Cand_pos_rel_to_com = position - CoM_pos
+                    Other_pos_rel_to_com = other_pos - CoM_pos
+                    
+                    Cand_rel_speed_to_com = np.sqrt(np.sum((Cand_vel_rel_to_com)**2))
+                    Other_rel_speed_to_com = np.sqrt(np.sum((Other_vel_rel_to_com)**2))
+                
+                    reduced_mass = (particle_mass*other_mass)/(particle_mass+other_mass)
+                    E_pot = (-1*(yt.units.gravitational_constant_cgs*particle_mass*other_mass)/separation.in_units('cm')).in_units('erg')
+                    E_kin = (0.5*particle_mass*Cand_rel_speed_to_com**2 + 0.5*other_mass*Other_rel_speed_to_com**2).in_units('erg')
+                    epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+                    Cand_r_x_v = yt.YTArray(np.cross(Cand_pos_rel_to_com.in_units('cm'), Cand_vel_rel_to_com.in_units('cm/s')), 'cm**2/s')
+                    Other_r_x_v = yt.YTArray(np.cross(Other_pos_rel_to_com.in_units('cm'), Other_vel_rel_to_com.in_units('cm/s')), 'cm**2/s')
+                    L = particle_mass.in_units('g')*Cand_r_x_v + other_mass.in_units('g')*Other_r_x_v
+                    L_tot = np.sqrt(np.sum(L**2))
+                    h_val = L_tot/reduced_mass.in_units('g')
+                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g')))**2.))
+                    semimajor_a = ((-1*(yt.units.gravitational_constant_cgs*(particle_mass.in_units('g')+other_mass.in_units('g')))/epsilon.in_units('km**2/s**2'))/2).in_units('au')
                 else:
-                    particle_data['relative_velocity'] = np.append(particle_data['relative_velocity'], np.array([rel_vel]), axis=0)
+                    e = np.nan
+                    semimajor_a = np.nan
+                particle_data['eccentricity'] = np.append(particle_data['eccentricity'], e)
+                particle_data['semimajor_axis'] = np.append(particle_data['semimajor_axis'], semimajor_a)
                 #print('read', counter)
         #write lastest pickle
         file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
