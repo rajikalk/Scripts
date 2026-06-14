@@ -108,5 +108,6 @@ for plot_sink in plot_sinks:
     #ax0.set_ylim([5,1000])
     ax0.tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
+    plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
 
  
