@@ -95,6 +95,9 @@ for plot_sink in plot_sinks:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
+            
+            import pdb
+            pdb.set_trace()
 
             Cand_it = np.where(particle_data['particle_tag']==plot_sink)[0]
             Other_it = np.where(particle_data['particle_tag']!=plot_sink)[0]
