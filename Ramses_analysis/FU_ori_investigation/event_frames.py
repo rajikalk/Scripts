@@ -65,7 +65,7 @@ except:
 
 
 width = 30
-stdvel = 3
+stdvel = 1
 n_frames = 5
 make_frame = True
 event_it = args.event_identifier
@@ -218,12 +218,23 @@ for plot_time in plot_times:
         plot_velocity_legend = True
     else:
         plot_velocity_legend = False
+        
+    if plot_time == plot_times[-1]:
+        legend_text=str(int(3)) + "km$\,$s$^{-1}$"
+        xvel = (0.07*(xlim[1] - xlim[0]))
+        yvel = 0
+        pos_start = [9, 12.5]
+        width_val = 0.8
+        width_ceil = 0.8
+        ax.add_patch(mpatches.FancyArrowPatch((pos_start[0], pos_start[1]), (pos_start[0]+xvel, pos_start[1]+yvel), arrowstyle='->', color='magenta', linewidth=width_val, mutation_scale=10.*width_val, shrinkA=0.0, shrinkB=0.0, alpha=width_val/width_ceil))
+        annotate_text = ax.text(10, -10, legend_text, va="center", ha="center", color='w', fontsize=font_size)
+        annotate_text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
     
     ax.scatter(tracer_data['other_positions'][ax_x_ind], tracer_data['other_positions'][ax_y_ind], marker='.', s=1, c='orange', edgecolors=None)
     
     ax.scatter(tracer_data['burst_positions'][ax_x_ind][usable_inds], tracer_data['burst_positions'][ax_y_ind][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
 
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][ax_x_ind][usable_inds].value, tracer_data['burst_positions'][ax_y_ind][usable_inds].value, tracer_data['burst_velocity'][ax_x_ind][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][ax_y_ind][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
+    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][ax_x_ind][usable_inds].value, tracer_data['burst_positions'][ax_y_ind][usable_inds].value, tracer_data['burst_velocity'][ax_x_ind][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][ax_y_ind][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=3, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
@@ -257,10 +268,10 @@ for plot_time in plot_times:
             part_color = [part_color[-1]]
         
     #Get unit velocity:
-    part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
+    #part_info['particle_velocity'] =part_info['particle_velocity']/np.sqrt(np.sum(part_info['particle_velocity']**2, axis=0))[0]
         
     
-    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=0.5, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1)
+    mym.annotate_particles(ax, part_info['particle_position'], part_info['accretion_rad'], limits=[xlim, ylim], annotate_field=part_info['particle_mass'], particle_tags=part_info['particle_tag'], zorder=7, annotate_velocity=True, standard_vel=1, width_ceil = 1.0, particle_velocity=part_info['particle_velocity'], part_color=part_color, part_tag_split_length=1)
 
     ax.tick_params(axis='both', which='major', labelsize=font_size)
     for line in ax.xaxis.get_ticklines():
