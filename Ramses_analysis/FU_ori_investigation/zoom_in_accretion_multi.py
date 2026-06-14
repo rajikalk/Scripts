@@ -91,7 +91,10 @@ for plot_sink in plot_sinks:
             if sink_it == 0:
                 ln_lab = lns[0]
                 for ln_it in lns[1:]:
-                    ln_lab = ln_lab + [ln_it]
+                    try:
+                        ln_lab = ln_lab + ln_it
+                    except:
+                        ln_lab = ln_lab + [ln_it]
                 labs = [l.get_label() for l in ln_lab]
                 axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.9)
         else:
@@ -109,7 +112,10 @@ for plot_sink in plot_sinks:
     if plot_sink == 45:
         ln_lab = lns_res[0]
         for ln_it in lns_res[1:]:
-            ln_lab = ln_lab + ln_it
+            try:
+                ln_lab = ln_lab + ln_it
+            except:
+                ln_lab = ln_lab + [ln_it]
         labs = [l.get_label() for l in ln_lab]
         axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', framealpha=0.9)
 
