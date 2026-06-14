@@ -78,27 +78,15 @@ mym.set_units(units_override)
 del units_override['density_unit']
 
 #Get end time of event:
-sim_files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/output*/info*')
+sim_files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/output*/info*'))
 ds = yt.load(sim_files[-1], units_override=units_override)
 sink_form_time = ds.r["sink_particle_form_time"][45]
-
-import pdb
-pdb.set_trace()
-
+end_burst = ds.current_time.in_units('yr') - sink_form_time
+start_burst = time_bounds[event_it -1][1]
 cbar_lims = cbar_lims_all[event_it-1]
-start_burst = burst_bounds[event_it -1][0]
-end_burst = burst_bounds[event_it -1][1]
-start_time = time_bounds[event_it -1][0]
-end_time = time_bounds[event_it -1][1]
-if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
-    end_burst = 7340
-    end_time = 7340
     
-plot_dt = (end_burst-start_burst)/4
-plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
-units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
-mym.set_units(units_override)
-
+plot_dt = (end_burst.value-start_burst)/4
+plot_times = np.arange(start_burst, end_burst.value+plot_dt, plot_dt)
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
@@ -107,7 +95,7 @@ axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
             
-axes_1.set_title("Suppression event "+str(event_it), y=0.8)
+axes_1.set_title("Post burst event "+str(event_it), y=0.8)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
