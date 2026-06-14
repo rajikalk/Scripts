@@ -84,6 +84,8 @@ sink_form_time = ds.r["sink_particle_form_time"][45]
 end_burst = ds.current_time.in_units('yr') - sink_form_time
 start_burst = time_bounds[event_it -1][1]
 cbar_lims = cbar_lims_all[event_it-1]
+start_time = burst_bounds[event_it -1][0]
+end_time = end_burst.value
     
 plot_dt = (end_burst.value-start_burst)/4
 plot_times = np.arange(start_burst, end_burst.value+plot_dt, plot_dt)
