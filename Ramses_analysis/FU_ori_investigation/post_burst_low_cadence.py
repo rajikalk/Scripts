@@ -103,6 +103,7 @@ for plot_file in plot_files:
     
 start_time = burst_bounds[event_it-1][0]
 end_time = plot_times[-1]
+cbar_lims = cbar_lims_all[event_it-1]
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
