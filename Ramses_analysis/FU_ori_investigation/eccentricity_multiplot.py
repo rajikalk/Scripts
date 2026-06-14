@@ -64,7 +64,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2.2*single_col_width))#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2.2*single_col_width), sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -97,7 +97,7 @@ for plot_sink in plot_sinks:
             ax0.semilogy(particle_data['time'], semi_minor, ls="--")
         
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True, right=True)
-    axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
+    #axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     axs.flatten()[sink_it].set_ylim([0.5, 1.1])
     #if left_lower_lim[sink_it]!= None:
     #    axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
