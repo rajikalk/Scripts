@@ -101,7 +101,7 @@ for plot_sink in plot_sinks:
     axs.flatten()[sink_it].set_ylim([0.5, 1.1])
     #if left_lower_lim[sink_it]!= None:
     #    axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
-    ax0.flatten()[sink_it].set_ylabel("Semiminor Axis (AU)")
+    ax0.set_ylabel("Semiminor Axis (AU)")
     axs.flatten()[sink_it].set_ylabel("Eccentricity")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
