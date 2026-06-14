@@ -88,9 +88,7 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].ploy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
-            axs.flatten()[sink_it].ploy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
-
+            axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
         
     #axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     axs.flatten()[sink_it].set_ylim([0, 1.2])
