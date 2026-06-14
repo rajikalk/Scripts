@@ -86,7 +86,7 @@ ds = yt.load(usable_files[0], units_override=units_override)
 curr_time = ds.current_time.in_units('yr') - sink_form_time
 file_no = int(usable_files[0].split('_')[-1].split('.')[0])
 if curr_time<time_bounds[event_it-1][1]:
-    file_no = file_no + 1
+    file_no = file_no + 10
 counter=0
 plot_files = []
 while counter<5:
