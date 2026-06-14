@@ -77,6 +77,7 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
+            lns = []
             ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':')
