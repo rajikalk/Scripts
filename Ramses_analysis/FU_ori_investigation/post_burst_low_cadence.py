@@ -78,14 +78,18 @@ mym.set_units(units_override)
 del units_override['density_unit']
 
 #Get end time of event:
-start_burst = burst_bounds[event_it -1][1] + 10
-end_burst = start_burst+40
-cbar_lims = cbar_lims_all[event_it-1]
-start_time = burst_bounds[event_it -1][0]
-end_time = end_burst
-    
-plot_dt = (end_burst-start_burst)/4
-plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
+sim_files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/output*/info*'))
+ds = yt.load(sim_files[-1], units_override=units_override)
+sink_form_time = ds.r["sink_particle_form_time"][45]
+usable_files = mym.find_files([time_bounds[event_it-1][1]], sim_files, sink_form_time, 45, verbatim=True)
+ds = yt.load(usable_files[0], units_override=units_override)
+curr_time = ds.current_time.in_units('yr') - sink_form_time
+if curr_time<time_bounds[event_it-1][1]:
+    import pdb
+    pdb.set_trace()
+else:
+    import pdb
+    pdb.set_trace()
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
@@ -133,21 +137,12 @@ for plot_time in plot_times:
         cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/movie_script.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/', './', '-sink', '45', '-pt', str(plot_time), '-at', 'True', '-pvl', 'True',  '-ax', args.axis, '-al', '15', '-tf', '12', '-stdv', str(stdvel), '-thickness', '30', '-use_gas', 'False', '-ic', '1', '-update_alim', 'True', '-frames_only', 'False', '-apm', 'True', '-res', '1028']
         
         subprocess.Popen(cmd).wait()
-    tracer_pickle = "tracer_time_" + str(plot_time) + ".pkl"
-    if os.path.isfile(tracer_pickle) == False:
-        cmd = ['python', '/home/100/rlk100/Scripts/Ramses_analysis/FU_ori_investigation/tracer_particle_analysis.py', '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/', './', '-pt', str(plot_time)]
-        
-        subprocess.Popen(cmd).wait()
         
     files = sorted(glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/*/info*'))
     
     #load pickle
     file = open(movie_plot_pickle, 'rb')
     X_image, Y_image, image, magx, magy, X_vel, Y_vel, velx, vely, velz, part_info, args_dict, simfo = pickle.load(file)
-    file.close()
-    
-    file = open(tracer_pickle, 'rb')
-    tracer_data = pickle.load(file)
     file.close()
     
     #if event_it == 2:
@@ -221,12 +216,6 @@ for plot_time in plot_times:
         plot_velocity_legend = True
     else:
         plot_velocity_legend = False
-    
-    ax.scatter(tracer_data['other_positions'][ax_x_ind], tracer_data['other_positions'][ax_y_ind], marker='.', s=1, c='orange', edgecolors=None)
-    
-    ax.scatter(tracer_data['burst_positions'][ax_x_ind][usable_inds], tracer_data['burst_positions'][ax_y_ind][usable_inds], marker='.', s=1, c='magenta', edgecolors=None)
-
-    mym.my_own_quiver_function(ax, tracer_data['burst_positions'][ax_x_ind][usable_inds].value, tracer_data['burst_positions'][ax_y_ind][usable_inds].value, tracer_data['burst_velocity'][ax_x_ind][usable_inds].in_units('cm/s').value, tracer_data['burst_velocity'][ax_y_ind][usable_inds].in_units('cm/s').value, color='magenta', standard_vel=stdvel, plot_velocity_legend=False, pvl_pos=[10, -10])
     
     if plot_time == plot_times[-1]:
         legend_text=str(int(stdvel)) + "km$\,$s$^{-1}$"
