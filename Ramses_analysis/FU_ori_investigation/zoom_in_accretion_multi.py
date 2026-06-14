@@ -68,7 +68,7 @@ for plot_sink in plot_sinks:
     sink_it = sink_it + 1
     plot_pickles = particle_pickles[sink_it]
     Cand_label = 'Candidate '+ Cand_labels[sink_it]
-    axs.flatten()[sink_it].set_title('Candidate '+str(Cand_ind))
+    axs.flatten()[sink_it].set_title(Cand_label)
     pickle_it = -1
     for plot_pickle in plot_pickles:
         pickle_it = pickle_it+1
