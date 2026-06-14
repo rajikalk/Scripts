@@ -61,7 +61,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width), sharey=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(two_col_width, 1.5*two_col_width))#, sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -70,6 +70,7 @@ for plot_sink in plot_sinks:
     Cand_label = 'Candidate '+ Cand_labels[sink_it]
     axs.flatten()[sink_it].set_title(Cand_label)
     pickle_it = -1
+    ax0 = axs.flatten()[sink_it].twinx()
     for plot_pickle in plot_pickles:
         pickle_it = pickle_it+1
         if plot_sink != 45:
@@ -81,7 +82,6 @@ for plot_sink in plot_sinks:
             ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':')
-            ax0 = axs.flatten()[sink_it].twinx()
             ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
             lns.append(ln)
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
@@ -97,7 +97,6 @@ for plot_sink in plot_sinks:
             ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Cand_it][0], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Other_it][0], color=proj_colours[pickle_it], ls=':')
-            ax0 = axs.flatten()[sink_it].twinx()
             ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
             lns.append(ln)
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
