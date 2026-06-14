@@ -140,7 +140,7 @@ for plot_sink in plot_sinks:
     print('plotted time panel', plot_sink)
     plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
 
-axs.flatten()[sink_it].set_ylabel("Time since candidate formation (yr)")
+axs.flatten()[sink_it].set_xlabel("Time since candidate formation (yr)")
 plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
 
  
