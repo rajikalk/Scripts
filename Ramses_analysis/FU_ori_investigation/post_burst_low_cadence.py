@@ -102,7 +102,7 @@ for plot_file in plot_files:
     plot_times.append(curr_time)
     
 start_time = burst_bounds[event_it-1][0]
-end_time = plot_times[-1]
+end_time = plot_times[-1].value
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
