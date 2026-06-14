@@ -79,13 +79,19 @@ for plot_sink in plot_sinks:
             file.close()
             
             lns = []
-            ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label='Candidate accretion rate', color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':')
+            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':', label='Closest star accretion rate')
             ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
             lns.append(ln)
-            ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
+            ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$')
             lns.append(ln)
+            if sink_it == 0:
+                ln_lab = lns[0]
+                for ln_it in lns[1:]:
+                    ln_lab = ln_lab + ln_it
+                labs = [l.get_label() for l in ln_lab]
+                axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.9)
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
@@ -97,20 +103,20 @@ for plot_sink in plot_sinks:
             ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Cand_it][0], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Other_it][0], color=proj_colours[pickle_it], ls=':')
-            ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
+            ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25)
             lns.append(ln)
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
             lns.append(ln)
+            ln_lab = lns[0]
+            for ln_it in lns[1:]:
+                ln_lab = ln_lab + ln_it
+            labs = [l.get_label() for l in ln_lab]
+            axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', framealpha=0.9)
 
         
-    #axs.flatten()[sink_it].set_xlim([time_bounds[0], time_bounds[1]])
+    axs.flatten()[sink_it].set_xlim(left=0)
     axs.flatten()[sink_it].set_ylabel("Accretion rate (M$_\odot$/yr)")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
-    ln_lab = lns[0]
-    for ln_it in lns[1:]:
-        ln_lab = ln_lab + ln_it
-    labs = [l.get_label() for l in ln_lab]
-    axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.9)
     ax0.set_ylabel('Separation (AU)')
     #ax0.set_ylim([5,1000])
     ax0.tick_params(axis='both', direction='in', top=True)
