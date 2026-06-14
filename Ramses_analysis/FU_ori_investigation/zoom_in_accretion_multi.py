@@ -48,7 +48,7 @@ except:
 
 plot_sinks = [17, 45, 71, 75, 102]
 Cand_labels = ['2', '3', '8', '11', '15+16']
-particle_pickles = [['particle_data_17.pkl', 'particle_data_17_19.pkl'], ['array_particle_data_L18.pkl', 'array_particle_data_L19.pkl', 'array_particle_data_L20.pkl', 'array_particle_data_L21.pkl'], ['particle_data_71.pkl', 'particle_data_71_19.pkl', 'particle_data_71_20.pkl', 'particle_data_71_21.pkl'], ['particle_data_75.pkl', 'particle_data_75_19.pkl'], ['particle_data_102.pkl', 'particle_data_102_19.pkl', 'particle_data_102_20.pkl']]
+particle_pickles = [['particle_data_17.pkl', 'particle_data_17_19.pkl'], ['array_particle_data_L18.pkl', 'array_particle_data_L19.pkl', 'array_particle_data_L20.pkl', 'array_particle_data_L21.pkl'], ['particle_data_71.pkl', 'particle_data_71_19.pkl', 'particle_data_71_20.pkl'], ['particle_data_75.pkl', 'particle_data_75_19.pkl'], ['particle_data_102.pkl', 'particle_data_102_19.pkl', 'particle_data_102_20.pkl']]
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
 
@@ -97,7 +97,7 @@ for plot_sink in plot_sinks:
                     except:
                         ln_lab = ln_lab + [ln_it]
                 labs = [l.get_label() for l in ln_lab]
-                axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', ncols=2, framealpha=0.9)
+                axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', ncols=2, framealpha=0.9)
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
@@ -120,7 +120,7 @@ for plot_sink in plot_sinks:
             except:
                 ln_lab = ln_lab + [ln_it]
         labs = [l.get_label() for l in ln_lab]
-        axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', framealpha=0.9)
+        axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', framealpha=0.9)
 
         
     axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
