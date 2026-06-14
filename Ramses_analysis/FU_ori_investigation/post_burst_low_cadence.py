@@ -136,6 +136,8 @@ axes_1.xaxis.label.set_color('black')
 axes_1.yaxis.label.set_color('black')
 axes_1.tick_params(axis='both', labelsize=font_size)
 axes_1.set_xlim([start_time, end_time])
+if event_it == 5:
+    axes_1.set_ylim(bottom=1e-8)
 axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
 plt.savefig("Event_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
