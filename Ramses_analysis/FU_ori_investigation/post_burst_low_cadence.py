@@ -84,13 +84,23 @@ sink_form_time = ds.r["sink_particle_form_time"][45]
 usable_files = mym.find_files([time_bounds[event_it-1][1]], sim_files, sink_form_time, 45, verbatim=True)
 ds = yt.load(usable_files[0], units_override=units_override)
 curr_time = ds.current_time.in_units('yr') - sink_form_time
-file_no = usable_files[0].split('_')
+file_no = int(usable_files[0].split('_')[-1].split('.')[0])
 if curr_time<time_bounds[event_it-1][1]:
-    import pdb
-    pdb.set_trace()
-else:
-    import pdb
-    pdb.set_trace()
+    file_no = file_no + 1
+counter=0
+plot_files = []
+while counter<5:
+    plot_file = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/output_'+("%05d" % file_no)+'/info_'+("%05d" % file_no)+'.txt'
+    plot_files.append(plot_file)
+    file_no = file_no + 1
+    counter = counter + 1
+    
+plot_times = []
+for plot_file in plot_files:
+    ds = yt.load(plot_file, units_override=units_override)
+    curr_time = ds.current_time.in_units('yr') - sink_form_time
+    plot_times.append(curr_time)
+    
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
