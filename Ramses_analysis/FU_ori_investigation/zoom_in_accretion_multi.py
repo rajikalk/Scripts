@@ -89,7 +89,7 @@ for plot_sink in plot_sinks:
             lns.append(ln)
             ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
             lns.append(ln)
-            ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$')
+            ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$', alpha=0.25)
             lns.append(ln)
         else:
             file = open(plot_pickle, 'rb')
@@ -102,7 +102,7 @@ for plot_sink in plot_sinks:
             lns_res.append(ln)
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Other_it][0], color=proj_colours[pickle_it], ls=':')
             ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25)
-            ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
+            ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', alpha=0.25)
             
         y_lower_lim = r_acc[pickle_it]/2
     if sink_it == 0 and plot_pickle == plot_pickles[0]:
