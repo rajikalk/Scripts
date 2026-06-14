@@ -64,7 +64,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 0.5*single_col_width))#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 1.*single_col_width))#, sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -82,16 +82,18 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            axs.flatten()[sink_it].ploy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            axs.flatten()[sink_it].ploy(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
 
         
     #axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
+    axs.flatten()[sink_it].set_ylim([0, 1.2])
     #if left_lower_lim[sink_it]!= None:
     #    axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
     axs.flatten()[sink_it].set_ylabel("Eccentricity")
