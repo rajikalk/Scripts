@@ -104,7 +104,7 @@ for plot_sink in plot_sinks:
             ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25)
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', alpha=0.25)
             
-        y_lower_lim = r_acc[pickle_it]/2
+        #_lower_lim = r_acc[pickle_it]/2
         if sink_it == 0 and plot_pickle==plot_pickles[0]:
             ln_lab = lns[0]
             for ln_it in lns[1:]:
@@ -132,10 +132,11 @@ for plot_sink in plot_sinks:
     axs.flatten()[sink_it].set_ylabel("Accretion rate (M$_\odot$/yr)")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
     ax0.set_ylabel('Separation (AU)')
-    if right_upper_lim[sink_it] == None:
-        ax0.set_ylim(bottom=y_lower_lim)
-    else:
-        ax0.set_ylim([y_lower_lim, right_upper_lim[sink_it]])
+    #if right_upper_lim[sink_it] == None:
+    #    ax0.set_ylim(bottom=y_lower_lim)
+    #else:
+    #    ax0.set_ylim([y_lower_lim, right_upper_lim[sink_it]])
+    ax0.set_ylim([r_acc[-1]/2, right_upper_lim[sink_it]])
     ax0.tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
     plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
