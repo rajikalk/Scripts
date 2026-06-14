@@ -85,7 +85,7 @@ for plot_sink in plot_sinks:
             semi_minor = particle_data['semimajor_axis'] * np.sqrt(1-particle_data['eccentricity']**2)
             
             lns = []
-            ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-', label="Eccentricity")
+            ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], color=proj_colours[pickle_it], ls='-', label="Eccentricity")
             lns.append(ln)
             ln = ax0.semilogy(particle_data['time'], semi_minor, ls="--", label="Semiminor axis")
             lns.append(ln)
