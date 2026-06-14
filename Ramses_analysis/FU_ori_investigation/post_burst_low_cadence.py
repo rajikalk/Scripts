@@ -99,10 +99,10 @@ plot_times = []
 for plot_file in plot_files:
     ds = yt.load(plot_file, units_override=units_override)
     curr_time = ds.current_time.in_units('yr') - sink_form_time
-    plot_times.append(curr_time)
+    plot_times.append(curr_time.value)
     
 start_time = burst_bounds[event_it-1][0]
-end_time = plot_times[-1].value
+end_time = plot_times[-1]
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
