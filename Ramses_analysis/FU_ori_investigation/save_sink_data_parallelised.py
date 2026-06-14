@@ -57,6 +57,8 @@ for path in Cleaned_dirs:
             save_dir = save_dir_top + 'Starting_from_event/'
         else:
             save_dir = save_dir_top
+        if os.path.exists(save_dir) == False:
+            os.mkdir(save_dir)
         if "Level" in path:
             lvl_int = path.split('Level_')[-1].split('/')[0]
             pickle_name = pickle_name + "_" + lvl_int
