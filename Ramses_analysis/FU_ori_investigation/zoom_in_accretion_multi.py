@@ -55,7 +55,7 @@ r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(le
 res_label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\Delta x=0.39$AU"]
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 x_right_lim = [12000, 10000, 5500, 4000, 1750]
-left_lower_lim = [1.e-9, 1.e-12, 1.e-12, 1.e-10, 1.e-8] #[None, 1.e-9, 1.e-9, 1.e-9, None]
+left_lower_lim = [1.e-9, 1.e-12, 1.e-12, 1.e-10, 1.e-7] #[None, 1.e-9, 1.e-9, 1.e-9, None]
 right_upper_lim = [1.e5, 1.e5, 1.e5, 1.e5, 1.e5] #[None, 1.e3, None, None, None]
 
 two_col_width = 7.20472 #inches
@@ -139,5 +139,8 @@ for plot_sink in plot_sinks:
     ax0.tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
     plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
+
+axs.flatten()[sink_it].set_ylabel("Time since candidate formation (yr)")
+plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
 
  
