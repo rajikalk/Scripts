@@ -226,8 +226,6 @@ for path in Cleaned_dirs:
                         plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
                 '''
                 if len(sink_data['u']) > sink_ind:
-                    import pdb
-                    pdb.set_trace()
                     if sink_form_time == 0:
                         sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
                     time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
@@ -259,7 +257,7 @@ for path in Cleaned_dirs:
                     
                     other_mass = yt.YTArray(sink_data['m'][np.array([closest_ind])]*units['mass_unit'].in_units('msun'), 'msun')
                     d_mass = sink_data['dm'][np.array([closest_ind])]*units['mass_unit'].in_units('msun')
-                    d_time = (sink_data['snapshot_time'] - closest_ind['tflush'])*units['time_unit'].in_units('yr')
+                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                     acc_val = d_mass/d_time
                     if acc_val == 0:
                         acc_val =1.e-12
@@ -269,6 +267,9 @@ for path in Cleaned_dirs:
                     if np.isnan(closest_ind) == False:
                         other_pos = yt.YTArray(np.array([sink_data['x'][closest_ind], sink_data['y'][closest_ind], sink_data['z'][closest_ind]])*units['length_unit'].in_units('au'), 'au')
                         other_vel = yt.YTArray(np.array([sink_data['ux'][closest_ind], sink_data['uy'][closest_ind], sink_data['uz'][closest_ind]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                        
+                        CoM_pos = (position*particle_mass + other_pos*other_mass)/(particle_mass + other_mass)
+                        CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
                     
                         CoM_vel = (velocity*particle_mass + other_vel*other_mass)/(particle_mass + other_mass)
                         
