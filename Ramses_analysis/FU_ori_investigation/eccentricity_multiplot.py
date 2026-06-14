@@ -64,7 +64,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 1.*single_col_width))#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2*single_col_width))#, sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -73,7 +73,6 @@ for plot_sink in plot_sinks:
     Cand_label = 'Candidate '+ Cand_labels[sink_it]
     axs.flatten()[sink_it].set_title(Cand_label, y=0.8)
     pickle_it = -1
-    ax0 = axs.flatten()[sink_it].twinx()
     lns_res = []
     for plot_pickle in plot_pickles:
         pickle_it = pickle_it+1
