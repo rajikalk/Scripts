@@ -321,7 +321,7 @@ if 'particle_data' not in locals():
     file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
     particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
     file_open.close()
-
+'''
 f_acc = 0.5
 radius = yt.YTQuantity(2.0, 'rsun')
 #M_dot = accretion(sink_inds, global_ind)
@@ -404,3 +404,4 @@ plt.xlim()
 plt.ylabel('Separation (AU)')
 plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
 plt.savefig(str(sink_ind)+'_separation_vs_time_sink.png')
+'''
