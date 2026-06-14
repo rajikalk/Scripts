@@ -47,7 +47,7 @@ except:
 #global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
 
 plot_sinks = [17, 45, 71, 75, 102]
-Cand_label = ['2', '3', '8', '11', '15+16']
+Cand_labels = ['2', '3', '8', '11', '15+16']
 particle_pickles = [['particle_data_17.pkl', 'particle_data_17_19.pkl'], ['array_particle_data_L18.pkl', 'array_particle_data_L19.pkl', 'array_particle_data_L20.pkl', 'array_particle_data_L21.pkl'], ['particle_data_71.pkl', 'particle_data_71_19.pkl', 'particle_data_71_20.pkl', 'particle_data_71_21.pkl'], ['particle_data_75.pkl', 'particle_data_75_19.pkl'], ['particle_data_102.pkl', 'particle_data_102_19.pkl', 'particle_data_102_20.pkl']]
 length_unit = yt.YTQuantity(4.0,"pc")
 r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(length_unit.in_units('au')/(2**19)*4, decimals=2), np.round(length_unit.in_units('au')/(2**20)*4, decimals=2), np.round(length_unit.in_units('au')/(2**21)*4, decimals=2)]
@@ -67,7 +67,7 @@ sink_it = -1
 for plot_sink in plot_sinks:
     sink_it = sink_it + 1
     plot_pickles = particle_pickles[sink_it]
-    Cand_label = 'Candidate '+ plot_sinks[sink_it]
+    Cand_label = 'Candidate '+ Cand_labels[sink_it]
     axs.flatten()[sink_it].set_title('Candidate '+str(Cand_ind))
     pickle_it = -1
     for plot_pickle in plot_pickles:
