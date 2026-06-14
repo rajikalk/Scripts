@@ -70,8 +70,18 @@ n_frames = 5
 make_frame = True
 event_it = args.event_identifier
 
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+units_override.update({"mass_unit":(2998,"Msun")})
+
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+mym.set_units(units_override)
+del units_override['density_unit']
+
 #Get end time of event:
-sim_files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/*')
+sim_files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/output*/info*')
+ds = yt.load(sim_files[-1], units_override=units_override)
+sink_form_time = ds.r["sink_particle_form_time"][45]
+
 import pdb
 pdb.set_trace()
 
