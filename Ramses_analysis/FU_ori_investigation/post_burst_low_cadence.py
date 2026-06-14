@@ -89,6 +89,8 @@ if curr_time<time_bounds[event_it-1][1]:
     file_no = file_no + 10
 if event_it == 5:
     file_no = file_no - 10
+    if args.axis == 'yz':
+        file_no = file_no - 10
 counter=0
 plot_files = []
 while counter<5:
