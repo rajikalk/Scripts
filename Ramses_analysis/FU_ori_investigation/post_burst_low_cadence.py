@@ -114,7 +114,7 @@ axes_1 = plt.subplot(G[0, :])
 plt.subplots_adjust(wspace=0.01)
 plt.subplots_adjust(hspace=-0.2)
             
-axes_1.set_title("Post burst event "+str(event_it), y=0.8)
+axes_1.set_title("Post burst event "+str(event_it), y=0.2)
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
