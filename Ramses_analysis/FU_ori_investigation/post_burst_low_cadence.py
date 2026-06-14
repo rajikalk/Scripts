@@ -87,6 +87,8 @@ curr_time = ds.current_time.in_units('yr') - sink_form_time
 file_no = int(usable_files[0].split('_')[-1].split('.')[0])
 if curr_time<time_bounds[event_it-1][1]:
     file_no = file_no + 10
+if event_it == 5:
+    file_no = file_no - 10
 counter=0
 plot_files = []
 while counter<5:
