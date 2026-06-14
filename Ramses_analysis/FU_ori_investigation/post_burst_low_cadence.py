@@ -78,16 +78,14 @@ mym.set_units(units_override)
 del units_override['density_unit']
 
 #Get end time of event:
-start_burst = burst_bounds[event_it -1][1]
+start_burst = burst_bounds[event_it -1][1] + 10
+end_burst = start_burst+40
 cbar_lims = cbar_lims_all[event_it-1]
 start_time = burst_bounds[event_it -1][0]
-end_time = start_burst+50
-
-import pdb
-pdb.set_trace()
+end_time = end_burst
     
-plot_dt = (end_burst.value-start_burst)/4
-plot_times = np.arange(start_burst, end_burst.value+plot_dt, plot_dt)
+plot_dt = (end_burst-start_burst)/4
+plot_times = np.arange(start_burst, end_burst+plot_dt, plot_dt)
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
