@@ -89,6 +89,7 @@ for plot_sink in plot_sinks:
             
             axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
         
+    axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     axs.flatten()[sink_it].set_ylim([0.5, 1.2])
     #if left_lower_lim[sink_it]!= None:
