@@ -84,6 +84,7 @@ sink_form_time = ds.r["sink_particle_form_time"][45]
 usable_files = mym.find_files([time_bounds[event_it-1][1]], sim_files, sink_form_time, 45, verbatim=True)
 ds = yt.load(usable_files[0], units_override=units_override)
 curr_time = ds.current_time.in_units('yr') - sink_form_time
+file_no = usable_files[0].split('_')
 if curr_time<time_bounds[event_it-1][1]:
     import pdb
     pdb.set_trace()
