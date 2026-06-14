@@ -318,19 +318,23 @@ for path in Cleaned_dirs:
             radius = yt.YTQuantity(2.0, 'rsun')
             #M_dot = accretion(sink_inds, global_ind)
             #M = yt.YTArray(global_data['m'][global_ind,sink_inds]*units['mass_unit'].in_units('msun'), 'Msun')
-            m_dot = yt.YTArray(particle_data['mdot']).in_units('g/s')
-            mass = yt.YTArray(particle_data['mass']).in_units('g')
+            m_dot = yt.YTArray(particle_data['mdot'], 'msun/yr').in_units('g/s')
+            mass = yt.YTArray(particle_data['mass'], 'msun').in_units('g')
             L_acc = f_acc * (yt.units.gravitational_constant_cgs * mass * m_dot)/radius.in_units('cm')
             L_tot = L_acc.in_units('Lsun')
 
             Mag = -2.5*np.log10(L_tot)
+            
+            m_dot_c = yt.YTArray(particle_data['closest_mdot'], 'msun/yr').in_units('g/s')
+            mass_c = yt.YTArray(particle_data['closest_mass'], 'msun').in_units('g')
+            L_acc_c = f_acc * (yt.units.gravitational_constant_cgs * mass_c * m_dot_c)/radius.in_units('cm')
+            L_tot_c = L_acc_c.in_units('Lsun')
+
+            Mag_c = -2.5*np.log10(L_tot_c)
 
             plt.clf()
-            for part_it in range(2):
-                if part_it == 0:
-                    plt.plot(particle_data['time'], Mag.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-                else:
-                    plt.plot(particle_data['time'], Mag.T[part_it], label="Nearest_sink")
+            plt.plot(particle_data['time'], Mag, label="Sink "+str(sink_ind))
+            plt.plot(particle_data['time'], Mag_c, label="Nearest_sink")
             plt.gca().invert_yaxis()
             plt.xlabel('Time (yr)')
             plt.xlim()
@@ -340,11 +344,8 @@ for path in Cleaned_dirs:
             plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_magnitude_vs_time_sink.png')
 
             plt.clf()
-            for part_it in range(2):
-                if part_it == 0:
-                    plt.plot(particle_data['time'], L_tot.T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-                else:
-                    plt.plot(particle_data['time'], L_tot.T[part_it], label="Nearest_sink")
+            plt.plot(particle_data['time'], L_tot, label="Sink "+str(sink_ind))
+            plt.plot(particle_data['time'], L_tot_c, label="Nearest_sink")
             plt.xlabel('Time (yr)')
             plt.xlim()
             plt.legend()
@@ -354,11 +355,8 @@ for path in Cleaned_dirs:
 
 
             plt.clf()
-            for part_it in range(2):
-                if part_it == 0:
-                    plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-                else:
-                    plt.semilogy(particle_data['time'], np.array(particle_data['mdot']).T[part_it], label="Nearest_sink")
+            plt.semilogy(particle_data['time'], np.array(particle_data['mdot']), label="Sink "+str(sink_ind))
+            plt.semilogy(particle_data['time'], np.array(particle_data['closest_mdot']), label="Nearest_sink")
             plt.xlabel('Time (yr)')
             plt.xlim()
             plt.legend()
@@ -367,11 +365,8 @@ for path in Cleaned_dirs:
             plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_accretion_vs_time_sink.png')
 
             plt.clf()
-            for part_it in range(2):
-                if part_it == 0:
-                    plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Sink "+str(particle_data['particle_tag'][part_it]))
-                else:
-                    plt.plot(particle_data['time'], np.array(particle_data['mass']).T[part_it], label="Nearest_sink")
+            plt.plot(particle_data['time'], np.array(particle_data['mass']), label="Sink "+str(sink_ind))
+            plt.plot(particle_data['time'], np.array(particle_data['closest_mass']), label="Nearest_sink")
             plt.xlabel('Time (yr)')
             plt.xlim()
             plt.legend()
@@ -394,6 +389,7 @@ for path in Cleaned_dirs:
             plt.xlabel('Time (yr)')
             plt.xlim()
             plt.ylabel('Separation (AU)')
-            plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(particle_data['particle_tag'][1:]))
+            unique_comps = np.unique(particle_data['closest_sink'], return_index=True)[0][np.argsort(np.unique(particle_data['closest_sink'], return_index=True)[1])]
+            plt.title('Sink no ' + str(sink_ind) + " with companion tags " + str(unique_comps))
             plt.savefig(save_dir +pickle_name.split('.pkl')[0].split('data_')[-1]+'_separation_vs_time_sink.png')
 
