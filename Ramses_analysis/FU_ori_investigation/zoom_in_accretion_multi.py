@@ -127,7 +127,7 @@ for plot_sink in plot_sinks:
     axs.flatten()[sink_it].set_ylabel("Accretion rate (M$_\odot$/yr)")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
     ax0.set_ylabel('Separation (AU)')
-    ax0.set_ylim(lower=y_lower_lim)
+    ax0.set_ylim(bottom=y_lower_lim)
     ax0.tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
     plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
