@@ -84,9 +84,13 @@ for plot_sink in plot_sinks:
             file.close()
             semi_minor = particle_data['semimajor_axis'] * np.sqrt(1-particle_data['eccentricity']**2)
             
-            axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
-            ax0.semilogy(particle_data['time'], semi_minor, ls="--")
-            ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', alpha=0.25)
+            lns = []
+            ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-', label="Eccentricity")
+            lns.append(ln)
+            ln = ax0.semilogy(particle_data['time'], semi_minor, ls="--", label="Semiminor axis")
+            lns.append(ln)
+            ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$', alpha=0.25)
+            lns.append(ln)
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
@@ -98,6 +102,27 @@ for plot_sink in plot_sinks:
             lns_res.append(ln)
             ax0.semilogy(particle_data['time'], semi_minor, ls="--")
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', alpha=0.25)
+        
+        if sink_it == 0 and plot_pickle==plot_pickles[0]:
+            ln_lab = lns[0]
+            for ln_it in lns[1:]:
+                try:
+                    ln_lab = ln_lab + ln_it
+                except:
+                    ln_lab = ln_lab + [ln_it]
+            labs = [l.get_label() for l in ln_lab]
+            axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', ncols=2, framealpha=0.9)
+            
+    if plot_sink == 45:
+        ln_lab = lns_res[0]
+        for ln_it in lns_res[1:]:
+            try:
+                ln_lab = ln_lab + ln_it
+            except:
+                ln_lab = ln_lab + [ln_it]
+        labs = [l.get_label() for l in ln_lab]
+        axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', framealpha=0.9)
+    
         
     if x_right_lim[sink_it] != None:
         axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
