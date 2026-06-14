@@ -92,7 +92,7 @@ plot_files = []
 while counter<5:
     plot_file = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/data/output_'+("%05d" % file_no)+'/info_'+("%05d" % file_no)+'.txt'
     plot_files.append(plot_file)
-    file_no = file_no + 1
+    file_no = file_no + 10
     counter = counter + 1
     
 plot_times = []
