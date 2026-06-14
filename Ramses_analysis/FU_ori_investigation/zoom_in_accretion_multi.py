@@ -72,7 +72,7 @@ for plot_sink in plot_sinks:
     pickle_it = -1
     for plot_pickle in plot_pickles:
         pickle_it = pickle_it+1
-        if plot_sinks != 45:
+        if plot_sink != 45:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
@@ -87,8 +87,6 @@ for plot_sink in plot_sinks:
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
             lns.append(ln)
         else:
-            import pdb
-            pdb.set_trace()
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
