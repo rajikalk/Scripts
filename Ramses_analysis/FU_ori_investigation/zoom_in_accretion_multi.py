@@ -93,7 +93,16 @@ for plot_sink in plot_sinks:
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
 
-            ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label='Candidate accretion_rate')
+            Cand_it = np.where(particle_data['particle_tag']==plot_sink)[0]
+            Other_it = np.where(particle_data['particle_tag']!=plot_sink)[0]
+            lns = []
+            ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Cand_it], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            lns.append(ln)
+            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Other_it], color=proj_colours[pickle_it], ls=':')
+            ax0 = axs.flatten()[0].twinx()
+            ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
+            lns.append(ln)
+            ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
             lns.append(ln)
 
         
