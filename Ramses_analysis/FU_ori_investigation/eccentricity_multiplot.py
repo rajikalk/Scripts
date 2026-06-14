@@ -72,6 +72,7 @@ for plot_sink in plot_sinks:
     plot_pickles = particle_pickles[sink_it]
     Cand_label = 'Candidate '+ Cand_labels[sink_it]
     axs.flatten()[sink_it].set_title(Cand_label, y=0.8)
+    ax0 = axs.flatten()[sink_it].twinx()
     pickle_it = -1
     lns_res = []
     for plot_pickle in plot_pickles:
@@ -80,26 +81,27 @@ for plot_sink in plot_sinks:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
-            import pdb
-            pdb.set_trace()
             semi_minor = particle_data['semimajor_axis'] * np.sqrt(1-particle_data['eccentricity']**2)
             
             axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
+            ax0.semilogy(particle_data['time'], semi_minor, ls="--'")
         else:
             file = open(plot_pickle, 'rb')
             particle_data, counter, sink_ind, sink_form_time = pickle.load(file)
             file.close()
             
-            import pdb
-            pdb.set_trace()
+            semi_minor = particle_data['semimajor_axis'] * np.sqrt(1-particle_data['eccentricity']**2)
+            
             ln = axs.flatten()[sink_it].plot(particle_data['time'], particle_data['eccentricity'], label=res_label[pickle_it], color=proj_colours[pickle_it], ls='-')
             lns_res.append(ln)
+            ax0.semilogy(particle_data['time'], semi_minor, ls="--'")
         
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True, right=True)
     axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     axs.flatten()[sink_it].set_ylim([0.5, 1.1])
     #if left_lower_lim[sink_it]!= None:
     #    axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
+    ax0.flatten()[sink_it].set_ylabel("Semiminor Axis (AU)")
     axs.flatten()[sink_it].set_ylabel("Eccentricity")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
