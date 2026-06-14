@@ -97,7 +97,7 @@ for plot_sink in plot_sinks:
             lns_res.append(ln)
             ax0.semilogy(particle_data['time'], semi_minor, ls="--")
         
-    if x_right_lim[sink_it]] != None:
+    if x_right_lim[sink_it] != None:
         axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     else:
         axs.flatten()[sink_it].set_xlim(left=0)
