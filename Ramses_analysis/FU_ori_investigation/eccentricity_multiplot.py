@@ -65,7 +65,7 @@ page_height = 10.62472 #inches
 font_size = 10
 
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, 2.7*single_col_width), sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=5, figsize=(single_col_width, page_height), sharey=True)
 
 sink_it = -1
 for plot_sink in plot_sinks:
@@ -111,7 +111,7 @@ for plot_sink in plot_sinks:
                 except:
                     ln_lab = ln_lab + [ln_it]
             labs = [l.get_label() for l in ln_lab]
-            axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', ncols=2, framealpha=0.9)
+            axs.flatten()[sink_it].legend(ln_lab, labs, loc='lower left', framealpha=0.9)
             
     if plot_sink == 45:
         ln_lab = lns_res[0]
