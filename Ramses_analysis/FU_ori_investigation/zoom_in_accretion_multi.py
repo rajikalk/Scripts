@@ -56,7 +56,7 @@ res_label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\D
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
 x_right_lim = [12000, 10000, 5500, 4000, 1750]
 left_lower_lim = [1.e-9, 1.e-12, 1.e-12, 1.e-10, 1.e-7] #[None, 1.e-9, 1.e-9, 1.e-9, None]
-right_upper_lim = [1.e5, 1.e5, 1.e5, 1.e5, 1.e5] #[None, 1.e3, None, None, None]
+right_upper_lim = [9.e4, 9.e4, 9.e4, 9.e4, 9.e4] #[None, 1.e3, None, None, None]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
