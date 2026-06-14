@@ -81,7 +81,8 @@ for plot_sink in plot_sinks:
             lns = []
             ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'], label='Candidate accretion rate', color=proj_colours[pickle_it], ls='-')
             lns.append(ln)
-            axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':', label='Closest star accretion rate')
+            ln = axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['closest_mdot'], color=proj_colours[pickle_it], ls=':', label='Closest star accretion rate')
+            lns.append(ln)
             ln = ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25, label="Separation")
             lns.append(ln)
             ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$')
