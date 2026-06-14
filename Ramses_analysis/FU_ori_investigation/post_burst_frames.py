@@ -71,7 +71,7 @@ make_frame = True
 event_it = args.event_identifier
 
 #Get end time of event:
-sim_files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(c)+'/data/*')
+sim_files = glob.glob('/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/*')
 import pdb
 pdb.set_trace()
 
