@@ -54,6 +54,7 @@ r_acc = [np.round(length_unit.in_units('au')/(2**18)*4, decimals=2), np.round(le
 
 res_label = ["$\Delta x=3.15$AU", "$\Delta x=1.57$AU", "$\Delta x=0.79$AU", "$\Delta x=0.39$AU"]
 proj_colours = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray']
+x_right_lim = [12000, 15000, 8000, 4000, 1750]
 
 two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
@@ -68,7 +69,7 @@ for plot_sink in plot_sinks:
     sink_it = sink_it + 1
     plot_pickles = particle_pickles[sink_it]
     Cand_label = 'Candidate '+ Cand_labels[sink_it]
-    axs.flatten()[sink_it].set_title(Cand_label)
+    axs.flatten()[sink_it].set_title(Cand_label, y=0.8)
     pickle_it = -1
     ax0 = axs.flatten()[sink_it].twinx()
     lns_res = []
@@ -88,7 +89,7 @@ for plot_sink in plot_sinks:
             lns.append(ln)
             ln = ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.', label='2r$_{acc}$')
             lns.append(ln)
-            if sink_it == 0:
+            if sink_it == 0 and plot_pickle == plot_pickles[0]:
                 ln_lab = lns[0]
                 for ln_it in lns[1:]:
                     try:
@@ -109,6 +110,8 @@ for plot_sink in plot_sinks:
             axs.flatten()[sink_it].semilogy(particle_data['time'], particle_data['mdot'].T[Other_it][0], color=proj_colours[pickle_it], ls=':')
             ax0.semilogy(particle_data['time'], particle_data['separation'], color=proj_colours[pickle_it], ls="--", alpha=0.25)
             ax0.axhline(y=r_acc[pickle_it], color=proj_colours[pickle_it], ls='-.')
+            
+        y_lower_lim = r_acc[pickle_it]/2
     if plot_sink == 45:
         ln_lab = lns_res[0]
         for ln_it in lns_res[1:]:
@@ -120,11 +123,11 @@ for plot_sink in plot_sinks:
         axs.flatten()[sink_it].legend(ln_lab, labs, loc='upper right', framealpha=0.9)
 
         
-    axs.flatten()[sink_it].set_xlim(left=0)
+    axs.flatten()[sink_it].set_xlim([0, x_right_lim[sink_it]])
     axs.flatten()[sink_it].set_ylabel("Accretion rate (M$_\odot$/yr)")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
     ax0.set_ylabel('Separation (AU)')
-    #ax0.set_ylim([5,1000])
+    ax0.set_ylim(lower=y_lower_lim)
     ax0.tick_params(axis='both', direction='in', top=True)
     print('plotted time panel', plot_sink)
     plt.savefig('zoom_in_multi.pdf', bbox_inches='tight', pad_inches=0.02)
