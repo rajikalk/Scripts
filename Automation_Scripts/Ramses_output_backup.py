@@ -6,10 +6,6 @@ import csv
 import glob
 import os
 
-parser = argparse.ArgumentParser()
-parser.add_argument('files', nargs='*')
-args = parser.parse_args()
-
 # ===== MAIN Start =====
 
 #Open and read Expiring text file:
