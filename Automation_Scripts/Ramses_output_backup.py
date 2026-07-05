@@ -12,8 +12,8 @@ import os
 with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
     reader = csv.reader(f)
     header = True
-    for row[0] in reader:
-        if 'output_' in row:
+    for row in reader:
+        if 'output_' in row[0]:
             import pdb
             pdb.set_trace()
 
