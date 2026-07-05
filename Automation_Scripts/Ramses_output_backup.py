@@ -16,7 +16,6 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
         if 'output_' in row[0]:
             import pdb
             pdb.set_trace()
-            tar -czvf archive.tar.gz /path/to/directory
             compress_file = row[0].split(' ')[-1].split('output_')[0] + 'output_' + row[0].split(' ')[-1].split('output_')[1].split('/')[0]
             shellcmd = 'tar -czvf ' + compress_file+'.tar.gz '+compress_file
             proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
