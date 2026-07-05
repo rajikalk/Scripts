@@ -16,6 +16,40 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
         if 'output_' in row[0]:
             import pdb
             pdb.set_trace()
+            tar -czvf archive.tar.gz /path/to/directory
+            compress_file = row[0].split(' ')[-1].split('output_')[0] + 'output_' + row[0].split(' ')[-1].split('output_')[1].split('/')[0]
+            shellcmd = 'tar -czvf ' + compress_file+'.tar.gz '+compress_file
+            proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
+            print("Made tar of", compress_file)
+            
+            mdss_save_dir = 'rlk100/Zoom_in_simulations/Sink_' + compress_file.split('Sink_')[-1].split('data')[0]
+            #check is sim dir exists:
+            shellcmd = 'mdss ls '+ mdss_save_dir
+            proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
+            output_mdss = proc.stdout.read()
+            if "No such file or directory" in output_mdss:
+                import pdb
+                pdb.set_trace()
+            
+            
+            
+            backup_done = []
+            with open('Backup_dirs.txt', 'r') as f_backup:
+                reader = csv.reader(f_backup)
+                for row in reader:
+                    synced_done.append(row[0])
+            if '/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file not in synced_done[-1]:
+                shellcmd = 'rsync -vaz astro03-travel:/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file+'/* output_'+curr_file+'/.'
+                return_code = subprocess.call(shellcmd, shell=True)
+                if return_code != 0:
+                    print("error on copying file locally")
+                    break
+                else:
+                    #update sync list
+                    with open('Backup_dirs.txt', 'a') as f_backup:
+                        f_backup.write('/groups/astro/rlk/rlk/FU_ori_investigation/Zoom_in_simulations/Sink_45/data/output_'+curr_file+'\n')
+                    f_backup.close()
+
 
 f.close()
     
