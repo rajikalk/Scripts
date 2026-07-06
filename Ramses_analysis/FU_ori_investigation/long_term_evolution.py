@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import glob
-from mpi4py.MPI import COMM_WORLD as CW
 import matplotlib.colors as mcolors
 import scipy.interpolate as interp
 import pickle
