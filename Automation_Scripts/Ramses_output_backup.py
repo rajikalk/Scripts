@@ -9,6 +9,7 @@ import os
 # ===== MAIN Start =====
 
 #Open and read Expiring text file:
+backup_done = []
 with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
     reader = csv.reader(f)
     header = True
@@ -18,29 +19,28 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
             tar_gz = compress_file+'.tar.gz'
             #check if mdss save dir is exists
             mdss_save_dir = 'rlk100/Zoom_in_simulations/Sink_' + compress_file.split('Sink_')[-1].split('data')[0]
-            import pdb
-            pdb.set_trace()
+            shellcmd = 'mdss ls ' + mdss_save_dir
+            result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            output_string = result.stdout
+            if "No such file or directory" in output_string:
+                shellcmd = 'mdss mkdir ' + mdss_save_dir
+                result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                output_string = result.stdout
+                print("Created MDSS directory", mdss_save_dir)
             #check if tar in mdss
-            shellcmd = 'tar -czvf ' + tar_gz + ' ' + compress_file
-            result = subprocess.run(shellcmd, stdout=subprocess.PIPE, shell=True, capture_output=True, text=True)
+            shellcmd = 'mdss ls ' + mdss_save_dir + tar_gz.split('/')[-1]
+            result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
             output_string = result.stdout
-            print("Made tar of", compress_file)
-            
-            
-            #check is sim dir exists:
-            shellcmd = 'mdss ls' + mdss_save_dir
-            result = subprocess.run(shellcmd, stdout=subprocess.PIPE, shell=True, capture_output=True, text=True)
-            output_string = result.stdout
-            proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
-            shellcmd = 'mdss put '+ compress_file+'.tar.gz '+mdss_save_dir
-            proc = subprocess.Popen(shellcmd, stdout=subprocess.PIPE, shell=True)
-            print("put"+compress_file+'.tar.gz '+mdss_save_dir)
-            
-            backup_done = []
-
-            with open('Backup_dirs.txt', 'a') as f_backup:
-                f_backup.write(compress_file +'\n')
-            f_backup.close()
-
-
+            if "No such file or directory" in output_string:
+                #check if tar exists
+                if os.path.isfile(tar_gz) ==  False:
+                    shellcmd = 'tar -czvf ' + tar_gz + ' ' + compress_file
+                    result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    output_string = result.stdout
+                    print("Made tar of", compress_file)
+                #now move to MDSS
+                shellcmd = 'mdss put '+ tar_gz + ' '+mdss_save_dir
+                result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                output_string = result.stdout
+                print("put "+tar_gz+' '+mdss_save_dir)
 f.close()
