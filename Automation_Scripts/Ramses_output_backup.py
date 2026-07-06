@@ -12,7 +12,6 @@ rank = CW.Get_rank()
 size = CW.Get_size()
 
 #Open and read Expiring text file:
-backup_done = []
 rit = -1
 with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
     reader = csv.reader(f)
