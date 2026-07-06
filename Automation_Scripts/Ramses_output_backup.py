@@ -17,7 +17,7 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
             compress_file = row[0].split(' ')[-1].split('output_')[0] + 'output_' + row[0].split(' ')[-1].split('output_')[1].split('/')[0]
             tar_gz = compress_file+'.tar.gz'
             if
-            shellcmd = 'tar -czvf ' + tar_gz + ' compress_file
+            shellcmd = 'tar -czvf ' + tar_gz + ' ' + compress_file
             result = subprocess.run(shellcmd, stdout=subprocess.PIPE, shell=True, capture_output=True, text=True)
             output_string = result.stdout
             print("Made tar of", compress_file)
