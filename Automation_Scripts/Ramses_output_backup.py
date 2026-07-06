@@ -43,4 +43,6 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
                 result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
                 output_string = result.stdout
                 print("put "+tar_gz+' '+mdss_save_dir)
+                #remove tar file
+                os.remove(tar_gz)
 f.close()
