@@ -57,3 +57,5 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
                     #remove tar file
                     os.remove(tar_gz)
 f.close()
+
+print("finished backing up output files to MDSS on rank", rank)
