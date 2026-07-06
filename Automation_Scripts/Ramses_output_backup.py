@@ -34,6 +34,7 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
                     result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
                     output_string = result.stdout
                     print("RANK ", rit, ": Created MDSS directory", mdss_save_dir)
+                    sys.stdout.flush()
                 #check if tar in mdss
                 shellcmd = 'mdss ls ' + mdss_save_dir + tar_gz.split('/')[-1]
                 result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -45,11 +46,13 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
                         result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
                         output_string = result.stdout
                         print("RANK ", rit, ": Made tar of", compress_file)
+                        sys.stdout.flush()
                     #now move to MDSS
                     shellcmd = 'mdss put '+ tar_gz + ' '+mdss_save_dir
                     result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
                     output_string = result.stdout
                     print("RANK ", rit, ": put "+tar_gz+' '+mdss_save_dir)
+                    sys.stdout.flush()
                     #remove tar file
                     os.remove(tar_gz)
 f.close()
