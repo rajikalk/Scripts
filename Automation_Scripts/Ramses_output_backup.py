@@ -14,6 +14,9 @@ size = CW.Get_size()
 
 #Open and read Expiring text file:
 rit = -1
+shellcmd = 'nci-file-expiry list-warnings > expiring_files.txt'
+result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+output_string = result.stdout
 with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
     reader = csv.reader(f)
     header = True
@@ -58,9 +61,12 @@ with open('/home/100/rlk100/expiring_files.txt', 'r') as f:
                     os.remove(tar_gz)
 f.close()
 
-print("finished backing up output files to MDSS on rank", rank)
+print("finished backing up expiring files to MDSS on rank", rank)
 
 rit = -1
+shellcmd = 'nci-file-expiry list-quarantined > my_quarantine_list.txt'
+result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+output_string = result.stdout
 with open('/home/100/rlk100/my_quarantined_files.txt', 'r') as f:
     reader = csv.reader(f)
     header = True
@@ -105,4 +111,4 @@ with open('/home/100/rlk100/my_quarantined_files.txt', 'r') as f:
                     os.remove(tar_gz)
 f.close()
 
-print("finished backing up output files to MDSS on rank", rank)
+print("finished backing up quarantined files to MDSS on rank", rank)
