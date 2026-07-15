@@ -132,6 +132,7 @@ for plot_sink in plot_sinks:
         axs.flatten()[sink_it].set_ylim(bottom=left_lower_lim[sink_it])
     axs.flatten()[sink_it].set_ylabel("Accretion rate (M$_\odot$/yr)")
     axs.flatten()[sink_it].tick_params(axis='both', direction='in', top=True)
+    axs.flatten()[sink_it].set_ylim([1.e-9, 5.e-4])
     ax0.set_ylabel('Separation (AU)')
     #if right_upper_lim[sink_it] == None:
     #    ax0.set_ylim(bottom=y_lower_lim)
