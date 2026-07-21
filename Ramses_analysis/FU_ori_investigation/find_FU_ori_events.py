@@ -282,9 +282,9 @@ if rank == 0:
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.14)
     
-    axs.flatten()[22].set_axis_off()
-    axs.flatten()[23].set_axis_off()
-    axs.flatten()[24].set_axis_off()
+    axs.flatten()[37].set_axis_off()
+    axs.flatten()[38].set_axis_off()
+    axs.flatten()[39].set_axis_off()
     
     
     #top_clean = top_clean[15:]
@@ -352,6 +352,7 @@ if rank == 0:
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
+        if plot_it == len(top_clean)-1
         ax1.legend(bbox_to_anchor=(1, 1))
             
         useable_times = useable_times/1000
