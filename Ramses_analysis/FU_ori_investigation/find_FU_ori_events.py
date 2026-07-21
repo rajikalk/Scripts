@@ -352,8 +352,8 @@ if rank == 0:
         ax1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         ax2.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
         
-        if plot_it == len(top_clean)-1
-        ax1.legend(bbox_to_anchor=(1, 1))
+        if plot_it == len(top_clean)-1:
+            ax1.legend(bbox_to_anchor=(1, 1))
             
         useable_times = useable_times/1000
         Cand_string = "Cand. "+str(plot_it+1)
