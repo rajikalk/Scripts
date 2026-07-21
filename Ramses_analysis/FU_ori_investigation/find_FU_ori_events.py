@@ -321,7 +321,7 @@ if rank == 0:
                             
         ax2.plot(useable_times/1000, useable_L, color='b')
 
-        if plot_it >19:
+        if plot_it >37:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
             ax1.set_ylabel('Scaled L and correlation', fontsize=font_size, labelpad=0)
