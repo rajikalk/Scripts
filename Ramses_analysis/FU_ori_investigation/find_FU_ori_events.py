@@ -324,7 +324,7 @@ if rank == 0:
         if plot_it >34:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
-            ax1.set_ylabel('Scaled L and correlation', fontsize=font_size, labelpad=0)
+            ax1.set_ylabel('Scaled L and corr.', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
