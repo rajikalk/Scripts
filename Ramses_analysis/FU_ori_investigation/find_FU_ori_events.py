@@ -278,7 +278,7 @@ if rank == 0:
         
     plt.cla()
     plt.clf()
-    fig, axs = plt.subplots(ncols=5, nrows=5, figsize=(two_col_width, 0.8*page_height), sharey=True, linewidth=1)
+    fig, axs = plt.subplots(ncols=5, nrows=8, figsize=(two_col_width,page_height), sharey=True, linewidth=1)
     plt.subplots_adjust(wspace=0.0)
     plt.subplots_adjust(hspace=0.14)
     
@@ -324,7 +324,7 @@ if rank == 0:
         if plot_it >19:
             ax1.set_xlabel('Time (kyr)', fontsize=font_size, labelpad=-1)
         if np.remainder(plot_it, 5) == 0:
-            ax1.set_ylabel('scaled L and correlation', fontsize=font_size, labelpad=0)
+            ax1.set_ylabel('Scaled L and correlation', fontsize=font_size, labelpad=0)
         else:
             yticklabels = ax1.get_yticklabels()
             plt.setp(yticklabels, visible=False)
