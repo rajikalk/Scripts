@@ -189,7 +189,7 @@ if rank == 0:
     matplotlib.rcParams['mathtext.rm'] = 'Arial'
     matplotlib.rcParams['mathtext.sf'] = 'Arial'
     matplotlib.rcParams['mathtext.default'] = 'regular'
-    
+    '''
     plt.cla()
     plt.clf()
     fig, axs = plt.subplots(ncols=5, nrows=3, figsize=(two_col_width, 0.5*page_height), sharey=True, linewidth=1)
@@ -274,7 +274,7 @@ if rank == 0:
         
         plt.savefig('Main_body_best_matches.pdf', bbox_inches='tight', pad_inches=0.02)
         print('Updated Main_body_best_matches.pdf with sink', top_clean[plot_it])
-        
+    '''
         
     plt.cla()
     plt.clf()
