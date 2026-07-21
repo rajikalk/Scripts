@@ -287,7 +287,7 @@ if rank == 0:
     axs.flatten()[24].set_axis_off()
     
     
-    top_clean = top_clean[15:]
+    #top_clean = top_clean[15:]
     for plot_it in range(len(top_clean)):
         pickle_open = open('Mesa_pickle_'+("%04d" % top_clean[plot_it])+'_full_age.pkl', "rb")
         pickle_data = pickle.load(pickle_open)
