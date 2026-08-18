@@ -67,7 +67,7 @@ rit = -1
 shellcmd = 'nci-file-expiry list-quarantined > my_quarantine_list.txt'
 result = subprocess.run(shellcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 output_string = result.stdout
-with open('/home/100/rlk100/my_quarantined_files.txt', 'r') as f:
+with open('/home/100/rlk100/my_quarantine_list.txt', 'r') as f:
     reader = csv.reader(f)
     header = True
     for row in reader:
