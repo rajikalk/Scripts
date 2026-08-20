@@ -7,6 +7,19 @@ import glob
 from mpi4py.MPI import COMM_WORLD as CW
 import scipy.interpolate as interp
 import pickle
+import argparse
+
+def parse_inputs():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-mass_thres", "--mass_threshold", help="Mass threshold for good matches?", type=float, default=0.0)
+    parser.add_argument("files", nargs='*')
+    args = parser.parse_args()
+    return args
+    
+    
+#================================================================================
+args = parse_inputs()
 
 lsun = 3.828e26*1.e7 # solar luminosity in erg
 FU_temp = np.concatenate((np.zeros(20), np.ones(80)))
@@ -103,7 +116,7 @@ for sink_file in sink_files:
                         scaled_L = useable_L - np.min(useable_L)
                         scaled_L = scaled_L/np.max(scaled_L)
                         cor = np.correlate(scaled_L,FU_temp,'same')
-                        if L_diff>1 and np.median(cor)>66.6 and mass[time_it] > 0.5:
+                        if L_diff>1 and np.median(cor)>66.6 and mass[time_it] > args.mass_threshold:
                             plt.clf()
                             fig, ax1 = plt.subplots()
 
