@@ -52,6 +52,17 @@ top_clean = top_clean[np.argsort(top_clean)]
 
 end_times = {'10':300000, '17':279000, '45':30000, '48':1450000, '51':96000, '54':150000, '56':10000, '71':22000, '72':90000, '73':70000, '75':36000, '83':55000, '85':60000, '93':350000, '101':10000, '102':10000, '103':50000, '109':1000000, '118':325000, '141':500000, '150':750000, '151':240000, '154':240000, '159':190000, '168':90000, '175':80000, '176':75000, '177':229000, '221':35000, '239':90000, '258':26000, '262':55000, '272':7000, '275':51000, '292':79000, '309':10000}
 
+#STARTING FROM EVENT
+top_clean = np.array([17, 45, 51, 56, 71, 100, 101, 102, 166, 174, 175, 219, 237, 256, 260, 270, 290])
+top_clean = top_clean[np.argsort(top_clean)]
+end_times = {'17':88478, '45':76169, '51':81016, '56':47214, '71':128775, '100':114931, '101':106671, '102':100965, '166':88947, '174':149529, '175':149794, '219':134571, '237':123564, '256':114601, '260':36958, '270':49168, '290':95581}
+
+global_output_pickles = '/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/times.pkl'
+global_open = open(global_output_pickles, 'rb')
+global_times = pickle.load(global_open)
+global_open.close()
+
+
 for sink_id in top_clean:
     if args.low_res_pickle == 'True':
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'_low_res.pdf'
@@ -59,16 +70,17 @@ for sink_id in top_clean:
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
     if os.path.isfile(save_name) == False:
         if args.low_res_pickle == 'True':
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
         else:
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+"_high_res.pkl"
         if os.path.isfile(global_pickle) == False:
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
         print('global pickle:', global_pickle)
         file_open = open(global_pickle, 'rb')
         particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
         file_open.close()
         print('successfully read global pickle')
+        
 
         if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
             print('Calculating Total Luminosity')
@@ -202,6 +214,8 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
+        import pdb
+        pdb.set_trace()
         axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
         ln_lab = lns[0]
