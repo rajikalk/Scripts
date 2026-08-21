@@ -36,7 +36,7 @@ sink_inds = [17, 45, 51, 56, 71, 100, 101, 102, 166, 174, 175, 219, 237, 256, 26
 #sink_ind = args.sink_id
 companion_ids = []
 
-path = sys.argv[1]
+path = sys.argv[1] #e.g /home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/
 save_dir = sys.argv[2]
 if save_dir[-1] != '/':
     save_dir = save_dir + '/'
@@ -83,12 +83,12 @@ for sink_ind in sink_inds:
             updating = True
                 
             particle_data = {}
-            particle_data.update({'time':[]})
-            particle_data.update({'mass':[]})
-            particle_data.update({'mdot':[]})
-            particle_data.update({'separation':[]})
-            particle_data.update({'eccentricity':[]})
-            particle_data.update({'closest_sink':[]})
+            particle_data.update({'time':np.array([])})
+            particle_data.update({'mass':np.array([])})
+            particle_data.update({'mdot':np.array([])})
+            particle_data.update({'separation':np.array([])})
+            particle_data.update({'eccentricity':np.array([])})
+            particle_data.update({'closest_sink':np.array([])})
             counter = 0
             sink_form_time = 0
             
@@ -121,14 +121,14 @@ for sink_ind in sink_inds:
                         dz = sink_data['z'] - sink_data['z'][sink_ind]
                         separation = np.sqrt(dx**2 + dy**2 + dz**2)*units['length_unit'].in_units('au')
                         closest_sink = np.argsort(separation)[1]
-                        particle_data['closest_sink'].append(closest_sink)
-                        particle_data['time'].append(time_val)
-                        particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
+                        np.append(particle_data['closest_sink'], closest_sink)
+                        np.append(particle_data['time'], time_val)
+                        np.append(particle_data['mass'], yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
                         d_mass = sink_data['dm'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun')
                         d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
                         acc_val = d_mass/d_time
                         #acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                        particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
+                        np.append(particle_data['mdot'], yt.YTArray(acc_val, 'msun/yr'))
                         
                         position = yt.YTArray(np.array([sink_data['x'][np.array([sink_ind,closest_sink])], sink_data['y'][np.array([sink_ind,closest_sink])], sink_data['z'][np.array([sink_ind,closest_sink])]])*units['length_unit'].in_units('au'), 'au')
                         velocity = yt.YTArray(np.array([sink_data['ux'][np.array([sink_ind,closest_sink])], sink_data['uy'][np.array([sink_ind,closest_sink])], sink_data['uz'][np.array([sink_ind,closest_sink])]])*units['velocity_unit'].in_units('km/s'), 'km/s')
@@ -141,7 +141,7 @@ for sink_ind in sink_inds:
                         distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
                         relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
                         separation = np.sum(distance_from_com)
-                        particle_data['separation'].append(separation)
+                        np.append(particle_data['separation'], separation)
                         
                         reduced_mass = np.product(particle_data['mass'][-1].in_units('g'))/np.sum(particle_data['mass'][-1].in_units('g'))
                         E_pot = (-1*(yt.units.gravitational_constant_cgs*np.product(particle_data['mass'][-1].in_units('g')))/separation.in_units('cm')).in_units('erg')
@@ -152,7 +152,7 @@ for sink_ind in sink_inds:
                         L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
                         h_val = L_tot/reduced_mass.in_units('g')
                         e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
-                        particle_data['eccentricity'].append(e)
+                        np.append(particle_data['eccentricity'], e)
                         
                     else:
                         break
