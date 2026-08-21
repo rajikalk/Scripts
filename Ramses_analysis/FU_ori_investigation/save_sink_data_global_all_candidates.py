@@ -33,7 +33,7 @@ args = parse_inputs()
 #sink_inds = [17, 45, 51, 71, 75, 85, 101, 103, 176, 177, 258, 272, 292]
 #Sink ids starting from event
 sink_inds = [17, 45, 51, 56, 71, 100, 101, 102, 166, 174, 175, 219, 237, 256, 260, 270, 290]
-sink_ind = args.sink_id
+#sink_ind = args.sink_id
 companion_ids = []
 
 path = sys.argv[1]
@@ -65,100 +65,101 @@ units={}
 for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
-if args.update_pickle == 'True':
-    print("Reading particle data")
-    loaded_sink_data = rsink(datadir=path, all=True)
-    updating = False
-    
-    if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
-        file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
-        particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
-        file_open.close()
-        counter = int(counter)
-        if counter < len(loaded_sink_data):
-            updating = True
-            print('pickle data is not up to date! Updating...')
-    else:
-        updating = True
-            
-        particle_data = {}
-        particle_data.update({'time':[]})
-        particle_data.update({'mass':[]})
-        particle_data.update({'mdot':[]})
-        particle_data.update({'separation':[]})
-        particle_data.update({'eccentricity':[]})
-        particle_data.update({'closest_sink':[]})
-        counter = 0
-        sink_form_time = 0
+for sink_ind in sink_inds:
+    if args.update_pickle == 'True':
+        print("Reading particle data")
+        loaded_sink_data = rsink(datadir=path, all=True)
+        updating = False
         
-    if updating == True:
-        loaded_sink_data = loaded_sink_data[counter:]
-        for sink_data in loaded_sink_data:
-            counter = counter + 1
-            if np.remainder(counter, 1000) == 0:
-                try:
-                    os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl')
-                except:
-                    print("pickle files doesn't exist yet")
-                file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
-                pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
-                file.close()
-                os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl')
-                print('read', counter, 'snapshots of sink particle data, and saved pickle')
-            if len(sink_data['tcreate']) > sink_ind:
-                if sink_form_time == 0:
-                    sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
-                if args.end_time_val is None:
-                    end_time_val = loaded_sink_data[-1]['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                else:
-                    end_time_val = yt.YTQuantity(args.end_time_val, 'yr')
+        if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
+            file_open = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'rb')
+            particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
+            file_open.close()
+            counter = int(counter)
+            if counter < len(loaded_sink_data):
+                updating = True
+                print('pickle data is not up to date! Updating...')
+        else:
+            updating = True
                 
-                time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
-                if time_val < end_time_val:
-                    dx = sink_data['x'] - sink_data['x'][sink_ind]
-                    dy = sink_data['y'] - sink_data['y'][sink_ind]
-                    dz = sink_data['z'] - sink_data['z'][sink_ind]
-                    separation = np.sqrt(dx**2 + dy**2 + dz**2)*units['length_unit'].in_units('au')
-                    closest_sink = np.argsort(separation)[1]
-                    particle_data['closest_sink'].append(closest_sink)
-                    particle_data['time'].append(time_val)
-                    particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
-                    d_mass = sink_data['dm'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun')
-                    d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
-                    acc_val = d_mass/d_time
-                    #acc_val[np.where(acc_val == 0)[0]]=1.e-12
-                    particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
+            particle_data = {}
+            particle_data.update({'time':[]})
+            particle_data.update({'mass':[]})
+            particle_data.update({'mdot':[]})
+            particle_data.update({'separation':[]})
+            particle_data.update({'eccentricity':[]})
+            particle_data.update({'closest_sink':[]})
+            counter = 0
+            sink_form_time = 0
+            
+        if updating == True:
+            loaded_sink_data = loaded_sink_data[counter:]
+            for sink_data in loaded_sink_data:
+                counter = counter + 1
+                if np.remainder(counter, 1000) == 0:
+                    try:
+                        os.remove(save_dir+'particle_data_'+str(sink_ind)+'.pkl')
+                    except:
+                        print("pickle files doesn't exist yet")
+                    file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
+                    pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+                    file.close()
+                    os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl')
+                    print('read', counter, 'snapshots of sink particle data, and saved pickle')
+                if len(sink_data['tcreate']) > sink_ind:
+                    if sink_form_time == 0:
+                        sink_form_time = sink_data['tcreate'][sink_ind]*units['time_unit'].in_units('yr')
+                    if args.end_time_val is None:
+                        end_time_val = loaded_sink_data[-1]['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
+                    else:
+                        end_time_val = yt.YTQuantity(args.end_time_val, 'yr')
                     
-                    position = yt.YTArray(np.array([sink_data['x'][np.array([sink_ind,closest_sink])], sink_data['y'][np.array([sink_ind,closest_sink])], sink_data['z'][np.array([sink_ind,closest_sink])]])*units['length_unit'].in_units('au'), 'au')
-                    velocity = yt.YTArray(np.array([sink_data['ux'][np.array([sink_ind,closest_sink])], sink_data['uy'][np.array([sink_ind,closest_sink])], sink_data['uz'][np.array([sink_ind,closest_sink])]])*units['velocity_unit'].in_units('km/s'), 'km/s')
-                    
-                    CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
-                    CoM_vel = np.sum((velocity*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
-                    
-                    vel_rel_to_com = (velocity.T - CoM_vel).T
-                    pos_rel_to_com = (position.T - CoM_pos).T
-                    distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
-                    relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
-                    separation = np.sum(distance_from_com)
-                    particle_data['separation'].append(separation)
-                    
-                    reduced_mass = np.product(particle_data['mass'][-1].in_units('g'))/np.sum(particle_data['mass'][-1].in_units('g'))
-                    E_pot = (-1*(yt.units.gravitational_constant_cgs*np.product(particle_data['mass'][-1].in_units('g')))/separation.in_units('cm')).in_units('erg')
-                    E_kin = np.sum((0.5*particle_data['mass'][-1].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
-                    epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
-                    r_x_v = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
-                    L = particle_data['mass'][-1].in_units('g').T*r_x_v
-                    L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
-                    h_val = L_tot/reduced_mass.in_units('g')
-                    e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
-                    particle_data['eccentricity'].append(e)
-                    
-                else:
-                    break
+                    time_val = sink_data['snapshot_time']*units['time_unit'].in_units('yr') - sink_form_time
+                    if time_val < end_time_val:
+                        dx = sink_data['x'] - sink_data['x'][sink_ind]
+                        dy = sink_data['y'] - sink_data['y'][sink_ind]
+                        dz = sink_data['z'] - sink_data['z'][sink_ind]
+                        separation = np.sqrt(dx**2 + dy**2 + dz**2)*units['length_unit'].in_units('au')
+                        closest_sink = np.argsort(separation)[1]
+                        particle_data['closest_sink'].append(closest_sink)
+                        particle_data['time'].append(time_val)
+                        particle_data['mass'].append(yt.YTArray(sink_data['m'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun'), 'msun'))
+                        d_mass = sink_data['dm'][np.array([sink_ind,closest_sink])]*units['mass_unit'].in_units('msun')
+                        d_time = (sink_data['snapshot_time'] - sink_data['tflush'])*units['time_unit'].in_units('yr')
+                        acc_val = d_mass/d_time
+                        #acc_val[np.where(acc_val == 0)[0]]=1.e-12
+                        particle_data['mdot'].append(yt.YTArray(acc_val, 'msun/yr'))
                         
-        #write lastest pickle
-        file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
-        pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
-        file.close()
-        os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl')
-        print('read', counter, 'snapshots of sink particle data, and saved pickle')
+                        position = yt.YTArray(np.array([sink_data['x'][np.array([sink_ind,closest_sink])], sink_data['y'][np.array([sink_ind,closest_sink])], sink_data['z'][np.array([sink_ind,closest_sink])]])*units['length_unit'].in_units('au'), 'au')
+                        velocity = yt.YTArray(np.array([sink_data['ux'][np.array([sink_ind,closest_sink])], sink_data['uy'][np.array([sink_ind,closest_sink])], sink_data['uz'][np.array([sink_ind,closest_sink])]])*units['velocity_unit'].in_units('km/s'), 'km/s')
+                        
+                        CoM_pos = np.sum((position*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
+                        CoM_vel = np.sum((velocity*particle_data['mass'][-1]).T, axis=0)/np.sum(particle_data['mass'][-1])
+                        
+                        vel_rel_to_com = (velocity.T - CoM_vel).T
+                        pos_rel_to_com = (position.T - CoM_pos).T
+                        distance_from_com = np.sqrt(np.sum(pos_rel_to_com**2, axis=0))
+                        relative_speed_to_com = np.sqrt(np.sum(vel_rel_to_com**2, axis=0))
+                        separation = np.sum(distance_from_com)
+                        particle_data['separation'].append(separation)
+                        
+                        reduced_mass = np.product(particle_data['mass'][-1].in_units('g'))/np.sum(particle_data['mass'][-1].in_units('g'))
+                        E_pot = (-1*(yt.units.gravitational_constant_cgs*np.product(particle_data['mass'][-1].in_units('g')))/separation.in_units('cm')).in_units('erg')
+                        E_kin = np.sum((0.5*particle_data['mass'][-1].in_units('g')*relative_speed_to_com.in_units('cm/s')**2).in_units('erg'))
+                        epsilon = (E_pot + E_kin)/reduced_mass.in_units('g')
+                        r_x_v = yt.YTArray(np.cross(pos_rel_to_com.T.in_units('cm'), vel_rel_to_com.T.in_units('cm/s')).T, 'cm**2/s')
+                        L = particle_data['mass'][-1].in_units('g').T*r_x_v
+                        L_tot = np.sqrt(np.sum(np.sum(L, axis=1)**2, axis=0))
+                        h_val = L_tot/reduced_mass.in_units('g')
+                        e = np.sqrt(1 + (2.*epsilon*h_val**2.)/((yt.units.gravitational_constant_cgs*np.sum(particle_data['mass'][-1].in_units('g')))**2.))
+                        particle_data['eccentricity'].append(e)
+                        
+                    else:
+                        break
+                            
+            #write lastest pickle
+            file = open(save_dir+'particle_data_'+str(sink_ind)+'.pkl', 'wb')
+            pickle.dump((particle_data, counter, sink_ind, sink_form_time), file)
+            file.close()
+            os.system('cp '+save_dir+'particle_data_'+str(sink_ind)+'.pkl '+save_dir+'particle_data_'+str(sink_ind)+'_tmp.pkl')
+            print('read', counter, 'snapshots of sink particle data, and saved pickle')
