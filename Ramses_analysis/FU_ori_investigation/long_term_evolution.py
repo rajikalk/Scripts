@@ -269,13 +269,13 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
+        axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
+        ax1 = axs.flatten()[1].twinx()
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[1])&(glob_time_wrt_sink<time_bounds[2]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax1.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
-        axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
-        axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
-        ax1 = axs.flatten()[1].twinx()
         ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax1.axhline(y=16.6, color='k', ls='-.')
         ax1.set_ylabel('Separation (AU)')
@@ -309,13 +309,13 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
+        axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
+        ax2 = axs.flatten()[2].twinx()
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[2])&(glob_time_wrt_sink<time_bounds[3]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax2.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
-        axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
-        axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
-        ax2 = axs.flatten()[2].twinx()
         ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax2.axhline(y=16.6, color='k', ls='-.')
         ax2.set_ylabel('Separation (AU)')
@@ -349,13 +349,13 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
+        axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
+        ax3 = axs.flatten()[3].twinx()
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[3])&(glob_time_wrt_sink<time_bounds[4]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax3.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
-        axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
-        axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
-        ax3 = axs.flatten()[3].twinx()
         ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax3.axhline(y=16.6, color='k', ls='-.')
         ax3.set_ylabel('Separation (AU)')
@@ -389,13 +389,13 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr, ls=':')
         axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
+        axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
+        axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
+        ax4 = axs.flatten()[4].twinx()
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[4])&(glob_time_wrt_sink<time_bounds[5]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax4.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
-        axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
-        axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
-        ax4 = axs.flatten()[4].twinx()
         ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax4.axhline(y=16.6, color='k', ls='-.')
         ax4.set_ylabel('Separation (AU)')
