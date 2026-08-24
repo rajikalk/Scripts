@@ -417,7 +417,7 @@ for sink_id in top_clean:
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
         # place a text box in upper left in axes coords
-        ax4.text(time_bounds[4], 800, 'Companion IDs:'+str(comp_ids), transform=ax4.transAxes, fontsize=14,
+        ax4.text(0.05, 0.95, 'Companion IDs:'+str(comp_ids), transform=ax4.transAxes, fontsize=14,
         verticalalignment='top', bbox=props)
         print('plotted time panel 5')
 
