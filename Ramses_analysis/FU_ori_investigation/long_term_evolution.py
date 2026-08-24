@@ -62,7 +62,6 @@ global_open = open(global_output_pickles, 'rb')
 global_times = pickle.load(global_open)
 global_open.close()
 
-
 for sink_id in top_clean:
     if args.low_res_pickle == 'True':
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'_low_res.pdf'
@@ -75,6 +74,9 @@ for sink_id in top_clean:
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+"_high_res.pkl"
         if os.path.isfile(global_pickle) == False:
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
+            
+        import pdb
+        pdb.set_trace()
         print('global pickle:', global_pickle)
         file_open = open(global_pickle, 'rb')
         particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
