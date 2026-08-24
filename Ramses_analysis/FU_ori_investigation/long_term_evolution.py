@@ -410,6 +410,15 @@ for sink_id in top_clean:
         ax4.tick_params(axis='both', direction='in', top=True)
         axs.flatten()[4].set_xlabel("Time since candidate formation (yr)")
         #axs.flatten()[4].set_ylim([5.e-2, 2.5e1])
+        
+        #Get unique companion ids
+        IDs, Indexes = np.unique(particle_data['closest_sink'], return_index=True)
+        comp_ids = IDs[np.argsort(Indexes)]
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+        # place a text box in upper left in axes coords
+        ax4.text(time_bounds[4], 800, 'Companion IDs:'+str(comp_ids), transform=ax4.transAxes, fontsize=14,
+        verticalalignment='top', bbox=props)
         print('plotted time panel 5')
 
         plt.savefig(save_name, bbox_inches='tight', pad_inches=0.02)
