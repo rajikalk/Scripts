@@ -68,7 +68,12 @@ for key in units_override.keys():
 for sink_ind in sink_inds:
     if args.update_pickle == 'True':
         print("Reading particle data")
-        loaded_sink_data = rsink(datadir=path, all=True)
+        #loaded_sink_data = rsink(datadir=path, all=True)
+        #updating = False
+        
+        file_open = open('/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl', 'rb')
+        loaded_sink_data = pickle.load(file_open)
+        file_open.close()
         updating = False
         
         if os.path.isfile('particle_data_'+str(sink_ind)+'.pkl'):
