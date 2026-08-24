@@ -227,7 +227,7 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
-        plot_glob = np.where((glob_time_wrt_sink>time_bounds[0])&(glob_time_wrt_sink<time_bounds[1]))
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[0])&(glob_time_wrt_sink<time_bounds[1]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
@@ -269,7 +269,7 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
-        plot_glob = np.where((glob_time_wrt_sink>time_bounds[1])&(glob_time_wrt_sink<time_bounds[2]))
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[1])&(glob_time_wrt_sink<time_bounds[2]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
@@ -309,7 +309,7 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
-        plot_glob = np.where((glob_time_wrt_sink>time_bounds[2])&(glob_time_wrt_sink<time_bounds[3]))
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[2])&(glob_time_wrt_sink<time_bounds[3]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
@@ -349,7 +349,7 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
-        plot_glob = np.where((glob_time_wrt_sink>time_bounds[3])&(glob_time_wrt_sink<time_bounds[4]))
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[3])&(glob_time_wrt_sink<time_bounds[4]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
@@ -389,7 +389,7 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr, ls=':')
         axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
-        plot_glob = np.where((glob_time_wrt_sink>time_bounds[4])&(glob_time_wrt_sink<time_bounds[5]))
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[4])&(glob_time_wrt_sink<time_bounds[5]))[0]
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
