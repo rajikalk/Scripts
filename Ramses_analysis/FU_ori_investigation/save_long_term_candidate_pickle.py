@@ -104,6 +104,10 @@ if args.update_pickle == 'True':
         
         pickle_name = pickle_name+'.pkl'
         
+        if sink_ind == 71:
+            import pdb
+            pdb.set_trace()
+        
         if os.path.isfile(pickle_name):
             try:
                 file_open = open(pickle_name, 'rb')
