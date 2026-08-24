@@ -231,8 +231,6 @@ for sink_id in top_clean:
                 axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[0])&(glob_time_wrt_sink<time_bounds[1]))[0]
-        import pdb
-        pdb.set_trace()
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it], c='r')
             ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
