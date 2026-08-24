@@ -76,15 +76,6 @@ for key in units_override.keys():
     units.update({key:yt.YTQuantity(units_override[key][0], units_override[key][1])})
 
 if args.update_pickle == 'True':
-    print("Reading global data")
-    if args.high_resolution == 'True':
-        file_open = open('/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl', 'rb')
-    else:
-        file_open = open('/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl', 'rb')
-    loaded_sink_data = pickle.load(file_open)
-    file_open.close()
-    updating = False
-    
     sink_ind = args.sink_number
     if args.save_all_sinks == 'False':
         save_sinks = [sink_ind]
@@ -92,6 +83,15 @@ if args.update_pickle == 'True':
         save_sinks = top_clean
     
     for sink_ind in save_sinks:
+        print("Reading global data")
+        if args.high_resolution == 'True':
+            file_open = open('/home/100/rlk100/gdata/RAMSES/Global/raw_stars_full_G100_512.pkl', 'rb')
+        else:
+            file_open = open('/home/100/rlk100/gdata/RAMSES/Global/stars_red_512.pkl', 'rb')
+        loaded_sink_data = pickle.load(file_open)
+        file_open.close()
+        updating = False
+    
         if args.end_save_time != None:
             end_time = args.end_save_time
         elif str(sink_ind) in end_times.keys():# and args.high_resolution == 'True':
@@ -156,9 +156,6 @@ if args.update_pickle == 'True':
                     if sink_form_time == 0:
                         sink_form_time = sink_data[sink_ind][14]*units['time_unit'].in_units('yr')
                     time_val = sink_data[sink_ind][17]*units['time_unit'].in_units('yr') - sink_form_time
-                    if sink_ind == 71:
-                        import pdb
-                        pdb.set_trace()
                     if end_time == None or time_val < yt.YTQuantity(end_time, 'yr'):
                         particle_data['time'] = np.append(particle_data['time'], time_val)
                         particle_mass = sink_data[sink_ind][9]*units['mass_unit'].in_units('msun')
