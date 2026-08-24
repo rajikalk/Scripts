@@ -235,7 +235,7 @@ for sink_id in top_clean:
         pdb.set_trace()
         for glob_it in plot_glob:
             axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it], c='r')
-            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
         axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
         ln_lab = lns[0]
@@ -280,7 +280,7 @@ for sink_id in top_clean:
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[1])&(glob_time_wrt_sink<time_bounds[2]))[0]
         for glob_it in plot_glob:
             axs.flatten()[1].axvline(x=glob_time_wrt_sink[glob_it], c='r')
-            ax1.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
+            ax1.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
         ax1.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax1.axhline(y=16.6, color='k', ls='-.')
         ax1.axhline(y=200, color='k', ls='-.')
@@ -321,7 +321,7 @@ for sink_id in top_clean:
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[2])&(glob_time_wrt_sink<time_bounds[3]))[0]
         for glob_it in plot_glob:
             axs.flatten()[2].axvline(x=glob_time_wrt_sink[glob_it], c='r')
-            ax2.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
+            ax2.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
         ax2.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax2.axhline(y=16.6, color='k', ls='-.')
         ax2.axhline(y=200, color='k', ls='-.')
@@ -362,7 +362,7 @@ for sink_id in top_clean:
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[3])&(glob_time_wrt_sink<time_bounds[4]))[0]
         for glob_it in plot_glob:
             axs.flatten()[3].axvline(x=glob_time_wrt_sink[glob_it], c='r')
-            ax3.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
+            ax3.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
         ax3.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax3.axhline(y=16.6, color='k', ls='-.')
         ax3.axhline(y=200, color='k', ls='-.')
@@ -403,7 +403,7 @@ for sink_id in top_clean:
         plot_glob = np.where((glob_time_wrt_sink>time_bounds[4])&(glob_time_wrt_sink<time_bounds[5]))[0]
         for glob_it in plot_glob:
             axs.flatten()[4].axvline(x=glob_time_wrt_sink[glob_it], c='r')
-            ax4.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
+            ax4.text(glob_time_wrt_sink[glob_it], 900, str(glob_it+55))
         ax4.semilogy(particle_data['time'][:end_it], particle_data['separation'][:end_it], color='k', ls="--", alpha=0.25)
         ax4.axhline(y=16.6, color='k', ls='-.')
         ax4.axhline(y=200, color='k', ls='-.')
