@@ -62,6 +62,17 @@ global_open = open(global_output_pickles, 'rb')
 global_times = pickle.load(global_open)
 global_open.close()
 
+units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
+units_override.update({"mass_unit":(2998,"Msun")})
+units_override.update({"density_unit":(units_override['mass_unit'][0]/units_override['length_unit'][0]**3, "Msun/pc**3")})
+    
+scale_l = yt.YTQuantity(units_override['length_unit'][0], units_override['length_unit'][1]).in_units('cm').value # 4 pc
+scale_v = yt.YTQuantity(units_override['velocity_unit'][0], units_override['velocity_unit'][1]).in_units('cm/s').value         # 0.18 km/s == sound speed
+scale_t = scale_l/scale_v # 4 pc / 0.18 km/s
+scale_d = yt.YTQuantity(units_override['density_unit'][0], units_override['density_unit'][1]).in_units('g/cm**3').value
+
+global_times = global_times * yt.YTQuantity(scale_t, 's').in_units('yr')
+
 for sink_id in top_clean:
     if args.low_res_pickle == 'True':
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'_low_res.pdf'
@@ -75,13 +86,13 @@ for sink_id in top_clean:
         if os.path.isfile(global_pickle) == False:
             global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
             
-        import pdb
-        pdb.set_trace()
         print('global pickle:', global_pickle)
         file_open = open(global_pickle, 'rb')
         particle_data, counter, sink_ind, sink_form_time = pickle.load(file_open)
         file_open.close()
         print('successfully read global pickle')
+        
+        glob_time_wrt_sink = global_times - sink_form_time
         
 
         if 'ltot' not in particle_data.keys() or np.shape(particle_data['ltot'])[1] == 2:
@@ -216,8 +227,10 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[0].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[0].set_xlim([time_bounds[0], time_bounds[1]])
-        import pdb
-        pdb.set_trace()
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[0])&(glob_time_wrt_sink<time_bounds[1]))
+        for glob_it in plot_glob
+            axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
         axs.flatten()[0].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[0].tick_params(axis='both', direction='in', top=True)
         ln_lab = lns[0]
@@ -256,6 +269,10 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[1].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[1].set_xlim([time_bounds[1], time_bounds[2]])
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[1])&(glob_time_wrt_sink<time_bounds[2]))
+        for glob_it in plot_glob
+            axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
         axs.flatten()[1].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[1].tick_params(axis='both', direction='in', top=True)
         ax1 = axs.flatten()[1].twinx()
@@ -292,6 +309,10 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[2].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[2].set_xlim([time_bounds[2], time_bounds[3]])
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[2])&(glob_time_wrt_sink<time_bounds[3]))
+        for glob_it in plot_glob
+            axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
         axs.flatten()[2].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[2].tick_params(axis='both', direction='in', top=True)
         ax2 = axs.flatten()[2].twinx()
@@ -328,6 +349,10 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[3].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr[:end_it], ls=':')
         axs.flatten()[3].set_xlim([time_bounds[3], time_bounds[4]])
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[3])&(glob_time_wrt_sink<time_bounds[4]))
+        for glob_it in plot_glob
+            axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
         axs.flatten()[3].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[3].tick_params(axis='both', direction='in', top=True)
         ax3 = axs.flatten()[3].twinx()
@@ -364,6 +389,10 @@ for sink_id in top_clean:
             else:
                 axs.flatten()[4].semilogy(yt.YTArray(particle_data['time'][:end_it]), ltot_curr, ls=':')
         axs.flatten()[4].set_xlim([time_bounds[4], time_bounds[5]])
+        plot_glob = np.where((glob_time_wrt_sink>time_bounds[4])&(glob_time_wrt_sink<time_bounds[5]))
+        for glob_it in plot_glob
+            axs.flatten()[0].axvline(x=glob_time_wrt_sink[glob_it])
+            ax0.text(glob_time_wrt_sink[glob_it], 900, str(glob_it))
         axs.flatten()[4].set_ylabel("L$_{tot}$ (L$_\odot$)")
         axs.flatten()[4].tick_params(axis='both', direction='in', top=True)
         ax4 = axs.flatten()[4].twinx()
