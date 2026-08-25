@@ -23,7 +23,7 @@ del last_n
 sink_ind = np.argmin(loaded_sink_data_last['u'])
 del loaded_sink_data_last
 print("Sink_ind =", sink_ind)
-loaded_sink_data = rsink(datadir=path, all=True)
+loaded_sink_data = rsink(datadir='data/', all=True)
     
 particle_data = {}
 particle_data.update({'time':np.array([])})
