@@ -80,13 +80,15 @@ for sink_id in top_clean:
         save_name = 'long_term_evolution_ltot_'+str(sink_id)+'.pdf'
     if os.path.isfile(save_name) == False:
         if args.low_res_pickle == 'True':
-            
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
+            #global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
         else:
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+"_high_res.pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+"_high_res.pkl"
+            #global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+"_high_res.pkl"
             #global_pickle =  "/home/100/rlk100/gdata/RAMSES/Analysis/Long_term_evolution/Starting_from_event/particle_data_"+str(sink_id)+"_high_res.pkl"
         if os.path.isfile(global_pickle) == False:
-            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
+            global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/particle_data_"+str(sink_id)+".pkl"
+            #global_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Long_term_evolution_pickles/Starting_from_event/particle_data_"+str(sink_id)+".pkl"
             
         print('global pickle:', global_pickle)
         file_open = open(global_pickle, 'rb')
