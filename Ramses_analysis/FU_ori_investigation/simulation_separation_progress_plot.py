@@ -28,6 +28,7 @@ loaded_sink_data = rsink(datadir='data/', all=True)
 particle_data = {}
 particle_data.update({'time':np.array([])})
 particle_data.update({'separation':np.array([])})
+particle_data.update({'closest_sink':np.array([])})
         
 counter = 0
 sink_form_time = 0
@@ -47,4 +48,7 @@ while len(loaded_sink_data)>0:
     dy = sink_data['y']*units['length_unit'].in_units('au') - position[1]
     dz = sink_data['z']*units['length_unit'].in_units('au') - position[2]
     sep = np.sqrt(dx**2 + dy**2 + dz**2)
-    particle_data['separation'] = np.append(particle_data['separation'], np.min(sep))
+    closest_ind = np.argsort(sep)[1]
+    particle_data['closest_sink'] = np.append(particle_data['closest_sink'], closest_ind)
+    separation = sep[closest_ind]
+    particle_data['separation'] = np.append(particle_data['separation'], separation)
