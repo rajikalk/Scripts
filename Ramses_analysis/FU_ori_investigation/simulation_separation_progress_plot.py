@@ -79,7 +79,6 @@ while len(loaded_sink_data)>0:
 plt.clf()
 plt.clf()
 fig, axs = plt.subplots(ncols=1, nrows=3, sharex=True)
-iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
 axs.flatten()[0].plot(particle_data['time'], particle_data['mass'])
