@@ -55,7 +55,7 @@ end_times = {'10':300000, '17':279000, '45':30000, '48':1450000, '51':96000, '54
 #STARTING FROM EVENT
 #top_clean = np.array([17, 45, 51, 56, 71, 100, 101, 102, 166, 174, 175, 219, 237, 256, 260, 270, 290])
 #top_clean = top_clean[np.argsort(top_clean)]
-#end_times = {'17':88478, '45':76169, '51':81016, '56':47214, '71':128775, '100':114931, '101':106671, '102':100965, '166':88947, '174':149529, '175':149794, '219':134571, '237':123564, '256':114601, '260':36958, '270':49168, '290':95581}
+end_times_event = {'17':88478, '45':76169, '51':81016, '56':47214, '71':128775, '100':114931, '101':106671, '102':100965, '166':88947, '174':149529, '175':149794, '219':134571, '237':123564, '256':114601, '260':36958, '270':49168, '290':95581}
 
 global_output_pickles = '/home/100/rlk100/gdata/RAMSES/Global/G100/512_Resolution/data/times.pkl'
 global_open = open(global_output_pickles, 'rb')
@@ -183,6 +183,8 @@ for sink_id in top_clean:
         start_time = particle_data['time'][0]
         if args.low_res_pickle == 'True':
             end_time = particle_data['time'][-1]
+        elif str(sink_id) in end_times_event.keys():
+            end_time = end_times_event[str(sink_id)]
         elif str(sink_id) in end_times.keys():
             end_time = end_times[str(sink_id)]
         else:
