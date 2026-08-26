@@ -21,6 +21,8 @@ stars_output_file = 'data/output_'+("%05d" % last_n)+'/stars_output.dat'
 loaded_sink_data_last = rsink(last_n, datadir='data/')
 del last_n
 sink_ind = np.argmin(loaded_sink_data_last['u'])
+import pdb
+pdb.set_trace()
 del loaded_sink_data_last
 print("Sink_ind =", sink_ind)
 loaded_sink_data = rsink(datadir='data/', all=True)
