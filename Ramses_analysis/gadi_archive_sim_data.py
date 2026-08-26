@@ -5,7 +5,7 @@ from mpi4py.MPI import COMM_WORLD as CW
 rank = CW.Get_rank()
 size = CW.Get_size()
 
-data_dirs = sorted(glob.glob('data/output*/'))
+data_dirs = sorted(glob.glob('data/output*/hydro*.out00030'))
 rit = -1
 for data_dir in data_dirs:
     rit = rit + 1
