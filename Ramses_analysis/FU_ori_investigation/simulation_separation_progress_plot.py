@@ -5,6 +5,8 @@ import yt
 import yt.units
 from yt.units import g, s, cm, Lsun
 import matplotlib.pyplot as plt
+import os
+
 
 #================================================================================
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s")}
@@ -18,12 +20,16 @@ del units_override
 
 last_n = int(sorted(glob.glob("data/output*"))[-1].split("_")[-1])
 stars_output_file = 'data/output_'+("%05d" % last_n)+'/stars_output.dat'
+path = os.getcwd()
+sink_ind = int(path.split('/Sink_')[1].split('/')[0])
+'''
 loaded_sink_data_last = rsink(last_n, datadir='data/')
 del last_n
 sink_ind = np.argmin(loaded_sink_data_last['u'])
 import pdb
 pdb.set_trace()
 del loaded_sink_data_last
+'''
 print("Sink_ind =", sink_ind)
 loaded_sink_data = rsink(datadir='data/', all=True)
     
