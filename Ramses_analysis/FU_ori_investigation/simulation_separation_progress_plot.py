@@ -105,6 +105,6 @@ if 'Level_19' in path:
     res_limit = 2*1.57
 if 'Level_20' in path:
     res_limit = 2*0.79
-axs.flatten()[2].axhline(y=res_limit)
+axs.flatten()[2].axhline(y=res_limit, ls=':')
 axs.flatten()[2].set_xlim([particle_data['time'][0], particle_data['time'][-1]])
 plt.savefig('progress_plot.png')
