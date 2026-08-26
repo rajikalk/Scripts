@@ -78,7 +78,7 @@ while len(loaded_sink_data)>0:
     
 plt.clf()
 plt.clf()
-fig, axs = plt.subplots(ncols=1, nrows=3, figsize=(two_col_width, single_col_width*1.7), sharex=True)#, sharey=True)
+fig, axs = plt.subplots(ncols=1, nrows=3, sharex=True)
 iter_range = range(0, len(pickle_files))
 plt.subplots_adjust(wspace=0.0)
 plt.subplots_adjust(hspace=0.0)
