@@ -12,6 +12,8 @@ for data_dir in data_dirs:
     if rit == size:
         rit = 0
     if rank == rit:
+        import pdb
+        pdb.set_trace()
         dir_it = int(data_dir.split('output_')[-1][:-1])
         print('Compressing output', dir_it, 'on rank', rit)
         subprocess.run('tar -cvzf output_'+("%05d" % dir_it)+'.tar.gz data/output_'+("%05d" % dir_it)+'/', shell=True)
