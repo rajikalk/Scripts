@@ -100,5 +100,11 @@ axs.flatten()[1].set_ylim(bottom=1.e-8)
 axs.flatten()[2].semilogy(particle_data['time'], particle_data['separation'])
 axs.flatten()[2].set_ylabel('Separation (AU)')
 axs.flatten()[2].set_xlabel('Time (yr)')
+res_limit = 2*3.15
+if 'Level_19' in path:
+    res_limit = 2*1.57
+if 'Level_20' in path:
+    res_limit = 2*0.79
+axs.flatten()[2].axhline(y=res_limit)
 axs.flatten()[2].set_xlim([particle_data['time'][0], particle_data['time'][-1]])
 plt.savefig('progress_plot.png')
