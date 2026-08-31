@@ -107,4 +107,9 @@ if 'Level_20' in path:
     res_limit = 2*0.79
 axs.flatten()[2].axhline(y=res_limit, ls=':')
 axs.flatten()[2].set_xlim([particle_data['time'][0], particle_data['time'][-1]])
-plt.savefig('progress_plot.png')
+figname= "Sink_"+str(sink_ind)
+if 'Level' in path:
+    level_it = path.split('Level_')[-1].split('/')[0]
+    figname = figname + "_Level_" + str(level_it)
+figname = figname + '_progress_plot.png'
+plt.savefig(figname)
