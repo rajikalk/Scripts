@@ -62,6 +62,11 @@ except:
     
 
 event_it = args.event_identifier
+start_time = time_bounds[event_it -1][0]
+end_time = time_bounds[event_it -1][1]
+if event_it == 4 and os.getcwd().split('/')[-1] == 'End_7340':
+    end_burst = 7340
+    end_time = 7340
 units_override = {"length_unit":(4.0,"pc"), "velocity_unit":(0.18, "km/s"), "time_unit":(685706129102738.9, "s"), "mass_unit":(2998,"Msun")}
 mym.set_units(units_override)
 
