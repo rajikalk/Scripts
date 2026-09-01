@@ -5,21 +5,17 @@ import argparse
 import numpy as np
 import pickle
 import my_ramses_module as mym
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
-import matplotlib.patheffects as path_effects
-import matplotlib.gridspec as gridspec
 import os
-import subprocess
 import yt
 import my_ramses_fields_short as myf
-import matplotlib.patches as mpatches
+import gc
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument("-ax", "--axis", default='xy', type=str)
+parser.add_argument("-sph_rad", "--measuring_sphere_radius", )
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -109,7 +105,27 @@ sink_id = 45
 
 for file in files:
     ds = yt.load(file, units_override=units_override)
+    
+    sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
+    
+    #Get sink position
     sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+    sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+    sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+    sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+    
+    #Cet sink velocity
+    sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+    sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+    sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+    sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
+    
+    #Define measuring sphere:
+    
+    
+    
+    
+
     import pdb
     pdb.set_trace()
     
