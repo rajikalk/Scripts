@@ -75,32 +75,34 @@ plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
             
 plt.title("Burst event "+str(event_it), y=0.8)
-import pdb
-pdb.set_trace()
 start_ind = np.argmin(abs(particle_data['time']-start_time))
 end_ind = np.argmin(abs(particle_data['time']-end_time))
 #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-lns1 = axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
-axes_1_twin = axes_1.twinx()
+lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
+axes_1_twin = plt.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns = lns1+lns2
 labs = [l.get_label() for l in lns]
-axes_1.legend(lns, labs, loc='upper left')
+plt.legend(lns, labs, loc='upper left')
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-axes_1.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-axes_1.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+plt.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
+plt.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
-axes_1.tick_params(axis='x', which='major', direction='in', color='k', top=True)
-axes_1.tick_params(axis='y', which='major', direction='in', color='k', right=True)
-axes_1.xaxis.label.set_color('black')
-axes_1.yaxis.label.set_color('black')
-axes_1.tick_params(axis='both', labelsize=font_size)
-axes_1.set_xlim([start_time, end_time])
-axes_1.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
+plt.tick_params(axis='x', which='major', direction='in', color='k', top=True)
+plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
+plt.xaxis.label.set_color('black')
+plt.yaxis.label.set_color('black')
+plt.tick_params(axis='both', labelsize=font_size)
+plt.set_xlim([start_time, end_time])
+plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
-plt.savefig("Burst_Event_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+plt.savefig("BHL_Event_"+str(event_it)+"_"+args.axis+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+
+import pdb
+pdb.set_trace()
+sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
 
 plot_it = -1
 for plot_time in plot_times:
@@ -286,5 +288,5 @@ for plot_time in plot_times:
 
     ax.set_xlabel('$'+args.axis[0]+'$ (AU)', fontsize=font_size, labelpad=-1)
         
-    plt.savefig("Burst_Event_"+str(event_it)+"_"+args.axis+"_mosaic.pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("BHL_Event_"+str(event_it)+"_"+args.axis+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('saving figure after plotting time', plot_time)
