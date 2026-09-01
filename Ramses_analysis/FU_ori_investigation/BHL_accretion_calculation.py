@@ -87,8 +87,8 @@ plt.legend(lns, labs, loc='upper left')
             
 #Plot accretion and separation. This should be loaded from a pickle
 
-plt.set_xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-plt.set_ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
+plt.xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
+plt.ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
 axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
 plt.tick_params(axis='x', which='major', direction='in', color='k', top=True)
 plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
