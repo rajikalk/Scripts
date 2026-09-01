@@ -95,7 +95,7 @@ plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
 plt.xaxis.label.set_color('black')
 plt.yaxis.label.set_color('black')
 plt.tick_params(axis='both', labelsize=font_size)
-plt.set_xlim([start_time, end_time])
+plt.xlim([start_time, end_time])
 plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
 plt.savefig("BHL_Event_"+str(event_it)+"_"+args.axis+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
