@@ -156,10 +156,15 @@ for file in files:
     sph_vely = np.mean(ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s'))
     sph_velz = np.mean(ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s'))
     bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
+    del sph_velx, sph_vely, sph_velz
+    gc.collect
     rel_vel = bulk_velocity - sink_vel
     rel_speed = np.sqrt(np.sum(rel_vel**2))
+    del rel_vel
+    gc.collect
     
-    sound_speed = ds.r["gas", "sound_speed"][sphere_inds].in_units('km/s')
+    sound_speed = ds.r["gas", "Gamma"][sphere_inds] * 
+    
 
     import pdb
     pdb.set_trace()
