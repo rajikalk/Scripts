@@ -52,7 +52,7 @@ def _Pressure(field,data):
     del pressure_unit
     return pressure_arr
 
-yt.add_field("Pressure", function=_Pressure, units=r"g/cm*s**2", sampling_type="local", force_override=True)
+yt.add_field("Pressure", function=_Pressure, units=r"g/cm/s**2", sampling_type="local", force_override=True)
 
 def _Gamma(field,data):
     """

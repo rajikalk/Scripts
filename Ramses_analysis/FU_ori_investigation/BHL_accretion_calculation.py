@@ -163,7 +163,7 @@ for file in files:
     del rel_vel
     gc.collect
     
-    sound_speed = ds.r["gas", "Gamma"][sphere_inds]
+    sound_speed = np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds])
     
 
     import pdb
