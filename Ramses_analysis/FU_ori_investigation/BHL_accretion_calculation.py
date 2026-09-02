@@ -189,6 +189,7 @@ if len(files)>0:
         file_open = open('BHL_accretion.pkl', 'wb')
         pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
         file_open.close()
+        print("Calculated BHL for file", file)
         
 
 lns3 = plt.fill_between(time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high, color='g', alpha=0.5, label="BHL prediction")
