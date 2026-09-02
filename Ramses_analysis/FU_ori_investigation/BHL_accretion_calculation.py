@@ -104,8 +104,7 @@ if os.path.exists('BHL_accretion.pkl'):
     time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high = pickle.load(file_open)
     file_open.close()
     if len(time_arr) != len(files):
-        import pdb
-        pdb.set_trace()
+        files = files[len(time_arr):]
 else:
     time_arr = np.array([])
     BHL_Acc_acc_low = np.array([])
