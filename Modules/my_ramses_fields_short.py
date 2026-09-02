@@ -47,7 +47,7 @@ def _Pressure(field,data):
     """
     pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
     pressure = data[('ramses', 'Pressure')].value*pressure_unit
-    pressure_arr = yt.YTArray(pressure, 'g/cm*s**2')
+    pressure_arr = yt.YTArray(pressure, 'g/cm/s**2')
     del pressure
     del pressure_unit
     return pressure_arr
