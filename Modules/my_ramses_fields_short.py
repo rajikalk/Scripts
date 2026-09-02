@@ -45,8 +45,6 @@ def _Pressure(field,data):
     """
     Overwrites pressure field
     """
-    import pdb
-    pdb.set_trace()
     pressure_unit = (data.ds.mass_unit/(data.ds.length_unit*data.ds.time_unit**2)).in_cgs()
     pressure = data[('ramses', 'Pressure')].value*pressure_unit
     pressure_arr = yt.YTArray(pressure, 'g/cm*s**2')
@@ -60,13 +58,11 @@ def _Gamma(field,data):
     """
     Derive gamma from density from the piecewise polytropic equation
     """
-    dense_bounds = [np.inf, 2.5e-16, 3.84e-13, 3.84e-8, 3.84e-3, 0]
+    dense_bounds = [0, 2.5e-16, 3.84e-13, 3.84e-8, 3.84e-3, np.inf]
     gamma_val = [1.0, 1.1, 1.4, 1.1, 5./3.]
     gamma = yt.YTArray(np.ones(np.shape(data[('gas', 'Density')])), '')
     for git in range(len(gamma_val)):
-        import pdb
-        pdb.set_trace()
-        update_inds = np.where((data[('gas', 'Density')].in_units('g/cm**3')<dense_bounds[git])&(data[('gas', 'Density')].in_units('g/cm**3')>dense_bounds[git+1]))[0]
+        update_inds = np.where((data[('gas', 'Density')].in_units('g/cm**3')>dense_bounds[git])&(data[('gas', 'Density')].in_units('g/cm**3')<dense_bounds[git+1]))[0]
         gamma[update_inds] = gamma_val[git]
     return gamma
 
