@@ -96,18 +96,21 @@ plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
 
 plt.savefig("BHL_Event_"+str(event_it)+"_"+args.axis+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
+del particle_data, counter, sink_ind
+gc.collect()
+
 sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
 files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))
 
 time_arr = np.array([])
 BHL_Acc_acc = np.array([])
 sink_id = 45
-sink_form_time = np.nan
+#sink_form_time = np.nan
 
 for file in files:
     ds = yt.load(file, units_override=units_override)
-    if np.isnan(sink_form_time):
-        sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+    #if np.isnan(sink_form_time):
+    #    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
     time_val = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
     np.append(time_arr, time_val)
     
