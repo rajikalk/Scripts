@@ -228,6 +228,10 @@ if rank == 0:
     time_arr = time_arr[sorted_inds]
     BHL_Acc_acc_low = BHL_Acc_acc_low[sorted_inds]
     BHL_Acc_acc_high = BHL_Acc_acc_high[sorted_inds]
+    
+    file_open = open('BHL_accretion.pkl', 'wb')
+    pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
+    file_open.close()
 
     lns3 = plt.fill_between(time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high, color='g', alpha=0.5, label="BHL prediction")
     lns = lns1+lns2+ln3
