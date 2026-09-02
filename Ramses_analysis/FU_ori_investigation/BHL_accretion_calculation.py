@@ -15,7 +15,7 @@ import gc
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument("-ax", "--axis", default='xy', type=str)
-parser.add_argument("-sph_rad", "--measuring_sphere_radius", )
+parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=5, type=float)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -102,9 +102,14 @@ files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))
 time_arr = np.array([])
 BHL_Acc_acc = np.array([])
 sink_id = 45
+sink_form_time = np.nan
 
 for file in files:
     ds = yt.load(file, units_override=units_override)
+    if np.isnan(sink_form_time):
+        sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+    time_val = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
+    np.append(time_arr, time_val)
     
     sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
     
@@ -113,18 +118,28 @@ for file in files:
     sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
     sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
     sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+    del sink_particle_posx, sink_particle_posy, sink_particle_posz
+    gc.collect()
     
     #Cet sink velocity
     sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
     sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
     sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
     sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
+    del sink_particle_velx, sink_particle_vely, sink_particle_velz
+    gc.collect()
     
     #Define measuring sphere:
+    radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
     
-    
-    
-    
+    #Get inds in measuring sphere
+    dd = ds.all_data()
+    dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
+    dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
+    dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
+    sep = np.sqrt(dx**2 + dy**2 + dz**2)
+    del dx, dy, dz
+    gc.collect()
 
     import pdb
     pdb.set_trace()
