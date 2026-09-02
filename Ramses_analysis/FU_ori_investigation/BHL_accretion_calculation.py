@@ -8,8 +8,10 @@ import my_ramses_module as mym
 import matplotlib.pyplot as plt
 import os
 import yt
+yt.enable_parallelism()
 import my_ramses_fields_short as myf
 import gc
+
 #-----------------------------------------------------
 
 parser = argparse.ArgumentParser()
