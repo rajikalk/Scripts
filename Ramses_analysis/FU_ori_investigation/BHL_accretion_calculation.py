@@ -111,10 +111,11 @@ for file in files:
     ds = yt.load(file, units_override=units_override)
     #if np.isnan(sink_form_time):
     #    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-    time_val = ds.current_time.in_units('yr') - sink_form_time.in_units('yr')
+    time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
     np.append(time_arr, time_val)
     
     sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
+    gc.collect()
     
     #Get sink position
     sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
@@ -124,7 +125,7 @@ for file in files:
     del sink_particle_posx, sink_particle_posy, sink_particle_posz
     gc.collect()
     
-    #Cet sink velocity
+    #get sink velocity
     sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
     sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
     sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
@@ -143,6 +144,22 @@ for file in files:
     sep = np.sqrt(dx**2 + dy**2 + dz**2)
     del dx, dy, dz
     gc.collect()
+    
+    sphere_inds = np.where(sep<radius)[0]
+    del sep
+    gc.collect()
+    
+    mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
+    
+    #Calculate bulk velocity of the sphere
+    sph_velx = np.mean(ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s'))
+    sph_vely = np.mean(ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s'))
+    sph_velz = np.mean(ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s'))
+    bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
+    rel_vel = bulk_velocity - sink_vel
+    rel_speed = np.sqrt(np.sum(rel_vel**2))
+    
+    sound_speed = ds.r["gas", "sound_speed"][sphere_inds].in_units('km/s')
 
     import pdb
     pdb.set_trace()

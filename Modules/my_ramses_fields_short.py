@@ -41,6 +41,20 @@ def _Density(field,data):
 
 yt.add_field("Density", function=_Density, units=r"g/cm**3", sampling_type="local", force_override=True)
 
+def _Gamma(field,data):
+    """
+    Derive gamma from density from the piecewise polytropic equation
+    """
+    dense_bounds = [np.inf, 2.5e-16, 3.84e-13, 3.84e-8, 3.84e-3, 0]
+    gamma_val = [1.0, 1.1, 1.4, 1.1, 5./3.]
+    gamma = yt.YTArray(np.ones(np.shape(data[('gas', 'Density')])), '')
+    for git in range(len(gamma_val)):
+        update_inds = np.where((data[('gas', 'Density')].in_units('g/cm**3')<dense_bounds[git])&(data[('gas', 'Density')].in_units('g/cm**3')>dense_bounds[git+1]))[0]
+        gamma[update_inds] = gamma_val[git]
+    return gamma
+
+yt.add_field("Gamma", function=_Gamma, units=r"", sampling_type="local", force_override=True)
+
 def _cell_mass(field,data):
     """
     Overwrites cell mass field
