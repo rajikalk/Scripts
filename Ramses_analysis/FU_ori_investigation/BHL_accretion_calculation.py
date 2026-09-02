@@ -54,6 +54,7 @@ try:
     particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
     file_open.close()
     print("finished reading in pickle")
+    sys.stdout.flush()
 except:
     sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
     print("read pickle", sink_pickle)
@@ -61,6 +62,7 @@ except:
     particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
     file_open.close()
     print("finished reading in pickle")
+    sys.stdout.flush()
     
 if rank != 0:
     del particle_data, counter
@@ -134,6 +136,8 @@ if len(files)>0:
         if rit == size:
             rit = 0
         if rank == rit:
+            print('Reading file', file, 'on rank', rank)
+            sys.stdout.flush()
             ds = yt.load(file, units_override=units_override)
             #if np.isnan(sink_form_time):
             #    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
@@ -142,6 +146,8 @@ if len(files)>0:
             
             sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
             gc.collect()
+            print('Got particle mass on rank', rank)
+            sys.stdout.flush()
             
             #Get sink position
             sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
@@ -150,6 +156,8 @@ if len(files)>0:
             sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
             del sink_particle_posx, sink_particle_posy, sink_particle_posz
             gc.collect()
+            print('Got particle position on rank', rank)
+            sys.stdout.flush()
             
             #get sink velocity
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
@@ -158,6 +166,8 @@ if len(files)>0:
             sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
             del sink_particle_velx, sink_particle_vely, sink_particle_velz
             gc.collect()
+            print('Got particle velocity on rank', rank)
+            sys.stdout.flush()
             
             #Define measuring sphere:
             radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
@@ -170,6 +180,8 @@ if len(files)>0:
             sep = np.sqrt(dx**2 + dy**2 + dz**2)
             del dx, dy, dz
             gc.collect()
+            print('Got indexes of cells in measuring sphere on rank', rank)
+            sys.stdout.flush()
             
             sphere_inds = np.where(sep<radius)[0]
             del sep
@@ -188,8 +200,12 @@ if len(files)>0:
             rel_speed = np.sqrt(np.sum(rel_vel**2))
             del rel_vel
             gc.collect
+            print('calculated mean density and relative speed on rank', rank)
+            sys.stdout.flush()
             
             sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+            print('calculated sound speed on rank', rank)
+            sys.stdout.flush()
             
             alpha = yt.YTArray([1, 2], '')
             BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
@@ -203,14 +219,16 @@ if len(files)>0:
             gc.collect
             BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
             BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
+            print('calculated BHL accretion on rank', rank)
+            sys.stdout.flush()
 
             #Save BHL Calculation
             file_open = open('BHL_accretion_'+str(rank)+'.pkl', 'wb')
             pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
             file_open.close()
             print("RANK "+str(rank)+": Calculated BHL for file", file)
+            sys.stdout.flush()
         
-sys.stdout.flush()
 CW.Barrier()
 
 if rank == 0:
