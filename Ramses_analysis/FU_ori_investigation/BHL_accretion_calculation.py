@@ -106,9 +106,9 @@ if len(files)>0:
     para_div = 4
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):
         proj_root_rank = int(rank/(size/para_div))
-        print('Reading file', file, 'on rank', rank)
+        print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
-        ds = yt.load(file, units_override=units_override)
+        ds = yt.load(fn, units_override=units_override)
         #if np.isnan(sink_form_time):
         #    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
