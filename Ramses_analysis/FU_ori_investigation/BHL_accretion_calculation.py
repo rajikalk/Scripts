@@ -229,7 +229,7 @@ if len(files)>0:
             print("RANK "+str(rank)+": Calculated BHL for file", file)
             sys.stdout.flush()
 
-print('Finished BHL Calculation on ')
+print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
 
 if rank == 0:
