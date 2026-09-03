@@ -93,6 +93,7 @@ else:
     BHL_Acc_acc_low = np.array([])
     BHL_Acc_acc_high = np.array([])
 sink_id = 45
+sink_form_time = np.nan
 
 sys.stdout.flush()
 CW.Barrier()
