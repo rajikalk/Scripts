@@ -109,8 +109,8 @@ if len(files)>0:
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
         ds = yt.load(fn, units_override=units_override)
-        #if np.isnan(sink_form_time):
-        #    sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+        if np.isnan(sink_form_time):
+            sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
         time_arr = np.append(time_arr, time_val)
         
