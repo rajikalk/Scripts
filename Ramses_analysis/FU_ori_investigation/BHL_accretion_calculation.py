@@ -228,7 +228,8 @@ if len(files)>0:
             file_open.close()
             print("RANK "+str(rank)+": Calculated BHL for file", file)
             sys.stdout.flush()
-        
+
+print('Finished BHL Calculation on ')
 CW.Barrier()
 
 if rank == 0:
@@ -256,3 +257,6 @@ if rank == 0:
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
     plt.savefig("BHL_Event_"+str(event_it)+"_"+args.axis+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    print('Saved figure with BHL Accretion')
+    sys.stdout.flush()
+    
