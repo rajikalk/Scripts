@@ -197,7 +197,7 @@ if len(files)>0:
         file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
         pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
         file_open.close()
-        print("RANK "+str(rank)+": Calculated BHL for file", file)
+        print("RANK "+str(rank)+": Calculated BHL for file", fn)
         sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
