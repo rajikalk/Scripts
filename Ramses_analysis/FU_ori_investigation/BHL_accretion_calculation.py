@@ -102,6 +102,9 @@ CW.Barrier()
 
 sys.stdout.flush()
 CW.Barrier()
+if size==1:
+    import pdb
+    pdb.set_trace()
 
 if len(files)>0:
     para_div = 4
