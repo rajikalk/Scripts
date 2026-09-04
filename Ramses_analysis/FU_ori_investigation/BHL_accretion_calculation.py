@@ -273,8 +273,6 @@ if rank == 0:
     #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
 
     BHL_mean = (BHL_Acc_acc_low+BHL_Acc_acc_high)/2
-    lns3 = plt.semilogy(time_arr, BHL_mean, color='g', ls=':', label="BHL_mean")
-    plt.fill_between(time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high, color='g', alpha=0.5, label="BHL prediction")
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
