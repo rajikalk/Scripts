@@ -75,8 +75,8 @@ elif os.path.exists('BHL_accretion_0.pkl'):
     time_arr = np.array([])
     BHL_Acc_acc_low = np.array([])
     BHL_Acc_acc_high = np.array([])
-    for rit in range(pickle_files):
-        file_open = open('BHL_accretion_'+str(rit)+'.pkl', 'rb')
+    for pickle_file in pickle_files:
+        file_open = open(pickle_file, 'rb')
         time_arr_r, BHL_Acc_acc_low_r, BHL_Acc_acc_high_r = pickle.load(file_open)
         file_open.close()
         time_arr = np.append(time_arr,time_arr_r)
