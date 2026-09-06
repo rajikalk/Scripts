@@ -267,7 +267,7 @@ if rank == 0:
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("BHL_Event_"+str(event_it)+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
 
     #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
@@ -276,7 +276,7 @@ if rank == 0:
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("BHL_Event_"+str(event_it)+".png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     sys.stdout.flush()
     
