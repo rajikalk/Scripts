@@ -211,7 +211,7 @@ if len(files)>0:
         #ds.index.clear_all_data()
         
         #Save BHL Calculation
-        file_open = open('BHL_accretion_'+(proj_root_rank)+'.pkl', 'wb')
+        file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
         pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
         file_open.close()
         print("RANK "+str(rank)+": Calculated BHL for file", fn)
