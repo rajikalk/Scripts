@@ -121,7 +121,7 @@ if len(files)>0:
         if np.isnan(sink_form_time):
             sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-        time_arr = np.append(time_arr, time_val)
+        #time_arr = np.append(time_arr, time_val)
         sto.result_id = "Time"
         sto.result = time_val
         
@@ -198,8 +198,8 @@ if len(files)>0:
         BHL = (alpha * (BHL_top/BHL_bot)).in_units('msun/yr')
         del alpha, BHL_top, BHL_bot
         gc.collect
-        BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
-        BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
+        #BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
+        #BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
         sto.result_id = "BHL_Acc_acc_low"
         sto.result = BHL[0]
         sto.result_id = "BHL_Acc_acc_high"
