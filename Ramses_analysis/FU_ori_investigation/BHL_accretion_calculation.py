@@ -64,6 +64,7 @@ CW.Barrier()
 sim_data_dir = '/home/100/rlk100/gdata/RAMSES/Zoom-in_CPH_sims/Sink_45/Level_19/Level_20/Event_'+str(event_it)+'/data/'
 files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
 
+'''
 if os.path.exists('BHL_accretion.pkl'):
     file_open = open('BHL_accretion.pkl', 'rb')
     time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high = pickle.load(file_open)
@@ -92,6 +93,7 @@ else:
     time_arr = np.array([])
     BHL_Acc_acc_low = np.array([])
     BHL_Acc_acc_high = np.array([])
+'''
 sink_id = 45
 sink_form_time = np.nan
 
@@ -114,11 +116,14 @@ if len(files)>0:
         try:
             ds = yt.load(fn, units_override=units_override)
     '''
-    for ds in ts.piter():
+    my_storage = {}
+    for sto, ds in ts.piter(storage=my_storage):
         if np.isnan(sink_form_time):
             sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
         time_arr = np.append(time_arr, time_val)
+        sto.result_id = "Time"
+        sto.result = time_val
         
         sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
         gc.collect()
@@ -195,20 +200,27 @@ if len(files)>0:
         gc.collect
         BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
         BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
+        sto.result_id = "BHL_Acc_acc_low"
+        sto.result = BHL[0]
+        sto.result_id = "BHL_Acc_acc_high"
+        sto.result = BHL[1]
         print('calculated BHL accretion on rank', rank)
         sys.stdout.flush()
 
+        '''
         #Save BHL Calculation
         file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
         pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
         file_open.close()
         print("RANK "+str(rank)+": Calculated BHL for file", fn)
         sys.stdout.flush()
+        '''
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
 
 if rank == 0:
+    '''
     pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
     time_arr = np.array([])
     BHL_Acc_acc_low = np.array([])
@@ -224,6 +236,11 @@ if rank == 0:
     time_arr = time_arr[sorted_inds]
     BHL_Acc_acc_low = BHL_Acc_acc_low[sorted_inds]
     BHL_Acc_acc_high = BHL_Acc_acc_high[sorted_inds]
+    '''
+    
+    time_arr = storage["Time"]
+    BHL_Acc_acc_low = storage["BHL_Acc_acc_low"]
+    BHL_Acc_acc_high = storage["BHL_Acc_acc_high"]
     
     file_open = open('BHL_accretion.pkl', 'wb')
     pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
