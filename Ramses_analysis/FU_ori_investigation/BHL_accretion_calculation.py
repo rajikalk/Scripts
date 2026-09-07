@@ -204,10 +204,11 @@ print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
 
 if rank == 0:
+    pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
     time_arr = np.array([])
     BHL_Acc_acc_low = np.array([])
     BHL_Acc_acc_high = np.array([])
-    for rit in range(size):
+    for pickle_file in pickle_files:
         file_open = open('BHL_accretion_'+str(rit)+'.pkl', 'rb')
         time_arr_r, BHL_Acc_acc_low_r, BHL_Acc_acc_high_r = pickle.load(file_open)
         file_open.close()
