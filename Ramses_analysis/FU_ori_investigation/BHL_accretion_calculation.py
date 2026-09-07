@@ -218,7 +218,7 @@ if len(files)>0:
             sys.stdout.flush()
             
         except:
-            print(ds, "seems to be missing data")
+            print(fn, "seems to be missing data")
 
 
 print('Finished BHL Calculation on rank', rank)
