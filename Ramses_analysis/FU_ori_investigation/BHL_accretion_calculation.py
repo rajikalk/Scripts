@@ -185,7 +185,7 @@ if len(files)>0:
             sys.stdout.flush()
             
             sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
-            print('calculated sound speed on rank', rank, ' for fn', fn)
+            print('calculated sound speed on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             
             alpha = yt.YTArray([1, 2], '')
