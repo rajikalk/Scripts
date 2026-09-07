@@ -204,8 +204,6 @@ if len(files)>0:
         file_open.close()
         print("RANK "+str(rank)+": Calculated BHL for file", fn)
         sys.stdout.flush()
-    except:
-        print(fn, "seems to be missing some data")
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
