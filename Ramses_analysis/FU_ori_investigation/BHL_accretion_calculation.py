@@ -212,7 +212,7 @@ if len(files)>0:
             
             #Save BHL Calculation
             file_open = open('BHL_accretion_'+(proj_root_rank)+'.pkl', 'wb')
-            pickle.dump((storage["Time"], storage["BHL_Acc_acc_low"], storage["BHL_Acc_acc_high"]), file_open)
+            pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             file_open.close()
             print("RANK "+str(rank)+": Calculated BHL for file", fn)
             sys.stdout.flush()
@@ -243,9 +243,9 @@ if rank == 0:
     BHL_Acc_acc_high = BHL_Acc_acc_high[sorted_inds]
     '''
     
-    time_arr = storage["Time"]
-    BHL_Acc_acc_low = storage["BHL_Acc_acc_low"]
-    BHL_Acc_acc_high = storage["BHL_Acc_acc_high"]
+    time_arr = my_storage["Time"]
+    BHL_Acc_acc_low = my_storage["BHL_Acc_acc_low"]
+    BHL_Acc_acc_high = my_storage["BHL_Acc_acc_high"]
     
     file_open = open('BHL_accretion.pkl', 'wb')
     pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
