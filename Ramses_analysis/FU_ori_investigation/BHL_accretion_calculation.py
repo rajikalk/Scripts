@@ -109,96 +109,99 @@ if len(files)>0:
         proj_root_rank = int(rank/(size/para_div))
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
-        ds = yt.load(fn, units_override=units_override)
-        if np.isnan(sink_form_time):
-            sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-        time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-        time_arr = np.append(time_arr, time_val)
-        
-        sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
-        gc.collect()
-        print('Got particle mass on rank', rank)
-        sys.stdout.flush()
-        
-        #Get sink position
-        sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
-        sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
-        sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
-        sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
-        del sink_particle_posx, sink_particle_posy, sink_particle_posz
-        gc.collect()
-        print('Got particle position on rank', rank)
-        sys.stdout.flush()
-        
-        #get sink velocity
-        sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
-        sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
-        sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
-        sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
-        del sink_particle_velx, sink_particle_vely, sink_particle_velz
-        gc.collect()
-        print('Got particle velocity on rank', rank)
-        sys.stdout.flush()
-        
-        #Define measuring sphere:
-        radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
-        
-        #Get inds in measuring sphere
-        dd = ds.all_data()
-        dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
-        dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
-        dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-        sep = np.sqrt(dx**2 + dy**2 + dz**2)
-        del dx, dy, dz
-        gc.collect()
-        print('Got indexes of cells in measuring sphere on rank', rank)
-        sys.stdout.flush()
-        
-        sphere_inds = np.where(sep<radius)[0]
-        del sep
-        gc.collect()
-        
-        mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
-        
-        #Calculate bulk velocity of the sphere
-        sph_velx = np.mean(ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s'))
-        sph_vely = np.mean(ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s'))
-        sph_velz = np.mean(ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s'))
-        bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
-        del sph_velx, sph_vely, sph_velz
-        gc.collect
-        rel_vel = bulk_velocity - sink_vel
-        rel_speed = np.sqrt(np.sum(rel_vel**2))
-        del rel_vel
-        gc.collect
-        print('calculated mean density and relative speed on rank', rank)
-        sys.stdout.flush()
-        
-        sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
-        print('calculated sound speed on rank', rank)
-        sys.stdout.flush()
-        
-        alpha = yt.YTArray([1, 2], '')
-        BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
-        del sink_mass, mean_density
-        gc.collect
-        BHL_bot = (rel_speed.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
-        del rel_speed, sound_speed
-        gc.collect
-        BHL = (alpha * (BHL_top/BHL_bot)).in_units('msun/yr')
-        del alpha, BHL_top, BHL_bot
-        gc.collect
-        BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
-        BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
-        print('calculated BHL accretion on rank', rank)
-        sys.stdout.flush()
+        try:
+            ds = yt.load(fn, units_override=units_override)
+            if np.isnan(sink_form_time):
+                sink_form_time = ds.r["sink_particle_form_time"][sink_id]
+            time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
+            time_arr = np.append(time_arr, time_val)
+            
+            sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
+            gc.collect()
+            print('Got particle mass on rank', rank)
+            sys.stdout.flush()
+            
+            #Get sink position
+            sink_particle_posx = ds.r["gas", "sink_particle_posx"][sink_id]
+            sink_particle_posy = ds.r["gas", "sink_particle_posy"][sink_id]
+            sink_particle_posz = ds.r["gas", "sink_particle_posz"][sink_id]
+            sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
+            del sink_particle_posx, sink_particle_posy, sink_particle_posz
+            gc.collect()
+            print('Got particle position on rank', rank)
+            sys.stdout.flush()
+            
+            #get sink velocity
+            sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
+            sink_particle_vely = ds.r["gas", "sink_particle_vely"][sink_id]
+            sink_particle_velz = ds.r["gas", "sink_particle_velz"][sink_id]
+            sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
+            del sink_particle_velx, sink_particle_vely, sink_particle_velz
+            gc.collect()
+            print('Got particle velocity on rank', rank)
+            sys.stdout.flush()
+            
+            #Define measuring sphere:
+            radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
+            
+            #Get inds in measuring sphere
+            dd = ds.all_data()
+            dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
+            dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
+            dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
+            sep = np.sqrt(dx**2 + dy**2 + dz**2)
+            del dx, dy, dz
+            gc.collect()
+            print('Got indexes of cells in measuring sphere on rank', rank)
+            sys.stdout.flush()
+            
+            sphere_inds = np.where(sep<radius)[0]
+            del sep
+            gc.collect()
+            
+            mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
+            
+            #Calculate bulk velocity of the sphere
+            sph_velx = np.mean(ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s'))
+            sph_vely = np.mean(ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s'))
+            sph_velz = np.mean(ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s'))
+            bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
+            del sph_velx, sph_vely, sph_velz
+            gc.collect
+            rel_vel = bulk_velocity - sink_vel
+            rel_speed = np.sqrt(np.sum(rel_vel**2))
+            del rel_vel
+            gc.collect
+            print('calculated mean density and relative speed on rank', rank)
+            sys.stdout.flush()
+            
+            sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
+            print('calculated sound speed on rank', rank)
+            sys.stdout.flush()
+            
+            alpha = yt.YTArray([1, 2], '')
+            BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
+            del sink_mass, mean_density
+            gc.collect
+            BHL_bot = (rel_speed.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
+            del rel_speed, sound_speed
+            gc.collect
+            BHL = (alpha * (BHL_top/BHL_bot)).in_units('msun/yr')
+            del alpha, BHL_top, BHL_bot
+            gc.collect
+            BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
+            BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
+            print('calculated BHL accretion on rank', rank)
+            sys.stdout.flush()
 
-        #Save BHL Calculation
-        file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
-        pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
-        file_open.close()
-        print("RANK "+str(rank)+": Calculated BHL for file", fn)
-        sys.stdout.flush()
+            #Save BHL Calculation
+            file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
+            pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
+            file_open.close()
+            print("RANK "+str(rank)+": Calculated BHL for file", fn)
+            sys.stdout.flush()
+        except:
+            print(fn, "seems to be missing some data")
 
 print('Finished BHL Calculation on rank', rank)
 CW.Barrier()
