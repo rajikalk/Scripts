@@ -208,7 +208,7 @@ if len(files)>0:
         print('calculated BHL accretion on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
-        ds.index.clear_all_data()
+        #ds.index.clear_all_data()
         
         #Save BHL Calculation
         file_open = open('BHL_accretion_'+(proj_root_rank)+'.pkl', 'wb')
