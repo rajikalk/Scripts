@@ -110,7 +110,7 @@ if len(files)>0:
     #'''
     para_div = 7
     my_storage = {}
-    for fn in yt.parallel_objects(files, njobs=int(size/para_div), storage=my_storage):
+    for sto, fn in yt.parallel_objects(files, njobs=int(size/para_div), storage=my_storage):
         proj_root_rank = int(rank/(size/para_div))
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
