@@ -209,7 +209,7 @@ if rank == 0:
     BHL_Acc_acc_low = np.array([])
     BHL_Acc_acc_high = np.array([])
     for pickle_file in pickle_files:
-        file_open = open('BHL_accretion_'+str(rit)+'.pkl', 'rb')
+        file_open = open(pickle_file, 'rb')
         time_arr_r, BHL_Acc_acc_low_r, BHL_Acc_acc_high_r = pickle.load(file_open)
         file_open.close()
         time_arr = np.append(time_arr,time_arr_r)
