@@ -127,7 +127,7 @@ if len(files)>0:
         
         sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
         gc.collect()
-        print('Got particle mass on rank', rank)
+        print('Got particle mass on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         #Get sink position
@@ -137,7 +137,7 @@ if len(files)>0:
         sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
         del sink_particle_posx, sink_particle_posy, sink_particle_posz
         gc.collect()
-        print('Got particle position on rank', rank)
+        print('Got particle position on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         #get sink velocity
@@ -147,7 +147,7 @@ if len(files)>0:
         sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
         del sink_particle_velx, sink_particle_vely, sink_particle_velz
         gc.collect()
-        print('Got particle velocity on rank', rank)
+        print('Got particle velocity on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         #Define measuring sphere:
@@ -161,7 +161,7 @@ if len(files)>0:
         sep = np.sqrt(dx**2 + dy**2 + dz**2)
         del dx, dy, dz
         gc.collect()
-        print('Got indexes of cells in measuring sphere on rank', rank)
+        print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         sphere_inds = np.where(sep<radius)[0]
@@ -181,11 +181,11 @@ if len(files)>0:
         rel_speed = np.sqrt(np.sum(rel_vel**2))
         del rel_vel
         gc.collect
-        print('calculated mean density and relative speed on rank', rank)
+        print('calculated mean density and relative speed on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         sound_speed = np.mean(np.sqrt((ds.r["gas", "Gamma"][sphere_inds]*ds.r["gas", "Pressure"][sphere_inds])/ds.r["gas", "Density"][sphere_inds]).in_units('km/s'))
-        print('calculated sound speed on rank', rank)
+        print('calculated sound speed on rank', rank, ' for fn', fn)
         sys.stdout.flush()
         
         alpha = yt.YTArray([1, 2], '')
@@ -204,7 +204,7 @@ if len(files)>0:
         sto.result = BHL[0]
         sto.result_id = "BHL_Acc_acc_high"
         sto.result = BHL[1]
-        print('calculated BHL accretion on rank', rank)
+        print('calculated BHL accretion on rank', rank, ' for fn', fn)
         sys.stdout.flush()
 
         '''
