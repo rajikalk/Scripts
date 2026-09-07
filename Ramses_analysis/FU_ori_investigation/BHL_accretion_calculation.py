@@ -104,8 +104,8 @@ sys.stdout.flush()
 CW.Barrier()
 
 if len(files)>0:
-    para_div = 4
-    for fn in yt.parallel_objects(files):
+    para_div = 7
+    for fn in yt.parallel_objects(files, njobs=size/para_div):
         proj_root_rank = int(rank/(size/para_div))
         print('Reading file', fn, 'on rank', rank)
         sys.stdout.flush()
