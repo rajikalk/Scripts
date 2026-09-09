@@ -165,7 +165,7 @@ if len(files)>0:
         print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
-        sphere_inds = np.where(sep=<radius)[0]
+        sphere_inds = np.where(sep<=radius)[0]
         del sep
         gc.collect()
         
