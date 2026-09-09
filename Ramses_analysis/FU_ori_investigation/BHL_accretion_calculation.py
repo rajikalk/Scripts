@@ -189,7 +189,7 @@ if len(files)>0:
         bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
         del sph_velx, sph_vely, sph_velz
         gc.collect
-        rel_vel = bulk_velocity[sphere_inds] - sink_vel
+        rel_vel = bulk_velocity - sink_vel
         import pdb
         pdb.set_trace()
         rel_speed = np.sqrt(np.sum(rel_vel**2))
