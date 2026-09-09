@@ -196,16 +196,25 @@ if len(files)>0:
         mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
         
         #Calculate bulk velocity of the sphere
-        sph_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
-        sph_vely = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s')
-        sph_velz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s')
-        sph_vel = yt.YTArray([sph_velx, sph_vely, sph_velz])
-        bulk_velocity = yt.YTArray([np.mean(sph_velx), np.mean(sph_vely), np.mean(sph_velz)])
+        sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
+        sph_dvy = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s') - sink_vel[1]
+        sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
+        sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
+        rel_vel = yt.YTArray([np.mean(sph_dvx), np.mean(sph_dvy), np.mean(sph_dvz)])
         del sph_velx, sph_vely, sph_velz
         gc.collect
-        rel_vel = bulk_velocity - sink_vel
         import pdb
         pdb.set_trace()
+        
+        #Calculate Tangential vel
+        proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
+        proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
+        proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
+        rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
+        rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
+        sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
+        tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
+        
         rel_speed = np.sqrt(np.sum(rel_vel**2))
         del rel_vel, bulk_velocity
         gc.collect
