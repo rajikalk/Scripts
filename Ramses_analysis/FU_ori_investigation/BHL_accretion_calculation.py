@@ -99,7 +99,7 @@ elif os.path.exists('BHL_accretion_0.pkl'):
     sorted_inds = np.argsort(save_dict["Time"])
     for key in save_dict.keys():
         save_dict[key] = save_dict[key][sorted_inds]
-    if len(time_arr) != len(files):
+    if len(save_dict["Time"]) != len(files):
         files = files[len(time_arr):]
 else:
     save_dict = {}
