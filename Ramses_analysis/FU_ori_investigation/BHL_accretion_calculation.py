@@ -78,32 +78,36 @@ files = sorted(glob.glob(sim_data_dir+"*/info*.txt"))#[::10]
 
 if os.path.exists('BHL_accretion.pkl'):
     file_open = open('BHL_accretion.pkl', 'rb')
-    time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high = pickle.load(file_open)
+    save_dict = pickle.load(file_open)
     file_open.close()
-    if len(time_arr) != len(files):
-        files = files[len(time_arr):]
+    if len(save_dict["Time"]) != len(files):
+        files = files[len(save_dict["Time"]):]
 elif os.path.exists('BHL_accretion_0.pkl'):
     pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
-    time_arr = np.array([])
-    BHL_Acc_acc_low = np.array([])
-    BHL_Acc_acc_high = np.array([])
+    save_dict = {}
+    save_dict.update({"Time": np.array([])})
+    save_dict.update({"BHL_Acc_acc_low": np.array([])})
+    save_dict.update({"BHL_Acc_acc_high": np.array([])})
+    save_dict.update({"Density": np.array([])})
+    save_dict.update({"Rel_kep": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
-        time_arr_r, BHL_Acc_acc_low_r, BHL_Acc_acc_high_r = pickle.load(file_open)
+        save_dict_r = pickle.load(file_open)
         file_open.close()
-        time_arr = np.append(time_arr,time_arr_r)
-        BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL_Acc_acc_low_r)
-        BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL_Acc_acc_high_r)
-    sorted_inds = np.argsort(time_arr)
-    time_arr = time_arr[sorted_inds]
-    BHL_Acc_acc_low = BHL_Acc_acc_low[sorted_inds]
-    BHL_Acc_acc_high = BHL_Acc_acc_high[sorted_inds]
+        for key in save_dict_r.keys():
+            save_dict[key] = np.append(save_dict[key],save_dict_r[key])
+    sorted_inds = np.argsort(save_dict["Time"])
+    for key in save_dict.keys():
+        save_dict[key] = save_dict[key][sorted_inds]
     if len(time_arr) != len(files):
         files = files[len(time_arr):]
 else:
-    time_arr = np.array([])
-    BHL_Acc_acc_low = np.array([])
-    BHL_Acc_acc_high = np.array([])
+    save_dict = {}
+    save_dict.update({"Time": np.array([])})
+    save_dict.update({"BHL_Acc_acc_low": np.array([])})
+    save_dict.update({"BHL_Acc_acc_high": np.array([])})
+    save_dict.update({"Density": np.array([])})
+    save_dict.update({"Rel_kep": np.array([])})
 
 sink_id = 45
 sink_form_time = np.nan
@@ -133,7 +137,7 @@ if len(files)>0:
         if np.isnan(sink_form_time):
             sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
-        time_arr = np.append(time_arr, time_val)
+        save_dict["Time"] = np.append(save_dict["Time"],time_val)
         #sto.result_id = "Time"
         #sto.result = time_val
         
@@ -172,8 +176,8 @@ if len(files)>0:
         dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
         sep_vector = yt.YTArray([dx, dy, dz])
         del dx, dy, dz, dd
-        sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
         gc.collect()
+        sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
         print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
@@ -191,9 +195,16 @@ if len(files)>0:
             enc_inds = np.where(radii<=radii[radi_it])[0]
             enc_mass = np.sum(gas_mass[enc_inds])
             enclosed_mass[radi_it] = enc_mass
+        del gas_mass
+        gc.collect()
+        enclosed_mass = enclosed_mass+sink_mass.in_units('g')
         keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
         
-        mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
+        density_array = ds.r["gas", "Density"][sphere_inds]
+        save_dict["Density"] = np.append(save_dict["Density"], density_array)
+        mean_density = np.mean(density_array)
+        del density_array
+        gc.collect()
         
         #Calculate bulk velocity of the sphere
         sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
@@ -201,23 +212,35 @@ if len(files)>0:
         sph_dvz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s') - sink_vel[2]
         sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
         rel_vel = yt.YTArray([np.mean(sph_dvx), np.mean(sph_dvy), np.mean(sph_dvz)])
-        del sph_velx, sph_vely, sph_velz
-        gc.collect
-        import pdb
-        pdb.set_trace()
+        del sph_dvx, sph_dvy, sph_dvz
+        gc.collect()
         
         #Calculate Tangential vel
         proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
         proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
         proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
+        del sep_vector
+        gc.collect()
         rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
+        del proj_v_x, proj_v_y, proj_v_z
+        gc.collect()
         rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
+        del rad_vel
+        gc.collect()
         sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
+        del sph_vel
+        gc.collect()
         tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
+        del sph_speed, rad_speed
+        gc.collect()
+        rel_kep = tang_vel/keplerian_velocity
+        save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], rel_kep)
+        del rel_kep
+        gc.collect()
         
         rel_speed = np.sqrt(np.sum(rel_vel**2))
-        del rel_vel, bulk_velocity
-        gc.collect
+        del rel_vel
+        gc.collect()
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
@@ -228,15 +251,15 @@ if len(files)>0:
         alpha = yt.YTArray([1, 2], '')
         BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
         del sink_mass, mean_density
-        gc.collect
+        gc.collect()
         BHL_bot = (rel_speed.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
         del rel_speed, sound_speed
-        gc.collect
+        gc.collect()
         BHL = (alpha * (BHL_top/BHL_bot)).in_units('msun/yr')
         del alpha, BHL_top, BHL_bot
-        gc.collect
-        BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL[0])
-        BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL[1])
+        gc.collect()
+        save_dict["BHL_Acc_acc_low"] = np.append(save_dict["BHL_Acc_acc_low"], BHL[0])
+        save_dict["BHL_Acc_acc_high"] = np.append(save_dict["BHL_Acc_acc_high"], BHL[1])
         #sto.result_id = "BHL_Acc_acc_low"
         #sto.result = BHL[0]
         #sto.result_id = "BHL_Acc_acc_high"
@@ -249,7 +272,7 @@ if len(files)>0:
         #Save BHL Calculation
         file_open = open('BHL_accretion_'+str(proj_root_rank)+'.pkl', 'wb')
         #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
-        pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
+        pickle.dump((save_dict), file_open)
         file_open.close()
         print("RANK "+str(rank)+": Calculated BHL for file", fn)
         sys.stdout.flush()
@@ -263,28 +286,24 @@ CW.Barrier()
 
 if rank == 0:
     pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
-    time_arr = np.array([])
-    BHL_Acc_acc_low = np.array([])
-    BHL_Acc_acc_high = np.array([])
+    save_dict = {}
+    save_dict.update({"Time": np.array([])})
+    save_dict.update({"BHL_Acc_acc_low": np.array([])})
+    save_dict.update({"BHL_Acc_acc_high": np.array([])})
+    save_dict.update({"Density": np.array([])})
+    save_dict.update({"Rel_kep": np.array([])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
-        time_arr_r, BHL_Acc_acc_low_r, BHL_Acc_acc_high_r = pickle.load(file_open)
+        save_dict_r = pickle.load(file_open)
         file_open.close()
-        time_arr = np.append(time_arr,time_arr_r)
-        BHL_Acc_acc_low = np.append(BHL_Acc_acc_low, BHL_Acc_acc_low_r)
-        BHL_Acc_acc_high = np.append(BHL_Acc_acc_high, BHL_Acc_acc_high_r)
-    sorted_inds = np.argsort(time_arr)
-    time_arr = time_arr[sorted_inds]
-    BHL_Acc_acc_low = BHL_Acc_acc_low[sorted_inds]
-    BHL_Acc_acc_high = BHL_Acc_acc_high[sorted_inds]
-    '''
-    
-    time_arr = my_storage["Time"]
-    BHL_Acc_acc_low = my_storage["BHL_Acc_acc_low"]
-    BHL_Acc_acc_high = my_storage["BHL_Acc_acc_high"]
-    '''
+        for key in save_dict_r.keys():
+            save_dict[key] = np.append(save_dict[key],save_dict_r[key])
+    sorted_inds = np.argsort(save_dict["Time"])
+    for key in save_dict.keys():
+        save_dict[key] = save_dict[key][sorted_inds]
+        
     file_open = open('BHL_accretion.pkl', 'wb')
-    pickle.dump((time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high), file_open)
+    pickle.dump((save_dict), file_open)
     file_open.close()
     
     try:
@@ -311,9 +330,9 @@ if rank == 0:
     end_ind = np.argmin(abs(particle_data['time']-end_time))
     #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
     lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
-    BHL_mean = (BHL_Acc_acc_low+BHL_Acc_acc_high)/2
-    lns3 = plt.semilogy(time_arr, BHL_mean, color='g', ls=':', label="BHL_mean")
-    plt.fill_between(time_arr, BHL_Acc_acc_low, BHL_Acc_acc_high, color='g', alpha=0.5, label="BHL prediction")
+    BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
+    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color='g', ls=':', label="BHL_mean")
+    plt.fill_between(time_arr, save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color='g', alpha=0.5, label="BHL prediction")
     axes_1_twin = plt.twinx()
     lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
     #Plot accretion and separation. This should be loaded from a pickle
@@ -335,8 +354,6 @@ if rank == 0:
     print('Saved figure with BHL Accretion')
 
     #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
-
-    BHL_mean = (BHL_Acc_acc_low+BHL_Acc_acc_high)/2
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
