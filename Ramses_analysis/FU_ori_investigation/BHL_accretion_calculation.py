@@ -22,7 +22,7 @@ if rank == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument("-ax", "--axis", default='xy', type=str)
-parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=5, type=float)
+parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=6, type=float)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
@@ -165,9 +165,13 @@ if len(files)>0:
         print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
-        sphere_inds = np.where(sep<radius)[0]
+        sphere_inds = np.where(sep=<radius)[0]
         del sep
         gc.collect()
+        
+        #Calculate Keplerian velocity
+        import pdb
+        pdb.set_trace()
         
         mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
         
