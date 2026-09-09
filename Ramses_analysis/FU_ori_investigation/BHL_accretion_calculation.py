@@ -159,14 +159,16 @@ if len(files)>0:
         dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
         dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
         dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-        sep = np.sqrt(dx**2 + dy**2 + dz**2)
+        sep_vector = yt.YTArray([dx, dy, dz])
         del dx, dy, dz, dd
+        sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
         gc.collect()
         print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
         #Get indices in measure sphere
         sphere_inds = np.where(sep<=radius)[0]
+        sep_vector = sep_vector[sphere_inds]
         
         #Calcualte keplerian velocity
         radii = sep[sphere_inds]
@@ -183,10 +185,10 @@ if len(files)>0:
         mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
         
         #Calculate bulk velocity of the sphere
-        sph_velx = np.mean(ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s'))
-        sph_vely = np.mean(ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s'))
-        sph_velz = np.mean(ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s'))
-        bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
+        sph_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
+        sph_vely = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s')
+        sph_velz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s')
+        bulk_velocity = yt.YTArray([np.mean(sph_velx), np.mean(sph_vely), np.mean(sph_velz)])
         del sph_velx, sph_vely, sph_velz
         gc.collect
         rel_vel = bulk_velocity - sink_vel
