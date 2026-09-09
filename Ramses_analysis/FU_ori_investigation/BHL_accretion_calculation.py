@@ -13,6 +13,17 @@ import my_ramses_fields_short as myf
 import gc
 from mpi4py.MPI import COMM_WORLD as CW
 
+def projected_vector(vector, proj_vector):
+    """
+    Calculates the position of vector projected onto proj_vector
+    """
+    vector_units = vector.units
+    proj_v_x = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[0]
+    proj_v_y = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[1]
+    proj_v_z = (np.dot(vector, proj_vector)/np.dot(proj_vector,proj_vector))*proj_vector[2]
+    proj_v = yt.YTArray(np.array([proj_v_x,proj_v_y,proj_v_z]).T, vector_units)
+    return proj_v
+
 #-----------------------------------------------------
 rank = CW.Get_rank()
 size = CW.Get_size()
@@ -168,7 +179,7 @@ if len(files)>0:
         
         #Get indices in measure sphere
         sphere_inds = np.where(sep<=radius)[0]
-        sep_vector = sep_vector[sphere_inds]
+        sep_vector = sep_vector.T[sphere_inds].T
         
         #Calcualte keplerian velocity
         radii = sep[sphere_inds]
@@ -188,6 +199,7 @@ if len(files)>0:
         sph_velx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s')
         sph_vely = ds.r["ramses", "y-velocity"][sphere_inds].in_units('km/s')
         sph_velz = ds.r["ramses", "z-velocity"][sphere_inds].in_units('km/s')
+        sph_vel = yt.YTArray([sph_velx, sph_vely, sph_velz])
         bulk_velocity = yt.YTArray([np.mean(sph_velx), np.mean(sph_vely), np.mean(sph_velz)])
         del sph_velx, sph_vely, sph_velz
         gc.collect
