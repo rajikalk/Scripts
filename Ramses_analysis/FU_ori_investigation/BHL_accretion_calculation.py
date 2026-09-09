@@ -160,18 +160,25 @@ if len(files)>0:
         dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
         dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
         sep = np.sqrt(dx**2 + dy**2 + dz**2)
-        del dx, dy, dz
+        del dx, dy, dz, dd
         gc.collect()
         print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
+        #Get indices in measure sphere
         sphere_inds = np.where(sep<=radius)[0]
+        
+        #Calcualte keplerian velocity
+        radii = sep[sphere_inds]
         del sep
         gc.collect()
-        
-        #Calculate Keplerian velocity
-        import pdb
-        pdb.set_trace()
+        gas_mass = ds.r["gas", "mass"][sphere_inds]
+        enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
+        for radi_it in range(len(radii)):
+            enc_inds = np.where(radii<=radii[radi_it])[0]
+            enc_mass = np.sum(gas_mass[enc_inds])
+            enclosed_mass[radi_it] = enc_mass
+        keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
         
         mean_density = np.mean(ds.r["gas", "Density"][sphere_inds])
         
@@ -182,9 +189,11 @@ if len(files)>0:
         bulk_velocity = yt.YTArray([sph_velx, sph_vely, sph_velz])
         del sph_velx, sph_vely, sph_velz
         gc.collect
-        rel_vel = bulk_velocity - sink_vel
+        rel_vel = bulk_velocity[sphere_inds] - sink_vel
+        import pdb
+        pdb.set_trace()
         rel_speed = np.sqrt(np.sum(rel_vel**2))
-        del rel_vel
+        del rel_vel, bulk_velocity
         gc.collect
         print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
         sys.stdout.flush()
