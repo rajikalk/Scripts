@@ -21,7 +21,7 @@ if rank == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-event_id", "--event_identifier", default=2, type=int)
 parser.add_argument("-ax", "--axis", default='xy', type=str)
-parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=6, type=float)
+parser.add_argument("-sph_rad", "--measuring_sphere_radius", default=5, type=float)
 parser.add_argument('files', nargs='*')
 args = parser.parse_args()
 
