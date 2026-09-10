@@ -57,8 +57,8 @@ elif os.path.exists('BHL_accretion_0.pkl'):
     save_dict.update({"Time": np.array([])})
     save_dict.update({"BHL_Acc_acc_low": np.array([])})
     save_dict.update({"BHL_Acc_acc_high": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
+    save_dict.update({"Density": np.array([[]])})
+    save_dict.update({"Rel_kep": np.array([[]])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
@@ -75,8 +75,8 @@ else:
     save_dict.update({"Time": np.array([])})
     save_dict.update({"BHL_Acc_acc_low": np.array([])})
     save_dict.update({"BHL_Acc_acc_high": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
+    save_dict.update({"Density": np.array([[]])})
+    save_dict.update({"Rel_kep": np.array([[]])})
 
 sink_id = 45
 sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
@@ -164,7 +164,10 @@ if len(files)>0:
         gc.collect()
         
         density_array = ds.r["gas", "Density"][sphere_inds]
-        save_dict["Density"] = np.append(save_dict["Density"], density_array)
+        try:
+            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
+        except:
+            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
         mean_density = np.mean(density_array)
         del density_array
         gc.collect()
@@ -203,7 +206,10 @@ if len(files)>0:
         del sph_speed, rad_speed
         gc.collect()
         rel_kep = tang_vel/keplerian_velocity
-        save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], rel_kep)
+        try:
+            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
+        except:
+            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
         del rel_kep
         gc.collect()
         
