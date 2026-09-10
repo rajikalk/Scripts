@@ -85,12 +85,13 @@ if len(files)>0:
         #'''
         #my_storage = {}
         #for sto, ds in ts.piter(storage=my_storage):
-        if np.isnan(sink_form_time):
-            if len(ds.r["sink_particle_form_time"]) == 45:
-                skip=True
-            else:
+        
+        if len(ds.r["sink_particle_form_time"]) == 45:
+            skip=True
+        else:
+            if np.isnan(sink_form_time):
                 sink_form_time = ds.r["sink_particle_form_time"][sink_id]
-                skip = False
+            skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
             save_dict["Time"] = np.append(save_dict["Time"],time_val)
