@@ -209,8 +209,6 @@ if rank == 0:
     pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"BHL_Acc_acc_low": np.array([])})
-    save_dict.update({"BHL_Acc_acc_high": np.array([])})
     save_dict.update({"Density": np.array([])})
     save_dict.update({"Rel_kep": np.array([])})
     for pickle_file in pickle_files:
@@ -226,23 +224,6 @@ if rank == 0:
     file_open = open('BHL_accretion.pkl', 'wb')
     pickle.dump((save_dict), file_open)
     file_open.close()
-    
-    try:
-        sink_pickle = "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl"
-        file_open = open(sink_pickle, 'rb')
-        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-        file_open.close()
-        print("finished reading in pickle")
-        sys.stdout.flush()
-    except:
-        sink_pickle = "/scratch/ek9/rlk100/RAMSES/Analysis/Event_plots/particle_data_L20.pkl"
-        print("read pickle", sink_pickle)
-        file_open = open(sink_pickle, 'rb')
-        particle_data, counter, sink_id, sink_form_time = pickle.load(file_open)
-        file_open.close()
-        print("finished reading in pickle")
-        sys.stdout.flush()
-
     
     import matplotlib.pyplot as plt
     
@@ -266,40 +247,12 @@ if rank == 0:
     
     plt.clf()
     fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
-                
-    plt.title("Burst event "+str(event_it), y=0.8)
-    start_ind = np.argmin(abs(particle_data['time']-start_time))
-    end_ind = np.argmin(abs(particle_data['time']-end_time))
     #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-    lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
-    BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
-    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color='g', ls=':', label="BHL_mean")
-    plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color='g', alpha=0.5, label="BHL prediction")
-    axes_1_twin = plt.twinx()
-    lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
-    #Plot accretion and separation. This should be loaded from a pickle
-
-    plt.xlabel('Time (yr)', labelpad=-0.2, fontsize=font_size) #($yr$)
-    plt.ylabel('Accretion rate (M$_\odot$/yr)', labelpad=-0.2, fontsize=font_size)# (M$_\odot/yr$)
-    axes_1_twin.set_ylabel('Separation (au)', fontsize=font_size)
-    plt.tick_params(axis='x', which='major', direction='in', color='k', top=True)
-    plt.tick_params(axis='y', which='major', direction='in', color='k', right=True)
-    #plt.xaxis.label.set_color('black')
-    #plt.yaxis.label.set_color('black')
-    plt.tick_params(axis='both', labelsize=font_size)
-    plt.xlim([start_time, end_time])
-    plt.tick_params(axis='both', labelsize=font_size, labelfontfamily='sans-serif')
-    lns = lns1+lns2+lns3
-    labs = [l.get_label() for l in lns]
-    plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    print('Saved figure with BHL Accretion')
-
-    #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
-    lns = lns1+lns2+lns3
-    labs = [l.get_label() for l in lns]
-    plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.scatter(particle_data['time'], particle_data['Rel_kep'], color=particle_data['Density'])
+    plt.ylim([0, 2])
+    plt.axhline(y=0.8, ls="--", c='k')
+    plt.axhline(y=1.2, ls="--", c='k')
+    plt.savefig("Kep_mass_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     sys.stdout.flush()
     
