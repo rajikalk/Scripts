@@ -41,7 +41,7 @@ if os.path.exists('Kep_mass.pkl'):
     file_open.close()
     if len(save_dict["Time"]) != len(files):
         files = files[len(save_dict["Time"]):]
-elif os.path.exists('Kep_mass.pkl'):
+elif os.path.exists('Kep_mass_0.pkl'):
     pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
