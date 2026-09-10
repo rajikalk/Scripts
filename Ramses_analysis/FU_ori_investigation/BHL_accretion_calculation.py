@@ -27,7 +27,6 @@ args = parser.parse_args()
 
 #------------------------------------------------------
 time_bounds = [[3800, 4900],[5575, 5700], [6580, 6720], [7295, 7365], [7850, 7900]]
-cmap=plt.cm.gist_heat
 
 #Start by loading pickel data and then deleting what we don't need
 
@@ -283,6 +282,8 @@ if rank == 0:
 
     
     import matplotlib.pyplot as plt
+    
+    cmap=plt.cm.gist_heat
     plt.rcParams.update({
         "font.family": "sans-serif",
         "font.sans-serif": ["Arial"],
