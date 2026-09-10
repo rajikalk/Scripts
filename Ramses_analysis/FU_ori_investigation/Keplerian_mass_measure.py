@@ -195,7 +195,7 @@ if len(files)>0:
             gc.collect()
             
             #Save BHL Calculation
-            file_open = open('Kep_mass'+str(proj_root_rank)+'.pkl', 'wb')
+            file_open = open('Kep_mass_'+str(proj_root_rank)+'.pkl', 'wb')
             #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
             pickle.dump((save_dict), file_open)
             file_open.close()
