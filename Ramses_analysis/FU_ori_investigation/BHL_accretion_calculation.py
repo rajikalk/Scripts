@@ -171,6 +171,9 @@ if len(files)>0:
         mean_density = np.mean(density_array)
         del density_array
         gc.collect()
+        BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
+        del sink_mass, mean_density
+        gc.collect()
         
         #Calculate bulk velocity of the sphere
         sph_dvx = ds.r["ramses", "x-velocity"][sphere_inds].in_units('km/s') - sink_vel[0]
@@ -212,9 +215,6 @@ if len(files)>0:
         sys.stdout.flush()
         
         alpha = yt.YTArray([1, 2], '')
-        BHL_top = 2*np.pi* (sink_mass.in_cgs()*yt.units.gravitational_constant_cgs)**2 * mean_density.in_cgs()
-        del sink_mass, mean_density
-        gc.collect()
         BHL_bot = (rel_speed.in_cgs()**2 + sound_speed.in_cgs()**2)**(3./2.)
         del rel_speed, sound_speed
         gc.collect()
@@ -310,7 +310,7 @@ if rank == 0:
     lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='b', ls='-', label="Accretion rate")
     BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
     lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color='g', ls=':', label="BHL_mean")
-    plt.fill_between(time_arr, save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color='g', alpha=0.5, label="BHL prediction")
+    plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color='g', alpha=0.5, label="BHL prediction")
     axes_1_twin = plt.twinx()
     lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
     #Plot accretion and separation. This should be loaded from a pickle
