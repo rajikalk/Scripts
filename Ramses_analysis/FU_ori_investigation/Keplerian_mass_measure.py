@@ -86,7 +86,7 @@ if len(files)>0:
         #my_storage = {}
         #for sto, ds in ts.piter(storage=my_storage):
         if np.isnan(sink_form_time):
-            if len(ds.r["sink_particle_form_time"][sink_id]) == 45:
+            if len(ds.r["sink_particle_form_time"]) == 45:
                 skip=True
             else:
                 sink_form_time = ds.r["sink_particle_form_time"][sink_id]
