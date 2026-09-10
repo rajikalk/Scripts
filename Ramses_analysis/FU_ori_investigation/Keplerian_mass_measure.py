@@ -185,6 +185,8 @@ if len(files)>0:
             del enclosed_mass, sink_mass
             gc.collect()
             
+            import pdb
+            pdb.set_trace()
             rel_kep = tang_vel/keplerian_velocity
             save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], rel_kep)
             del rel_kep
@@ -243,17 +245,19 @@ if rank == 0:
     single_col_width = 3.50394 #inches
     page_height = 10.62472 #inches
     font_size = 9
-    mym.set_global_font_size(font_size)
 
     
     plt.clf()
     fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
     #axes_1.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[0][start_ind:end_ind], color='b', ls=':')
-    plt.scatter(particle_data['time'], particle_data['Rel_kep'], color=particle_data['Density'])
+    smap = plt.scatter(save_dict['Time'], save_dict['Rel_kep'], c=save_dict['Density'])
+    plt.xlabel("Time (yr)")
+    plt.ylabel("$v_\mathrm{\perp}/v_{Kep}$")
     plt.ylim([0, 2])
+    plt.xlim([0, save_dict['Time'][-1]])
     plt.axhline(y=0.8, ls="--", c='k')
     plt.axhline(y=1.2, ls="--", c='k')
-    plt.savefig("Kep_mass_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    cb = fig.colorbar(smap)
+    plt.savefig("Kep_mass_radius_"+str(args.measuring_sphere_radius)+"_au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
-    sys.stdout.flush()
     
