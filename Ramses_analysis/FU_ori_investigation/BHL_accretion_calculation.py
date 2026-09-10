@@ -115,7 +115,7 @@ if len(files)>0:
         sink_pos = yt.YTArray([sink_particle_posx, sink_particle_posy, sink_particle_posz])
         del sink_particle_posx, sink_particle_posy, sink_particle_posz
         gc.collect()
-        print('Got particle position on rank', rank, ' for fn', ds)
+        #print('Got particle position on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
         #get sink velocity
@@ -125,7 +125,7 @@ if len(files)>0:
         sink_vel = yt.YTArray([sink_particle_velx, sink_particle_vely, sink_particle_velz])
         del sink_particle_velx, sink_particle_vely, sink_particle_velz
         gc.collect()
-        print('Got particle velocity on rank', rank, ' for fn', ds)
+        #print('Got particle velocity on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
         #Get inds in measuring sphere
@@ -145,7 +145,7 @@ if len(files)>0:
         radii = sep[sphere_inds]
         del sep
         gc.collect()
-        print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
+        #print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
         sep_vector = sep_vector.T[sphere_inds].T
         
         #Calcualte keplerian velocity
@@ -158,7 +158,7 @@ if len(files)>0:
         del gas_mass
         gc.collect()
         sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
-        print('Got particle mass on rank', rank, ' for fn', ds)
+        #print('Got particle mass on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         enclosed_mass = enclosed_mass+sink_mass.in_units('g')
         keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
@@ -226,7 +226,7 @@ if len(files)>0:
         #sto.result = BHL[0]
         #sto.result_id = "BHL_Acc_acc_high"
         #sto.result = BHL[1]
-        print('calculated BHL accretion on rank', rank, ' for fn', ds)
+        #print('calculated BHL accretion on rank', rank, ' for fn', ds)
         sys.stdout.flush()
         
         #ds.index.clear_all_data()
