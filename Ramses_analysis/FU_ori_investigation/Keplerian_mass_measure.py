@@ -65,7 +65,7 @@ else:
     save_dict.update({"Rel_kep": np.array([])})
 
 sink_id = 45
-sink_form_time = np.nan
+sink_form_time = yt.YTQuantity(22926444.19370405, 'yr')
 
 sys.stdout.flush()
 CW.Barrier()
@@ -85,8 +85,6 @@ if len(files)>0:
         #'''
         #my_storage = {}
         #for sto, ds in ts.piter(storage=my_storage):
-        if np.isnan(sink_form_time):
-            sink_form_time = ds.r["sink_particle_form_time"][sink_id]
         time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
         save_dict["Time"] = np.append(save_dict["Time"],time_val)
         del time_val
