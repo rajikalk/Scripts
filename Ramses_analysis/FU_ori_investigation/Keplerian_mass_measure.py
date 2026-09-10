@@ -45,8 +45,8 @@ elif os.path.exists('Kep_mass_0.pkl'):
     pickle_files = sorted(glob.glob("Kep_mass_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
+    save_dict.update({"Density": np.array([[]])})
+    save_dict.update({"Rel_kep": np.array([[]])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
@@ -61,8 +61,8 @@ elif os.path.exists('Kep_mass_0.pkl'):
 else:
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
+    save_dict.update({"Density": np.array([[]])})
+    save_dict.update({"Rel_kep": np.array([[]])})
 
 sink_id = 45
 sink_form_time = np.nan
@@ -185,15 +185,19 @@ if len(files)>0:
             del enclosed_mass, sink_mass
             gc.collect()
             
-            import pdb
-            pdb.set_trace()
             rel_kep = tang_vel/keplerian_velocity
-            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], rel_kep)
+            try:
+                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
+            except:
+                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
             del rel_kep
             gc.collect()
             
             density_array = ds.r["gas", "Density"][sphere_inds]
-            save_dict["Density"] = np.append(save_dict["Density"], density_array)
+            try:
+                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
+            except:
+                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
             del density_array
             gc.collect()
             
@@ -212,8 +216,8 @@ if rank == 0:
     pickle_files = sorted(glob.glob("BHL_accretion_*.pkl"))
     save_dict = {}
     save_dict.update({"Time": np.array([])})
-    save_dict.update({"Density": np.array([])})
-    save_dict.update({"Rel_kep": np.array([])})
+    save_dict.update({"Density": np.array([[]])})
+    save_dict.update({"Rel_kep": np.array([[]])})
     for pickle_file in pickle_files:
         file_open = open(pickle_file, 'rb')
         save_dict_r = pickle.load(file_open)
