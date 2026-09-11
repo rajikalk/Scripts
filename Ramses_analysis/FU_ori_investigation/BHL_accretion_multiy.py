@@ -100,10 +100,10 @@ for rad in Radii:
     
     if plot == True:
         BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
-        lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[pickle_files.index(pickle_file)], ls=':', label="r = "+str(rad)+"AU")
+        lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[Radii.index(rad)], ls=':', label="r = "+str(rad)+"AU")
         lns_all.append(lns3)
         plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
-        plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[pickle_files.index(pickle_file)], alpha=0.5)
+        plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[Radii.index(rad)], alpha=0.5)
 axes_1_twin = plt.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns_all.append(lns2)
