@@ -254,7 +254,7 @@ if len(files)>0:
         #pickle.dump((my_storage["Time"], my_storage["BHL_Acc_acc_low"], my_storage["BHL_Acc_acc_high"]), file_open)
         pickle.dump((save_dict), file_open)
         file_open.close()
-        print("RANK "+str(rank)+": Calculated BHL for file", fn)
+        print("RANK "+str(rank)+": CALCULATED BHL FOR FILE", files.index(fn), "OF", len(files))
         sys.stdout.flush()
 
 print('Finished BHL Calculation on rank', rank)
@@ -281,6 +281,8 @@ if rank == 0:
     file_open = open('BHL_accretion.pkl', 'wb')
     pickle.dump((save_dict), file_open)
     file_open.close()
+    
+    radius = args.measuring_sphere_radius
     
     try:
         sink_pickle = "/Users/reggie/Documents/Simulation_analysis/FU_ori_analysis/Particle_data_pickles/particle_data_L20.pkl"
@@ -348,14 +350,13 @@ if rank == 0:
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
 
     #plt.savefig("BHL_Event_"+str(event_it)+".pdf", format='pdf', bbox_inches='tight', pad_inches=0.02, dpi=300)
     lns = lns1+lns2+lns3
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc='upper left')
-    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(args.measuring_sphere_radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
+    plt.savefig("BHL_Event_"+str(event_it)+"_radius_"+str(radius)+"au.png", format='png', bbox_inches='tight', pad_inches=0.02, dpi=300)
     print('Saved figure with BHL Accretion')
     sys.stdout.flush()
-    
