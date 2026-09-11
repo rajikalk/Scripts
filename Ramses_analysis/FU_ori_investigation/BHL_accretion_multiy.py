@@ -28,8 +28,6 @@ two_col_width = 7.20472 #inches
 single_col_width = 3.50394 #inches
 page_height = 10.62472 #inches
 font_size = 9
-mym.set_global_font_size(font_size)
-
 
 plt.clf()
 fig = plt.figure(figsize=(two_col_width, 0.6*two_col_width))
