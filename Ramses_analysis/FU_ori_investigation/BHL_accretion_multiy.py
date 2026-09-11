@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+import os
 
 cmap=plt.cm.gist_heat
 plt.rcParams.update({
