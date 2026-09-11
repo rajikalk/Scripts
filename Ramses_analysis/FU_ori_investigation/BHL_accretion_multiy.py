@@ -69,12 +69,31 @@ end_ind = np.argmin(abs(particle_data['time']-end_time))
 lns_all = []
 lns1 = plt.semilogy(particle_data['time'][start_ind:end_ind], particle_data['mdot'].T[1][start_ind:end_ind], color='k', ls='-', label="Accretion rate")
 lns_all.append(lns1)
+Radii = [3, 4, 5, 6]
 
-pickle_files = sorted(glob.glob("/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(args.event_identifier)+"/Radius_*/BHL_accretion.pkl"))
-for pickle_file in pickle_files:
-    file_open = open(pickle_file, 'rb')
-    save_dict = pickle.load(file_open)
-    file_open.close()
+for rad in Radii:
+    directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(args.event_identifier)+"/Radius_"+str(rad) +"/"
+    if os.path.exists(directory+'BHL_accretion.pkl'):
+        file_open = open(directory+'BHL_accretion.pkl', 'rb')
+        save_dict = pickle.load(file_open)
+        file_open.close()
+    elif os.path.exists(directory+'BHL_accretion_0.pkl'):
+        pickle_files = sorted(glob.glob(directory+"BHL_accretion_*.pkl"))
+        save_dict = {}
+        save_dict.update({"Time": np.array([])})
+        save_dict.update({"BHL_Acc_acc_low": np.array([])})
+        save_dict.update({"BHL_Acc_acc_high": np.array([])})
+        save_dict.update({"Density": np.array([[]])})
+        save_dict.update({"Rel_kep": np.array([[]])})
+        for pickle_file in pickle_files:
+            file_open = open(pickle_file, 'rb')
+            save_dict_r = pickle.load(file_open)
+            file_open.close()
+            for key in save_dict_r.keys():
+                save_dict[key] = np.append(save_dict[key],save_dict_r[key])
+        sorted_inds = np.argsort(save_dict["Time"])
+        for key in save_dict.keys():
+            save_dict[key] = save_dict[key][sorted_inds]
 
     radius = pickle_file.split('Radius_')[-1][0]
     
