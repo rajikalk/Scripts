@@ -72,6 +72,7 @@ Radii = [3, 4, 5, 6]
 
 for rad in Radii:
     directory = "/home/100/rlk100/rlk/RAMSES/Analysis/BHL_analytical_calc/Event_"+str(args.event_identifier)+"/Radius_"+str(rad) +"/"
+    plot = True
     if os.path.exists(directory+'BHL_accretion.pkl'):
         file_open = open(directory+'BHL_accretion.pkl', 'rb')
         save_dict = pickle.load(file_open)
@@ -93,12 +94,16 @@ for rad in Radii:
         sorted_inds = np.argsort(save_dict["Time"])
         for key in save_dict.keys():
             save_dict[key] = save_dict[key][sorted_inds]
+    else:
+        print("No data right now for Radius", rad)
+        plot = False
     
-    BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
-    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[pickle_files.index(pickle_file)], ls=':', label="r = "+str(rad)+"AU")
-    lns_all.append(lns3)
-    plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
-    plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[pickle_files.index(pickle_file)], alpha=0.5)
+    if plot == True:
+        BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
+        lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[pickle_files.index(pickle_file)], ls=':', label="r = "+str(rad)+"AU")
+        lns_all.append(lns3)
+        plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
+        plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[pickle_files.index(pickle_file)], alpha=0.5)
 axes_1_twin = plt.twinx()
 lns2 = axes_1_twin.plot(particle_data['time'][start_ind:end_ind], particle_data['separation'][start_ind:end_ind], ls='--', color='k', alpha=0.5, label="Separation")
 lns_all.append(lns2)
