@@ -165,9 +165,16 @@ if len(files)>0:
         
         density_array = ds.r["gas", "Density"][sphere_inds]
         try:
-            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
+            try:
+                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
+            except:
+                save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
         except:
-            save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=0)
+            print("Hack for previous mistake about appending 2d arrays. Please fix!")
+            try:
+                save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=1)
+            except:
+                save_dict["Density"] = np.append([save_dict["Density"].T], [density_array], axis=0)
         mean_density = np.mean(density_array)
         del density_array
         gc.collect()
@@ -207,9 +214,16 @@ if len(files)>0:
         gc.collect()
         rel_kep = tang_vel/keplerian_velocity
         try:
-            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
+            try:
+                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
+            except:
+                save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
         except:
-            save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
+            print("Hack for previous mistake about appending 2d arrays. Please fix!")
+            try:
+                save_dict["Rel_kep"] = np.append([save_dict["Rel_kep"].T], [rel_kep], axis=1)
+            except:
+                save_dict["Rel_kep"] = np.append([save_dict["Rel_kep"].T], [rel_kep], axis=0)
         del rel_kep
         gc.collect()
         
