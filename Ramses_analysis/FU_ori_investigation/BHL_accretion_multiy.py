@@ -93,11 +93,9 @@ for rad in Radii:
         sorted_inds = np.argsort(save_dict["Time"])
         for key in save_dict.keys():
             save_dict[key] = save_dict[key][sorted_inds]
-
-    radius = pickle_file.split('Radius_')[-1][0]
     
     BHL_mean = (save_dict["BHL_Acc_acc_low"]+save_dict["BHL_Acc_acc_high"])/2
-    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[pickle_files.index(pickle_file)], ls=':', label="r = "+radius+"AU")
+    lns3 = plt.semilogy(save_dict["Time"], BHL_mean, color=colours[pickle_files.index(pickle_file)], ls=':', label="r = "+str(rad)+"AU")
     lns_all.append(lns3)
     plt.ylim([np.min(particle_data['mdot'].T[1][start_ind:end_ind]), np.max(particle_data['mdot'].T[1][start_ind:end_ind])])
     plt.fill_between(save_dict["Time"], save_dict["BHL_Acc_acc_low"], save_dict["BHL_Acc_acc_high"], color=colours[pickle_files.index(pickle_file)], alpha=0.5)
