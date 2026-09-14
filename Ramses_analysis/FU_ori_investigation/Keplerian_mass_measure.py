@@ -52,6 +52,8 @@ elif os.path.exists('Kep_mass_0.pkl'):
         save_dict_r = pickle.load(file_open)
         file_open.close()
         for key in save_dict_r.keys():
+            import pdb
+            pdb.set_trace()
             save_dict[key] = np.append(save_dict[key],save_dict_r[key])
     sorted_inds = np.argsort(save_dict["Time"])
     for key in save_dict.keys():
@@ -131,6 +133,7 @@ if len(files)>0:
             
             #Calcualte enclosed mass
             gas_mass = ds.r["gas", "mass"][sphere_inds]
+            gas_mass = ds.r["gas", "Density"][sphere_inds].in_units('msun/cm**3')*(ds.r["ramses", "dx"].in_units('cm')**3)
             enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
             for radi_it in range(len(radii)):
                 enc_inds = np.where(radii<=radii[radi_it])[0]
