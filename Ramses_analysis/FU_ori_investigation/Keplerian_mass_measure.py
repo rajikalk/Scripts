@@ -209,6 +209,8 @@ if len(files)>0:
             rel_kep = tang_vel/keplerian_velocity
             del tang_vel, keplerian_velocity
             gc.collect()
+            import pdb
+            pdb.set_trace()
             try:
                 save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
             except:
@@ -218,6 +220,8 @@ if len(files)>0:
             
             
             density_array = ds.r["gas", "Density"][sphere_inds]
+            import pdb
+            pdb.set_trace()
             try:
                 save_dict["Density"] = np.append(save_dict["Density"], [density_array], axis=1)
             except:
