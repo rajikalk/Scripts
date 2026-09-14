@@ -124,11 +124,30 @@ if len(files)>0:
             #Get indices in measure sphere
             radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
             sphere_inds = np.where(sep<=radius)[0]
+            sep_vector = sep_vector.T[sphere_inds].T
             radii = sep[sphere_inds]
             del sep
             gc.collect()
-            #print('Got indexes of cells in measuring sphere on rank', rank, ' for fn', ds)
-            sep_vector = sep_vector.T[sphere_inds].T
+            
+            #Calcualte enclosed mass
+            gas_mass = ds.r["gas", "mass"][sphere_inds]
+            enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
+            for radi_it in range(len(radii)):
+                enc_inds = np.where(radii<=radii[radi_it])[0]
+                enc_mass = np.sum(gas_mass[enc_inds])
+                enclosed_mass[radi_it] = enc_mass
+            del gas_mass
+            gc.collect()
+            sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
+            #print('Got particle mass on rank', rank, ' for fn', ds)
+            sys.stdout.flush()
+            enclosed_mass = enclosed_mass+sink_mass.in_units('g')
+            del sink_mass
+            gc.collect()
+            keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
+            del enclosed_mass, radii
+            gc.collect()
+            
             
             #Calculate bulk velocity of the sphere
             sink_particle_velx = ds.r["gas", "sink_particle_velx"][sink_id]
@@ -145,10 +164,6 @@ if len(files)>0:
             sph_vel = yt.YTArray([sph_dvx, sph_dvy, sph_dvz])
             del sph_dvx, sph_dvy, sph_dvz, sink_vel
             gc.collect()
-            sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
-            rel_vel = yt.YTArray([np.mean(sph_vel[0]), np.mean(sph_vel[1]), np.mean(sph_vel[2])])
-            del rel_vel
-            gc.collect()
             print('calculated mean density and relative speed on rank', rank, ' for fn', ds)
             sys.stdout.flush()
             
@@ -156,33 +171,18 @@ if len(files)>0:
             proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
             proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
             proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
-            del sph_vel, sep_vector
-            gc.collect()
             rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
-            del proj_v_x, proj_v_y, proj_v_z
+            del proj_v_x, proj_v_y, proj_v_z, sep_vector
             gc.collect()
             rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
             del rad_vel
             gc.collect()
+            sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
+            del sph_vel
+            gc.collect()
+
             tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
             del sph_speed, rad_speed
-            gc.collect()
-            
-            #Calcualte keplerian velocity
-            gas_mass = ds.r["gas", "mass"][sphere_inds]
-            enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
-            for radi_it in range(len(radii)):
-                enc_inds = np.where(radii<=radii[radi_it])[0]
-                enc_mass = np.sum(gas_mass[enc_inds])
-                enclosed_mass[radi_it] = enc_mass
-            del gas_mass
-            gc.collect()
-            sink_mass = ds.r["gas", "sink_particle_mass"][sink_id]
-            #print('Got particle mass on rank', rank, ' for fn', ds)
-            sys.stdout.flush()
-            enclosed_mass = enclosed_mass+sink_mass.in_units('g')
-            keplerian_velocity = np.sqrt((yt.units.gravitational_constant_cgs*enclosed_mass)/radii).in_units('km/s')
-            del enclosed_mass, sink_mass
             gc.collect()
             
             rel_kep = tang_vel/keplerian_velocity
@@ -192,6 +192,7 @@ if len(files)>0:
                 save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=0)
             del rel_kep
             gc.collect()
+            
             
             density_array = ds.r["gas", "Density"][sphere_inds]
             try:
