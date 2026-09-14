@@ -79,7 +79,7 @@ gc.collect()
 if len(files)>0:
     #ts = yt.DatasetSeries(files, parallel=4)
     #'''
-    para_div = 4
+    para_div = 7
     #my_storage = {}
     for fn in yt.parallel_objects(files, njobs=int(size/para_div)):#, storage=my_storage):
         proj_root_rank = int(rank/para_div)
@@ -120,19 +120,22 @@ if len(files)>0:
             dx = dd['x'].in_units('au') - sink_pos[0].in_units('au')
             dy = dd['y'].in_units('au') - sink_pos[1].in_units('au')
             dz = dd['z'].in_units('au') - sink_pos[2].in_units('au')
-            sep_vector = yt.YTArray([dx, dy, dz])
+            sep_vector_all = yt.YTArray([dx, dy, dz])
             del dx, dy, dz, dd, sink_pos
             gc.collect()
-            sep = np.sqrt(sep_vector[0]**2 + sep_vector[1]**2 + sep_vector[2]**2)
+            sep = np.sqrt(sep_vector_all[0]**2 + sep_vector_all[1]**2 + sep_vector_all[2]**2)
             sys.stdout.flush()
             
             #Get indices in measure sphere
             radius = yt.YTQuantity(args.measuring_sphere_radius, 'au')
             sphere_inds = np.where(sep<=radius)[0]
-            sep_vector = sep_vector.T[sphere_inds].T
             radii = sep[sphere_inds]
             del sep
             gc.collect()
+            sep_vector = sep_vector_all.T[sphere_inds].T
+            del sep_vector_all
+            gc.collect()
+
             
             #Calcualte enclosed mass
             try:
@@ -176,24 +179,31 @@ if len(files)>0:
             sys.stdout.flush()
             
             #Calculate Tangential vel
-            proj_v_x = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[0]
-            proj_v_y = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[1]
-            proj_v_z = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()*sep_vector.in_units('km')[2]
-            rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
-            del proj_v_x, proj_v_y, proj_v_z, sep_vector
-            gc.collect()
-            rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
-            del rad_vel
-            gc.collect()
+            proj_factor = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()
             sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
             del sph_vel
             gc.collect()
 
+            proj_v_x = proj_factor*sep_vector.in_units('km')[0]
+            proj_v_y = proj_factor*sep_vector.in_units('km')[1]
+            proj_v_z = proj_factor*sep_vector.in_units('km')[2]
+            del proj_factor, sep_vector
+            gc.collect()
+            rad_vel = yt.YTArray([proj_v_x,proj_v_y,proj_v_z])
+            del proj_v_x, proj_v_y, proj_v_z
+            gc.collect()
+            rad_speed = np.sqrt(rad_vel[0]**2 + rad_vel[1]**2 + rad_vel[2]**2)
+            del rad_vel
+            gc.collect()
+            
+            
             tang_vel = np.sqrt(sph_speed**2 - rad_speed**2)
             del sph_speed, rad_speed
             gc.collect()
             
             rel_kep = tang_vel/keplerian_velocity
+            del tang_vel, keplerian_velocity
+            gc.collect()
             try:
                 save_dict["Rel_kep"] = np.append(save_dict["Rel_kep"], [rel_kep], axis=1)
             except:
