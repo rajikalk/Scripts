@@ -89,6 +89,8 @@ if len(files)>0:
                 sink_form_time = ds.r["sink_particle_form_time"][sink_id]
                 del ds.r["sink_particle_form_time"][sink_id]
                 gc.collect()
+                print("RANK", rank, "got sink formation time")
+                sys.stdout.flush()
             skip = False
         if skip == False:
             time_val = ds.current_time.in_units('yr').value - sink_form_time.in_units('yr').value
