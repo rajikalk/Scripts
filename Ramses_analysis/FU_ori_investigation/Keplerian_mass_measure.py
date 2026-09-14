@@ -183,6 +183,7 @@ if len(files)>0:
             #Calculate Tangential vel
             proj_factor = (np.dot(sph_vel.T.in_units('km/s'), sep_vector.in_units('km')).diagonal())/np.dot(sep_vector.T.in_units('km'), sep_vector.in_units('km')).diagonal()
             sph_speed = np.sqrt(sph_vel[0]**2 + sph_vel[1]**2 + sph_vel[2]**2)
+            rel_kep_full = sph_speed/keplerian_velocity
             del sph_vel
             gc.collect()
             print("RANK", rank, "got gas speed and proj factor")
@@ -207,9 +208,20 @@ if len(files)>0:
             print("RANK", rank, "calculated tangential velocity")
             sys.stdout.flush()
             
-            rel_kep = tang_vel/keplerian_velocity
+            rel_kep_tang = tang_vel/keplerian_velocity
             del tang_vel, keplerian_velocity
             gc.collect()
+            
+            disc_tang = np.where((rel_kep_tang>0.9)&(rel_kep_tang<1.1))[0]
+            disc_full = np.where((rel_kep_full>0.9)&(rel_kep_full<1.1))[0]
+            import pdb
+            pdb.set_trace()
+            
+            #get median radius of kep mass
+            
+            
+            #Get
+            
             print("RANK", rank, "calculated relative keplerian velocity")
             sys.stdout.flush()
             if np.shape(save_dict["Rel_kep"]) == (1, 0):
