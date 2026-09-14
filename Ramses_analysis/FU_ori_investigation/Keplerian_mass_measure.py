@@ -136,7 +136,7 @@ if len(files)>0:
             #Calcualte enclosed mass
             try:
                 gas_mass = ds.r["gas", "mass"][sphere_inds]
-            except
+            except:
                 gas_mass = ds.r["gas", "Density"][sphere_inds].in_units('g/cm**3')*(ds.r["ramses", "dx"][sphere_inds].in_units('cm')**3)
             enclosed_mass = yt.YTArray(np.zeros(np.shape(radii)), "g")
             for radi_it in range(len(radii)):
