@@ -52,7 +52,7 @@ elif os.path.exists('Kep_mass_0.pkl'):
                 save_dict[key] = np.append(save_dict[key], save_dict_r[key])
             else:
                 if np.shape(save_dict[key]) == (1, 0):
-                    save_dict[key] = np.empty((0,len(rel_kep)))
+                    save_dict[key] = np.empty((0,len(save_dict_r[key][0])))
                 save_dict[key] = np.append(save_dict[key], save_dict_r[key], axis=0)
     del save_dict_r
     gc.collect()
